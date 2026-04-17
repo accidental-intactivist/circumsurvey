@@ -1,61 +1,84 @@
-import { useState, useEffect, useRef } from "react";
+// ═══════════════════════════════════════════════════════════════
+// v7 — "The Special Report" final form
+// Tomorrow's Bureau × Magazine-quality editorial motion
+// ═══════════════════════════════════════════════════════════════
+
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   META, PATHWAY,
   ALL_QUESTIONS, MIRROR_PAIRS, QUOTE_GALLERIES,
   CURATED_SECTIONS
 } from "./data.js";
 
-// ═══════════════════════════════════════════════════════════════
-// v6 — Tomorrow's Bureau × Special Report
-// Community-validated typography (Playfair / Barlow / JetBrains Mono)
-// Community-validated pathway palette (#5b93c7 / #d94f4f / #e8c868 / #a0a0a0)
-// Gradient grammar: pathway-colored for single cards, rainbow only when earned
-// ═══════════════════════════════════════════════════════════════
+// ── Type scale (bumped per Tone's feedback) ────────────────────
+const TYPE = {
+  // Display
+  mastheadHero:    "clamp(3rem, 8vw, 6rem)",      // landing HUGE
+  heroDisplay:     "clamp(2.6rem, 6.5vw, 4.8rem)", // card hero
+  sectionTitle:    "clamp(1.7rem, 3.2vw, 2.4rem)",
+  cardQuestion:    "clamp(1.2rem, 2vw, 1.55rem)",  // up from 1.1
+  cardLabel:       "clamp(0.72rem, 1vw, 0.85rem)", // eyebrows
+  body:            "clamp(0.95rem, 1.1vw, 1.05rem)", // up from 0.85 to min 1rem
+  bodySmall:       "clamp(0.82rem, 1vw, 0.9rem)",
+  dataValue:       "clamp(1.05rem, 1.2vw, 1.2rem)", // the numbers
+  dataLabel:       "clamp(0.88rem, 1.05vw, 0.98rem)",
+  bigStat:         "clamp(2.6rem, 4.5vw, 3.8rem)",  // stat callouts
+  pullQuote:       "clamp(1.3rem, 2.5vw, 1.9rem)",   // pull quotes
+  nav:             "clamp(0.7rem, 0.85vw, 0.8rem)",
+  mono:            "clamp(0.62rem, 0.75vw, 0.72rem)",
+};
 
+// ── Paper-grain SVG (encoded as data URI, under 1KB) ───────────
+// Subtle fractal noise filter applied with low opacity
+const GRAIN_SVG = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.15 0 0 0 0 0.13 0 0 0 0.085 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>`;
+
+// ── Color system ───────────────────────────────────────────────
 const C = {
-  // Page (dark)
   bg:        "#0a0a0c",
   bgSoft:    "#131316",
+  bgDeep:    "#050506",
   pageText:  "#eee",
-  pageMuted: "#888",
-  pageDim:   "#555",
-  pageGhost: "#222",
+  pageTextBright: "#fff",
+  pageMuted: "#999",
+  pageDim:   "#666",
+  pageGhost: "#2a2a30",
 
-  // Card (cream document)
   paper:         "#faf6f0",
+  paperWarm:     "#f4ede0",
   paperEdge:     "#f0ece4",
   paperInk:      "#2a2622",
   paperInkText:  "#faf6f0",
   paperInkDeep:  "#1a1815",
-  paperSubtle:   "#4a4640",
-  paperDim:      "#6a6660",
-  paperGhost:    "#9a968e",
+  paperSubtle:   "#3a3530",  // darker, more readable
+  paperDim:      "#5a5450",
+  paperGhost:    "#8a8680",
   paperRule:     "#e8e2d8",
   paperRuleDash: "#d4cfc4",
   paperFill:     "#f0ece4",
   paperBarBg:    "#eae4da",
-  dotLeader:     "#ccc4b8",
+  dotLeader:     "#c4bdb0",
 
-  // Editorial accents (gold for structural labels)
   gold:       "#d4a030",
   goldBright: "#e8b840",
+  goldDeep:   "#a87e18",
 
-  // Spectrum colors (used for option ordering in distributions)
-  red:        "#d94f4f",
-  redBright:  "#e85d50",
-  orange:     "#e8a44a",
+  red:          "#d94f4f",
+  redBright:    "#e85d50",
+  redDeep:      "#a03030",
+  orange:       "#e8a44a",
   orangeBright: "#f09860",
-  yellow:     "#e8c868",
+  yellow:       "#e8c868",
   yellowBright: "#f0c840",
-  green:      "#68b878",
-  blue:       "#5b93c7",
-  blueBright: "#5888c0",
-  lightBlue:  "#8bb8d9",
-  neutral:    "#a0a0a0",
-  neutralMid: "#999",
+  green:        "#68b878",
+  greenDeep:    "#4a8a58",
+  blue:         "#5b93c7",
+  blueBright:   "#5888c0",
+  blueDeep:     "#3a6f9a",
+  lightBlue:    "#8bb8d9",
+  neutral:      "#a0a0a0",
 };
 
-// Community-validated pathway palette
+// ── Community-validated pathway palette ────────────────────────
 const PATH_COLORS = {
   intact:      "#5b93c7",
   circumcised: "#d94f4f",
@@ -75,77 +98,44 @@ const PATH_BG = {
 const pathColor = (p) => PATH_COLORS[p] || C.neutral;
 const pathBg    = (p) => PATH_BG[p]     || "rgba(0,0,0,0.05)";
 
-// ═══════════════════════════════════════════════════════════════
-// GRADIENT GRAMMAR
-// Single pathway cards get pathway-colored gradients.
-// Mirror cards get split gradients.
-// All-pathway consensus cards get the rainbow.
-// ═══════════════════════════════════════════════════════════════
-
+// ── Gradient grammar ───────────────────────────────────────────
 const PATH_GRADIENTS = {
-  // Blue → green: life-affirming cooling
   intact:      "linear-gradient(90deg, #5b93c7, #68b878)",
-  // Red → orange: intensifying warning
   circumcised: "linear-gradient(90deg, #d94f4f, #e8a44a)",
-  // Yellow → red: the unresolved journey
   restoring:   "linear-gradient(90deg, #e8c868, #d94f4f)",
-  // Grey → gold: outside the frame, authoritative witness
   observer:    "linear-gradient(90deg, #a0a0a0, #d4a030)",
-  // Red → yellow: both component colors meeting
   all_circ:    "linear-gradient(90deg, #d94f4f, #e8c868)",
 };
 
-// Full rainbow — only for consensus & overview cards
 const RAINBOW_GRAD = "linear-gradient(90deg, #d94f4f, #e8a44a, #e8c868, #68b878, #5b93c7)";
 
-// Mirror: split gradient left pathway → right pathway
-function mirrorGradient(leftPath, rightPath) {
-  const l = pathColor(leftPath), r = pathColor(rightPath);
-  return `linear-gradient(90deg, ${l} 0%, ${l} 40%, ${r} 60%, ${r} 100%)`;
+function mirrorGradient(l, r) {
+  const lc = pathColor(l), rc = pathColor(r);
+  return `linear-gradient(90deg, ${lc} 0%, ${lc} 40%, ${rc} 60%, ${rc} 100%)`;
 }
 
-// Determine a card's "type" (for gradient and optional label)
-function cardType(q) {
-  if (!q.data) return "single";
-  const pathways = Object.keys(q.data);
-  const activePathways = pathways.filter(p => q.type === "avg"
-    ? q.data[p] != null
-    : Array.isArray(q.data[p]) && q.data[p].length);
-  if (activePathways.length === 1) return "single";
-  if (activePathways.length >= 3) return "consensus";
-  if (activePathways.length === 2) return "duo";
-  return "single";
-}
-
-// Consensus detection — do all pathways strongly agree?
-// If the top option exceeds 75% in every pathway, flag as "consensus"
+// ── Consensus detection ────────────────────────────────────────
 function isConsensus(q) {
   if (!q.data || q.type === "avg") return false;
   const pathways = Object.keys(q.data).filter(p => Array.isArray(q.data[p]));
   if (pathways.length < 3) return false;
-  const topOpts = pathways.map(p => {
+  const tops = pathways.map(p => {
     const arr = q.data[p];
     if (!arr || !arr.length) return null;
     return { idx: arr.indexOf(Math.max(...arr)), val: Math.max(...arr) };
   }).filter(Boolean);
-  if (topOpts.length < 3) return false;
-  // All pathways top the same option, and all are >= 75%
-  const firstIdx = topOpts[0].idx;
-  return topOpts.every(t => t.idx === firstIdx && t.val >= 75);
+  if (tops.length < 3) return false;
+  const firstIdx = tops[0].idx;
+  return tops.every(t => t.idx === firstIdx && t.val >= 75);
 }
 
-// Gradient for a given question
 function questionGradient(q) {
   if (isConsensus(q)) return RAINBOW_GRAD;
   const pathways = q.pathways || (q.data ? Object.keys(q.data).filter(p =>
     q.type === "avg" ? q.data[p] != null : Array.isArray(q.data[p])
   ) : []);
-  if (pathways.length === 1) {
-    return PATH_GRADIENTS[pathways[0]] || PATH_GRADIENTS.observer;
-  }
+  if (pathways.length === 1) return PATH_GRADIENTS[pathways[0]] || PATH_GRADIENTS.observer;
   if (pathways.length >= 4) return RAINBOW_GRAD;
-  // 2-3 pathway cards default to pathway-blended
-  // (these usually show intact/circ/restoring — a 3-way comparison)
   return RAINBOW_GRAD;
 }
 
@@ -171,29 +161,21 @@ function refCode(q, n) {
   return `${base} · PHASE 1 · N = ${n || META.totalRespondents}`;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// REVEAL — scroll-into-view animation hook
-// ═══════════════════════════════════════════════════════════════
+// ── Paper styles (with grain) ──────────────────────────────────
+const PAPER_BG = `url("${GRAIN_SVG}"), linear-gradient(180deg, ${C.paper} 0%, ${C.paperWarm} 100%)`;
 
+// ── IntersectionObserver hooks ────────────────────────────────
 function useReveal(options = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setVisible(true);
-      return;
-    }
+    if (typeof IntersectionObserver === "undefined") { setVisible(true); return; }
     const obs = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            obs.unobserve(entry.target);
-          }
-        });
-      },
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { setVisible(true); obs.unobserve(e.target); }
+      }),
       { threshold: 0.08, rootMargin: "0px 0px -10% 0px", ...options }
     );
     obs.observe(el);
@@ -205,92 +187,180 @@ function useReveal(options = {}) {
 function Reveal({ children, delay = 0, style, className }) {
   const [ref, visible] = useReveal();
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(16px)",
-        transition: `opacity 0.65s ease-out ${delay}ms, transform 0.65s ease-out ${delay}ms`,
-        ...style,
-      }}
-    >
-      {children}
-    </div>
+    <div ref={ref} className={className} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0)" : "translateY(16px)",
+      transition: `opacity 0.7s ease-out ${delay}ms, transform 0.7s ease-out ${delay}ms`,
+      ...style,
+    }}>{children}</div>
+  );
+}
+
+// Animated tween 0 → 1 over duration ms once visible
+function useTween(visible, duration = 800, ease = (p) => 1 - Math.pow(1 - p, 3)) {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    if (!visible) return;
+    let start;
+    let raf;
+    const step = (t) => {
+      if (!start) start = t;
+      const p = Math.min(1, (t - start) / duration);
+      setProgress(ease(p));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [visible, duration]);
+  return progress;
+}
+
+// Count-up animation for big numbers
+function CountUp({ to, suffix = "", duration = 1600, visible = true, decimals = 0 }) {
+  const p = useTween(visible, duration);
+  const val = to * p;
+  return (
+    <>{val.toFixed(decimals)}{suffix}</>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// BUREAU CARD — cream document on dark page
+// CIRCUMSURVEY SEAL — custom SVG badge
+// Inspired by your Data Studio donut's red star logo
 // ═══════════════════════════════════════════════════════════════
 
-function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, children, style }) {
+function CircumSurveySeal({ size = 44, ringColor = C.red, starColor = C.gold }) {
+  const r = size / 2;
+  const cx = r, cy = r;
+  const innerR = r * 0.66;
+  const textR = r * 0.82;
+
+  // Generate text-on-path for "CIRCUMSURVEY · ONLINE · "
+  const pathId = `seal-path-${size}`;
+
+  // 5-pointed star
+  const starPts = [];
+  const starR = r * 0.4, starIR = starR * 0.4;
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
+    const rr = i % 2 === 0 ? starR : starIR;
+    starPts.push(`${cx + rr * Math.cos(a)},${cy + rr * Math.sin(a)}`);
+  }
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+      style={{ display: "block", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+      <defs>
+        <path id={pathId}
+          d={`M ${cx},${cy} m ${-textR},0 a ${textR},${textR} 0 1,1 ${textR * 2},0 a ${textR},${textR} 0 1,1 ${-textR * 2},0`}
+          fill="none"
+        />
+      </defs>
+      {/* Outer ring */}
+      <circle cx={cx} cy={cy} r={r - 1} fill={ringColor} stroke={C.paperInk} strokeWidth="1" />
+      {/* Inner red disc */}
+      <circle cx={cx} cy={cy} r={innerR} fill={ringColor} stroke={C.paperInk} strokeWidth="0.5" />
+      {/* Text ring white */}
+      <circle cx={cx} cy={cy} r={innerR + (r - innerR) * 0.5} fill="none" stroke={C.paper} strokeWidth={(r - innerR) * 0.9} opacity="0.08" />
+      {/* Text circling */}
+      <text fill={C.paper} fontFamily="'Barlow Condensed', sans-serif" fontWeight="700" fontSize={size * 0.14} letterSpacing="1">
+        <textPath href={`#${pathId}`} startOffset="0%">
+          CIRCUMSURVEY · ONLINE ·&#160;
+        </textPath>
+      </text>
+      {/* Star */}
+      <polygon points={starPts.join(" ")} fill={starColor} stroke={C.paperInk} strokeWidth="0.5" />
+    </svg>
+  );
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// BUREAU CARD with paper grain + animated rainbow shimmer
+// ═══════════════════════════════════════════════════════════════
+
+function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, children, style, shimmer }) {
   const [ref, visible] = useReveal();
+  const useRainbow = gradient === RAINBOW_GRAD;
   return (
     <div
       ref={ref}
       style={{
-        background: C.paper,
+        background: PAPER_BG,
         border: `2.5px solid ${C.paperInk}`,
         borderRadius: 3,
         position: "relative",
-        overflow: "visible",
-        marginBottom: "2.5rem",
-        boxShadow: visible ? "0 3px 20px rgba(0,0,0,0.28)" : "0 2px 6px rgba(0,0,0,0.15)",
+        overflow: "hidden",
+        marginBottom: "3rem",
+        boxShadow: visible ? "0 6px 32px rgba(0,0,0,0.35)" : "0 2px 8px rgba(0,0,0,0.15)",
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
-        transition: "opacity 0.7s ease-out, transform 0.7s ease-out, box-shadow 0.7s ease-out",
+        transform: visible ? "translateY(0)" : "translateY(24px)",
+        transition: "opacity 0.75s ease-out, transform 0.75s ease-out, box-shadow 0.75s ease-out",
         ...style,
       }}
     >
-      {/* Accent gradient bar */}
-      <div style={{ height: 5, background: gradient || RAINBOW_GRAD }} />
+      {/* Accent gradient bar with optional shimmer */}
+      <div style={{ position: "relative", height: 6, background: gradient || RAINBOW_GRAD, overflow: "hidden" }}>
+        {useRainbow && shimmer !== false && (
+          <div style={{
+            position: "absolute",
+            top: 0, left: 0,
+            width: "30%",
+            height: "100%",
+            background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)",
+            animation: "bureauShimmer 7s ease-in-out infinite",
+          }} />
+        )}
+      </div>
 
       {/* Red corner star */}
       <div style={{
         position: "absolute",
-        top: -11,
+        top: -10,
         left: 24,
-        fontSize: "1.1rem",
+        fontSize: "1.3rem",
         color: C.red,
         background: C.bg,
-        padding: "0 0.35rem",
+        padding: "0 0.45rem",
         lineHeight: 1,
         fontFamily: "'Playfair Display', serif",
+        zIndex: 2,
       }}>★</div>
 
       {/* Dark letterhead strip */}
       <div style={{
         background: C.paperInk,
         color: C.paperInkText,
-        padding: "0.55rem 1.25rem",
+        padding: "0.7rem 1.5rem",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        gap: "0.5rem",
+        gap: "0.6rem",
         flexWrap: "wrap",
+        position: "relative",
+        zIndex: 1,
       }}>
         <div style={{
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 700,
-          fontSize: "0.7rem",
+          fontSize: TYPE.cardLabel,
           textTransform: "uppercase",
-          letterSpacing: "0.12em",
+          letterSpacing: "0.14em",
           display: "flex",
           alignItems: "center",
-          gap: "0.4rem",
+          gap: "0.5rem",
         }}>
-          <span style={{ color: C.red, fontSize: "0.95rem" }}>★</span>
+          <span style={{ color: C.red, fontSize: "1.05em" }}>★</span>
           {title}
           {cardLabel && (
             <span style={{
-              marginLeft: "0.35rem",
-              padding: "0.12rem 0.4rem",
-              background: "rgba(212,160,48,0.18)",
-              border: `1px solid rgba(212,160,48,0.35)`,
+              marginLeft: "0.5rem",
+              padding: "0.15rem 0.5rem",
+              background: "rgba(212,160,48,0.2)",
+              border: `1px solid rgba(212,160,48,0.4)`,
               color: C.goldBright,
               borderRadius: 2,
-              fontSize: "0.55rem",
+              fontSize: "0.82em",
               letterSpacing: "0.1em",
             }}>{cardLabel}</span>
           )}
@@ -298,7 +368,7 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
         {refText && (
           <div style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "0.52rem",
+            fontSize: TYPE.mono,
             color: C.pageMuted,
             letterSpacing: "0.05em",
           }}>{refText}</div>
@@ -310,19 +380,20 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
       {stamp && (
         <div style={{
           position: "absolute",
-          bottom: 14,
-          right: 18,
+          bottom: 16,
+          right: 20,
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 700,
-          fontSize: "0.55rem",
+          fontSize: "0.72rem",
           textTransform: "uppercase",
           letterSpacing: "0.14em",
           color: stampColor || C.red,
           border: `2px solid ${stampColor || C.red}`,
-          padding: "0.2rem 0.5rem",
+          padding: "0.25rem 0.55rem",
           transform: "rotate(-4deg)",
-          opacity: 0.6,
+          opacity: 0.55,
           borderRadius: 2,
+          zIndex: 2,
         }}>{stamp}</div>
       )}
     </div>
@@ -330,9 +401,779 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ANIMATED PIE — sweeps in from 12 o'clock
+// THE CINEMATIC HERO — full-viewport data-driven entry
 // ═══════════════════════════════════════════════════════════════
 
+// Data poetry — devastating numbers that cycle
+const HERO_FACTS = [
+  {
+    big:   "96%",
+    line1: "prioritize the child's right",
+    line2: "to bodily autonomy.",
+    context: "Across every pathway — intact, circumcised, restoring, observer.",
+    color: C.blue,
+  },
+  {
+    big:   "80%",
+    line1: "of restoring respondents",
+    line2: "report strong, frequent resentment.",
+    context: "0% said they have never felt negative about their circumcision.",
+    color: C.red,
+  },
+  {
+    big:   "47.6%",
+    line1: "describe the decision as",
+    line2: "\"routine / automatic.\"",
+    context: "Only 2.7% were offered it as a neutral choice with pros and cons.",
+    color: C.orange,
+  },
+  {
+    big:   "52%",
+    line1: "of circumcised respondents",
+    line2: "prefer the intact appearance.",
+    context: "A quiet majority, in their own words.",
+    color: C.yellow,
+  },
+  {
+    big:   "88%",
+    line1: "of intact respondents would",
+    line2: "keep their son intact.",
+    context: "78% of circumcised respondents would make the same choice for their son.",
+    color: C.green,
+  },
+];
+
+function RotatingFact() {
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState("in"); // in | holding | out
+  useEffect(() => {
+    let t;
+    if (phase === "in")      t = setTimeout(() => setPhase("holding"), 1200);
+    else if (phase === "holding") t = setTimeout(() => setPhase("out"), 4500);
+    else if (phase === "out")     t = setTimeout(() => {
+      setIdx(i => (i + 1) % HERO_FACTS.length);
+      setPhase("in");
+    }, 700);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  const fact = HERO_FACTS[idx];
+  const visible = phase !== "out";
+  const opacity = phase === "holding" ? 1 : phase === "in" ? 1 : 0;
+  const y = phase === "in" ? 0 : phase === "holding" ? 0 : -16;
+
+  return (
+    <div style={{
+      textAlign: "center",
+      maxWidth: 820,
+      margin: "0 auto",
+      opacity,
+      transform: `translateY(${y}px)`,
+      transition: "opacity 0.6s ease-out, transform 0.7s ease-out",
+    }}>
+      <div style={{
+        fontFamily: "'Playfair Display', serif",
+        fontWeight: 800,
+        fontSize: TYPE.mastheadHero,
+        color: fact.color,
+        lineHeight: 1,
+        letterSpacing: "-0.02em",
+        marginBottom: "1.25rem",
+        textShadow: `0 0 48px ${fact.color}22`,
+        transition: "color 0.7s ease-out, text-shadow 0.7s ease-out",
+      }}>
+        <CountUp to={parseFloat(fact.big)} suffix={fact.big.replace(/[\d.]+/g, "")}
+          duration={1400} decimals={fact.big.includes(".") ? 1 : 0}
+          visible={phase === "in" || phase === "holding"} />
+      </div>
+
+      <div style={{
+        fontFamily: "'Playfair Display', serif",
+        fontWeight: 600,
+        fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+        color: C.pageText,
+        lineHeight: 1.3,
+        marginBottom: "0.3rem",
+      }}>
+        {fact.line1}
+      </div>
+      <div style={{
+        fontFamily: "'Playfair Display', serif",
+        fontWeight: 600,
+        fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+        color: C.pageText,
+        lineHeight: 1.3,
+        marginBottom: "1.25rem",
+      }}>
+        {fact.line2}
+      </div>
+      <div style={{
+        fontFamily: "'Barlow', sans-serif",
+        fontWeight: 400,
+        fontStyle: "italic",
+        fontSize: TYPE.body,
+        color: C.pageMuted,
+        lineHeight: 1.55,
+        maxWidth: 540,
+        margin: "0 auto",
+      }}>
+        {fact.context}
+      </div>
+    </div>
+  );
+}
+
+// Ambient 496-dot artwork in background — "portrait of all respondents"
+function RespondentArtwork({ opacity = 0.25 }) {
+  const dots = useMemo(() => {
+    // 140 intact, 210 circ, 109 restoring, 37 observer
+    const arr = [];
+    const groups = [
+      { count: 140, color: PATH_COLORS.intact },
+      { count: 210, color: PATH_COLORS.circumcised },
+      { count: 109, color: PATH_COLORS.restoring },
+      { count: 37,  color: PATH_COLORS.observer },
+    ];
+    let i = 0;
+    groups.forEach(g => {
+      for (let k = 0; k < g.count; k++) {
+        // Sunflower spiral (Vogel's model)
+        const idx = i++;
+        const a = idx * 2.39996323; // golden angle
+        const r = Math.sqrt(idx) * 18;
+        arr.push({ idx, a, r, color: g.color });
+      }
+    });
+    return arr;
+  }, []);
+
+  return (
+    <svg width="100%" height="100%" viewBox="-400 -400 800 800"
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity,
+        pointerEvents: "none",
+        mixBlendMode: "screen",
+      }}
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <g style={{ animation: "bureauRotate 120s linear infinite", transformOrigin: "center" }}>
+        {dots.map(d => (
+          <circle key={d.idx}
+            cx={d.r * Math.cos(d.a)}
+            cy={d.r * Math.sin(d.a)}
+            r={2.2}
+            fill={d.color}
+          />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+function CinematicHero() {
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => { setTimeout(() => setRevealed(true), 80); }, []);
+  return (
+    <div style={{
+      position: "relative",
+      minHeight: "82vh",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "3rem 1.5rem 4rem",
+      overflow: "hidden",
+      background: `radial-gradient(ellipse at center, ${C.bgSoft} 0%, ${C.bg} 50%, ${C.bgDeep} 100%)`,
+      borderBottom: `1px solid ${C.pageGhost}`,
+    }}>
+      <RespondentArtwork opacity={0.2} />
+
+      {/* Rainbow bar at very top */}
+      <div style={{
+        position: "absolute",
+        top: 0, left: 0, right: 0,
+        height: 4,
+        background: RAINBOW_GRAD,
+      }} />
+
+      {/* Top eyebrow — publication masthead */}
+      <div style={{
+        position: "absolute",
+        top: "1.5rem",
+        left: "50%",
+        transform: `translateX(-50%) translateY(${revealed ? 0 : -10}px)`,
+        opacity: revealed ? 1 : 0,
+        transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.75rem",
+        zIndex: 5,
+      }}>
+        <span style={{ color: C.red, fontSize: "1rem" }}>★</span>
+        <span style={{
+          fontFamily: "'Barlow Condensed', sans-serif",
+          fontWeight: 700,
+          fontSize: TYPE.cardLabel,
+          color: C.gold,
+          textTransform: "uppercase",
+          letterSpacing: "0.22em",
+        }}>Tomorrow's Bureau</span>
+        <span style={{ color: C.red, fontSize: "1rem" }}>★</span>
+      </div>
+
+      {/* Publication title — "The Accidental Intactivist's Inquiry" in big */}
+      <Reveal delay={150}>
+        <div style={{
+          textAlign: "center",
+          marginBottom: "1.5rem",
+          position: "relative",
+          zIndex: 2,
+        }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 700,
+            fontSize: "clamp(0.75rem, 1.2vw, 0.88rem)",
+            color: C.gold,
+            textTransform: "uppercase",
+            letterSpacing: "0.3em",
+            marginBottom: "0.5rem",
+          }}>An Anonymous Survey · Phase 1 Preliminary Findings</div>
+          <h1 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 800,
+            fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)",
+            color: C.pageTextBright,
+            lineHeight: 1.05,
+            letterSpacing: "-0.015em",
+            margin: 0,
+          }}>The Accidental Intactivist's Inquiry</h1>
+          <div style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontStyle: "italic",
+            fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
+            color: C.pageMuted,
+            marginTop: "0.4rem",
+          }}>{META.totalRespondents} Voices · Six Pathways · One Question, Asked Honestly</div>
+        </div>
+      </Reveal>
+
+      {/* Rotating facts */}
+      <div style={{ position: "relative", zIndex: 2, width: "100%", minHeight: "22rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <RotatingFact />
+      </div>
+
+      {/* Scroll cue */}
+      <Reveal delay={1200}>
+        <div style={{
+          position: "relative",
+          marginTop: "3rem",
+          textAlign: "center",
+          zIndex: 2,
+        }}>
+          <div style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 700,
+            fontSize: "0.7rem",
+            color: C.gold,
+            textTransform: "uppercase",
+            letterSpacing: "0.2em",
+            marginBottom: "0.8rem",
+          }}>Scroll to Begin</div>
+          <div style={{
+            width: 1, height: 48,
+            margin: "0 auto",
+            background: `linear-gradient(180deg, ${C.gold}, transparent)`,
+          }} />
+        </div>
+      </Reveal>
+
+      {/* Rainbow gradient accent at bottom edge of hero */}
+      <div style={{
+        position: "absolute",
+        bottom: 0, left: 0, right: 0,
+        height: 3,
+        background: RAINBOW_GRAD,
+        opacity: 0.5,
+      }} />
+    </div>
+  );
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// EDITOR'S LETTER — Tone's first-person introduction as card #1
+// ═══════════════════════════════════════════════════════════════
+
+function EditorsLetter() {
+  return (
+    <BureauCard
+      title="Editor's Letter"
+      refText="FROM THE DESK OF TONE PETTIT · FOUNDER"
+      stamp="Letter"
+      stampColor={C.gold}
+      gradient={PATH_GRADIENTS.intact}
+      cardLabel="INTRODUCTION"
+    >
+      <div style={{ padding: "2.5rem 2.5rem 2rem", position: "relative" }}>
+        <div style={{
+          fontFamily: "'Barlow Condensed', sans-serif",
+          fontWeight: 700,
+          fontSize: TYPE.cardLabel,
+          textTransform: "uppercase",
+          letterSpacing: "0.18em",
+          color: C.gold,
+          marginBottom: "0.5rem",
+        }}>From the Founder</div>
+
+        <h2 style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 800,
+          fontSize: TYPE.sectionTitle,
+          color: C.paperInk,
+          lineHeight: 1.15,
+          letterSpacing: "-0.015em",
+          marginBottom: "1.5rem",
+        }}>Why I asked.</h2>
+
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 400,
+          fontSize: TYPE.body,
+          color: C.paperSubtle,
+          lineHeight: 1.75,
+        }}>
+          <p style={{ marginBottom: "1rem" }}>
+            I grew up intact in a culture where almost everyone else was not. I've always
+            been perfectly happy with my equipment — but it occurred to me that I had never
+            heard anyone discuss how they <em>actually</em> felt as adults about their
+            circumcision status.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            Not in school. Not in movies. Not among friends. The subject just… didn't come up.
+            And when it did, it was a punchline or a shrug, never an inquiry.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            So I realized I could just <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>ask them directly</strong> —
+            respectfully and anonymously — and collect a comparative database filled with
+            actual answers from people's lived experiences. While I do have opinions about
+            the practice, I wanted to create a space for people to share their thoughts
+            in a safe, private way.
+          </p>
+          <p style={{
+            marginBottom: "1.5rem",
+            padding: "1rem 1.25rem",
+            background: "rgba(91,147,199,0.06)",
+            borderLeft: `3px solid ${C.blue}`,
+            borderRadius: "0 4px 4px 0",
+            fontFamily: "'Playfair Display', serif",
+            fontStyle: "italic",
+            fontSize: "clamp(1.05rem, 1.4vw, 1.25rem)",
+            color: C.paperInk,
+            lineHeight: 1.55,
+          }}>
+            We are not telling people how to feel. We are creating a platform for them to
+            anonymously share how they actually feel and what they actually experience.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            What you are about to browse is the interactive data explorer for the largest
+            comparative survey of intact, circumcised, and restoring populations ever
+            assembled from lived experience. It is, by design, a data instrument — not an
+            advocacy document.
+          </p>
+          <p style={{ marginBottom: "1.5rem" }}>
+            The data speaks for itself. When arranged properly — especially in the mirror
+            pairs — it speaks volumes.
+          </p>
+        </div>
+
+        {/* Signature block */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          marginTop: "2rem",
+          paddingTop: "1.5rem",
+          borderTop: `1px dashed ${C.paperRuleDash}`,
+        }}>
+          {/* Faux signature — Tone Pettit in Mr Dafoe-style script */}
+          <svg width="150" height="48" viewBox="0 0 150 48" style={{ flexShrink: 0 }}>
+            <path
+              d="M 8,32 Q 14,18 22,26 T 35,28 M 30,24 Q 38,14 44,24 T 52,32 M 50,22 L 56,32 M 56,22 L 62,32 M 62,30 Q 68,22 74,28 T 82,30 M 82,22 Q 88,18 92,28 L 98,22 M 98,22 Q 104,32 110,24 T 120,28 M 118,26 Q 126,20 132,28 T 142,30"
+              stroke={C.paperInk}
+              strokeWidth="1.8"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.85"
+            />
+          </svg>
+          <div>
+            <div style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontWeight: 700,
+              fontSize: TYPE.bodySmall,
+              color: C.paperInk,
+            }}>Tone Pettit</div>
+            <div style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 600,
+              fontSize: "0.72rem",
+              color: C.paperDim,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+            }}>Founder · circumsurvey.online</div>
+          </div>
+        </div>
+      </div>
+    </BureauCard>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SECTION TITLE CARD — magazine-chapter divider
+// ═══════════════════════════════════════════════════════════════
+
+function SectionTitleCard({ chapter, totalChapters, title, subtitle, quote, id }) {
+  const [ref, visible] = useReveal();
+  return (
+    <div
+      ref={ref}
+      id={id}
+      style={{
+        margin: "4rem -1.5rem 3rem",  // negative margin breaks out of container slightly
+        padding: "4rem 2rem 4.5rem",
+        position: "relative",
+        textAlign: "center",
+        scrollMarginTop: "4rem",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: "opacity 0.9s ease-out, transform 0.9s ease-out",
+        borderTop: `1px solid ${C.pageGhost}`,
+        borderBottom: `1px solid ${C.pageGhost}`,
+        background: `linear-gradient(180deg, transparent 0%, ${C.bgSoft} 50%, transparent 100%)`,
+      }}
+    >
+      {/* Rainbow mini-bar at top */}
+      <div style={{
+        position: "absolute",
+        top: -1,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: 140,
+        height: 3,
+        background: RAINBOW_GRAD,
+        borderRadius: 2,
+      }} />
+
+      <div style={{
+        fontFamily: "'Barlow Condensed', sans-serif",
+        fontWeight: 700,
+        fontSize: TYPE.cardLabel,
+        textTransform: "uppercase",
+        letterSpacing: "0.3em",
+        color: C.gold,
+        marginBottom: "1rem",
+      }}>
+        <span style={{ color: C.red, marginRight: "0.5rem" }}>★</span>
+        Chapter {chapter} of {totalChapters}
+        <span style={{ color: C.red, marginLeft: "0.5rem" }}>★</span>
+      </div>
+
+      <h2 style={{
+        fontFamily: "'Playfair Display', serif",
+        fontWeight: 800,
+        fontSize: "clamp(2.2rem, 5.5vw, 4rem)",
+        lineHeight: 1.05,
+        letterSpacing: "-0.02em",
+        color: C.pageTextBright,
+        marginBottom: subtitle ? "0.75rem" : quote ? "2rem" : 0,
+      }}>{title}</h2>
+
+      {subtitle && (
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontStyle: "italic",
+          fontWeight: 400,
+          fontSize: "clamp(1.1rem, 2vw, 1.45rem)",
+          color: C.pageMuted,
+          maxWidth: 620,
+          margin: "0 auto 2rem",
+          lineHeight: 1.4,
+        }}>{subtitle}</div>
+      )}
+
+      {quote && (
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontStyle: "italic",
+          fontWeight: 400,
+          fontSize: "clamp(1rem, 1.4vw, 1.2rem)",
+          color: C.gold,
+          maxWidth: 520,
+          margin: "0 auto",
+          lineHeight: 1.5,
+        }}>"{quote}"</div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DEVASTATING NUMBER — full-bleed interstitial between sections
+// ═══════════════════════════════════════════════════════════════
+
+function DevastatingNumber({ big, line1, line2, context, color = C.red, decimals = 0 }) {
+  const [ref, visible] = useReveal();
+  const tween = useTween(visible, 1400);
+  // Parse the number part (could be "96", "52%", "88.8", "0")
+  const numStr = String(big);
+  const numMatch = numStr.match(/^([\d.]+)(.*)$/);
+  const numVal = numMatch ? parseFloat(numMatch[1]) : 0;
+  const suffix = numMatch ? numMatch[2] : "";
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        margin: "3rem -1.5rem",
+        padding: "6rem 2rem",
+        background: C.bgDeep,
+        borderTop: `1px solid ${C.pageGhost}`,
+        borderBottom: `1px solid ${C.pageGhost}`,
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Radial color wash */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: `radial-gradient(ellipse at center, ${color}15 0%, transparent 60%)`,
+        pointerEvents: "none",
+      }} />
+
+      {/* Subtle dot artwork */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        opacity: 0.15,
+        background: `radial-gradient(circle, ${color} 1px, transparent 1.5px)`,
+        backgroundSize: "32px 32px",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 2 }}>
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 800,
+          fontSize: "clamp(4rem, 12vw, 9rem)",
+          color,
+          lineHeight: 0.95,
+          letterSpacing: "-0.03em",
+          marginBottom: "1.5rem",
+          textShadow: `0 0 80px ${color}33`,
+        }}>
+          {(numVal * tween).toFixed(decimals)}{suffix}
+        </div>
+
+        {line1 && (
+          <div style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 500,
+            fontSize: "clamp(1.4rem, 3vw, 2.2rem)",
+            color: C.pageTextBright,
+            lineHeight: 1.25,
+            maxWidth: 800,
+            margin: "0 auto 0.3rem",
+          }}>{line1}</div>
+        )}
+        {line2 && (
+          <div style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 500,
+            fontSize: "clamp(1.4rem, 3vw, 2.2rem)",
+            color: C.pageTextBright,
+            lineHeight: 1.25,
+            maxWidth: 800,
+            margin: "0 auto 1.5rem",
+          }}>{line2}</div>
+        )}
+
+        {context && (
+          <div style={{
+            fontFamily: "'Barlow', sans-serif",
+            fontWeight: 400,
+            fontStyle: "italic",
+            fontSize: TYPE.body,
+            color: C.pageMuted,
+            maxWidth: 560,
+            margin: "0 auto",
+            lineHeight: 1.55,
+          }}>{context}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PULL QUOTE SEPARATOR — respondent voice between sections
+// ═══════════════════════════════════════════════════════════════
+
+function PullQuoteSeparator({ quote, attribution, pathway }) {
+  const [ref, visible] = useReveal();
+  const color = pathColor(pathway);
+  return (
+    <div
+      ref={ref}
+      style={{
+        margin: "3rem -1rem",
+        padding: "3rem 2rem",
+        textAlign: "center",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(12px)",
+        transition: "opacity 1s ease-out, transform 1s ease-out",
+      }}
+    >
+      <div style={{
+        fontFamily: "'Playfair Display', serif",
+        fontWeight: 400,
+        fontStyle: "italic",
+        fontSize: TYPE.pullQuote,
+        color: C.pageTextBright,
+        maxWidth: 720,
+        margin: "0 auto 1rem",
+        lineHeight: 1.4,
+        letterSpacing: "-0.005em",
+      }}>
+        <span style={{ color: C.red, fontSize: "0.7em", marginRight: "0.4rem", verticalAlign: "top" }}>★</span>
+        {quote}
+        <span style={{ color: C.red, fontSize: "0.7em", marginLeft: "0.4rem", verticalAlign: "top" }}>★</span>
+      </div>
+      <div style={{
+        fontFamily: "'Barlow Condensed', sans-serif",
+        fontWeight: 700,
+        fontSize: TYPE.cardLabel,
+        textTransform: "uppercase",
+        letterSpacing: "0.2em",
+        color,
+      }}>— {attribution}</div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NARRATIVE PROGRESS RAIL — sticky right-side chapter indicator
+// ═══════════════════════════════════════════════════════════════
+
+function NarrativeRail({ sections, activeId }) {
+  const [hoverIdx, setHoverIdx] = useState(null);
+
+  return (
+    <div style={{
+      position: "fixed",
+      right: "1.25rem",
+      top: "50%",
+      transform: "translateY(-50%)",
+      zIndex: 90,
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.5rem",
+      alignItems: "flex-end",
+    }}>
+      {sections.map((sec, i) => {
+        const isActive = activeId === sec.id;
+        const isHover = hoverIdx === i;
+        return (
+          <button
+            key={sec.id}
+            onClick={() => {
+              const el = document.getElementById(sec.id);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            onMouseEnter={() => setHoverIdx(i)}
+            onMouseLeave={() => setHoverIdx(null)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: "0.25rem 0.35rem",
+              borderRadius: 3,
+            }}
+          >
+            {/* Label appears on hover */}
+            <span style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.72rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: isActive ? C.gold : C.pageMuted,
+              opacity: isHover || isActive ? 1 : 0,
+              transform: isHover || isActive ? "translateX(0)" : "translateX(8px)",
+              transition: "opacity 0.2s, transform 0.2s",
+              whiteSpace: "nowrap",
+              pointerEvents: "none",
+            }}>{sec.title}</span>
+
+            {/* Dot / star indicator */}
+            <span style={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              background: isActive ? C.gold : "transparent",
+              border: `1.5px solid ${isActive ? C.gold : isHover ? C.pageText : C.pageDim}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.5rem",
+              color: C.bg,
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 700,
+              transition: "all 0.2s",
+              transform: isActive ? "scale(1.15)" : "scale(1)",
+            }}>{isActive ? "★" : ""}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACTIVE SECTION TRACKER — Intersection Observer for rail
+// ═══════════════════════════════════════════════════════════════
+
+function useActiveSection(sectionIds) {
+  const [active, setActive] = useState(sectionIds[0]);
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      entries => {
+        // Find the entry that's most visible (highest intersection ratio)
+        const visible = entries.filter(e => e.isIntersecting);
+        if (visible.length > 0) {
+          visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          setActive(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-30% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, [sectionIds]);
+  return active;
+}
 function Pie({ data, colors, size = 150, currentPathway }) {
   const [ref, visible] = useReveal();
   const [progress, setProgress] = useState(0);
@@ -1351,144 +2192,6 @@ function MirrorCard({ pair }) {
 // HERO CARD
 // ═══════════════════════════════════════════════════════════════
 
-function HeroCard() {
-  return (
-    <div style={{
-      background: C.paper,
-      border: `3px solid ${C.paperInk}`,
-      borderRadius: 3,
-      position: "relative",
-      marginBottom: "2.5rem",
-      boxShadow: "0 5px 30px rgba(0,0,0,0.35)",
-    }}>
-      <div style={{ height: 7, background: RAINBOW_GRAD }} />
-      <div style={{
-        position: "absolute",
-        top: -14, left: 24,
-        fontSize: "1.5rem",
-        color: C.red,
-        background: C.bg,
-        padding: "0 0.4rem",
-        lineHeight: 1,
-      }}>★</div>
-
-      <div style={{
-        background: C.paperInk,
-        color: C.paperInkText,
-        padding: "0.75rem 1.75rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        gap: "0.5rem",
-        flexWrap: "wrap",
-      }}>
-        <div style={{
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700,
-          fontSize: "0.82rem",
-          textTransform: "uppercase",
-          letterSpacing: "0.14em",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem",
-        }}>
-          <span style={{ color: C.red, fontSize: "1.1rem" }}>★</span>
-          The Accidental Intactivist's Inquiry
-        </div>
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: "0.58rem",
-          color: C.pageMuted,
-          letterSpacing: "0.06em",
-        }}>PHASE 1 · PRELIMINARY FINDINGS · circumsurvey.online</div>
-      </div>
-
-      <div style={{ padding: "3rem 2rem 2.5rem", textAlign: "center" }}>
-        <Reveal>
-          <div style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 800,
-            fontSize: "clamp(2rem, 5vw, 3.2rem)",
-            color: C.paperInk,
-            letterSpacing: "-0.01em",
-            lineHeight: 1.05,
-            marginBottom: "0.5rem",
-          }}>
-            Six Pathways. {META.totalRespondents} Voices.
-          </div>
-        </Reveal>
-        <Reveal delay={120}>
-          <div style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 400,
-            fontStyle: "italic",
-            fontSize: "clamp(0.95rem, 2vw, 1.2rem)",
-            color: C.paperDim,
-            marginBottom: "1.5rem",
-          }}>
-            What if someone actually asked how you felt?
-          </div>
-        </Reveal>
-        <Reveal delay={240}>
-          <div style={{
-            fontFamily: "'Barlow', sans-serif",
-            fontWeight: 400,
-            fontSize: "0.92rem",
-            color: C.paperSubtle,
-            lineHeight: 1.65,
-            maxWidth: 520,
-            margin: "0 auto 1.75rem",
-            textAlign: "justify",
-          }}>
-            This is the interactive data explorer for the largest comparative survey of intact, circumcised, and restoring populations ever assembled from lived experience. Browse the findings. Toggle between pathways. See mirror questions side by side. Read voices from the survey itself. The data speaks for itself.
-          </div>
-        </Reveal>
-
-        <Reveal delay={360}>
-          <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1.75rem" }}>
-            {Object.entries(PATHWAY).filter(([k]) => ["intact","circumcised","restoring","observer"].includes(k)).map(([k, m]) => {
-              const color = pathColor(k);
-              return (
-                <span key={k} style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  padding: "0.3rem 0.75rem",
-                  borderRadius: 100,
-                  background: pathBg(k),
-                  color,
-                  border: `1.5px solid ${color}44`,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                }}>{m.emoji} {m.short} <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>n={m.n}</strong></span>
-              );
-            })}
-          </div>
-        </Reveal>
-
-        <Reveal delay={480}>
-          <div style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 400,
-            fontStyle: "italic",
-            fontSize: "0.88rem",
-            color: C.gold,
-            maxWidth: 500,
-            margin: "0 auto",
-            lineHeight: 1.55,
-          }}>
-            "This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults. So I asked."
-          </div>
-        </Reveal>
-      </div>
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// SECTION LABEL
-// ═══════════════════════════════════════════════════════════════
-
 function SectionLabel({ id, title, subtitle }) {
   return (
     <Reveal>
@@ -1798,11 +2501,92 @@ function MethodologyModal({ open, onClose }) {
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════
 
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN APP — v7 assembly
+// ═══════════════════════════════════════════════════════════════
+
+// Narrative sections for the progress rail
+// These IDs correspond to the DOM ids we set on SectionTitleCard / card containers
+function getNarrativeSections() {
+  return [
+    { id: "hero", title: "The Inquiry" },
+    { id: "letter", title: "Editor's Letter" },
+    ...CURATED_SECTIONS.map((s, i) => ({
+      id: `section-${s.id}`,
+      title: s.title,
+    })),
+  ];
+}
+
+// Devastating numbers, one per curated section
+const SECTION_INTERSTITIALS = {
+  "pleasure_gap": {
+    big: "36%",
+    line1: "lower pleasure from",
+    line2: "mobile skin gliding.",
+    context: "Intact respondents rate it 3.88, circumcised respondents 2.49 — across every dimension of sexual experience, intact leads.",
+    color: "#d94f4f",
+  },
+  "resentment": {
+    big: "0%",
+    line1: "of restoring respondents",
+    line2: "said \"no, never.\"",
+    context: "Every single restoring respondent reported feeling some resentment, loss, anger, or grief about their circumcision.",
+    color: "#e85d50",
+  },
+  "handling": {
+    big: "47.6%",
+    line1: "describe the decision as",
+    line2: "\"routine or automatic.\"",
+    context: "Only 2.7% of circumcised respondents say it was offered as a neutral choice with pros and cons.",
+    color: "#e8a44a",
+  },
+  "future_sons": {
+    big: "88%",
+    line1: "of intact respondents would",
+    line2: "keep their son intact.",
+    context: "78% of circumcised, 98% of restoring, and 91% of observer respondents would do the same.",
+    color: "#68b878",
+  },
+  "autonomy": {
+    big: "96%",
+    line1: "prioritize the child's",
+    line2: "right to bodily autonomy.",
+    context: "A near-universal consensus across all four pathways — the rare finding where every voice agrees.",
+    color: "#5b93c7",
+  },
+};
+
+// Pull quotes between sections (rotate from a small curated list)
+const PULL_QUOTES = [
+  {
+    quote: "I, at 57 years old, have never had a normal intimate relationship. The mutilation is always there.",
+    attribution: "Circumcised Pathway",
+    pathway: "circumcised",
+  },
+  {
+    quote: "Only as a teen or young adult did I feel self-conscious — due to stigma from movies and pop culture.",
+    attribution: "Intact Pathway",
+    pathway: "intact",
+  },
+  {
+    quote: "Every day I'm reminded of what was taken from me. Restoring is the only thing that's given me hope.",
+    attribution: "Restoring Pathway",
+    pathway: "restoring",
+  },
+];
+
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
   const [view, setView] = useState("curated");
+
+  const narrativeSections = useMemo(() => getNarrativeSections(), []);
+  const activeSection = useActiveSection(
+    view === "curated" && !activeId ? narrativeSections.map(s => s.id) : []
+  );
 
   const handleSelect = id => {
     if (id.startsWith("section-")) {
@@ -1825,6 +2609,8 @@ export default function App() {
   const currentQ = ALL_QUESTIONS.find(q => q.id === activeId);
   const currentM = MIRROR_PAIRS.find(p => p.id === activeId);
 
+  const showRail = view === "curated" && !activeId;
+
   return (
     <div style={{
       fontFamily: "'Barlow', sans-serif",
@@ -1835,37 +2621,43 @@ export default function App() {
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onSelect={handleSelect} activeId={activeId} />
       <MethodologyModal open={methodologyOpen} onClose={() => setMethodologyOpen(false)} />
 
+      {showRail && <NarrativeRail sections={narrativeSections} activeId={activeSection} />}
+
+      {/* Sticky nav */}
       <nav style={{
         position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(10,10,12,0.95)",
-        backdropFilter: "blur(10px)",
+        background: "rgba(10,10,12,0.92)",
+        backdropFilter: "blur(12px)",
         borderBottom: `1px solid ${C.pageGhost}`,
         display: "flex", alignItems: "center",
-        padding: "0.6rem 1.25rem",
+        padding: "0.7rem 1.5rem",
         gap: "0.75rem", flexWrap: "wrap",
       }}>
         <button onClick={() => setSidebarOpen(true)} style={{
           background: "none", border: `1px solid ${C.pageGhost}`, borderRadius: 4,
           color: C.pageMuted, cursor: "pointer",
-          padding: "0.35rem 0.6rem",
+          padding: "0.4rem 0.7rem",
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700, fontSize: "0.72rem",
+          fontWeight: 700, fontSize: "0.75rem",
           textTransform: "uppercase", letterSpacing: "0.12em",
-          display: "flex", alignItems: "center", gap: "0.35rem",
+          display: "flex", alignItems: "center", gap: "0.4rem",
         }}>
           <span style={{ color: C.red }}>★</span> Navigate
         </button>
 
-        <a href="https://circumsurvey.online" target="_blank" rel="noreferrer" style={{
-          fontFamily: "'Playfair Display', serif",
-          fontWeight: 700,
-          fontSize: "0.98rem",
-          color: C.gold,
-          textDecoration: "none",
-          flex: 1, minWidth: 180,
-        }}>
-          The Accidental Intactivist's Inquiry
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1, minWidth: 180 }}>
+          <CircumSurveySeal size={28} />
+          <a href="https://circumsurvey.online" target="_blank" rel="noreferrer" style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 700,
+            fontSize: "1rem",
+            color: C.gold,
+            textDecoration: "none",
+            lineHeight: 1.15,
+          }}>
+            The Accidental Intactivist's Inquiry
+          </a>
+        </div>
 
         <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
           {[
@@ -1874,12 +2666,12 @@ export default function App() {
             { id: "mirror",   l: "Mirrors" },
             { id: "observer", l: "Witnesses" },
           ].map(t => (
-            <button key={t.id} onClick={() => { setView(t.id); setActiveId(null); }} style={{
-              padding: "0.3rem 0.7rem",
+            <button key={t.id} onClick={() => { setView(t.id); setActiveId(null); window.scrollTo({top: 0, behavior: "smooth"}); }} style={{
+              padding: "0.35rem 0.75rem",
               borderRadius: 100,
               cursor: "pointer",
               fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: "0.65rem",
+              fontSize: "0.7rem",
               fontWeight: 700,
               border: view === t.id ? `1.5px solid ${C.gold}` : `1px solid ${C.pageGhost}`,
               background: view === t.id ? "rgba(212,160,48,0.12)" : "transparent",
@@ -1893,90 +2685,91 @@ export default function App() {
         <button onClick={() => setMethodologyOpen(true)} style={{
           background: "none", border: "none", color: C.pageMuted, cursor: "pointer",
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: "0.68rem", fontWeight: 700,
-          textTransform: "uppercase", letterSpacing: "0.08em",
+          fontSize: "0.72rem", fontWeight: 700,
+          textTransform: "uppercase", letterSpacing: "0.1em",
         }}>★ Methodology</button>
 
         <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: "0.65rem",
+          fontSize: "0.7rem",
           fontWeight: 700,
           color: C.bg,
           background: C.gold,
-          padding: "0.35rem 0.8rem",
+          padding: "0.4rem 0.9rem",
           borderRadius: 3,
           textDecoration: "none",
           textTransform: "uppercase",
-          letterSpacing: "0.08em",
+          letterSpacing: "0.1em",
         }}>Take Survey</a>
       </nav>
 
-      {/* Page masthead */}
-      <div style={{
-        textAlign: "center",
-        padding: "3rem 2rem 2rem",
-        borderBottom: `1px solid ${C.pageGhost}`,
-      }}>
-        <div style={{
-          height: 5, width: 220, margin: "0 auto 1.5rem",
-          background: RAINBOW_GRAD, borderRadius: 3,
-        }} />
-        <Reveal>
-          <h1 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 800,
-            fontSize: "clamp(1.6rem, 4vw, 2.4rem)",
-            color: C.gold,
-            letterSpacing: "-0.01em",
-            marginBottom: "0.4rem",
-          }}>Tomorrow's Bureau</h1>
-        </Reveal>
-        <Reveal delay={120}>
-          <div style={{
-            fontFamily: "'Playfair Display', serif",
-            fontWeight: 400,
-            fontStyle: "italic",
-            fontSize: "clamp(0.88rem, 1.8vw, 1.05rem)",
-            color: C.pageMuted,
-            marginBottom: "0.9rem",
-          }}>Phase 1 Preliminary Findings · {META.totalRespondents} Respondents</div>
-        </Reveal>
-        <Reveal delay={240}>
-          <div style={{
-            fontFamily: "'Barlow', sans-serif",
-            fontWeight: 400,
-            fontSize: "0.85rem",
-            color: C.pageDim,
-            maxWidth: 560,
-            margin: "0 auto",
-            lineHeight: 1.65,
-          }}>
-            Anonymous inquiry into anatomy, autonomy, and cultural assumptions. Mid-century optimism meets documentary rigor. The warmth of a future that believes in documenting the truth.
-          </div>
-        </Reveal>
-      </div>
+      {/* Cinematic Hero — only in curated mode, no activeId */}
+      {view === "curated" && !activeId && (
+        <div id="hero">
+          <CinematicHero />
+        </div>
+      )}
 
-      <div style={{ maxWidth: 920, margin: "0 auto", padding: "2rem 1.5rem 3rem" }}>
-        {!activeId && view === "curated" && <HeroCard />}
+      <div style={{ maxWidth: 940, margin: "0 auto", padding: "2rem 1.5rem 3rem" }}>
 
         {activeId && currentQ && <QCard q={currentQ} />}
         {activeId && currentM && <MirrorCard pair={currentM} />}
 
         {view === "curated" && !activeId && (
           <>
-            {CURATED_SECTIONS.map(sec => (
-              <div key={sec.id} style={{ marginBottom: "3rem" }}>
-                <SectionLabel id={`section-${sec.id}`} title={sec.title} subtitle={sec.desc} />
-                {sec.id === "pleasure_gap" && <PleasureGapHero />}
-                {sec.question_ids.map(id => {
-                  const q = ALL_QUESTIONS.find(x => x.id === id);
-                  const m = MIRROR_PAIRS.find(x => x.id === id);
-                  if (q) return <QCard key={id} q={q} />;
-                  if (m) return <MirrorCard key={id} pair={m} />;
-                  return null;
-                })}
-              </div>
-            ))}
+            <div id="letter">
+              <EditorsLetter />
+            </div>
+
+            {CURATED_SECTIONS.map((sec, si) => {
+              const interstitial = SECTION_INTERSTITIALS[sec.id];
+              const pullQuote = PULL_QUOTES[si % PULL_QUOTES.length];
+              return (
+                <div key={sec.id}>
+                  {/* Interstitial between sections (not before first) */}
+                  {si > 0 && interstitial && (
+                    <DevastatingNumber
+                      big={interstitial.big}
+                      line1={interstitial.line1}
+                      line2={interstitial.line2}
+                      context={interstitial.context}
+                      color={interstitial.color}
+                      decimals={interstitial.big.includes(".") ? 1 : 0}
+                    />
+                  )}
+
+                  {/* Section title card */}
+                  <SectionTitleCard
+                    id={`section-${sec.id}`}
+                    chapter={si + 1}
+                    totalChapters={CURATED_SECTIONS.length}
+                    title={sec.title}
+                    subtitle={sec.desc}
+                  />
+
+                  {/* Pleasure gap hero before the cards in that section */}
+                  {sec.id === "pleasure_gap" && <PleasureGapHero />}
+
+                  {/* Section content */}
+                  {sec.question_ids.map(id => {
+                    const q = ALL_QUESTIONS.find(x => x.id === id);
+                    const m = MIRROR_PAIRS.find(x => x.id === id);
+                    if (q) return <QCard key={id} q={q} />;
+                    if (m) return <MirrorCard key={id} pair={m} />;
+                    return null;
+                  })}
+
+                  {/* Pull quote after section */}
+                  {si < CURATED_SECTIONS.length - 1 && (
+                    <PullQuoteSeparator
+                      quote={pullQuote.quote}
+                      attribution={pullQuote.attribution}
+                      pathway={pullQuote.pathway}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </>
         )}
 
@@ -2010,55 +2803,59 @@ export default function App() {
       </div>
 
       {/* CTA */}
-      <div style={{ borderTop: `1px solid ${C.pageGhost}`, padding: "3rem 1.5rem", textAlign: "center" }}>
-        <div style={{ height: 4, width: 160, margin: "0 auto 1.25rem", background: RAINBOW_GRAD, borderRadius: 2 }} />
+      <div style={{ borderTop: `1px solid ${C.pageGhost}`, padding: "4rem 1.5rem", textAlign: "center" }}>
+        <div style={{ height: 4, width: 180, margin: "0 auto 1.5rem", background: RAINBOW_GRAD, borderRadius: 2 }} />
         <div style={{
           fontFamily: "'Playfair Display', serif",
           fontWeight: 700,
-          fontSize: "1.6rem",
+          fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
           color: C.gold,
-          marginBottom: "0.5rem",
-          letterSpacing: "-0.005em",
+          marginBottom: "0.75rem",
+          letterSpacing: "-0.01em",
         }}>Add Your Voice</div>
         <p style={{
           fontFamily: "'Barlow', sans-serif",
-          fontSize: "0.88rem",
-          color: C.pageDim,
-          maxWidth: 440,
-          margin: "0 auto 1.5rem",
+          fontSize: TYPE.body,
+          color: C.pageMuted,
+          maxWidth: 480,
+          margin: "0 auto 2rem",
           lineHeight: 1.6,
         }}>Every perspective strengthens this dataset. 30–90 minutes, fully anonymous, every question optional.</p>
         <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
           display: "inline-block",
-          padding: "0.7rem 2rem",
+          padding: "0.9rem 2.4rem",
           background: C.gold,
           color: C.bg,
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 700,
           textDecoration: "none",
           borderRadius: 3,
-          fontSize: "0.9rem",
+          fontSize: "1rem",
           textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          letterSpacing: "0.12em",
         }}>★ Take the Survey</a>
       </div>
 
+      {/* Footer */}
       <footer style={{
-        padding: "2rem 1.5rem",
+        padding: "2.5rem 1.5rem",
         textAlign: "center",
         fontFamily: "'Barlow', sans-serif",
-        fontSize: "0.72rem",
+        fontSize: TYPE.bodySmall,
         color: C.pageDim,
         borderTop: `1px solid ${C.pageGhost}`,
-        lineHeight: 1.9,
+        lineHeight: 2,
       }}>
+        <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center" }}>
+          <CircumSurveySeal size={52} />
+        </div>
         <div style={{
           fontFamily: "'Playfair Display', serif",
           fontWeight: 700,
-          fontSize: "0.88rem",
+          fontSize: "0.95rem",
           color: C.gold,
           marginBottom: "0.5rem",
-        }}>Tomorrow's Bureau</div>
+        }}>The Accidental Intactivist's Inquiry</div>
         <a href="https://circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>circumsurvey.online</a> · {META.phase} · n = {META.totalRespondents}
         <br />By Tone Pettit · <a href="mailto:tone@circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>tone@circumsurvey.online</a>
         <br />
@@ -2066,7 +2863,7 @@ export default function App() {
         {" · "}
         <a href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Substack</a>
         <br />
-        <span style={{ fontSize: "0.6rem", color: C.pageDim }}>Strategic partners: Intact Global · GALDEF · DOC · WIBM</span>
+        <span style={{ fontSize: "0.7rem", color: C.pageDim }}>Strategic partners: Intact Global · GALDEF · DOC · WIBM</span>
       </footer>
     </div>
   );

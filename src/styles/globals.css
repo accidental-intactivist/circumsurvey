@@ -1,49 +1,7 @@
 /* ═══════════════════════════════════════════
-   Tomorrow's Bureau — Global Design System
-   CircumSurvey Findings Site
+   CircumSurvey Findings — v7 Global Styles
+   Tomorrow's Bureau × Special Report
    ═══════════════════════════════════════════ */
-
-:root {
-  /* Editorial palette (cream sections) */
-  --cream: #faf6f0;
-  --cream-dark: #f0ece4;
-  --cream-border: #e8e2d8;
-  --cream-rule: #d4cfc4;
-  --text-dark: #2a2622;
-  --text-body: #5a5a52;
-  --text-muted: #999;
-
-  /* Bureau palette (dark sections) */
-  --bureau-bg: #0e0e10;
-  --bureau-card: #18181c;
-  --bureau-border: #222228;
-  --bureau-text: #eeeef0;
-  --bureau-text-sec: #8a8a96;
-
-  /* Accent colors */
-  --star-red: #e85d50;
-  --warm-orange: #f09860;
-  --sunny-yellow: #f0c840;
-  --fresh-green: #68b878;
-  --calm-blue: #5888c0;
-  --gold: #d4a030;
-
-  /* Pathway colors (data visualizations only) */
-  --pathway-intact: #5888c0;
-  --pathway-circumcised: #e85d50;
-  --pathway-restoring: #f0c840;
-  --pathway-observer: #a0a0a0;
-  --pathway-born-circ: #cc6855;
-
-  /* Rainbow gradient */
-  --rainbow: linear-gradient(90deg, var(--star-red), var(--warm-orange), var(--sunny-yellow), var(--fresh-green), var(--calm-blue));
-
-  /* Typography */
-  --font-display: 'Josefin Sans', sans-serif;
-  --font-body: 'Outfit', sans-serif;
-  --font-data: 'JetBrains Mono', monospace;
-  --font-label: 'Barlow Condensed', sans-serif;
-}
 
 * {
   margin: 0;
@@ -51,16 +9,74 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: var(--font-body);
-  font-weight: 300;
-  background: var(--cream);
-  color: var(--text-dark);
+html, body {
+  background: #0a0a0c;
+  color: #eee;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Scrollbar styling for dark sections */
-::-webkit-scrollbar { width: 6px; }
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar for dark theme */
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ── Animation keyframes ─────────────────── */
+
+@keyframes bureauShimmer {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(400%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes bureauRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bureauPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes bureauFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ── Reduce motion for those who prefer ──── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Typography refinements ──────────────── */
+
+/* Prevent ligatures from breaking our monospace stats */
+.mono {
+  font-feature-settings: "tnum" on, "lnum" on;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smoother text on dark backgrounds */
+body { letter-spacing: 0.003em; }
+
+/* Selection color */
+::selection {
+  background: rgba(212, 160, 48, 0.3);
+  color: #faf6f0;
+}

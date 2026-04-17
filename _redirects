@@ -1,305 +1,809 @@
-# CircumSurvey Technical Infrastructure Plan
-## From Prototype to Production — A Budget-Conscious Roadmap
-
-**For:** Tone Pettit
-**Date:** April 2026
-**Context:** You last hosted on Dreamhost with WordPress. The landscape has changed completely. This plan explains what you need, why, and how much it costs at each phase.
-
----
-
-## The Big Picture: You Need Less Than You Think
-
-The single most important thing to understand about modern web hosting in 2026 is this: **you don't need a traditional server for most of what you're building.**
-
-The old model (Dreamhost, GoDaddy, Bluehost) was: rent a server, install WordPress, the server runs 24/7 whether anyone visits or not, and you pay monthly regardless. That model still exists but it's overkill for your use case.
-
-The new model is: your site is a set of static files (HTML, CSS, JavaScript, JSON data) that get deployed to a global CDN (Content Delivery Network). There's no server "running" — the files just sit there, served from whichever edge location is closest to the visitor. The React app we've been building runs entirely in the visitor's browser. No server processing needed.
-
-This means **Phase A and B of the site cost $0/month to host.** Seriously.
-
-The only time you need a "server" (or more precisely, a serverless function) is when you want to:
-1. Call the Anthropic API for the LLM query tool (Phase C)
-2. Authenticate Substack subscribers (Phase C)
-3. Serve a dynamic API for researchers (Phase D)
-
-Everything else is static files on a CDN.
-
----
-
-## Architecture by Phase
-
-### Phase A & B: The Static Site (Summit → Post-Summit)
-**Cost: $0–5/month**
-
-```
-                    ┌─────────────────────┐
-                    │   circumsurvey.online │
-                    │   (your domain)       │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   Cloudflare Pages    │
-                    │   (free tier)         │
-                    │   - Unlimited BW      │
-                    │   - 500 builds/mo     │
-                    │   - Global CDN        │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   React App (static)  │
-                    │   - Question Explorer │
-                    │   - Mirror Pairs      │
-                    │   - Demographics      │
-                    │   - Embedded JSON data│
-                    └───────────────────────┘
-```
-
-**What gets deployed:** A built React application (static HTML/CSS/JS files) plus a JSON data file containing all the pre-computed aggregates. No database. No backend. No server.
-
-**How the data works:** Your Python scripts process the CSV and output a structured JSON file. This JSON file ships with the React app. All filtering, toggling, and searching happens in the visitor's browser using JavaScript. Nobody's hitting a server when they click between pathways — they're just re-rendering data that's already loaded.
-
-**Hosting recommendation: Cloudflare Pages**
-
-Why Cloudflare over Vercel or Netlify:
-- **Unlimited bandwidth on the free tier.** If your site goes viral after the Summit or gets linked in a news article, you won't get a surprise bill. Vercel and Netlify both have bandwidth caps on free tiers.
-- **300+ global edge locations.** Fastest CDN of the three.
-- **$0/month** for everything you need in Phase A and B.
-- **Custom domain support** on free tier. You'd point a subdomain like `findings.circumsurvey.online` to it.
-- If you ever need serverless functions (Phase C), Cloudflare Workers are available at $5/month with extremely generous limits.
-
-**How deployment works:**
-1. You push code to a GitHub repository
-2. Cloudflare Pages detects the push, runs the build command (`npm run build`)
-3. The built files are deployed globally in ~30 seconds
-4. Your custom domain serves the new version
-
-You don't SSH into anything. You don't FTP files. You push to GitHub and the site updates. This is the modern equivalent of what Dreamhost used to do, but faster, free, and with a global CDN.
-
-**Domain setup:**
-Your domain (circumsurvey.online) is presumably already registered and hosted somewhere. You'd either:
-- Add a CNAME record for `findings.circumsurvey.online` pointing to Cloudflare Pages, or
-- If you want to migrate the whole domain to Cloudflare DNS (recommended — their free DNS is the fastest in the world), you'd transfer nameservers and then set up Pages for the subdomain.
-
----
-
-### Phase C: The LLM Query Tool (Weeks 3–6)
-**Cost: $5–25/month**
-
-This is where you need actual compute — but only a tiny amount.
-
-```
-                    ┌─────────────────────┐
-                    │   React Frontend      │
-                    │   (still static)      │
-                    └──────────┬──────────┘
-                               │ API call
-                    ┌──────────▼──────────┐
-                    │   Cloudflare Worker   │
-                    │   (serverless fn)     │
-                    │   - Auth check        │
-                    │   - Rate limiting     │
-                    │   - Query routing     │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   Anthropic API       │
-                    │   (Claude Haiku)      │
-                    │   - RAG over findings │
-                    │   - ~$0.001/query     │
-                    └───────────────────────┘
-```
-
-**What's new:** A single Cloudflare Worker (serverless function) that:
-1. Receives the user's natural language query
-2. Checks if they're authenticated (Substack subscriber) or under the free rate limit
-3. Retrieves relevant pre-computed findings from an embedded vector store
-4. Sends the findings + query to Claude Haiku via the Anthropic API
-5. Returns the synthesized answer to the frontend
-
-**Cost breakdown:**
-- Cloudflare Workers Paid: **$5/month** (includes 10 million requests/month — you'll use a tiny fraction)
-- Anthropic API (Claude Haiku): **~$0.001–0.005 per query**
-  - 100 queries/day = ~$0.30/day = ~$9/month
-  - 1,000 queries/day = ~$3/day = ~$90/month (this would mean massive traction)
-  - Realistically, budget **$10–20/month** for API costs in the early months
-
-**The vector store:** For a dataset of ~500–1,000 pre-computed finding snippets, you don't need a hosted vector database. You can:
-- Pre-compute embeddings using a lightweight model
-- Store them as a JSON file (a few MB)
-- Do cosine similarity search in the Worker function itself
-- This costs $0 and adds ~50ms of latency
-
-If you later need a proper vector database (10,000+ findings, sub-10ms retrieval), Cloudflare Vectorize is available at $0.01/1M queries.
-
-**Authentication for Substack subscribers:**
-The simplest approach is a shared secret or token system. Substack doesn't have OAuth, but you can:
-- Generate unique access tokens for paid subscribers
-- Distribute them via a Substack-exclusive post
-- The Worker validates the token before allowing unlimited queries
-- Free visitors get 10 queries/session (tracked via a session cookie)
-
----
-
-### Phase D: Research API & Growth (Ongoing)
-**Cost: $5–50/month depending on usage**
-
-```
-                    ┌─────────────────────┐
-                    │   Public Site         │
-                    │   (Cloudflare Pages)  │
-                    └───────────────────────┘
-
-                    ┌─────────────────────┐
-                    │   Research API        │
-                    │   (Cloudflare Worker) │
-                    │   - Token auth        │
-                    │   - Rate limited      │
-                    │   - Aggregate queries │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   Cloudflare D1       │
-                    │   (SQLite database)   │
-                    │   - Aggregate data    │
-                    │   - Query logs        │
-                    │   - Usage analytics   │
-                    └───────────────────────┘
-```
-
-**What's new:** A lightweight SQLite database (Cloudflare D1) that stores:
-- Pre-computed aggregate data in queryable form
-- API usage logs and analytics
-- Researcher access tokens and permissions
-
-This is only needed if you want to offer programmatic access to the aggregate data for allied researchers. For most purposes, a downloadable CSV with a data-use agreement is simpler and sufficient.
-
-**Cloudflare D1 pricing:** Free tier includes 5 million rows read and 100K rows written per day. More than enough for years.
-
----
-
-## Cost Summary
-
-| Phase | Monthly Cost | What You Get |
-|-------|-------------|-------------|
-| A & B (Summit + Post-Summit) | **$0** | Full interactive site, unlimited traffic, global CDN, custom domain |
-| C (LLM Tool) | **$15–25** | Cloudflare Workers ($5) + Anthropic API (~$10–20) |
-| D (Research API) | **$5–50** | Database + API + analytics |
-| Domain renewal | **~$12/year** | circumsurvey.online |
-
-**Total realistic budget for the first 6 months: $100–200.** That's it. No $30/month Dreamhost plan. No database hosting. No server maintenance.
-
----
-
-## What You'd Need to Learn (and What You Already Know)
-
-Given your background in software engineering and data science, here's what maps to skills you have and what's new:
-
-**Things you already know how to do:**
-- Write Python scripts to process CSV data → JSON aggregates
-- Build React components (you've been building them in our sessions)
-- Use Git and GitHub for version control
-- Think about data structures and API design
-
-**Things that are new but straightforward:**
-- **Cloudflare Pages setup:** ~30 minutes to connect GitHub repo and configure build. Their dashboard is intuitive.
-- **Cloudflare Workers:** Writing serverless functions in JavaScript. If you can write a Node.js Express route handler, you can write a Worker — the syntax is nearly identical.
-- **Anthropic API calls:** You've seen the pattern in our React prototypes. It's a fetch() call with your API key.
-
-**Things you can defer or skip:**
-- Docker, Kubernetes, containerization — not needed
-- Database administration — not needed until Phase D, and D1 is zero-config
-- SSL certificates — Cloudflare handles this automatically
-- Server security, patching, updates — there's no server to maintain
-
----
-
-## Recommended Setup Steps
-
-### Right Now (Pre-Summit)
-
-1. **Create a Cloudflare account** (free) at cloudflare.com
-2. **Create a GitHub repository** for the findings site code
-3. **Connect the repo to Cloudflare Pages** — takes 5 minutes
-4. **Configure your build:**
-   - Framework: React (Vite or Create React App)
-   - Build command: `npm run build`
-   - Output directory: `dist` or `build`
-5. **Add a custom domain:** `findings.circumsurvey.online` (CNAME record)
-6. **Push the v4 prototype code** — the site goes live globally
-
-### After the Summit
-
-7. **Set up the data pipeline:**
-   - Python script: CSV → JSON aggregates
-   - Include in the build process so data updates are automatic
-8. **Get an Anthropic API key** for Phase C development
-9. **Prototype the Cloudflare Worker** for the LLM query endpoint
-10. **Set up Substack subscriber authentication** (token-based)
-
----
-
-## Migration Path from circumsurvey.online
-
-Your current circumsurvey.online site (home, about, FAQ, resources) presumably runs on some existing hosting. You have two options:
-
-**Option A: Keep existing hosting for the main site, add Cloudflare for findings.**
-- Main site stays where it is (Google Sites? Squarespace? WordPress?)
-- findings.circumsurvey.online is a separate Cloudflare Pages deployment
-- Easiest, no disruption to existing site
-
-**Option B: Migrate everything to Cloudflare.**
-- Transfer DNS to Cloudflare (free, fastest DNS in the world)
-- Rebuild main site as static pages on Cloudflare Pages
-- findings.circumsurvey.online as a separate Pages project
-- More work upfront but cleaner long-term architecture
-- Would require rebuilding the main site, which may not be worth it now
-
-**Recommendation: Start with Option A.** Get the findings site live on a subdomain. Migrate the main site later if/when it makes sense. Don't let infrastructure work delay the Summit launch.
-
----
-
-## Tools & Accounts You'll Need
-
-| Tool | Purpose | Cost | Priority |
-|------|---------|------|----------|
-| **Cloudflare** account | Hosting, CDN, DNS, Workers | Free (Pages), $5/mo (Workers) | Now |
-| **GitHub** account | Code repository, version control | Free | Now |
-| **Node.js** (local) | Build tooling for React app | Free | Now |
-| **Anthropic API** key | Claude Haiku for LLM queries | Pay-per-use (~$0.001/query) | Phase C |
-| **VS Code** or similar | Code editor | Free | Now |
-| **Python 3** (local) | Data processing scripts | Free | Now |
-
----
-
-## A Note on Security
-
-Since you're handling survey data, even anonymized:
-
-- **The raw CSV never ships to the browser.** Only pre-computed aggregates in JSON form.
-- **The Anthropic API key lives in a Cloudflare Worker environment variable**, never in client-side code. Visitors can't see or steal it.
-- **Rate limiting** on the LLM endpoint prevents abuse (both cost and content).
-- **No personally identifiable information** exists in the dataset by design (no emails, IPs, or names were collected).
-- **Cloudflare provides DDoS protection** automatically on all plans, including free.
-
-You don't need to think about server hardening, firewall rules, or SSH access because there is no server. The attack surface is essentially zero.
-
----
-
-## Comparison: Old World vs New World
-
-| | Dreamhost (2010s) | Cloudflare Pages (2026) |
-|---|---|---|
-| Server | Shared Linux box in a data center | No server — files on a global CDN |
-| Deployment | FTP files to the server | Push to GitHub, auto-deploys in 30 sec |
-| Database | MySQL on the same server | None needed (or D1 at edge for pennies) |
-| SSL | Buy a certificate, install it manually | Automatic, free, always on |
-| Scaling | Your server gets slow when traffic spikes | CDN handles any traffic level |
-| Security | You manage updates, firewall, patching | Cloudflare handles everything |
-| Cost | $10–30/month whether anyone visits or not | $0/month for unlimited traffic |
-| CMS | WordPress (PHP, plugins, updates) | React app (no CMS needed) |
-| Uptime | 99.5% if you're lucky | 99.99% (Cloudflare's SLA) |
-| Backups | You set up cron jobs | Git history IS your backup |
-
----
-
-*The bottom line: you can host a world-class interactive data exploration site for $0/month, add an AI-powered query tool for $15–25/month, and never think about server maintenance, security patches, or scaling. The infrastructure is the easy part. The hard part — the survey, the data, the ethical framework, the community — you've already done.*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CircumSurvey — Motif Hybrid: Tomorrow's Bureau</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0c;
+  color: #eee;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ═══ HEADER ═══ */
+.page-header {
+  text-align: center;
+  padding: 3.5rem 2rem;
+  border-bottom: 1px solid #222;
+}
+.page-header .rainbow {
+  height: 5px;
+  background: linear-gradient(90deg, #e85d50, #f09860, #f0c840, #68b878, #5888c0);
+  width: 200px;
+  margin: 0 auto 1.5rem;
+  border-radius: 3px;
+}
+.page-header h1 {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: #f09860;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+.page-header .sub {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+.page-header .desc {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 0.78rem;
+  color: #555;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ═══ CONTAINER ═══ */
+.showcase {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.section-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #f09860;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #f09860 0%, transparent 100%);
+}
+
+/* ═══════════════════════════════════════════
+   THE HYBRID CARD
+   Tomorrow's Bureau
+   ═══════════════════════════════════════════ */
+.bureau-card {
+  background: #faf6f0;
+  border: 2.5px solid #2a2622;
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+}
+
+/* Rainbow top bar */
+.bureau-card .rainbow-bar {
+  height: 5px;
+  background: linear-gradient(90deg, #e85d50, #f09860, #f0c840, #68b878, #5888c0);
+}
+
+/* Corner star */
+.bureau-card .corner-star {
+  position: absolute;
+  top: -11px;
+  left: 24px;
+  font-size: 1.1rem;
+  color: #e85d50;
+  background: #0a0a0c;
+  padding: 0 0.35rem;
+  line-height: 1;
+}
+
+/* Black header bar */
+.bureau-card .header-bar {
+  background: #2a2622;
+  color: #faf6f0;
+  padding: 0.55rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bureau-card .header-bar .bar-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bureau-card .header-bar .bar-title .star {
+  color: #e85d50;
+  font-size: 0.85rem;
+}
+
+.bureau-card .header-bar .bar-ref {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  color: #888;
+  letter-spacing: 0.05em;
+}
+
+/* Card body */
+.bureau-card .card-body {
+  padding: 1.75rem 1.5rem;
+}
+
+/* Form field */
+.form-field {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #d4cfc4;
+}
+
+.form-field:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.field-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #f09860;
+  margin-bottom: 0.3rem;
+}
+
+.field-question {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: #2a2622;
+  line-height: 1.35;
+  margin-bottom: 0.4rem;
+}
+
+.field-body {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 0.78rem;
+  color: #5a5a52;
+  line-height: 1.6;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Ruled data rows */
+.data-table {
+  margin-top: 0.5rem;
+}
+
+.data-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #e8e2d8;
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+.data-row .pathway-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  color: #2a2622;
+  width: 140px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.data-row .dotted-fill {
+  flex: 1;
+  border-bottom: 2px dotted #ccc4b8;
+  margin-bottom: 3px;
+  min-width: 20px;
+}
+
+.data-row .data-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.data-row.total-row {
+  border-top: 2px solid #2a2622;
+  border-bottom: 2px solid #2a2622;
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+}
+
+.data-row.total-row .pathway-label {
+  font-weight: 700;
+}
+
+.data-row.total-row .data-value {
+  font-size: 1.05rem;
+}
+
+/* Arrow notes */
+.arrow-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: #999;
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+
+.arrow-note .arrow {
+  color: #f09860;
+  font-weight: 700;
+}
+
+/* Stamp */
+.bureau-card .stamp {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #e85d50;
+  border: 2px solid #e85d50;
+  padding: 0.2rem 0.45rem;
+  transform: rotate(-4deg);
+  opacity: 0.6;
+  border-radius: 2px;
+}
+
+/* ═══ PIE + CONTENT LAYOUT ═══ */
+.card-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.card-chart {
+  width: 155px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-content-right {
+  flex: 1;
+  min-width: 220px;
+}
+
+/* Pathway chips */
+.pathway-chips {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.pathway-chip {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.pathway-chip.active {
+  transform: scale(1.05);
+}
+
+/* Fun stat callout */
+.stat-callout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f0ece4;
+  border-radius: 10px;
+  border-left: 4px solid;
+}
+
+.stat-callout .big-num {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.stat-callout .stat-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: #5a5a52;
+  line-height: 1.4;
+}
+
+/* ═══ QUOTE GALLERY ═══ */
+.voices-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #d4cfc4;
+}
+
+.voices-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #f09860;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.voices-label .star { color: #e85d50; }
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+.quote-card {
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  border-left: 3px solid;
+}
+
+.quote-card .quote-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: #3a3a35;
+  margin-bottom: 0.35rem;
+}
+
+.quote-card .quote-attrib {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.voices-disclaimer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  color: #aaa;
+  margin-top: 0.5rem;
+}
+
+/* ═══ MIRROR CARD ═══ */
+.mirror-inner {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.mirror-side {
+  flex: 1;
+  min-width: 240px;
+  padding: 1.5rem;
+}
+
+.mirror-side:first-child {
+  border-right: 1px dashed #d4cfc4;
+}
+
+.mirror-side .side-pathway {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-bottom: 0.15rem;
+}
+
+.mirror-side .side-question {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 0.72rem;
+  color: #7a7a72;
+  font-style: italic;
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+}
+
+.mirror-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.mirror-bar-row .bar-container {
+  flex: 1;
+  height: 14px;
+  background: #eae4da;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mirror-bar-row .bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  transition: width 0.5s;
+}
+
+.mirror-bar-row .bar-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  color: #7a7a72;
+  width: 85px;
+  flex-shrink: 0;
+}
+
+.mirror-bar-row .bar-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #2a2622;
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ═══ CALLOUT BOX ═══ */
+.language-note {
+  margin: 0 1.5rem 0 1.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(240,152,96,0.08);
+  border-left: 3px solid #f09860;
+  border-radius: 0 4px 4px 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-style: italic;
+  color: #8a7a62;
+  line-height: 1.5;
+}
+
+.language-note strong {
+  color: #f09860;
+  font-weight: 600;
+  font-style: normal;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ PAGE HEADER ═══ -->
+<div class="page-header">
+  <div class="rainbow"></div>
+  <h1>Tomorrow's Bureau</h1>
+  <div class="sub">The hybrid you asked for — Hello Tomorrow meets The Bureau</div>
+  <div class="desc">Mid-century optimistic geometry with ruled-form structure. Josefin Sans headlines, dotted leader fills, red stars, rainbow accents, and the warmth of a future that believes in documenting the truth.</div>
+</div>
+
+<div class="showcase">
+
+<!-- ═══ SAMPLE 1: STANDARD QUESTION CARD ═══ -->
+<div class="section-label">Standard Question Card — Pie Chart + Ruled Data</div>
+
+<div class="bureau-card">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Sexual Experience Assessment</div>
+    <div class="bar-ref">FORM CS-057 · PHASE 1 · N = 496</div>
+  </div>
+  <div class="card-body">
+    <div class="card-layout">
+      <div class="card-chart">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="65" fill="#e8e2d8"/>
+          <path d="M75,75 L75,10 A65,65 0 0,1 137,97Z" fill="#e85d50"/>
+          <path d="M75,75 L137,97 A65,65 0 0,1 42,133Z" fill="#f0c840"/>
+          <path d="M75,75 L42,133 A65,65 0 0,1 75,10Z" fill="#5888c0"/>
+          <circle cx="75" cy="75" r="28" fill="#faf6f0"/>
+          <text x="75" y="72" text-anchor="middle" font-family="Josefin Sans" font-size="9" font-weight="600" fill="#2a2622">SHOWING</text>
+          <text x="75" y="84" text-anchor="middle" font-family="Josefin Sans" font-size="7" font-weight="400" fill="#999">🔵 Circumcised</text>
+        </svg>
+        <div class="pathway-chips">
+          <span class="pathway-chip active" style="background:rgba(232,93,80,0.15); color:#e85d50; border:1.5px solid #e85d50;">🔵 Circ</span>
+          <span class="pathway-chip" style="background:transparent; color:#999; border:1px solid #ddd;">🟢 Intact</span>
+          <span class="pathway-chip" style="background:transparent; color:#999; border:1px solid #ddd;">🟣 Restoring</span>
+        </div>
+      </div>
+      <div class="card-content-right">
+        <div class="form-field">
+          <div class="field-label">Question Designation</div>
+          <div class="field-question">How confident are you that your orgasms are as good as they could be?</div>
+        </div>
+
+        <div class="form-field">
+          <div class="field-label">Response Distribution — 🔵 The Circumcised Pathway (n = 210)</div>
+          <div class="data-table">
+            <div class="data-row">
+              <span class="pathway-label">Not at all — missing</span>
+              <span class="dotted-fill"></span>
+              <span class="data-value" style="color:#e85d50">48.2%</span>
+            </div>
+            <div class="data-row">
+              <span class="pathway-label">Moderately</span>
+              <span class="dotted-fill"></span>
+              <span class="data-value" style="color:#2a2622">23.6%</span>
+            </div>
+            <div class="data-row">
+              <span class="pathway-label">Depends on situation</span>
+              <span class="dotted-fill"></span>
+              <span class="data-value" style="color:#2a2622">5.5%</span>
+            </div>
+            <div class="data-row">
+              <span class="pathway-label">Confident</span>
+              <span class="dotted-fill"></span>
+              <span class="data-value" style="color:#2a2622">16.1%</span>
+            </div>
+            <div class="data-row">
+              <span class="pathway-label">Extremely confident</span>
+              <span class="dotted-fill"></span>
+              <span class="data-value" style="color:#2a2622">6.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrow-note">
+          <span class="arrow">→</span> Compare: Intact Pathway reports only 4.5% "something is missing"<br>
+          <span class="arrow">→</span> Restoration Pathway: 59.6% — awareness increases through restoration<br>
+          <span class="arrow">→</span> Toggle pathways to see each distribution
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stamp">Preliminary</div>
+</div>
+
+<!-- ═══ SAMPLE 2: THE SYSTEMIC FAILURE ═══ -->
+<div class="section-label">Data-Only Card — Ruled Form Style</div>
+
+<div class="bureau-card">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Decision & Consent Assessment</div>
+    <div class="bar-ref">FORM CS-095 · 🔵 CIRCUMCISED PATHWAY ONLY</div>
+  </div>
+  <div class="card-body">
+    <div class="form-field">
+      <div class="field-label">Question Designation</div>
+      <div class="field-question">How was circumcision handled around the time of your birth?</div>
+      <div class="field-body">Respondents were asked to characterize how the procedure was presented by the medical establishment to their parents.</div>
+    </div>
+
+    <div class="form-field">
+      <div class="field-label">Response Distribution — 🔵 The Circumcised Pathway (n = 185)</div>
+      <div class="data-table">
+        <div class="data-row">
+          <span class="pathway-label">Routine / automatic</span>
+          <span class="dotted-fill"></span>
+          <span class="data-value" style="color:#e85d50">47.6%</span>
+        </div>
+        <div class="data-row">
+          <span class="pathway-label">No idea</span>
+          <span class="dotted-fill"></span>
+          <span class="data-value" style="color:#999">23.2%</span>
+        </div>
+        <div class="data-row">
+          <span class="pathway-label">Strong medical rec.</span>
+          <span class="dotted-fill"></span>
+          <span class="data-value" style="color:#f09860">18.9%</span>
+        </div>
+        <div class="data-row">
+          <span class="pathway-label">Not brought up</span>
+          <span class="dotted-fill"></span>
+          <span class="data-value" style="color:#2a2622">7.6%</span>
+        </div>
+        <div class="data-row">
+          <span class="pathway-label">Neutral pros & cons</span>
+          <span class="dotted-fill"></span>
+          <span class="data-value" style="color:#5888c0">2.7%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout" style="border-left-color:#e85d50">
+      <div class="big-num" style="color:#e85d50">2.7%</div>
+      <div class="stat-text">of circumcised respondents report that the procedure was presented as a neutral choice with pros and cons. The remaining 97.3% describe a spectrum from automatic default to uninformed acceptance.</div>
+    </div>
+
+    <div class="arrow-note">
+      <span class="arrow">→</span> Combined "routine" + "no idea" = 70.8% — seven in ten had no meaningful decision process<br>
+      <span class="arrow">→</span> This is the systemic failure: not parental ignorance, but institutional default
+    </div>
+  </div>
+  <div class="stamp">Phase 1</div>
+</div>
+
+<!-- ═══ SAMPLE 3: MIRROR CARD ═══ -->
+<div class="section-label">Mirror Comparison Card — Side by Side</div>
+
+<div class="bureau-card">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Mirror Comparison · Resentment vs Regret</div>
+    <div class="bar-ref">PARALLEL QUESTION PAIR</div>
+  </div>
+
+  <div class="language-note">
+    <strong>★ Language note:</strong> We use "resentment" for the Circumcised Pathway because the procedure was performed without their agency. We use "regret" for the Intact Pathway because that is the word that could meaningfully apply to a state they grew into. This distinction was shaped by community feedback.
+  </div>
+
+  <div class="mirror-inner">
+    <div class="mirror-side" style="background:rgba(232,93,80,0.03)">
+      <div class="side-pathway" style="color:#e85d50">🔵 The Circumcised Pathway</div>
+      <div class="side-question">Have you experienced resentment, loss, anger, or grief about your circumcision?</div>
+
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:54.6%; background:#e85d50">55%</div></div>
+        <div class="bar-label">Strong & frequent</div>
+        <div class="bar-value">54.6%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:16.1%; background:#f09860"></div></div>
+        <div class="bar-label">Sometimes</div>
+        <div class="bar-value">16.1%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:8.3%; background:#f0c840"></div></div>
+        <div class="bar-label">Rarely</div>
+        <div class="bar-value">8.3%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:21%; background:#5888c0"></div></div>
+        <div class="bar-label">No, never</div>
+        <div class="bar-value">21.0%</div>
+      </div>
+    </div>
+
+    <div class="mirror-side" style="background:rgba(88,136,192,0.03)">
+      <div class="side-pathway" style="color:#5888c0">🟢 The Intact Pathway</div>
+      <div class="side-question">Have you ever wished you were circumcised, or felt regret about being intact?</div>
+
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:8.6%; background:#e85d50"></div></div>
+        <div class="bar-label">Strong & frequent</div>
+        <div class="bar-value">8.6%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:11.5%; background:#f09860"></div></div>
+        <div class="bar-label">Sometimes</div>
+        <div class="bar-value">11.5%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:18%; background:#f0c840"></div></div>
+        <div class="bar-label">Rarely</div>
+        <div class="bar-value">18.0%</div>
+      </div>
+      <div class="mirror-bar-row">
+        <div class="bar-container"><div class="bar-fill" style="width:61.9%; background:#5888c0">62%</div></div>
+        <div class="bar-label">No, never</div>
+        <div class="bar-value">61.9%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quotes below mirror -->
+  <div class="card-body">
+    <div class="voices-section" style="border-top:none; padding-top:0;">
+      <div class="voices-label"><span class="star">★</span> Voices from the Survey</div>
+      <div class="quote-grid">
+        <div class="quote-card" style="background:rgba(232,93,80,0.06); border-left-color:#e85d50;">
+          <div class="quote-text">"Pain. Loss of pleasure. Loss of confidence. Loss of trust. Self hatred. Depression."</div>
+          <div class="quote-attrib" style="color:#e85d50">— Circumcised Pathway · On drawbacks</div>
+        </div>
+        <div class="quote-card" style="background:rgba(232,93,80,0.06); border-left-color:#e85d50;">
+          <div class="quote-text">"I, at 57 years old, have never had a normal intimate relationship... the mutilation is always there."</div>
+          <div class="quote-attrib" style="color:#e85d50">— Circumcised Pathway · On lifelong impact</div>
+        </div>
+        <div class="quote-card" style="background:rgba(88,136,192,0.06); border-left-color:#5888c0;">
+          <div class="quote-text">"In childhood and through college I was self conscious because all my friends were cut and I only knew one other kid who was uncut."</div>
+          <div class="quote-attrib" style="color:#5888c0">— Intact Pathway · On adolescent pressure</div>
+        </div>
+        <div class="quote-card" style="background:rgba(88,136,192,0.06); border-left-color:#5888c0;">
+          <div class="quote-text">"Only as a teen/young adult due to stigma arising from movies, pop culture, etc."</div>
+          <div class="quote-attrib" style="color:#5888c0">— Intact Pathway · On the source of regret</div>
+        </div>
+      </div>
+      <div class="voices-disclaimer">★ Anonymous quotes selected from open-ended responses. All identifying details removed.</div>
+    </div>
+  </div>
+  <div class="stamp">Mirror</div>
+</div>
+
+<!-- ═══ SAMPLE 4: HERO / INTRO SECTION ═══ -->
+<div class="section-label">Hero Section — Site Entry Point</div>
+
+<div class="bureau-card" style="border-width:3px">
+  <div class="rainbow-bar" style="height:6px"></div>
+  <div class="corner-star" style="font-size:1.3rem; top:-13px;">★</div>
+  <div class="header-bar" style="padding:0.7rem 1.5rem;">
+    <div class="bar-title" style="font-size:0.75rem;"><span class="star" style="font-size:1rem;">★</span> The Accidental Intactivist's Inquiry</div>
+    <div class="bar-ref" style="font-size:0.55rem;">PHASE 1 · PRELIMINARY FINDINGS · circumsurvey.online</div>
+  </div>
+  <div class="card-body" style="text-align:center; padding:2.5rem 2rem;">
+    <div style="font-family:'Josefin Sans',sans-serif; font-weight:700; font-size:clamp(1.6rem,4vw,2.4rem); color:#2a2622; letter-spacing:0.03em; margin-bottom:0.3rem;">
+      Six Pathways. 496 Voices.
+    </div>
+    <div style="font-family:'Josefin Sans',sans-serif; font-weight:300; font-style:italic; font-size:1rem; color:#888; margin-bottom:1.25rem;">
+      What if someone actually asked how you felt?
+    </div>
+    <div style="font-family:'Outfit',sans-serif; font-weight:300; font-size:0.82rem; color:#5a5a52; line-height:1.6; max-width:480px; margin:0 auto 1.5rem; text-align:justify;">
+      This is the interactive data explorer for the largest comparative survey of intact, circumcised, and restoring populations ever assembled from lived experience. Browse the findings. Toggle between pathways. See mirror questions side by side. Read voices from the survey itself. The data speaks for itself.
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+      <span class="pathway-chip active" style="background:rgba(88,136,192,0.12); color:#5888c0; border:1.5px solid rgba(88,136,192,0.4); font-size:0.6rem; padding:0.25rem 0.7rem;">🟢 Intact n=140</span>
+      <span class="pathway-chip active" style="background:rgba(232,93,80,0.12); color:#e85d50; border:1.5px solid rgba(232,93,80,0.4); font-size:0.6rem; padding:0.25rem 0.7rem;">🔵 Circumcised n=210</span>
+      <span class="pathway-chip active" style="background:rgba(240,200,64,0.12); color:#c8a020; border:1.5px solid rgba(240,200,64,0.4); font-size:0.6rem; padding:0.25rem 0.7rem;">🟣 Restoring n=109</span>
+      <span class="pathway-chip active" style="background:rgba(150,150,150,0.12); color:#888; border:1.5px solid rgba(150,150,150,0.4); font-size:0.6rem; padding:0.25rem 0.7rem;">🟠 Observer n=37</span>
+    </div>
+
+    <div style="font-family:'Outfit',sans-serif; font-weight:300; font-style:italic; font-size:0.72rem; color:#f09860; max-width:420px; margin:0 auto;">
+      "This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults. So I asked."
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center; padding:2.5rem 2rem; border-top:1px solid #222;">
+  <div style="height:4px; background:linear-gradient(90deg, #e85d50, #f09860, #f0c840, #68b878, #5888c0); width:120px; margin:0 auto 1rem; border-radius:2px;"></div>
+  <p style="font-family:'Josefin Sans',sans-serif; font-weight:600; font-size:0.85rem; color:#f09860; margin-bottom:0.3rem">Tomorrow's Bureau</p>
+  <p style="font-family:'Outfit',sans-serif; font-weight:300; font-size:0.72rem; color:#555; max-width:400px; margin:0 auto; line-height:1.55;">
+    Hello Tomorrow's optimistic geometry and warm palette, structured through The Bureau's ruled forms, dotted leaders, red stars, and classified-document authority.
+  </p>
+</div>
+
+</body>
+</html>

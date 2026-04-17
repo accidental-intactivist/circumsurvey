@@ -1,0 +1,161 @@
+# ═══════════════════════════════════════════════════════════════
+# CircumSurvey — Automated Data Refresh
+# ═══════════════════════════════════════════════════════════════
+#
+# This workflow:
+#   1. Downloads the latest Form Responses from Google Sheets
+#   2. Runs aggregate.py to recompute all distributions
+#   3. Commits the updated src/data.js if anything changed
+#   4. Cloudflare Pages auto-deploys on any commit to main
+#
+# Triggers:
+#   - Manually via GitHub Actions UI (workflow_dispatch)
+#   - Automatically every day at 06:00 UTC
+#   - On any push to main (ensures deploy is always current)
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   SHEETS_ID          — The Google Sheets spreadsheet ID
+#   GOOGLE_API_KEY     — Google API key with Sheets read access
+#                        (or use GOOGLE_SERVICE_ACCOUNT_JSON below)
+#
+# ═══════════════════════════════════════════════════════════════
+
+name: Refresh Survey Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_commit:
+        description: 'Commit even if data unchanged'
+        required: false
+        default: 'false'
+        type: boolean
+  schedule:
+    # Daily at 06:00 UTC (11pm Pacific, picks up overnight responses)
+    - cron: '0 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      # Only re-run aggregation if the script itself changes
+      - 'scripts/aggregate.py'
+
+jobs:
+  refresh:
+    name: Fetch & Aggregate
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # needed to commit back to the repo
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── 2. Set up Python ─────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      # ── 3. Download latest CSV from Google Sheets ────────────
+      - name: Download latest responses CSV
+        env:
+          SHEETS_ID: ${{ secrets.SHEETS_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, sys, urllib.request
+
+          sheets_id = os.environ.get('SHEETS_ID')
+          api_key   = os.environ.get('GOOGLE_API_KEY')
+
+          if not sheets_id:
+              print("ERROR: SHEETS_ID secret not set.")
+              sys.exit(1)
+
+          # Export "Form Responses 1" tab (gid=0) as CSV
+          # Works for sheets shared with "Anyone with the link can view"
+          # If using a private sheet, use the service account approach below
+          if api_key:
+              url = (
+                  f"https://sheets.googleapis.com/v4/spreadsheets/{sheets_id}"
+                  f"/values/Form%20Responses%201?key={api_key}&majorDimension=ROWS"
+              )
+              # Fetch via Sheets API and convert to CSV
+              import json, csv, io
+              req = urllib.request.Request(url)
+              with urllib.request.urlopen(req) as resp:
+                  data = json.loads(resp.read())
+              rows = data.get('values', [])
+              os.makedirs('data/raw', exist_ok=True)
+              with open('data/raw/responses.csv', 'w', newline='', encoding='utf-8') as f:
+                  writer = csv.writer(f)
+                  writer.writerows(rows)
+              print(f"Downloaded {len(rows)-1} response rows via Sheets API.")
+          else:
+              # Fallback: direct CSV export (requires sheet to be publicly shared)
+              url = (
+                  f"https://docs.google.com/spreadsheets/d/{sheets_id}"
+                  f"/export?format=csv&gid=0"
+              )
+              os.makedirs('data/raw', exist_ok=True)
+              urllib.request.urlretrieve(url, 'data/raw/responses.csv')
+              with open('data/raw/responses.csv') as f:
+                  rows = f.readlines()
+              print(f"Downloaded {len(rows)-1} response rows via direct export.")
+          PYEOF
+
+      # ── 4. Run aggregation script ─────────────────────────────
+      - name: Run aggregate.py
+        run: |
+          python3 scripts/aggregate.py \
+            data/raw/responses.csv \
+            src/data.js
+          echo "Aggregation complete."
+
+      # ── 5. Check if data actually changed ────────────────────
+      - name: Check for data changes
+        id: changes
+        run: |
+          git diff --quiet src/data.js && \
+            echo "changed=false" >> $GITHUB_OUTPUT || \
+            echo "changed=true"  >> $GITHUB_OUTPUT
+          echo "Force commit: ${{ inputs.force_commit }}"
+
+      # ── 6. Get new respondent count for commit message ────────
+      - name: Get respondent count
+        if: steps.changes.outputs.changed == 'true' || inputs.force_commit == 'true'
+        id: count
+        run: |
+          N=$(python3 -c "
+          import csv
+          with open('data/raw/responses.csv', encoding='utf-8-sig') as f:
+              print(sum(1 for row in csv.reader(f)) - 1)
+          ")
+          echo "n=$N" >> $GITHUB_OUTPUT
+          echo "Respondent count: $N"
+
+      # ── 7. Commit and push if changed ─────────────────────────
+      - name: Commit updated data
+        if: steps.changes.outputs.changed == 'true' || inputs.force_commit == 'true'
+        run: |
+          git config user.name  "circumsurvey-bot"
+          git config user.email "bot@circumsurvey.online"
+          git add src/data.js
+          git commit -m "🔄 Auto-refresh: n=${{ steps.count.outputs.n }} respondents [$(date -u +%Y-%m-%d)]"
+          git push
+          echo "✓ Pushed updated data.js — Cloudflare Pages will deploy automatically."
+
+      # ── 8. Report if nothing changed ──────────────────────────
+      - name: No changes detected
+        if: steps.changes.outputs.changed == 'false' && inputs.force_commit != 'true'
+        run: |
+          echo "✓ No changes in aggregated data — no commit needed."
+          echo "  (The survey data hasn't changed since the last run)"

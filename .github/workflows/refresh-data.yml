@@ -1,0 +1,95 @@
+﻿name: Refresh Survey Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_commit:
+        description: 'Commit even if data unchanged'
+        required: false
+        default: 'false'
+        type: boolean
+  schedule:
+    - cron: '0 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/aggregate.py'
+
+jobs:
+  refresh:
+    name: Fetch & Aggregate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Download latest responses CSV
+        env:
+          SHEETS_ID: ${{ secrets.SHEETS_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, sys, json, csv, urllib.request
+
+          sheets_id = os.environ.get('SHEETS_ID')
+          api_key   = os.environ.get('GOOGLE_API_KEY')
+
+          if not sheets_id or not api_key:
+              print("ERROR: SHEETS_ID or GOOGLE_API_KEY secret missing.")
+              sys.exit(1)
+
+          url = (f"https://sheets.googleapis.com/v4/spreadsheets/{sheets_id}"
+                 f"/values/Form%20Responses%201?key={api_key}")
+          req = urllib.request.Request(url)
+          with urllib.request.urlopen(req) as resp:
+              data = json.loads(resp.read())
+          rows = data.get('values', [])
+          os.makedirs('data/raw', exist_ok=True)
+          with open('data/raw/responses.csv', 'w', newline='', encoding='utf-8') as f:
+              csv.writer(f).writerows(rows)
+          print(f"Downloaded {len(rows)-1} response rows.")
+          PYEOF
+
+      - name: Run aggregate.py
+        run: python3 scripts/aggregate.py data/raw/responses.csv src/data.js
+
+      - name: Check for data changes
+        id: changes
+        run: |
+          git diff --quiet src/data.js && \
+            echo "changed=false" >> $GITHUB_OUTPUT || \
+            echo "changed=true"  >> $GITHUB_OUTPUT
+
+      - name: Get respondent count
+        if: steps.changes.outputs.changed == 'true' || inputs.force_commit == 'true'
+        id: count
+        run: |
+          N=$(python3 -c "import csv; print(sum(1 for _ in csv.reader(open('data/raw/responses.csv', encoding='utf-8-sig'))) - 1)")
+          echo "n=$N" >> $GITHUB_OUTPUT
+
+      - name: Commit updated data
+        if: steps.changes.outputs.changed == 'true' || inputs.force_commit == 'true'
+        run: |
+          git config user.name  "circumsurvey-bot"
+          git config user.email "bot@circumsurvey.online"
+          git add src/data.js
+          git commit -m "🔄 Auto-refresh: n=${{ steps.count.outputs.n }} [$(date -u +%Y-%m-%d)]"
+          git push
+
+      - name: No changes detected
+        if: steps.changes.outputs.changed == 'false' && inputs.force_commit != 'true'
+        run: echo "✓ No data changes — no commit needed."

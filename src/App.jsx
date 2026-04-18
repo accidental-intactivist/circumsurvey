@@ -2301,6 +2301,648 @@ function MirrorCard({ pair }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// ACT ON THIS — four cards that convert "so what?" into action
+// ═══════════════════════════════════════════════════════════════
+
+function UrgentPlaintiffCard() {
+  return (
+    <div id="section-urgent-plaintiff" style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title="Urgent: Washington State Plaintiff Search"
+        refText="EQUAL PROTECTION LAWSUIT · TIME-SENSITIVE"
+        stamp="Urgent"
+        stampColor={C.red}
+        gradient={`linear-gradient(90deg, ${C.red}, #e85d50, #e8a44a)`}
+        cardLabel="★ URGENT CALL TO ACTION"
+        shimmer={false}
+      >
+        <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
+          {/* URGENT badge */}
+          <div style={{
+            display: "inline-block",
+            background: C.red,
+            color: "#fff",
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 800,
+            fontSize: "0.72rem",
+            letterSpacing: "0.2em",
+            padding: "0.35rem 0.85rem",
+            borderRadius: 2,
+            marginBottom: "0.9rem",
+            textTransform: "uppercase",
+          }}>★ Urgent · Time-Sensitive</div>
+
+          <h2 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 800,
+            fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
+            color: C.paperInk,
+            lineHeight: 1.2,
+            letterSpacing: "-0.015em",
+            marginBottom: "1rem",
+          }}>A courageous plaintiff could unlock a landmark case.</h2>
+
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1.25rem",
+          }}>
+            Leaders from <strong style={{ color: C.paperInk }}>Intact Global</strong>,{" "}
+            <strong style={{ color: C.paperInk }}>Doctors Opposing Circumcision</strong>, and the{" "}
+            <strong style={{ color: C.paperInk }}>Washington Initiative for Boys and Men</strong> are
+            preparing a potential Equal Protection lawsuit arguing that Washington State's failure
+            to protect boys from non-consensual genital cutting, while protecting girls, violates
+            its own constitution. To move forward, the lawsuit needs a plaintiff.
+          </p>
+
+          {/* Criteria box */}
+          <div style={{
+            background: "rgba(217,79,79,0.06)",
+            border: `1px dashed ${C.red}`,
+            borderRadius: 4,
+            padding: "1.1rem 1.35rem",
+            marginBottom: "1.5rem",
+          }}>
+            <div style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.72rem",
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              color: C.red,
+              marginBottom: "0.6rem",
+            }}>We are looking for a "regret parent" who meets <em>all three</em> criteria:</div>
+            <ul style={{
+              margin: 0,
+              paddingLeft: "1.25rem",
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "0.95rem",
+              color: C.paperSubtle,
+              lineHeight: 1.7,
+            }}>
+              <li>You are a parent who now <strong style={{ color: C.paperInk }}>regrets the decision</strong> to have your son circumcised.</li>
+              <li>Your son was <strong style={{ color: C.paperInk }}>born AND circumcised in Washington State</strong>.</li>
+              <li>The circumcision occurred <strong style={{ color: C.paperInk }}>on or after March 1, 2023</strong>.</li>
+            </ul>
+          </div>
+
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontStyle: "italic",
+            fontSize: "1rem",
+            color: C.paperSubtle,
+            lineHeight: 1.65,
+            marginBottom: "1.5rem",
+          }}>
+            If you are this person — or if you know a family who might be — your story could be
+            the key that unlocks equal legal protection for the next generation of Washington
+            boys. All communications are handled in the strictest confidence.
+          </p>
+
+          {/* Two contact paths */}
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+            <a
+              href="mailto:plaintiff@circumsurvey.online"
+              style={{
+                display: "inline-block",
+                padding: "0.8rem 1.4rem",
+                background: C.red,
+                color: "#fff",
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 700,
+                textDecoration: "none",
+                borderRadius: 3,
+                fontSize: "0.95rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+              }}
+            >✉ Reach Out Confidentially</a>
+            <a
+              href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "0.8rem 1.4rem",
+                background: "transparent",
+                color: C.paperInk,
+                border: `2px solid ${C.paperInk}`,
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontWeight: 700,
+                textDecoration: "none",
+                borderRadius: 3,
+                fontSize: "0.95rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+              }}
+            >★ Take the Survey</a>
+          </div>
+          <p style={{
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: "0.78rem",
+            color: C.paperDim,
+            marginTop: "0.9rem",
+            lineHeight: 1.5,
+          }}>
+            If taking the survey, mention your potential plaintiff status in one of the
+            open-ended fields. Direct email: <a href="mailto:plaintiff@circumsurvey.online" style={{ color: C.red, fontWeight: 600 }}>plaintiff@circumsurvey.online</a>
+          </p>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+function StrategicPartnersCard() {
+  const partners = [
+    {
+      name: "Doctors Opposing Circumcision",
+      short: "DOC",
+      logo: "/partners/doc.png",
+      url: "https://doctorsopposingcircumcision.org/",
+      color: C.blue,
+      blurb: "Seattle-based international organization of medical professionals, founded in 1995 on the principle of \"First, do no harm.\" Our survey is featured on their official site.",
+    },
+    {
+      name: "Intact Global",
+      short: "Intact Global",
+      logo: "/partners/intact-global.png",
+      url: "https://intactglobal.org/",
+      color: C.red,
+      blurb: "Legal advocacy led by attorney Eric Clopper. Preparing a landmark Washington State Equal Protection lawsuit — our dataset is an active tool in their strategic litigation.",
+    },
+    {
+      name: "GALDEF",
+      short: "Genital Autonomy Legal Defense & Education Fund",
+      logo: "/partners/galdef.png",
+      url: "https://www.galdef.org/",
+      color: "#1f6b78", // GALDEF teal
+      blurb: "Co-founded by Tim Hammond, whose pioneering survey work on long-term harms was a direct inspiration for this project. Strategic path toward academic review at Quinnipiac.",
+    },
+    {
+      name: "WIBM",
+      short: "Washington Initiative for Boys and Men",
+      logo: "/partners/wibm.png",
+      url: "https://wibm.us/",
+      color: "#1f6b78", // WIBM teal
+      blurb: "Leading political advocacy group in Washington State. Our project provides WA-specific data as evidence for their legislative efforts to secure bodily integrity for boys.",
+    },
+  ];
+
+  return (
+    <div id="section-partners" style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title="Strategic Partners & Collaborators"
+        refText="AN INDEPENDENT PROJECT, SUPPORTED BY ESTABLISHED ADVOCACY"
+        stamp="Partners"
+        stampColor={C.gold}
+        gradient={RAINBOW_GRAD}
+        cardLabel="STRATEGIC ALLIANCES"
+      >
+        <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1.75rem",
+          }}>
+            What began as an independent inquiry has earned the recognition of leaders and
+            organizations who have been doing this work for decades. We are honored to be in
+            active collaboration with:
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "1rem",
+          }}>
+            {partners.map(p => (
+              <a
+                key={p.name}
+                href={p.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  textDecoration: "none",
+                  color: "inherit",
+                  background: "rgba(255,255,255,0.5)",
+                  border: `1px solid ${C.paperRuleDash}`,
+                  borderTop: `3px solid ${p.color}`,
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  transition: "background 0.2s, transform 0.2s, box-shadow 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.92)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                {/* Logo container — white background so logos have room to breathe */}
+                <div style={{
+                  background: "#fff",
+                  padding: "1.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 140,
+                  borderBottom: `1px solid ${C.paperRuleDash}`,
+                }}>
+                  <img
+                    src={p.logo}
+                    alt={`${p.name} logo`}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                    }}
+                  />
+                </div>
+
+                {/* Content */}
+                <div style={{ padding: "1.1rem 1.25rem 1.25rem", flex: 1, display: "flex", flexDirection: "column" }}>
+                  <div style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                    color: C.paperInk,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.005em",
+                    marginBottom: "0.2rem",
+                  }}>{p.name}</div>
+                  {p.short !== p.name && (
+                    <div style={{
+                      fontFamily: "'Barlow Condensed', sans-serif",
+                      fontSize: "0.72rem",
+                      color: p.color,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      fontWeight: 700,
+                      marginBottom: "0.55rem",
+                    }}>{p.short}</div>
+                  )}
+                  <div style={{
+                    fontFamily: "'Barlow', sans-serif",
+                    fontWeight: 400,
+                    fontSize: "0.85rem",
+                    color: C.paperSubtle,
+                    lineHeight: 1.55,
+                    marginBottom: "0.75rem",
+                    flex: 1,
+                  }}>{p.blurb}</div>
+                  <div style={{
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: "0.72rem",
+                    color: p.color,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    fontWeight: 800,
+                  }}>Visit {p.name} →</div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+function ResourcesCard() {
+  const resources = [
+    {
+      title: "The Accidental Intactivist Manifesto",
+      sub: "125 pages · PDF",
+      blurb: "The foundational document behind this research. Personal insight, scientific inquiry, and cultural critique — the history, ethics, anatomy, and emotional truth.",
+      url: "https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing",
+      color: C.red,
+      cta: "Download PDF",
+    },
+    {
+      title: "2-Page Survey Overview",
+      sub: "Methodology prospectus · PDF",
+      blurb: "Goals, methodology, ethical framework. For sharing with organizations, researchers, journalists, and anyone interested in the research design.",
+      url: "https://drive.google.com/file/d/1TzhNbktVBKKzh6JGaKti2G0hxyUOb_ol/view?usp=drive_link",
+      color: C.blue,
+      cta: "Download PDF",
+    },
+    {
+      title: "Shareable Flyers & QR Code",
+      sub: "Full-page posters, 2×2 handout cards, QR image",
+      blurb: "For posting on community bulletin boards, info tables, local fairs, and conferences. Help us reach 500+ diverse perspectives.",
+      url: "https://www.circumsurvey.online/resources-downloads",
+      color: C.gold,
+      cta: "Browse Materials",
+    },
+    {
+      title: "The Accidental Intactivist on Substack",
+      sub: "Ongoing analysis · Essays · Preliminary findings",
+      blurb: "Follow along for deeper analysis, survey updates, and related essays. Paid subscription directly funds the continuation of this work.",
+      url: "https://theaccidentalintactivist.substack.com/",
+      color: C.green,
+      cta: "Read & Subscribe",
+    },
+  ];
+
+  return (
+    <div id="section-resources" style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title="Dig Deeper · Resources & Downloads"
+        refText="MANIFESTO · METHODOLOGY · SHAREABLES"
+        stamp="Library"
+        stampColor={C.gold}
+        gradient={PATH_GRADIENTS.restoring}
+        cardLabel="FOR FURTHER INQUIRY"
+      >
+        <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1.75rem",
+          }}>
+            The data on this site is one phase of a larger inquiry. For context, methodology,
+            and materials you can share with others, these are the canonical sources:
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "1rem",
+          }}>
+            {resources.map(r => (
+              <a
+                key={r.title}
+                href={r.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: "block",
+                  textDecoration: "none",
+                  color: "inherit",
+                  background: "rgba(255,255,255,0.5)",
+                  border: `1px solid ${C.paperRuleDash}`,
+                  borderTop: `3px solid ${r.color}`,
+                  borderRadius: 3,
+                  padding: "1.15rem 1.25rem",
+                  transition: "background 0.2s, transform 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.9)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <div style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontWeight: 700,
+                  fontSize: "1.05rem",
+                  color: C.paperInk,
+                  lineHeight: 1.25,
+                  marginBottom: "0.25rem",
+                  letterSpacing: "-0.005em",
+                }}>{r.title}</div>
+                <div style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "0.72rem",
+                  color: r.color,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                  marginBottom: "0.6rem",
+                }}>{r.sub}</div>
+                <div style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "0.85rem",
+                  color: C.paperSubtle,
+                  lineHeight: 1.55,
+                  marginBottom: "0.7rem",
+                }}>{r.blurb}</div>
+                <div style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "0.78rem",
+                  color: r.color,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  fontWeight: 800,
+                }}>{r.cta} →</div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+function GetInvolvedCard() {
+  const paths = [
+    {
+      id: "ambassador",
+      title: "Become a Survey Ambassador",
+      color: C.gold,
+      icon: "★",
+      blurb: "The single highest-impact thing you can do right now. Share the survey with friends, family, colleagues, and online communities. Use our printable flyers, posters, and QR codes at events.",
+      actions: [
+        { label: "circumsurvey.online", url: "https://circumsurvey.online", primary: true },
+        { label: "Shareables", url: "https://www.circumsurvey.online/resources-downloads" },
+      ],
+    },
+    {
+      id: "volunteer",
+      title: "Volunteer Your Skills",
+      color: C.blue,
+      icon: "✎",
+      blurb: "Translation (Spanish / Hebrew / German / Arabic), data analysis & visualization, regional outreach, content writing. Tell us what you can do.",
+      actions: [
+        { label: "volunteer@circumsurvey.online", url: "mailto:volunteer@circumsurvey.online", primary: true },
+      ],
+    },
+    {
+      id: "support",
+      title: "Support Independent Research",
+      color: C.red,
+      icon: "♥",
+      blurb: "This work is 100% grassroots, no institutional funding. A one-time tip via Buy Me a Coffee or a paid Substack subscription directly fuels the next phase of research.",
+      logo: "/partners/bmc.png",
+      logoAlt: "Buy Me a Coffee",
+      actions: [
+        { label: "Buy Me a Coffee", url: "https://coff.ee/accidental.intactivist", primary: true },
+        { label: "Substack", url: "https://theaccidentalintactivist.substack.com/subscribe" },
+      ],
+    },
+    {
+      id: "collab",
+      title: "Organizational Collaboration",
+      color: C.green,
+      icon: "◈",
+      blurb: "If you represent an organization whose mission aligns with bodily integrity and informed consent, let's talk about signal-boosting, data-sharing, and co-authored outputs.",
+      actions: [
+        { label: "info@circumsurvey.online", url: "mailto:info@circumsurvey.online", primary: true },
+      ],
+    },
+  ];
+
+  return (
+    <div id="section-get-involved" style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title="Four Ways to Get Involved"
+        refText="AMBASSADOR · VOLUNTEER · SUPPORTER · COLLABORATOR"
+        stamp="Action"
+        stampColor={C.gold}
+        gradient={RAINBOW_GRAD}
+        cardLabel="FROM SO-WHAT TO SO-THIS"
+      >
+        <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1.75rem",
+          }}>
+            The data does not interpret itself. If any of what you've read here moves you, here
+            are the concrete paths — from five minutes to long-term:
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+            gap: "1rem",
+          }}>
+            {paths.map(p => (
+              <div
+                key={p.id}
+                style={{
+                  background: "rgba(255,255,255,0.5)",
+                  border: `1px solid ${C.paperRuleDash}`,
+                  borderLeft: `4px solid ${p.color}`,
+                  borderRadius: 3,
+                  padding: "1.15rem 1.25rem",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", marginBottom: "0.4rem" }}>
+                  <span style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: "1.15rem",
+                    color: p.color,
+                    fontWeight: 700,
+                  }}>{p.icon}</span>
+                  <div style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                    color: C.paperInk,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.005em",
+                  }}>{p.title}</div>
+                </div>
+                <div style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "0.85rem",
+                  color: C.paperSubtle,
+                  lineHeight: 1.55,
+                  marginBottom: "0.85rem",
+                  flex: 1,
+                }}>{p.blurb}</div>
+
+                {/* Optional service logo (e.g. BMC for support) */}
+                {p.logo && (
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    background: "#fff",
+                    border: `1px solid ${C.paperRuleDash}`,
+                    borderRadius: 3,
+                    padding: "0.5rem 0.75rem",
+                    marginBottom: "0.75rem",
+                    height: 48,
+                  }}>
+                    <img
+                      src={p.logo}
+                      alt={p.logoAlt || ""}
+                      style={{
+                        height: "100%",
+                        width: "auto",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Actions: primary button + any secondary links */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  {p.actions.map((action, i) => action.primary ? (
+                    <a
+                      key={i}
+                      href={action.url}
+                      target={action.url.startsWith("http") ? "_blank" : undefined}
+                      rel={action.url.startsWith("http") ? "noreferrer" : undefined}
+                      style={{
+                        display: "inline-block",
+                        padding: "0.55rem 0.95rem",
+                        background: p.color,
+                        color: "#fff",
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontWeight: 700,
+                        textDecoration: "none",
+                        borderRadius: 3,
+                        fontSize: "0.78rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                      }}
+                    >{action.label}</a>
+                  ) : (
+                    <a
+                      key={i}
+                      href={action.url}
+                      target={action.url.startsWith("http") ? "_blank" : undefined}
+                      rel={action.url.startsWith("http") ? "noreferrer" : undefined}
+                      style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontSize: "0.75rem",
+                        color: p.color,
+                        textDecoration: "none",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        fontWeight: 700,
+                        borderBottom: `1px dashed ${p.color}`,
+                        paddingBottom: 1,
+                      }}
+                    >{action.label} →</a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // HERO CARD
 // ═══════════════════════════════════════════════════════════════
 
@@ -2392,6 +3034,12 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
     { cat: "Curated Findings", color: C.gold, items: CURATED_SECTIONS.map(s => ({ id: `section-${s.id}`, label: s.title, isSection: true })) },
     { cat: "Mirror Pairs",     color: C.red,    items: MIRROR_PAIRS.map(p => ({ id: p.id, label: p.title })) },
     { cat: "Observer Pathway", color: C.neutral, items: [{ id: "section-observer", label: `The Witnesses (n=${PATHWAY.observer.n})`, isSection: true }] },
+    { cat: "★ Act on This",    color: C.red,    items: [
+      { id: "section-urgent-plaintiff", label: "★ Urgent: WA Plaintiff Search", isSection: true },
+      { id: "section-partners",         label: "Strategic Partners", isSection: true },
+      { id: "section-resources",        label: "Resources & Downloads", isSection: true },
+      { id: "section-get-involved",     label: "Ways to Get Involved", isSection: true },
+    ]},
     ...CATS.map(cat => ({
       cat, color: C.pageDim,
       items: ALL_QUESTIONS.filter(q => q.cat === cat).map(q => ({ id: q.id, label: q.q })),
@@ -2628,6 +3276,10 @@ function getNarrativeSections() {
       id: `section-${s.id}`,
       title: s.title,
     })),
+    { id: "section-urgent-plaintiff", title: "★ Urgent Call" },
+    { id: "section-partners", title: "Strategic Partners" },
+    { id: "section-resources", title: "Resources" },
+    { id: "section-get-involved", title: "Get Involved" },
   ];
 }
 
@@ -2882,6 +3534,12 @@ export default function App() {
                 </div>
               );
             })}
+
+            {/* ═══════ ACT ON THIS — from "so what?" to "so this" ═══════ */}
+            <UrgentPlaintiffCard />
+            <StrategicPartnersCard />
+            <ResourcesCard />
+            <GetInvolvedCard />
           </>
         )}
 
@@ -2974,8 +3632,20 @@ export default function App() {
         <a href="https://circumsurvey.online/about" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Methodology</a>
         {" · "}
         <a href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Substack</a>
+        {" · "}
+        <a href="https://coff.ee/accidental.intactivist" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Support</a>
         <br />
-        <span style={{ fontSize: "0.7rem", color: C.pageDim }}>Strategic partners: Intact Global · GALDEF · DOC · WIBM</span>
+        <span style={{ fontSize: "0.75rem", color: C.pageMuted }}>
+          Strategic partners: <a href="https://doctorsopposingcircumcision.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>DOC</a>
+          {" · "}<a href="https://intactglobal.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>Intact Global</a>
+          {" · "}<a href="https://galdef.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>GALDEF</a>
+          {" · "}<a href="https://wibm.us" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>WIBM</a>
+        </span>
+        <br />
+        <span style={{ fontSize: "0.72rem", color: C.red, fontWeight: 600, letterSpacing: "0.02em" }}>
+          ★ WA plaintiff search (Equal Protection lawsuit):{" "}
+          <a href="mailto:plaintiff@circumsurvey.online" style={{ color: C.red, textDecoration: "underline" }}>plaintiff@circumsurvey.online</a>
+        </span>
       </footer>
     </div>
   );

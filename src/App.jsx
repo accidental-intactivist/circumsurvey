@@ -169,17 +169,38 @@ function useReveal(options = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    let el = ref.current;
     if (typeof IntersectionObserver === "undefined") { setVisible(true); return; }
-    const obs = new IntersectionObserver(
-      entries => entries.forEach(e => {
-        if (e.isIntersecting) { setVisible(true); obs.unobserve(e.target); }
-      }),
-      { threshold: 0.08, rootMargin: "0px 0px -10% 0px", ...options }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
+    // Try immediately; retry once on next frame if ref wasn't attached yet
+    const attach = () => {
+      el = ref.current;
+      if (!el) return false;
+      // Check if already in viewport NOW — for elements that mount already visible
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top < vh * 1.5 && rect.bottom > -vh * 0.5) {
+        setVisible(true);
+        return true;
+      }
+      const obs = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) { setVisible(true); obs.unobserve(e.target); }
+        }),
+        { threshold: 0, rootMargin: "200px 0px 200px 0px", ...options }
+      );
+      obs.observe(el);
+      return obs;
+    };
+    const result = attach();
+    if (result === false) {
+      // Retry on next frame
+      const raf = requestAnimationFrame(() => {
+        const r2 = attach();
+        if (r2 === false) setVisible(true); // Give up gracefully — just show it
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+    return () => { if (result && result.disconnect) result.disconnect(); };
   }, []);
   return [ref, visible];
 }
@@ -230,46 +251,76 @@ function CountUp({ to, suffix = "", duration = 1600, visible = true, decimals = 
 // ═══════════════════════════════════════════════════════════════
 
 function CircumSurveySeal({ size = 44, ringColor = C.red, starColor = C.gold }) {
+  // At large sizes (footer), use the real CircumSurvey logo PNG —
+  // it has "CIRCUM SURVEY. ONLINE" text and the character you expect.
+  // At small sizes (nav, 28px), the PNG's detail gets lost, so we fall
+  // back to a stylized SVG that reads better as a tiny badge.
+  if (size >= 80) {
+    return (
+      <img
+        src="/circumsurvey-logo.png"
+        width={size}
+        height={size}
+        alt="CircumSurvey.online"
+        style={{
+          display: "block",
+          width: size,
+          height: size,
+          filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))",
+        }}
+      />
+    );
+  }
+
+  // Stylized small-size mark — big star, red disc, text arc only if it fits
   const r = size / 2;
   const cx = r, cy = r;
-  const innerR = r * 0.66;
-  const textR = r * 0.82;
+  const showText = size >= 40;
 
-  // Generate text-on-path for "CIRCUMSURVEY · ONLINE · "
-  const pathId = `seal-path-${size}`;
-
-  // 5-pointed star
+  const starR = r * (showText ? 0.48 : 0.62);
+  const starIR = starR * 0.4;
   const starPts = [];
-  const starR = r * 0.4, starIR = starR * 0.4;
   for (let i = 0; i < 10; i++) {
     const a = (i / 10) * Math.PI * 2 - Math.PI / 2;
     const rr = i % 2 === 0 ? starR : starIR;
     starPts.push(`${cx + rr * Math.cos(a)},${cy + rr * Math.sin(a)}`);
   }
 
+  const textR = r * 0.78;
+  const pathId = `seal-text-path-${size}`;
+
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
-      style={{ display: "block", filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      style={{ display: "block", filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.35))" }}
+      role="img"
+      aria-label="CircumSurvey.online"
+    >
       <defs>
-        <path id={pathId}
+        <path
+          id={pathId}
           d={`M ${cx},${cy} m ${-textR},0 a ${textR},${textR} 0 1,1 ${textR * 2},0 a ${textR},${textR} 0 1,1 ${-textR * 2},0`}
           fill="none"
         />
       </defs>
-      {/* Outer ring */}
-      <circle cx={cx} cy={cy} r={r - 1} fill={ringColor} stroke={C.paperInk} strokeWidth="1" />
-      {/* Inner red disc */}
-      <circle cx={cx} cy={cy} r={innerR} fill={ringColor} stroke={C.paperInk} strokeWidth="0.5" />
-      {/* Text ring white */}
-      <circle cx={cx} cy={cy} r={innerR + (r - innerR) * 0.5} fill="none" stroke={C.paper} strokeWidth={(r - innerR) * 0.9} opacity="0.08" />
-      {/* Text circling */}
-      <text fill={C.paper} fontFamily="'Barlow Condensed', sans-serif" fontWeight="700" fontSize={size * 0.14} letterSpacing="1">
-        <textPath href={`#${pathId}`} startOffset="0%">
-          CIRCUMSURVEY · ONLINE ·&#160;
-        </textPath>
-      </text>
-      {/* Star */}
-      <polygon points={starPts.join(" ")} fill={starColor} stroke={C.paperInk} strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={r - 0.5} fill={ringColor} />
+      <circle cx={cx} cy={cy} r={r - 0.5} fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="1" />
+      {showText && (
+        <text
+          fill={C.paper}
+          fontFamily="'Barlow Condensed', sans-serif"
+          fontWeight="800"
+          fontSize={size * 0.155}
+          letterSpacing="0.5"
+        >
+          <textPath href={`#${pathId}`} startOffset="0%">
+            CIRCUMSURVEY · ONLINE ·&#160;
+          </textPath>
+        </text>
+      )}
+      <polygon points={starPts.join(" ")} fill={starColor} />
     </svg>
   );
 }
@@ -312,20 +363,6 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
           }} />
         )}
       </div>
-
-      {/* Red corner star */}
-      <div style={{
-        position: "absolute",
-        top: -10,
-        left: 24,
-        fontSize: "1.3rem",
-        color: C.red,
-        background: C.bg,
-        padding: "0 0.45rem",
-        lineHeight: 1,
-        fontFamily: "'Playfair Display', serif",
-        zIndex: 2,
-      }}>★</div>
 
       {/* Dark letterhead strip */}
       <div style={{
@@ -710,8 +747,8 @@ function CinematicHero() {
 function EditorsLetter() {
   return (
     <BureauCard
-      title="Editor's Letter"
-      refText="FROM THE DESK OF TONE PETTIT · FOUNDER"
+      title="A Note from the Lead Researcher"
+      refText="FROM THE DESK OF TONE PETTIT · LEAD RESEARCHER"
       stamp="Letter"
       stampColor={C.gold}
       gradient={PATH_GRADIENTS.intact}
@@ -726,7 +763,7 @@ function EditorsLetter() {
           letterSpacing: "0.18em",
           color: C.gold,
           marginBottom: "0.5rem",
-        }}>From the Founder</div>
+        }}>From the Lead Researcher</div>
 
         <h2 style={{
           fontFamily: "'Playfair Display', serif",
@@ -736,7 +773,7 @@ function EditorsLetter() {
           lineHeight: 1.15,
           letterSpacing: "-0.015em",
           marginBottom: "1.5rem",
-        }}>Why I asked.</h2>
+        }}>The 'Why' Behind This Inquiry</h2>
 
         <div style={{
           fontFamily: "'Playfair Display', serif",
@@ -746,59 +783,98 @@ function EditorsLetter() {
           lineHeight: 1.75,
         }}>
           <p style={{ marginBottom: "1rem" }}>
-            I grew up intact in a culture where almost everyone else was not. I've always
-            been perfectly happy with my equipment — but it occurred to me that I had never
-            heard anyone discuss how they <em>actually</em> felt as adults about their
-            circumcision status.
+            My name is Tone Pettit, and I am the "Accidental Intactivist." This project was
+            born from a lifetime of observation and a single, persistent question.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            Not in school. Not in movies. Not among friends. The subject just… didn't come up.
-            And when it did, it was a punchline or a shrug, never an inquiry.
+            By a conscious choice of my parents in the 1970s, I grew up intact — an outlier
+            in a US culture where routine infant circumcision was the unquestioned norm. I
+            became an <em>accidental witness</em> to a profound alteration that nearly all
+            my friends, my partners, and men in the media had undergone — something my
+            parents had simply dismissed as unnecessary.
           </p>
-          <p style={{ marginBottom: "1rem" }}>
-            So I realized I could just <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>ask them directly</strong> —
-            respectfully and anonymously — and collect a comparative database filled with
-            actual answers from people's lived experiences. While I do have opinions about
-            the practice, I wanted to create a space for people to share their thoughts
-            in a safe, private way.
-          </p>
+
           <p style={{
             marginBottom: "1.5rem",
-            padding: "1rem 1.25rem",
-            background: "rgba(91,147,199,0.06)",
-            borderLeft: `3px solid ${C.blue}`,
+            padding: "1.1rem 1.35rem",
+            background: "rgba(217,79,79,0.06)",
+            borderLeft: `3px solid ${C.red}`,
             borderRadius: "0 4px 4px 0",
             fontFamily: "'Playfair Display', serif",
             fontStyle: "italic",
-            fontSize: "clamp(1.05rem, 1.4vw, 1.25rem)",
+            fontWeight: 500,
+            fontSize: "clamp(1.1rem, 1.5vw, 1.3rem)",
             color: C.paperInk,
-            lineHeight: 1.55,
+            lineHeight: 1.5,
           }}>
-            We are not telling people how to feel. We are creating a platform for them to
-            anonymously share how they actually feel and what they actually experience.
+            In a culture so obsessed with sex, where we seemingly want every experience to
+            be as good as possible, how did this one topic become so taboo?
+          </p>
+
+          <p style={{ marginBottom: "1rem" }}>
+            Everyone seems to have an opinion about whether infant circumcision should or
+            shouldn't be done — but I almost never hear adults talking honestly about their
+            own lived experience with their own anatomy.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            What you are about to browse is the interactive data explorer for the largest
-            comparative survey of intact, circumcised, and restoring populations ever
-            assembled from lived experience. It is, by design, a data instrument — not an
-            advocacy document.
+            I had so many questions. How did men actually <em>feel</em> about being cut?
+            Was it something they ever thought about? What was their sexual experience
+            truly like? This survey is my way of finally asking those questions.
+          </p>
+
+          <h3 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 800,
+            fontSize: "clamp(1.2rem, 1.6vw, 1.4rem)",
+            color: C.paperInk,
+            letterSpacing: "-0.01em",
+            marginTop: "2rem",
+            marginBottom: "0.75rem",
+          }}>So — what did we find?</h3>
+
+          <p style={{ marginBottom: "1rem" }}>
+            It turns out this is a conversation a lot of people have been waiting to have.
+            We are now the custodians of <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>hundreds of
+            vivid, often heartbreaking accounts</strong> of a procedure performed on millions,
+            usually without their consent.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of every pathway agrees</strong> the
+            child should have the right to decide. Intact, circumcised, restoring, observer
+            — no other question in this survey produces a consensus that strong. It is the
+            rare finding where everyone quietly agrees on the ethics, and yet the default
+            practice continues anyway.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>86% of circumcised respondents</strong> report
+            some level of resentment, loss, anger, or grief. Only 14% say "no, never." The
+            cultural shorthand that "they don't remember, they don't care" collapses on
+            contact with the data.
           </p>
           <p style={{ marginBottom: "1.5rem" }}>
-            The data speaks for itself. When arranged properly — especially in the mirror
-            pairs — it speaks volumes.
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>Only 2.7% of circumcised respondents</strong>{" "}
+            say the decision was presented to their parents as a neutral choice with pros
+            and cons. Nearly half — 47.6% — describe it as "routine or automatic." That is
+            not informed consent. That is cultural autopilot.
+          </p>
+
+          <p style={{ marginBottom: "1rem" }}>
+            What follows is a data instrument, not an advocacy document. I am not here to
+            tell you how to feel. I am here to share what <em>four hundred and ninety-six
+            people said when finally asked</em> — and to bring these essential stories into
+            the light.
           </p>
         </div>
 
-        {/* Signature block */}
+        {/* Signature block — Tone's real contact info */}
         <div style={{
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: "1rem",
           marginTop: "2rem",
           paddingTop: "1.5rem",
           borderTop: `1px dashed ${C.paperRuleDash}`,
         }}>
-          {/* Faux signature — Tone Pettit in Mr Dafoe-style script */}
           <svg width="150" height="48" viewBox="0 0 150 48" style={{ flexShrink: 0 }}>
             <path
               d="M 8,32 Q 14,18 22,26 T 35,28 M 30,24 Q 38,14 44,24 T 52,32 M 50,22 L 56,32 M 56,22 L 62,32 M 62,30 Q 68,22 74,28 T 82,30 M 82,22 Q 88,18 92,28 L 98,22 M 98,22 Q 104,32 110,24 T 120,28 M 118,26 Q 126,20 132,28 T 142,30"
@@ -824,7 +900,18 @@ function EditorsLetter() {
               color: C.paperDim,
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-            }}>Founder · circumsurvey.online</div>
+              marginBottom: "0.35rem",
+            }}>The Accidental Intactivist · Lead Researcher</div>
+            <div style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontSize: "0.78rem",
+              color: C.paperDim,
+              lineHeight: 1.5,
+            }}>
+              <a href="mailto:tone@circumsurvey.online" style={{ color: C.paperSubtle, textDecoration: "none" }}>tone@circumsurvey.online</a>
+              {" · "}
+              <a href="https://reddit.com/u/c4charkey" target="_blank" rel="noreferrer" style={{ color: C.paperSubtle, textDecoration: "none" }}>reddit.com/u/c4charkey</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1191,6 +1278,11 @@ function Pie({ data, colors, size = 150, currentPathway }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [visible]);
+  // Safety: if animation never fired, force render after 2.5s
+  useEffect(() => {
+    const t = setTimeout(() => setProgress(p => p === 0 ? 1 : p), 2500);
+    return () => clearTimeout(t);
+  }, []);
 
   const total = data.reduce((a, b) => a + b, 0);
   if (!total) return <svg ref={ref} width={size} height={size} />;
@@ -1260,6 +1352,11 @@ function StackedBar({ q, width = 400, height = 280 }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [visible]);
+  // Safety: if after 2.5s nothing happened, force render
+  useEffect(() => {
+    const t = setTimeout(() => setProgress(p => p === 0 ? 1 : p), 2500);
+    return () => clearTimeout(t);
+  }, []);
 
   const pathways = (q.pathways || Object.keys(q.data)).filter(
     p => p !== "all_circ" && Array.isArray(q.data[p])
@@ -1407,6 +1504,11 @@ function GroupedBar({ questions, pathways = ["circumcised","restoring","intact"]
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [visible]);
+  // Safety: if animation never fired, force render after 2.5s
+  useEffect(() => {
+    const t = setTimeout(() => setProgress(p => p === 0 ? 1 : p), 2500);
+    return () => clearTimeout(t);
+  }, []);
 
   const padLeft = 36, padRight = 8, padTop = 24, padBottom = 72;
   const plotW = width - padLeft - padRight;
@@ -2062,6 +2164,11 @@ function AnimatedBar({ color, targetHeight, label, emoji }) {
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
   }, [visible, targetHeight]);
+  // Safety: if animation never fired, force final height after 2.5s
+  useEffect(() => {
+    const t = setTimeout(() => setH(curr => curr === 0 ? targetHeight : curr), 2500);
+    return () => clearTimeout(t);
+  }, [targetHeight]);
   return (
     <div ref={ref} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem" }}>
       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.62rem", fontWeight: 700, color }}>{label}</span>
@@ -2126,6 +2233,11 @@ function MirrorBar({ opt, value, color, delay }) {
     }, delay);
     return () => clearTimeout(timer);
   }, [visible, value, delay]);
+  // Safety: if animation never fired, force final value after 2.5s + delay
+  useEffect(() => {
+    const t = setTimeout(() => setW(curr => curr === 0 ? value : curr), 2500 + delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
   return (
     <div ref={ref} style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.35rem" }}>
       <div style={{ flex: 1, height: 16, background: C.paperBarBg, borderRadius: 3, overflow: "hidden" }}>
@@ -2847,7 +2959,7 @@ export default function App() {
         lineHeight: 2,
       }}>
         <div style={{ marginBottom: "1rem", display: "flex", justifyContent: "center" }}>
-          <CircumSurveySeal size={52} />
+          <CircumSurveySeal size={96} />
         </div>
         <div style={{
           fontFamily: "'Playfair Display', serif",

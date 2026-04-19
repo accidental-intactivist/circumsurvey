@@ -1757,31 +1757,31 @@ function FormField({ label, question, body, last, children }) {
     }}>
       {label && (
         <div style={{
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700,
-          fontSize: "0.62rem",
+          fontFamily: "'Josefin Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "0.66rem",
           textTransform: "uppercase",
-          letterSpacing: "0.14em",
-          color: C.gold,
-          marginBottom: "0.35rem",
+          letterSpacing: "0.16em",
+          color: C.orangeBright,
+          marginBottom: "0.5rem",
         }}>{label}</div>
       )}
       {question && (
         <div style={{
-          fontFamily: "'Playfair Display', serif",
-          fontWeight: 700,
-          fontSize: "1.1rem",
+          fontFamily: "'Josefin Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "1.18rem",
           color: C.paperInk,
-          lineHeight: 1.3,
-          marginBottom: body ? "0.5rem" : 0,
+          lineHeight: 1.32,
+          marginBottom: body ? "0.55rem" : 0,
           letterSpacing: "-0.005em",
         }}>{question}</div>
       )}
       {body && (
         <div style={{
-          fontFamily: "'Barlow', sans-serif",
+          fontFamily: "'Outfit', sans-serif",
           fontWeight: 400,
-          fontSize: "0.85rem",
+          fontSize: "0.9rem",
           color: C.paperSubtle,
           lineHeight: 1.65,
         }}>{body}</div>
@@ -2092,12 +2092,12 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
         {canStack && (
           <div style={{ display: "flex", gap: "0.3rem", marginBottom: "1rem", alignItems: "center" }}>
             <span style={{
-              fontFamily: "'Barlow Condensed', sans-serif",
-              fontWeight: 700,
-              fontSize: "0.6rem",
+              fontFamily: "'Josefin Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: "0.64rem",
               color: C.paperDim,
               textTransform: "uppercase",
-              letterSpacing: "0.12em",
+              letterSpacing: "0.14em",
               marginRight: "0.25rem",
             }}>View</span>
             {[
@@ -2108,14 +2108,14 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
                 padding: "0.22rem 0.6rem",
                 borderRadius: 100,
                 cursor: "pointer",
-                fontFamily: "'Barlow Condensed', sans-serif",
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                border: chartType === t.id ? `1.5px solid ${C.gold}` : `1px solid ${C.paperRuleDash}`,
-                background: chartType === t.id ? "rgba(212,160,48,0.10)" : "transparent",
-                color: chartType === t.id ? C.gold : C.paperGhost,
+                fontFamily: "'Josefin Sans', sans-serif",
+                fontSize: "0.64rem",
+                fontWeight: 600,
+                border: chartType === t.id ? `1.5px solid ${C.orangeBright}` : `1px solid ${C.paperRuleDash}`,
+                background: chartType === t.id ? "rgba(240,152,96,0.10)" : "transparent",
+                color: chartType === t.id ? C.orangeBright : C.paperGhost,
                 textTransform: "uppercase",
-                letterSpacing: "0.06em",
+                letterSpacing: "0.08em",
               }}>{t.l}</button>
             ))}
           </div>
@@ -2129,13 +2129,13 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
               </div>
               <div style={{ minWidth: 180, flex: "0 1 230px" }}>
                 <div style={{
-                  fontFamily: "'Barlow Condensed', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "0.6rem",
+                  fontFamily: "'Josefin Sans', sans-serif",
+                  fontWeight: 600,
+                  fontSize: "0.64rem",
                   textTransform: "uppercase",
-                  letterSpacing: "0.14em",
-                  color: C.gold,
-                  marginBottom: "0.4rem",
+                  letterSpacing: "0.16em",
+                  color: C.orangeBright,
+                  marginBottom: "0.45rem",
                 }}>Response Options</div>
                 <StackedBarLegend opts={q.opts} colors={q.colors} />
               </div>

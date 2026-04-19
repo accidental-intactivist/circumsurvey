@@ -59,669 +59,679 @@ const _data = {
     }
   },
   "questions": [
-    {
-      "id": "appearance",
-      "cat": "Body Image",
-      "q": "How do you feel about your penis's physical appearance?",
-      "opts": [
-        "Very Positive",
-        "Positive",
-        "Neutral",
-        "Negative",
-        "Don't think about it",
-        "Very Negative"
+  {
+    "id": "appearance",
+    "cat": "Body Image",
+    "q": "Thinking about your penis today, how do you generally FEEL about its physical appearance?",
+    "opts": [
+      "Very Positive",
+      "Positive",
+      "Neutral",
+      "Negative",
+      "I don't really think about its appearance much.",
+      "Very Negative"
+    ],
+    "colors": [
+      "#5b93c7",
+      "#8bb8d9",
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        44.6,
+        32.4,
+        13.7,
+        8.6,
+        0.7,
+        0
       ],
-      "colors": [
-        "#5b93c7",
-        "#8bb8d9",
-        "#e8c868",
-        "#e8a44a",
-        "#d94f4f",
-        "#a0a0a0"
+      "circumcised": [
+        11.2,
+        26.2,
+        15.5,
+        24.8,
+        1.0,
+        21.4
       ],
-      "data": {
-        "intact": [
-          44.6,
-          32.4,
-          13.7,
-          8.6,
-          0.7,
-          0
-        ],
-        "circumcised": [
-          11.2,
-          26.2,
-          15.5,
-          24.8,
-          1.0,
-          21.4
-        ],
-        "restoring": [
-          4.7,
-          25.2,
-          20.6,
-          30.8,
-          0,
-          18.7
-        ]
-      },
-      "pathways": [
-        "intact",
-        "circumcised",
-        "restoring"
+      "restoring": [
+        4.7,
+        25.2,
+        20.6,
+        30.8,
+        0,
+        18.7
       ]
     },
-    {
-      "id": "pride",
-      "cat": "Body Image",
-      "q": "Overall, how proud or satisfied are you with your penis?",
-      "opts": [
-        "Very proud",
-        "Generally proud",
-        "Neutral",
-        "Somewhat dissatisfied",
-        "No framework",
-        "Very dissatisfied"
+    "pathways": [
+      "intact",
+      "circumcised",
+      "restoring"
+    ]
+  },
+  {
+    "id": "pride",
+    "cat": "Body Image",
+    "q": "Overall, how PROUD or satisfied are you with your penis?",
+    "opts": [
+      "Very proud and satisfied",
+      "Generally proud and satisfied",
+      "Neutral or ambivalent",
+      "Somewhat dissatisfied",
+      "I don't really frame my feelings about it in terms of 'pride' or 'dissatisfaction'.",
+      "Very dissatisfied"
+    ],
+    "colors": [
+      "#5b93c7",
+      "#8bb8d9",
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        38.7,
+        37.2,
+        11.7,
+        9.5,
+        2.2,
+        0.7
       ],
-      "colors": [
-        "#5b93c7",
-        "#8bb8d9",
-        "#e8c868",
-        "#e8a44a",
-        "#d94f4f",
-        "#a0a0a0"
+      "circumcised": [
+        8.3,
+        24.8,
+        11.7,
+        22.3,
+        2.4,
+        30.6
       ],
-      "data": {
-        "intact": [
-          38.7,
-          37.2,
-          11.7,
-          9.5,
-          2.2,
-          0.7
-        ],
-        "circumcised": [
-          8.3,
-          24.8,
-          11.7,
-          22.3,
-          2.4,
-          30.6
-        ],
-        "restoring": [
-          7.5,
-          16.8,
-          12.1,
-          37.4,
-          1.9,
-          24.3
-        ]
-      },
-      "sub": "Considering appearance, function, and pleasure",
-      "pathways": [
-        "intact",
-        "circumcised",
-        "restoring"
+      "restoring": [
+        7.5,
+        16.8,
+        12.1,
+        37.4,
+        1.9,
+        24.3
       ]
     },
-    {
-      "id": "intensity",
-      "cat": "Sexual Experience",
-      "q": "Intensity of Orgasm (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.73,
-        "circumcised": 2.99,
-        "restoring": 2.93
-      }
+    "sub": "Considering appearance, function, and pleasure",
+    "pathways": [
+      "intact",
+      "circumcised",
+      "restoring"
+    ]
+  },
+  {
+    "id": "intensity",
+    "cat": "Sexual Experience",
+    "q": "Please rate the INTENSITY of your orgasms.",
+    "type": "avg",
+    "data": {
+      "intact": 3.73,
+      "circumcised": 2.99,
+      "restoring": 2.93
     },
-    {
-      "id": "duration_r",
-      "cat": "Sexual Experience",
-      "q": "Duration of Orgasm (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.8,
-        "circumcised": 2.81,
-        "restoring": 2.65
-      }
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.1): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "duration_r",
+    "cat": "Sexual Experience",
+    "q": "Please rate the DURATION of your orgasms.",
+    "type": "avg",
+    "data": {
+      "intact": 3.8,
+      "circumcised": 2.81,
+      "restoring": 2.65
     },
-    {
-      "id": "ease",
-      "cat": "Sexual Experience",
-      "q": "Ease of Reaching Orgasm (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.43,
-        "circumcised": 2.91,
-        "restoring": 2.8
-      }
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.2): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "ease",
+    "cat": "Sexual Experience",
+    "q": "Please rate your OVERALL EASE of reaching orgasm.",
+    "type": "avg",
+    "data": {
+      "intact": 3.43,
+      "circumcised": 2.91,
+      "restoring": 2.8
     },
-    {
-      "id": "light",
-      "cat": "Sexual Experience",
-      "q": "Sensitivity to Light Touch (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.67,
-        "circumcised": 2.6,
-        "restoring": 2.67
-      }
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.3): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "light",
+    "cat": "Sexual Experience",
+    "q": "Please rate your SENSITIVITY to light touch.",
+    "type": "avg",
+    "data": {
+      "intact": 3.67,
+      "circumcised": 2.6,
+      "restoring": 2.67
     },
-    {
-      "id": "mobile",
-      "cat": "Sexual Experience",
-      "q": "Pleasure from Mobile Skin / Gliding (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.88,
-        "circumcised": 2.49,
-        "restoring": 3.0
-      }
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.4): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "mobile",
+    "cat": "Sexual Experience",
+    "q": "Please rate your PLEASURE from mobile skin.",
+    "type": "avg",
+    "data": {
+      "intact": 3.88,
+      "circumcised": 2.49,
+      "restoring": 3.0
     },
-    {
-      "id": "variety",
-      "cat": "Sexual Experience",
-      "q": "Variety of Pleasurable Sensations (1–5 scale)",
-      "type": "avg",
-      "data": {
-        "intact": 3.78,
-        "circumcised": 2.58,
-        "restoring": 2.65
-      }
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.5): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "variety",
+    "cat": "Sexual Experience",
+    "q": "Please rate the VARIETY of pleasurable sensations you experience.",
+    "type": "avg",
+    "data": {
+      "intact": 3.78,
+      "circumcised": 2.58,
+      "restoring": 2.65
     },
-    {
-      "id": "confidence",
-      "cat": "Sexual Experience",
-      "q": "How confident are you that your orgasms are as good as they could be?",
-      "opts": [
-        "Confident",
-        "Extremely confident",
-        "Moderately confident",
-        "Depends",
-        "Something is missing"
+    "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.6): 1 = Low/Poor, 5 = High/Excellent."
+  },
+  {
+    "id": "confidence",
+    "cat": "Sexual Experience",
+    "q": "...how would you rate your general confidence that your orgasms are as intense or fulfilling as possible?",
+    "opts": [
+      "Confident",
+      "Extremely confident",
+      "Moderately confident",
+      "Depends",
+      "Something is missing"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7"
+    ],
+    "data": {
+      "intact": [
+        43.3,
+        24.6,
+        16.4,
+        11.2,
+        4.5
       ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7"
+      "circumcised": [
+        16.1,
+        6.5,
+        23.1,
+        6.0,
+        48.2
       ],
-      "data": {
-        "intact": [
-          43.3,
-          24.6,
-          16.4,
-          11.2,
-          4.5
-        ],
-        "circumcised": [
-          16.1,
-          6.5,
-          23.1,
-          6.0,
-          48.2
-        ],
-        "restoring": [
-          7.7,
-          5.8,
-          19.2,
-          7.7,
-          59.6
-        ]
-      },
-      "pathways": [
-        "intact",
-        "circumcised",
-        "restoring"
+      "restoring": [
+        7.7,
+        5.8,
+        19.2,
+        7.7,
+        59.6
       ]
     },
-    {
-      "id": "lube",
-      "cat": "Sexual Experience",
-      "q": "How often do you need artificial lubrication?",
-      "opts": [
-        "Never",
-        "Sometimes",
-        "Rarely",
-        "Often helpful",
-        "Always/almost always",
-        "N/A"
+    "pathways": [
+      "intact",
+      "circumcised",
+      "restoring"
+    ],
+    "sub": "We're asking about your confidence in your baseline — whether the experience you have is as full as it could be, or whether something is missing."
+  },
+  {
+    "id": "lube",
+    "cat": "Sexual Experience",
+    "q": "Do you generally need to use artificial LUBRICATION during sexual activity?",
+    "opts": [
+      "Never",
+      "Sometimes",
+      "Rarely",
+      "Often helpful",
+      "Always/almost always",
+      "N/A"
+    ],
+    "colors": [
+      "#5b93c7",
+      "#8bb8d9",
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        55.5,
+        19.7,
+        18.2,
+        5.1,
+        1.5,
+        0
       ],
-      "colors": [
-        "#5b93c7",
-        "#8bb8d9",
-        "#e8c868",
-        "#e8a44a",
-        "#d94f4f",
-        "#a0a0a0"
+      "circumcised": [
+        5.5,
+        20.0,
+        14.5,
+        18.0,
+        39.0,
+        3.0
       ],
-      "data": {
-        "intact": [
-          55.5,
-          19.7,
-          18.2,
-          5.1,
-          1.5,
-          0
-        ],
-        "circumcised": [
-          5.5,
-          20.0,
-          14.5,
-          18.0,
-          39.0,
-          3.0
-        ],
-        "restoring": [
-          16.0,
-          17.9,
-          17.9,
-          14.2,
-          33.0,
-          0.9
-        ]
-      },
-      "pathways": [
-        "intact",
-        "circumcised",
-        "restoring"
+      "restoring": [
+        16.0,
+        17.9,
+        17.9,
+        14.2,
+        33.0,
+        0.9
       ]
     },
-    {
-      "id": "duration",
-      "cat": "Sexual Experience",
-      "q": "How long do the primary pleasurable sensations of your typical orgasm last?",
-      "opts": [
-        "6–15 sec",
-        "16–30 sec",
-        "0–5 sec",
-        "Up to 1 min",
-        "Unsure",
-        "Varies",
-        "1+ min"
+    "pathways": [
+      "intact",
+      "circumcised",
+      "restoring"
+    ]
+  },
+  {
+    "id": "duration",
+    "cat": "Sexual Experience",
+    "q": "DURATION: How long do the primary pleasurable sensations of your typical orgasm last?",
+    "opts": [
+      "6–15 sec",
+      "16–30 sec",
+      "0–5 sec",
+      "Up to 1 min",
+      "Unsure",
+      "Varies",
+      "1+ min"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        40.6,
+        29.0,
+        14.5,
+        6.5,
+        5.1,
+        2.9,
+        1.4
       ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7",
-        "#a0a0a0"
+      "circumcised": [
+        34.8,
+        12.9,
+        38.3,
+        7.0,
+        1.5,
+        3.5,
+        2.0
       ],
-      "data": {
-        "intact": [
-          40.6,
-          29.0,
-          14.5,
-          6.5,
-          5.1,
-          2.9,
-          1.4
-        ],
-        "circumcised": [
-          34.8,
-          12.9,
-          38.3,
-          7.0,
-          1.5,
-          3.5,
-          2.0
-        ],
-        "restoring": [
-          38.1,
-          11.4,
-          39.0,
-          3.8,
-          2.9,
-          2.9,
-          1.9
-        ]
-      },
-      "pathways": [
-        "intact",
-        "circumcised",
-        "restoring"
+      "restoring": [
+        38.1,
+        11.4,
+        39.0,
+        3.8,
+        2.9,
+        2.9,
+        1.9
       ]
     },
-    {
-      "id": "sons",
-      "cat": "Autonomy & Ethics",
-      "q": "If you were to have a male child, what would you choose regarding circumcision?",
-      "opts": [
-        "Keep intact",
-        "N/A",
-        "Undecided",
-        "Partner's choice",
-        "Circumcise"
+    "pathways": [
+      "intact",
+      "circumcised",
+      "restoring"
+    ]
+  },
+  {
+    "id": "sons",
+    "cat": "Autonomy & Ethics",
+    "q": "Based on everything you know and have experienced, if you were to have a child assigned male at birth today, what would your decision regarding circumcision be?",
+    "opts": [
+      "Keep intact",
+      "N/A",
+      "Undecided",
+      "Partner's choice",
+      "Circumcise"
+    ],
+    "colors": [
+      "#5b93c7",
+      "#d94f4f",
+      "#e8c868",
+      "#e8a44a",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        88.8,
+        7.5,
+        2.2,
+        1.5,
+        0
       ],
-      "colors": [
-        "#5b93c7",
-        "#d94f4f",
-        "#e8c868",
-        "#e8a44a",
-        "#a0a0a0"
+      "circumcised": [
+        78.1,
+        6.0,
+        4.0,
+        3.5,
+        8.5
       ],
-      "data": {
-        "intact": [
-          88.8,
-          7.5,
-          2.2,
-          1.5,
-          0
-        ],
-        "circumcised": [
-          78.1,
-          6.0,
-          4.0,
-          3.5,
-          8.5
-        ],
-        "restoring": [
-          98.1,
-          1.9,
-          0,
-          0,
-          0
-        ],
-        "observer": [
-          90.9,
-          3.0,
-          0,
-          3.0,
-          3.0
-        ]
-      }
-    },
-    {
-      "id": "autonomy",
-      "cat": "Autonomy & Ethics",
-      "q": "For a non-therapeutic irreversible procedure on a healthy infant — which principle takes priority?",
-      "opts": [
-        "Child's bodily autonomy",
-        "Parental / medical discretion"
+      "restoring": [
+        98.1,
+        1.9,
+        0,
+        0,
+        0
       ],
-      "colors": [
-        "#5b93c7",
-        "#d94f4f"
-      ],
-      "data": {
-        "intact": [
-          96.4,
-          3.6
-        ],
-        "circumcised": [
-          81.3,
-          18.7
-        ],
-        "restoring": [
-          100.0,
-          0
-        ],
-        "observer": [
-          97.0,
-          3.0
-        ]
-      }
-    },
-    {
-      "id": "handled",
-      "cat": "Decision & Consent",
-      "q": "How was circumcision handled around the time of your birth?",
-      "opts": [
-        "Routine / automatic",
-        "No idea",
-        "Strong medical rec.",
-        "Not brought up",
-        "Neutral pros & cons"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#a0a0a0",
-        "#e8a44a",
-        "#8bb8d9",
-        "#5b93c7"
-      ],
-      "data": {
-        "circumcised": [
-          47.6,
-          23.2,
-          18.9,
-          7.6,
-          2.7
-        ]
-      },
-      "note": "Asked of Circumcised Pathway respondents only.",
-      "pathways": [
-        "circumcised"
+      "observer": [
+        90.9,
+        3.0,
+        0,
+        3.0,
+        3.0
       ]
-    },
-    {
-      "id": "norm",
-      "cat": "Decision & Consent",
-      "q": "In your community growing up, what was the general expectation for newborn boys?",
-      "opts": [
-        "Uncommon",
-        "Unquestioned norm",
-        "Very common",
-        "50/50",
-        "Not sure"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7"
-      ],
-      "data": {
-        "intact": [
-          33.8,
-          23.5,
-          22.8,
-          12.5,
-          7.4
-        ],
-        "circumcised": [
-          22.9,
-          47.3,
-          14.4,
-          6.0,
-          9.5
-        ],
-        "restoring": [
-          16.5,
-          54.1,
-          16.5,
-          2.8,
-          10.1
-        ],
-        "observer": [
-          11.8,
-          44.1,
-          32.4,
-          5.9,
-          5.9
-        ]
-      }
-    },
-    {
-      "id": "father_status",
-      "cat": "Decision & Consent",
-      "q": "What is your father's circumcision state?",
-      "opts": [
-        "Circumcised",
-        "Intact",
-        "Don't know",
-        "N/A"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9"
-      ],
-      "data": {
-        "circumcised": [
-          67.1,
-          24.2,
-          7.7,
-          1.0
-        ],
-        "restoring": [
-          75.2,
-          15.6,
-          7.3,
-          1.8
-        ]
-      },
-      "note": "Asked of Circumcised and Restoring respondents.",
-      "pathways": [
-        "circumcised",
-        "restoring"
-      ]
-    },
-    {
-      "id": "restoration_considered",
-      "cat": "Decision & Consent",
-      "q": "Have you ever considered or researched foreskin restoration?",
-      "opts": [
-        "Actively researching",
-        "Seriously considered",
-        "Briefly considered",
-        "Never considered",
-        "No",
-        "Unsure/never heard"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7",
-        "#a0a0a0"
-      ],
-      "data": {
-        "circumcised": [
-          27.5,
-          24.0,
-          23.0,
-          15.7,
-          7.8,
-          2.0
-        ]
-      },
-      "note": "Asked of Circumcised Pathway respondents only.",
-      "pathways": [
-        "circumcised"
-      ]
-    },
-    {
-      "id": "aesthetics",
-      "cat": "Beliefs & Perceptions",
-      "q": "Purely in terms of aesthetics, which look do you personally find more appealing?",
-      "opts": [
-        "Strongly prefer intact",
-        "Slightly prefer intact",
-        "No preference",
-        "Slightly prefer circ",
-        "Strongly prefer circ"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7"
-      ],
-      "data": {
-        "intact": [
-          65.2,
-          14.5,
-          8.0,
-          6.5,
-          5.8
-        ],
-        "circumcised": [
-          52.0,
-          10.8,
-          9.3,
-          7.8,
-          20.1
-        ],
-        "restoring": [
-          90.7,
-          2.8,
-          3.7,
-          1.9,
-          0.9
-        ],
-        "observer": [
-          48.5,
-          12.1,
-          18.2,
-          15.2,
-          6.1
-        ]
-      }
-    },
-    {
-      "id": "med_superior",
-      "cat": "Beliefs & Perceptions",
-      "q": "Which state do you believe is medically or hygienically superior?",
-      "opts": [
-        "Intact slightly",
-        "Intact significantly",
-        "No difference",
-        "Circ slightly",
-        "Circ significantly",
-        "Unsure"
-      ],
-      "colors": [
-        "#d94f4f",
-        "#e8a44a",
-        "#e8c868",
-        "#8bb8d9",
-        "#5b93c7",
-        "#a0a0a0"
-      ],
-      "data": {
-        "intact": [
-          34.3,
-          32.8,
-          19.7,
-          7.3,
-          2.9,
-          2.9
-        ],
-        "circumcised": [
-          23.6,
-          31.0,
-          16.3,
-          13.3,
-          12.3,
-          3.4
-        ],
-        "restoring": [
-          28.7,
-          48.1,
-          13.9,
-          5.6,
-          2.8,
-          0.9
-        ],
-        "observer": [
-          15.2,
-          48.5,
-          24.2,
-          6.1,
-          3.0,
-          3.0
-        ]
-      }
     }
-  ],
+  },
+  {
+    "id": "autonomy",
+    "cat": "Autonomy & Ethics",
+    "q": "When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant, which principle do you believe should be given more weight?",
+    "opts": [
+      "The recommendation of Medical Authorities and Parental Discretion",
+      "The Child's Right to Bodily Autonomy"
+    ],
+    "colors": [
+      "#5b93c7",
+      "#d94f4f"
+    ],
+    "data": {
+      "intact": [
+        96.4,
+        3.6
+      ],
+      "circumcised": [
+        81.3,
+        18.7
+      ],
+      "restoring": [
+        100.0,
+        0
+      ],
+      "observer": [
+        97.0,
+        3.0
+      ]
+    }
+  },
+  {
+    "id": "handled",
+    "cat": "Decision & Consent",
+    "q": "Based on what you know, how was the topic of circumcision likely handled around the time of your birth?",
+    "opts": [
+      "Routine / automatic",
+      "No idea",
+      "Strong medical rec.",
+      "Not brought up",
+      "Neutral pros & cons"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#a0a0a0",
+      "#e8a44a",
+      "#8bb8d9",
+      "#5b93c7"
+    ],
+    "data": {
+      "circumcised": [
+        47.6,
+        23.2,
+        18.9,
+        7.6,
+        2.7
+      ]
+    },
+    "note": "Asked of Circumcised Pathway respondents only.",
+    "pathways": [
+      "circumcised"
+    ]
+  },
+  {
+    "id": "norm",
+    "cat": "Decision & Consent",
+    "q": "In your family or the community you grew up in, what was the general EXPECTATION for newborn boys regarding circumcision?",
+    "opts": [
+      "Uncommon",
+      "Unquestioned norm",
+      "Very common",
+      "50/50",
+      "Not sure"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7"
+    ],
+    "data": {
+      "intact": [
+        33.8,
+        23.5,
+        22.8,
+        12.5,
+        7.4
+      ],
+      "circumcised": [
+        22.9,
+        47.3,
+        14.4,
+        6.0,
+        9.5
+      ],
+      "restoring": [
+        16.5,
+        54.1,
+        16.5,
+        2.8,
+        10.1
+      ],
+      "observer": [
+        11.8,
+        44.1,
+        32.4,
+        5.9,
+        5.9
+      ]
+    },
+    "sub": "This question tries to get at the power of social conformity and default settings. Was circumcision the unquestioned norm, or was it truly seen as an optional choice?"
+  },
+  {
+    "id": "father_status",
+    "cat": "Decision & Consent",
+    "q": "What is your FATHER'S (or primary male guardian's) circumcision state, to the best of your knowledge?",
+    "opts": [
+      "Circumcised",
+      "Intact",
+      "Don't know",
+      "N/A"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9"
+    ],
+    "data": {
+      "circumcised": [
+        67.1,
+        24.2,
+        7.7,
+        1.0
+      ],
+      "restoring": [
+        75.2,
+        15.6,
+        7.3,
+        1.8
+      ]
+    },
+    "note": "Asked of Circumcised and Restoring respondents.",
+    "pathways": [
+      "circumcised",
+      "restoring"
+    ]
+  },
+  {
+    "id": "restoration_considered",
+    "cat": "Decision & Consent",
+    "q": "Have you ever considered or researched options like foreskin RESTORATION or REGENERATION?",
+    "opts": [
+      "Actively researching",
+      "Seriously considered",
+      "Briefly considered",
+      "Never considered",
+      "No",
+      "Unsure/never heard"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7",
+      "#a0a0a0"
+    ],
+    "data": {
+      "circumcised": [
+        27.5,
+        24.0,
+        23.0,
+        15.7,
+        7.8,
+        2.0
+      ]
+    },
+    "note": "Asked of Circumcised Pathway respondents only.",
+    "pathways": [
+      "circumcised"
+    ],
+    "sub": "Restoration uses gradual skin-stretching methods to regrow foreskin coverage over the glans. Regeneration refers to biomedical approaches to grow new foreskin tissue, like Foregen's research."
+  },
+  {
+    "id": "aesthetics",
+    "cat": "Beliefs & Perceptions",
+    "q": "Purely in terms of AESTHETICS (visual appearance), which look do you personally find more appealing?",
+    "opts": [
+      "Strongly prefer intact",
+      "Slightly prefer intact",
+      "No preference",
+      "Slightly prefer circ",
+      "Strongly prefer circ"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7"
+    ],
+    "data": {
+      "intact": [
+        65.2,
+        14.5,
+        8.0,
+        6.5,
+        5.8
+      ],
+      "circumcised": [
+        52.0,
+        10.8,
+        9.3,
+        7.8,
+        20.1
+      ],
+      "restoring": [
+        90.7,
+        2.8,
+        3.7,
+        1.9,
+        0.9
+      ],
+      "observer": [
+        48.5,
+        12.1,
+        18.2,
+        15.2,
+        6.1
+      ]
+    }
+  },
+  {
+    "id": "med_superior",
+    "cat": "Beliefs & Perceptions",
+    "q": "Putting aside your personal satisfaction or feelings, which state do you generally believe to be MEDICALLY HEALTHIER or more HYGIENIC overall?",
+    "opts": [
+      "Intact slightly",
+      "Intact significantly",
+      "No difference",
+      "Circ slightly",
+      "Circ significantly",
+      "Unsure"
+    ],
+    "colors": [
+      "#d94f4f",
+      "#e8a44a",
+      "#e8c868",
+      "#8bb8d9",
+      "#5b93c7",
+      "#a0a0a0"
+    ],
+    "data": {
+      "intact": [
+        34.3,
+        32.8,
+        19.7,
+        7.3,
+        2.9,
+        2.9
+      ],
+      "circumcised": [
+        23.6,
+        31.0,
+        16.3,
+        13.3,
+        12.3,
+        3.4
+      ],
+      "restoring": [
+        28.7,
+        48.1,
+        13.9,
+        5.6,
+        2.8,
+        0.9
+      ],
+      "observer": [
+        15.2,
+        48.5,
+        24.2,
+        6.1,
+        3.0,
+        3.0
+      ]
+    },
+    "sub": "This question is about your intellectual belief regarding health outcomes, based on everything you've heard or learned in your life."
+  }
+],
   "mirrorPairs": [
     {
       "id": "resentment_mirror",

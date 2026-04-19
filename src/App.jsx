@@ -1988,6 +1988,47 @@ function QuoteGallery({ gallery }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// CARD SUMMARIES — editorial callouts keyed to question id
+// These render in the right column of QCard as an interpretation,
+// replacing the redundant "mean rating" legend. Only cards with a
+// summary here get the enhanced treatment; others render minimally.
+// ═══════════════════════════════════════════════════════════════
+
+const CARD_SUMMARIES = {
+  // ── Sexual Experience (six avg cards) ──────────────────────────
+  "intensity": {
+    headline: "Intact respondents rate orgasm intensity 25% higher.",
+    body: "On a 1–5 scale, intact men average 3.73 vs 2.99 for circumcised men — a gap of three-quarters of a full point. Restoring respondents land at 2.93, close to where they started, suggesting intensity recovers more slowly than other dimensions.",
+    frame: "gap",
+  },
+  "duration_r": {
+    headline: "Orgasm duration sees the second-largest gap.",
+    body: "Intact respondents average 3.80; circumcised 2.81. A full point of separation on a 5-point scale is large in survey terms — comparable to the gap between 'satisfied' and 'very dissatisfied' on an attitudinal scale. Restoring at 2.65 is actually below the circumcised average, which some restorers attribute to keratinization recovery being incomplete.",
+    frame: "gap",
+  },
+  "ease": {
+    headline: "The smallest Pleasure Gap — but still present.",
+    body: "Ease of reaching orgasm shows the narrowest spread of the six dimensions (3.43 vs 2.91, a 15% gap). This matters because 'ease' is the metric most confounded by arousal, partner dynamics, and psychological factors — the fact that it still shows a measurable gap rather than none at all is notable.",
+    frame: "gap",
+  },
+  "light": {
+    headline: "Intact respondents report 41% more sensitivity to light touch.",
+    body: "3.67 vs 2.60 — the third-largest Pleasure Gap and the one most directly tied to the anatomy. Light-touch receptors concentrated in the foreskin's ridged band are removed by circumcision. Restoring respondents report 2.67, a modest recovery that tracks with the documented de-keratinization process.",
+    frame: "gap",
+  },
+  "mobile": {
+    headline: "The largest gap in the entire Sexual Experience module.",
+    body: "Pleasure from gliding / mobile skin: 3.88 intact, 2.49 circumcised — a 36% gap, the widest measured. This is the mechanical function most completely lost in circumcision: the foreskin's ability to slide over the glans creating frictionless sensation. Restorers at 3.00 are the clearest demonstration that even partial mechanical restoration moves the needle.",
+    frame: "gap",
+  },
+  "variety": {
+    headline: "Intact respondents report 46% more variety of sensation.",
+    body: "3.78 vs 2.58. 'Variety' here means the range of pleasurable sensations reported — from subtle to intense, from localized to full-body. A narrower dynamic range is consistent with keratinization, nerve remodeling, and the loss of the foreskin's distinct sensation-class. Restorers sit at 2.65, suggesting variety is harder to recover than raw sensitivity.",
+    frame: "gap",
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════
 // QUESTION CARD
 // ═══════════════════════════════════════════════════════════════
 
@@ -2128,27 +2169,49 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
             </div>
 
             <div style={{ flex: 1, minWidth: 220 }}>
-              <FormField
-                label={isAvg
-                  ? "Mean Rating by Pathway"
-                  : `Response Distribution — ${currentMeta.emoji} ${currentMeta.label} (n = ${currentMeta.n})`}
-                last
-              >
-                {isAvg ? (
-                  <div style={{ fontFamily: "'Barlow', sans-serif", fontSize: "0.85rem", color: C.paperSubtle, lineHeight: 1.8, paddingTop: "0.4rem" }}>
-                    {pathways.map(p => {
-                      const v = q.data[p]; if (v == null) return null;
-                      const meta = PATHWAY[p]; const color = pathColor(p);
-                      return (
-                        <div key={p} style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                          <span>{meta.emoji}</span>
-                          <strong style={{ color, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.92rem", fontWeight: 800 }}>{v.toFixed(2)}</strong>
-                          <span style={{ color: C.paperDim, fontSize: "0.78rem" }}>— {meta.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
+              {isAvg ? (
+                /* AVG CARDS: show editorial summary, not redundant legend */
+                <>
+                  {CARD_SUMMARIES[q.id] ? (
+                    <div style={{
+                      padding: "0 0 0.5rem 0",
+                    }}>
+                      <div style={{
+                        fontFamily: "'Barlow Condensed', sans-serif",
+                        fontWeight: 700,
+                        fontSize: "0.6rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.14em",
+                        color: C.gold,
+                        marginBottom: "0.5rem",
+                      }}>The Finding</div>
+                      <div style={{
+                        fontFamily: "'Playfair Display', serif",
+                        fontWeight: 700,
+                        fontSize: "1.05rem",
+                        color: C.paperInk,
+                        lineHeight: 1.3,
+                        letterSpacing: "-0.005em",
+                        marginBottom: "0.65rem",
+                      }}>{CARD_SUMMARIES[q.id].headline}</div>
+                      <div style={{
+                        fontFamily: "'Barlow', sans-serif",
+                        fontSize: "0.85rem",
+                        color: C.paperSubtle,
+                        lineHeight: 1.6,
+                      }}>{CARD_SUMMARIES[q.id].body}</div>
+                    </div>
+                  ) : (
+                    <div style={{ paddingTop: "1rem" }} />
+                  )}
+                  <ArrowNotes notes={notes} />
+                </>
+              ) : (
+                /* NON-AVG CARDS: keep the existing Response Distribution */
+                <FormField
+                  label={`Response Distribution — ${currentMeta.emoji} ${currentMeta.label} (n = ${currentMeta.n})`}
+                  last
+                >
                   <div style={{ marginTop: "0.5rem" }}>
                     {(q.opts || []).map((opt, i) => (
                       <DataRow key={i} label={opt} value={`${(currentData?.[i] ?? 0).toFixed(1)}%`}
@@ -2156,10 +2219,9 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
                         last={i === q.opts.length - 1} />
                     ))}
                   </div>
-                )}
-              </FormField>
-
-              <ArrowNotes notes={notes} />
+                  <ArrowNotes notes={notes} />
+                </FormField>
+              )}
             </div>
           </div>
         )}

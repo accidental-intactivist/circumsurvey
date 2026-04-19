@@ -15,6 +15,7 @@ import {
   DEMOGRAPHIC_OUTLIERS,
   DEMOGRAPHIC_META,
 } from "./demographics.js";
+import { VOICES_THEMES } from "./voices.js";
 
 // ── Type scale (bumped per Tone's feedback) ────────────────────
 const TYPE = {
@@ -1369,7 +1370,8 @@ function StackedBar({ q, width = 400, height = 280 }) {
   );
   if (pathways.length === 0) return <svg ref={ref} width={width} height={height} />;
 
-  const padLeft = 36, padRight = 8, padTop = 10, padBottom = 44;
+  // Bumped padTop to fit axis-title row; bumped padBottom so pathway labels don't clip
+  const padLeft = 36, padRight = 8, padTop = 34, padBottom = 62;
   const plotW = width - padLeft - padRight;
   const plotH = height - padTop - padBottom;
   const barW = Math.min(70, plotW / pathways.length * 0.72);
@@ -1392,6 +1394,16 @@ function StackedBar({ q, width = 400, height = 280 }) {
 
   return (
     <svg ref={ref} width={width} height={height} style={{ display: "block", maxWidth: "100%", height: "auto" }}>
+      {/* Axis title — makes clear these stacks are BELIEFS BY pathway */}
+      <text x={padLeft + plotW / 2} y={14} textAnchor="middle"
+        fontFamily="'Barlow Condensed', sans-serif"
+        fontSize="9.5" fontWeight="800" fill={C.gold}
+        letterSpacing="0.18em">
+        RESPONSES BY PATHWAY
+      </text>
+      <line x1={padLeft} x2={width - padRight} y1={22} y2={22}
+        stroke={C.gold} strokeWidth="0.5" opacity="0.35" />
+
       {/* Gridlines */}
       {[0, 25, 50, 75, 100].map(tick => {
         const y = padTop + plotH - (tick / 100) * plotH;
@@ -1414,6 +1426,7 @@ function StackedBar({ q, width = 400, height = 280 }) {
         const x = padLeft + gapW + si * (barW + gapW);
         const pathwayMeta = PATHWAY[stack.pathway];
         const pathwayC = pathColor(stack.pathway);
+        const labelX = x + barW / 2;
         return (
           <g key={stack.pathway}>
             {stack.segments.map(seg => {
@@ -1445,16 +1458,22 @@ function StackedBar({ q, width = 400, height = 280 }) {
               );
             })}
 
-            <text x={x + barW / 2} y={height - padBottom + 16} textAnchor="middle"
-              fontFamily="'Playfair Display', serif" fontSize="11" fontWeight="700" fill={pathwayC}>
+            {/* Pathway label group — emoji + name + n, more visually grounded */}
+            {/* Subtle connector line from bar base to label */}
+            <line x1={labelX} x2={labelX}
+              y1={padTop + plotH + 2} y2={padTop + plotH + 8}
+              stroke={pathwayC} strokeWidth="1.5" opacity="0.6" />
+            <text x={labelX} y={padTop + plotH + 22} textAnchor="middle"
+              fontFamily="'Playfair Display', serif" fontSize="13" fontWeight="700" fill={pathwayC}>
               {pathwayMeta.emoji}
             </text>
-            <text x={x + barW / 2} y={height - padBottom + 30} textAnchor="middle"
-              fontFamily="'Playfair Display', serif" fontSize="10" fontWeight="700" fill={C.paperInk}>
-              {pathwayMeta.short}
+            <text x={labelX} y={padTop + plotH + 38} textAnchor="middle"
+              fontFamily="'Barlow Condensed', sans-serif" fontSize="11" fontWeight="800"
+              fill={C.paperInk} letterSpacing="0.05em">
+              {pathwayMeta.short.toUpperCase()}
             </text>
-            <text x={x + barW / 2} y={height - padBottom + 40} textAnchor="middle"
-              fontFamily="'JetBrains Mono', monospace" fontSize="7.5" fontWeight="600" fill={C.paperDim}>
+            <text x={labelX} y={padTop + plotH + 51} textAnchor="middle"
+              fontFamily="'JetBrains Mono', monospace" fontSize="8" fontWeight="600" fill={C.paperDim}>
               n={pathwayMeta.n}
             </text>
           </g>
@@ -2303,6 +2322,558 @@ function MirrorCard({ pair }) {
         </div>
       )}
     </BureauCard>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIX PATHWAYS — the survey's full architecture
+// ═══════════════════════════════════════════════════════════════
+
+// Pathway metadata for the intro card and the voices section
+// This is a superset of PATHWAY in data.js — adds trans and intersex
+const PATHWAY_META_EXT = [
+  {
+    id: "intact", emoji: "🟢", label: "The Intact Pathway",
+    short: "Intact",
+    n: 140,
+    color: "#5b93c7",
+    description: "Men never circumcised. Their parents, for varied reasons, chose not to follow the default.",
+    featured_in: "chapters 1–7, plus demographics & voices",
+  },
+  {
+    id: "circumcised", emoji: "🔵", label: "The Circumcised Pathway",
+    short: "Circumcised",
+    n: 210,
+    color: "#d94f4f",
+    description: "Men who were circumcised, generally as infants, without their consent.",
+    featured_in: "chapters 1–7, plus demographics & voices",
+  },
+  {
+    id: "restoring", emoji: "🟣", label: "The Restoration Pathway",
+    short: "Restoring",
+    n: 109,
+    color: "#e8c868",
+    description: "Men actively restoring — or who have completed restoring — their foreskin.",
+    featured_in: "chapters on restoration & voices",
+  },
+  {
+    id: "observer", emoji: "🟠", label: "The Observer, Partner & Ally Pathway",
+    short: "Observer",
+    n: 37,
+    color: "#a0a0a0",
+    description: "Partners, parents of AMAB children, doctors, therapists, intactivists — witnesses without a personal anatomical stake.",
+    featured_in: "universal questions & voices",
+  },
+  {
+    id: "trans", emoji: "🔴", label: "The Trans · Gender-Affirming Surgery Pathway",
+    short: "Trans",
+    n: 0,
+    color: "#e85d50",
+    description: "Trans men reflecting on pre-surgery circumcision state and choices made during gender-affirming bottom surgery.",
+    featured_in: "awaiting first respondent",
+    dormant: true,
+  },
+  {
+    id: "intersex", emoji: "⚪", label: "The Intersex Pathway",
+    short: "Intersex",
+    n: 0,
+    color: "#b0a888",
+    description: "Intersex respondents connecting routine infant circumcision to the broader frame of non-consensual genital surgery (IGM).",
+    featured_in: "awaiting first respondent",
+    dormant: true,
+  },
+];
+
+function SixPathwaysCard() {
+  return (
+    <div id="section-six-pathways" style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title="The Six Pathways"
+        refText="SURVEY ARCHITECTURE · SIX BRANCHES, ONE INQUIRY"
+        stamp="Architecture"
+        stampColor={C.gold}
+        gradient={RAINBOW_GRAD}
+        cardLabel="HOW THE INQUIRY IS STRUCTURED"
+      >
+        <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1.75rem",
+          }}>
+            The survey isn't one questionnaire with a single audience — it's{" "}
+            <strong style={{ color: C.paperInk }}>six parallel branches</strong>,
+            each tailored to a distinct experience of this issue. Every branch asks
+            some of the same questions, but each also asks things only that
+            pathway can meaningfully answer.
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "1rem",
+          }}>
+            {PATHWAY_META_EXT.map(p => (
+              <div
+                key={p.id}
+                style={{
+                  background: p.dormant ? "rgba(200,195,185,0.15)" : "rgba(255,255,255,0.5)",
+                  border: `1px solid ${C.paperRuleDash}`,
+                  borderLeft: `4px solid ${p.color}`,
+                  borderRadius: 3,
+                  padding: "1.15rem 1.25rem",
+                  opacity: p.dormant ? 0.85 : 1,
+                }}
+              >
+                <div style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  gap: "0.55rem",
+                  marginBottom: "0.2rem",
+                }}>
+                  <span style={{ fontSize: "1.35rem" }}>{p.emoji}</span>
+                  <div style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                    color: C.paperInk,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.005em",
+                  }}>{p.short}</div>
+                  <div style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: "0.72rem",
+                    color: p.dormant ? C.paperDim : p.color,
+                    fontWeight: 700,
+                    marginLeft: "auto",
+                  }}>
+                    n = {p.n}
+                  </div>
+                </div>
+                <div style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: p.color,
+                  marginBottom: "0.55rem",
+                }}>{p.label}</div>
+                <div style={{
+                  fontFamily: "'Barlow', sans-serif",
+                  fontSize: "0.85rem",
+                  color: C.paperSubtle,
+                  lineHeight: 1.55,
+                  marginBottom: "0.65rem",
+                }}>{p.description}</div>
+                <div style={{
+                  fontFamily: "'Barlow Condensed', sans-serif",
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: C.paperDim,
+                  fontWeight: 600,
+                  fontStyle: p.dormant ? "italic" : "normal",
+                }}>
+                  {p.dormant ? "★ We're listening — if this is you, your survey is waiting" : `Featured ${p.featured_in}`}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop: "1.5rem",
+            padding: "1rem 1.25rem",
+            background: "rgba(91,147,199,0.06)",
+            borderLeft: `3px solid ${C.blue}`,
+            borderRadius: "0 4px 4px 0",
+            fontFamily: "'Playfair Display', serif",
+            fontStyle: "italic",
+            fontSize: "0.95rem",
+            color: C.paperSubtle,
+            lineHeight: 1.6,
+          }}>
+            The trans and intersex pathways exist in the survey because this
+            conversation is part of a larger coalition — genital autonomy is a
+            question about consent and bodily integrity that crosses identity
+            lines. Those pathways have no respondents yet. Their columns in
+            this report are quiet on purpose.{" "}
+            <a
+              href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: C.blue, fontWeight: 700, textDecoration: "underline" }}
+            >If you are a voice we haven't heard yet, the survey is here.</a>
+          </div>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VOICES SECTION — parallel pathway columns of curated quotes
+// ═══════════════════════════════════════════════════════════════
+
+// One quote, rendered consistently across all cards
+function VoiceQuote({ quote, pathwayColor, compact }) {
+  return (
+    <blockquote style={{
+      margin: 0,
+      padding: compact ? "0.7rem 0.85rem 0.7rem 1rem" : "0.85rem 1rem 0.9rem 1.15rem",
+      background: "rgba(255,255,255,0.55)",
+      borderLeft: `3px solid ${pathwayColor}`,
+      borderRadius: "0 3px 3px 0",
+      marginBottom: "0.65rem",
+    }}>
+      <div style={{
+        fontFamily: "'Playfair Display', serif",
+        fontSize: compact ? "0.88rem" : "0.93rem",
+        color: C.paperInk,
+        lineHeight: 1.55,
+        fontStyle: "italic",
+        marginBottom: "0.4rem",
+        whiteSpace: "pre-wrap",
+      }}>
+        &ldquo;{quote.text}&rdquo;
+      </div>
+      <div style={{
+        fontFamily: "'Barlow Condensed', sans-serif",
+        fontSize: "0.7rem",
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        color: C.paperDim,
+        fontWeight: 600,
+      }}>
+        {quote.age ? `Age ${quote.age}` : "Age —"}
+        {quote.generation && ` · ${quote.generation}`}
+      </div>
+    </blockquote>
+  );
+}
+
+// One pathway column within a theme card
+function PathwayColumn({ pathwayId, pathwayMeta, subtitle, quotes, expanded, onToggle }) {
+  const initiallyVisible = 4;
+  const visibleQuotes = expanded ? quotes : quotes.slice(0, initiallyVisible);
+  const hiddenCount = quotes.length - initiallyVisible;
+  const dormant = pathwayMeta.dormant;
+
+  return (
+    <div style={{
+      flex: 1,
+      minWidth: 260,
+      background: dormant ? "rgba(200,195,185,0.12)" : "rgba(255,255,255,0.25)",
+      border: `1px solid ${C.paperRuleDash}`,
+      borderTop: `4px solid ${pathwayMeta.color}`,
+      borderRadius: "3px",
+      padding: "1.1rem 1.15rem 1.25rem",
+      opacity: dormant ? 0.85 : 1,
+    }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: "0.45rem", marginBottom: "0.25rem" }}>
+        <span style={{ fontSize: "1.1rem" }}>{pathwayMeta.emoji}</span>
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 700,
+          fontSize: "1rem",
+          color: C.paperInk,
+          letterSpacing: "-0.005em",
+        }}>{pathwayMeta.short}</div>
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: "0.7rem",
+          color: C.paperDim,
+          marginLeft: "auto",
+          fontWeight: 700,
+        }}>
+          n = {pathwayMeta.n}
+        </div>
+      </div>
+      {subtitle && (
+        <div style={{
+          fontFamily: "'Barlow', sans-serif",
+          fontStyle: "italic",
+          fontSize: "0.78rem",
+          color: C.paperSubtle,
+          marginBottom: "0.85rem",
+          lineHeight: 1.4,
+        }}>{subtitle}</div>
+      )}
+      {dormant ? (
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontStyle: "italic",
+          fontSize: "0.9rem",
+          color: C.paperDim,
+          lineHeight: 1.55,
+          padding: "0.8rem 0",
+        }}>
+          No respondents yet. This pathway exists in the survey —{" "}
+          <a
+            href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: pathwayMeta.color, fontWeight: 700, textDecoration: "underline" }}
+          >your voice is welcome here</a>.
+        </div>
+      ) : quotes.length === 0 ? (
+        <div style={{
+          fontFamily: "'Barlow', sans-serif",
+          fontSize: "0.85rem",
+          color: C.paperDim,
+          fontStyle: "italic",
+          padding: "0.5rem 0",
+        }}>
+          This question was not asked of the {pathwayMeta.short.toLowerCase()} pathway.
+        </div>
+      ) : (
+        <>
+          {visibleQuotes.map(q => (
+            <VoiceQuote key={q.row_idx} quote={q} pathwayColor={pathwayMeta.color} compact />
+          ))}
+          {hiddenCount > 0 && (
+            <button
+              onClick={onToggle}
+              style={{
+                width: "100%",
+                marginTop: "0.35rem",
+                padding: "0.45rem 0.7rem",
+                background: "transparent",
+                border: `1px dashed ${pathwayMeta.color}`,
+                borderRadius: 3,
+                color: pathwayMeta.color,
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
+            >
+              {expanded ? "Show fewer" : `Read ${hiddenCount} more`}
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function VoicesThemeCard({ theme, pathways, universal }) {
+  const [expanded, setExpanded] = useState({});
+  const toggle = id => setExpanded(e => ({ ...e, [id]: !e[id] }));
+
+  return (
+    <div style={{ scrollMarginTop: "4rem" }}>
+      <BureauCard
+        title={theme.title}
+        refText={theme.desc.toUpperCase()}
+        stamp={universal ? "Universal" : "Voices"}
+        stampColor={C.gold}
+        gradient={RAINBOW_GRAD}
+        cardLabel={universal ? "ASKED OF EVERY PATHWAY" : "IN THEIR OWN WORDS"}
+      >
+        <div style={{ padding: "1.75rem 2rem 2rem" }}>
+          <div style={{
+            display: "flex",
+            gap: "1rem",
+            flexWrap: "wrap",
+          }}>
+            {pathways.map(p => {
+              const meta = PATHWAY_META_EXT.find(m => m.id === p.id);
+              const quotes = theme.pathways[p.id] || [];
+              return (
+                <PathwayColumn
+                  key={p.id}
+                  pathwayId={p.id}
+                  pathwayMeta={meta}
+                  subtitle={p.subtitle}
+                  quotes={quotes}
+                  expanded={!!expanded[p.id]}
+                  onToggle={() => toggle(p.id)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </BureauCard>
+    </div>
+  );
+}
+
+function VoicesSection() {
+  // Configuration: which themes render in which pathway order
+  // The parallel-pair themes show pathways that were asked the question
+  // The universal themes show all six
+  const cards = [
+    {
+      theme_id: "message_to_parents",
+      universal: false,
+      pathways: [
+        { id: "intact",      subtitle: VOICES_THEMES.message_to_parents.subtitle_intact || "What growing up intact was like" },
+        { id: "circumcised", subtitle: VOICES_THEMES.message_to_parents.subtitle_circumcised || "What I'd say to my parents" },
+      ],
+    },
+    {
+      theme_id: "advantages",
+      universal: false,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring", subtitle: "Motivations to restore" },
+      ],
+    },
+    {
+      theme_id: "drawbacks",
+      universal: false,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring", subtitle: "Before restoring, how did you feel?" },
+      ],
+    },
+    {
+      theme_id: "wish_understood",
+      universal: false,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring" },
+      ],
+    },
+    {
+      theme_id: "when_feelings",
+      universal: false,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+      ],
+    },
+    {
+      theme_id: "outlier_parents",
+      universal: false,
+      pathways: [
+        { id: "intact" },
+      ],
+    },
+    {
+      theme_id: "final_straw",
+      universal: false,
+      pathways: [
+        { id: "restoring" },
+      ],
+    },
+    {
+      theme_id: "stereotype_intact",
+      universal: true,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring" },
+        { id: "observer" },
+        { id: "trans" },
+        { id: "intersex" },
+      ],
+    },
+    {
+      theme_id: "stereotype_circ",
+      universal: true,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring" },
+        { id: "observer" },
+        { id: "trans" },
+        { id: "intersex" },
+      ],
+    },
+    {
+      theme_id: "most_important_info",
+      universal: true,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring" },
+        { id: "observer" },
+        { id: "trans" },
+        { id: "intersex" },
+      ],
+    },
+    {
+      theme_id: "trauma_metaphor",
+      universal: true,
+      pathways: [
+        { id: "intact" },
+        { id: "circumcised" },
+        { id: "restoring" },
+        { id: "observer" },
+        { id: "trans" },
+        { id: "intersex" },
+      ],
+    },
+  ];
+
+  return (
+    <div id="section-voices" style={{ scrollMarginTop: "4rem" }}>
+      {/* Voices section intro */}
+      <BureauCard
+        title="In Their Own Words · The Record"
+        refText="CURATED TESTIMONY ACROSS THE SIX PATHWAYS"
+        stamp="Voices"
+        stampColor={C.gold}
+        gradient={RAINBOW_GRAD}
+        cardLabel="NARRATIVE TESTIMONY"
+      >
+        <div style={{ padding: "1.75rem 2rem 1.75rem" }}>
+          <p style={{
+            fontFamily: "'Playfair Display', serif",
+            fontWeight: 400,
+            fontSize: TYPE.body,
+            color: C.paperSubtle,
+            lineHeight: 1.7,
+            marginBottom: "1rem",
+          }}>
+            Numbers summarize. They do not{" "}
+            <em>witness</em>. The survey's free-text questions collected
+            thousands of words of lived experience — sometimes tender,
+            sometimes furious, often both at once. The cards below juxtapose
+            responses to the same question across pathways, so the comparisons
+            the survey was designed to surface become visible on the page.
+          </p>
+          <p style={{
+            fontFamily: "'Barlow', sans-serif",
+            fontSize: "0.85rem",
+            color: C.paperDim,
+            fontStyle: "italic",
+            lineHeight: 1.6,
+          }}>
+            Each quote is shown with age and generation for context. Names and
+            identifying details have been removed. The full curation rationale
+            — including responses I chose not to surface and why — is available
+            in the site's documentation. Quotes are drawn directly from survey
+            responses with no edits to wording except for redaction of specific
+            identifying details.
+          </p>
+        </div>
+      </BureauCard>
+
+      {/* Render each theme card */}
+      {cards.map(cardSpec => {
+        const theme = VOICES_THEMES[cardSpec.theme_id];
+        if (!theme) return null;
+        return (
+          <VoicesThemeCard
+            key={cardSpec.theme_id}
+            theme={theme}
+            pathways={cardSpec.pathways}
+            universal={cardSpec.universal}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -3536,6 +4107,10 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
 
   const sections = [
     { cat: "Curated Findings", color: C.gold, items: CURATED_SECTIONS.map(s => ({ id: `section-${s.id}`, label: s.title, isSection: true })) },
+    { cat: "The Six Pathways", color: C.gold, items: [
+      { id: "section-six-pathways", label: "Survey Architecture", isSection: true },
+      { id: "section-voices",       label: "In Their Own Words — The Record", isSection: true },
+    ]},
     { cat: "Mirror Pairs",     color: C.red,    items: MIRROR_PAIRS.map(p => ({ id: p.id, label: p.title })) },
     { cat: "Observer Pathway", color: C.neutral, items: [{ id: "section-observer", label: `The Witnesses (n=${PATHWAY.observer.n})`, isSection: true }] },
     { cat: "★ Act on This",    color: C.red,    items: [
@@ -3777,10 +4352,13 @@ function getNarrativeSections() {
   return [
     { id: "hero", title: "The Inquiry" },
     { id: "letter", title: "Editor's Letter" },
+    { id: "section-six-pathways", title: "The Six Pathways" },
     ...CURATED_SECTIONS.map((s, i) => ({
       id: `section-${s.id}`,
       title: s.title,
     })),
+    { id: "section-voices", title: "In Their Own Words" },
+    { id: "section-demographics", title: "Demographics Explorer" },
     { id: "section-urgent-plaintiff", title: "★ Urgent Call" },
     { id: "section-partners", title: "Strategic Partners" },
     { id: "section-resources", title: "Resources" },
@@ -3990,6 +4568,9 @@ export default function App() {
               <EditorsLetter />
             </div>
 
+            {/* ═══════ SIX PATHWAYS — survey architecture, after the letter ═══════ */}
+            <SixPathwaysCard />
+
             {CURATED_SECTIONS.map((sec, si) => {
               const interstitial = SECTION_INTERSTITIALS[sec.id];
               const pullQuote = PULL_QUOTES[si % PULL_QUOTES.length];
@@ -4039,6 +4620,9 @@ export default function App() {
                 </div>
               );
             })}
+
+            {/* ═══════ VOICES — the narrative record, all six pathways ═══════ */}
+            <VoicesSection />
 
             {/* ═══════ DEMOGRAPHICS EXPLORER — the outlier-parents question ═══════ */}
             <DemographicsExplorerCard />

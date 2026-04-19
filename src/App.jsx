@@ -346,7 +346,7 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
       style={{
         background: PAPER_BG,
         border: `2.5px solid ${C.paperInk}`,
-        borderRadius: 3,
+        borderRadius: 10,
         position: "relative",
         overflow: "hidden",
         marginBottom: "3rem",
@@ -426,17 +426,17 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
           position: "absolute",
           bottom: 16,
           right: 20,
-          fontFamily: "'Barlow Condensed', sans-serif",
-          fontWeight: 700,
-          fontSize: "0.72rem",
+          fontFamily: "'Josefin Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "0.7rem",
           textTransform: "uppercase",
-          letterSpacing: "0.14em",
-          color: stampColor || C.red,
-          border: `2px solid ${stampColor || C.red}`,
-          padding: "0.25rem 0.55rem",
-          transform: "rotate(-4deg)",
-          opacity: 0.55,
-          borderRadius: 2,
+          letterSpacing: "0.16em",
+          color: C.orangeBright,
+          background: "rgba(240,152,96,0.08)",
+          border: `1.5px solid ${C.orangeBright}`,
+          padding: "0.3rem 0.85rem",
+          opacity: 0.85,
+          borderRadius: 100,
           zIndex: 2,
         }}>{stamp}</div>
       )}
@@ -2177,12 +2177,12 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
                       padding: "0 0 0.5rem 0",
                     }}>
                       <div style={{
-                        fontFamily: "'Barlow Condensed', sans-serif",
-                        fontWeight: 700,
-                        fontSize: "0.6rem",
+                        fontFamily: "'Josefin Sans', sans-serif",
+                        fontWeight: 600,
+                        fontSize: "0.62rem",
                         textTransform: "uppercase",
-                        letterSpacing: "0.14em",
-                        color: C.gold,
+                        letterSpacing: "0.16em",
+                        color: C.orangeBright,
                         marginBottom: "0.5rem",
                       }}>The Finding</div>
                       <div style={{
@@ -4568,7 +4568,7 @@ export default function App() {
           </a>
         </div>
 
-        <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", alignItems: "center" }}>
           {[
             { id: "curated",  l: "Curated" },
             { id: "all",      l: "All Questions" },
@@ -4588,6 +4588,46 @@ export default function App() {
               textTransform: "uppercase",
               letterSpacing: "0.08em",
             }}>{t.l}</button>
+          ))}
+
+          {/* Visual divider — these jump to sections within the curated view */}
+          <span style={{
+            width: 1, height: 16,
+            background: C.pageGhost,
+            margin: "0 0.2rem",
+          }} />
+
+          {/* Section jump pills — only visible/relevant in curated view */}
+          {[
+            { id: "section-voices",       l: "Voices",       icon: "✎" },
+            { id: "section-demographics", l: "Demographics", icon: "◈" },
+          ].map(s => (
+            <button key={s.id} onClick={() => {
+              setView("curated");
+              setActiveId(null);
+              setTimeout(() => {
+                const el = document.getElementById(s.id);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }, 100);
+            }} style={{
+              padding: "0.35rem 0.75rem",
+              borderRadius: 100,
+              cursor: "pointer",
+              fontFamily: "'Josefin Sans', sans-serif",
+              fontSize: "0.7rem",
+              fontWeight: 600,
+              border: `1px solid ${C.orangeBright}`,
+              background: "rgba(240,152,96,0.08)",
+              color: C.orangeBright,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}>
+              <span>{s.icon}</span>
+              {s.l}
+            </button>
           ))}
         </div>
 

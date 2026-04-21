@@ -1,0 +1,20 @@
+name = "circumsurvey-api"
+main = "src/index.js"
+compatibility_date = "2026-04-01"
+
+# D1 database binding — exposes env.DB inside the Worker
+[[d1_databases]]
+binding = "DB"
+database_name = "circumsurvey"
+database_id = "9018c642-05c8-4335-93cc-4282c5e7ff12"
+
+# Route: mount at /api/* on the findings subdomain
+# This makes the Worker respond to https://findings.circumsurvey.online/api/*
+# while the Pages site continues to serve everything else.
+[[routes]]
+pattern = "findings.circumsurvey.online/api/*"
+zone_name = "circumsurvey.online"
+
+# Observability
+[observability]
+enabled = true

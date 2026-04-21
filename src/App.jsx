@@ -683,7 +683,7 @@ function CinematicHero() {
             textTransform: "uppercase",
             letterSpacing: "0.3em",
             marginBottom: "0.5rem",
-          }}>An Anonymous Survey · Phase 1 Preliminary Findings</div>
+          }}>An Anonymous Survey · Findings Updated Live</div>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
             fontWeight: 800,
@@ -877,23 +877,27 @@ function EditorsLetter() {
         <div style={{
           display: "flex",
           alignItems: "flex-start",
-          gap: "1rem",
+          gap: "1.1rem",
           marginTop: "2rem",
           paddingTop: "1.5rem",
           borderTop: `1px dashed ${C.paperRuleDash}`,
         }}>
-          <svg width="150" height="48" viewBox="0 0 150 48" style={{ flexShrink: 0 }}>
-            <path
-              d="M 8,32 Q 14,18 22,26 T 35,28 M 30,24 Q 38,14 44,24 T 52,32 M 50,22 L 56,32 M 56,22 L 62,32 M 62,30 Q 68,22 74,28 T 82,30 M 82,22 Q 88,18 92,28 L 98,22 M 98,22 Q 104,32 110,24 T 120,28 M 118,26 Q 126,20 132,28 T 142,30"
-              stroke={C.paperInk}
-              strokeWidth="1.8"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity="0.85"
-            />
-          </svg>
-          <div>
+          <img
+            src="/tone-headshot.jpg"
+            alt="Tone Pettit"
+            width="76"
+            height="76"
+            style={{
+              width: 76,
+              height: 76,
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: `2px solid ${C.paperInk}`,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ flex: 1 }}>
             <div style={{
               fontFamily: "'Barlow', sans-serif",
               fontWeight: 700,
@@ -907,8 +911,15 @@ function EditorsLetter() {
               color: C.paperDim,
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              marginBottom: "0.35rem",
+              marginBottom: "0.25rem",
             }}>The Accidental Intactivist · Lead Researcher</div>
+            <div style={{
+              fontFamily: "'Barlow', sans-serif",
+              fontStyle: "italic",
+              fontSize: "0.74rem",
+              color: C.paperGhost,
+              marginBottom: "0.4rem",
+            }}>Born Washington State, 1977 · Based in Seattle</div>
             <div style={{
               fontFamily: "'Barlow', sans-serif",
               fontSize: "0.78rem",
@@ -920,6 +931,17 @@ function EditorsLetter() {
               <a href="https://reddit.com/u/c4charkey" target="_blank" rel="noreferrer" style={{ color: C.paperSubtle, textDecoration: "none" }}>reddit.com/u/c4charkey</a>
             </div>
           </div>
+          <svg width="120" height="42" viewBox="0 0 150 48" style={{ flexShrink: 0, marginTop: "0.4rem" }}>
+            <path
+              d="M 8,32 Q 14,18 22,26 T 35,28 M 30,24 Q 38,14 44,24 T 52,32 M 50,22 L 56,32 M 56,22 L 62,32 M 62,30 Q 68,22 74,28 T 82,30 M 82,22 Q 88,18 92,28 L 98,22 M 98,22 Q 104,32 110,24 T 120,28 M 118,26 Q 126,20 132,28 T 142,30"
+              stroke={C.paperInk}
+              strokeWidth="1.8"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.85"
+            />
+          </svg>
         </div>
       </div>
     </BureauCard>
@@ -4491,6 +4513,46 @@ export default function App() {
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [activeId, setActiveId] = useState(null);
   const [view, setView] = useState("curated");
+
+  // ── Live count: fetch from /api/count on mount, fall back silently ──
+  // If the Worker is up and D1 has data, this overrides the baked-in
+  // META.totalRespondents and META.pathwayCounts with live numbers.
+  // If it fails (Worker down, CORS issue, network error), the baked-in
+  // numbers stay. No loading spinner — the site renders immediately with
+  // static data and upgrades in place when live data arrives.
+  const [liveNonce, setLiveNonce] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 3000); // 3s timeout
+
+    fetch("/api/count", { signal: ctrl.signal })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        clearTimeout(timeoutId);
+        if (cancelled || !data || typeof data.total !== "number") return;
+        // Mutate META in place — safe because this is our own import
+        if (data.total > 0) META.totalRespondents = data.total;
+        if (data.by_pathway) {
+          Object.entries(data.by_pathway).forEach(([p, n]) => {
+            if (META.pathwayCounts[p] !== undefined) {
+              META.pathwayCounts[p] = n;
+            }
+            if (PATHWAY[p] !== undefined) {
+              PATHWAY[p].n = n;
+            }
+          });
+        }
+        // Trigger re-render so every META.totalRespondents site refreshes
+        setLiveNonce(n => n + 1);
+      })
+      .catch(() => {
+        // Silent fallback — static numbers already rendered
+        clearTimeout(timeoutId);
+      });
+
+    return () => { cancelled = true; ctrl.abort(); };
+  }, []);
 
   const narrativeSections = useMemo(() => getNarrativeSections(), []);
   const activeSection = useActiveSection(

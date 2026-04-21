@@ -1,0 +1,416 @@
+/**
+ * CircumSurvey API Worker
+ * ═══════════════════════════════════════════════════════════════
+ * Serves live D1-backed aggregate data at /api/* routes.
+ *
+ * Routes (mount this Worker at findings.circumsurvey.online/api/*):
+ *   GET /api/count                    — total + by-pathway counts
+ *   GET /api/questions                — all question metadata
+ *   GET /api/questions?tier=1,2       — filter by tier
+ *   GET /api/aggregate?q=<id>         — response distribution for one question
+ *   GET /api/aggregate?q=<id>&by=pathway
+ *   GET /api/aggregate?q=<id>&filter=religion.primary_tradition=christian
+ *
+ * Caching: short-TTL edge cache via Cache API so D1 reads stay cheap.
+ * CORS: permissive (same-origin in practice since mounted on the site domain).
+ * Error handling: every handler returns JSON; no HTML error pages leak.
+ */
+
+const CACHE_TTL_SECONDS = 60; // 1 minute — acceptable staleness for a live count
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function json(body, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
+      ...CORS_HEADERS,
+      ...extraHeaders,
+    },
+  });
+}
+
+function errorJson(message, status = 500) {
+  return json({ error: message }, status);
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (request.method !== "GET") {
+      return errorJson("Method not allowed", 405);
+    }
+
+    // Edge cache check
+    const cache = caches.default;
+    const cacheKey = new Request(url.toString(), request);
+    let response = await cache.match(cacheKey);
+    if (response) {
+      return response;
+    }
+
+    try {
+      // Support mounting at /api/* or at root — normalize path
+      const path = url.pathname.replace(/^\/api/, "") || "/";
+
+      if (path === "/" || path === "/count") {
+        response = await handleCount(env);
+      } else if (path === "/questions") {
+        response = await handleQuestions(env, url);
+      } else if (path === "/aggregate") {
+        response = await handleAggregate(env, url);
+      } else if (path === "/response-distribution") {
+        response = await handleResponseDistribution(env, url);
+      } else if (path === "/geo") {
+        response = await handleGeo(env, url);
+      } else if (path === "/health") {
+        response = json({ ok: true, ts: new Date().toISOString() });
+      } else {
+        response = errorJson(`Unknown endpoint: ${path}`, 404);
+      }
+
+      // Cache successful responses
+      if (response.status === 200) {
+        ctx.waitUntil(cache.put(cacheKey, response.clone()));
+      }
+
+      return response;
+    } catch (err) {
+      console.error("Worker error:", err);
+      return errorJson(`Internal error: ${err.message || String(err)}`, 500);
+    }
+  },
+};
+
+// ─────────────────────────────────────────────────────────────
+// Handlers
+// ─────────────────────────────────────────────────────────────
+
+async function handleCount(env) {
+  const { results: totalResult } = await env.DB.prepare(
+    `SELECT COUNT(*) AS total FROM respondents WHERE consent = 1`
+  ).all();
+  const total = totalResult[0]?.total ?? 0;
+
+  const { results: pathwayResults } = await env.DB.prepare(
+    `SELECT pathway, COUNT(*) AS n
+     FROM respondents
+     WHERE consent = 1
+     GROUP BY pathway`
+  ).all();
+
+  const by_pathway = {};
+  let classified = 0;
+  for (const row of pathwayResults) {
+    if (row.pathway) {
+      by_pathway[row.pathway] = row.n;
+      if (row.pathway !== "observer") classified += row.n;
+    } else {
+      by_pathway.unclassified = row.n;
+    }
+  }
+
+  return json({
+    total,
+    classified, // excludes observers and unclassified
+    by_pathway,
+    updated_at: new Date().toISOString(),
+  });
+}
+
+async function handleQuestions(env, url) {
+  const tierParam = url.searchParams.get("tier");
+  const sectionParam = url.searchParams.get("section");
+  const pathwayParam = url.searchParams.get("pathway");
+
+  let sql = `SELECT id, section, pathway, prompt, subtitle, type, opts_json, tier, col_idx
+             FROM questions WHERE 1=1`;
+  const bindings = [];
+
+  if (tierParam) {
+    const tiers = tierParam.split(",").map((t) => parseInt(t, 10)).filter((t) => !isNaN(t));
+    if (tiers.length > 0) {
+      sql += ` AND tier IN (${tiers.map(() => "?").join(",")})`;
+      bindings.push(...tiers);
+    }
+  }
+  if (sectionParam) {
+    sql += ` AND section = ?`;
+    bindings.push(sectionParam);
+  }
+  if (pathwayParam) {
+    sql += ` AND (pathway = ? OR pathway = 'all')`;
+    bindings.push(pathwayParam);
+  }
+  sql += ` ORDER BY col_idx`;
+
+  const stmt = bindings.length > 0 ? env.DB.prepare(sql).bind(...bindings) : env.DB.prepare(sql);
+  const { results } = await stmt.all();
+
+  // Parse opts_json into actual array
+  const parsed = results.map((r) => ({
+    ...r,
+    opts: r.opts_json ? tryParseJson(r.opts_json) : null,
+  }));
+
+  return json({ count: parsed.length, questions: parsed });
+}
+
+async function handleAggregate(env, url) {
+  const questionId = url.searchParams.get("q");
+  const by = url.searchParams.get("by") || "pathway";
+  const filter = url.searchParams.get("filter"); // e.g. "religion.primary_tradition=christian"
+
+  if (!questionId) {
+    return errorJson("Missing required parameter: q", 400);
+  }
+
+  // Build filter WHERE clause safely
+  let filterJoin = "";
+  let filterWhere = "";
+  const bindings = [questionId];
+
+  if (filter) {
+    const parsed = parseFilter(filter);
+    if (parsed) {
+      if (parsed.table === "religion") {
+        filterJoin = "LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+        filterWhere = `AND rg.${parsed.column} = ?`;
+        bindings.push(parsed.value);
+      } else if (parsed.table === "demographics") {
+        filterJoin = "LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
+        filterWhere = `AND d.${parsed.column} = ?`;
+        bindings.push(parsed.value);
+      }
+    }
+  }
+
+  // Choose GROUP BY source
+  let groupCol = "resp.pathway";
+  let groupJoin = "JOIN respondents resp ON resp.id = r.respondent_id";
+  if (by === "generation") {
+    groupJoin += " JOIN demographics dem ON dem.respondent_id = r.respondent_id";
+    groupCol = "dem.generation";
+  } else if (by === "religion") {
+    groupJoin += " LEFT JOIN religion rel ON rel.respondent_id = r.respondent_id";
+    groupCol = "rel.primary_tradition";
+  } else if (by === "country_born") {
+    groupJoin += " JOIN demographics dem ON dem.respondent_id = r.respondent_id";
+    groupCol = "dem.country_born";
+  }
+
+  // Average numeric + count + distribution all at once
+  const sql = `
+    SELECT ${groupCol} AS bucket,
+           COUNT(*) AS n,
+           AVG(r.value_num) AS avg_num,
+           r.value_text AS value_text
+    FROM responses r
+    ${groupJoin}
+    ${filterJoin}
+    WHERE r.question_id = ?
+    ${filterWhere}
+    GROUP BY bucket, r.value_text
+    ORDER BY bucket, n DESC
+  `;
+
+  const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+
+  // Reshape into { bucket: { n, avg, distribution: [{label, n}...] } }
+  const byBucket = {};
+  for (const row of results) {
+    const key = row.bucket ?? "unknown";
+    if (!byBucket[key]) {
+      byBucket[key] = { n: 0, sum_num: 0, count_num: 0, distribution: [] };
+    }
+    byBucket[key].n += row.n;
+    if (row.avg_num !== null) {
+      byBucket[key].sum_num += row.avg_num * row.n;
+      byBucket[key].count_num += row.n;
+    }
+    if (row.value_text) {
+      byBucket[key].distribution.push({ label: row.value_text, n: row.n });
+    }
+  }
+
+  // Finalize averages
+  const out = {};
+  for (const [k, v] of Object.entries(byBucket)) {
+    out[k] = {
+      n: v.n,
+      avg: v.count_num > 0 ? v.sum_num / v.count_num : null,
+      distribution: v.distribution,
+    };
+  }
+
+  return json({
+    question: questionId,
+    by,
+    filter: filter || null,
+    results: out,
+    updated_at: new Date().toISOString(),
+  });
+}
+
+async function handleResponseDistribution(env, url) {
+  const questionId = url.searchParams.get("q");
+  const pathway = url.searchParams.get("pathway");
+
+  if (!questionId) {
+    return errorJson("Missing required parameter: q", 400);
+  }
+
+  const bindings = [questionId];
+  let pathwayWhere = "";
+  if (pathway) {
+    pathwayWhere = "AND resp.pathway = ?";
+    bindings.push(pathway);
+  }
+
+  const sql = `
+    SELECT r.value_text AS label,
+           COUNT(*) AS n
+    FROM responses r
+    JOIN respondents resp ON resp.id = r.respondent_id
+    WHERE r.question_id = ?
+    ${pathwayWhere}
+    AND r.value_text IS NOT NULL
+    GROUP BY r.value_text
+    ORDER BY n DESC
+  `;
+
+  const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+
+  const total = results.reduce((s, r) => s + r.n, 0);
+  const distribution = results.map((r) => ({
+    label: r.label,
+    n: r.n,
+    pct: total > 0 ? (r.n / total) * 100 : 0,
+  }));
+
+  return json({
+    question: questionId,
+    pathway: pathway || "all",
+    n: total,
+    distribution,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Geographic aggregations for map visualizations
+// GET /api/geo?level=country              — respondents by country
+// GET /api/geo?level=us_state             — respondents by US state
+// GET /api/geo?level=canada_province      — respondents by Canadian province
+// GET /api/geo?level=us_state&by=pathway  — pathway breakdown per state
+// ─────────────────────────────────────────────────────────────
+async function handleGeo(env, url) {
+  const level = url.searchParams.get("level") || "country";
+  const by = url.searchParams.get("by"); // 'pathway' | null
+  const usingBorn = url.searchParams.get("when") !== "now"; // default: birth location
+
+  const colMap = {
+    country: usingBorn ? "country_born" : "country_now",
+    us_state: usingBorn ? "us_state_born" : "us_state_now",
+    canada_province: usingBorn ? "canada_province_born" : "canada_province_now",
+  };
+  const col = colMap[level];
+  if (!col) {
+    return errorJson(`Unknown level: ${level}. Use one of: country, us_state, canada_province`, 400);
+  }
+
+  let sql;
+  if (by === "pathway") {
+    // Returns one row per (location, pathway) — lets the UI build stacked bars or choropleth+breakdown
+    sql = `
+      SELECT d.${col} AS location,
+             resp.pathway AS pathway,
+             COUNT(*) AS n
+      FROM demographics d
+      JOIN respondents resp ON resp.id = d.respondent_id
+      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      GROUP BY d.${col}, resp.pathway
+      ORDER BY d.${col}, n DESC
+    `;
+  } else {
+    sql = `
+      SELECT d.${col} AS location,
+             COUNT(*) AS n
+      FROM demographics d
+      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      GROUP BY d.${col}
+      ORDER BY n DESC
+    `;
+  }
+
+  const { results } = await env.DB.prepare(sql).all();
+
+  // Reshape for client: if by=pathway, nest pathways under each location
+  if (by === "pathway") {
+    const byLoc = {};
+    for (const row of results) {
+      if (!byLoc[row.location]) {
+        byLoc[row.location] = { location: row.location, n: 0, by_pathway: {} };
+      }
+      byLoc[row.location].n += row.n;
+      byLoc[row.location].by_pathway[row.pathway || "unclassified"] = row.n;
+    }
+    return json({
+      level,
+      when: usingBorn ? "born" : "now",
+      by,
+      locations: Object.values(byLoc).sort((a, b) => b.n - a.n),
+    });
+  }
+
+  return json({
+    level,
+    when: usingBorn ? "born" : "now",
+    locations: results,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Utilities
+// ─────────────────────────────────────────────────────────────
+
+function tryParseJson(s) {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return null;
+  }
+}
+
+function parseFilter(filter) {
+  // Parse "table.column=value" — only allow whitelisted tables/columns
+  const match = filter.match(/^([a-z_]+)\.([a-z_]+)=(.+)$/);
+  if (!match) return null;
+  const [, table, column, value] = match;
+  const allowed = {
+    demographics: [
+      "country_born", "country_now", "us_state_born", "us_state_now",
+      "race_ethnicity", "age_bracket", "generation", "education",
+      "family_upbringing", "socioeconomic", "politics",
+      "sexuality", "gender", "sex_assigned",
+    ],
+    religion: [
+      "upbringing_significance", "primary_tradition", "cultural_background",
+      "christian_denomination", "jewish_denomination", "islamic_madhhab",
+    ],
+  };
+  if (!allowed[table] || !allowed[table].includes(column)) {
+    return null;
+  }
+  return { table, column, value };
+}

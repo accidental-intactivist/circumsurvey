@@ -33,3 +33,23 @@ v7.4-*.zip
 v7.4.1-drop/
 
 v7.4.1-*.zip
+
+v7.6.1-drop/
+
+v7.6.1-*.zip
+
+v7.6-drop/
+
+v7.6-*.zip
+
+worker/node_modules/
+
+worker/.wrangler/
+
+data/seed.sql
+
+data/meta_mapping.json
+
+data/responses.csv
+
+data/responses.xlsx

@@ -6,13 +6,13 @@
 
 const _data = {
   "meta": {
-    "totalRespondents": 496,
-    "phase": "Phase 1 · Preliminary Findings",
-    "lastUpdated": "2026-04-17",
+    "totalRespondents": 501,
+    "phase": "Live · Rolling Count",
+    "lastUpdated": "2026-04-21",
     "pathwayCounts": {
-      "intact": 140,
+      "intact": 142,
       "restoring": 109,
-      "circumcised": 210,
+      "circumcised": 213,
       "observer": 37
     }
   },

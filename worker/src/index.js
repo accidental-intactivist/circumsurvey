@@ -68,6 +68,8 @@ export default {
         response = await handleCount(env);
       } else if (path === "/questions") {
         response = await handleQuestions(env, url);
+      } else if (path === "/sections") {
+        response = await handleSections(env, url);
       } else if (path === "/aggregate") {
         response = await handleAggregate(env, url);
       } else if (path === "/response-distribution") {
@@ -133,6 +135,7 @@ async function handleQuestions(env, url) {
   const tierParam = url.searchParams.get("tier");
   const sectionParam = url.searchParams.get("section");
   const pathwayParam = url.searchParams.get("pathway");
+  const withCounts = url.searchParams.get("counts") === "1";
 
   let sql = `SELECT id, section, pathway, prompt, subtitle, type, opts_json, tier, col_idx
              FROM questions WHERE 1=1`;
@@ -153,18 +156,75 @@ async function handleQuestions(env, url) {
     sql += ` AND (pathway = ? OR pathway = 'all')`;
     bindings.push(pathwayParam);
   }
-  sql += ` ORDER BY col_idx`;
+  sql += ` ORDER BY tier, col_idx`;
 
   const stmt = bindings.length > 0 ? env.DB.prepare(sql).bind(...bindings) : env.DB.prepare(sql);
   const { results } = await stmt.all();
 
   // Parse opts_json into actual array
-  const parsed = results.map((r) => ({
+  let parsed = results.map((r) => ({
     ...r,
     opts: r.opts_json ? tryParseJson(r.opts_json) : null,
+    opts_json: undefined, // strip raw from response
   }));
 
+  // Optionally join in response counts per question
+  if (withCounts && parsed.length > 0) {
+    const ids = parsed.map(p => p.id);
+    // D1 prepare doesn't support dynamic IN-lists with array binding cleanly,
+    // so build a fresh placeholder list
+    const { results: countRows } = await env.DB.prepare(
+      `SELECT question_id, COUNT(*) AS n
+       FROM responses
+       WHERE question_id IN (${ids.map(() => "?").join(",")})
+       GROUP BY question_id`
+    ).bind(...ids).all();
+    const countMap = {};
+    for (const row of countRows) countMap[row.question_id] = row.n;
+    parsed = parsed.map(p => ({ ...p, n_responses: countMap[p.id] || 0 }));
+  }
+
   return json({ count: parsed.length, questions: parsed });
+}
+
+// ─────────────────────────────────────────────────────────────
+// /api/sections — return the list of sections with counts
+// Useful for Explore site navigation rails.
+// ─────────────────────────────────────────────────────────────
+async function handleSections(env, url) {
+  const pathwayParam = url.searchParams.get("pathway");
+
+  let sql = `SELECT section,
+                    pathway,
+                    COUNT(*) AS n,
+                    SUM(CASE WHEN tier = 1 THEN 1 ELSE 0 END) AS n_curated
+             FROM questions
+             WHERE section IS NOT NULL`;
+  const bindings = [];
+  if (pathwayParam) {
+    sql += ` AND (pathway = ? OR pathway = 'all')`;
+    bindings.push(pathwayParam);
+  }
+  sql += ` GROUP BY section, pathway ORDER BY section, pathway`;
+
+  const stmt = bindings.length > 0 ? env.DB.prepare(sql).bind(...bindings) : env.DB.prepare(sql);
+  const { results } = await stmt.all();
+
+  // Consolidate: one entry per section with nested pathway breakdown
+  const bySection = {};
+  for (const r of results) {
+    if (!bySection[r.section]) {
+      bySection[r.section] = { section: r.section, total: 0, curated: 0, by_pathway: {} };
+    }
+    bySection[r.section].total += r.n;
+    bySection[r.section].curated += r.n_curated;
+    bySection[r.section].by_pathway[r.pathway] = r.n;
+  }
+
+  return json({
+    count: Object.keys(bySection).length,
+    sections: Object.values(bySection).sort((a, b) => b.total - a.total),
+  });
 }
 
 async function handleAggregate(env, url) {

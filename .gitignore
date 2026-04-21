@@ -53,3 +53,11 @@ data/meta_mapping.json
 data/responses.csv
 
 data/responses.xlsx
+
+v7.7-drop/
+
+v7.7-*.zip
+
+data/questions_seed.sql
+
+data/questions_manifest.json

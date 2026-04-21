@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // v7 — "The Special Report" final form
-// Tomorrow's Bureau × Magazine-quality editorial motion
+// Editorial design language × Magazine-quality editorial motion
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
@@ -567,16 +567,17 @@ function RotatingFact() {
   );
 }
 
-// Ambient 496-dot artwork in background — "portrait of all respondents"
+// Ambient respondent-dot artwork in background — "portrait of every respondent"
+// Dot counts come from META.pathwayCounts (live-updated by useLiveMeta hook).
 function RespondentArtwork({ opacity = 0.25 }) {
   const dots = useMemo(() => {
-    // 140 intact, 210 circ, 109 restoring, 37 observer
+    const pc = META.pathwayCounts || {};
     const arr = [];
     const groups = [
-      { count: 140, color: PATH_COLORS.intact },
-      { count: 210, color: PATH_COLORS.circumcised },
-      { count: 109, color: PATH_COLORS.restoring },
-      { count: 37,  color: PATH_COLORS.observer },
+      { count: pc.intact      ?? 142, color: PATH_COLORS.intact },
+      { count: pc.circumcised ?? 213, color: PATH_COLORS.circumcised },
+      { count: pc.restoring   ?? 109, color: PATH_COLORS.restoring },
+      { count: pc.observer    ?? 37,  color: PATH_COLORS.observer },
     ];
     let i = 0;
     groups.forEach(g => {
@@ -663,7 +664,7 @@ function CinematicHero() {
           color: C.gold,
           textTransform: "uppercase",
           letterSpacing: "0.22em",
-        }}>Tomorrow's Bureau</span>
+        }}>Special Report</span>
         <span style={{ color: C.red, fontSize: "1rem" }}>★</span>
       </div>
 
@@ -867,8 +868,8 @@ function EditorsLetter() {
 
           <p style={{ marginBottom: "1rem" }}>
             What follows is a data instrument, not an advocacy document. I am not here to
-            tell you how to feel. I am here to share what <em>four hundred and ninety-six
-            people said when finally asked</em> — and to bring these essential stories into
+            tell you how to feel. I am here to share what <em>{respondentsAsProse(META.totalRespondents)} people
+            said when finally asked</em> — and to bring these essential stories into
             the light.
           </p>
         </div>
@@ -2415,11 +2416,13 @@ function MirrorCard({ pair }) {
 
 // Pathway metadata for the intro card and the voices section
 // This is a superset of PATHWAY in data.js — adds trans and intersex
+// n values pulled from META.pathwayCounts so they auto-update when
+// /api/count mutates META (see useLiveMeta hook in App).
 const PATHWAY_META_EXT = [
   {
     id: "intact", emoji: "🟢", label: "The Intact Pathway",
     short: "Intact",
-    n: 140,
+    get n() { return META.pathwayCounts?.intact ?? 142; },
     color: "#5b93c7",
     description: "Men never circumcised. Their parents, for varied reasons, chose not to follow the default.",
     featured_in: "chapters 1–7, plus demographics & voices",
@@ -2427,7 +2430,7 @@ const PATHWAY_META_EXT = [
   {
     id: "circumcised", emoji: "🔵", label: "The Circumcised Pathway",
     short: "Circumcised",
-    n: 210,
+    get n() { return META.pathwayCounts?.circumcised ?? 213; },
     color: "#d94f4f",
     description: "Men who were circumcised, generally as infants, without their consent.",
     featured_in: "chapters 1–7, plus demographics & voices",
@@ -2435,7 +2438,7 @@ const PATHWAY_META_EXT = [
   {
     id: "restoring", emoji: "🟣", label: "The Restoration Pathway",
     short: "Restoring",
-    n: 109,
+    get n() { return META.pathwayCounts?.restoring ?? 109; },
     color: "#e8c868",
     description: "Men actively restoring — or who have completed restoring — their foreskin.",
     featured_in: "chapters on restoration & voices",
@@ -2443,7 +2446,7 @@ const PATHWAY_META_EXT = [
   {
     id: "observer", emoji: "🟠", label: "The Observer, Partner & Ally Pathway",
     short: "Observer",
-    n: 37,
+    get n() { return META.pathwayCounts?.observer ?? 37; },
     color: "#a0a0a0",
     description: "Partners, parents of AMAB children, doctors, therapists, intactivists — witnesses without a personal anatomical stake.",
     featured_in: "universal questions & voices",
@@ -2451,7 +2454,7 @@ const PATHWAY_META_EXT = [
   {
     id: "trans", emoji: "🔴", label: "The Trans · Gender-Affirming Surgery Pathway",
     short: "Trans",
-    n: 0,
+    get n() { return META.pathwayCounts?.trans ?? 0; },
     color: "#e85d50",
     description: "Trans men reflecting on pre-surgery circumcision state and choices made during gender-affirming bottom surgery.",
     featured_in: "awaiting first respondent",
@@ -2460,7 +2463,7 @@ const PATHWAY_META_EXT = [
   {
     id: "intersex", emoji: "⚪", label: "The Intersex Pathway",
     short: "Intersex",
-    n: 0,
+    get n() { return META.pathwayCounts?.intersex ?? 0; },
     color: "#b0a888",
     description: "Intersex respondents connecting routine infant circumcision to the broader frame of non-consensual genital surgery (IGM).",
     featured_in: "awaiting first respondent",
@@ -4507,6 +4510,39 @@ const PULL_QUOTES = [
     pathway: "restoring",
   },
 ];
+
+// ── Respondent count → readable prose ─────────────────────────
+// Renders META.totalRespondents as natural English prose that stays
+// honest as the count grows (e.g. "over five hundred" at n=501,
+// "nearly six hundred" at n=580, "over one thousand" at n=1001+).
+// Rounds DOWN to nearest 100 so the phrase is always conservative.
+function respondentsAsProse(n) {
+  if (!n || n < 100) return "hundreds of";
+  if (n >= 1000) {
+    if (n < 1100) return "over one thousand";
+    return `over ${n.toLocaleString()}`;
+  }
+  const hundred = Math.floor(n / 100) * 100;
+  const words = {
+    100: "one hundred",
+    200: "two hundred",
+    300: "three hundred",
+    400: "four hundred",
+    500: "five hundred",
+    600: "six hundred",
+    700: "seven hundred",
+    800: "eight hundred",
+    900: "nine hundred",
+    1000: "one thousand",
+  };
+  const base = words[hundred] || `${hundred}`;
+  // If we're within 50 of the next hundred-boundary, say "nearly X" instead
+  const nextHundred = hundred + 100;
+  if (nextHundred - n <= 50 && words[nextHundred]) {
+    return `nearly ${words[nextHundred]}`;
+  }
+  return `over ${base}`;
+}
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

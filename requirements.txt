@@ -1,0 +1,13 @@
+# CircumSurvey Python dependencies
+#
+# Used by:
+#   - scripts/aggregate.py          → requests (fetches Google Sheets CSV in the refresh-data workflow)
+#   - scripts/load_d1.py            → openpyxl (reads the responses.xlsx for the D1 seed generation)
+#   - scripts/demographics.py       → stdlib only (csv, collections, json)
+#   - scripts/voices.py             → stdlib only
+#
+# The GitHub Actions refresh-data.yml workflow uses `actions/setup-python@v5`
+# with `cache: 'pip'` which expects this file to exist at the repo root.
+
+requests>=2.31.0
+openpyxl>=3.1.0

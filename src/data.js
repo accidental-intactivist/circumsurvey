@@ -76,8 +76,8 @@ const _data = {
       "#8bb8d9",
       "#e8c868",
       "#e8a44a",
-      "#d94f4f",
-      "#a0a0a0"
+      "#a0a0a0",
+      "#d94f4f"
     ],
     "data": {
       "intact": [
@@ -128,8 +128,8 @@ const _data = {
       "#8bb8d9",
       "#e8c868",
       "#e8a44a",
-      "#d94f4f",
-      "#a0a0a0"
+      "#a0a0a0",
+      "#d94f4f"
     ],
     "data": {
       "intact": [
@@ -248,11 +248,11 @@ const _data = {
       "Something is missing"
     ],
     "colors": [
-      "#d94f4f",
-      "#e8a44a",
-      "#e8c868",
+      "#5b93c7",
       "#8bb8d9",
-      "#5b93c7"
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f"
     ],
     "data": {
       "intact": [
@@ -350,12 +350,13 @@ const _data = {
       "1+ min"
     ],
     "colors": [
-      "#d94f4f",
       "#e8a44a",
       "#e8c868",
+      "#d94f4f",
       "#8bb8d9",
-      "#5b93c7",
-      "#a0a0a0"
+      "#a0a0a0",
+      "#a0a0a0",
+      "#5b93c7"
     ],
     "data": {
       "intact": [
@@ -405,10 +406,10 @@ const _data = {
     ],
     "colors": [
       "#5b93c7",
-      "#d94f4f",
+      "#a0a0a0",
       "#e8c868",
       "#e8a44a",
-      "#a0a0a0"
+      "#d94f4f"
     ],
     "data": {
       "intact": [
@@ -450,8 +451,8 @@ const _data = {
       "The Child's Right to Bodily Autonomy"
     ],
     "colors": [
-      "#5b93c7",
-      "#d94f4f"
+      "#d94f4f",
+      "#5b93c7"
     ],
     "data": {
       "intact": [
@@ -487,7 +488,7 @@ const _data = {
       "#d94f4f",
       "#a0a0a0",
       "#e8a44a",
-      "#8bb8d9",
+      "#e8c868",
       "#5b93c7"
     ],
     "data": {
@@ -516,11 +517,11 @@ const _data = {
       "Not sure"
     ],
     "colors": [
+      "#5b93c7",
       "#d94f4f",
       "#e8a44a",
       "#e8c868",
-      "#8bb8d9",
-      "#5b93c7"
+      "#a0a0a0"
     ],
     "data": {
       "intact": [
@@ -566,9 +567,9 @@ const _data = {
     ],
     "colors": [
       "#d94f4f",
-      "#e8a44a",
-      "#e8c868",
-      "#8bb8d9"
+      "#5b93c7",
+      "#a0a0a0",
+      "#a0a0a0"
     ],
     "data": {
       "circumcised": [
@@ -603,11 +604,11 @@ const _data = {
       "Unsure/never heard"
     ],
     "colors": [
-      "#d94f4f",
-      "#e8a44a",
-      "#e8c868",
-      "#8bb8d9",
       "#5b93c7",
+      "#8bb8d9",
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f",
       "#a0a0a0"
     ],
     "data": {
@@ -638,11 +639,11 @@ const _data = {
       "Strongly prefer circ"
     ],
     "colors": [
-      "#d94f4f",
-      "#e8a44a",
-      "#e8c868",
+      "#5b93c7",
       "#8bb8d9",
-      "#5b93c7"
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f"
     ],
     "data": {
       "intact": [
@@ -688,11 +689,11 @@ const _data = {
       "Unsure"
     ],
     "colors": [
-      "#d94f4f",
-      "#e8a44a",
-      "#e8c868",
       "#8bb8d9",
       "#5b93c7",
+      "#e8c868",
+      "#e8a44a",
+      "#d94f4f",
       "#a0a0a0"
     ],
     "data": {

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is the interactive data explorer for **The Accidental Intactivist's Inquiry** — an anonymous survey of 496+ respondents documenting the lived experiences of intact, circumcised, and restoring individuals, along with partners, parents, and healthcare professionals.
+This is the interactive data explorer for **The Accidental Intactivist's Inquiry** — an anonymous survey of 500+ respondents documenting the lived experiences of intact, circumcised, and restoring individuals, along with partners, parents, and healthcare professionals.
 
 **Author:** Tone Pettit (tone@circumsurvey.online), Seattle-based independent researcher
 **Sites:** circumsurvey.online (home), findings.circumsurvey.online (this project)

@@ -61,3 +61,16 @@ v7.7-*.zip
 data/questions_seed.sql
 
 data/questions_manifest.json
+
+# Wrangler local cache - contains auth context, NEVER commit
+.wrangler/
+**/.wrangler/
+
+# Build outputs and OS noise
+dist/
+node_modules/
+*.bak
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

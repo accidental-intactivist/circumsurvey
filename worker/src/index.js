@@ -169,18 +169,19 @@ async function handleQuestions(env, url) {
   }));
 
   // Optionally join in response counts per question
+  // IMPORTANT: Do NOT use IN (?,?,?...) — D1 has a 100-parameter bind limit.
+  // Instead fetch all response counts in one scan and filter in JS.
   if (withCounts && parsed.length > 0) {
-    const ids = parsed.map(p => p.id);
-    // D1 prepare doesn't support dynamic IN-lists with array binding cleanly,
-    // so build a fresh placeholder list
+    const idSet = new Set(parsed.map(p => p.id));
     const { results: countRows } = await env.DB.prepare(
       `SELECT question_id, COUNT(*) AS n
        FROM responses
-       WHERE question_id IN (${ids.map(() => "?").join(",")})
        GROUP BY question_id`
-    ).bind(...ids).all();
+    ).all();
     const countMap = {};
-    for (const row of countRows) countMap[row.question_id] = row.n;
+    for (const row of countRows) {
+      if (idSet.has(row.question_id)) countMap[row.question_id] = row.n;
+    }
     parsed = parsed.map(p => ({ ...p, n_responses: countMap[p.id] || 0 }));
   }
 

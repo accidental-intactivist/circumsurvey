@@ -237,26 +237,64 @@ export default function IndexPage({ routerState, navigate, updateState }) {
               onChange={(c) => updateState({ cohort: c })}
             />
 
-            {/* Link to Pathway Map page */}
-            <a
-              href="#/pathways"
-              style={{
-                padding: "0.55rem 0.7rem",
-                background: "rgba(212,160,48,0.08)",
-                border: `1px solid rgba(212,160,48,0.25)`,
-                borderRadius: 6,
-                color: C.goldBright,
+            {/* Tools Section */}
+            <div style={{ marginTop: "0.5rem" }}>
+              <div style={{
                 fontFamily: FONT.condensed,
-                fontWeight: 700,
-                fontSize: "0.72rem",
-                letterSpacing: "0.12em",
+                fontSize: "0.68rem",
+                letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                textAlign: "center",
-                transition: "all 0.15s",
-              }}
-            >
-              🗺 View Full Pathway Map →
-            </a>
+                color: C.goldBright,
+                fontWeight: 700,
+                marginBottom: "0.6rem",
+                paddingLeft: "0.2rem"
+              }}>Tools</div>
+              <a
+                href="#/tools/cultural-alignment"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(91,147,199,0.08)",
+                  border: `1px solid rgba(91,147,199,0.25)`,
+                  borderRadius: 6,
+                  color: C.blue,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                📊 Cultural Alignment Matrix →
+              </a>
+
+              {/* Link to Pathway Map page */}
+              <a
+                href="#/pathways"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(212,160,48,0.08)",
+                  border: `1px solid rgba(212,160,48,0.25)`,
+                  borderRadius: 6,
+                  color: C.goldBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                }}
+              >
+                🗺 View Full Pathway Map →
+              </a>
+            </div>
           </aside>
 
           {/* RIGHT: question list */}

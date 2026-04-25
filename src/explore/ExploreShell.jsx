@@ -13,6 +13,7 @@ import { useRouter } from "./lib/router";
 import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
 import QuestionPage from "./pages/QuestionPage";
+import CulturalAlignmentPage from "./pages/CulturalAlignmentPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -27,6 +28,8 @@ export default function ExploreShell() {
     page = <PathwayPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "question") {
     page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "cultural-alignment") {
+    page = <CulturalAlignmentPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   }

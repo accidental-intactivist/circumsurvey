@@ -21,6 +21,8 @@ function parseHash() {
   } else if (segments[0] === "q" && segments[1]) {
     route = "question";
     params.id = segments[1];
+  } else if (segments[0] === "tools" && segments[1] === "cultural-alignment") {
+    route = "cultural-alignment";
   }
 
   // Extract standardized query state
@@ -48,6 +50,7 @@ function serializeState(route, params, state) {
   let path;
   if (route === "pathways") path = "/pathways";
   else if (route === "question") path = `/q/${params.id}`;
+  else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
   else path = "/";
 
   const q = new URLSearchParams();

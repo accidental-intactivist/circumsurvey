@@ -1,4 +1,4 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // v7 — "The Special Report" final form
 // Editorial design language × Magazine-quality editorial motion
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -17,6 +17,7 @@ import {
   DEMOGRAPHIC_META,
 } from "../demographics.js";
 import { VOICES_THEMES } from "../voices.js";
+import CulturalAlignmentSection from "../components/CulturalAlignmentSection.jsx";
 
 // ── Type scale (bumped per Tone's feedback) ────────────────────
 const TYPE = {
@@ -4835,6 +4836,9 @@ export default function LandingPage() {
                       pathway={pullQuote.pathway}
                     />
                   )}
+
+                  {/* Cultural Alignment Matrix inserted after The Generational Break */}
+                  {sec.id === "generational" && <CulturalAlignmentSection />}
                 </div>
               );
             })}

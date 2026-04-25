@@ -171,26 +171,32 @@ async function handleSections(env, url) {
 async function handleAggregate(env, url) {
   const questionId = url.searchParams.get("q");
   const by = url.searchParams.get("by") || "pathway";
-  const filter = url.searchParams.get("filter");
+  const filters = url.searchParams.getAll("filter");
   if (!questionId) return errorJson("Missing required parameter: q", 400);
 
-  let filterJoin = "";
   let filterWhere = "";
+  let needsReligion = false;
+  let needsDemographics = false;
   const bindings = [questionId];
-  if (filter) {
+
+  for (const filter of filters) {
     const parsed = parseFilter(filter);
     if (parsed) {
       if (parsed.table === "religion") {
-        filterJoin = "LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
-        filterWhere = `AND rg.${parsed.column} = ?`;
+        needsReligion = true;
+        filterWhere += ` AND rg.${parsed.column} = ?`;
         bindings.push(parsed.value);
       } else if (parsed.table === "demographics") {
-        filterJoin = "LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
-        filterWhere = `AND d.${parsed.column} = ?`;
+        needsDemographics = true;
+        filterWhere += ` AND d.${parsed.column} = ?`;
         bindings.push(parsed.value);
       }
     }
   }
+
+  let filterJoin = "";
+  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+  if (needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
 
   let groupCol = "resp.pathway";
   let groupJoin = "JOIN respondents resp ON resp.id = r.respondent_id";
@@ -239,7 +245,7 @@ async function handleAggregate(env, url) {
     };
   }
   return json({
-    question: questionId, by, filter: filter || null,
+    question: questionId, by, filters,
     results: out, updated_at: new Date().toISOString()
   });
 }
@@ -248,7 +254,7 @@ async function handleAggregate(env, url) {
 async function handleResponseDistribution(env, url) {
   const questionId = url.searchParams.get("q");
   const pathway = url.searchParams.get("pathway");
-  const filter = url.searchParams.get("filter");
+  const filters = url.searchParams.getAll("filter");
 
   if (!questionId) return errorJson("Missing required parameter: q", 400);
 
@@ -260,22 +266,28 @@ async function handleResponseDistribution(env, url) {
   }
 
   // ── NEW: cohort filter support ─────────────────────────────────────────
-  let filterJoin = "";
   let filterWhere = "";
-  if (filter) {
+  let needsReligion = false;
+  let needsDemographics = false;
+
+  for (const filter of filters) {
     const parsed = parseFilter(filter);
     if (parsed) {
       if (parsed.table === "religion") {
-        filterJoin = "LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
-        filterWhere = `AND rg.${parsed.column} = ?`;
+        needsReligion = true;
+        filterWhere += ` AND rg.${parsed.column} = ?`;
         bindings.push(parsed.value);
       } else if (parsed.table === "demographics") {
-        filterJoin = "LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
-        filterWhere = `AND d.${parsed.column} = ?`;
+        needsDemographics = true;
+        filterWhere += ` AND d.${parsed.column} = ?`;
         bindings.push(parsed.value);
       }
     }
   }
+
+  let filterJoin = "";
+  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+  if (needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
 
   const sql = `
     SELECT r.value_text AS label, COUNT(*) AS n
@@ -298,7 +310,7 @@ async function handleResponseDistribution(env, url) {
   return json({
     question: questionId,
     pathway: pathway || "all",
-    filter: filter || null,
+    filters,
     n: total,
     distribution
   });

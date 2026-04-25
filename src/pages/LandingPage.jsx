@@ -166,7 +166,7 @@ function getCombinedData(q) {
 
 function refCode(q, n) {
   const base = `FORM CS-${(q.id || "").toUpperCase().substring(0, 10)}`;
-  return `${base} Â· PHASE 1 Â· N = ${n || META.totalRespondents}`;
+  return `${base} · PHASE 1 · N = ${n || META.totalRespondents}`;
 }
 
 // â”€â”€ Paper styles (with grain) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -324,7 +324,7 @@ function CircumSurveySeal({ size = 44, ringColor = C.red, starColor = C.gold }) 
           letterSpacing="0.5"
         >
           <textPath href={`#${pathId}`} startOffset="0%">
-            CIRCUMSURVEY Â· ONLINE Â·&#160;
+            CIRCUMSURVEY · ONLINE ·&#160;
           </textPath>
         </text>
       )}
@@ -685,7 +685,7 @@ function CinematicHero() {
             textTransform: "uppercase",
             letterSpacing: "0.3em",
             marginBottom: "0.5rem",
-          }}>An Anonymous Survey Â· Findings Updated Live</div>
+          }}>An Anonymous Survey · Findings Updated Live</div>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
             fontWeight: 800,
@@ -702,7 +702,7 @@ function CinematicHero() {
             fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
             color: C.pageMuted,
             marginTop: "0.4rem",
-          }}>{META.totalRespondents} Voices Â· Six Pathways Â· One Question, Asked Honestly</div>
+          }}>{META.totalRespondents} Voices · Six Pathways · One Question, Asked Honestly</div>
         </div>
       </Reveal>
 
@@ -757,7 +757,7 @@ function EditorsLetter() {
   return (
     <BureauCard
       title="A Note from the Lead Researcher"
-      refText="FROM THE DESK OF TONE PETTIT Â· LEAD RESEARCHER"
+      refText="FROM THE DESK OF TONE PETTIT · LEAD RESEARCHER"
       stamp="Letter"
       stampColor={C.gold}
       gradient={PATH_GRADIENTS.intact}
@@ -914,14 +914,14 @@ function EditorsLetter() {
               textTransform: "uppercase",
               letterSpacing: "0.1em",
               marginBottom: "0.25rem",
-            }}>The Accidental Intactivist Â· Lead Researcher</div>
+            }}>The Accidental Intactivist · Lead Researcher</div>
             <div style={{
               fontFamily: "'Barlow', sans-serif",
               fontStyle: "italic",
               fontSize: "0.74rem",
               color: C.paperGhost,
               marginBottom: "0.4rem",
-            }}>Born Washington State, 1977 Â· Based in Seattle</div>
+            }}>Born Washington State, 1977 · Based in Seattle</div>
             <div style={{
               fontFamily: "'Barlow', sans-serif",
               fontSize: "0.78rem",
@@ -929,7 +929,7 @@ function EditorsLetter() {
               lineHeight: 1.5,
             }}>
               <a href="mailto:tone@circumsurvey.online" style={{ color: C.paperSubtle, textDecoration: "none" }}>tone@circumsurvey.online</a>
-              {" Â· "}
+              {" · "}
               <a href="https://reddit.com/u/c4charkey" target="_blank" rel="noreferrer" style={{ color: C.paperSubtle, textDecoration: "none" }}>reddit.com/u/c4charkey</a>
             </div>
           </div>
@@ -1692,7 +1692,7 @@ function PleasureGapHero() {
   return (
     <BureauCard
       title="The Pleasure Gap â€” Direct Comparison"
-      refText={`FORM CS-PLEASURE Â· SEXUAL EXPERIENCE Â· N = ${META.totalRespondents}`}
+      refText={`FORM CS-PLEASURE · SEXUAL EXPERIENCE · N = ${META.totalRespondents}`}
       stamp="Featured"
       stampColor={C.gold}
       gradient={RAINBOW_GRAD}
@@ -1931,7 +1931,7 @@ function LanguageNote({ children }) {
       color: "#7a6a42",
       lineHeight: 1.55,
     }}>
-      <strong style={{ color: C.gold, fontWeight: 700, fontStyle: "normal", fontFamily: "'Barlow Condensed', sans-serif", textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.1em" }}>â˜… Language Note Â· </strong>{" "}
+      <strong style={{ color: C.gold, fontWeight: 700, fontStyle: "normal", fontFamily: "'Barlow Condensed', sans-serif", textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.1em" }}>â˜… Language Note · </strong>{" "}
       {children}
     </div>
   );
@@ -1995,7 +1995,7 @@ function QuoteGallery({ gallery }) {
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   color,
-                }}>â€” {meta.short} Pathway Â· {qt.context}</div>
+                }}>â€” {meta.short} Pathway · {qt.context}</div>
               </div>
             </Reveal>
           ));
@@ -2070,7 +2070,7 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
 
   const consensus = isConsensus(q);
   const gradient = questionGradient(q);
-  const cardLabelText = forceCardLabel || (consensus ? "CONSENSUS Â· ALL PATHWAYS AGREE" : null);
+  const cardLabelText = forceCardLabel || (consensus ? "CONSENSUS · ALL PATHWAYS AGREE" : null);
 
   const notes = [];
   if (!isAvg && q.data.intact && q.data.circumcised) {
@@ -2373,12 +2373,12 @@ function MirrorCard({ pair }) {
 
   return (
     <BureauCard
-      title={`Mirror Â· ${pair.title}`}
-      refText={`${leftMeta.short.toUpperCase()} â‡” ${rightMeta.short.toUpperCase()} Â· PARALLEL QUESTION PAIR`}
+      title={`Mirror · ${pair.title}`}
+      refText={`${leftMeta.short.toUpperCase()} â‡” ${rightMeta.short.toUpperCase()} · PARALLEL QUESTION PAIR`}
       stamp="Mirror"
       stampColor={C.gold}
       gradient={gradient}
-      cardLabel="MIRROR Â· PARALLEL QUESTION PAIR"
+      cardLabel="MIRROR · PARALLEL QUESTION PAIR"
     >
       {pair.note && <LanguageNote>{pair.note}</LanguageNote>}
       {pair.sub && (
@@ -2453,7 +2453,7 @@ const PATHWAY_META_EXT = [
     featured_in: "universal questions & voices",
   },
   {
-    id: "trans", emoji: "ðŸ”´", label: "The Trans Â· Gender-Affirming Surgery Pathway",
+    id: "trans", emoji: "ðŸ”´", label: "The Trans · Gender-Affirming Surgery Pathway",
     short: "Trans",
     get n() { return META.pathwayCounts?.trans ?? 0; },
     color: "#e85d50",
@@ -2477,7 +2477,7 @@ function SixPathwaysCard() {
     <div id="section-six-pathways" style={{ scrollMarginTop: "4rem" }}>
       <BureauCard
         title="The Six Pathways"
-        refText="SURVEY ARCHITECTURE Â· SIX BRANCHES, ONE INQUIRY"
+        refText="SURVEY ARCHITECTURE · SIX BRANCHES, ONE INQUIRY"
         stamp="Architecture"
         stampColor={C.gold}
         gradient={RAINBOW_GRAD}
@@ -2637,7 +2637,7 @@ function VoiceQuote({ quote, pathwayColor, compact }) {
         fontWeight: 600,
       }}>
         {quote.age ? `Age ${quote.age}` : "Age â€”"}
-        {quote.generation && ` Â· ${quote.generation}`}
+        {quote.generation && ` · ${quote.generation}`}
       </div>
     </blockquote>
   );
@@ -2908,7 +2908,7 @@ function VoicesSection() {
     <div id="section-voices" style={{ scrollMarginTop: "4rem" }}>
       {/* Voices section intro */}
       <BureauCard
-        title="In Their Own Words Â· The Record"
+        title="In Their Own Words · The Record"
         refText="CURATED TESTIMONY ACROSS THE SIX PATHWAYS"
         stamp="Voices"
         stampColor={C.gold}
@@ -3000,11 +3000,11 @@ function DemographicsExplorerCard() {
     <div id="section-demographics" style={{ scrollMarginTop: "4rem" }}>
       <BureauCard
         title="Demographics Explorer"
-        refText="CROSS-TAB Â· WHO CIRCS AND WHO DOESN'T"
+        refText="CROSS-TAB · WHO CIRCS AND WHO DOESN'T"
         stamp="Explorer"
         stampColor={C.gold}
         gradient={`linear-gradient(90deg, ${C.blue}, ${C.gold}, ${C.red})`}
-        cardLabel="INTERACTIVE Â· CIRCUMCISION OUTCOMES BY DEMOGRAPHIC"
+        cardLabel="INTERACTIVE · CIRCUMCISION OUTCOMES BY DEMOGRAPHIC"
       >
         <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
 
@@ -3060,9 +3060,9 @@ function DemographicsExplorerCard() {
               color: C.paperInk,
             }}>
               <span style={{ color: colorIntact }}>{baseRate.pct_intact}% intact</span>
-              {" Â· "}
+              {" · "}
               <span style={{ color: colorCirc }}>{baseRate.pct_circumcised}% circumcised</span>
-              {" Â· "}
+              {" · "}
               <span style={{ color: C.paperDim }}>n = {baseRate.total}</span>
             </div>
             <div style={{
@@ -3217,9 +3217,9 @@ function DemographicsExplorerCard() {
                       whiteSpace: "nowrap",
                     }}>
                       {cat.pct_intact}% intact
-                      {" Â· "}
+                      {" · "}
                       n = {cat.total}
-                      {" Â· "}
+                      {" · "}
                       <span style={{
                         color: deviation > 3 ? colorIntact : deviation < -3 ? colorCirc : C.paperDim,
                         fontWeight: 700,
@@ -3378,7 +3378,7 @@ function DemographicsExplorerCard() {
                       textTransform: "uppercase",
                       color: C.paperDim,
                       marginBottom: "0.15rem",
-                    }}>{o.dimension_label}  Â·  Spread {o.spread}pp</div>
+                    }}>{o.dimension_label}  ·  Spread {o.spread}pp</div>
                     <div style={{
                       fontFamily: "'Playfair Display', serif",
                       fontWeight: 400,
@@ -3472,7 +3472,7 @@ function UrgentPlaintiffCard() {
     <div id="section-urgent-plaintiff" style={{ scrollMarginTop: "4rem" }}>
       <BureauCard
         title="Urgent: Washington State Plaintiff Search"
-        refText="EQUAL PROTECTION LAWSUIT Â· TIME-SENSITIVE"
+        refText="EQUAL PROTECTION LAWSUIT · TIME-SENSITIVE"
         stamp="Urgent"
         stampColor={C.red}
         gradient={`linear-gradient(90deg, ${C.red}, #e85d50, #e8a44a)`}
@@ -3493,7 +3493,7 @@ function UrgentPlaintiffCard() {
             borderRadius: 2,
             marginBottom: "0.9rem",
             textTransform: "uppercase",
-          }}>â˜… Urgent Â· Time-Sensitive</div>
+          }}>â˜… Urgent · Time-Sensitive</div>
 
           <h2 style={{
             fontFamily: "'Playfair Display', serif",
@@ -3788,7 +3788,7 @@ function ResourcesCard() {
   const resources = [
     {
       title: "The Accidental Intactivist Manifesto",
-      sub: "125 pages Â· PDF",
+      sub: "125 pages · PDF",
       blurb: "The foundational document behind this research. Personal insight, scientific inquiry, and cultural critique â€” the history, ethics, anatomy, and emotional truth.",
       url: "https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing",
       color: C.red,
@@ -3796,7 +3796,7 @@ function ResourcesCard() {
     },
     {
       title: "2-Page Survey Overview",
-      sub: "Methodology prospectus Â· PDF",
+      sub: "Methodology prospectus · PDF",
       blurb: "Goals, methodology, ethical framework. For sharing with organizations, researchers, journalists, and anyone interested in the research design.",
       url: "https://drive.google.com/file/d/1TzhNbktVBKKzh6JGaKti2G0hxyUOb_ol/view?usp=drive_link",
       color: C.blue,
@@ -3812,7 +3812,7 @@ function ResourcesCard() {
     },
     {
       title: "The Accidental Intactivist on Substack",
-      sub: "Ongoing analysis Â· Essays Â· Preliminary findings",
+      sub: "Ongoing analysis · Essays · Preliminary findings",
       blurb: "Follow along for deeper analysis, survey updates, and related essays. Paid subscription directly funds the continuation of this work.",
       url: "https://theaccidentalintactivist.substack.com/",
       color: C.green,
@@ -3823,8 +3823,8 @@ function ResourcesCard() {
   return (
     <div id="section-resources" style={{ scrollMarginTop: "4rem" }}>
       <BureauCard
-        title="Dig Deeper Â· Resources & Downloads"
-        refText="MANIFESTO Â· METHODOLOGY Â· SHAREABLES"
+        title="Dig Deeper · Resources & Downloads"
+        refText="MANIFESTO · METHODOLOGY · SHAREABLES"
         stamp="Library"
         stampColor={C.gold}
         gradient={PATH_GRADIENTS.restoring}
@@ -3968,7 +3968,7 @@ function GetInvolvedCard() {
     <div id="section-get-involved" style={{ scrollMarginTop: "4rem" }}>
       <BureauCard
         title="Four Ways to Get Involved"
-        refText="AMBASSADOR Â· VOLUNTEER Â· SUPPORTER Â· COLLABORATOR"
+        refText="AMBASSADOR · VOLUNTEER · SUPPORTER · COLLABORATOR"
         stamp="Action"
         stampColor={C.gold}
         gradient={RAINBOW_GRAD}
@@ -4153,8 +4153,8 @@ function ObserverSection() {
   return (
     <div>
       <BureauCard
-        title="The Witnesses Â· Observer Pathway"
-        refText={`FORM CS-OBS Â· N = ${PATHWAY.observer.n}`}
+        title="The Witnesses · Observer Pathway"
+        refText={`FORM CS-OBS · N = ${PATHWAY.observer.n}`}
         stamp="Witnesses"
         stampColor={C.gold}
         gradient={PATH_GRADIENTS.observer}
@@ -4328,7 +4328,7 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
           textAlign: "center",
           letterSpacing: "0.05em",
         }}>
-          â˜… {ALL_QUESTIONS.length + MIRROR_PAIRS.length} items Â· {META.totalRespondents} respondents
+          â˜… {ALL_QUESTIONS.length + MIRROR_PAIRS.length} items · {META.totalRespondents} respondents
         </div>
       </div>
       {open && <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 150, backdropFilter: "blur(2px)" }} />}
@@ -4936,22 +4936,22 @@ export default function LandingPage() {
           color: C.gold,
           marginBottom: "0.5rem",
         }}>The Accidental Intactivist's Inquiry</div>
-        <a href="https://circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>circumsurvey.online</a> Â· {META.phase} Â· n = {META.totalRespondents}
-        <br />By Tone Pettit Â· <a href="mailto:tone@circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>tone@circumsurvey.online</a>
+        <a href="https://circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>circumsurvey.online</a> · {META.phase} · n = {META.totalRespondents}
+        <br />By Tone Pettit · <a href="mailto:tone@circumsurvey.online" style={{ color: C.gold, textDecoration: "none" }}>tone@circumsurvey.online</a>
         <br />
         <Link to="/about" style={{ color: C.pageMuted, textDecoration: "none" }}>Methodology</Link>
-        {" Â· "}
+        {" · "}
         <Link to="/faq" style={{ color: C.pageMuted, textDecoration: "none" }}>FAQ</Link>
-        {" Â· "}
+        {" · "}
         <a href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Substack</a>
-        {" Â· "}
+        {" · "}
         <a href="https://coff.ee/accidental.intactivist" target="_blank" rel="noreferrer" style={{ color: C.pageMuted, textDecoration: "none" }}>Support</a>
         <br />
         <span style={{ fontSize: "0.75rem", color: C.pageMuted }}>
           Strategic partners: <a href="https://doctorsopposingcircumcision.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>DOC</a>
-          {" Â· "}<a href="https://intactglobal.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>Intact Global</a>
-          {" Â· "}<a href="https://galdef.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>GALDEF</a>
-          {" Â· "}<a href="https://wibm.us" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>WIBM</a>
+          {" · "}<a href="https://intactglobal.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>Intact Global</a>
+          {" · "}<a href="https://galdef.org" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>GALDEF</a>
+          {" · "}<a href="https://wibm.us" target="_blank" rel="noreferrer" style={{ color: C.pageMuted }}>WIBM</a>
         </span>
         <br />
         <span style={{ fontSize: "0.72rem", color: C.red, fontWeight: 600, letterSpacing: "0.02em" }}>

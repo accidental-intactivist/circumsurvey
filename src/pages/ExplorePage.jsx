@@ -1,6 +1,6 @@
 ﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// v7 â€” "The Special Report" final form
-// Editorial design language Ã— Magazine-quality editorial motion
+// v7 — "The Special Report" final form
+// Editorial design language × Magazine-quality editorial motion
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
@@ -18,7 +18,7 @@ import {
 } from "../demographics.js";
 import { VOICES_THEMES } from "../voices.js";
 
-// â”€â”€ Type scale (bumped per Tone's feedback) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Type scale (bumped per Tone's feedback) ────────────────────
 const TYPE = {
   // Display
   mastheadHero:    "clamp(3rem, 8vw, 6rem)",      // landing HUGE
@@ -36,11 +36,11 @@ const TYPE = {
   mono:            "clamp(0.62rem, 0.75vw, 0.72rem)",
 };
 
-// â”€â”€ Paper-grain SVG (encoded as data URI, under 1KB) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Paper-grain SVG (encoded as data URI, under 1KB) ───────────
 // Subtle fractal noise filter applied with low opacity
 const GRAIN_SVG = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.17 0 0 0 0 0.15 0 0 0 0 0.13 0 0 0 0.085 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>`;
 
-// â”€â”€ Color system â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Color system ───────────────────────────────────────────────
 const C = {
   bg:        "#0a0a0c",
   bgSoft:    "#131316",
@@ -86,7 +86,7 @@ const C = {
   neutral:      "#a0a0a0",
 };
 
-// â”€â”€ Community-validated pathway palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Community-validated pathway palette ────────────────────────
 const PATH_COLORS = {
   intact:      "#5b93c7",
   circumcised: "#d94f4f",
@@ -106,7 +106,7 @@ const PATH_BG = {
 const pathColor = (p) => PATH_COLORS[p] || C.neutral;
 const pathBg    = (p) => PATH_BG[p]     || "rgba(0,0,0,0.05)";
 
-// â”€â”€ Gradient grammar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Gradient grammar ───────────────────────────────────────────
 const PATH_GRADIENTS = {
   intact:      "linear-gradient(90deg, #5b93c7, #68b878)",
   circumcised: "linear-gradient(90deg, #d94f4f, #e8a44a)",
@@ -122,7 +122,7 @@ function mirrorGradient(l, r) {
   return `linear-gradient(90deg, ${lc} 0%, ${lc} 40%, ${rc} 60%, ${rc} 100%)`;
 }
 
-// â”€â”€ Consensus detection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Consensus detection ────────────────────────────────────────
 function isConsensus(q) {
   if (!q.data || q.type === "avg") return false;
   const pathways = Object.keys(q.data).filter(p => Array.isArray(q.data[p]));
@@ -153,7 +153,7 @@ const ALL_CIRC_META = {
   label: "All Circumcised Respondents",
   short: "All Circ.",
   n: (PATHWAY.circumcised?.n || 0) + (PATHWAY.restoring?.n || 0),
-  emoji: "ðŸ”µðŸŸ£",
+  emoji: "🔵🟣",
 };
 
 function getCombinedData(q) {
@@ -169,10 +169,10 @@ function refCode(q, n) {
   return `${base} · PHASE 1 · N = ${n || META.totalRespondents}`;
 }
 
-// â”€â”€ Paper styles (with grain) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Paper styles (with grain) ──────────────────────────────────
 const PAPER_BG = `url("${GRAIN_SVG}"), linear-gradient(180deg, ${C.paper} 0%, ${C.paperWarm} 100%)`;
 
-// â”€â”€ IntersectionObserver hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── IntersectionObserver hooks ────────────────────────────────
 function useReveal(options = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -183,7 +183,7 @@ function useReveal(options = {}) {
     const attach = () => {
       el = ref.current;
       if (!el) return false;
-      // Check if already in viewport NOW â€” for elements that mount already visible
+      // Check if already in viewport NOW — for elements that mount already visible
       const rect = el.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
       if (rect.top < vh * 1.5 && rect.bottom > -vh * 0.5) {
@@ -204,7 +204,7 @@ function useReveal(options = {}) {
       // Retry on next frame
       const raf = requestAnimationFrame(() => {
         const r2 = attach();
-        if (r2 === false) setVisible(true); // Give up gracefully â€” just show it
+        if (r2 === false) setVisible(true); // Give up gracefully — just show it
       });
       return () => cancelAnimationFrame(raf);
     }
@@ -225,7 +225,7 @@ function Reveal({ children, delay = 0, style, className }) {
   );
 }
 
-// Animated tween 0 â†’ 1 over duration ms once visible
+// Animated tween 0 → 1 over duration ms once visible
 function useTween(visible, duration = 800, ease = (p) => 1 - Math.pow(1 - p, 3)) {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -254,12 +254,12 @@ function CountUp({ to, suffix = "", duration = 1600, visible = true, decimals = 
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// CIRCUMSURVEY SEAL â€” custom SVG badge
+// CIRCUMSURVEY SEAL — custom SVG badge
 // Inspired by your Data Studio donut's red star logo
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function CircumSurveySeal({ size = 44, ringColor = C.red, starColor = C.gold }) {
-  // At large sizes (footer), use the real CircumSurvey logo PNG â€”
+  // At large sizes (footer), use the real CircumSurvey logo PNG —
   // it has "CIRCUM SURVEY. ONLINE" text and the character you expect.
   // At small sizes (nav, 28px), the PNG's detail gets lost, so we fall
   // back to a stylized SVG that reads better as a tiny badge.
@@ -280,7 +280,7 @@ function CircumSurveySeal({ size = 44, ringColor = C.red, starColor = C.gold }) 
     );
   }
 
-  // Stylized small-size mark â€” big star, red disc, text arc only if it fits
+  // Stylized small-size mark — big star, red disc, text arc only if it fits
   const r = size / 2;
   const cx = r, cy = r;
   const showText = size >= 40;
@@ -395,7 +395,7 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
           alignItems: "center",
           gap: "0.5rem",
         }}>
-          <span style={{ color: C.red, fontSize: "1.05em" }}>â˜…</span>
+          <span style={{ color: C.red, fontSize: "1.05em" }}>★</span>
           {title}
           {cardLabel && (
             <span style={{
@@ -446,16 +446,16 @@ function BureauCard({ title, refText, stamp, stampColor, gradient, cardLabel, ch
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// THE CINEMATIC HERO â€” full-viewport data-driven entry
+// THE CINEMATIC HERO — full-viewport data-driven entry
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// Data poetry â€” devastating numbers that cycle
+// Data poetry — devastating numbers that cycle
 const HERO_FACTS = [
   {
     big:   "96%",
     line1: "prioritize the child's right",
     line2: "to bodily autonomy.",
-    context: "Across every pathway â€” intact, circumcised, restoring, observer.",
+    context: "Across every pathway — intact, circumcised, restoring, observer.",
     color: C.blue,
   },
   {
@@ -568,7 +568,7 @@ function RotatingFact() {
   );
 }
 
-// Ambient respondent-dot artwork in background â€” "portrait of every respondent"
+// Ambient respondent-dot artwork in background — "portrait of every respondent"
 // Dot counts come from META.pathwayCounts (live-updated by useLiveMeta hook).
 function RespondentArtwork({ opacity = 0.25 }) {
   const dots = useMemo(() => {
@@ -644,7 +644,7 @@ function CinematicHero() {
         background: RAINBOW_GRAD,
       }} />
 
-      {/* Top eyebrow â€” publication masthead */}
+      {/* Top eyebrow — publication masthead */}
       <div style={{
         position: "absolute",
         top: "1.5rem",
@@ -657,7 +657,7 @@ function CinematicHero() {
         gap: "0.75rem",
         zIndex: 5,
       }}>
-        <span style={{ color: C.red, fontSize: "1rem" }}>â˜…</span>
+        <span style={{ color: C.red, fontSize: "1rem" }}>★</span>
         <span style={{
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 700,
@@ -666,10 +666,10 @@ function CinematicHero() {
           textTransform: "uppercase",
           letterSpacing: "0.22em",
         }}>Special Report</span>
-        <span style={{ color: C.red, fontSize: "1rem" }}>â˜…</span>
+        <span style={{ color: C.red, fontSize: "1rem" }}>★</span>
       </div>
 
-      {/* Publication title â€” "The Accidental Intactivist's Inquiry" in big */}
+      {/* Publication title — "The Accidental Intactivist's Inquiry" in big */}
       <Reveal delay={150}>
         <div style={{
           textAlign: "center",
@@ -750,7 +750,7 @@ function CinematicHero() {
 
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// EDITOR'S LETTER â€” Tone's first-person introduction as card #1
+// EDITOR'S LETTER — Tone's first-person introduction as card #1
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function EditorsLetter() {
@@ -796,10 +796,10 @@ function EditorsLetter() {
             born from a lifetime of observation and a single, persistent question.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            By a conscious choice of my parents in the 1970s, I grew up intact â€” an outlier
+            By a conscious choice of my parents in the 1970s, I grew up intact — an outlier
             in a US culture where routine infant circumcision was the unquestioned norm. I
             became an <em>accidental witness</em> to a profound alteration that nearly all
-            my friends, my partners, and men in the media had undergone â€” something my
+            my friends, my partners, and men in the media had undergone — something my
             parents had simply dismissed as unnecessary.
           </p>
 
@@ -822,7 +822,7 @@ function EditorsLetter() {
 
           <p style={{ marginBottom: "1rem" }}>
             Everyone seems to have an opinion about whether infant circumcision should or
-            shouldn't be done â€” but I almost never hear adults talking honestly about their
+            shouldn't be done — but I almost never hear adults talking honestly about their
             own lived experience with their own anatomy.
           </p>
           <p style={{ marginBottom: "1rem" }}>
@@ -839,7 +839,7 @@ function EditorsLetter() {
             letterSpacing: "-0.01em",
             marginTop: "2rem",
             marginBottom: "0.75rem",
-          }}>So â€” what did we find?</h3>
+          }}>So — what did we find?</h3>
 
           <p style={{ marginBottom: "1rem" }}>
             It turns out this is a conversation a lot of people have been waiting to have.
@@ -850,7 +850,7 @@ function EditorsLetter() {
           <p style={{ marginBottom: "1rem" }}>
             <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of every pathway agrees</strong> the
             child should have the right to decide. Intact, circumcised, restoring, observer
-            â€” no other question in this survey produces a consensus that strong. It is the
+            — no other question in this survey produces a consensus that strong. It is the
             rare finding where everyone quietly agrees on the ethics, and yet the default
             practice continues anyway.
           </p>
@@ -863,19 +863,19 @@ function EditorsLetter() {
           <p style={{ marginBottom: "1.5rem" }}>
             <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>Only 2.7% of circumcised respondents</strong>{" "}
             say the decision was presented to their parents as a neutral choice with pros
-            and cons. Nearly half â€” 47.6% â€” describe it as "routine or automatic." That is
+            and cons. Nearly half — 47.6% — describe it as "routine or automatic." That is
             not informed consent. That is cultural autopilot.
           </p>
 
           <p style={{ marginBottom: "1rem" }}>
             What follows is a data instrument, not an advocacy document. I am not here to
             tell you how to feel. I am here to share what <em>{respondentsAsProse(META.totalRespondents)} people
-            said when finally asked</em> â€” and to bring these essential stories into
+            said when finally asked</em> — and to bring these essential stories into
             the light.
           </p>
         </div>
 
-        {/* Signature block â€” Tone's real contact info */}
+        {/* Signature block — Tone's real contact info */}
         <div style={{
           display: "flex",
           alignItems: "flex-start",
@@ -951,7 +951,7 @@ function EditorsLetter() {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// SECTION TITLE CARD â€” magazine-chapter divider
+// SECTION TITLE CARD — magazine-chapter divider
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function SectionTitleCard({ chapter, totalChapters, title, subtitle, quote, id }) {
@@ -995,9 +995,9 @@ function SectionTitleCard({ chapter, totalChapters, title, subtitle, quote, id }
         color: C.gold,
         marginBottom: "1rem",
       }}>
-        <span style={{ color: C.red, marginRight: "0.5rem" }}>â˜…</span>
+        <span style={{ color: C.red, marginRight: "0.5rem" }}>★</span>
         Chapter {chapter} of {totalChapters}
-        <span style={{ color: C.red, marginLeft: "0.5rem" }}>â˜…</span>
+        <span style={{ color: C.red, marginLeft: "0.5rem" }}>★</span>
       </div>
 
       <h2 style={{
@@ -1040,7 +1040,7 @@ function SectionTitleCard({ chapter, totalChapters, title, subtitle, quote, id }
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// DEVASTATING NUMBER â€” full-bleed interstitial between sections
+// DEVASTATING NUMBER — full-bleed interstitial between sections
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function DevastatingNumber({ big, line1, line2, context, color = C.red, decimals = 0 }) {
@@ -1139,7 +1139,7 @@ function DevastatingNumber({ big, line1, line2, context, color = C.red, decimals
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// PULL QUOTE SEPARATOR â€” respondent voice between sections
+// PULL QUOTE SEPARATOR — respondent voice between sections
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function PullQuoteSeparator({ quote, attribution, pathway }) {
@@ -1168,9 +1168,9 @@ function PullQuoteSeparator({ quote, attribution, pathway }) {
         lineHeight: 1.4,
         letterSpacing: "-0.005em",
       }}>
-        <span style={{ color: C.red, fontSize: "0.7em", marginRight: "0.4rem", verticalAlign: "top" }}>â˜…</span>
+        <span style={{ color: C.red, fontSize: "0.7em", marginRight: "0.4rem", verticalAlign: "top" }}>★</span>
         {quote}
-        <span style={{ color: C.red, fontSize: "0.7em", marginLeft: "0.4rem", verticalAlign: "top" }}>â˜…</span>
+        <span style={{ color: C.red, fontSize: "0.7em", marginLeft: "0.4rem", verticalAlign: "top" }}>★</span>
       </div>
       <div style={{
         fontFamily: "'Barlow Condensed', sans-serif",
@@ -1179,13 +1179,13 @@ function PullQuoteSeparator({ quote, attribution, pathway }) {
         textTransform: "uppercase",
         letterSpacing: "0.2em",
         color,
-      }}>â€” {attribution}</div>
+      }}>— {attribution}</div>
     </div>
   );
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// NARRATIVE PROGRESS RAIL â€” sticky right-side chapter indicator
+// NARRATIVE PROGRESS RAIL — sticky right-side chapter indicator
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function NarrativeRail({ sections, activeId }) {
@@ -1257,7 +1257,7 @@ function NarrativeRail({ sections, activeId }) {
               fontWeight: 700,
               transition: "all 0.2s",
               transform: isActive ? "scale(1.15)" : "scale(1)",
-            }}>{isActive ? "â˜…" : ""}</span>
+            }}>{isActive ? "★" : ""}</span>
           </button>
         );
       })}
@@ -1266,7 +1266,7 @@ function NarrativeRail({ sections, activeId }) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// ACTIVE SECTION TRACKER â€” Intersection Observer for rail
+// ACTIVE SECTION TRACKER — Intersection Observer for rail
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function useActiveSection(sectionIds) {
@@ -1361,7 +1361,7 @@ function Pie({ data, colors, size = 150, currentPathway }) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// ANIMATED STACKED BAR â€” 100% stacks per pathway, grows from baseline
+// ANIMATED STACKED BAR — 100% stacks per pathway, grows from baseline
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function StackedBar({ q, width = 400, height = 280 }) {
@@ -1418,7 +1418,7 @@ function StackedBar({ q, width = 400, height = 280 }) {
 
   return (
     <svg ref={ref} width={width} height={height} style={{ display: "block", maxWidth: "100%", height: "auto" }}>
-      {/* Axis title â€” makes clear these stacks are BELIEFS BY pathway */}
+      {/* Axis title — makes clear these stacks are BELIEFS BY pathway */}
       <text x={padLeft + plotW / 2} y={14} textAnchor="middle"
         fontFamily="'Barlow Condensed', sans-serif"
         fontSize="9.5" fontWeight="800" fill={C.gold}
@@ -1482,7 +1482,7 @@ function StackedBar({ q, width = 400, height = 280 }) {
               );
             })}
 
-            {/* Pathway label group â€” emoji + name + n, more visually grounded */}
+            {/* Pathway label group — emoji + name + n, more visually grounded */}
             {/* Subtle connector line from bar base to label */}
             <line x1={labelX} x2={labelX}
               y1={padTop + plotH + 2} y2={padTop + plotH + 8}
@@ -1532,7 +1532,7 @@ function StackedBarLegend({ opts, colors }) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// ANIMATED GROUPED BAR â€” clusters of pathway bars per metric
+// ANIMATED GROUPED BAR — clusters of pathway bars per metric
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function GroupedBar({ questions, pathways = ["circumcised","restoring","intact"], width = 640, height = 340, yMax = 5 }) {
@@ -1602,7 +1602,7 @@ function GroupedBar({ questions, pathways = ["circumcised","restoring","intact"]
               if (v == null) return null;
               const color = pathColor(p);
               const barX = gx + pi * (barW + barGap);
-              // Staggered reveal â€” each bar delays by group index + bar index
+              // Staggered reveal — each bar delays by group index + bar index
               const startAt = (mi * 0.08 + pi * 0.03);
               const localP = Math.max(0, Math.min(1, (progress - startAt) / (1 - startAt)));
               const fullH = (v / yMax) * plotH;
@@ -1624,7 +1624,7 @@ function GroupedBar({ questions, pathways = ["circumcised","restoring","intact"]
               );
             })}
 
-            {/* Metric label â€” two lines */}
+            {/* Metric label — two lines */}
             <text x={gx + groupInnerW / 2} y={height - padBottom + 16} textAnchor="middle"
               fontFamily="'Playfair Display', serif" fontSize="10" fontWeight="700" fill={C.paperInk}>
               {(metric.label.split(" ").slice(0, Math.ceil(metric.label.split(" ").length / 2))).join(" ")}
@@ -1661,7 +1661,7 @@ function GroupedBar({ questions, pathways = ["circumcised","restoring","intact"]
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// PLEASURE GAP HERO â€” featured grouped bar at top of that section
+// PLEASURE GAP HERO — featured grouped bar at top of that section
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function PleasureGapHero() {
@@ -1670,7 +1670,7 @@ function PleasureGapHero() {
 
   const questions = sexQs.map(q => ({
     id: q.id,
-    label: q.q.replace(/\s*\(1â€“5 scale\)\s*$/, ""),
+    label: q.q.replace(/\s*\(1–5 scale\)\s*$/, ""),
     data: q.data,
   }));
 
@@ -1681,7 +1681,7 @@ function PleasureGapHero() {
       if (!biggestGap || Math.abs(delta) > Math.abs(biggestGap.delta)) {
         biggestGap = {
           delta,
-          label: q.q.replace(/\s*\(1â€“5 scale\)\s*$/, ""),
+          label: q.q.replace(/\s*\(1–5 scale\)\s*$/, ""),
           intact: q.data.intact,
           circumcised: q.data.circumcised,
         };
@@ -1691,7 +1691,7 @@ function PleasureGapHero() {
 
   return (
     <BureauCard
-      title="The Pleasure Gap â€” Direct Comparison"
+      title="The Pleasure Gap — Direct Comparison"
       refText={`FORM CS-PLEASURE · SEXUAL EXPERIENCE · N = ${META.totalRespondents}`}
       stamp="Featured"
       stampColor={C.gold}
@@ -1702,7 +1702,7 @@ function PleasureGapHero() {
         <FormField
           label="Grouped Comparison"
           question="How do the three pathways compare on self-reported sexual experience?"
-          body="Each cluster shows the mean rating (1â€“5 scale) for one dimension. Bars for Circumcised, Restoring, and Intact respondents sit side-by-side so the Pleasure Gap is visible at a glance: the blue Intact bar consistently sits above the other two across every dimension."
+          body="Each cluster shows the mean rating (1–5 scale) for one dimension. Bars for Circumcised, Restoring, and Intact respondents sit side-by-side so the Pleasure Gap is visible at a glance: the blue Intact bar consistently sits above the other two across every dimension."
         />
 
         <div style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}>
@@ -1716,14 +1716,14 @@ function PleasureGapHero() {
         {biggestGap && (
           <StatCallout
             number={`${biggestGap.delta > 0 ? "+" : ""}${biggestGap.delta.toFixed(1)}`}
-            text={<>The largest gap is <strong>{biggestGap.label}</strong>: Intact respondents rate it <strong>{biggestGap.intact.toFixed(2)}</strong>, Circumcised respondents <strong>{biggestGap.circumcised.toFixed(2)}</strong> â€” a {Math.abs(biggestGap.delta / biggestGap.intact * 100).toFixed(0)}% gap on a 5-point scale.</>}
+            text={<>The largest gap is <strong>{biggestGap.label}</strong>: Intact respondents rate it <strong>{biggestGap.intact.toFixed(2)}</strong>, Circumcised respondents <strong>{biggestGap.circumcised.toFixed(2)}</strong> — a {Math.abs(biggestGap.delta / biggestGap.intact * 100).toFixed(0)}% gap on a 5-point scale.</>}
             color={C.red}
           />
         )}
 
         <ArrowNotes notes={[
           "Intact Pathway leads on every single dimension",
-          "Circumcised and Restoring Pathways track closely â€” restoration recovers partial function",
+          "Circumcised and Restoring Pathways track closely — restoration recovers partial function",
           "Detail cards below break down each dimension individually",
         ]} />
       </div>
@@ -1870,7 +1870,7 @@ function ArrowNotes({ notes }) {
     }}>
       {notes.map((note, i) => (
         <div key={i}>
-          <span style={{ color: C.gold, fontWeight: 700 }}>â†’</span> {note}
+          <span style={{ color: C.gold, fontWeight: 700 }}>→</span> {note}
         </div>
       ))}
     </div>
@@ -1931,14 +1931,14 @@ function LanguageNote({ children }) {
       color: "#7a6a42",
       lineHeight: 1.55,
     }}>
-      <strong style={{ color: C.gold, fontWeight: 700, fontStyle: "normal", fontFamily: "'Barlow Condensed', sans-serif", textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.1em" }}>â˜… Language Note · </strong>{" "}
+      <strong style={{ color: C.gold, fontWeight: 700, fontStyle: "normal", fontFamily: "'Barlow Condensed', sans-serif", textTransform: "uppercase", fontSize: "0.7rem", letterSpacing: "0.1em" }}>★ Language Note · </strong>{" "}
       {children}
     </div>
   );
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// QUOTE GALLERY â€” voices from the survey
+// QUOTE GALLERY — voices from the survey
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function QuoteGallery({ gallery }) {
@@ -1961,7 +1961,7 @@ function QuoteGallery({ gallery }) {
         alignItems: "center",
         gap: "0.35rem",
       }}>
-        <span style={{ color: C.red }}>â˜…</span> Voices from the Survey
+        <span style={{ color: C.red }}>★</span> Voices from the Survey
       </div>
       <div style={{
         display: "grid",
@@ -1995,7 +1995,7 @@ function QuoteGallery({ gallery }) {
                   textTransform: "uppercase",
                   letterSpacing: "0.1em",
                   color,
-                }}>â€” {meta.short} Pathway · {qt.context}</div>
+                }}>— {meta.short} Pathway · {qt.context}</div>
               </div>
             </Reveal>
           ));
@@ -2006,48 +2006,48 @@ function QuoteGallery({ gallery }) {
         fontSize: "0.55rem",
         color: C.paperGhost,
         marginTop: "0.6rem",
-      }}>â˜… Anonymous quotes from open-ended responses. All identifying details removed.</div>
+      }}>★ Anonymous quotes from open-ended responses. All identifying details removed.</div>
     </div>
   );
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// CARD SUMMARIES â€” editorial callouts keyed to question id
+// CARD SUMMARIES — editorial callouts keyed to question id
 // These render in the right column of QCard as an interpretation,
 // replacing the redundant "mean rating" legend. Only cards with a
 // summary here get the enhanced treatment; others render minimally.
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 const CARD_SUMMARIES = {
-  // â”€â”€ Sexual Experience (six avg cards) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Sexual Experience (six avg cards) ──────────────────────────
   "intensity": {
     headline: "Intact respondents rate orgasm intensity 25% higher.",
-    body: "On a 1â€“5 scale, intact men average 3.73 vs 2.99 for circumcised men â€” a gap of three-quarters of a full point. Restoring respondents land at 2.93, close to where they started, suggesting intensity recovers more slowly than other dimensions.",
+    body: "On a 1–5 scale, intact men average 3.73 vs 2.99 for circumcised men — a gap of three-quarters of a full point. Restoring respondents land at 2.93, close to where they started, suggesting intensity recovers more slowly than other dimensions.",
     frame: "gap",
   },
   "duration_r": {
     headline: "Orgasm duration sees the second-largest gap.",
-    body: "Intact respondents average 3.80; circumcised 2.81. A full point of separation on a 5-point scale is large in survey terms â€” comparable to the gap between 'satisfied' and 'very dissatisfied' on an attitudinal scale. Restoring at 2.65 is actually below the circumcised average, which some restorers attribute to keratinization recovery being incomplete.",
+    body: "Intact respondents average 3.80; circumcised 2.81. A full point of separation on a 5-point scale is large in survey terms — comparable to the gap between 'satisfied' and 'very dissatisfied' on an attitudinal scale. Restoring at 2.65 is actually below the circumcised average, which some restorers attribute to keratinization recovery being incomplete.",
     frame: "gap",
   },
   "ease": {
-    headline: "The smallest Pleasure Gap â€” but still present.",
-    body: "Ease of reaching orgasm shows the narrowest spread of the six dimensions (3.43 vs 2.91, a 15% gap). This matters because 'ease' is the metric most confounded by arousal, partner dynamics, and psychological factors â€” the fact that it still shows a measurable gap rather than none at all is notable.",
+    headline: "The smallest Pleasure Gap — but still present.",
+    body: "Ease of reaching orgasm shows the narrowest spread of the six dimensions (3.43 vs 2.91, a 15% gap). This matters because 'ease' is the metric most confounded by arousal, partner dynamics, and psychological factors — the fact that it still shows a measurable gap rather than none at all is notable.",
     frame: "gap",
   },
   "light": {
     headline: "Intact respondents report 41% more sensitivity to light touch.",
-    body: "3.67 vs 2.60 â€” the third-largest Pleasure Gap and the one most directly tied to the anatomy. Light-touch receptors concentrated in the foreskin's ridged band are removed by circumcision. Restoring respondents report 2.67, a modest recovery that tracks with the documented de-keratinization process.",
+    body: "3.67 vs 2.60 — the third-largest Pleasure Gap and the one most directly tied to the anatomy. Light-touch receptors concentrated in the foreskin's ridged band are removed by circumcision. Restoring respondents report 2.67, a modest recovery that tracks with the documented de-keratinization process.",
     frame: "gap",
   },
   "mobile": {
     headline: "The largest gap in the entire Sexual Experience module.",
-    body: "Pleasure from gliding / mobile skin: 3.88 intact, 2.49 circumcised â€” a 36% gap, the widest measured. This is the mechanical function most completely lost in circumcision: the foreskin's ability to slide over the glans creating frictionless sensation. Restorers at 3.00 are the clearest demonstration that even partial mechanical restoration moves the needle.",
+    body: "Pleasure from gliding / mobile skin: 3.88 intact, 2.49 circumcised — a 36% gap, the widest measured. This is the mechanical function most completely lost in circumcision: the foreskin's ability to slide over the glans creating frictionless sensation. Restorers at 3.00 are the clearest demonstration that even partial mechanical restoration moves the needle.",
     frame: "gap",
   },
   "variety": {
     headline: "Intact respondents report 46% more variety of sensation.",
-    body: "3.78 vs 2.58. 'Variety' here means the range of pleasurable sensations reported â€” from subtle to intense, from localized to full-body. A narrower dynamic range is consistent with keratinization, nerve remodeling, and the loss of the foreskin's distinct sensation-class. Restorers sit at 2.65, suggesting variety is harder to recover than raw sensitivity.",
+    body: "3.78 vs 2.58. 'Variety' here means the range of pleasurable sensations reported — from subtle to intense, from localized to full-body. A narrower dynamic range is consistent with keratinization, nerve remodeling, and the loss of the foreskin's distinct sensation-class. Restorers sit at 2.65, suggesting variety is harder to recover than raw sensitivity.",
     frame: "gap",
   },
 };
@@ -2084,7 +2084,7 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
   if (isAvg && q.data.intact && q.data.circumcised) {
     const delta = q.data.intact - q.data.circumcised;
     const pct = Math.abs(delta / q.data.intact * 100).toFixed(0);
-    notes.push(`Î” ${delta.toFixed(2)} (${pct}% ${delta > 0 ? "lower" : "higher"} in circumcised vs intact)`);
+    notes.push(`Δ ${delta.toFixed(2)} (${pct}% ${delta > 0 ? "lower" : "higher"} in circumcised vs intact)`);
   }
 
   return (
@@ -2233,7 +2233,7 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
               ) : (
                 /* NON-AVG CARDS: keep the existing Response Distribution */
                 <FormField
-                  label={`Response Distribution â€” ${currentMeta.emoji} ${currentMeta.label} (n = ${currentMeta.n})`}
+                  label={`Response Distribution — ${currentMeta.emoji} ${currentMeta.label} (n = ${currentMeta.n})`}
                   last
                 >
                   <div style={{ marginTop: "0.5rem" }}>
@@ -2290,7 +2290,7 @@ function AnimatedBar({ color, targetHeight, label, emoji }) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// MIRROR CARD â€” the devastating juxtapositions
+// MIRROR CARD — the devastating juxtapositions
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function MirrorSide({ side, colors, bgColor }) {
@@ -2374,7 +2374,7 @@ function MirrorCard({ pair }) {
   return (
     <BureauCard
       title={`Mirror · ${pair.title}`}
-      refText={`${leftMeta.short.toUpperCase()} â‡” ${rightMeta.short.toUpperCase()} · PARALLEL QUESTION PAIR`}
+      refText={`${leftMeta.short.toUpperCase()} ⇔ ${rightMeta.short.toUpperCase()} · PARALLEL QUESTION PAIR`}
       stamp="Mirror"
       stampColor={C.gold}
       gradient={gradient}
@@ -2412,48 +2412,48 @@ function MirrorCard({ pair }) {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// SIX PATHWAYS â€” the survey's full architecture
+// SIX PATHWAYS — the survey's full architecture
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 // Pathway metadata for the intro card and the voices section
-// This is a superset of PATHWAY in data.js â€” adds trans and intersex
+// This is a superset of PATHWAY in data.js — adds trans and intersex
 // n values pulled from META.pathwayCounts so they auto-update when
 // /api/count mutates META (see useLiveMeta hook in App).
 const PATHWAY_META_EXT = [
   {
-    id: "intact", emoji: "ðŸŸ¢", label: "The Intact Pathway",
+    id: "intact", emoji: "🟢", label: "The Intact Pathway",
     short: "Intact",
     get n() { return META.pathwayCounts?.intact ?? 142; },
     color: "#5b93c7",
     description: "Men never circumcised. Their parents, for varied reasons, chose not to follow the default.",
-    featured_in: "chapters 1â€“7, plus demographics & voices",
+    featured_in: "chapters 1–7, plus demographics & voices",
   },
   {
-    id: "circumcised", emoji: "ðŸ”µ", label: "The Circumcised Pathway",
+    id: "circumcised", emoji: "🔵", label: "The Circumcised Pathway",
     short: "Circumcised",
     get n() { return META.pathwayCounts?.circumcised ?? 213; },
     color: "#d94f4f",
     description: "Men who were circumcised, generally as infants, without their consent.",
-    featured_in: "chapters 1â€“7, plus demographics & voices",
+    featured_in: "chapters 1–7, plus demographics & voices",
   },
   {
-    id: "restoring", emoji: "ðŸŸ£", label: "The Restoration Pathway",
+    id: "restoring", emoji: "🟣", label: "The Restoration Pathway",
     short: "Restoring",
     get n() { return META.pathwayCounts?.restoring ?? 109; },
     color: "#e8c868",
-    description: "Men actively restoring â€” or who have completed restoring â€” their foreskin.",
+    description: "Men actively restoring — or who have completed restoring — their foreskin.",
     featured_in: "chapters on restoration & voices",
   },
   {
-    id: "observer", emoji: "ðŸŸ ", label: "The Observer, Partner & Ally Pathway",
+    id: "observer", emoji: "🟠", label: "The Observer, Partner & Ally Pathway",
     short: "Observer",
     get n() { return META.pathwayCounts?.observer ?? 37; },
     color: "#a0a0a0",
-    description: "Partners, parents of AMAB children, doctors, therapists, intactivists â€” witnesses without a personal anatomical stake.",
+    description: "Partners, parents of AMAB children, doctors, therapists, intactivists — witnesses without a personal anatomical stake.",
     featured_in: "universal questions & voices",
   },
   {
-    id: "trans", emoji: "ðŸ”´", label: "The Trans · Gender-Affirming Surgery Pathway",
+    id: "trans", emoji: "🔴", label: "The Trans · Gender-Affirming Surgery Pathway",
     short: "Trans",
     get n() { return META.pathwayCounts?.trans ?? 0; },
     color: "#e85d50",
@@ -2462,7 +2462,7 @@ const PATHWAY_META_EXT = [
     dormant: true,
   },
   {
-    id: "intersex", emoji: "âšª", label: "The Intersex Pathway",
+    id: "intersex", emoji: "⚪", label: "The Intersex Pathway",
     short: "Intersex",
     get n() { return META.pathwayCounts?.intersex ?? 0; },
     color: "#b0a888",
@@ -2492,7 +2492,7 @@ function SixPathwaysCard() {
             lineHeight: 1.7,
             marginBottom: "1.75rem",
           }}>
-            The survey isn't one questionnaire with a single audience â€” it's{" "}
+            The survey isn't one questionnaire with a single audience — it's{" "}
             <strong style={{ color: C.paperInk }}>six parallel branches</strong>,
             each tailored to a distinct experience of this issue. Every branch asks
             some of the same questions, but each also asks things only that
@@ -2566,7 +2566,7 @@ function SixPathwaysCard() {
                   fontWeight: 600,
                   fontStyle: p.dormant ? "italic" : "normal",
                 }}>
-                  {p.dormant ? "â˜… We're listening â€” if this is you, your survey is waiting" : `Featured ${p.featured_in}`}
+                  {p.dormant ? "★ We're listening — if this is you, your survey is waiting" : `Featured ${p.featured_in}`}
                 </div>
               </div>
             ))}
@@ -2585,7 +2585,7 @@ function SixPathwaysCard() {
             lineHeight: 1.6,
           }}>
             The trans and intersex pathways exist in the survey because this
-            conversation is part of a larger coalition â€” genital autonomy is a
+            conversation is part of a larger coalition — genital autonomy is a
             question about consent and bodily integrity that crosses identity
             lines. Those pathways have no respondents yet. Their columns in
             this report are quiet on purpose.{" "}
@@ -2603,7 +2603,7 @@ function SixPathwaysCard() {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// VOICES SECTION â€” parallel pathway columns of curated quotes
+// VOICES SECTION — parallel pathway columns of curated quotes
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 // One quote, rendered consistently across all cards
@@ -2636,7 +2636,7 @@ function VoiceQuote({ quote, pathwayColor, compact }) {
         color: C.paperDim,
         fontWeight: 600,
       }}>
-        {quote.age ? `Age ${quote.age}` : "Age â€”"}
+        {quote.age ? `Age ${quote.age}` : "Age —"}
         {quote.generation && ` · ${quote.generation}`}
       </div>
     </blockquote>
@@ -2699,7 +2699,7 @@ function PathwayColumn({ pathwayId, pathwayMeta, subtitle, quotes, expanded, onT
           lineHeight: 1.55,
           padding: "0.8rem 0",
         }}>
-          No respondents yet. This pathway exists in the survey â€”{" "}
+          No respondents yet. This pathway exists in the survey —{" "}
           <a
             href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
             target="_blank"
@@ -2926,7 +2926,7 @@ function VoicesSection() {
           }}>
             Numbers summarize. They do not{" "}
             <em>witness</em>. The survey's free-text questions collected
-            thousands of words of lived experience â€” sometimes tender,
+            thousands of words of lived experience — sometimes tender,
             sometimes furious, often both at once. The cards below juxtapose
             responses to the same question across pathways, so the comparisons
             the survey was designed to surface become visible on the page.
@@ -2940,7 +2940,7 @@ function VoicesSection() {
           }}>
             Each quote is shown with age and generation for context. Names and
             identifying details have been removed. The full curation rationale
-            â€” including responses I chose not to surface and why â€” is available
+            — including responses I chose not to surface and why — is available
             in the site's documentation. Quotes are drawn directly from survey
             responses with no edits to wording except for redaction of specific
             identifying details.
@@ -2966,7 +2966,7 @@ function VoicesSection() {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// DEMOGRAPHICS EXPLORER â€” "who circs and who doesn't?"
+// DEMOGRAPHICS EXPLORER — "who circs and who doesn't?"
 // An interactive filter tool for the outlier-parents question
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
@@ -2988,7 +2988,7 @@ function DemographicsExplorerCard() {
     return cats;
   }, [currentDim, sortMode]);
 
-  // Find max bar width for proportional rendering â€” use count of largest category
+  // Find max bar width for proportional rendering — use count of largest category
   const maxTotal = Math.max(...categories.map(c => c.total), 1);
 
   // Colors for the two outcome segments (stacked)
@@ -3029,7 +3029,7 @@ function DemographicsExplorerCard() {
           }}>
             Routine infant circumcision is the default in American hospitals. But not every family
             followed the default. Slice the respondent pool by the demographic signals that shape
-            parenting decisions â€” politics, education, religion, generation, country â€” and a portrait
+            parenting decisions — politics, education, religion, generation, country — and a portrait
             of the "outlier parent" begins to emerge.
           </p>
 
@@ -3140,7 +3140,7 @@ function DemographicsExplorerCard() {
             }}>Sort:</span>
             {[
               { id: "natural", label: "Natural order" },
-              { id: "intact",  label: "% Intact (highâ†’low)" },
+              { id: "intact",  label: "% Intact (high→low)" },
               { id: "size",    label: "Sample size" },
             ].map(opt => (
               <button
@@ -3185,9 +3185,9 @@ function DemographicsExplorerCard() {
               const relativeWidth = Math.max((cat.total / maxTotal) * 100, 8); // floor at 8% for readability
               const deviation = cat.pct_intact - baseRate.pct_intact;
               // Only show the % label if the segment is wide enough on screen to fit it.
-              // Heuristic: segment_px â‰ˆ container_px * (relativeWidth/100) * (pct/100)
+              // Heuristic: segment_px ≈ container_px * (relativeWidth/100) * (pct/100)
               // We want at least ~30px for a label to fit comfortably.
-              // Assume container is ~720px at worst case â†’ threshold = 30 / (720 * relativeWidth/100) * 100
+              // Assume container is ~720px at worst case → threshold = 30 / (720 * relativeWidth/100) * 100
               const segWidthEstimate = (relativeWidth / 100) * 720;
               const intactLabelFits = (cat.pct_intact / 100) * segWidthEstimate >= 32;
               const circLabelFits   = (cat.pct_circumcised / 100) * segWidthEstimate >= 32;
@@ -3229,7 +3229,7 @@ function DemographicsExplorerCard() {
                     </div>
                   </div>
 
-                  {/* Stacked bar â€” intact (blue) vs circumcised (red) */}
+                  {/* Stacked bar — intact (blue) vs circumcised (red) */}
                   <div style={{
                     position: "relative",
                     height: 24,
@@ -3319,7 +3319,7 @@ function DemographicsExplorerCard() {
               textTransform: "uppercase",
               color: C.gold,
               marginBottom: "0.5rem",
-            }}>â˜… Outlier Signal</div>
+            }}>★ Outlier Signal</div>
             <div style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 700,
@@ -3405,7 +3405,7 @@ function DemographicsExplorerCard() {
                     textTransform: "uppercase",
                     fontWeight: 700,
                     flexShrink: 0,
-                  }}>View â†’</span>
+                  }}>View →</span>
                 </li>
               ))}
             </ol>
@@ -3427,8 +3427,8 @@ function DemographicsExplorerCard() {
               lineHeight: 1.65,
             }}>
               My own parents made a "conscious choice" in the 1970s that put me in the 30.5%
-              intact minority of this sample. Within their cohort â€” U.S.-born Boomers, middle-class,
-              college-educated â€” that choice was especially rare. What distinguished them? A
+              intact minority of this sample. Within their cohort — U.S.-born Boomers, middle-class,
+              college-educated — that choice was especially rare. What distinguished them? A
               question mark, instead of the default.
             </div>
             <div style={{
@@ -3439,7 +3439,7 @@ function DemographicsExplorerCard() {
               color: C.paperDim,
               marginTop: "0.85rem",
               fontWeight: 700,
-            }}>â€” Tone Pettit, Lead Researcher</div>
+            }}>— Tone Pettit, Lead Researcher</div>
           </div>
 
           {/* Methodology note */}
@@ -3464,7 +3464,7 @@ function DemographicsExplorerCard() {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// ACT ON THIS â€” four cards that convert "so what?" into action
+// ACT ON THIS — four cards that convert "so what?" into action
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function UrgentPlaintiffCard() {
@@ -3476,7 +3476,7 @@ function UrgentPlaintiffCard() {
         stamp="Urgent"
         stampColor={C.red}
         gradient={`linear-gradient(90deg, ${C.red}, #e85d50, #e8a44a)`}
-        cardLabel="â˜… URGENT CALL TO ACTION"
+        cardLabel="★ URGENT CALL TO ACTION"
         shimmer={false}
       >
         <div style={{ padding: "2rem 2.25rem 2.25rem" }}>
@@ -3493,7 +3493,7 @@ function UrgentPlaintiffCard() {
             borderRadius: 2,
             marginBottom: "0.9rem",
             textTransform: "uppercase",
-          }}>â˜… Urgent · Time-Sensitive</div>
+          }}>★ Urgent · Time-Sensitive</div>
 
           <h2 style={{
             fontFamily: "'Playfair Display', serif",
@@ -3560,7 +3560,7 @@ function UrgentPlaintiffCard() {
             lineHeight: 1.65,
             marginBottom: "1.5rem",
           }}>
-            If you are this person â€” or if you know a family who might be â€” your story could be
+            If you are this person — or if you know a family who might be — your story could be
             the key that unlocks equal legal protection for the next generation of Washington
             boys. All communications are handled in the strictest confidence.
           </p>
@@ -3582,7 +3582,7 @@ function UrgentPlaintiffCard() {
                 textTransform: "uppercase",
                 letterSpacing: "0.12em",
               }}
-            >âœ‰ Reach Out Confidentially</a>
+            >✉ Reach Out Confidentially</a>
             <a
               href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
               target="_blank"
@@ -3601,7 +3601,7 @@ function UrgentPlaintiffCard() {
                 textTransform: "uppercase",
                 letterSpacing: "0.12em",
               }}
-            >â˜… Take the Survey</a>
+            >★ Take the Survey</a>
           </div>
           <p style={{
             fontFamily: "'Barlow', sans-serif",
@@ -3635,7 +3635,7 @@ function StrategicPartnersCard() {
       logo: "/partners/intact-global.png",
       url: "https://intactglobal.org/",
       color: C.red,
-      blurb: "Legal advocacy led by attorney Eric Clopper. Preparing a landmark Washington State Equal Protection lawsuit â€” our dataset is an active tool in their strategic litigation.",
+      blurb: "Legal advocacy led by attorney Eric Clopper. Preparing a landmark Washington State Equal Protection lawsuit — our dataset is an active tool in their strategic litigation.",
     },
     {
       name: "GALDEF",
@@ -3713,7 +3713,7 @@ function StrategicPartnersCard() {
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                {/* Logo container â€” white background so logos have room to breathe */}
+                {/* Logo container — white background so logos have room to breathe */}
                 <div style={{
                   background: "#fff",
                   padding: "1.25rem",
@@ -3773,7 +3773,7 @@ function StrategicPartnersCard() {
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
                     fontWeight: 800,
-                  }}>Visit {p.name} â†’</div>
+                  }}>Visit {p.name} →</div>
                 </div>
               </a>
             ))}
@@ -3789,7 +3789,7 @@ function ResourcesCard() {
     {
       title: "The Accidental Intactivist Manifesto",
       sub: "125 pages · PDF",
-      blurb: "The foundational document behind this research. Personal insight, scientific inquiry, and cultural critique â€” the history, ethics, anatomy, and emotional truth.",
+      blurb: "The foundational document behind this research. Personal insight, scientific inquiry, and cultural critique — the history, ethics, anatomy, and emotional truth.",
       url: "https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing",
       color: C.red,
       cta: "Download PDF",
@@ -3804,7 +3804,7 @@ function ResourcesCard() {
     },
     {
       title: "Shareable Flyers & QR Code",
-      sub: "Full-page posters, 2Ã—2 handout cards, QR image",
+      sub: "Full-page posters, 2×2 handout cards, QR image",
       blurb: "For posting on community bulletin boards, info tables, local fairs, and conferences. Help us reach 500+ diverse perspectives.",
       url: "https://www.circumsurvey.online/resources-downloads",
       color: C.gold,
@@ -3906,7 +3906,7 @@ function ResourcesCard() {
                   letterSpacing: "0.08em",
                   textTransform: "uppercase",
                   fontWeight: 800,
-                }}>{r.cta} â†’</div>
+                }}>{r.cta} →</div>
               </a>
             ))}
           </div>
@@ -3922,7 +3922,7 @@ function GetInvolvedCard() {
       id: "ambassador",
       title: "Become a Survey Ambassador",
       color: C.gold,
-      icon: "â˜…",
+      icon: "★",
       blurb: "The single highest-impact thing you can do right now. Share the survey with friends, family, colleagues, and online communities. Use our printable flyers, posters, and QR codes at events.",
       actions: [
         { label: "circumsurvey.online", url: "https://circumsurvey.online", primary: true },
@@ -3933,7 +3933,7 @@ function GetInvolvedCard() {
       id: "volunteer",
       title: "Volunteer Your Skills",
       color: C.blue,
-      icon: "âœŽ",
+      icon: "✎",
       blurb: "Translation (Spanish / Hebrew / German / Arabic), data analysis & visualization, regional outreach, content writing. Tell us what you can do.",
       actions: [
         { label: "volunteer@circumsurvey.online", url: "mailto:volunteer@circumsurvey.online", primary: true },
@@ -3943,7 +3943,7 @@ function GetInvolvedCard() {
       id: "support",
       title: "Support Independent Research",
       color: C.red,
-      icon: "â™¥",
+      icon: "♥",
       blurb: "This work is 100% grassroots, no institutional funding. A one-time tip via Buy Me a Coffee or a paid Substack subscription directly fuels the next phase of research.",
       logo: "/partners/bmc.png",
       logoAlt: "Buy Me a Coffee",
@@ -3956,7 +3956,7 @@ function GetInvolvedCard() {
       id: "collab",
       title: "Organizational Collaboration",
       color: C.green,
-      icon: "â—ˆ",
+      icon: "◈",
       blurb: "If you represent an organization whose mission aligns with bodily integrity and informed consent, let's talk about signal-boosting, data-sharing, and co-authored outputs.",
       actions: [
         { label: "info@circumsurvey.online", url: "mailto:info@circumsurvey.online", primary: true },
@@ -3984,7 +3984,7 @@ function GetInvolvedCard() {
             marginBottom: "1.75rem",
           }}>
             The data does not interpret itself. If any of what you've read here moves you, here
-            are the concrete paths â€” from five minutes to long-term:
+            are the concrete paths — from five minutes to long-term:
           </p>
 
           <div style={{
@@ -4093,7 +4093,7 @@ function GetInvolvedCard() {
                         borderBottom: `1px dashed ${p.color}`,
                         paddingBottom: 1,
                       }}
-                    >{action.label} â†’</a>
+                    >{action.label} →</a>
                   ))}
                 </div>
               </div>
@@ -4164,7 +4164,7 @@ function ObserverSection() {
           <FormField
             label="Pathway Description"
             question="Partners, parents, healthcare professionals, and allies"
-            body="Respondents who have observed the impact of circumcision in others' lives. Their independent witness perspective â€” without a personal anatomical stake â€” makes their answers striking. The Observer Pathway includes spouses, partners, parents of AMAB children, doctors, researchers, therapists, and intactivists."
+            body="Respondents who have observed the impact of circumcision in others' lives. Their independent witness perspective — without a personal anatomical stake — makes their answers striking. The Observer Pathway includes spouses, partners, parents of AMAB children, doctors, researchers, therapists, and intactivists."
           />
 
           <StatCallout
@@ -4197,13 +4197,13 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
     { cat: "Curated Findings", color: C.gold, items: CURATED_SECTIONS.map(s => ({ id: `section-${s.id}`, label: s.title, isSection: true })) },
     { cat: "The Six Pathways", color: C.gold, items: [
       { id: "section-six-pathways", label: "Survey Architecture", isSection: true },
-      { id: "section-voices",       label: "In Their Own Words â€” The Record", isSection: true },
+      { id: "section-voices",       label: "In Their Own Words — The Record", isSection: true },
     ]},
     { cat: "Mirror Pairs",     color: C.red,    items: MIRROR_PAIRS.map(p => ({ id: p.id, label: p.title })) },
     { cat: "Observer Pathway", color: C.neutral, items: [{ id: "section-observer", label: `The Witnesses (n=${PATHWAY.observer.n})`, isSection: true }] },
-    { cat: "â˜… Act on This",    color: C.red,    items: [
+    { cat: "★ Act on This",    color: C.red,    items: [
       { id: "section-demographics",     label: "Demographics Explorer", isSection: true },
-      { id: "section-urgent-plaintiff", label: "â˜… Urgent: WA Plaintiff Search", isSection: true },
+      { id: "section-urgent-plaintiff", label: "★ Urgent: WA Plaintiff Search", isSection: true },
       { id: "section-partners",         label: "Strategic Partners", isSection: true },
       { id: "section-resources",        label: "Resources & Downloads", isSection: true },
       { id: "section-get-involved",     label: "Ways to Get Involved", isSection: true },
@@ -4239,11 +4239,11 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
             color: C.gold,
             textTransform: "uppercase",
             letterSpacing: "0.14em",
-          }}>â˜… Navigate</span>
+          }}>★ Navigate</span>
           <button onClick={onClose} style={{
             background: "none", border: "none", color: C.pageDim, cursor: "pointer",
             fontSize: "1.2rem", padding: "0.2rem",
-          }}>âœ•</button>
+          }}>✕</button>
         </div>
 
         <div style={{ padding: "0.5rem 0.75rem" }}>
@@ -4291,7 +4291,7 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
                   borderRadius: 3,
                 }}>
                   <span>{sec.cat} ({visible.length})</span>
-                  <span style={{ fontSize: "0.6rem", transition: "transform 0.15s", transform: isOpen ? "rotate(180deg)" : "" }}>â–¾</span>
+                  <span style={{ fontSize: "0.6rem", transition: "transform 0.15s", transform: isOpen ? "rotate(180deg)" : "" }}>▾</span>
                 </button>
                 {isOpen && visible.map(item => {
                   const isActive = activeId === item.id;
@@ -4328,7 +4328,7 @@ function Sidebar({ open, onClose, onSelect, activeId }) {
           textAlign: "center",
           letterSpacing: "0.05em",
         }}>
-          â˜… {ALL_QUESTIONS.length + MIRROR_PAIRS.length} items · {META.totalRespondents} respondents
+          ★ {ALL_QUESTIONS.length + MIRROR_PAIRS.length} items · {META.totalRespondents} respondents
         </div>
       </div>
       {open && <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 150, backdropFilter: "blur(2px)" }} />}
@@ -4371,7 +4371,7 @@ function MethodologyModal({ open, onClose }) {
           background: "rgba(0,0,0,0.85)",
           padding: "0 0.35rem",
           lineHeight: 1,
-        }}>â˜…</div>
+        }}>★</div>
 
         <div style={{
           background: C.paperInk,
@@ -4388,9 +4388,9 @@ function MethodologyModal({ open, onClose }) {
             textTransform: "uppercase",
             letterSpacing: "0.14em",
           }}>
-            <span style={{ color: C.red }}>â˜…</span> Methodology & Ethics
+            <span style={{ color: C.red }}>★</span> Methodology & Ethics
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: C.pageMuted, cursor: "pointer", fontSize: "1.1rem" }}>âœ•</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: C.pageMuted, cursor: "pointer", fontSize: "1.1rem" }}>✕</button>
         </div>
 
         <div style={{ padding: "2rem 1.75rem" }}>
@@ -4417,7 +4417,7 @@ function MethodologyModal({ open, onClose }) {
               fontSize: "0.75rem",
               textTransform: "uppercase",
               letterSpacing: "0.08em",
-            }}>Read Full Methodology â†’</Link>
+            }}>Read Full Methodology →</Link>
           </div>
         </div>
       </div>
@@ -4431,7 +4431,7 @@ function MethodologyModal({ open, onClose }) {
 
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// MAIN APP â€” v7 assembly
+// MAIN APP — v7 assembly
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 // Narrative sections for the progress rail
@@ -4447,7 +4447,7 @@ function getNarrativeSections() {
     })),
     { id: "section-voices", title: "In Their Own Words" },
     { id: "section-demographics", title: "Demographics Explorer" },
-    { id: "section-urgent-plaintiff", title: "â˜… Urgent Call" },
+    { id: "section-urgent-plaintiff", title: "★ Urgent Call" },
     { id: "section-partners", title: "Strategic Partners" },
     { id: "section-resources", title: "Resources" },
     { id: "section-get-involved", title: "Get Involved" },
@@ -4460,7 +4460,7 @@ const SECTION_INTERSTITIALS = {
     big: "36%",
     line1: "lower pleasure from",
     line2: "mobile skin gliding.",
-    context: "Intact respondents rate it 3.88, circumcised respondents 2.49 â€” across every dimension of sexual experience, intact leads.",
+    context: "Intact respondents rate it 3.88, circumcised respondents 2.49 — across every dimension of sexual experience, intact leads.",
     color: "#d94f4f",
   },
   "resentment": {
@@ -4488,7 +4488,7 @@ const SECTION_INTERSTITIALS = {
     big: "96%",
     line1: "prioritize the child's",
     line2: "right to bodily autonomy.",
-    context: "A near-universal consensus across all four pathways â€” the rare finding where every voice agrees.",
+    context: "A near-universal consensus across all four pathways — the rare finding where every voice agrees.",
     color: "#5b93c7",
   },
 };
@@ -4501,7 +4501,7 @@ const PULL_QUOTES = [
     pathway: "circumcised",
   },
   {
-    quote: "Only as a teen or young adult did I feel self-conscious â€” due to stigma from movies and pop culture.",
+    quote: "Only as a teen or young adult did I feel self-conscious — due to stigma from movies and pop culture.",
     attribution: "Intact Pathway",
     pathway: "intact",
   },
@@ -4512,7 +4512,7 @@ const PULL_QUOTES = [
   },
 ];
 
-// â”€â”€ Respondent count â†’ readable prose â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Respondent count → readable prose ─────────────────────────
 // Renders META.totalRespondents as natural English prose that stays
 // honest as the count grows (e.g. "over five hundred" at n=501,
 // "nearly six hundred" at n=580, "over one thousand" at n=1001+).
@@ -4551,11 +4551,11 @@ export default function ExplorePage() {
   const [activeId, setActiveId] = useState(null);
   const [view, setView] = useState("curated");
 
-  // â”€â”€ Live count: fetch from /api/count on mount, fall back silently â”€â”€
+  // ── Live count: fetch from /api/count on mount, fall back silently ──
   // If the Worker is up and D1 has data, this overrides the baked-in
   // META.totalRespondents and META.pathwayCounts with live numbers.
   // If it fails (Worker down, CORS issue, network error), the baked-in
-  // numbers stay. No loading spinner â€” the site renders immediately with
+  // numbers stay. No loading spinner — the site renders immediately with
   // static data and upgrades in place when live data arrives.
   const [liveNonce, setLiveNonce] = useState(0);
   useEffect(() => {
@@ -4568,7 +4568,7 @@ export default function ExplorePage() {
       .then(data => {
         clearTimeout(timeoutId);
         if (cancelled || !data || typeof data.total !== "number") return;
-        // Mutate META in place â€” safe because this is our own import
+        // Mutate META in place — safe because this is our own import
         if (data.total > 0) META.totalRespondents = data.total;
         if (data.by_pathway) {
           Object.entries(data.by_pathway).forEach(([p, n]) => {
@@ -4584,7 +4584,7 @@ export default function ExplorePage() {
         setLiveNonce(n => n + 1);
       })
       .catch(() => {
-        // Silent fallback â€” static numbers already rendered
+        // Silent fallback — static numbers already rendered
         clearTimeout(timeoutId);
       });
 
@@ -4650,7 +4650,7 @@ export default function ExplorePage() {
           textTransform: "uppercase", letterSpacing: "0.12em",
           display: "flex", alignItems: "center", gap: "0.4rem",
         }}>
-          <span style={{ color: C.red }}>â˜…</span> Navigate
+          <span style={{ color: C.red }}>★</span> Navigate
         </button>
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1, minWidth: 180 }}>
@@ -4680,7 +4680,7 @@ export default function ExplorePage() {
             letterSpacing: "0.1em",
             transition: "all 0.2s ease"
           }}>
-            âž” Narrative Report
+            ➔ Narrative Report
           </Link>
         </div>
 
@@ -4706,17 +4706,17 @@ export default function ExplorePage() {
             }}>{t.l}</button>
           ))}
 
-          {/* Visual divider â€” these jump to sections within the curated view */}
+          {/* Visual divider — these jump to sections within the curated view */}
           <span style={{
             width: 1, height: 16,
             background: C.pageGhost,
             margin: "0 0.2rem",
           }} />
 
-          {/* Section jump pills â€” only visible/relevant in curated view */}
+          {/* Section jump pills — only visible/relevant in curated view */}
           {[
-            { id: "section-voices",       l: "Voices",       icon: "âœŽ" },
-            { id: "section-demographics", l: "Demographics", icon: "â—ˆ" },
+            { id: "section-voices",       l: "Voices",       icon: "✎" },
+            { id: "section-demographics", l: "Demographics", icon: "◈" },
           ].map(s => (
             <button key={s.id} onClick={() => {
               setView("curated");
@@ -4752,7 +4752,7 @@ export default function ExplorePage() {
           fontFamily: "'Barlow Condensed', sans-serif",
           fontSize: "0.72rem", fontWeight: 700,
           textTransform: "uppercase", letterSpacing: "0.1em",
-        }}>â˜… Methodology</button>
+        }}>★ Methodology</button>
 
         <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
           fontFamily: "'Barlow Condensed', sans-serif",
@@ -4768,7 +4768,7 @@ export default function ExplorePage() {
         }}>Take Survey</a>
       </nav>
 
-      {/* Cinematic Hero â€” only in curated mode, no activeId */}
+      {/* Cinematic Hero — only in curated mode, no activeId */}
       {view === "curated" && !activeId && (
         <div id="hero">
           <CinematicHero />
@@ -4786,7 +4786,7 @@ export default function ExplorePage() {
               <EditorsLetter />
             </div>
 
-            {/* â•â•â•â•â•â•â• SIX PATHWAYS â€” survey architecture, after the letter â•â•â•â•â•â•â• */}
+            {/* â•â•â•â•â•â•â• SIX PATHWAYS — survey architecture, after the letter â•â•â•â•â•â•â• */}
             <SixPathwaysCard />
 
             {CURATED_SECTIONS.map((sec, si) => {
@@ -4839,13 +4839,13 @@ export default function ExplorePage() {
               );
             })}
 
-            {/* â•â•â•â•â•â•â• VOICES â€” the narrative record, all six pathways â•â•â•â•â•â•â• */}
+            {/* â•â•â•â•â•â•â• VOICES — the narrative record, all six pathways â•â•â•â•â•â•â• */}
             <VoicesSection />
 
-            {/* â•â•â•â•â•â•â• DEMOGRAPHICS EXPLORER â€” the outlier-parents question â•â•â•â•â•â•â• */}
+            {/* â•â•â•â•â•â•â• DEMOGRAPHICS EXPLORER — the outlier-parents question â•â•â•â•â•â•â• */}
             <DemographicsExplorerCard />
 
-            {/* â•â•â•â•â•â•â• ACT ON THIS â€” from "so what?" to "so this" â•â•â•â•â•â•â• */}
+            {/* â•â•â•â•â•â•â• ACT ON THIS — from "so what?" to "so this" â•â•â•â•â•â•â• */}
             <UrgentPlaintiffCard />
             <StrategicPartnersCard />
             <ResourcesCard />
@@ -4900,7 +4900,7 @@ export default function ExplorePage() {
           maxWidth: 480,
           margin: "0 auto 2rem",
           lineHeight: 1.6,
-        }}>Every perspective strengthens this dataset. 30â€“90 minutes, fully anonymous, every question optional.</p>
+        }}>Every perspective strengthens this dataset. 30–90 minutes, fully anonymous, every question optional.</p>
         <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
           display: "inline-block",
           padding: "0.9rem 2.4rem",
@@ -4913,7 +4913,7 @@ export default function ExplorePage() {
           fontSize: "1rem",
           textTransform: "uppercase",
           letterSpacing: "0.12em",
-        }}>â˜… Take the Survey</a>
+        }}>★ Take the Survey</a>
       </div>
 
       {/* Footer */}
@@ -4955,7 +4955,7 @@ export default function ExplorePage() {
         </span>
         <br />
         <span style={{ fontSize: "0.72rem", color: C.red, fontWeight: 600, letterSpacing: "0.02em" }}>
-          â˜… WA plaintiff search (Equal Protection lawsuit):{" "}
+          ★ WA plaintiff search (Equal Protection lawsuit):{" "}
           <a href="mailto:plaintiff@circumsurvey.online" style={{ color: C.red, textDecoration: "underline" }}>plaintiff@circumsurvey.online</a>
         </span>
       </footer>

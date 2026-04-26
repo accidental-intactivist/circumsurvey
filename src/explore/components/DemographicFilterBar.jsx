@@ -27,6 +27,21 @@ export const DEMOGRAPHIC_DIMENSIONS = [
     ],
   },
   {
+    id: "pathway",
+    label: "Pathway",
+    column: "pathway",
+    options: [
+      { value: "intact", label: "Intact" },
+      { value: "circumcised", label: "Circumcised" },
+      { value: "restoring", label: "Restoring" },
+      { value: "observer", label: "Observer" },
+      { value: "trans", label: "Transgender (All)" },
+      { value: "trans_vaginoplasty", label: "Post-Vaginoplasty" },
+      { value: "trans_phalloplasty", label: "Post-Phalloplasty" },
+      { value: "intersex", label: "Intersex" }
+    ],
+  },
+  {
     id: "country_born",
     label: "Country Born",
     column: "country_born",
@@ -223,28 +238,32 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
                   >
                     — any {dim.label.toLowerCase()} —
                   </button>
-                  {dim.options.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => setFilter(dim.column, opt)}
-                      style={{
-                        width: "100%",
-                        padding: "0.4rem 0.7rem",
-                        background: activeValue === opt ? `rgba(212,160,48,0.12)` : "transparent",
-                        border: "none",
-                        color: activeValue === opt ? C.goldBright : C.text,
-                        fontFamily: FONT.body,
-                        fontSize: "0.76rem",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        fontWeight: activeValue === opt ? 600 : 400,
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = activeValue === opt ? `rgba(212,160,48,0.18)` : "rgba(255,255,255,0.03)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = activeValue === opt ? `rgba(212,160,48,0.12)` : "transparent"; }}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                  {dim.options.map((opt) => {
+                    const optValue = typeof opt === "string" ? opt : opt.value;
+                    const optLabel = typeof opt === "string" ? opt : opt.label;
+                    return (
+                      <button
+                        key={optValue}
+                        onClick={() => setFilter(dim.column, optValue)}
+                        style={{
+                          width: "100%",
+                          padding: "0.4rem 0.7rem",
+                          background: activeValue === optValue ? `rgba(212,160,48,0.12)` : "transparent",
+                          border: "none",
+                          color: activeValue === optValue ? C.goldBright : C.text,
+                          fontFamily: FONT.body,
+                          fontSize: "0.76rem",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          fontWeight: activeValue === optValue ? 600 : 400,
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = activeValue === optValue ? `rgba(212,160,48,0.18)` : "rgba(255,255,255,0.03)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = activeValue === optValue ? `rgba(212,160,48,0.12)` : "transparent"; }}
+                      >
+                        {optLabel}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -276,9 +295,17 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
 // Shorten long labels for display in the button
 function shortLabel(value) {
   if (!value) return "";
+  // Handle pathways gracefully
+  if (value === "trans") return "Transgender (All)";
+  if (value === "trans_vaginoplasty") return "Post-Vaginoplasty";
+  if (value === "trans_phalloplasty") return "Post-Phalloplasty";
+  if (value === "intact" || value === "circumcised" || value === "restoring" || value === "observer" || value === "intersex") {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  
   // Trim parenthetical era ranges from generation labels
   let v = value.replace(/\s*\([^)]*\)\s*$/, "");
   if (value.includes("United States")) v = "USA";
-  if (value.length > 28) v = v.slice(0, 25) + "…";
+  if (v.length > 28) v = v.slice(0, 25) + "…";
   return v;
 }

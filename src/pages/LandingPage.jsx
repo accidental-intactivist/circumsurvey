@@ -18,6 +18,7 @@ import {
 } from "../demographics.js";
 import { VOICES_THEMES } from "../voices.js";
 import CulturalAlignmentSection from "../components/CulturalAlignmentSection.jsx";
+import HarmonicCanvas from "../components/HarmonicCanvas.jsx";
 
 // ── Type scale (bumped per Tone's feedback) ────────────────────
 const TYPE = {
@@ -635,7 +636,7 @@ function CinematicHero() {
       background: `radial-gradient(ellipse at center, ${C.bgSoft} 0%, ${C.bg} 50%, ${C.bgDeep} 100%)`,
       borderBottom: `1px solid ${C.pageGhost}`,
     }}>
-      <RespondentArtwork opacity={0.2} />
+      <HarmonicCanvas />
 
       {/* Rainbow bar at very top */}
       <div style={{
@@ -4669,12 +4670,12 @@ export default function LandingPage() {
         gap: "0.75rem", flexWrap: "wrap",
       }}>
         <button onClick={() => setSidebarOpen(true)} style={{
-          background: "none", border: `1px solid ${C.pageGhost}`, borderRadius: 4,
+          background: "transparent", border: `1px solid ${C.pageGhost}`, borderRadius: 100,
           color: C.pageMuted, cursor: "pointer",
-          padding: "0.4rem 0.7rem",
+          padding: "0.35rem 0.75rem",
           fontFamily: "'Barlow Condensed', sans-serif",
           fontWeight: 700, fontSize: "0.75rem",
-          textTransform: "uppercase", letterSpacing: "0.12em",
+          textTransform: "uppercase", letterSpacing: "0.1em",
           display: "flex", alignItems: "center", gap: "0.4rem",
         }}>
           <span style={{ color: C.red }}>★</span> Navigate
@@ -4694,11 +4695,11 @@ export default function LandingPage() {
           </Link>
           <Link to="/explore" style={{
             marginLeft: "0.5rem",
-            padding: "0.3rem 0.8rem",
+            padding: "0.35rem 0.8rem",
             background: "rgba(212,160,48,0.1)",
             border: `1px solid rgba(212,160,48,0.4)`,
             color: C.goldBright,
-            borderRadius: 4,
+            borderRadius: 100,
             textDecoration: "none",
             fontFamily: "'Barlow Condensed', sans-serif",
             fontWeight: 700,
@@ -4723,13 +4724,14 @@ export default function LandingPage() {
               borderRadius: 100,
               cursor: "pointer",
               fontFamily: "'Barlow Condensed', sans-serif",
-              fontSize: "0.7rem",
+              fontSize: "0.75rem",
               fontWeight: 700,
               border: view === t.id ? `1.5px solid ${C.gold}` : `1px solid ${C.pageGhost}`,
               background: view === t.id ? "rgba(212,160,48,0.12)" : "transparent",
               color: view === t.id ? C.gold : C.pageDim,
               textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.1em",
+              transition: "all 0.2s ease"
             }}>{t.l}</button>
           ))}
 
@@ -4756,17 +4758,18 @@ export default function LandingPage() {
               padding: "0.35rem 0.75rem",
               borderRadius: 100,
               cursor: "pointer",
-              fontFamily: "'Josefin Sans', sans-serif",
-              fontSize: "0.7rem",
-              fontWeight: 600,
-              border: `1px solid ${C.orangeBright}`,
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              border: `1px solid rgba(240,152,96,0.6)`,
               background: "rgba(240,152,96,0.08)",
               color: C.orangeBright,
               textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.1em",
               display: "flex",
               alignItems: "center",
               gap: "0.3rem",
+              transition: "all 0.2s ease"
             }}>
               <span>{s.icon}</span>
               {s.l}
@@ -4775,23 +4778,26 @@ export default function LandingPage() {
         </div>
 
         <button onClick={() => setMethodologyOpen(true)} style={{
-          background: "none", border: "none", color: C.pageMuted, cursor: "pointer",
+          background: "transparent", border: "none", color: C.pageMuted, cursor: "pointer",
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: "0.72rem", fontWeight: 700,
+          fontSize: "0.75rem", fontWeight: 700,
           textTransform: "uppercase", letterSpacing: "0.1em",
+          padding: "0.35rem 0.75rem",
+          display: "flex", alignItems: "center", gap: "0.3rem"
         }}>★ Methodology</button>
 
         <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
           fontFamily: "'Barlow Condensed', sans-serif",
-          fontSize: "0.7rem",
+          fontSize: "0.75rem",
           fontWeight: 700,
           color: C.bg,
           background: C.gold,
-          padding: "0.4rem 0.9rem",
-          borderRadius: 3,
+          padding: "0.35rem 0.9rem",
+          borderRadius: 100,
           textDecoration: "none",
           textTransform: "uppercase",
           letterSpacing: "0.1em",
+          transition: "all 0.2s ease"
         }}>Take Survey</a>
       </nav>
 

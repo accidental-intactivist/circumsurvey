@@ -28,11 +28,22 @@ export default function NarrativeList({ distribution }) {
           }
           
           let locStr = "";
-          const region = item.us_state_now || item.canada_province_now;
-          if (region && item.country_now) {
-            locStr = `${region}, ${item.country_now}`;
-          } else if (item.country_now) {
-            locStr = item.country_now;
+          let region = item.us_state_now || item.canada_province_now;
+          if (region && typeof region === 'string' && region.includes(" - ")) {
+            region = region.split(" - ").pop().trim();
+          }
+          
+          let country = item.country_now;
+          if (country === "United States of America (USA)") {
+            country = "USA";
+          } else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") {
+            country = "UK";
+          }
+
+          if (region && country) {
+            locStr = `${region}, ${country}`;
+          } else if (country) {
+            locStr = country;
           }
 
           return (

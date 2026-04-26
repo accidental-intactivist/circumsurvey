@@ -38,13 +38,22 @@ export const PATHWAYS = {
     n: 37,
     desc: "Partners, parents, providers, advocates",
   },
-  trans: {
-    id: "trans",
-    label: "Trans",
+  trans_vaginoplasty: {
+    id: "trans_vaginoplasty",
+    label: "Post-Vaginoplasty",
     emoji: "🔴",
-    color: PATH_COLORS.trans,
+    color: PATH_COLORS.trans_vaginoplasty,
     n: 0,
-    desc: "Post-vaginoplasty & post-phalloplasty",
+    desc: "Trans women who have undergone vaginoplasty",
+    waiting: true,
+  },
+  trans_phalloplasty: {
+    id: "trans_phalloplasty",
+    label: "Post-Phalloplasty",
+    emoji: "🔴",
+    color: PATH_COLORS.trans_phalloplasty,
+    n: 0,
+    desc: "Trans men who have undergone phalloplasty",
     waiting: true,
   },
   intersex: {
@@ -58,7 +67,7 @@ export const PATHWAYS = {
   },
 };
 
-export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans", "intersex"];
+export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans_vaginoplasty", "trans_phalloplasty", "intersex"];
 
 // ── Survey phase ordering ──────────────────────────────────────────────────
 // The survey has three phases: Universal questions, then Pathway-specific,

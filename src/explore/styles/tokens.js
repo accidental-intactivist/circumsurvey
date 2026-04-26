@@ -37,7 +37,8 @@ export const PATH_COLORS = {
   circumcised: "#d94f4f",
   restoring: "#e8c868",
   observer: "#e8a44a",
-  trans: "#e85d50",
+  trans_vaginoplasty: "#e85d50",
+  trans_phalloplasty: "#c64639",
   intersex: "#b0a888",
   all: "#d4a030",
 };

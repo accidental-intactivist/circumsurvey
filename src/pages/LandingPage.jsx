@@ -2609,6 +2609,22 @@ function SixPathwaysCard() {
 
 // One quote, rendered consistently across all cards
 function VoiceQuote({ quote, pathwayColor, compact }) {
+  let genStr = quote.generation || "Unknown Gen";
+  if (genStr.includes("(born")) {
+    genStr = genStr.split("(born")[0].trim();
+  }
+  if (genStr === "Boomer") {
+    genStr = "Baby Boomer";
+  }
+  
+  let locStr = "";
+  const region = quote.us_state_now || quote.canada_province_now;
+  if (region && quote.country_now) {
+    locStr = `${region}, ${quote.country_now}`;
+  } else if (quote.country_now) {
+    locStr = quote.country_now;
+  }
+
   return (
     <blockquote style={{
       margin: 0,
@@ -2637,8 +2653,7 @@ function VoiceQuote({ quote, pathwayColor, compact }) {
         color: C.paperDim,
         fontWeight: 600,
       }}>
-        {quote.age ? `Age ${quote.age}` : "Age —"}
-        {quote.generation && ` · ${quote.generation}`}
+        {genStr} {locStr ? ` · ${locStr}` : ""}
       </div>
     </blockquote>
   );

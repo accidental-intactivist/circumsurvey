@@ -14,6 +14,12 @@ import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
 import QuestionPage from "./pages/QuestionPage";
 import CulturalAlignmentPage from "./pages/CulturalAlignmentPage";
+import MirrorPairsPage from "./pages/MirrorPairsPage";
+import DemographicsDashboardPage from "./pages/DemographicsDashboardPage";
+import ReligiousMirrorsPage from "./pages/ReligiousMirrorsPage";
+import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
+import GenerationalFaultlinesPage from "./pages/GenerationalFaultlinesPage";
+import ObserverTriadPage from "./pages/ObserverTriadPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -30,6 +36,18 @@ export default function ExploreShell() {
     page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "cultural-alignment") {
     page = <CulturalAlignmentPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "pairs") {
+    page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "demographics") {
+    page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "religious-mirrors") {
+    page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "narrative-mirrors") {
+    page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "generational-faultlines") {
+    page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "observer-triad") {
+    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   }

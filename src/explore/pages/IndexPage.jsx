@@ -73,8 +73,17 @@ export default function IndexPage({ routerState, navigate, updateState }) {
   const filteredGrouped = useMemo(() => {
     if (!questions) return null;
 
-    // 1. Apply section filter (if selected)
-    let filtered = questions;
+    // 1. Apply section filter (if selected) and exclude mechanical/meta questions
+    const EXCLUDED_IDS = [
+      "q347",
+      "observe_healthcare_stance_rec_against",
+      "observe_healthcare_stance_lean_against",
+      "observe_healthcare_stance_neutral",
+      "observe_healthcare_stance_lean_for",
+      "observe_healthcare_stance_rec_for",
+      "observe_healthcare_stance_avoid"
+    ];
+    let filtered = questions.filter(q => !EXCLUDED_IDS.includes(q.id) && !q.id.startsWith("meta_"));
     if (section) {
       filtered = filtered.filter((q) => q.section === section);
     }
@@ -249,6 +258,145 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                 marginBottom: "0.6rem",
                 paddingLeft: "0.2rem"
               }}>Tools</div>
+
+              <a
+                href="#/pairs"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                ⚖️ Mirror Pairs View →
+              </a>
+
+              <a
+                href="#/demographics"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                📊 Demographics Dashboard →
+              </a>
+
+              <a
+                href="#/religious-mirrors"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                ⚖️ Religious Mirrors View →
+              </a>
+
+              <a
+                href="#/narrative-mirrors"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                📜 Narrative Mirrors View →
+              </a>
+
+              <a
+                href="#/generational-faultlines"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                ⏳ Generational Faultlines →
+              </a>
+
+              <a
+                href="#/observer-triad"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                👁️ The Observer Triad →
+              </a>
+
               <a
                 href="#/tools/cultural-alignment"
                 style={{
@@ -509,18 +657,51 @@ function SectionGroup({ group, pathway, distributions, cohortDistributions, navi
 
       {/* Questions */}
       <div style={{ display: "flex", flexDirection: "column", gap: "0.12rem" }}>
-        {group.questions.map((q, i) => (
-          <div key={q.id} data-qid={q.id}>
-            <QuestionRow
-              q={q}
-              index={i}
-              distribution={distributions[q.id]}
-              cohortDistribution={cohortDistributions[q.id]}
-              onClick={() => navigate("question", { id: q.id })}
-              searchTerm={searchTerm}
-            />
-          </div>
-        ))}
+        {group.section === "Religion" ? (
+          ["Universal", "Jewish", "Christian", "Islamic"].map(sub => {
+            const subQuestions = group.questions.filter(q => {
+              if (sub === "Jewish") return q.id.includes("jewish");
+              if (sub === "Christian") return q.id.includes("christian");
+              if (sub === "Islamic") return q.id.includes("islamic");
+              return !q.id.includes("jewish") && !q.id.includes("christian") && !q.id.includes("islamic");
+            });
+            if (subQuestions.length === 0) return null;
+            return (
+              <div key={sub} style={{ marginBottom: "1rem" }}>
+                <div style={{
+                  fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.goldBright, 
+                  textTransform: "uppercase", letterSpacing: "0.12em", padding: "0.5rem 0.5rem 0.3rem"
+                }}>
+                  {sub === "Universal" ? "🌐 Universal Religion" : 
+                   sub === "Jewish" ? "✡️ Jewish Perspectives" :
+                   sub === "Christian" ? "✝️ Christian Perspectives" : "☪️ Islamic Perspectives"}
+                </div>
+                {subQuestions.map((q, i) => (
+                  <div key={q.id} data-qid={q.id}>
+                    <QuestionRow
+                      q={q} index={i}
+                      distribution={distributions[q.id]} cohortDistribution={cohortDistributions[q.id]}
+                      onClick={() => navigate("question", { id: q.id })} searchTerm={searchTerm}
+                    />
+                  </div>
+                ))}
+              </div>
+            );
+          })
+        ) : (
+          group.questions.map((q, i) => (
+            <div key={q.id} data-qid={q.id}>
+              <QuestionRow
+                q={q}
+                index={i}
+                distribution={distributions[q.id]}
+                cohortDistribution={cohortDistributions[q.id]}
+                onClick={() => navigate("question", { id: q.id })}
+                searchTerm={searchTerm}
+              />
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

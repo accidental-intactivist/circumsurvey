@@ -76,6 +76,15 @@ export async function getResponseDistribution(questionId, { pathway = null, coho
   return fetchJson(`${API_BASE}/response-distribution?${params.toString()}`);
 }
 
+export async function getNarratives(questionId, { pathway = null, cohort = null } = {}) {
+  const params = new URLSearchParams();
+  params.set("q", questionId);
+  if (pathway) params.set("pathway", pathway);
+  const filter = cohortToFilterParam(cohort);
+  if (filter) params.set("filter", filter);
+  return fetchJson(`${API_BASE}/narratives?${params.toString()}`);
+}
+
 export async function getAggregate(questionId, { by = "pathway", cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);

@@ -23,6 +23,18 @@ function parseHash() {
     params.id = segments[1];
   } else if (segments[0] === "tools" && segments[1] === "cultural-alignment") {
     route = "cultural-alignment";
+  } else if (segments[0] === "pairs") {
+    route = "pairs";
+  } else if (segments[0] === "demographics") {
+    route = "demographics";
+  } else if (segments[0] === "religious-mirrors") {
+    route = "religious-mirrors";
+  } else if (segments[0] === "narrative-mirrors") {
+    route = "narrative-mirrors";
+  } else if (segments[0] === "generational-faultlines") {
+    route = "generational-faultlines";
+  } else if (segments[0] === "observer-triad") {
+    route = "observer-triad";
   }
 
   // Extract standardized query state
@@ -51,6 +63,8 @@ function serializeState(route, params, state) {
   if (route === "pathways") path = "/pathways";
   else if (route === "question") path = `/q/${params.id}`;
   else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
+  else if (route === "pairs") path = "/pairs";
+  else if (route === "demographics") path = "/demographics";
   else path = "/";
 
   const q = new URLSearchParams();

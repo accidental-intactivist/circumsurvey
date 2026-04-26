@@ -19,7 +19,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from "react";
-import CulturalAlignmentMatrix, { NORM_COLUMNS, PATHWAY_ROWS } from "./CulturalAlignmentMatrix";
+import CulturalAlignmentMatrix, { NORM_COLUMNS, PATHWAY_ROWS } from "../../components/CulturalAlignmentMatrix";
 import DemographicFilterBar from "../components/DemographicFilterBar";
 import { C, FONT, RAINBOW, API_BASE } from "../styles/tokens";
 

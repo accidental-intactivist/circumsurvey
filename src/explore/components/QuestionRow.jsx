@@ -97,16 +97,31 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
           )}
 
           {/* Prompt */}
-          <span style={{
-            fontFamily: FONT.body,
-            fontSize: "0.83rem",
-            color: C.text,
-            lineHeight: 1.4,
+          <div style={{
             flex: "1 1 60%",
             minWidth: 0,
           }}>
-            {promptDisplay}
-          </span>
+            <div style={{
+              fontFamily: FONT.body,
+              fontSize: "0.83rem",
+              color: C.text,
+              lineHeight: 1.4,
+            }}>
+              {promptDisplay}
+            </div>
+            {q.subtitle && (
+              <div style={{
+                fontFamily: FONT.body,
+                fontSize: "0.75rem",
+                color: C.muted,
+                marginTop: "0.25rem",
+                lineHeight: 1.35,
+                fontStyle: "italic",
+              }}>
+                {q.subtitle}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Bottom row: ID + n= + sparkline */}

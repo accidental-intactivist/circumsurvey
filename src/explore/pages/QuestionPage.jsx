@@ -7,9 +7,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
-import { getQuestions, getResponseDistribution, getAggregate } from "../lib/api";
+import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
 import { colorForLabel } from "../components/MiniSparkline";
 import DemographicFilterBar from "../components/DemographicFilterBar";
+import GeographicHeatmap from "../components/GeographicHeatmap";
+import GenerationalTrendChart from "../components/GenerationalTrendChart";
+import NarrativeList from "../components/NarrativeList";
+import { useTooltip, Tooltip } from "../components/Tooltip";
+import DistributionChart from "../components/DistributionChart";
 
 export default function QuestionPage({ routerState, navigate, updateState }) {
   const { params, cohort } = routerState;
@@ -58,10 +63,32 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     return () => { cancelled = true; };
   }, [questionId, JSON.stringify(cohort)]);
 
+  // ── Narrative fetch (if open_text) ──────────────────────────────────────
+  useEffect(() => {
+    if (!question || question.type !== "open_text") return;
+    let cancelled = false;
+    getNarratives(questionId).then((d) => {
+      if (!cancelled && d.narratives) {
+        setAllDistribution((prev) => ({ ...prev, distribution: d.narratives }));
+      }
+    }).catch(() => {});
+    
+    if (cohort) {
+      getNarratives(questionId, { cohort }).then((d) => {
+        if (!cancelled && d.narratives) {
+          setCohortDistribution((prev) => ({ ...prev, distribution: d.narratives }));
+        }
+      }).catch(() => {});
+    }
+
+    return () => { cancelled = true; };
+  }, [question, JSON.stringify(cohort)]);
+
   // ── Render ──────────────────────────────────────────────────────────────
 
   const pathwayObj = question?.pathway && question.pathway !== "all" ? PATHWAYS[question.pathway] : null;
-  const isOpenText = question?.type === "open_text";
+  const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current"].includes(question?.id);
+  const isOpenText = question?.type === "open_text" && !isGeographic;
 
   return (
     <div style={{
@@ -158,10 +185,22 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
               letterSpacing: "-0.01em",
               marginBottom: "0.45rem",
             }}>{question.prompt}</h1>
+            {question.subtitle && (
+              <p style={{
+                fontFamily: FONT.body,
+                fontSize: "1.1rem",
+                lineHeight: 1.5,
+                color: C.muted,
+                marginTop: "1rem",
+                marginBottom: 0,
+                maxWidth: 800
+              }}>{question.subtitle}</p>
+            )}
             <div style={{
               fontFamily: FONT.mono,
               fontSize: "0.7rem",
               color: C.dim,
+              marginTop: "0.5rem"
             }}>{question.id} · col_idx {question.col_idx}</div>
           </div>
         )}
@@ -222,7 +261,18 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             {/* RIGHT: content */}
             <main>
               {isOpenText ? (
-                <OpenTextNotice />
+                <NarrativeList distribution={cohortDistribution || allDistribution?.distribution} />
+              ) : isGeographic ? (
+                <>
+                  <GeographicHeatmap 
+                    questionId={question.id}
+                    title="Geographic distribution"
+                    distribution={allDistribution}
+                    cohortDistribution={cohortDistribution}
+                    byPathway={byPathway}
+                  />
+                  <GenerationalTrendChart questionId={question.id} />
+                </>
               ) : (
                 <>
                   <DistributionChart
@@ -234,6 +284,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                   {byPathway && Object.keys(byPathway.results || {}).length > 1 && (
                     <PathwayBreakdown byPathway={byPathway} />
                   )}
+                  
+                  <GenerationalTrendChart questionId={question.id} />
                 </>
               )}
             </main>
@@ -246,179 +298,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
 // ── Sub-components ───────────────────────────────────────────────────────
 
-function OpenTextNotice() {
-  return (
-    <div style={{
-      padding: "2rem 1.5rem",
-      textAlign: "center",
-      background: C.bgSoft,
-      border: `1px solid ${C.ghost}`,
-      borderRadius: 8,
-    }}>
-      <div style={{ fontSize: "2rem", marginBottom: "0.6rem" }}>📝</div>
-      <h3 style={{
-        fontFamily: FONT.display,
-        fontWeight: 600,
-        fontSize: "1.1rem",
-        color: C.text,
-        marginBottom: "0.5rem",
-      }}>Open-response question</h3>
-      <p style={{
-        fontFamily: FONT.body,
-        fontSize: "0.88rem",
-        color: C.muted,
-        maxWidth: 500,
-        margin: "0 auto",
-        lineHeight: 1.5,
-      }}>
-        This question collects free-text responses. Qualitative narrative analysis isn't available in the API yet — coming in a future release. For now, contact the research team for access to these responses.
-      </p>
-    </div>
-  );
-}
-
-function DistributionChart({ title, distribution, cohortDistribution }) {
-  if (!distribution) {
-    return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;
-  }
-  const dist = distribution.distribution || [];
-  if (dist.length === 0) {
-    return (
-      <div style={{
-        padding: "1.5rem",
-        background: C.bgSoft,
-        border: `1px solid ${C.ghost}`,
-        borderRadius: 8,
-        color: C.muted,
-        fontStyle: "italic",
-        textAlign: "center",
-      }}>No distribution data available for this question.</div>
-    );
-  }
-
-  const total = dist.reduce((s, d) => s + d.n, 0);
-  const cohortDist = cohortDistribution?.distribution || [];
-  const cohortTotal = cohortDist.reduce((s, d) => s + d.n, 0);
-
-  // Build a map for cohort comparison
-  const cohortMap = {};
-  for (const d of cohortDist) cohortMap[d.label] = d.n;
-
-  return (
-    <div style={{
-      background: C.bgSoft,
-      border: `1px solid ${C.ghost}`,
-      borderRadius: 8,
-      padding: "1.2rem",
-      marginBottom: "1.2rem",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.9rem", flexWrap: "wrap", gap: "0.5rem" }}>
-        <h2 style={{
-          fontFamily: FONT.display,
-          fontWeight: 700,
-          fontSize: "1.15rem",
-          color: C.textBright,
-          letterSpacing: "-0.01em",
-        }}>{title}</h2>
-        <div style={{
-          fontFamily: FONT.mono,
-          fontSize: "0.75rem",
-          color: C.muted,
-        }}>n = {total}</div>
-      </div>
-
-      {/* Stacked horizontal bar */}
-      <StackedBar dist={dist} total={total} />
-
-      {/* Legend / per-option rows */}
-      <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-        {dist.map((d, i) => {
-          const pct = total > 0 ? (d.n / total) * 100 : 0;
-          const cohortN = cohortMap[d.label] || 0;
-          const cohortPct = cohortTotal > 0 ? (cohortN / cohortTotal) * 100 : 0;
-          const hasCohort = !!cohortDistribution;
-          return (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <div style={{
-                width: 10, height: 10, borderRadius: 2,
-                background: colorForLabel(d.label),
-                flexShrink: 0,
-              }} />
-              <div style={{
-                flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
-                color: C.text, minWidth: 0, overflow: "hidden",
-                textOverflow: "ellipsis", whiteSpace: "nowrap",
-              }}>{d.label}</div>
-              <div style={{
-                fontFamily: FONT.mono, fontSize: "0.74rem",
-                color: C.muted, minWidth: 70, textAlign: "right",
-              }}>
-                {d.n} · {pct.toFixed(1)}%
-              </div>
-              {hasCohort && (
-                <div style={{
-                  fontFamily: FONT.mono, fontSize: "0.72rem",
-                  color: cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted,
-                  minWidth: 90, textAlign: "right",
-                  fontWeight: 600,
-                }}>
-                  {cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —"}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Cohort caption */}
-      {cohortDistribution && cohortTotal > 0 && (
-        <div style={{
-          marginTop: "0.9rem",
-          padding: "0.55rem 0.8rem",
-          background: "rgba(212,160,48,0.06)",
-          border: "1px solid rgba(212,160,48,0.2)",
-          borderRadius: 6,
-          fontFamily: FONT.body,
-          fontSize: "0.76rem",
-          color: C.muted,
-          lineHeight: 1.5,
-        }}>
-          <span style={{ color: C.goldBright, fontWeight: 600 }}>Cohort:</span>{" "}
-          {cohortTotal} respondents match your filter. Green values are <em>overrepresented</em> in the cohort relative to the full sample; red is <em>underrepresented</em>.
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StackedBar({ dist, total }) {
-  if (total === 0) return null;
-  let xCursor = 0;
-  return (
-    <svg width="100%" height="24" style={{ display: "block", borderRadius: 4, overflow: "hidden" }}>
-      <rect x={0} y={0} width="100%" height="24" fill={C.ghost} />
-      {dist.map((d, i) => {
-        const pct = (d.n / total) * 100;
-        const x = xCursor;
-        xCursor += pct;
-        return (
-          <rect
-            key={i}
-            x={`${x}%`}
-            y={0}
-            width={`${pct}%`}
-            height={24}
-            fill={colorForLabel(d.label)}
-          >
-            <title>{`${d.label}: ${d.n} (${pct.toFixed(1)}%)`}</title>
-          </rect>
-        );
-      })}
-    </svg>
-  );
-}
-
 function PathwayBreakdown({ byPathway }) {
+  const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const results = byPathway.results || {};
   const pathwaysWithData = PATHWAY_IDS
     .filter((id) => results[id] && results[id].n > 0)
@@ -472,9 +353,12 @@ function PathwayBreakdown({ byPathway }) {
                   const x = xCursor;
                   xCursor += pct;
                   return (
-                    <rect key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label)}>
-                      <title>{`${d.label}: ${d.n} (${pct.toFixed(1)}%)`}</title>
-                    </rect>
+                    <rect 
+                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label)}
+                      onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
+                      onMouseMove={moveTooltip}
+                      onMouseLeave={hideTooltip}
+                    />
                   );
                 })}
               </svg>
@@ -482,6 +366,7 @@ function PathwayBreakdown({ byPathway }) {
           );
         })}
       </div>
+      <Tooltip {...tooltip} />
     </div>
   );
 }

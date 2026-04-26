@@ -55,6 +55,8 @@ export default {
         response = await handleAggregate(env, url);
       } else if (path === "/response-distribution") {
         response = await handleResponseDistribution(env, url);
+      } else if (path === "/narratives") {
+        response = await handleNarratives(env, url);
       } else if (path === "/geo") {
         response = await handleGeo(env, url);
       } else if (path === "/health") {
@@ -313,6 +315,52 @@ async function handleResponseDistribution(env, url) {
     filters,
     n: total,
     distribution
+  });
+}
+
+async function handleNarratives(env, url) {
+  const questionId = url.searchParams.get("q");
+  const filters = url.searchParams.getAll("filter");
+  if (!questionId) return errorJson("Missing required parameter: q", 400);
+
+  const bindings = [questionId];
+  let filterWhere = "";
+  let needsReligion = false;
+
+  for (const filter of filters) {
+    const parsed = parseFilter(filter);
+    if (parsed) {
+      if (parsed.table === "religion") {
+        needsReligion = true;
+        filterWhere += ` AND rg.${parsed.column} = ?`;
+        bindings.push(parsed.value);
+      } else if (parsed.table === "demographics") {
+        filterWhere += ` AND d.${parsed.column} = ?`;
+        bindings.push(parsed.value);
+      }
+    }
+  }
+
+  let filterJoin = " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
+  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+
+  const sql = `
+    SELECT r.value_text AS text, resp.pathway, d.generation, d.age_bracket, 
+           d.country_born, d.country_now, d.us_state_born, d.us_state_now,
+           d.canada_province_born, d.canada_province_now
+    FROM responses r
+    JOIN respondents resp ON resp.id = r.respondent_id
+    ${filterJoin}
+    WHERE r.question_id = ?
+    ${filterWhere}
+    AND r.value_text IS NOT NULL
+  `;
+  const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+  return json({
+    question: questionId,
+    filters,
+    n: results.length,
+    narratives: results
   });
 }
 

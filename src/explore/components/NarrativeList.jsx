@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { C, FONT } from "../styles/tokens";
 
 export default function NarrativeList({ distribution }) {
@@ -8,43 +8,64 @@ export default function NarrativeList({ distribution }) {
     return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
   }
   
-  // The API returns narratives as `{ text, pathway, generation }` (or legacy `{ label, n }`)
-  const visible = distribution.slice(0, limit);
+  // Group identical responses (case-insensitive)
+  const grouped = useMemo(() => {
+    const map = new Map();
+    distribution.forEach(item => {
+      const text = item.text || item.label || "";
+      const normalized = text.trim().toLowerCase();
+      if (!normalized) return;
+      
+      if (!map.has(normalized)) {
+        map.set(normalized, {
+          text: text.trim(), // keep original case of the first entry
+          count: 1,
+          items: [item]
+        });
+      } else {
+        const group = map.get(normalized);
+        group.count++;
+        group.items.push(item);
+      }
+    });
+    
+    // Sort by count descending, then alphabetically
+    return Array.from(map.values()).sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return a.text.localeCompare(b.text);
+    });
+  }, [distribution]);
+
+  const visible = grouped.slice(0, limit);
   
   return (
     <div style={{ marginTop: "1rem" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        {visible.map((item, i) => {
-          const text = item.text || item.label;
-          const hasMeta = item.pathway || item.generation;
+        {visible.map((group, i) => {
+          const text = group.text;
+          const count = group.count;
+          const item = group.items[0];
+          
+          // Only show metadata if this is a unique response
+          const hasMeta = count === 1 && (item.pathway || item.generation);
           
           let genStr = item.generation || "Unknown Gen";
-          // Simplify "Millennial/Gen Y (born 1981-1996)" to "Millennial/Gen Y"
           if (genStr.includes("(born")) {
             genStr = genStr.split("(born")[0].trim();
           }
-          if (genStr === "Boomer") {
-            genStr = "Baby Boomer";
-          }
+          if (genStr === "Boomer") genStr = "Baby Boomer";
           
           let locStr = "";
           let region = item.us_state_now || item.canada_province_now;
           if (region && typeof region === 'string' && region.includes(" - ")) {
             region = region.split(" - ").pop().trim();
           }
-          
           let country = item.country_now;
-          if (country === "United States of America (USA)") {
-            country = "USA";
-          } else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") {
-            country = "UK";
-          }
+          if (country === "United States of America (USA)") country = "USA";
+          else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
 
-          if (region && country) {
-            locStr = `${region}, ${country}`;
-          } else if (country) {
-            locStr = country;
-          }
+          if (region && country) locStr = `${region}, ${country}`;
+          else if (country) locStr = country;
 
           return (
             <div key={i} style={{
@@ -60,7 +81,25 @@ export default function NarrativeList({ distribution }) {
               flexDirection: "column",
               gap: "0.8rem"
             }}>
-              <div>"{text}"</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
+                <div style={{ flex: 1, wordBreak: "break-word" }}>"{text}"</div>
+                {count > 1 && (
+                  <div style={{
+                    fontFamily: FONT.mono,
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    color: C.goldBright,
+                    background: "rgba(212,160,48,0.12)",
+                    border: `1px solid rgba(212,160,48,0.3)`,
+                    padding: "0.25rem 0.5rem",
+                    borderRadius: 6,
+                    whiteSpace: "nowrap"
+                  }}>
+                    n = {count}
+                  </div>
+                )}
+              </div>
+              
               {hasMeta && (
                 <div style={{
                   fontFamily: FONT.condensed,
@@ -78,7 +117,7 @@ export default function NarrativeList({ distribution }) {
         })}
       </div>
       
-      {limit < distribution.length && (
+      {limit < grouped.length && (
         <button 
           onClick={() => setLimit(l => l + 20)}
           style={{
@@ -98,7 +137,7 @@ export default function NarrativeList({ distribution }) {
           onMouseOver={e => e.target.style.background = C.ghost}
           onMouseOut={e => e.target.style.background = "transparent"}
         >
-          Load More ({distribution.length - limit} remaining)
+          Load More ({grouped.length - limit} remaining)
         </button>
       )}
     </div>

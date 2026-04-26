@@ -3,7 +3,7 @@
 // Universal → Pathways (with Observer sub-roles) → Synthesis
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { C, FONT } from "../styles/tokens";
+import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, OBSERVER_SUBROLES } from "../lib/pathways";
 
 // A single nav row
@@ -11,11 +11,27 @@ function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, 
   const fontSize = smaller ? "0.72rem" : "0.78rem";
   const sublabelSize = smaller ? "0.64rem" : "0.7rem";
   return (
-    <div
-      onClick={onClick}
-      style={{
-        padding: smaller ? "0.32rem 0.5rem" : "0.52rem 0.65rem",
-        paddingLeft: `${0.65 + indent * 0.8}rem`,
+    <div style={{ position: "relative" }}>
+      {/* Subway node dot */}
+      <div style={{
+        position: "absolute",
+        left: "-0.65rem",
+        top: "1.1rem",
+        transform: "translateY(-50%)",
+        width: selected ? 8 : 6,
+        height: selected ? 8 : 6,
+        borderRadius: "50%",
+        background: selected ? color : `${color}80`,
+        border: `2px solid ${C.bg}`,
+        zIndex: 2,
+        transition: "all 0.2s",
+      }} />
+
+      <div
+        onClick={onClick}
+        style={{
+          padding: smaller ? "0.32rem 0.5rem" : "0.52rem 0.65rem",
+          paddingLeft: `${0.65 + indent * 0.8}rem`,
         background: selected ? `${color}14` : "transparent",
         border: `1px solid ${selected ? `${color}50` : "transparent"}`,
         borderRadius: 6,
@@ -23,20 +39,20 @@ function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, 
         transition: "background 0.15s",
         position: "relative",
       }}
-      onMouseEnter={(e) => { if (onClick && !selected) e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
-      onMouseLeave={(e) => { if (onClick && !selected) e.currentTarget.style.background = "transparent"; }}
-    >
-      {selected && (
-        <div style={{
-          position: "absolute",
-          left: 0,
-          top: "20%",
-          bottom: "20%",
-          width: 2,
-          background: color,
-          borderRadius: 2,
-        }} />
-      )}
+        onMouseEnter={(e) => { if (onClick && !selected) e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
+        onMouseLeave={(e) => { if (onClick && !selected) e.currentTarget.style.background = "transparent"; }}
+      >
+        {selected && (
+          <div style={{
+            position: "absolute",
+            left: 0,
+            top: "20%",
+            bottom: "20%",
+            width: 2,
+            background: color,
+            borderRadius: 2,
+          }} />
+        )}
       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
         {emoji && <span style={{ fontSize: smaller ? "0.8rem" : "0.95rem" }}>{emoji}</span>}
         <span style={{
@@ -94,7 +110,8 @@ function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, 
           marginTop: "0.1rem",
           lineHeight: 1.35,
         }}>{desc}</div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -150,7 +167,25 @@ export default function SurveyMapNav({
   const synthesisPhase = SURVEY_PHASES.find(p => p.id === "synthesis");
 
   return (
-    <nav style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+    <nav style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      gap: "0.2rem", 
+      position: "relative",
+      paddingLeft: "0.9rem" 
+    }}>
+      {/* The main trunk line (Subway map style) */}
+      <div style={{
+        position: "absolute",
+        left: "0.25rem",
+        top: "1.2rem",
+        bottom: "1rem",
+        width: 2,
+        background: `linear-gradient(to bottom, ${C.gold}40 0%, ${PATH_COLORS.observer}60 40%, ${PATH_COLORS.intact}60 60%, ${C.gold}40 100%)`,
+        zIndex: 1,
+        borderRadius: 2,
+      }} />
+
       {/* Universal phase */}
       <PhaseHeader phase={universalPhase} />
       {universalPhase.sections.map((s) => (

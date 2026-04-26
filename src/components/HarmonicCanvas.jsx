@@ -19,6 +19,20 @@ export default function HarmonicCanvas() {
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
+    let isVisible = true;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animationFrameId) {
+          render();
+        } else if (!isVisible && animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+      });
+    }, { rootMargin: '100px' });
+    observer.observe(canvas);
+
     // Helper functions for math and colors
     const lerp = (start, end, t) => start + (end - start) * t;
     
@@ -68,31 +82,42 @@ export default function HarmonicCanvas() {
 
     const focalLength = 800;
     const steps = 45;
+    const halfSteps = Math.floor(steps / 2);
     
     const precomputedStyles1 = [];
-    const precomputedStyles2 = [];
-    const precomputedStyles3 = [];
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
-      const alpha = Math.sin(t * Math.PI) * 0.25 + 0.1; // Reduced alpha so it's a subtle background
+      const alpha = Math.sin(t * Math.PI) * 0.6 + 0.3; // Increased alpha for visibility
       
       const r1 = Math.round(lerp(cRed[0], cGold[0], t));
       const g1 = Math.round(lerp(cRed[1], cGold[1], t));
       const b1 = Math.round(lerp(cRed[2], cGold[2], t));
       precomputedStyles1.push(`rgba(${r1}, ${g1}, ${b1}, ${alpha})`);
+    }
 
+    const precomputedStyles2 = [];
+    for (let i = 0; i <= halfSteps; i++) {
+      const t = i / halfSteps;
+      const alpha = Math.sin(t * Math.PI) * 0.6 + 0.3;
+      
       const r2 = Math.round(lerp(cGold[0], cBlue[0], t));
       const g2 = Math.round(lerp(cGold[1], cBlue[1], t));
       const b2 = Math.round(lerp(cGold[2], cBlue[2], t));
       precomputedStyles2.push(`rgba(${r2}, ${g2}, ${b2}, ${alpha})`);
+    }
 
+    const precomputedStyles3 = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const alpha = Math.sin(t * Math.PI) * 0.6 + 0.3;
+      
       const r3 = Math.round(lerp(cBlue[0], cRed[0], t));
       const g3 = Math.round(lerp(cBlue[1], cRed[1], t));
       const b3 = Math.round(lerp(cBlue[2], cRed[2], t));
       precomputedStyles3.push(`rgba(${r3}, ${g3}, ${b3}, ${alpha})`);
     }
 
-    const totalLines = (steps + 1) * 3;
+    const totalLines = (steps + 1) * 2 + (halfSteps + 1);
     const linesToDraw = Array.from({ length: totalLines }, () => ({
       x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0,
       avgZ: 0, scale: 0, style: ''
@@ -101,6 +126,10 @@ export default function HarmonicCanvas() {
     let time = 0;
 
     const render = () => {
+      if (!isVisible) {
+        animationFrameId = null;
+        return;
+      }
       time += 10.66;
 
       // Clear rect instead of solid fill so we can see the container's background gradient
@@ -149,12 +178,12 @@ export default function HarmonicCanvas() {
         return { x, y, z };
       };
 
-      const generateRibbon = (cA, cB, precomputedStyles) => {
+      const generateRibbon = (cA, cB, precomputedStyles, ribbonSteps) => {
         const p0A = evalNode(cA[0]), p1A = evalNode(cA[1]), p2A = evalNode(cA[2]), p3A = evalNode(cA[3]);
         const p0B = evalNode(cB[0]), p1B = evalNode(cB[1]), p2B = evalNode(cB[2]), p3B = evalNode(cB[3]);
 
-        for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
+        for (let i = 0; i <= ribbonSteps; i++) {
+          const t = i / ribbonSteps;
 
           const p0x = lerp(p0A.x, p0B.x, t), p0y = lerp(p0A.y, p0B.y, t), p0z = lerp(p0A.z, p0B.z, t);
           const p1x = lerp(p1A.x, p1B.x, t), p1y = lerp(p1A.y, p1B.y, t), p1z = lerp(p1A.z, p1B.z, t);
@@ -179,14 +208,14 @@ export default function HarmonicCanvas() {
         }
       };
 
-      generateRibbon(curve1A, curve1B, precomputedStyles1);
-      generateRibbon(curve2A, curve2B, precomputedStyles2);
-      generateRibbon(curve3A, curve3B, precomputedStyles3);
+      generateRibbon(curve1A, curve1B, precomputedStyles1, steps);
+      generateRibbon(curve2A, curve2B, precomputedStyles2, halfSteps);
+      generateRibbon(curve3A, curve3B, precomputedStyles3, steps);
 
       linesToDraw.sort((a, b) => b.avgZ - a.avgZ);
 
       linesToDraw.forEach(line => {
-        ctx.lineWidth = Math.max(0.1, line.scale * 1.2);
+        ctx.lineWidth = Math.max(0.5, line.scale * 2.5); // Bumped thickness
         ctx.strokeStyle = line.style;
         ctx.beginPath();
         ctx.moveTo(line.x0, line.y0);
@@ -201,7 +230,10 @@ export default function HarmonicCanvas() {
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     };
   }, []);
 

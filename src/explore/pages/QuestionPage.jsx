@@ -141,6 +141,33 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
               </span>
             </>
           )}
+          
+          <button
+            onClick={(e) => {
+              navigator.clipboard.writeText(window.location.href);
+              const origText = e.target.innerText;
+              e.target.innerText = "✓ COPIED";
+              setTimeout(() => { e.target.innerText = origText; }, 2000);
+            }}
+            style={{
+              marginLeft: "auto",
+              background: "transparent",
+              border: `1px solid ${C.ghost}`,
+              color: C.muted,
+              fontFamily: FONT.condensed,
+              fontSize: "0.64rem",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              padding: "0.25rem 0.6rem",
+              borderRadius: 4,
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+            onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}
+          >
+            🔗 COPY LINK
+          </button>
         </div>
 
         {/* Rainbow accent */}

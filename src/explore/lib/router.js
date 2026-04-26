@@ -40,7 +40,7 @@ function parseHash() {
   // Extract standardized query state
   const state = {
     pathway: query.get("pathway") || null,
-    view: query.get("view") || "relevant", // mine | relevant | all
+    view: query.get("view") || "all", // mine | relevant | all
     search: query.get("s") || "",
     section: query.get("section") || null,
     observerRole: query.get("role") || null,

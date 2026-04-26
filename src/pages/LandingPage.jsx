@@ -636,6 +636,7 @@ function CinematicHero() {
       background: `radial-gradient(ellipse at center, ${C.bgSoft} 0%, ${C.bg} 50%, ${C.bgDeep} 100%)`,
       borderBottom: `1px solid ${C.pageGhost}`,
     }}>
+      {/* Both animations layered! */}
       <HarmonicCanvas />
 
       {/* Rainbow bar at very top */}

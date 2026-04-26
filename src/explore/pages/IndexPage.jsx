@@ -83,7 +83,11 @@ export default function IndexPage({ routerState, navigate, updateState }) {
       "observe_healthcare_stance_rec_for",
       "observe_healthcare_stance_avoid"
     ];
-    let filtered = questions.filter(q => !EXCLUDED_IDS.includes(q.id) && !q.id.startsWith("meta_"));
+    let filtered = questions.filter(q => 
+      !EXCLUDED_IDS.includes(q.id) && 
+      !q.id.startsWith("meta_") &&
+      q.section !== "Follow-up"
+    );
     if (section) {
       filtered = filtered.filter((q) => q.section === section);
     }
@@ -207,6 +211,26 @@ export default function IndexPage({ routerState, navigate, updateState }) {
             <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
           </div>
         </div>
+
+        {/* Instructive Guidance Banner */}
+        {(!pathway && !section && !search && !cohort && !observerRole) && (
+          <div style={{
+            background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.02) 100%)`,
+            border: `1px solid rgba(212,160,48,0.25)`,
+            borderRadius: 8,
+            padding: "0.85rem 1.2rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "0.8rem"
+          }}>
+            <span style={{ fontSize: "1.2rem", marginTop: "-0.1rem" }}>💡</span>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.82rem", color: C.textBright, lineHeight: 1.5 }}>
+              <strong style={{ color: C.goldBright, fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.4rem" }}>How to explore:</strong> 
+              By default, you are seeing all questions. Click on a <strong>Pathway Chip</strong> above to isolate respondents by their circumcision state. Use the <strong>Survey Map</strong> and <strong>Demographic Filters</strong> on the left to drill down into specific sections or cohorts (e.g. Millennials, North America).
+            </div>
+          </div>
+        )}
 
         {/* Two-panel grid */}
         <div

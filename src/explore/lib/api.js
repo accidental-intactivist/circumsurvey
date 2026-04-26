@@ -64,7 +64,34 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
   if (pathway) params.set("pathway", pathway);
   if (tier) params.set("tier", tier);
   if (section) params.set("section", section);
-  return fetchJson(`${API_BASE}/questions?${params.toString()}`);
+  const data = await fetchJson(`${API_BASE}/questions?${params.toString()}`);
+  
+  if (data && data.questions) {
+    data.questions.forEach(q => {
+      if (q.section === "Uncategorized" || !q.section) {
+        if (q.col_idx >= 346 && q.col_idx <= 355) {
+          q.section = "Gender-Affirming Surgery (Transmasculine / Transfeminine)";
+        } else if (q.col_idx >= 357 && q.col_idx <= 359) {
+          q.section = "Intersex Experience";
+        } else if (q.id.startsWith("observe_parent_") || q.id.startsWith("observe_undecided_")) {
+          q.section = "Parents & Guardians";
+        } else if (q.id.startsWith("observe_partner_") || ["q255", "q269", "q272", "q302"].includes(q.id)) {
+          q.section = "Partners & Intimacy";
+        } else if (q.id.startsWith("observe_student_") || q.id.startsWith("observe_curious_")) {
+          q.section = "Researchers & Students";
+        } else if (q.id.startsWith("observe_skeptic_")) {
+          q.section = "Skeptics & Critics";
+        } else if (q.id.startsWith("observe_healthcare_") || q.id.startsWith("observe_professional_")) {
+          q.section = "Medical Professionals";
+        } else if (q.id.startsWith("observe_advocate_") || q.id === "q262") {
+          q.section = "Advocates & Ethicists";
+        } else if (q.pathway === "observer") {
+          q.section = "Universal Observer";
+        }
+      }
+    });
+  }
+  return data;
 }
 
 export async function getResponseDistribution(questionId, { pathway = null, cohort = null } = {}) {

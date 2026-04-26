@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { C, FONT } from "../styles/tokens";
+import DistributionChart from "./DistributionChart";
 
 export default function NarrativeList({ distribution }) {
   const [limit, setLimit] = useState(20);
@@ -38,8 +39,26 @@ export default function NarrativeList({ distribution }) {
 
   const visible = grouped.slice(0, limit);
   
+  const chartData = useMemo(() => {
+    const hasGrouped = grouped.some(g => g.count > 1);
+    if (!hasGrouped) return null;
+    
+    return {
+      distribution: grouped.slice(0, 15).map(g => ({ label: g.text, n: g.count }))
+    };
+  }, [grouped]);
+  
   return (
     <div style={{ marginTop: "1rem" }}>
+      {chartData && (
+        <div style={{ marginBottom: "2rem" }}>
+          <DistributionChart 
+            title="Most Common Responses" 
+            distribution={chartData} 
+          />
+        </div>
+      )}
+
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         {visible.map((group, i) => {
           const text = group.text;

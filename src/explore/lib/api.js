@@ -34,7 +34,7 @@ async function fetchJson(url) {
 
 export function cohortToFilterParam(cohort) {
   if (!cohort) return null;
-  const entries = Object.entries(cohort).filter(([, v]) => v !== null && v !== undefined && v !== "");
+  const entries = Object.entries(cohort).filter(([k, v]) => k !== "pathway" && v !== null && v !== undefined && v !== "");
   if (entries.length === 0) return null;
   const [col, val] = entries[0];
   // All cohort columns we expose are in the `demographics` table currently.
@@ -97,7 +97,8 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
 export async function getResponseDistribution(questionId, { pathway = null, cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);
-  if (pathway) params.set("pathway", pathway);
+  const effectivePathway = pathway || (cohort && cohort.pathway) || null;
+  if (effectivePathway) params.set("pathway", effectivePathway);
   const filter = cohortToFilterParam(cohort);
   if (filter) params.set("filter", filter);
   return fetchJson(`${API_BASE}/response-distribution?${params.toString()}`);
@@ -106,7 +107,8 @@ export async function getResponseDistribution(questionId, { pathway = null, coho
 export async function getNarratives(questionId, { pathway = null, cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);
-  if (pathway) params.set("pathway", pathway);
+  const effectivePathway = pathway || (cohort && cohort.pathway) || null;
+  if (effectivePathway) params.set("pathway", effectivePathway);
   const filter = cohortToFilterParam(cohort);
   if (filter) params.set("filter", filter);
   return fetchJson(`${API_BASE}/narratives?${params.toString()}`);
@@ -116,6 +118,8 @@ export async function getAggregate(questionId, { by = "pathway", cohort = null }
   const params = new URLSearchParams();
   params.set("q", questionId);
   params.set("by", by);
+  const effectivePathway = (cohort && cohort.pathway) || null;
+  if (effectivePathway) params.set("pathway", effectivePathway);
   const filter = cohortToFilterParam(cohort);
   if (filter) params.set("filter", filter);
   return fetchJson(`${API_BASE}/aggregate?${params.toString()}`);

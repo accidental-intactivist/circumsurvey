@@ -2662,8 +2662,19 @@ function VoiceQuote({ quote, pathwayColor, compact }) {
 // One pathway column within a theme card
 function PathwayColumn({ pathwayId, pathwayMeta, subtitle, quotes, expanded, onToggle }) {
   const initiallyVisible = 4;
-  const visibleQuotes = expanded ? quotes : quotes.slice(0, initiallyVisible);
-  const hiddenCount = quotes.length - initiallyVisible;
+
+  // Randomize quotes on mount so visitors see different voices
+  const randomizedQuotes = useMemo(() => {
+    const shuffled = [...quotes];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }, [quotes]);
+
+  const visibleQuotes = expanded ? randomizedQuotes : randomizedQuotes.slice(0, initiallyVisible);
+  const hiddenCount = randomizedQuotes.length - initiallyVisible;
   const dormant = pathwayMeta.dormant;
 
   return (

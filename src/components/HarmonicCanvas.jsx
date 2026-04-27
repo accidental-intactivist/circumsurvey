@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function HarmonicCanvas() {
+export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -241,13 +241,14 @@ export default function HarmonicCanvas() {
     <canvas 
       ref={canvasRef} 
       style={{
-        position: 'absolute',
+        position,
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
         zIndex: 0,
+        opacity,
       }}
     />
   );

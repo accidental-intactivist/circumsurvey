@@ -626,17 +626,15 @@ If only one question is needed, make q2 null.`;
         return json({ answer: "I couldn't find enough data for that correlation.", quotes: [] });
       }
 
-      dataStr = JSON.stringify(aggResults, null, 2);
-
-      // 4. Synthesize Answer
-      const synthPrompt = `You are a data scientist analyzing the "CircumSurvey", a major research project on circumcision perspectives.
+      const synthPrompt = `You are a data scientist analyzing the "CircumSurvey" (The Accidental Intactivist's Inquiry).
+Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being.
 The user asked: "${query}"
 
 Here is the raw SQL aggregate data for their query (Variables: ${q1} ${q2 ? `cross-tabulated with ${q2}` : ''}):
 ${dataStr}
 
 Write a concise, analytical answer interpreting this data. Mention specific percentages or counts to support your points. 
-After presenting the objective data, draw 1-2 analytical conclusions about what this means for the broader societal context. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these findings. Format the SUAs clearly.`;
+After presenting the objective data, draw 1-2 analytical conclusions about what this means for the broader societal context. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these findings. Ensure your SUAs align with the project's focus on bodily autonomy and human rights. Format the SUAs clearly.`;
 
       const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
         messages: [
@@ -676,12 +674,13 @@ After presenting the objective data, draw 1-2 analytical conclusions about what 
 
     const contextStr = quotes.map((q, i) => `[Quote ${i+1}] (Pathway: ${q.pathway}, Gen: ${q.generation}): "${q.text}"`).join("\n\n");
 
-    const prompt = `You are a research assistant analyzing a qualitative dataset from the "CircumSurvey", a major research project on circumcision perspectives.
+    const prompt = `You are a research assistant analyzing a qualitative dataset from "The Accidental Intactivist's Inquiry".
+Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being. If respondents complain about "bias", understand that the survey transparently operates from this ethical framework.
 The user is asking a question about the data.
 Based ONLY on the following quotes from survey respondents, synthesize a thoughtful and objective answer.
 You MUST use bracketed citations like [Quote 1], [Quote 3] when referencing specific perspectives or quotes.
 Do not invent information. If the answer is not in the quotes, say so. 
-After summarizing the quotes, draw 1-2 analytical conclusions about the underlying emotional or social themes. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these insights. Format the SUAs clearly. Keep your total answer to 3-4 paragraphs.
+After summarizing the quotes, draw 1-2 analytical conclusions about the underlying emotional or social themes. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these insights. Ensure your SUAs align with the project's focus on bodily autonomy, education, and human rights. Format the SUAs clearly. Keep your total answer to 3-4 paragraphs.
 
 User Question: ${query}
 

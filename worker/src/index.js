@@ -626,6 +626,11 @@ If only one question is needed, make q2 null.`;
         return json({ answer: "I couldn't find enough data for that correlation.", quotes: [] });
       }
 
+      dataStr = JSON.stringify(aggResults, null, 2);
+      if (dataStr.length > 12000) {
+        dataStr = dataStr.slice(0, 12000) + "\n...[TRUNCATED DUE TO LENGTH]...";
+      }
+
       const synthPrompt = `You are a data scientist analyzing the "CircumSurvey" (The Accidental Intactivist's Inquiry).
 Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being.
 The user asked: "${query}"
@@ -655,7 +660,8 @@ After presenting the objective data, draw 1-2 analytical conclusions about what 
     const aiResponse = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: [query] });
     const queryVector = aiResponse.data[0];
 
-    const matches = await env.VECTORIZE.query(queryVector, { topK: 15, returnMetadata: true });
+    // Limit topK to 6 to avoid blowing out the 8k token limit on Llama-3.1-8b-instruct
+    const matches = await env.VECTORIZE.query(queryVector, { topK: 6, returnMetadata: true });
     
     if (!matches || matches.matches.length === 0) {
       return json({ answer: "I couldn't find any relevant responses in the survey data.", quotes: [] });
@@ -672,7 +678,10 @@ After presenting the objective data, draw 1-2 analytical conclusions about what 
       };
     });
 
-    const contextStr = quotes.map((q, i) => `[Quote ${i+1}] (Pathway: ${q.pathway}, Gen: ${q.generation}): "${q.text}"`).join("\n\n");
+    let contextStr = quotes.map((q, i) => `[Quote ${i+1}] (Pathway: ${q.pathway}, Gen: ${q.generation}): "${q.text}"`).join("\n\n");
+    if (contextStr.length > 15000) {
+      contextStr = contextStr.slice(0, 15000) + "\n...[TRUNCATED DUE TO LENGTH]...";
+    }
 
     const prompt = `You are a research assistant analyzing a qualitative dataset from "The Accidental Intactivist's Inquiry".
 Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being. If respondents complain about "bias", understand that the survey transparently operates from this ethical framework.

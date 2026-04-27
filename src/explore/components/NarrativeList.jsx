@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { C, FONT } from "../styles/tokens";
+import { PATHWAYS } from "../lib/pathways";
 import DistributionChart from "./DistributionChart";
 
 export default function NarrativeList({ distribution }) {
@@ -15,7 +16,7 @@ export default function NarrativeList({ distribution }) {
     distribution.forEach(item => {
       const text = item.text || item.label || "";
       const normalized = text.trim().toLowerCase();
-      if (!normalized) return;
+      if (!normalized || normalized === "-" || normalized === "—") return;
       
       if (!map.has(normalized)) {
         map.set(normalized, {
@@ -85,11 +86,15 @@ export default function NarrativeList({ distribution }) {
 
           if (region && country) locStr = `${region}, ${country}`;
           else if (country) locStr = country;
+          
+          const pathwayColor = item.pathway && PATHWAYS[item.pathway.toLowerCase()] 
+            ? PATHWAYS[item.pathway.toLowerCase()].color 
+            : C.gold;
 
           return (
             <div key={i} style={{
               background: C.bgSoft,
-              borderLeft: `3px solid ${C.gold}`,
+              borderLeft: `3px solid ${pathwayColor}`,
               padding: "1.2rem 1.5rem",
               borderRadius: "0 8px 8px 0",
               fontFamily: FONT.body,
@@ -100,8 +105,8 @@ export default function NarrativeList({ distribution }) {
               flexDirection: "column",
               gap: "0.8rem"
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
-                <div style={{ flex: 1, wordBreak: "break-word" }}>"{text}"</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", maxWidth: "100%" }}>
+                <div style={{ flex: 1, minWidth: 0, overflowWrap: "break-word", paddingRight: "0.5rem" }}>"{text}"</div>
                 {count > 1 && (
                   <div style={{
                     fontFamily: FONT.mono,

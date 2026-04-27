@@ -35,6 +35,8 @@ function parseHash() {
     route = "generational-faultlines";
   } else if (segments[0] === "observer-triad") {
     route = "observer-triad";
+  } else if (segments[0] === "methodology") {
+    route = "methodology";
   }
 
   // Extract standardized query state
@@ -44,13 +46,14 @@ function parseHash() {
     search: query.get("s") || "",
     section: query.get("section") || null,
     observerRole: query.get("role") || null,
+    ai_query: query.get("ai_query") || "",
   };
 
   // Cohort filters (demographic): prefix "c_"
   const cohort = {};
   for (const [key, val] of query.entries()) {
     if (key.startsWith("c_") && val) {
-      cohort[key.slice(2)] = val;
+      cohort[key.slice(2)] = val.includes(",") ? val.split(",") : val;
     }
   }
   state.cohort = Object.keys(cohort).length > 0 ? cohort : null;
@@ -65,6 +68,7 @@ function serializeState(route, params, state) {
   else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
   else if (route === "pairs") path = "/pairs";
   else if (route === "demographics") path = "/demographics";
+  else if (route === "methodology") path = "/methodology";
   else path = "/";
 
   const q = new URLSearchParams();
@@ -73,9 +77,16 @@ function serializeState(route, params, state) {
   if (state.search) q.set("s", state.search);
   if (state.section) q.set("section", state.section);
   if (state.observerRole) q.set("role", state.observerRole);
+  if (state.ai_query) q.set("ai_query", state.ai_query);
   if (state.cohort) {
     for (const [k, v] of Object.entries(state.cohort)) {
-      if (v) q.set(`c_${k}`, v);
+      if (v) {
+        if (Array.isArray(v)) {
+          if (v.length > 0) q.set(`c_${k}`, v.join(","));
+        } else {
+          q.set(`c_${k}`, v);
+        }
+      }
     }
   }
   const qs = q.toString();

@@ -35,16 +35,21 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
-    if (request.method !== "GET") {
-      return errorJson("Method not allowed", 405);
-    }
-    const cache = caches.default;
-    const cacheKey = new Request(url.toString(), request);
-    let response = await cache.match(cacheKey);
-    if (response) return response;
-
     try {
       const path = url.pathname.replace(/^\/api/, "") || "/";
+      
+      if (request.method === "POST" && path === "/ai/query") {
+        return await handleCopilotQuery(env, request, url);
+      }
+      
+      if (request.method !== "GET") {
+        return errorJson("Method not allowed", 405);
+      }
+      
+      const cache = caches.default;
+      const cacheKey = new Request(url.toString(), request);
+      let response = await cache.match(cacheKey);
+      if (response) return response;
       if (path === "/" || path === "/count") {
         response = await handleCount(env);
       } else if (path === "/questions") {
@@ -59,6 +64,8 @@ export default {
         response = await handleNarratives(env, url);
       } else if (path === "/geo") {
         response = await handleGeo(env, url);
+      } else if (path === "/ai/embed_batch") {
+        response = await handleEmbedBatch(env, url);
       } else if (path === "/health") {
         response = json({ ok: true, ts: new Date().toISOString() });
       } else {
@@ -173,36 +180,20 @@ async function handleSections(env, url) {
 async function handleAggregate(env, url) {
   const questionId = url.searchParams.get("q");
   const by = url.searchParams.get("by") || "pathway";
+  const byQuestion = url.searchParams.get("by_question");
   const filters = url.searchParams.getAll("filter");
+  const pathways = url.searchParams.getAll("pathway");
   if (!questionId) return errorJson("Missing required parameter: q", 400);
 
-  let filterWhere = "";
-  let needsReligion = false;
-  let needsDemographics = false;
-  const bindings = [questionId];
-
-  for (const filter of filters) {
-    const parsed = parseFilter(filter);
-    if (parsed) {
-      if (parsed.table === "religion") {
-        needsReligion = true;
-        filterWhere += ` AND rg.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      } else if (parsed.table === "demographics") {
-        needsDemographics = true;
-        filterWhere += ` AND d.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      }
-    }
-  }
-
-  let filterJoin = "";
-  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
-  if (needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
-
+  const bindings = [];
+  
   let groupCol = "resp.pathway";
   let groupJoin = "JOIN respondents resp ON resp.id = r.respondent_id";
-  if (by === "generation") {
+  if (byQuestion) {
+    groupJoin = `JOIN responses r2 ON r2.respondent_id = r.respondent_id AND r2.question_id = ?`;
+    groupCol = "r2.value_text";
+    bindings.push(byQuestion);
+  } else if (by === "generation") {
     groupJoin += " JOIN demographics dem ON dem.respondent_id = r.respondent_id";
     groupCol = "dem.generation";
   } else if (by === "religion") {
@@ -213,6 +204,30 @@ async function handleAggregate(env, url) {
     groupCol = "dem.country_born";
   }
 
+  bindings.push(questionId);
+  
+  let pathwayWhere = "";
+  if (pathways.length > 0) {
+    if (pathways.length === 1) {
+      pathwayWhere = " AND resp.pathway = ?";
+      bindings.push(pathways[0]);
+    } else {
+      const placeholders = pathways.map(() => "?").join(",");
+      pathwayWhere = ` AND resp.pathway IN (${placeholders})`;
+      bindings.push(...pathways);
+    }
+  }
+
+  const filterData = buildFilterWhere(filters);
+  const filterWhere = filterData.filterWhere;
+  const needsReligion = filterData.needsReligion;
+  const needsDemographics = filterData.needsDemographics;
+  bindings.push(...filterData.bindings);
+
+  let filterJoin = "";
+  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+  if (needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
+
   const sql = `
     SELECT ${groupCol} AS bucket,
            COUNT(*) AS n,
@@ -222,6 +237,7 @@ async function handleAggregate(env, url) {
     ${groupJoin}
     ${filterJoin}
     WHERE r.question_id = ?
+    ${pathwayWhere}
     ${filterWhere}
     GROUP BY bucket, r.value_text
     ORDER BY bucket, n DESC
@@ -255,41 +271,31 @@ async function handleAggregate(env, url) {
 // ─── UPDATED: now supports `filter` param for cohort-filtered distributions ───
 async function handleResponseDistribution(env, url) {
   const questionId = url.searchParams.get("q");
-  const pathway = url.searchParams.get("pathway");
+  const pathways = url.searchParams.getAll("pathway");
   const filters = url.searchParams.getAll("filter");
 
   if (!questionId) return errorJson("Missing required parameter: q", 400);
 
   const bindings = [questionId];
   let pathwayWhere = "";
-  if (pathway) {
-    pathwayWhere = "AND resp.pathway = ?";
-    bindings.push(pathway);
-  }
-
-  // ── NEW: cohort filter support ─────────────────────────────────────────
-  let filterWhere = "";
-  let needsReligion = false;
-  let needsDemographics = false;
-
-  for (const filter of filters) {
-    const parsed = parseFilter(filter);
-    if (parsed) {
-      if (parsed.table === "religion") {
-        needsReligion = true;
-        filterWhere += ` AND rg.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      } else if (parsed.table === "demographics") {
-        needsDemographics = true;
-        filterWhere += ` AND d.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      }
+  if (pathways.length > 0) {
+    if (pathways.length === 1) {
+      pathwayWhere = " AND resp.pathway = ?";
+      bindings.push(pathways[0]);
+    } else {
+      const placeholders = pathways.map(() => "?").join(",");
+      pathwayWhere = ` AND resp.pathway IN (${placeholders})`;
+      bindings.push(...pathways);
     }
   }
 
+  const filterData = buildFilterWhere(filters);
+  const filterWhere = filterData.filterWhere;
+  bindings.push(...filterData.bindings);
+
   let filterJoin = "";
-  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
-  if (needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
+  if (filterData.needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+  if (filterData.needsDemographics) filterJoin += " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
 
   const sql = `
     SELECT r.value_text AS label, COUNT(*) AS n
@@ -311,7 +317,7 @@ async function handleResponseDistribution(env, url) {
   }));
   return json({
     question: questionId,
-    pathway: pathway || "all",
+    pathway: pathways.length > 0 ? pathways.join(",") : "all",
     filters,
     n: total,
     distribution
@@ -320,29 +326,29 @@ async function handleResponseDistribution(env, url) {
 
 async function handleNarratives(env, url) {
   const questionId = url.searchParams.get("q");
+  const pathways = url.searchParams.getAll("pathway");
   const filters = url.searchParams.getAll("filter");
   if (!questionId) return errorJson("Missing required parameter: q", 400);
 
   const bindings = [questionId];
-  let filterWhere = "";
-  let needsReligion = false;
-
-  for (const filter of filters) {
-    const parsed = parseFilter(filter);
-    if (parsed) {
-      if (parsed.table === "religion") {
-        needsReligion = true;
-        filterWhere += ` AND rg.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      } else if (parsed.table === "demographics") {
-        filterWhere += ` AND d.${parsed.column} = ?`;
-        bindings.push(parsed.value);
-      }
+  let pathwayWhere = "";
+  if (pathways.length > 0) {
+    if (pathways.length === 1) {
+      pathwayWhere = " AND resp.pathway = ?";
+      bindings.push(pathways[0]);
+    } else {
+      const placeholders = pathways.map(() => "?").join(",");
+      pathwayWhere = ` AND resp.pathway IN (${placeholders})`;
+      bindings.push(...pathways);
     }
   }
 
+  const filterData = buildFilterWhere(filters);
+  const filterWhere = filterData.filterWhere;
+  bindings.push(...filterData.bindings);
+
   let filterJoin = " LEFT JOIN demographics d ON d.respondent_id = r.respondent_id";
-  if (needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
+  if (filterData.needsReligion) filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = r.respondent_id";
 
   const sql = `
     SELECT r.value_text AS text, resp.pathway, d.generation, d.age_bracket, 
@@ -352,6 +358,7 @@ async function handleNarratives(env, url) {
     JOIN respondents resp ON resp.id = r.respondent_id
     ${filterJoin}
     WHERE r.question_id = ?
+    ${pathwayWhere}
     ${filterWhere}
     AND r.value_text IS NOT NULL
   `;
@@ -432,4 +439,270 @@ function parseFilter(filter) {
   };
   if (!allowed[table] || !allowed[table].includes(column)) return null;
   return { table, column, value: decodeURIComponent(value) };
+}
+
+function buildFilterWhere(filters) {
+  let needsReligion = false;
+  let needsDemographics = false;
+  const filterMap = {}; 
+  
+  for (const filter of filters) {
+    const parsed = parseFilter(filter);
+    if (parsed) {
+      const key = `${parsed.table}.${parsed.column}`;
+      if (!filterMap[key]) filterMap[key] = { table: parsed.table, col: parsed.column, values: [] };
+      filterMap[key].values.push(parsed.value);
+      if (parsed.table === "religion") needsReligion = true;
+      if (parsed.table === "demographics") needsDemographics = true;
+    }
+  }
+
+  let filterWhere = "";
+  const bindings = [];
+  
+  for (const group of Object.values(filterMap)) {
+    const alias = group.table === "religion" ? "rg" : "d";
+    if (group.values.length === 1) {
+      filterWhere += ` AND ${alias}.${group.col} = ?`;
+      bindings.push(group.values[0]);
+    } else {
+      const placeholders = group.values.map(() => "?").join(",");
+      filterWhere += ` AND ${alias}.${group.col} IN (${placeholders})`;
+      bindings.push(...group.values);
+    }
+  }
+  
+  return { filterWhere, bindings, needsReligion, needsDemographics };
+}
+
+// ─── AI DATA COPILOT ENDPOINTS ───
+
+async function handleEmbedBatch(env, url) {
+  const limit = parseInt(url.searchParams.get("limit") || "100", 10);
+  const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+
+  // Fetch responses
+  const { results: rResults } = await env.DB.prepare(`
+    SELECT r.respondent_id, r.question_id, r.value_text, resp.pathway,
+           d.generation
+    FROM responses r
+    JOIN respondents resp ON resp.id = r.respondent_id
+    LEFT JOIN demographics d ON d.respondent_id = r.respondent_id
+    WHERE r.question_id IN (SELECT id FROM questions WHERE type = 'open_text')
+    AND r.value_text IS NOT NULL AND r.value_text != '' AND r.value_text != '-'
+    ORDER BY r.respondent_id, r.question_id
+    LIMIT ? OFFSET ?
+  `).bind(limit, offset).all();
+
+  if (rResults.length === 0) {
+    return json({ done: true, message: "No more records to embed." });
+  }
+
+  // 3. Prepare texts for embedding
+  const texts = rResults.map(r => r.value_text);
+  
+  // 4. Generate embeddings using BGE-Small (384 dimensions)
+  const aiResponse = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: texts });
+  
+  // 5. Upsert to Vectorize
+  const vectors = aiResponse.data.map((embedding, i) => {
+    const r = rResults[i];
+    return {
+      id: `${r.respondent_id}_${r.question_id}`,
+      values: embedding,
+      metadata: {
+        question_id: r.question_id,
+        pathway: r.pathway || "unknown",
+        generation: r.generation || "unknown",
+        text: r.value_text.substring(0, 5000) // truncate just in case to fit metadata limits
+      }
+    };
+  });
+
+  await env.VECTORIZE.upsert(vectors);
+
+  return json({
+    success: true,
+    processed: vectors.length,
+    next_offset: offset + limit
+  });
+}
+
+async function handleCopilotQuery(env, request, url) {
+  try {
+    const { query } = await request.json();
+    if (!query) return errorJson("Missing query", 400);
+
+    // Step 1: Detect Intent
+    const intentPrompt = `Analyze the user query about a survey dataset.
+Is the user asking for qualitative stories/feelings/quotes, or quantitative data/correlations/percentages?
+Reply with ONLY valid JSON in this format: {"intent": "qualitative" | "quantitative"}
+User Query: "${query}"`;
+
+    const rawIntentResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: [{ role: "user", content: intentPrompt }],
+      max_tokens: 100
+    });
+
+    let intent = "qualitative";
+    try {
+      // Find JSON block in the response
+      const jsonMatch = rawIntentResponse.response.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed.intent === "quantitative") intent = "quantitative";
+      }
+    } catch (e) {
+      console.error("Failed to parse intent:", e);
+    }
+
+    // ── QUANTITATIVE FLOW ──
+    if (intent === "quantitative") {
+      // 1. Fetch all quantitative questions
+      const { results: questions } = await env.DB.prepare("SELECT id, prompt FROM questions WHERE type != 'open_text'").all();
+      
+      const qListStr = questions.map(q => `ID: ${q.id} | Prompt: ${q.prompt}`).join("\n");
+      
+      // 2. Ask Llama to pick the two best questions
+      const pickPrompt = `You have access to a dataset with the following questions:
+${qListStr}
+
+The user asked: "${query}"
+
+Which TWO question IDs should be cross-tabulated to answer this?
+Reply with ONLY valid JSON in this format: {"q1": "question_id_1", "q2": "question_id_2"}
+If only one question is needed, make q2 null.`;
+
+      const rawPickResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+        messages: [{ role: "user", content: pickPrompt }],
+        max_tokens: 150
+      });
+
+      let q1 = null, q2 = null;
+      try {
+        const jsonMatch = rawPickResponse.response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          q1 = parsed.q1;
+          q2 = parsed.q2;
+        }
+      } catch (e) {
+        console.error("Failed to parse question picks:", e);
+      }
+
+      if (!q1) {
+        return json({ answer: "I couldn't identify the right quantitative metrics for that question. Try rephrasing?", quotes: [] });
+      }
+
+      // 3. Execute Cross-Tabulation
+      let sql, bindings, dataStr;
+      
+      if (q2) {
+        // Bivariate Cross-Tabulation
+        sql = `
+          SELECT r2.value_text AS bucket,
+                 COUNT(*) AS n,
+                 r1.value_text AS value_text
+          FROM responses r1
+          JOIN responses r2 ON r2.respondent_id = r1.respondent_id AND r2.question_id = ?
+          WHERE r1.question_id = ?
+          GROUP BY bucket, r1.value_text
+        `;
+        bindings = [q2, q1];
+      } else {
+        // Univariate
+        sql = `
+          SELECT r.value_text AS value_text, COUNT(*) AS n
+          FROM responses r
+          WHERE r.question_id = ?
+          GROUP BY r.value_text
+        `;
+        bindings = [q1];
+      }
+
+      const { results: aggResults } = await env.DB.prepare(sql).bind(...bindings).all();
+      
+      if (!aggResults || aggResults.length === 0) {
+        return json({ answer: "I couldn't find enough data for that correlation.", quotes: [] });
+      }
+
+      dataStr = JSON.stringify(aggResults, null, 2);
+
+      // 4. Synthesize Answer
+      const synthPrompt = `You are a data scientist analyzing the "CircumSurvey", a major research project on circumcision perspectives.
+The user asked: "${query}"
+
+Here is the raw SQL aggregate data for their query (Variables: ${q1} ${q2 ? `cross-tabulated with ${q2}` : ''}):
+${dataStr}
+
+Write a concise, analytical answer interpreting this data. Mention specific percentages or counts to support your points. 
+After presenting the objective data, draw 1-2 analytical conclusions about what this means for the broader societal context. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these findings. Format the SUAs clearly.`;
+
+      const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+        messages: [
+          { role: "system", content: "You are a strategic and analytical data scientist." },
+          { role: "user", content: synthPrompt }
+        ],
+        max_tokens: 1024
+      });
+
+      return json({
+        answer: chatResponse.response,
+        quotes: [],
+        metadata: { intent, q1, q2, rawData: aggResults }
+      });
+    }
+
+    // ── QUALITATIVE FLOW ──
+    const aiResponse = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: [query] });
+    const queryVector = aiResponse.data[0];
+
+    const matches = await env.VECTORIZE.query(queryVector, { topK: 15, returnMetadata: true });
+    
+    if (!matches || matches.matches.length === 0) {
+      return json({ answer: "I couldn't find any relevant responses in the survey data.", quotes: [] });
+    }
+
+    const quotes = matches.matches.map(m => {
+      const meta = m.metadata || {};
+      return {
+        text: meta.text,
+        pathway: meta.pathway,
+        generation: meta.generation,
+        question_id: meta.question_id,
+        score: m.score
+      };
+    });
+
+    const contextStr = quotes.map((q, i) => `[Quote ${i+1}] (Pathway: ${q.pathway}, Gen: ${q.generation}): "${q.text}"`).join("\n\n");
+
+    const prompt = `You are a research assistant analyzing a qualitative dataset from the "CircumSurvey", a major research project on circumcision perspectives.
+The user is asking a question about the data.
+Based ONLY on the following quotes from survey respondents, synthesize a thoughtful and objective answer.
+You MUST use bracketed citations like [Quote 1], [Quote 3] when referencing specific perspectives or quotes.
+Do not invent information. If the answer is not in the quotes, say so. 
+After summarizing the quotes, draw 1-2 analytical conclusions about the underlying emotional or social themes. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these insights. Format the SUAs clearly. Keep your total answer to 3-4 paragraphs.
+
+User Question: ${query}
+
+Survey Quotes:
+${contextStr}`;
+
+    const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: [
+        { role: "system", content: "You are a strategic and analytical qualitative research assistant." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 1024
+    });
+
+    return json({
+      answer: chatResponse.response,
+      quotes: quotes,
+      metadata: { intent }
+    });
+  } catch (err) {
+    console.error("Copilot Error:", err);
+    return errorJson(err.message, 500);
+  }
 }

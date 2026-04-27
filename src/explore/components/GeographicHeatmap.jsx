@@ -2,16 +2,23 @@ import { useMemo, useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
+import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
+import { normalizeName, rollUpDistribution } from "../lib/formatters";
 
 const WORLD_TOPO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byPathway }) {
   const [tooltip, setTooltip] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   
   const isUS = questionId.includes("us_state");
-  const geoUrl = isUS ? US_TOPO_URL : WORLD_TOPO_URL;
+  const isCanada = questionId.includes("can_province");
+  
+  let geoUrl = WORLD_TOPO_URL;
+  if (isUS) geoUrl = US_TOPO_URL;
+  else if (isCanada) geoUrl = CANADA_GEO_URL;
   
   // Choose which distribution to visualize
   const baseDist = (cohortDistribution?.distribution?.length > 0) 
@@ -38,6 +45,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       case "circumcised": return ["#381818", PATH_COLORS.circumcised];
       case "restoring": return ["#383018", PATH_COLORS.restoring];
       case "observer": return ["#383838", PATH_COLORS.observer];
+      case "trans_vaginoplasty": return ["#381818", PATH_COLORS.trans_vaginoplasty];
+      case "trans_phalloplasty": return ["#381818", PATH_COLORS.trans_phalloplasty];
+      case "intersex": return ["#282828", PATH_COLORS.intersex];
       default: return ["#4a3a1d", C.goldBright];
     }
   };
@@ -48,22 +58,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       .range(getScaleRange(activeTab));
   }, [dataMap.max, activeTab]);
 
-  // Handle common name variations
-  const normalizeName = (name) => {
-    if (!name) return "";
-    let n = name.toLowerCase();
-    
-    // Strip state code prefix if present, e.g. "wa - washington" -> "washington"
-    if (n.match(/^[a-z]{2}\s-\s/)) {
-      n = n.substring(5);
-    }
-    
-    if (n === "united states of america (usa)" || n === "united states of america" || n === "usa") return "united states";
-    if (n === "great britain" || n === "uk") return "united kingdom";
-    return n;
-  };
+  const aggregatedDist = useMemo(() => rollUpDistribution(activeDist), [activeDist]);
 
-  // Build a lookup map for pathway data
   const pathwayMap = useMemo(() => {
     const map = {};
     if (!byPathway || !byPathway.results) return map;
@@ -71,9 +67,11 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     for (const [pathwayId, data] of Object.entries(byPathway.results)) {
       if (!data.distribution) continue;
       for (const d of data.distribution) {
+        if (!d.label) continue;
         const norm = normalizeName(d.label);
         if (!map[norm]) map[norm] = {};
-        map[norm][pathwayId] = d.n;
+        if (!map[norm][pathwayId]) map[norm][pathwayId] = 0;
+        map[norm][pathwayId] += d.n;
       }
     }
     return map;
@@ -99,13 +97,13 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       
       {/* Pathway Filters */}
       <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
-        {["all", "intact", "circumcised", "restoring", "observer"].map(pathKey => {
+        {["all", ...PATHWAY_IDS].map(pathKey => {
           // Only show pathways that have data in byPathway
           if (pathKey !== "all" && (!byPathway?.results || !byPathway.results[pathKey] || byPathway.results[pathKey].n === 0)) return null;
           
           const isActive = activeTab === pathKey;
-          const color = pathKey === "all" ? C.goldBright : PATH_COLORS[pathKey];
-          const label = pathKey === "all" ? "All Pathways" : pathKey.charAt(0).toUpperCase() + pathKey.slice(1);
+          const color = pathKey === "all" ? C.goldBright : PATHWAYS[pathKey]?.color || C.muted;
+          const label = pathKey === "all" ? "All Pathways" : PATHWAYS[pathKey]?.label || pathKey;
           
           return (
             <button
@@ -152,10 +150,14 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
 
       <div style={{ width: "100%", aspectRatio: "16/9", background: C.bgDeep, borderRadius: 6, overflow: "hidden" }}>
         <ComposableMap 
-          projection={isUS ? "geoAlbersUsa" : "geoMercator"}
+          projection={isUS ? "geoAlbersUsa" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
           width={950}
           height={600}
-          projectionConfig={isUS ? { scale: 1000 } : { scale: 125 }}
+          projectionConfig={
+            isUS ? { scale: 1000 } : 
+            isCanada ? { rotate: [95, -60, 0], scale: 800 } : 
+            { scale: 125 }
+          }
         >
           <ZoomableGroup>
             <Geographies geography={geoUrl}>
@@ -185,11 +187,14 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                         
                         if (val > 0 && pathwayMap[norm]) {
                           const pData = pathwayMap[norm];
-                          const intact = pData.intact || 0;
-                          const circ = pData.circumcised || 0;
-                          const rest = pData.restoring || 0;
+                          const breakdown = [];
+                          for (const pid of PATHWAY_IDS) {
+                            if (pData[pid] > 0) {
+                              breakdown.push({ id: pid, n: pData[pid] });
+                            }
+                          }
                           
-                          if (intact > 0 || circ > 0 || rest > 0) {
+                          if (breakdown.length > 0) {
                             content = (
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                                 <div style={{ 
@@ -200,9 +205,11 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                                 }}>
                                   <strong>{geoName}</strong>: {val}
                                 </div>
-                                {intact > 0 && <div><span style={{ color: PATH_COLORS.intact }}>●</span> Intact: {intact}</div>}
-                                {circ > 0 && <div><span style={{ color: PATH_COLORS.circumcised }}>●</span> Circ: {circ}</div>}
-                                {rest > 0 && <div><span style={{ color: PATH_COLORS.restoring }}>●</span> Restoring: {rest}</div>}
+                                {breakdown.map(b => (
+                                  <div key={b.id}>
+                                    <span style={{ color: PATHWAYS[b.id].color }}>●</span> {PATHWAYS[b.id].label}: {b.n}
+                                  </div>
+                                ))}
                               </div>
                             );
                           }
@@ -260,6 +267,49 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           {cohortDistribution?.distribution?.length > 0 ? "Showing cohort distribution" : "Showing overall distribution"}
         </span>
       </div>
+
+      {/* Data Table */}
+      {aggregatedDist.length > 0 && (
+        <div style={{ marginTop: "2rem" }}>
+          <h3 style={{
+            fontFamily: FONT.condensed,
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            color: C.muted,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            marginBottom: "0.8rem",
+            borderBottom: `1px solid ${C.ghost}`,
+            paddingBottom: "0.4rem"
+          }}>
+            Complete Data Table ({activeTab === "all" ? "All Pathways" : PATHWAYS[activeTab]?.label})
+          </h3>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "0.4rem 1rem"
+          }}>
+            {aggregatedDist.map((d, i) => (
+              <div key={i} style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "0.3rem 0.5rem",
+                background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
+                borderRadius: 4,
+                fontFamily: FONT.body,
+                fontSize: "0.85rem"
+              }}>
+                <span style={{ color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: "1rem" }} title={d.label}>
+                  {d.label}
+                </span>
+                <span style={{ color: C.goldBright, fontFamily: FONT.mono, fontWeight: 500 }}>
+                  n={d.n}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

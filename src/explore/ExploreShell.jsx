@@ -20,6 +20,7 @@ import ReligiousMirrorsPage from "./pages/ReligiousMirrorsPage";
 import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
 import GenerationalFaultlinesPage from "./pages/GenerationalFaultlinesPage";
 import ObserverTriadPage from "./pages/ObserverTriadPage";
+import MethodologyPage from "./pages/MethodologyPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -48,6 +49,8 @@ export default function ExploreShell() {
     page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "observer-triad") {
     page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "methodology") {
+    page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   }

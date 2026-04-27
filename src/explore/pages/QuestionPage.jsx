@@ -15,6 +15,9 @@ import GenerationalTrendChart from "../components/GenerationalTrendChart";
 import NarrativeList from "../components/NarrativeList";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import DistributionChart from "../components/DistributionChart";
+import { MessageSquareText, BarChart2 } from "../components/Icons";
+import { applyLikert } from "../lib/formatters";
+import CopilotChat from "../components/CopilotChat";
 
 export default function QuestionPage({ routerState, navigate, updateState }) {
   const { params, cohort } = routerState;
@@ -26,6 +29,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const [cohortDistribution, setCohortDistribution] = useState(null);
   const [byPathway, setByPathway] = useState(null);
   const [error, setError] = useState(null);
+
+
 
   useEffect(() => {
     let cancelled = false;
@@ -63,9 +68,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     return () => { cancelled = true; };
   }, [questionId, JSON.stringify(cohort)]);
 
-  // ── Narrative fetch (if open_text) ──────────────────────────────────────
+  const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(question?.id);
+
+  // ── Narrative fetch (if open_text and not geographic) ─────────────────────
   useEffect(() => {
-    if (!question || question.type !== "open_text") return;
+    if (!question || question.type !== "open_text" || isGeographic) return;
     let cancelled = false;
     getNarratives(questionId).then((d) => {
       if (!cancelled && d.narratives) {
@@ -82,12 +89,40 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     }
 
     return () => { cancelled = true; };
-  }, [question, JSON.stringify(cohort)]);
+  }, [question, isGeographic, JSON.stringify(cohort)]);
+
+  // ── Render Formatted Data ───────────────────────────────────────────────
+  
+
+
+  const displayDist = useMemo(() => {
+    if (!allDistribution) return null;
+    return {
+      ...allDistribution,
+      distribution: applyLikert(allDistribution.distribution, question)
+    };
+  }, [allDistribution, question]);
+
+  const displayCohortDist = useMemo(() => {
+    if (!cohortDistribution?.distribution) return null;
+    return {
+      ...cohortDistribution,
+      distribution: applyLikert(cohortDistribution.distribution, question)
+    };
+  }, [cohortDistribution, question]);
+
+  const displayByPathway = useMemo(() => {
+    if (!byPathway?.results) return null;
+    const cloned = JSON.parse(JSON.stringify(byPathway));
+    for (const p in cloned.results) {
+      cloned.results[p].distribution = applyLikert(cloned.results[p].distribution, question);
+    }
+    return cloned;
+  }, [byPathway, question]);
 
   // ── Render ──────────────────────────────────────────────────────────────
 
   const pathwayObj = question?.pathway && question.pathway !== "all" ? PATHWAYS[question.pathway] : null;
-  const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current"].includes(question?.id);
   const isOpenText = question?.type === "open_text" && !isGeographic;
 
   return (
@@ -184,24 +219,33 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
           <div style={{ marginBottom: "1.5rem" }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
               {question.tier === 1 && (
-                <span style={{
-                  fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
-                  letterSpacing: "0.08em", color: C.gold,
-                  background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
-                  borderRadius: 999, padding: "0.15rem 0.5rem",
-                  flexShrink: 0, marginTop: "0.4rem",
-                }}>TIER 1 · CURATED</span>
+               <span style={{
+                 fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
+                 letterSpacing: "0.08em", color: C.gold,
+                 background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
+                 borderRadius: 999, padding: "0.15rem 0.5rem",
+                 flexShrink: 0, marginTop: "0.4rem",
+               }}>TIER 1 · CURATED</span>
               )}
-              {isOpenText && (
-                <span style={{
-                  fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
-                  letterSpacing: "0.1em", textTransform: "uppercase",
-                  color: C.muted, background: "rgba(255,255,255,0.05)",
-                  border: `1px solid ${C.ghost}`,
-                  borderRadius: 999, padding: "0.15rem 0.5rem",
-                  flexShrink: 0, marginTop: "0.4rem",
-                }}>open response</span>
-              )}
+              {/* Qual / Quant Badge */}
+              <span title={question.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
+                fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
+                letterSpacing: "0.06em", 
+                color: question.type === "open_text" ? "#a8b5c4" : C.dim, 
+                background: question.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
+                border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
+                borderRadius: 999, padding: "0.15rem 0.5rem",
+                flexShrink: 0, marginTop: "0.4rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.25rem",
+              }}>
+                {question.type === "open_text" ? (
+                  <><MessageSquareText size={11} strokeWidth={3} /> QUAL</>
+                ) : (
+                  <><BarChart2 size={11} strokeWidth={3} /> QUANT</>
+                )}
+              </span>
             </div>
             <h1 style={{
               fontFamily: FONT.display,
@@ -238,7 +282,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             className="explore-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "260px 1fr",
+              gridTemplateColumns: "260px 1fr 340px",
               gap: "1.2rem",
               alignItems: "start",
             }}
@@ -285,10 +329,10 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
               )}
             </aside>
 
-            {/* RIGHT: content */}
+            {/* CENTER: content */}
             <main>
               {isOpenText ? (
-                <NarrativeList distribution={cohortDistribution || allDistribution?.distribution} />
+                <NarrativeList distribution={cohortDistribution?.distribution || allDistribution?.distribution} />
               ) : isGeographic ? (
                 <>
                   <GeographicHeatmap 
@@ -302,20 +346,31 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                 </>
               ) : (
                 <>
-                  <DistributionChart
-                    title="Overall distribution"
-                    distribution={allDistribution}
-                    cohortDistribution={cohortDistribution}
+                  <DistributionChart 
+                    distribution={displayDist} 
+                    cohortDistribution={displayCohortDist}
+                    title="Overall vs. Filtered distribution" 
                   />
 
-                  {byPathway && Object.keys(byPathway.results || {}).length > 1 && (
-                    <PathwayBreakdown byPathway={byPathway} />
+                  {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
+                    <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />
                   )}
                   
                   <GenerationalTrendChart questionId={question.id} />
                 </>
               )}
             </main>
+
+            {/* RIGHT: AI Assistant */}
+            <aside style={{
+              position: "sticky",
+              top: "1rem",
+              maxHeight: "calc(100vh - 2rem)",
+              overflowY: "auto",
+              paddingRight: "0.4rem"
+            }}>
+              <CopilotChat routerState={routerState} updateState={updateState} />
+            </aside>
           </div>
         )}
       </div>
@@ -325,7 +380,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
 // ── Sub-components ───────────────────────────────────────────────────────
 
-function PathwayBreakdown({ byPathway }) {
+function PathwayBreakdown({ byPathway, overallDist = [] }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const results = byPathway.results || {};
   const pathwaysWithData = PATHWAY_IDS
@@ -333,6 +388,22 @@ function PathwayBreakdown({ byPathway }) {
     .map((id) => ({ id, ...results[id] }));
 
   if (pathwaysWithData.length === 0) return null;
+
+  // Compute missing major pathways for the "quick string"
+  const missing = [];
+  if (!results["observer"] || results["observer"].n === 0) missing.push("Observer");
+  
+  const transMissing = (!results["trans_vaginoplasty"] || results["trans_vaginoplasty"].n === 0) && (!results["trans_phalloplasty"] || results["trans_phalloplasty"].n === 0);
+  if (transMissing) missing.push("Transgender");
+  
+  if (!results["intersex"] || results["intersex"].n === 0) missing.push("Intersex");
+
+  let noDataMsg = null;
+  if (missing.length > 0) {
+    const last = missing.pop();
+    const joined = missing.length > 0 ? `${missing.join(", ")} or ${last}` : last;
+    noDataMsg = `No responses from ${joined} pathways for this question.`;
+  }
 
   return (
     <div style={{
@@ -379,9 +450,14 @@ function PathwayBreakdown({ byPathway }) {
                   const pct = (d.n / total) * 100;
                   const x = xCursor;
                   xCursor += pct;
+                  
+                  // Use canonical index from the overall distribution for consistent coloring across charts
+                  let canonicalIndex = overallDist.findIndex(od => od.label === d.label);
+                  if (canonicalIndex === -1) canonicalIndex = i; // Fallback
+
                   return (
                     <rect 
-                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label)}
+                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label, canonicalIndex)}
                       onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}
@@ -393,6 +469,19 @@ function PathwayBreakdown({ byPathway }) {
           );
         })}
       </div>
+      
+      {noDataMsg && (
+        <div style={{
+          marginTop: "1.1rem",
+          fontFamily: FONT.body,
+          fontSize: "0.72rem",
+          color: C.dim,
+          fontStyle: "italic",
+          textAlign: "center"
+        }}>
+          {noDataMsg}
+        </div>
+      )}
       <Tooltip {...tooltip} />
     </div>
   );

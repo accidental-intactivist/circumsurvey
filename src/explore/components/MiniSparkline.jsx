@@ -16,13 +16,71 @@ function stringHash(str) {
   return Math.abs(hash);
 }
 
+// 20 maximally distinct colors (Sasha Trubetskoy's palette)
+const DISTINCT_COLORS = [
+  "#e6194b", // Red
+  "#3cb44b", // Green
+  "#ffe119", // Yellow
+  "#4363d8", // Blue
+  "#f58231", // Orange
+  "#911eb4", // Purple
+  "#46f0f0", // Cyan
+  "#f032e6", // Magenta
+  "#bcf60c", // Lime
+  "#fabebe", // Pink
+  "#008080", // Teal
+  "#e6beff", // Lavender
+  "#9a6324", // Brown
+  "#fffac8", // Beige
+  "#800000", // Maroon
+  "#aaffc3", // Mint
+  "#808000", // Olive
+  "#ffd8b1", // Apricot
+  "#000075", // Navy
+  "#808080"  // Grey
+];
+
+function getCategoricalColor(index) {
+  return DISTINCT_COLORS[index % DISTINCT_COLORS.length];
+}
+
+function adjustColor(hex, index) {
+  if (index === 0) return hex;
+  // Create variations by alternately darkening and lightening based on index
+  const sign = index % 2 === 1 ? -1 : 1;
+  // Cycle magnitude to prevent pushing to pure black/white for high indices
+  const step = Math.ceil(index / 2) % 5; // 1, 2, 3, 4, 0
+  const magnitude = (step === 0 ? 5 : step) * 0.15; // 0.15 to 0.75 max
+  
+  let color = hex.replace("#", "");
+  if (color.length === 3) color = color[0]+color[0]+color[1]+color[1]+color[2]+color[2];
+  
+  let r = parseInt(color.substr(0, 2), 16);
+  let g = parseInt(color.substr(2, 2), 16);
+  let b = parseInt(color.substr(4, 2), 16);
+  
+  // Blend towards white or black to preserve hue
+  if (sign > 0) {
+    r = r + (255 - r) * magnitude;
+    g = g + (255 - g) * magnitude;
+    b = b + (255 - b) * magnitude;
+  } else {
+    r = r * (1 - magnitude);
+    g = g * (1 - magnitude);
+    b = b * (1 - magnitude);
+  }
+  
+  return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+}
+
 // Heuristic: map a label to a color on the red–blue semantic gradient.
 // Labels that sound negative/shocking skew red, positive/good skew blue,
 // and unknown/opt-out labels go grey. This mirrors findings-chart logic.
-function colorForLabel(label) {
+// If it doesn't match a semantic bucket, it uses the index to pick a distinct categorical color.
+function colorForLabel(label, index = 0) {
   const l = (label || "").toLowerCase();
   
-  // Distinctive vibrant colors for generation cohorts
+  // Distinctive vibrant colors for generation cohorts (no variation needed as they are uniquely named)
   if (/gen alpha|2013-present/i.test(l)) return "#d94f4f"; // Red
   if (/gen z|1997-2012/i.test(l)) return "#e8a44a"; // Orange
   if (/millennial|1981-1996/i.test(l)) return "#e8c868"; // Yellow
@@ -31,18 +89,15 @@ function colorForLabel(label) {
   if (/boomer|1946-1964/i.test(l)) return "#5b93c7"; // Blue
   if (/silent|1928-1945/i.test(l)) return "#7868b8"; // Purple
   
-  if (!l || /^n\/a$|not applicable|don'?t know|unsure|not sure|prefer not|no idea|don'?t think|don'?t really frame/.test(l)) return C.grey;
-  if (/very positive|confident|proud|never|\b1\+ min|strongly prefer intact|intact significantly|keep intact|child'?s right|neutral pros|uncommon|actively researching|no[,.]?$/i.test(l)) return C.blue;
-  if (/positive|proud and satisfied|generally|light blue|moderately/i.test(l)) return C.ltBlue;
-  if (/neutral|no difference|no preference|mix|50\/50|undecided|ambivalent|somewhat/i.test(l)) return C.yellow;
-  if (/negative|somewhat dissatisfied|often|orange|depends|brief/i.test(l)) return C.orange;
-  if (/very negative|dissatisfied|always|almost always|0.{0,2}5 sec|something is missing|routine|unquestioned|strongly prefer circ|circ significantly|circumcise|never considered|medical authorities/i.test(l)) return C.red;
+  if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$/.test(l)) return adjustColor(C.grey, index);
+  if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$/i.test(l)) return adjustColor(C.blue, index);
+  if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$/i.test(l)) return adjustColor(C.ltBlue, index);
+  if (/^neutral$|^no difference$|^no preference$|^mix$|^50\/50$|^undecided$|^ambivalent$|^somewhat$/i.test(l)) return adjustColor(C.yellow, index);
+  if (/^negative$|^somewhat dissatisfied$|^often$|^orange$|^depends$|^brief$/i.test(l)) return adjustColor(C.orange, index);
+  if (/^very negative$|^dissatisfied$|^always$|^almost always$|^0.{0,2}5 sec$|^something is missing$|^routine$|^unquestioned$|^strongly prefer circ$|^circ significantly$|^circumcise$|^never considered$|^medical authorities$/i.test(l)) return adjustColor(C.red, index);
   
-  // Deterministic hash for unmatched labels generating a vibrant, distinct HSL color
-  // We multiply the hash by the golden ratio angle (137.5 degrees) to ensure colors
-  // are maximally distinct even for strings with similar hash values.
-  const hue = (stringHash(l) * 137.5) % 360;
-  return `hsl(${hue.toFixed(1)}, 65%, 55%)`;
+  // Use programmatic distinct colors to guarantee no clashes.
+  return getCategoricalColor(index);
 }
 
 export default function MiniSparkline({ distribution, width = 120, height = 8, cohortDistribution = null }) {
@@ -72,17 +127,17 @@ export default function MiniSparkline({ distribution, width = 120, height = 8, c
           const x = xCursor;
           xCursor += pct;
           return (
-            <rect
-              key={i}
-              x={x}
-              y={0}
-              width={pct}
-              height={height}
-              fill={colorForLabel(seg.label)}
-              onMouseEnter={(e) => showTooltip(e, `${seg.label}: ${seg.n} (${Math.round(seg.n / total * 100)}%)`)}
-              onMouseMove={moveTooltip}
-              onMouseLeave={hideTooltip}
-            />
+              <rect
+                key={i}
+                x={x}
+                y={0}
+                width={pct}
+                height={height}
+                fill={colorForLabel(seg.label, i)}
+                onMouseEnter={(e) => showTooltip(e, `${seg.label}: ${seg.n} (${Math.round(seg.n / total * 100)}%)`)}
+                onMouseMove={moveTooltip}
+                onMouseLeave={hideTooltip}
+              />
           );
         })}
       </svg>
@@ -108,7 +163,7 @@ function CohortBar({ distribution, width, height, showTooltip, moveTooltip, hide
         const x = xCursor;
         xCursor += pct;
         return <rect 
-          key={i} x={x} y={0} width={pct} height={height} fill={colorForLabel(seg.label)}
+          key={i} x={x} y={0} width={pct} height={height} fill={colorForLabel(seg.label, i)}
           onMouseEnter={(e) => showTooltip(e, `cohort → ${seg.label}: ${seg.n}`)}
           onMouseMove={moveTooltip}
           onMouseLeave={hideTooltip}

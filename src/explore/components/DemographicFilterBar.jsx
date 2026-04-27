@@ -13,20 +13,6 @@ import { C, FONT } from "../styles/tokens";
 
 export const DEMOGRAPHIC_DIMENSIONS = [
   {
-    id: "generation",
-    label: "Generation",
-    column: "generation",
-    options: [
-      "Silent Generation (born 1928-1945)",
-      "Baby Boomer (born 1946-1964)",
-      "Generation X (born 1965-1980)",
-      "Xennial/Oregon Trail (born approx. 1977-1983)",
-      "Millennial/Gen Y (born 1981-1996)",
-      "Generation Z (born 1997-2012)",
-      "Generation Alpha (born 2013-Present)",
-    ],
-  },
-  {
     id: "pathway",
     label: "Pathway",
     column: "pathway",
@@ -39,6 +25,20 @@ export const DEMOGRAPHIC_DIMENSIONS = [
       { value: "trans_vaginoplasty", label: "Post-Vaginoplasty" },
       { value: "trans_phalloplasty", label: "Post-Phalloplasty" },
       { value: "intersex", label: "Intersex" }
+    ],
+  },
+  {
+    id: "generation",
+    label: "Generation",
+    column: "generation",
+    options: [
+      "Silent Generation (born 1928-1945)",
+      "Baby Boomer (born 1946-1964)",
+      "Generation X (born 1965-1980)",
+      "Xennial/Oregon Trail (born approx. 1977-1983)",
+      "Millennial/Gen Y (born 1981-1996)",
+      "Generation Z (born 1997-2012)",
+      "Generation Alpha (born 2013-Present)",
     ],
   },
   {
@@ -91,15 +91,32 @@ export const DEMOGRAPHIC_DIMENSIONS = [
 export default function DemographicFilterBar({ cohort, onChange, compact = false }) {
   const [openDim, setOpenDim] = useState(null);
 
-  const setFilter = (dimId, value) => {
+  const toggleFilter = (dimId, value) => {
     const next = { ...(cohort || {}) };
-    if (value === null || value === "" || value === next[dimId]) {
+    let current = next[dimId];
+    
+    // Support legacy string state -> array
+    if (current && !Array.isArray(current)) current = [current];
+    else if (!current) current = [];
+    
+    if (current.includes(value)) {
+      current = current.filter(v => v !== value);
+    } else {
+      current = [...current, value];
+    }
+    
+    if (current.length === 0) {
       delete next[dimId];
     } else {
-      next[dimId] = value;
+      next[dimId] = current;
     }
     onChange(Object.keys(next).length > 0 ? next : null);
-    setOpenDim(null);
+  };
+  
+  const clearFilter = (dimId) => {
+    const next = { ...(cohort || {}) };
+    delete next[dimId];
+    onChange(Object.keys(next).length > 0 ? next : null);
   };
 
   const clearAll = () => {
@@ -192,7 +209,7 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
                   textAlign: "right",
                   fontSize: "0.75rem",
                 }}>
-                  {activeValue ? shortLabel(activeValue) : <span style={{ color: C.dim }}>any</span>}
+                  {getButtonLabel(activeValue)}
                 </span>
                 <span style={{
                   color: isOpen ? C.goldBright : C.dim,
@@ -204,67 +221,87 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
 
               {/* Dropdown */}
               {isOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  right: 0,
-                  marginTop: 4,
-                  background: C.bgSoft,
-                  border: `1px solid ${C.ghost}`,
-                  borderRadius: 6,
-                  zIndex: 50,
-                  maxHeight: 260,
-                  overflowY: "auto",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
-                }}>
-                  <button
-                    onClick={() => setFilter(dim.column, null)}
-                    style={{
-                      width: "100%",
-                      padding: "0.45rem 0.7rem",
-                      background: "transparent",
-                      border: "none",
-                      borderBottom: `1px solid ${C.ghost}`,
-                      color: C.muted,
-                      fontFamily: FONT.condensed,
-                      fontSize: "0.7rem",
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    — any {dim.label.toLowerCase()} —
-                  </button>
-                  {dim.options.map((opt) => {
-                    const optValue = typeof opt === "string" ? opt : opt.value;
-                    const optLabel = typeof opt === "string" ? opt : opt.label;
-                    return (
-                      <button
-                        key={optValue}
-                        onClick={() => setFilter(dim.column, optValue)}
-                        style={{
-                          width: "100%",
-                          padding: "0.4rem 0.7rem",
-                          background: activeValue === optValue ? `rgba(212,160,48,0.12)` : "transparent",
-                          border: "none",
-                          color: activeValue === optValue ? C.goldBright : C.text,
-                          fontFamily: FONT.body,
-                          fontSize: "0.76rem",
-                          cursor: "pointer",
-                          textAlign: "left",
-                          fontWeight: activeValue === optValue ? 600 : 400,
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = activeValue === optValue ? `rgba(212,160,48,0.18)` : "rgba(255,255,255,0.03)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = activeValue === optValue ? `rgba(212,160,48,0.12)` : "transparent"; }}
-                      >
-                        {optLabel}
-                      </button>
-                    );
-                  })}
-                </div>
+                <>
+                  <div 
+                    style={{ position: "fixed", inset: 0, zIndex: 40 }} 
+                    onClick={() => setOpenDim(null)} 
+                  />
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    right: 0,
+                    marginTop: 4,
+                    background: C.bgSoft,
+                    border: `1px solid ${C.ghost}`,
+                    borderRadius: 6,
+                    zIndex: 50,
+                    maxHeight: 260,
+                    overflowY: "auto",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+                  }}>
+                    <button
+                      onClick={() => clearFilter(dim.column)}
+                      style={{
+                        width: "100%",
+                        padding: "0.45rem 0.7rem",
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: `1px solid ${C.ghost}`,
+                        color: C.muted,
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.7rem",
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      — clear selection —
+                    </button>
+                    {dim.options.map((opt) => {
+                      const optValue = typeof opt === "string" ? opt : opt.value;
+                      const optLabel = typeof opt === "string" ? opt : opt.label;
+                      
+                      const isSelected = Array.isArray(activeValue) ? activeValue.includes(optValue) : activeValue === optValue;
+                      
+                      return (
+                        <div
+                          key={optValue}
+                          onClick={() => toggleFilter(dim.column, optValue)}
+                          style={{
+                            width: "100%",
+                            padding: "0.4rem 0.7rem",
+                            background: isSelected ? `rgba(212,160,48,0.12)` : "transparent",
+                            color: isSelected ? C.goldBright : C.text,
+                            fontFamily: FONT.body,
+                            fontSize: "0.76rem",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            fontWeight: isSelected ? 600 : 400,
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = isSelected ? `rgba(212,160,48,0.18)` : "rgba(255,255,255,0.03)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? `rgba(212,160,48,0.12)` : "transparent"; }}
+                        >
+                          <div style={{
+                            width: 13, height: 13, borderRadius: 3, flexShrink: 0,
+                            border: `1px solid ${isSelected ? C.goldBright : C.dim}`,
+                            background: isSelected ? C.goldBright : "transparent",
+                            display: "flex", alignItems: "center", justifyContent: "center"
+                          }}>
+                            {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {optLabel}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
           );
@@ -290,6 +327,15 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
       )}
     </div>
   );
+}
+
+function getButtonLabel(activeValue) {
+  if (!activeValue || (Array.isArray(activeValue) && activeValue.length === 0)) {
+    return <span style={{ color: C.dim }}>any</span>;
+  }
+  
+  const values = Array.isArray(activeValue) ? activeValue : activeValue.split(",");
+  return values.map(v => shortLabel(v.trim())).join(", ");
 }
 
 // Shorten long labels for display in the button

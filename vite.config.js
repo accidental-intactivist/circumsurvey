@@ -9,4 +9,8 @@ export default defineConfig({
     // Inline small assets to reduce requests
     assetsInlineLimit: 4096,
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  }
 })

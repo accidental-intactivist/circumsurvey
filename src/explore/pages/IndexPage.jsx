@@ -13,6 +13,7 @@ import DemographicFilterBar from "../components/DemographicFilterBar";
 import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
+import CopilotChat from "../components/CopilotChat";
 
 export default function IndexPage({ routerState, navigate, updateState }) {
   const { pathway, view, search, section, cohort, observerRole } = routerState;
@@ -212,32 +213,12 @@ export default function IndexPage({ routerState, navigate, updateState }) {
           </div>
         </div>
 
-        {/* Instructive Guidance Banner */}
-        {(!pathway && !section && !search && !cohort && !observerRole) && (
-          <div style={{
-            background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.02) 100%)`,
-            border: `1px solid rgba(212,160,48,0.25)`,
-            borderRadius: 8,
-            padding: "0.85rem 1.2rem",
-            marginBottom: "1.5rem",
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "0.8rem"
-          }}>
-            <span style={{ fontSize: "1.2rem", marginTop: "-0.1rem" }}>💡</span>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.82rem", color: C.textBright, lineHeight: 1.5 }}>
-              <strong style={{ color: C.goldBright, fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.4rem" }}>How to explore:</strong> 
-              By default, you are seeing all questions. Click on a <strong>Pathway Chip</strong> above to isolate respondents by their circumcision state. Use the <strong>Survey Map</strong> and <strong>Demographic Filters</strong> on the left to drill down into specific sections or cohorts (e.g. Millennials, North America).
-            </div>
-          </div>
-        )}
-
-        {/* Two-panel grid */}
+        {/* Three-panel grid */}
         <div
           className="explore-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "260px 1fr",
+            gridTemplateColumns: "260px 1fr 340px",
             gap: "1.25rem",
             alignItems: "start",
           }}
@@ -469,8 +450,28 @@ export default function IndexPage({ routerState, navigate, updateState }) {
             </div>
           </aside>
 
-          {/* RIGHT: question list */}
+          {/* CENTER: question list */}
           <main>
+            {/* Instructive Guidance Banner */}
+            {(!pathway && !section && !search && !cohort && !observerRole) && (
+              <div style={{
+                background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.02) 100%)`,
+                border: `1px solid rgba(212,160,48,0.25)`,
+                borderRadius: 8,
+                padding: "0.85rem 1.2rem",
+                marginBottom: "1.5rem",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "0.8rem"
+              }}>
+                <span style={{ fontSize: "1.2rem", marginTop: "-0.1rem" }}>💡</span>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.82rem", color: C.textBright, lineHeight: 1.5 }}>
+                  <strong style={{ color: C.goldBright, fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.4rem" }}>How to explore:</strong> 
+                  By default, you are seeing all questions. Click on a <strong>Pathway Chip</strong> above to isolate respondents by their circumcision state. Use the <strong>Survey Map</strong> and <strong>Demographic Filters</strong> on the left to drill down into specific sections or cohorts (e.g. Millennials, North America).
+                </div>
+              </div>
+            )}
+
             {/* Status strip */}
             <div style={{
               display: "flex",
@@ -543,6 +544,17 @@ export default function IndexPage({ routerState, navigate, updateState }) {
               </div>
             )}
           </main>
+
+          {/* RIGHT: AI Assistant */}
+          <aside style={{
+            position: "sticky",
+            top: "1rem",
+            maxHeight: "calc(100vh - 2rem)",
+            overflowY: "auto",
+            paddingRight: "0.4rem"
+          }}>
+            <CopilotChat routerState={routerState} updateState={updateState} />
+          </aside>
         </div>
       </div>
 
@@ -808,6 +820,8 @@ function Footer() {
           color: C.dim,
         }}>
           <a href="https://findings.circumsurvey.online" style={{ color: C.muted, marginRight: "0.8rem" }}>← Back to the Special Report</a>
+          ·
+          <a href="#/methodology" style={{ color: C.goldBright, margin: "0 0.8rem" }}>Methodology & Data Rigor</a>
           ·
           <a href="https://circumsurvey.online" style={{ color: C.muted, marginLeft: "0.8rem" }}>circumsurvey.online</a>
         </div>

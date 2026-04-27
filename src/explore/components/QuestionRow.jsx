@@ -6,6 +6,7 @@
 import { C, FONT } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import MiniSparkline from "./MiniSparkline";
+import { MessageSquareText, BarChart2 } from "./Icons";
 
 export default function QuestionRow({ q, index, distribution, cohortDistribution, onClick, searchTerm = "" }) {
   // Pathway tag (for non-"all" questions)
@@ -96,6 +97,30 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
             </span>
           )}
 
+          {/* Qual / Quant Badge */}
+          <span title={q.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
+            fontFamily: FONT.condensed,
+            fontSize: "0.58rem",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            color: q.type === "open_text" ? "#a8b5c4" : C.dim,
+            background: q.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
+            border: `1px solid ${q.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
+            borderRadius: 999,
+            padding: "0.1rem 0.4rem",
+            flexShrink: 0,
+            marginTop: "0.15rem",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.25rem",
+          }}>
+            {q.type === "open_text" ? (
+              <><MessageSquareText size={10} strokeWidth={3} /> QUAL</>
+            ) : (
+              <><BarChart2 size={10} strokeWidth={3} /> QUANT</>
+            )}
+          </span>
+
           {/* Prompt */}
           <div style={{
             flex: "1 1 60%",
@@ -159,17 +184,6 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
               width={110}
               height={7}
             />
-          )}
-
-          {/* Type hint for open-text questions */}
-          {q.type === "open_text" && (
-            <span style={{
-              fontFamily: FONT.condensed,
-              fontSize: "0.58rem",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: C.dim,
-            }}>open response</span>
           )}
         </div>
       </div>

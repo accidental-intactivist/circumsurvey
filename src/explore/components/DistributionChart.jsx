@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
 
 export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
+  const [hiddenItems, setHiddenItems] = useState(new Set());
 
   if (!distribution) {
     return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;
@@ -45,9 +47,23 @@ export default function DistributionChart({ title, distribution, cohortDistribut
     );
   }
 
-  const total = dist.reduce((s, d) => s + d.n, 0);
   const cohortDist = cohortDistribution?.distribution || [];
-  const cohortTotal = cohortDist.reduce((s, d) => s + d.n, 0);
+  
+  const toggleItem = (label) => {
+    setHiddenItems(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+
+  // Filter distributions based on hiddenItems
+  const activeDist = dist.filter(d => !hiddenItems.has(d.label));
+  const activeCohortDist = cohortDist.filter(d => !hiddenItems.has(d.label));
+
+  const total = activeDist.reduce((s, d) => s + d.n, 0);
+  const cohortTotal = activeCohortDist.reduce((s, d) => s + d.n, 0);
 
   // Build a map for cohort comparison
   const cohortMap = {};
@@ -70,51 +86,85 @@ export default function DistributionChart({ title, distribution, cohortDistribut
             fontSize: "1.15rem",
             color: C.textBright,
             letterSpacing: "-0.01em",
-          }}>{title}</h2>
+          }}>{cohortDistribution ? "Overall vs. Filtered distribution" : title}</h2>
           <div style={{
             fontFamily: FONT.mono,
             fontSize: "0.75rem",
             color: C.muted,
-          }}>n = {total}</div>
+          }}>{hiddenItems.size > 0 ? "n (visible) = " : "n = "}{total}</div>
         </div>
       )}
 
-      {/* Stacked horizontal bar */}
-      <StackedBar dist={dist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+      {/* Stacked horizontal bars */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        {/* Overall Stacked Bar */}
+        <div>
+          {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.muted, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
+          <StackedBar dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+        </div>
+
+        {/* Cohort Stacked Bar */}
+        {cohortDistribution && cohortTotal > 0 && (
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.goldBright, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
+            <StackedBar dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+          </div>
+        )}
+      </div>
 
       {/* Legend / per-option rows */}
       <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
         {dist.map((d, i) => {
-          const pct = total > 0 ? (d.n / total) * 100 : 0;
+          const isHidden = hiddenItems.has(d.label);
+          // Percentages for the legend text
+          const pct = total > 0 && !isHidden ? (d.n / total) * 100 : 0;
           const cohortN = cohortMap[d.label] || 0;
-          const cohortPct = cohortTotal > 0 ? (cohortN / cohortTotal) * 100 : 0;
+          const cohortPct = cohortTotal > 0 && !isHidden ? (cohortN / cohortTotal) * 100 : 0;
           const hasCohort = !!cohortDistribution;
+          
           return (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <div 
+              key={i} 
+              onClick={() => toggleItem(d.label)}
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "0.6rem",
+                padding: "0.25rem 0.5rem",
+                margin: "0 -0.5rem",
+                borderRadius: 4,
+                cursor: "pointer",
+                transition: "all 0.15s",
+                opacity: isHidden ? 0.4 : 1
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent" }}
+            >
               <div style={{
                 width: 10, height: 10, borderRadius: 2,
-                background: colorForLabel(d.label),
+                background: isHidden ? C.ghost : colorForLabel(d.label, i),
                 flexShrink: 0,
               }} />
               <div style={{
                 flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
-                color: C.text, minWidth: 0, overflow: "hidden",
+                color: isHidden ? C.muted : C.text, minWidth: 0, overflow: "hidden",
                 textOverflow: "ellipsis", whiteSpace: "nowrap",
+                textDecoration: isHidden ? "line-through" : "none"
               }}>{d.label}</div>
               <div style={{
                 fontFamily: FONT.mono, fontSize: "0.74rem",
                 color: C.muted, minWidth: 70, textAlign: "right",
               }}>
-                {d.n} · {pct.toFixed(1)}%
+                {isHidden ? "Hidden" : `${d.n} · ${pct.toFixed(1)}%`}
               </div>
               {hasCohort && (
                 <div style={{
                   fontFamily: FONT.mono, fontSize: "0.72rem",
-                  color: cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted,
+                  color: isHidden ? C.muted : (cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted),
                   minWidth: 90, textAlign: "right",
                   fontWeight: 600,
                 }}>
-                  {cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —"}
+                  {isHidden ? "—" : (cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —")}
                 </div>
               )}
             </div>
@@ -161,7 +211,7 @@ function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
             y={0}
             width={`${pct}%`}
             height={24}
-            fill={colorForLabel(d.label)}
+            fill={colorForLabel(d.label, i)}
             onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
             onMouseMove={moveTooltip}
             onMouseLeave={hideTooltip}

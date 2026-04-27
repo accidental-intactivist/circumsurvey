@@ -14,3 +14,10 @@ zone_name = "circumsurvey.online"
 
 [observability]
 enabled = true
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "circumsurvey-narratives"

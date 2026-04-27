@@ -32,20 +32,29 @@ async function fetchJson(url) {
 // non-null filter (Worker currently supports one filter at a time — multi-filter
 // requires a Worker upgrade, scheduled for v8.2).
 
-export function cohortToFilterParam(cohort) {
-  if (!cohort) return null;
-  const entries = Object.entries(cohort).filter(([k, v]) => k !== "pathway" && v !== null && v !== undefined && v !== "");
-  if (entries.length === 0) return null;
-  const [col, val] = entries[0];
-  // All cohort columns we expose are in the `demographics` table currently.
+export function cohortToFilterParams(cohort) {
+  if (!cohort) return [];
+  const entries = Object.entries(cohort).filter(([k, v]) => k !== "pathway" && v !== null && v !== undefined && v !== "" && (!Array.isArray(v) || v.length > 0));
+  if (entries.length === 0) return [];
+  
   const demoCols = ["country_born", "country_now", "us_state_born", "us_state_now",
     "race_ethnicity", "age_bracket", "generation", "education",
     "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
   const religionCols = ["upbringing_significance", "primary_tradition", "cultural_background",
     "christian_denomination", "jewish_denomination", "islamic_madhhab"];
-  const table = religionCols.includes(col) ? "religion" : demoCols.includes(col) ? "demographics" : null;
-  if (!table) return null;
-  return `${table}.${col}=${encodeURIComponent(val)}`;
+    
+  const filters = [];
+  for (const [col, val] of entries) {
+    const table = religionCols.includes(col) ? "religion" : demoCols.includes(col) ? "demographics" : null;
+    if (!table) continue;
+    
+    // Support multi-select arrays or single strings
+    const values = Array.isArray(val) ? val : [val];
+    for (const v of values) {
+      filters.push(`${table}.${col}=${encodeURIComponent(v)}`);
+    }
+  }
+  return filters;
 }
 
 // ── Public API methods ─────────────────────────────────────────────────────
@@ -97,20 +106,38 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
 export async function getResponseDistribution(questionId, { pathway = null, cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);
-  const effectivePathway = pathway || (cohort && cohort.pathway) || null;
-  if (effectivePathway) params.set("pathway", effectivePathway);
-  const filter = cohortToFilterParam(cohort);
-  if (filter) params.set("filter", filter);
+  
+  let pathways = pathway ? (Array.isArray(pathway) ? pathway : [pathway]) : [];
+  if (pathways.length === 0 && cohort && cohort.pathway) {
+    pathways = Array.isArray(cohort.pathway) ? cohort.pathway : [cohort.pathway];
+  }
+  for (const p of pathways) {
+    params.append("pathway", p);
+  }
+  
+  const filters = cohortToFilterParams(cohort);
+  for (const f of filters) {
+    params.append("filter", f);
+  }
   return fetchJson(`${API_BASE}/response-distribution?${params.toString()}`);
 }
 
 export async function getNarratives(questionId, { pathway = null, cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);
-  const effectivePathway = pathway || (cohort && cohort.pathway) || null;
-  if (effectivePathway) params.set("pathway", effectivePathway);
-  const filter = cohortToFilterParam(cohort);
-  if (filter) params.set("filter", filter);
+  
+  let pathways = pathway ? (Array.isArray(pathway) ? pathway : [pathway]) : [];
+  if (pathways.length === 0 && cohort && cohort.pathway) {
+    pathways = Array.isArray(cohort.pathway) ? cohort.pathway : [cohort.pathway];
+  }
+  for (const p of pathways) {
+    params.append("pathway", p);
+  }
+  
+  const filters = cohortToFilterParams(cohort);
+  for (const f of filters) {
+    params.append("filter", f);
+  }
   return fetchJson(`${API_BASE}/narratives?${params.toString()}`);
 }
 
@@ -118,10 +145,19 @@ export async function getAggregate(questionId, { by = "pathway", cohort = null }
   const params = new URLSearchParams();
   params.set("q", questionId);
   params.set("by", by);
-  const effectivePathway = (cohort && cohort.pathway) || null;
-  if (effectivePathway) params.set("pathway", effectivePathway);
-  const filter = cohortToFilterParam(cohort);
-  if (filter) params.set("filter", filter);
+  
+  let pathways = [];
+  if (cohort && cohort.pathway) {
+    pathways = Array.isArray(cohort.pathway) ? cohort.pathway : [cohort.pathway];
+  }
+  for (const p of pathways) {
+    params.append("pathway", p);
+  }
+  
+  const filters = cohortToFilterParams(cohort);
+  for (const f of filters) {
+    params.append("filter", f);
+  }
   return fetchJson(`${API_BASE}/aggregate?${params.toString()}`);
 }
 
@@ -129,6 +165,19 @@ export async function getSections(pathway = null) {
   const params = new URLSearchParams();
   if (pathway) params.set("pathway", pathway);
   return fetchJson(`${API_BASE}/sections?${params.toString()}`);
+}
+
+export async function queryCopilot(queryText) {
+  const r = await fetch(`${API_BASE}/ai/query`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: queryText }),
+  });
+  if (!r.ok) {
+    const errData = await r.json().catch(() => ({}));
+    throw new Error(errData.error || `HTTP error ${r.status}`);
+  }
+  return await r.json();
 }
 
 export function clearCache() {

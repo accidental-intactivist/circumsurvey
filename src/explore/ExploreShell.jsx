@@ -10,6 +10,7 @@
 
 import { GLOBAL_CSS } from "./styles/tokens";
 import { useRouter } from "./lib/router";
+import HarmonicCanvas from "../components/HarmonicCanvas";
 import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
 import QuestionPage from "./pages/QuestionPage";
@@ -58,6 +59,9 @@ export default function ExploreShell() {
   return (
     <>
       <style>{GLOBAL_CSS}</style>
+      <div style={{ position: "fixed", inset: 0, zIndex: -1 }}>
+        <HarmonicCanvas position="fixed" opacity={0.12} />
+      </div>
       {page}
     </>
   );

@@ -210,7 +210,7 @@ export default function PathwayPage({ routerState, navigate, updateState }) {
             padding: "1.1rem",
           }}>
             <PanelHeader card={p} />
-            <div style={{ height: 1, background: `linear-gradient(90deg, ${p.color}50, transparent)`, marginBottom: "0.9rem" }} />
+            <div style={{ height: 1, background: `linear-gradient(90deg, color-mix(in srgb, p.color 31%, transparent), transparent)`, marginBottom: "0.9rem" }} />
 
             {p.waiting && <WaitingNotice card={p} />}
 
@@ -442,7 +442,7 @@ function SectionExpansion({ section, color, isExpanded, onToggle, navigate }) {
           alignItems: "center",
           gap: "0.6rem",
           padding: "0.65rem 0.75rem",
-          background: isExpanded ? `${color}12` : "transparent",
+          background: isExpanded ? `color-mix(in srgb, color 7%, transparent)` : "transparent",
           cursor: "pointer",
           userSelect: "none",
           transition: "background 0.2s",
@@ -476,7 +476,7 @@ function SectionExpansion({ section, color, isExpanded, onToggle, navigate }) {
       </div>
       {isExpanded && (
         <div style={{
-          borderTop: `1px solid ${color}30`,
+          borderTop: `1px solid color-mix(in srgb, color 19%, transparent)`,
           background: "rgba(0,0,0,0.22)",
           padding: "0.3rem 0.35rem 0.5rem",
           maxHeight: 380,
@@ -556,7 +556,7 @@ function ObserverRolesPanel({ expandedRole, onToggleRole, allObserverQuestions, 
                 alignItems: "center",
                 gap: "0.55rem",
                 padding: "0.6rem 0.75rem",
-                background: isExpanded ? `${PATHWAYS.observer.color}14` : "transparent",
+                background: isExpanded ? `color-mix(in srgb, PATHWAYS.observer.color 8%, transparent)` : "transparent",
                 cursor: role.multi ? "default" : "pointer",
                 userSelect: "none",
               }}
@@ -599,7 +599,7 @@ function ObserverRolesPanel({ expandedRole, onToggleRole, allObserverQuestions, 
             </div>
             {isExpanded && roleQuestions.length > 0 && (
               <div style={{
-                borderTop: `1px solid ${PATHWAYS.observer.color}30`,
+                borderTop: `1px solid color-mix(in srgb, PATHWAYS.observer.color 19%, transparent)`,
                 background: "rgba(0,0,0,0.2)",
                 padding: "0.3rem 0.35rem 0.5rem",
                 maxHeight: 340,

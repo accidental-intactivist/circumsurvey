@@ -145,27 +145,29 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
       }
 
       let x, y;
-      // Use CSS dimensions (not canvas pixel dimensions) for coordinate space
+      // Use a SQUARE virtual coordinate space based on the larger dimension.
+      // This prevents curves from squishing into flat bands in wide/short 
+      // containers like the explore masthead. The canvas clips the overflow.
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;
-      const halfW = cw / 2;
-      const halfH = ch / 2;
+      const span = Math.max(cw, ch);
+      const half = span / 2;
 
       if (n.type === 'inner') {
-        x = (Math.sin(t * n.fx + n.px) * n.ax + waveX) * halfW * 1.1;
-        y = (Math.cos(t * n.fy + n.py) * n.ay + waveY) * halfH * 1.1;
+        x = (Math.sin(t * n.fx + n.px) * n.ax + waveX) * half * 1.1;
+        y = (Math.cos(t * n.fy + n.py) * n.ay + waveY) * half * 1.1;
       } else if (n.type === 'left') {
-        x = -(halfW + 50) / scale; 
-        y = sweep(t * n.fy + n.py) * n.ay * halfH * 1.2;
+        x = -(half + 50) / scale; 
+        y = sweep(t * n.fy + n.py) * n.ay * half * 1.2;
       } else if (n.type === 'right') {
-        x = (halfW + 50) / scale;
-        y = sweep(t * n.fy + n.py) * n.ay * halfH * 1.2;
+        x = (half + 50) / scale;
+        y = sweep(t * n.fy + n.py) * n.ay * half * 1.2;
       } else if (n.type === 'top') {
-        x = sweep(t * n.fx + n.px) * n.ax * halfW * 1.2;
-        y = -(halfH + 50) / scale;
+        x = sweep(t * n.fx + n.px) * n.ax * half * 1.2;
+        y = -(half + 50) / scale;
       } else if (n.type === 'bottom') {
-        x = sweep(t * n.fx + n.px) * n.ax * halfW * 1.2;
-        y = (halfH + 50) / scale;
+        x = sweep(t * n.fx + n.px) * n.ax * half * 1.2;
+        y = (half + 50) / scale;
       }
       return { x, y, z };
     };

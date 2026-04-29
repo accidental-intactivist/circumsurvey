@@ -42,6 +42,10 @@ export default {
         return await handleCopilotQuery(env, request, url);
       }
       
+      if (request.method === "POST" && path === "/ai/embed_static") {
+        return await handleEmbedStatic(env, request);
+      }
+      
       if (request.method !== "GET") {
         return errorJson("Method not allowed", 405);
       }
@@ -66,6 +70,8 @@ export default {
         response = await handleGeo(env, url);
       } else if (path === "/ai/embed_batch") {
         response = await handleEmbedBatch(env, url);
+      } else if (path === "/ai/embed_static") {
+        response = await handleEmbedStatic(env, request);
       } else if (path === "/health") {
         response = json({ ok: true, ts: new Date().toISOString() });
       } else {
@@ -528,6 +534,29 @@ async function handleEmbedBatch(env, url) {
   });
 }
 
+async function handleEmbedStatic(env, request) {
+  if (request.method !== "POST") return errorJson("Method not allowed", 405);
+  
+  const { passages } = await request.json();
+  if (!passages || !Array.isArray(passages)) return errorJson("Missing passages array", 400);
+
+  const texts = passages.map(p => p.text);
+  const aiResponse = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: texts });
+
+  const vectors = aiResponse.data.map((embedding, i) => ({
+    id: passages[i].id,
+    values: embedding,
+    metadata: {
+      type: "static_context",
+      title: passages[i].title,
+      text: passages[i].text.substring(0, 5000)
+    }
+  }));
+
+  await env.VECTORIZE.upsert(vectors);
+  return json({ success: true, processed: vectors.length });
+}
+
 async function handleCopilotQuery(env, request, url) {
   try {
     const { query } = await request.json();
@@ -558,20 +587,16 @@ User Query: "${query}"`;
 
     // ── QUANTITATIVE FLOW ──
     if (intent === "quantitative") {
-      // 1. Fetch all quantitative questions
-      const { results: questions } = await env.DB.prepare("SELECT id, prompt FROM questions WHERE type != 'open_text'").all();
+      // 1. Fetch curated (tier 1) quantitative questions to stay within 8k context
+      const { results: questions } = await env.DB.prepare(
+        "SELECT id, prompt FROM questions WHERE type != 'open_text' AND tier = 1"
+      ).all();
       
-      const qListStr = questions.map(q => `ID: ${q.id} | Prompt: ${q.prompt}`).join("\n");
+      // Truncate prompts to keep total token count manageable
+      const qListStr = questions.map(q => `${q.id}: ${(q.prompt || '').slice(0, 80)}`).join("\n");
       
       // 2. Ask Llama to pick the two best questions
-      const pickPrompt = `You have access to a dataset with the following questions:
-${qListStr}
-
-The user asked: "${query}"
-
-Which TWO question IDs should be cross-tabulated to answer this?
-Reply with ONLY valid JSON in this format: {"q1": "question_id_1", "q2": "question_id_2"}
-If only one question is needed, make q2 null.`;
+      const pickPrompt = `Survey questions:\n${qListStr}\n\nUser asked: "${query}"\nPick TWO question IDs to cross-tabulate. Reply ONLY with JSON: {"q1": "id1", "q2": "id2"}\nIf only one needed, set q2 to null.`;
 
       const rawPickResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
         messages: [{ role: "user", content: pickPrompt }],
@@ -627,30 +652,40 @@ If only one question is needed, make q2 null.`;
       }
 
       dataStr = JSON.stringify(aggResults, null, 2);
-      if (dataStr.length > 12000) {
-        dataStr = dataStr.slice(0, 12000) + "\n...[TRUNCATED DUE TO LENGTH]...";
+      if (dataStr.length > 4000) {
+        dataStr = dataStr.slice(0, 4000) + "\n...[TRUNCATED]...";
       }
 
-      const synthPrompt = `You are a data scientist analyzing the "CircumSurvey" (The Accidental Intactivist's Inquiry).
-Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being.
-The user asked: "${query}"
+      const synthPrompt = `You are a data scientist analyzing the CircumSurvey — a study on circumcision perspectives valuing bodily autonomy as a human right.
+If the data indicates bias or limitations, explain that the survey transparently targets specific affected populations by design. DO NOT suggest the survey is flawed for doing so.
+User asked: "${query}"
 
-Here is the raw SQL aggregate data for their query (Variables: ${q1} ${q2 ? `cross-tabulated with ${q2}` : ''}):
+Data (${q1}${q2 ? ` × ${q2}` : ''}):
 ${dataStr}
 
-Write a concise, analytical answer interpreting this data. Mention specific percentages or counts to support your points. 
-After presenting the objective data, draw 1-2 analytical conclusions about what this means for the broader societal context. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these findings. Ensure your SUAs align with the project's focus on bodily autonomy and human rights. Format the SUAs clearly.`;
+Interpret the data with specific percentages. Draw 1-2 conclusions. Provide 2-3 Suggested User Actions for advocates/educators/policymakers aligned with bodily autonomy and human rights. Be concise.
+IMPORTANT: Output each Suggested User Action on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
 
       const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
         messages: [
-          { role: "system", content: "You are a strategic and analytical data scientist." },
+          { role: "system", content: "You are a concise, analytical data scientist." },
           { role: "user", content: synthPrompt }
         ],
-        max_tokens: 1024
+        max_tokens: 800
       });
 
+      let rawAnswer = chatResponse.response;
+      const suggestions = [];
+      const suaRegex = /<SUA>(.*?)<\/SUA>/g;
+      let match;
+      while ((match = suaRegex.exec(rawAnswer)) !== null) {
+        suggestions.push(match[1].trim());
+      }
+      const answer = rawAnswer.replace(/<SUA>.*?<\/SUA>/g, "").trim();
+
       return json({
-        answer: chatResponse.response,
+        answer,
+        suggestions,
         quotes: [],
         metadata: { intent, q1, q2, rawData: aggResults }
       });
@@ -678,34 +713,44 @@ After presenting the objective data, draw 1-2 analytical conclusions about what 
       };
     });
 
-    let contextStr = quotes.map((q, i) => `[Quote ${i+1}] (Pathway: ${q.pathway}, Gen: ${q.generation}): "${q.text}"`).join("\n\n");
-    if (contextStr.length > 15000) {
-      contextStr = contextStr.slice(0, 15000) + "\n...[TRUNCATED DUE TO LENGTH]...";
+    let contextStr = quotes.map((q, i) => `[${i+1}] (${q.pathway}, ${q.generation}): "${(q.text || '').slice(0, 500)}"`).join("\n");
+    if (contextStr.length > 4000) {
+      contextStr = contextStr.slice(0, 4000) + "\n...[TRUNCATED]...";
     }
 
-    const prompt = `You are a research assistant analyzing a qualitative dataset from "The Accidental Intactivist's Inquiry".
-Project Context: This survey explores perspectives on circumcision from a secular humanist framework that values bodily autonomy as a fundamental human right. It investigates the hypothesis that routine infant circumcision negatively impacts lifelong well-being. If respondents complain about "bias", understand that the survey transparently operates from this ethical framework.
-The user is asking a question about the data.
-Based ONLY on the following quotes from survey respondents, synthesize a thoughtful and objective answer.
-You MUST use bracketed citations like [Quote 1], [Quote 3] when referencing specific perspectives or quotes.
-Do not invent information. If the answer is not in the quotes, say so. 
-After summarizing the quotes, draw 1-2 analytical conclusions about the underlying emotional or social themes. Finally, provide 2-3 Suggested User Actions (SUAs) for advocates, educators, or policymakers based on these insights. Ensure your SUAs align with the project's focus on bodily autonomy, education, and human rights. Format the SUAs clearly. Keep your total answer to 3-4 paragraphs.
+    const prompt = `You analyze qualitative data from the CircumSurvey — a study on circumcision perspectives valuing bodily autonomy.
+Some quotes may complain about bias. Context: This survey TRANSPARENTLY operates from an ethical framework that non-consensual infant surgery is a human rights violation. It intentionally seeks out those affected. 
+If the user asks about bias or the methodology, DEFEND the methodology. Do not validate complaints that the survey is "biased" or "flawed" — explain that it is an intentional inquiry into a specific ethical hypothesis.
 
-User Question: ${query}
+Based ONLY on these respondent quotes (and your knowledge of the methodology), answer the user's question. Use citations like [1], [3]. Don't invent info.
+Draw 1-2 conclusions about emotional/social themes. Provide 2-3 Suggested User Actions for advocates/educators. Be concise (3-4 paragraphs).
+IMPORTANT: Output each Suggested User Action on its own line wrapped EXACTLY in <SUA>...</SUA> tags.
 
-Survey Quotes:
+Question: ${query}
+
+Quotes/Context:
 ${contextStr}`;
 
     const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
-        { role: "system", content: "You are a strategic and analytical qualitative research assistant." },
+        { role: "system", content: "You are a concise qualitative research assistant." },
         { role: "user", content: prompt }
       ],
-      max_tokens: 1024
+      max_tokens: 800
     });
 
+    let rawAnswer = chatResponse.response;
+    const suggestions = [];
+    const suaRegex = /<SUA>(.*?)<\/SUA>/g;
+    let match;
+    while ((match = suaRegex.exec(rawAnswer)) !== null) {
+      suggestions.push(match[1].trim());
+    }
+    const answer = rawAnswer.replace(/<SUA>.*?<\/SUA>/g, "").replace(/Suggested User Actions?:?/i, "").trim();
+
     return json({
-      answer: chatResponse.response,
+      answer,
+      suggestions,
       quotes: quotes,
       metadata: { intent }
     });

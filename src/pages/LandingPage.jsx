@@ -10,6 +10,7 @@ import {
   ALL_QUESTIONS, MIRROR_PAIRS, QUOTE_GALLERIES,
   CURATED_SECTIONS
 } from "../data.js";
+import { VOICES_THEMES } from "../voices.js";
 import {
   DEMOGRAPHIC_DIMENSIONS,
   DEMOGRAPHIC_BASE_RATE,

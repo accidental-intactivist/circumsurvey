@@ -663,8 +663,8 @@ User asked: "${query}"
 Data (${q1}${q2 ? ` × ${q2}` : ''}):
 ${dataStr}
 
-Interpret the data with specific percentages. Draw 1-2 conclusions. Provide 2-3 Suggested User Actions for advocates/educators/policymakers aligned with bodily autonomy and human rights. Be concise.
-IMPORTANT: Output each Suggested User Action on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
+Interpret the data with specific percentages. Draw 1-2 conclusions. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise.
+IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
 
       const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
         messages: [
@@ -676,12 +676,12 @@ IMPORTANT: Output each Suggested User Action on its own line wrapped EXACTLY in 
 
       let rawAnswer = chatResponse.response;
       const suggestions = [];
-      const suaRegex = /<SUA>(.*?)<\/SUA>/g;
+      const suaRegex = /<S?UA>(.*?)<\/S?UA>/gi;
       let match;
       while ((match = suaRegex.exec(rawAnswer)) !== null) {
         suggestions.push(match[1].trim());
       }
-      const answer = rawAnswer.replace(/<SUA>.*?<\/SUA>/g, "").trim();
+      const answer = rawAnswer.replace(/<S?UA>.*?<\/S?UA>/gi, "").trim();
 
       return json({
         answer,
@@ -723,8 +723,8 @@ Some quotes may complain about bias. Context: This survey TRANSPARENTLY operates
 If the user asks about bias or the methodology, DEFEND the methodology. Do not validate complaints that the survey is "biased" or "flawed" — explain that it is an intentional inquiry into a specific ethical hypothesis.
 
 Based ONLY on these respondent quotes (and your knowledge of the methodology), answer the user's question. Use citations like [1], [3]. Don't invent info.
-Draw 1-2 conclusions about emotional/social themes. Provide 2-3 Suggested User Actions for advocates/educators. Be concise (3-4 paragraphs).
-IMPORTANT: Output each Suggested User Action on its own line wrapped EXACTLY in <SUA>...</SUA> tags.
+Draw 1-2 conclusions about emotional/social themes. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise (3-4 paragraphs).
+IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.
 
 Question: ${query}
 
@@ -741,12 +741,12 @@ ${contextStr}`;
 
     let rawAnswer = chatResponse.response;
     const suggestions = [];
-    const suaRegex = /<SUA>(.*?)<\/SUA>/g;
+    const suaRegex = /<S?UA>(.*?)<\/S?UA>/gi;
     let match;
     while ((match = suaRegex.exec(rawAnswer)) !== null) {
       suggestions.push(match[1].trim());
     }
-    const answer = rawAnswer.replace(/<SUA>.*?<\/SUA>/g, "").replace(/Suggested User Actions?:?/i, "").trim();
+    const answer = rawAnswer.replace(/<S?UA>.*?<\/S?UA>/gi, "").replace(/Suggested User Actions?:?/i, "").trim();
 
     return json({
       answer,

@@ -5,7 +5,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useState, useRef } from "react";
-import { toPng } from "html-to-image";
 import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
@@ -136,6 +135,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const handleExport = async () => {
     if (!captureRef.current) return;
     try {
+      const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(captureRef.current, { 
         backgroundColor: C.bg,
         style: { padding: "1.5rem" } 

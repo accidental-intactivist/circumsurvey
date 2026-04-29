@@ -3,6 +3,14 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('cs_theme_name') || 'standard';
+  });
+
+  const [typeface, setTypeface] = useState(() => {
+    return localStorage.getItem('cs_theme_typeface') || 'tomorrow';
+  });
+
   const [mode, setMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cs_theme_mode');
@@ -12,8 +20,12 @@ export function ThemeProvider({ children }) {
     return 'dark';
   });
   
-  const [palette, setPalette] = useState(() => {
-    return localStorage.getItem('cs_theme_palette') || 'standard';
+  const [colorblind, setColorblind] = useState(() => {
+    return localStorage.getItem('cs_theme_colorblind') === 'true';
+  });
+
+  const [dyslexicFont, setDyslexicFont] = useState(() => {
+    return localStorage.getItem('cs_theme_dyslexic') === 'true';
   });
   
   const [typeScale, setTypeScale] = useState(() => {
@@ -23,8 +35,11 @@ export function ThemeProvider({ children }) {
   // Apply attributes to the root <html> element
   useEffect(() => {
     const root = document.documentElement;
-    root.setAttribute('data-theme', mode);
-    root.setAttribute('data-palette', palette);
+    root.setAttribute('data-theme', theme);
+    root.setAttribute('data-typeface', typeface);
+    root.setAttribute('data-mode', mode);
+    root.setAttribute('data-colorblind', colorblind.toString());
+    root.setAttribute('data-dyslexic', dyslexicFont.toString());
     
     // Manage CSS multiplier for typography scale
     let scaleMultiplier = 1;
@@ -36,13 +51,23 @@ export function ThemeProvider({ children }) {
     // 100% is 16px by default. 
     root.style.fontSize = `${scaleMultiplier * 100}%`;
 
+    localStorage.setItem('cs_theme_name', theme);
+    localStorage.setItem('cs_theme_typeface', typeface);
     localStorage.setItem('cs_theme_mode', mode);
-    localStorage.setItem('cs_theme_palette', palette);
+    localStorage.setItem('cs_theme_colorblind', colorblind.toString());
+    localStorage.setItem('cs_theme_dyslexic', dyslexicFont.toString());
     localStorage.setItem('cs_theme_scale', typeScale);
-  }, [mode, palette, typeScale]);
+  }, [theme, typeface, mode, colorblind, dyslexicFont, typeScale]);
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode, palette, setPalette, typeScale, setTypeScale }}>
+    <ThemeContext.Provider value={{ 
+      theme, setTheme, 
+      typeface, setTypeface,
+      mode, setMode, 
+      colorblind, setColorblind, 
+      dyslexicFont, setDyslexicFont,
+      typeScale, setTypeScale 
+    }}>
       {children}
     </ThemeContext.Provider>
   );

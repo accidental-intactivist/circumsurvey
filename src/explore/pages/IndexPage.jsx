@@ -14,6 +14,8 @@ import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
 import CopilotChat from "../components/CopilotChat";
+import ThemeToggle from "../components/ThemeToggle";
+import HarmonicCanvas from "../../components/HarmonicCanvas";
 
 export default function IndexPage({ routerState, navigate, updateState }) {
   const { pathway, view, search, section, cohort, observerRole } = routerState;
@@ -210,6 +212,8 @@ export default function IndexPage({ routerState, navigate, updateState }) {
           <div style={{ marginLeft: "auto", display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap" }}>
             <SearchBox value={search || ""} onChange={(s) => updateState({ search: s })} />
             <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
+            <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.2rem" }} />
+            <ThemeToggle />
           </div>
         </div>
 
@@ -572,8 +576,11 @@ function Masthead() {
       textAlign: "center",
       borderBottom: `1px solid ${C.ghost}`,
       background: C.bg,
+      position: "relative",
+      overflow: "hidden"
     }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <HarmonicCanvas opacity={0.3} />
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={{ height: 3, background: RAINBOW, borderRadius: 2, marginBottom: "1rem" }} />
         <div style={{
           fontFamily: FONT.condensed,

@@ -93,49 +93,53 @@ export default function NarrativeList({ distribution }) {
 
           return (
             <div key={i} style={{
-              background: C.bgSoft,
-              borderLeft: `3px solid ${pathwayColor}`,
-              padding: "1.2rem 1.5rem",
-              borderRadius: "0 8px 8px 0",
-              fontFamily: FONT.body,
-              fontSize: "0.95rem",
-              lineHeight: 1.6,
-              color: C.textBright,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.8rem"
+              background: "var(--c-bgSoft)",
+              border: `2px solid var(--c-ghost)`,
+              borderRadius: 8,
+              position: "relative",
+              overflow: "hidden",
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", maxWidth: "100%" }}>
-                <div style={{ flex: 1, minWidth: 0, overflowWrap: "break-word", paddingRight: "0.5rem" }}>"{text}"</div>
-                {count > 1 && (
-                  <div style={{
-                    fontFamily: FONT.mono,
-                    fontSize: "0.75rem",
-                    fontWeight: 700,
-                    color: C.goldBright,
-                    background: "rgba(212,160,48,0.12)",
-                    border: `1px solid rgba(212,160,48,0.3)`,
-                    padding: "0.25rem 0.5rem",
-                    borderRadius: 6,
-                    whiteSpace: "nowrap"
-                  }}>
-                    n = {count}
-                  </div>
-                )}
-              </div>
+              {/* Colored top border strip */}
+              <div style={{ height: 4, background: pathwayColor }} />
               
-              {hasMeta && (
-                <div style={{
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.75rem",
-                  color: C.muted,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em"
-                }}>
-                  {genStr} {locStr ? ` · ${locStr}` : ""}
-                  {' · '}{item.pathway ? item.pathway.charAt(0).toUpperCase() + item.pathway.slice(1) + " Pathway" : "Unknown Pathway"}
+              <div style={{
+                background: "var(--c-ghost)",
+                color: "var(--c-textBright)",
+                padding: "0.4rem 1rem",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "0.6rem",
+                fontFamily: FONT.condensed,
+                fontSize: "0.72rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+                fontWeight: 700,
+                flexWrap: "wrap",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <span style={{ color: pathwayColor, fontSize: "0.9rem" }}>★</span>
+                  {item.pathway ? item.pathway.charAt(0).toUpperCase() + item.pathway.slice(1) + " Pathway" : "Response"}
                 </div>
-              )}
+                <div style={{ color: "var(--c-muted)", fontFamily: FONT.mono, letterSpacing: "0.05em", fontSize: "0.65rem", display: "flex", gap: "0.5rem" }}>
+                  {hasMeta && <span>{genStr} {locStr ? ` · ${locStr}` : ""}</span>}
+                  {count > 1 && (
+                    <span style={{ 
+                      color: C.goldBright, 
+                      background: "rgba(212,160,48,0.12)", 
+                      border: `1px solid rgba(212,160,48,0.3)`, 
+                      padding: "0.15rem 0.4rem", 
+                      borderRadius: 4 
+                    }}>
+                      n={count}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div style={{ padding: "1.25rem 1.5rem", color: "var(--c-textBright)", fontFamily: FONT.body, fontSize: "1.05rem", lineHeight: 1.6 }}>
+                "{text}"
+              </div>
             </div>
           );
         })}

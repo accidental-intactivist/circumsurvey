@@ -155,7 +155,6 @@ function PhaseDivider({ label }) {
   );
 }
 
-import ThemeToggle from "./ThemeToggle";
 
 export default function SurveyMapNav({
   selectedPathway,
@@ -176,10 +175,7 @@ export default function SurveyMapNav({
       position: "relative",
       paddingLeft: "0.9rem" 
     }}>
-      {/* ── THEME & ACCESSIBILITY CONTROLS ── */}
-      <div style={{ marginBottom: "2rem", marginLeft: "-0.9rem" }}>
-        <ThemeToggle />
-      </div>
+
       {/* The main trunk line (Subway map style) */}
       <div style={{
         position: "absolute",

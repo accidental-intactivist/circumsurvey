@@ -16,9 +16,9 @@ import {
   DEMOGRAPHIC_OUTLIERS,
   DEMOGRAPHIC_META,
 } from "../demographics.js";
-import { VOICES_THEMES } from "../voices.js";
 import CulturalAlignmentSection from "../components/CulturalAlignmentSection.jsx";
 import HarmonicCanvas from "../components/HarmonicCanvas.jsx";
+import ThemeToggle from "../explore/components/ThemeToggle.jsx";
 
 // ── Type scale (bumped per Tone's feedback) ────────────────────
 const TYPE = {
@@ -638,6 +638,11 @@ function CinematicHero() {
     }}>
       {/* Both animations layered! */}
       <HarmonicCanvas />
+
+      {/* Settings Toggle */}
+      <div style={{ position: "absolute", top: "1.5rem", right: "1.5rem", zIndex: 50 }}>
+        <ThemeToggle />
+      </div>
 
       {/* Rainbow bar at very top */}
       <div style={{

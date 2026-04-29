@@ -4,7 +4,8 @@
 // Demographic filter chips at top integrate with persistent cohort state.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { toPng } from "html-to-image";
 import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
@@ -18,6 +19,7 @@ import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
 import { applyLikert } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function QuestionPage({ routerState, navigate, updateState }) {
   const { params, cohort } = routerState;
@@ -25,6 +27,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
   // ── Data fetch ──────────────────────────────────────────────────────────
   const [question, setQuestion] = useState(null);
+  const [prevQ, setPrevQ] = useState(null);
+  const [nextQ, setNextQ] = useState(null);
   const [allDistribution, setAllDistribution] = useState(null);
   const [cohortDistribution, setCohortDistribution] = useState(null);
   const [byPathway, setByPathway] = useState(null);
@@ -35,11 +39,13 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   useEffect(() => {
     let cancelled = false;
 
-    // Fetch the question metadata
     getQuestions({ counts: true }).then((d) => {
       if (cancelled) return;
-      const found = (d.questions || []).find((q) => q.id === questionId);
-      setQuestion(found || null);
+      const allQs = d.questions || [];
+      const foundIdx = allQs.findIndex((q) => q.id === questionId);
+      setQuestion(allQs[foundIdx] || null);
+      setPrevQ(foundIdx > 0 ? allQs[foundIdx - 1] : null);
+      setNextQ(foundIdx !== -1 && foundIdx < allQs.length - 1 ? allQs[foundIdx + 1] : null);
     }).catch((e) => setError(e.message));
 
     // Full-sample distribution
@@ -125,6 +131,24 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const pathwayObj = question?.pathway && question.pathway !== "all" ? PATHWAYS[question.pathway] : null;
   const isOpenText = question?.type === "open_text" && !isGeographic;
 
+  const captureRef = useRef(null);
+
+  const handleExport = async () => {
+    if (!captureRef.current) return;
+    try {
+      const dataUrl = await toPng(captureRef.current, { 
+        backgroundColor: C.bg,
+        style: { padding: "1.5rem" } 
+      });
+      const link = document.createElement('a');
+      link.download = `circumsurvey-${questionId}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to capture image", err);
+    }
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -203,12 +227,37 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
           >
             🔗 COPY LINK
           </button>
+          
+          <button
+            onClick={handleExport}
+            style={{
+              background: "transparent",
+              border: `1px solid ${C.ghost}`,
+              color: C.muted,
+              fontFamily: FONT.condensed,
+              fontSize: "0.64rem",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              padding: "0.25rem 0.6rem",
+              borderRadius: 4,
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+            onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}
+          >
+            📸 SAVE AS IMAGE
+          </button>
+
+          <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
+          <ThemeToggle />
         </div>
 
         {/* Rainbow accent */}
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, marginBottom: "1rem", opacity: 0.5 }} />
 
-        {/* Question heading */}
+        <div ref={captureRef}>
+          {/* Question heading */}
         {!question && !error && (
           <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
             Loading question…
@@ -371,6 +420,36 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             }}>
               <CopilotChat routerState={routerState} updateState={updateState} />
             </aside>
+          </div>
+        )}
+        </div>
+
+        {/* Sequential Navigation */}
+        {question && (
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "3rem",
+            paddingTop: "1.5rem",
+            borderTop: `1px solid ${C.ghost}`
+          }}>
+            {prevQ ? (
+              <a href={`#/q/${prevQ.id}`} style={{
+                fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.1em",
+                color: C.gold, fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.5rem"
+              }}>
+                <span style={{ fontSize: "1.2rem" }}>←</span> Previous Question
+              </a>
+            ) : <div />}
+            
+            {nextQ ? (
+              <a href={`#/q/${nextQ.id}`} style={{
+                fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.1em",
+                color: C.gold, fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.5rem"
+              }}>
+                Next Question <span style={{ fontSize: "1.2rem" }}>→</span>
+              </a>
+            ) : <div />}
           </div>
         )}
       </div>

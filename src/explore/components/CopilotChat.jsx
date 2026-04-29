@@ -77,7 +77,15 @@ export default function CopilotChat({ routerState, updateState }) {
         <textarea
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ask about the data..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              if (query.trim() && !loading) {
+                handleSearch(e);
+              }
+            }
+          }}
+          placeholder="Ask about the data… (Enter to send, Shift+Enter for newline)"
           style={{
             width: "100%",
             minHeight: "80px",
@@ -187,9 +195,50 @@ export default function CopilotChat({ routerState, updateState }) {
             lineHeight: 1.6,
             fontSize: "0.95rem",
             whiteSpace: "pre-wrap",
+            marginBottom: result.suggestions && result.suggestions.length > 0 ? "1.5rem" : "0"
           }}>
             {result.answer}
           </div>
+
+          {result.suggestions && result.suggestions.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>
+              <h5 style={{
+                fontFamily: FONT.condensed,
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: C.dim,
+              }}>Suggested Actions & Follow-ups</h5>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                {result.suggestions.map((sua, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setQuery(sua);
+                      executeSearch(sua);
+                      if (updateState) updateState({ ai_query: sua });
+                    }}
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      border: `1px solid ${C.ghost}`,
+                      borderRadius: 16,
+                      padding: "0.4rem 0.8rem",
+                      color: C.goldBright,
+                      fontFamily: FONT.body,
+                      fontSize: "0.85rem",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.1)"; e.target.style.borderColor = C.goldBright; }}
+                    onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = C.ghost; }}
+                  >
+                    {sua}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <BivariateHeatmap metadata={result.metadata} />
 

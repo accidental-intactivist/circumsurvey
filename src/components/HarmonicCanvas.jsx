@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
+export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '' }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -73,23 +73,39 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
     const curve2B = createVerticalCurve();
 
     // Custom colors
-    const cRed = [217, 79, 79];
-    const cGold = [212, 160, 48];
-    const cBlue = [91, 147, 199];
+    // ── Read theme colors from CSS custom properties ──
+    // Falls back to the standard palette if vars aren't set.
+    const parseColor = (cssVar, fallback) => {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+      if (!raw) return fallback;
+      // Handle hex
+      if (raw.startsWith('#')) {
+        const hex = raw.length === 4
+          ? raw.slice(1).split('').map(c => parseInt(c + c, 16))
+          : [parseInt(raw.slice(1,3),16), parseInt(raw.slice(3,5),16), parseInt(raw.slice(5,7),16)];
+        return hex;
+      }
+      // Handle rgb(r, g, b)
+      const m = raw.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+      if (m) return [+m[1], +m[2], +m[3]];
+      return fallback;
+    };
+
+    const cRed = parseColor('--c-red', [217, 79, 79]);
+    const cGold = parseColor('--c-gold', [212, 160, 48]);
+    const cBlue = parseColor('--c-blue', [91, 147, 199]);
 
     const focalLength = 800;
 
-    // ── Reduced step count: 24 instead of 45 ──
-    // This cuts the number of bezier curves nearly in half while 
-    // keeping the ribbons visually smooth.
-    const steps = 24;
+    // 36 steps: denser than the original 45 but smoother than 24
+    const steps = 36;
     const halfSteps = Math.floor(steps / 2);
     
-    // Pre-compute color styles (these never change)
+    // Pre-compute color styles — rebuilt if theme changes (via effect re-run)
     const precomputedStyles1 = [];
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
-      const alpha = Math.sin(t * Math.PI) * 0.6 + 0.3;
+      const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
       const r = Math.round(lerp(cRed[0], cGold[0], t));
       const g = Math.round(lerp(cRed[1], cGold[1], t));
       const b = Math.round(lerp(cRed[2], cGold[2], t));
@@ -99,7 +115,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
     const precomputedStyles2 = [];
     for (let i = 0; i <= halfSteps; i++) {
       const t = i / halfSteps;
-      const alpha = Math.sin(t * Math.PI) * 0.6 + 0.3;
+      const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
       const r = Math.round(lerp(cGold[0], cBlue[0], t));
       const g = Math.round(lerp(cGold[1], cBlue[1], t));
       const b = Math.round(lerp(cGold[2], cBlue[2], t));
@@ -123,8 +139,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
     const MIN_FRAME_INTERVAL = 1000 / 30; // ~33ms
 
     // Speed multiplier: lower = slower. Was effectively ~10.66 per 16ms frame 
-    // (≈666 units/sec). We slow it down to ~400 units/sec for a more relaxed feel.
-    const SPEED = 0.4;
+    // (≈666 units/sec). We slow it down to ~50 units/sec for a very chilled feel.
+    const SPEED = 0.03;
 
     const evalNode = (n, t) => {
       const z = Math.sin(t * n.fz + n.pz) * n.az;
@@ -153,20 +169,23 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
       const span = Math.max(cw, ch);
       const half = span / 2;
 
+      // Increased multipliers (from ~1.1 to ~3.5) push the nodes far outside 
+      // the visible canvas bounds. This ensures 60%+ of the geometry is off-screen
+      // at any given time, resulting in large, sweeping, curvier lines traversing the viewport.
       if (n.type === 'inner') {
-        x = (Math.sin(t * n.fx + n.px) * n.ax + waveX) * half * 1.1;
-        y = (Math.cos(t * n.fy + n.py) * n.ay + waveY) * half * 1.1;
+        x = (Math.sin(t * n.fx + n.px) * n.ax + waveX) * half * 3.2;
+        y = (Math.cos(t * n.fy + n.py) * n.ay + waveY) * half * 3.2;
       } else if (n.type === 'left') {
         x = -(half + 50) / scale; 
-        y = sweep(t * n.fy + n.py) * n.ay * half * 1.2;
+        y = sweep(t * n.fy + n.py) * n.ay * half * 3.5;
       } else if (n.type === 'right') {
         x = (half + 50) / scale;
-        y = sweep(t * n.fy + n.py) * n.ay * half * 1.2;
+        y = sweep(t * n.fy + n.py) * n.ay * half * 3.5;
       } else if (n.type === 'top') {
-        x = sweep(t * n.fx + n.px) * n.ax * half * 1.2;
+        x = sweep(t * n.fx + n.px) * n.ax * half * 3.5;
         y = -(half + 50) / scale;
       } else if (n.type === 'bottom') {
-        x = sweep(t * n.fx + n.px) * n.ax * half * 1.2;
+        x = sweep(t * n.fx + n.px) * n.ax * half * 3.5;
         y = (half + 50) / scale;
       }
       return { x, y, z };
@@ -251,7 +270,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
       // Group by style to minimize state changes (significant perf win on canvas)
       const styleGroups = new Map();
       for (const line of linesToDraw) {
-        const w = Math.max(0.5, line.scale * 2.5 * sizeScale);
+        const w = Math.max(0.3, line.scale * 1.4 * sizeScale);
         const key = `${line.style}|${w.toFixed(1)}`;
         if (!styleGroups.has(key)) {
           styleGroups.set(key, { style: line.style, width: w, lines: [] });
@@ -282,7 +301,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1 }) {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [themeKey]);
 
   return (
     <canvas 

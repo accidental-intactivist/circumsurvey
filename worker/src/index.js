@@ -582,8 +582,11 @@ User Query: "${query}"`;
         if (parsed.intent === "quantitative") intent = "quantitative";
       }
     } catch (e) {
-      console.error("Failed to parse intent:", e);
+      console.log("Intent parsing failed, defaulting to qualitative", e);
     }
+
+    // Fire and forget logging
+    env.DB.prepare("INSERT INTO ai_queries (query, intent) VALUES (?, ?)").bind(query, intent).run().catch(e => console.error("Logging error", e));
 
     // ── QUANTITATIVE FLOW ──
     if (intent === "quantitative") {

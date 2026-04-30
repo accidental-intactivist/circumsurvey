@@ -19,6 +19,8 @@ import { MessageSquareText, BarChart2 } from "../components/Icons";
 import { applyLikert } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
 import ThemeToggle from "../components/ThemeToggle";
+import SharePopover from "../components/SharePopover";
+import AddToReportButton from "../components/AddToReportButton";
 
 export default function QuestionPage({ routerState, navigate, updateState }) {
   const { params, cohort } = routerState;
@@ -201,53 +203,15 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             </>
           )}
           
-          <button
-            onClick={(e) => {
-              navigator.clipboard.writeText(window.location.href);
-              const origText = e.target.innerText;
-              e.target.innerText = "✓ COPIED";
-              setTimeout(() => { e.target.innerText = origText; }, 2000);
-            }}
-            style={{
-              marginLeft: "auto",
-              background: "transparent",
-              border: `1px solid ${C.ghost}`,
-              color: C.muted,
-              fontFamily: FONT.condensed,
-              fontSize: "0.64rem",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              padding: "0.25rem 0.6rem",
-              borderRadius: 4,
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-            onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}
-          >
-            🔗 COPY LINK
-          </button>
-          
-          <button
-            onClick={handleExport}
-            style={{
-              background: "transparent",
-              border: `1px solid ${C.ghost}`,
-              color: C.muted,
-              fontFamily: FONT.condensed,
-              fontSize: "0.64rem",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              padding: "0.25rem 0.6rem",
-              borderRadius: 4,
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-            onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}
-          >
-            📸 SAVE AS IMAGE
-          </button>
+          <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+            <AddToReportButton questionId={question?.id} />
+            <SharePopover 
+              url={window.location.href} 
+              questionId={question?.id} 
+              questionPrompt={question?.prompt}
+              onExportImage={handleExport}
+            />
+          </div>
 
           <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
           <ThemeToggle />

@@ -10,6 +10,7 @@
 
 import { GLOBAL_CSS } from "./styles/tokens";
 import { useRouter } from "./lib/router";
+import { useTheme } from "./contexts/ThemeContext";
 import HarmonicCanvas from "../components/HarmonicCanvas";
 import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
@@ -22,10 +23,12 @@ import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
 import GenerationalFaultlinesPage from "./pages/GenerationalFaultlinesPage";
 import ObserverTriadPage from "./pages/ObserverTriadPage";
 import MethodologyPage from "./pages/MethodologyPage";
+import ReportBuilderPage from "./pages/ReportBuilderPage";
 
 export default function ExploreShell() {
   const router = useRouter();
   const { route, params, state, navigate, updateState } = router;
+  const { theme, mode, colorblind } = useTheme();
 
   // The routerState prop is just the flat state object, so pages don't need
   // to know about the router's internals.
@@ -52,6 +55,8 @@ export default function ExploreShell() {
     page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "methodology") {
     page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "report") {
+    page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   }
@@ -60,7 +65,7 @@ export default function ExploreShell() {
     <>
       <style>{GLOBAL_CSS}</style>
       <div style={{ position: "fixed", inset: 0, zIndex: -1 }}>
-        <HarmonicCanvas position="fixed" opacity={0.12} />
+        <HarmonicCanvas position="fixed" opacity={0.12} themeKey={`${theme}-${mode}-${colorblind}`} />
       </div>
       {page}
     </>

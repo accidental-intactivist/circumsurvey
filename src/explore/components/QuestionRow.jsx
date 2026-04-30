@@ -7,6 +7,7 @@ import { C, FONT } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import MiniSparkline from "./MiniSparkline";
 import { MessageSquareText, BarChart2 } from "./Icons";
+import AddToReportButton from "./AddToReportButton";
 
 export default function QuestionRow({ q, index, distribution, cohortDistribution, onClick, searchTerm = "" }) {
   // Pathway tag (for non-"all" questions)
@@ -149,7 +150,6 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
           </div>
         </div>
 
-        {/* Bottom row: ID + n= + sparkline */}
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -186,6 +186,11 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
             />
           )}
         </div>
+      </div>
+
+      {/* Add to Report Button (Right aligned) */}
+      <div onClick={(e) => e.stopPropagation()} style={{ paddingTop: "0.1rem", paddingRight: "0.2rem", flexShrink: 0 }}>
+        <AddToReportButton questionId={q.id} iconOnly />
       </div>
 
       {/* Chevron */}

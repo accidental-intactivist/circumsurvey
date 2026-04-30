@@ -33,6 +33,31 @@ const passages = [
 - INTACT GLOBAL: Legal advocacy organization led by attorney Eric Clopper working to end forced genital cutting worldwide through strategic litigation.
 - GENITAL AUTONOMY LEGAL DEFENSE & EDUCATION FUND (GALDEF): Providing strategic advice from researcher Tim Hammond.
 - WASHINGTON INITIATIVE FOR BOYS AND MEN (WIBM): Political advocacy organization in Washington State focusing on policies for men and boys, including bodily integrity.`
+  },
+  {
+    id: "about_author",
+    title: "About the Author: Tone Pettit",
+    text: `Who is the 'Accidental Intactivist'? That's me, Tone Pettit, the survey author. I am a male, independent Seattle-based researcher and data scientist who, by a conscious choice of my parents, grew up as an intact outlier in the US—a culture where that's an anomaly for men. This experience has given me a lifelong 'accidental anthropologist' perspective, leading me to question and study a practice that is often accepted without thought.`
+  },
+  {
+    id: "about_methodology_1",
+    title: "Methodology & Hypothesis",
+    text: `The central hypothesis of this project is: "The routine practice of infant circumcision, perpetuated by cultural inertia and systemic failures in informed consent, results in a statistically significant and widespread negative impact on the lifelong physical, sexual, and psychological well-being of the individuals subjected to it." The survey is designed to rigorously test this hypothesis by gathering firsthand, comparative data on lived experiences. We believe that all research is conducted from a perspective. This project is transparently grounded in a secular humanist and egalitarian framework that values bodily autonomy as a fundamental, universal human right.`
+  },
+  {
+    id: "about_bias",
+    title: "Is this survey biased or propaganda?",
+    text: `Is it biased? Yes, in a way. This survey is conducted from a specific perspective: one that starts with the ethical question of whether a non-consensual, irreversible, and often painful surgical procedure should be routinely performed on healthy children for reasons that are not medically immediate. Is it propaganda? No. We are actively seeking all experiences—positive, negative, and neutral. The survey's unique structure asks about lived sexual experiences before asking about anatomical status to gather less biased comparative data.`
+  },
+  {
+    id: "faq_purpose",
+    title: "FAQ: Purpose of the Survey",
+    text: `What is the purpose of this survey and how will the data be used? This is an independent research project. Its primary goal is to gather a broad spectrum of anonymous, firsthand experiences to create public educational content for the 'Accidental Intactivist's Guide' series. This will include articles, data visualizations, and in-depth analyses. The aggregated, anonymized data will be a resource to support advocacy for bodily autonomy and contribute to a more informed public dialogue.`
+  },
+  {
+    id: "faq_health_benefits",
+    title: "FAQ: Health Benefits & Hygiene",
+    text: `What about the health benefits? I was told it's more hygienic. The purported health benefits of routine infant circumcision are highly contested and, in many cases, have been debunked or found to be statistically insignificant when weighed against the risks. Major medical bodies around the world (outside the US) do not recommend it. The 'hygiene' argument is often seen as a relic from an era before modern plumbing; simple, normal washing is sufficient for an intact penis.`
   }
 ];
 

@@ -13,6 +13,7 @@
     "db:count": "wrangler d1 execute circumsurvey --remote --command 'SELECT COUNT(*) FROM respondents'"
   },
   "devDependencies": {
+    "dotenv": "^17.4.2",
     "wrangler": "^3.78.0"
   }
 }

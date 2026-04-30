@@ -12,11 +12,14 @@
 
 import { Link } from "react-router-dom";
 import ExploreShell from "../explore/ExploreShell";
+import { ReportProvider } from "../explore/contexts/ReportContext";
+import ReportBadge from "../explore/components/ReportBadge";
 
 export default function ExplorePage() {
   return (
-    <>
+    <ReportProvider>
       <ExploreShell />
+      <ReportBadge />
       {/* Floating back-to-findings link, fixed top-right so it persists across all sub-views */}
       <Link
         to="/"
@@ -41,6 +44,6 @@ export default function ExplorePage() {
       >
         ← Narrative Report
       </Link>
-    </>
+    </ReportProvider>
   );
 }

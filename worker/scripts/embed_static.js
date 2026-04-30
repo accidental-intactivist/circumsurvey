@@ -1,44 +1,43 @@
 
-
 const passages = [
   {
-    id: "about_1",
-    title: "About the Project & Methodology",
-    text: `"The Accidental Intactivist's Inquiry" is more than just a survey; it is an independent research project designed to explore a deeply personal yet widely misunderstood topic with nuance, rigor, and respect for all perspectives. This page outlines the project's goals, the unique structure of the survey, and our commitment to ethical principles.`
+    id: "get_involved_1",
+    title: "Support the Inquiry & Get Involved",
+    text: `Thank you for your interest in "The Accidental Intactivist's Inquiry" and the broader mission to foster informed dialogue about male genital anatomy, autonomy, and cultural assumptions. This independent research project thrives on community engagement and support. Below are several ways you can contribute to this vital work: Become a Survey Ambassador, Volunteer Your Skills & Expertise, Support Independent Research, and Support Our Strategic Alliances & Collaborators.`
   },
   {
-    id: "about_2",
-    title: "Central Research Hypothesis",
-    text: `This project is built around a central guiding question born from the "Accidental Intactivist's" lifelong observations: "Why isn’t the routine, non-consensual surgical alteration of healthy infant genitals a central controversy of our age?" From this question, we derive our core working hypothesis: "The routine practice of infant circumcision, perpetuated by cultural inertia and systemic failures in informed consent, results in a statistically significant and widespread negative impact on the lifelong physical, sexual, and psychological well-being of the individuals subjected to it." This survey is designed to rigorously test this hypothesis by gathering firsthand, comparative data on lived experiences.`
+    id: "get_involved_2",
+    title: "URGENT CALL TO ACTION! Intact Global Lawsuit",
+    text: `Beyond our broader research, this project is now actively supporting a critical, time-sensitive legal effort with the potential to create historic change for children's rights in Washington State. Leaders from Intact Global, Doctors Opposing Circumcision, and the Washington Initiative for Boys and Men (WIBM) are preparing a potential Equal Protection lawsuit. This legal challenge argues that the state's failure to protect boys from non-consensual genital cutting, while protecting girls, is a violation of its own constitution. To move forward, this lawsuit needs a courageous plaintiff: A parent who regrets the decision, whose son was born AND circumcised in WASHINGTON STATE ON or AFTER March 1, 2023. Contact plantiff@circumsurvey.online or take the survey to get involved.`
   },
   {
-    id: "about_3",
-    title: "Research Philosophy & Stance on Bias",
-    text: `We believe that all research is conducted from a perspective. This project is transparently grounded in a secular humanist and egalitarian framework that values bodily autonomy as a fundamental, universal human right. Our primary inquiry stems from the ethical question of whether non-consensual, medically unnecessary surgery should be performed on children. While this forms our ethical starting point, we are committed to methodological rigor to mitigate confirmation bias. Our survey is not designed to be propaganda; it is an instrument of inquiry designed to discover whether the data supports or refutes this hypothesis.`
+    id: "get_involved_3",
+    title: "Become a Survey Ambassador",
+    text: `The single most impactful way to support this research right now is to help us gather as many diverse perspectives as possible. Our goal is to reach at least 500+ responses to ensure robust and meaningful findings. Share the Survey Link (http://circumsurvey.online) with friends, family, and online communities. Use our printable flyers, handout cards, QR codes, and 2-page overview PDF.`
   },
   {
-    id: "faq_1",
-    title: "FAQ: This survey seems biased",
-    text: `Q: This whole project just seems like biased intactivist propaganda designed to push an agenda. Why should anyone take this seriously?
-A: Is it biased? Yes, in a way. This survey is conducted from a specific perspective: one that starts with the ethical question of whether a non-consensual, irreversible, and often painful surgical procedure should be routinely performed on healthy children for reasons that are not medically immediate. This perspective values bodily autonomy as a fundamental right. Is it propaganda? No. Propaganda typically relies on omitting facts, emotional manipulation, and discouraging critical thought. This project is designed to do the opposite. We are actively seeking all experiences—positive, negative, and neutral—from intact, circumcised, and restoring individuals.`
+    id: "get_involved_4",
+    title: "Volunteer Your Skills & Expertise",
+    text: `This project is a significant undertaking. We are currently particularly interested in help with: 1. Translation & Localization (Spanish, Hebrew, German, Arabic). 2. Data Analysis & Visualization. 3. Regional Outreach & Promotion. 4. Content Creation & Writing Support. Interested in volunteering? Please contact us at: volunteer@circumsurvey.online`
   },
   {
-    id: "faq_2",
-    title: "FAQ: Health benefits & hygiene",
-    text: `Q: What about the health benefits? I was told it's more hygienic and prevents diseases.
-A: The purported health benefits of routine infant circumcision are highly contested and, in many cases, have been debunked or found to be statistically insignificant when weighed against the risks. Major medical bodies around the world (outside the US) do not recommend it. The "hygiene" argument, for instance, is often seen as a relic from an era before modern plumbing; simple, normal washing is sufficient for an intact penis, just as it is for any other body part.`
+    id: "resources_1",
+    title: "The Accidental Intactivist Manifesto",
+    text: `The Accidental Intactivist Manifesto pulls back the curtain on a normalized harm, tracing how culture, medicine, and silence converge to cut away not just skin—but truth. It is the foundational document behind this entire research effort. It weaves together personal insight, scientific inquiry, and cultural critique into a bold, eye-opening call to action. You can download the full 117-page manifesto PDF.`
   },
   {
-    id: "faq_3",
-    title: "FAQ: Adult circumcision vs Infant",
-    text: `Q: I (or someone I know) chose to be circumcised as an adult and am happy with the decision.
-A: Adult vs. Infant Circumcision: An adult making an informed, consensual decision about their own body is exercising their bodily autonomy. That is fundamentally different from a non-consensual, non-therapeutic procedure performed on a healthy infant who has no say in the matter. Our survey and advocacy focus primarily on the ethics of the latter.`
+    id: "resources_2",
+    title: "Key Project Supporters & Advocacy Partners",
+    text: `We are proud to collaborate with: 
+- DOCTORS OPPOSING CIRCUMCISION (DOC): A Seattle-based organization of medical professionals providing scientific/ethical arguments against infant circumcision.
+- INTACT GLOBAL: Legal advocacy organization led by attorney Eric Clopper working to end forced genital cutting worldwide through strategic litigation.
+- GENITAL AUTONOMY LEGAL DEFENSE & EDUCATION FUND (GALDEF): Providing strategic advice from researcher Tim Hammond.
+- WASHINGTON INITIATIVE FOR BOYS AND MEN (WIBM): Political advocacy organization in Washington State focusing on policies for men and boys, including bodily integrity.`
   }
 ];
 
 async function main() {
   const url = "https://findings.circumsurvey.online/api/ai/embed_static";
-  // To run this locally against dev: const url = "http://localhost:8787/api/ai/embed_static";
   
   console.log(`Sending ${passages.length} passages to ${url}...`);
   try {

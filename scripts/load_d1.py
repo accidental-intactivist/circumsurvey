@@ -276,12 +276,12 @@ def generate_sql(form_header, data_rows, col_to_meta, out_path):
             num = extract_numeric(val)
             if num is not None:
                 sql.append(
-                    f"INSERT INTO responses (respondent_id, question_id, value_text, value_num) "
+                    f"INSERT OR REPLACE INTO responses (respondent_id, question_id, value_text, value_num) "
                     f"VALUES ({rid}, {sqlstr(slug)}, {sqlstr(val)}, {num});"
                 )
             else:
                 sql.append(
-                    f"INSERT INTO responses (respondent_id, question_id, value_text) "
+                    f"INSERT OR REPLACE INTO responses (respondent_id, question_id, value_text) "
                     f"VALUES ({rid}, {sqlstr(slug)}, {sqlstr(val)});"
                 )
             resp_count += 1
@@ -290,8 +290,8 @@ def generate_sql(form_header, data_rows, col_to_meta, out_path):
     sql.append(f"-- {len(valid)} respondents, {resp_count} response rows")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text("\n".join(sql))
-    print(f"✓ Wrote {out_path}")
+    out_path.write_text("\n".join(sql), encoding="utf-8")
+    print(f"Wrote {out_path}")
     print(f"  {len(valid)} respondents, {resp_count} response rows")
 
     from collections import Counter

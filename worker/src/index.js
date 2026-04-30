@@ -676,12 +676,12 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
 
       let rawAnswer = chatResponse.response;
       const suggestions = [];
-      const suaRegex = /<S?UA>(.*?)<\/S?UA>/gi;
+      const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
       let match;
       while ((match = suaRegex.exec(rawAnswer)) !== null) {
-        suggestions.push(match[1].trim());
+        if (match[1].trim()) suggestions.push(match[1].trim());
       }
-      const answer = rawAnswer.replace(/<S?UA>.*?<\/S?UA>/gi, "").trim();
+      const answer = rawAnswer.replace(/<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi, "").trim();
 
       return json({
         answer,
@@ -695,35 +695,78 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
     const aiResponse = await env.AI.run('@cf/baai/bge-small-en-v1.5', { text: [query] });
     const queryVector = aiResponse.data[0];
 
-    // Limit topK to 6 to avoid blowing out the 8k token limit on Llama-3.1-8b-instruct
-    const matches = await env.VECTORIZE.query(queryVector, { topK: 6, returnMetadata: true });
+    // Since metadata filtering is not enabled on the index, we manually fetch the static docs and compute similarity.
+    const staticIds = [
+      "get_involved_1", "get_involved_2", "get_involved_3", "get_involved_4", 
+      "resources_1", "resources_2", "about_author", "about_methodology_1", 
+      "about_bias", "faq_purpose", "faq_health_benefits"
+    ];
     
-    if (!matches || matches.matches.length === 0) {
+    // Fetch top 5 respondent quotes
+    const matchesPromise = env.VECTORIZE.query(queryVector, { topK: 5, returnMetadata: true });
+    // Fetch all static docs by ID
+    const staticPromise = env.VECTORIZE.getByIds(staticIds);
+
+    const [matches, staticDocsRaw] = await Promise.all([matchesPromise, staticPromise]);
+
+    // Manual cosine similarity for static docs (vectors are pre-normalized, so dot product = cosine similarity)
+    const staticDocsScored = staticDocsRaw.map(doc => {
+      let score = 0;
+      for (let i = 0; i < queryVector.length; i++) {
+        score += queryVector[i] * doc.values[i];
+      }
+      return { ...doc, score };
+    });
+
+    // Sort descending by score and pick top 2
+    staticDocsScored.sort((a, b) => b.score - a.score);
+    
+    // Only include static docs if they have a decent similarity score to the query (e.g. > 0.4)
+    const topStatic = staticDocsScored.slice(0, 2).filter(d => d.score > 0.4);
+
+    const allMatches = [
+      ...topStatic,
+      ...(matches.matches || [])
+    ];
+
+    if (allMatches.length === 0) {
       return json({ answer: "I couldn't find any relevant responses in the survey data.", quotes: [] });
     }
 
-    const quotes = matches.matches.map(m => {
+    const quotes = allMatches.map(m => {
       const meta = m.metadata || {};
       return {
         text: meta.text,
         pathway: meta.pathway,
         generation: meta.generation,
         question_id: meta.question_id,
-        score: m.score
+        score: m.score,
+        type: meta.type,
+        title: meta.title
       };
     });
 
-    let contextStr = quotes.map((q, i) => `[${i+1}] (${q.pathway}, ${q.generation}): "${(q.text || '').slice(0, 500)}"`).join("\n");
+    let contextStr = quotes.map((q, i) => {
+      if (q.type === 'static_context') {
+        return `[${i+1}] (PROJECT DOCUMENTATION - ${q.title || 'FAQ'}): "${(q.text || '').slice(0, 500)}"`;
+      }
+      return `[${i+1}] (RESPONDENT QUOTE - ${q.pathway || 'unknown'}, ${q.generation || 'unknown'}): "${(q.text || '').slice(0, 500)}"`;
+    }).join("\n");
+
     if (contextStr.length > 4000) {
       contextStr = contextStr.slice(0, 4000) + "\n...[TRUNCATED]...";
     }
 
-    const prompt = `You analyze qualitative data from the CircumSurvey — a study on circumcision perspectives valuing bodily autonomy.
-Some quotes may complain about bias. Context: This survey TRANSPARENTLY operates from an ethical framework that non-consensual infant surgery is a human rights violation. It intentionally seeks out those affected. 
-If the user asks about bias or the methodology, DEFEND the methodology. Do not validate complaints that the survey is "biased" or "flawed" — explain that it is an intentional inquiry into a specific ethical hypothesis.
+    const prompt = `You are the official AI Copilot for CircumSurvey — a study on circumcision perspectives prioritizing bodily autonomy.
 
-Based ONLY on these respondent quotes (and your knowledge of the methodology), answer the user's question. Use citations like [1], [3]. Don't invent info.
-Draw 1-2 conclusions about emotional/social themes. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise (3-4 paragraphs).
+Context contains both RESPONDENT QUOTES and PROJECT DOCUMENTATION (Methodology, FAQ, Author info). The author of the survey, Tone Pettit, is male. Use "he/him" pronouns when referring to him.
+Based ONLY on the provided Context, answer the user's question. Use citations like [1], [3]. Don't invent info.
+
+If the user asks about the survey's methodology, author, or bias, rely on the PROJECT DOCUMENTATION. DEFEND the methodology—do not validate complaints that the survey is "biased". It intentionally seeks out affected populations based on an ethical framework.
+
+If the user asks about respondent experiences, draw conclusions from the RESPONDENT QUOTES about emotional/social themes.
+
+Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise (3-4 paragraphs max).
 IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.
 
 Question: ${query}
@@ -741,12 +784,12 @@ ${contextStr}`;
 
     let rawAnswer = chatResponse.response;
     const suggestions = [];
-    const suaRegex = /<S?UA>(.*?)<\/S?UA>/gi;
+    const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
     let match;
     while ((match = suaRegex.exec(rawAnswer)) !== null) {
-      suggestions.push(match[1].trim());
+      if (match[1].trim()) suggestions.push(match[1].trim());
     }
-    const answer = rawAnswer.replace(/<S?UA>.*?<\/S?UA>/gi, "").replace(/Suggested User Actions?:?/i, "").trim();
+    const answer = rawAnswer.replace(/<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi, "").replace(/Suggested User Actions?:?/i, "").trim();
 
     return json({
       answer,

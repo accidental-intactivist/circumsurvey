@@ -21,6 +21,7 @@ import CopilotChat from "../components/CopilotChat";
 import ThemeToggle from "../components/ThemeToggle";
 import SharePopover from "../components/SharePopover";
 import AddToReportButton from "../components/AddToReportButton";
+import WordCloud from "../components/WordCloud";
 
 export default function QuestionPage({ routerState, navigate, updateState }) {
   const { params, cohort } = routerState;
@@ -345,7 +346,10 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             {/* CENTER: content */}
             <main>
               {isOpenText ? (
-                <NarrativeList distribution={cohortDistribution?.distribution || allDistribution?.distribution} />
+                <>
+                  <WordCloud narratives={cohortDistribution?.distribution || allDistribution?.distribution} />
+                  <NarrativeList distribution={cohortDistribution?.distribution || allDistribution?.distribution} />
+                </>
               ) : isGeographic ? (
                 <>
                   <GeographicHeatmap 

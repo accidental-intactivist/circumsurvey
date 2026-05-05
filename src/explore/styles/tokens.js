@@ -228,6 +228,32 @@ export const GLOBAL_CSS = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   
+  /* ── RETRO OVERRIDE (Amiga/C64 Easter Egg) ── */
+  body.retro-override {
+    --c-bg: #4040E0;
+    --c-bgSoft: #4040E0;
+    --c-bgCard: #4040E0;
+    --c-bgDeep: #4040E0;
+    --c-text: #A0A0FF;
+    --c-textBright: #FFFFFF;
+    --c-muted: #A0A0FF;
+    --c-dim: #A0A0FF;
+    --c-ghost: #A0A0FF;
+    --c-gold: #FFFFFF;
+    --c-goldBright: #FFFFFF;
+    
+    --f-display: 'JetBrains Mono', monospace !important;
+    --f-body: 'JetBrains Mono', monospace !important;
+    --f-condensed: 'JetBrains Mono', monospace !important;
+    
+    border: 4px solid #A0A0FF;
+    padding: 2px;
+  }
+  
+  body.retro-override * {
+    border-radius: 0 !important;
+  }
+
   html, body { 
     background: var(--c-bg); 
     color: var(--c-text); 

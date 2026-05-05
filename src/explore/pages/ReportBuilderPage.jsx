@@ -1,9 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useReport } from "../contexts/ReportContext";
 import { C, FONT } from "../styles/tokens";
-import { getQuestions, getResponseDistribution } from "../lib/api";
-import QuestionRow from "../components/QuestionRow";
+import { getQuestions, getResponseDistribution, getNarratives, getAggregate } from "../lib/api";
+import { applyLikert } from "../lib/formatters";
 import ThemeToggle from "../components/ThemeToggle";
+import DistributionChart from "../components/DistributionChart";
+import GeographicHeatmap from "../components/GeographicHeatmap";
+import NarrativeList from "../components/NarrativeList";
+import WordCloud from "../components/WordCloud";
 
 export default function ReportBuilderPage({ navigate }) {
   const { reportItems, removeFromReport, reorderReport, clearReport } = useReport();
@@ -22,28 +26,55 @@ export default function ReportBuilderPage({ navigate }) {
     return () => { cancelled = true; };
   }, []);
 
-  // Fetch distributions for sparklines & CSV
+  // Fetch all necessary data for the report items
   useEffect(() => {
     let cancelled = false;
-    if (reportItems.length === 0) return;
+    if (reportItems.length === 0 || questions.length === 0) return;
     
-    // Only fetch those we don't have
     const toFetch = reportItems.filter(id => !distributions[id]);
     
     toFetch.forEach(id => {
-      getResponseDistribution(id).then(d => {
+      const q = questions.find(q => q.id === id);
+      if (!q) return;
+
+      const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(id);
+
+      const promises = [getResponseDistribution(id)];
+      
+      if (q.type === "open_text" && !isGeographic) {
+        promises.push(getNarratives(id).catch(() => null));
+      } else {
+        promises.push(Promise.resolve(null));
+      }
+
+      if (isGeographic) {
+         promises.push(getAggregate(id, { by: "pathway" }).catch(() => null));
+      } else {
+         promises.push(Promise.resolve(null));
+      }
+
+      Promise.all(promises).then(([distRes, narRes, pathRes]) => {
         if (!cancelled) {
-          setDistributions(prev => ({ ...prev, [id]: d.distribution }));
+          setDistributions(prev => ({
+            ...prev,
+            [id]: {
+               distribution: distRes?.distribution || [],
+               narratives: narRes?.narratives || null,
+               byPathway: pathRes || null
+            }
+          }));
         }
-      }).catch(e => console.error("Failed to fetch dist for", id, e));
+      }).catch(e => console.error("Failed to fetch full data for", id, e));
     });
     
     return () => { cancelled = true; };
-  }, [reportItems]);
+  }, [reportItems, questions, distributions]);
 
-  const reportQuestions = reportItems
-    .map(id => questions.find(q => q.id === id))
-    .filter(Boolean);
+  const reportQuestions = useMemo(() => {
+    return reportItems
+      .map(id => questions.find(q => q.id === id))
+      .filter(Boolean);
+  }, [reportItems, questions]);
 
   const moveUp = (index) => {
     if (index > 0) reorderReport(index, index - 1);
@@ -56,7 +87,8 @@ export default function ReportBuilderPage({ navigate }) {
   const exportCSV = () => {
     let csv = "Question ID,Prompt,Theme,Data\\n";
     reportQuestions.forEach(q => {
-      const dist = distributions[q.id];
+      const data = distributions[q.id];
+      const dist = data?.distribution;
       let dataStr = "";
       if (dist) {
         dataStr = dist.map(d => `${d.label}: ${d.n} (${d.pct.toFixed(1)}%)`).join(" | ");
@@ -76,7 +108,8 @@ export default function ReportBuilderPage({ navigate }) {
     reportQuestions.forEach((q, i) => {
       txt += `${i + 1}. ${q.prompt}\\n`;
       txt += `ID: ${q.id} | Section: ${q.section || 'N/A'}\\n`;
-      const dist = distributions[q.id];
+      const data = distributions[q.id];
+      const dist = data?.distribution;
       if (dist) {
         dist.forEach(d => {
           const bars = "█".repeat(Math.round(d.pct / 5));
@@ -138,6 +171,7 @@ export default function ReportBuilderPage({ navigate }) {
           body { background: white !important; color: black !important; }
           .print-container { padding: 0 !important; }
           * { text-shadow: none !important; box-shadow: none !important; }
+          .report-block { break-inside: avoid; margin-bottom: 2rem; border-color: #ddd !important; }
         }
       `}</style>
 
@@ -227,55 +261,104 @@ export default function ReportBuilderPage({ navigate }) {
               Your report is empty. Browse the Master Index to add questions here.
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {reportQuestions.map((q, index) => (
-                <div key={q.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <div className="no-print" style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                    <button 
-                      onClick={() => moveUp(index)}
-                      disabled={index === 0}
-                      style={{
-                        background: "transparent", border: "none", color: index === 0 ? C.dim : C.muted,
-                        cursor: index === 0 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "0.8rem"
-                      }}
-                    >▲</button>
-                    <button 
-                      onClick={() => moveDown(index)}
-                      disabled={index === reportQuestions.length - 1}
-                      style={{
-                        background: "transparent", border: "none", color: index === reportQuestions.length - 1 ? C.dim : C.muted,
-                        cursor: index === reportQuestions.length - 1 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "0.8rem"
-                      }}
-                    >▼</button>
-                  </div>
-                  
-                  <div style={{ flex: 1, border: `1px solid ${C.ghost}`, borderRadius: 6, overflow: "hidden" }}>
-                    <QuestionRow 
-                      q={q} 
-                      index={index} 
-                      distribution={distributions[q.id]}
-                      onClick={() => {
-                        window.open(`#/q/${q.id}`, "_blank");
-                      }}
-                    />
-                  </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+              {reportQuestions.map((q, index) => {
+                const data = distributions[q.id];
+                const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(q.id);
+                const isOpenText = q.type === "open_text" && !isGeographic;
+                
+                const displayDist = data ? { distribution: applyLikert(data.distribution, q) } : null;
 
-                  <button 
-                    className="no-print"
-                    onClick={() => removeFromReport(q.id)}
-                    style={{
-                      background: "transparent", border: "none", color: C.dim,
-                      cursor: "pointer", padding: "0.5rem", fontSize: "1.2rem",
-                      transition: "color 0.15s"
-                    }}
-                    onMouseEnter={e => e.target.style.color = C.red}
-                    onMouseLeave={e => e.target.style.color = C.dim}
-                    title="Remove from report"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+                return (
+                  <div key={q.id} className="report-block" style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+                    <div className="no-print" style={{ display: "flex", flexDirection: "column", gap: "0.2rem", marginTop: "1.5rem" }}>
+                      <button 
+                        onClick={() => moveUp(index)}
+                        disabled={index === 0}
+                        style={{
+                          background: "transparent", border: "none", color: index === 0 ? C.dim : C.muted,
+                          cursor: index === 0 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem"
+                        }}
+                      >▲</button>
+                      <button 
+                        onClick={() => moveDown(index)}
+                        disabled={index === reportQuestions.length - 1}
+                        style={{
+                          background: "transparent", border: "none", color: index === reportQuestions.length - 1 ? C.dim : C.muted,
+                          cursor: index === reportQuestions.length - 1 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem"
+                        }}
+                      >▼</button>
+                    </div>
+                    
+                    <div style={{ 
+                      flex: 1, 
+                      border: `1px solid ${C.ghost}`, 
+                      borderRadius: 12, 
+                      background: C.bgCard,
+                      overflow: "hidden" 
+                    }}>
+                      <div style={{ padding: "1.5rem 1.8rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
+                          <div>
+                            <span style={{
+                              fontFamily: FONT.condensed, fontSize: "0.65rem", fontWeight: 700,
+                              letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold,
+                              display: "block", marginBottom: "0.4rem"
+                            }}>{q.section || "General"}</span>
+                            <h2 style={{ 
+                              fontFamily: FONT.display, fontSize: "1.35rem", color: C.textBright, 
+                              lineHeight: 1.25, marginBottom: "1rem", letterSpacing: "-0.01em"
+                            }}>
+                              {index + 1}. {q.prompt}
+                            </h2>
+                            {q.subtitle && (
+                              <p style={{
+                                fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted,
+                                fontStyle: "italic", marginBottom: "1.5rem"
+                              }}>{q.subtitle}</p>
+                            )}
+                          </div>
+                          <button 
+                            className="no-print"
+                            onClick={() => removeFromReport(q.id)}
+                            style={{
+                              background: "transparent", border: "none", color: C.dim,
+                              cursor: "pointer", padding: "0.2rem", fontSize: "1.4rem",
+                              transition: "color 0.15s", lineHeight: 1
+                            }}
+                            onMouseEnter={e => e.target.style.color = C.red}
+                            onMouseLeave={e => e.target.style.color = C.dim}
+                            title="Remove from report"
+                          >×</button>
+                        </div>
+
+                        {!data ? (
+                          <div style={{ color: C.dim, fontStyle: "italic" }}>Loading data...</div>
+                        ) : isOpenText ? (
+                          <>
+                            <WordCloud narratives={data.narratives || []} />
+                            <div style={{ marginTop: "1.5rem" }}>
+                              <NarrativeList distribution={data.narratives || []} />
+                            </div>
+                          </>
+                        ) : isGeographic ? (
+                          <GeographicHeatmap 
+                            questionId={q.id}
+                            title="Geographic distribution"
+                            distribution={{ distribution: data.distribution || [] }}
+                            byPathway={data.byPathway}
+                          />
+                        ) : (
+                          <DistributionChart 
+                            distribution={displayDist} 
+                            title="Distribution" 
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

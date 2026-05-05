@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
@@ -6,34 +6,116 @@ import { useTooltip, Tooltip } from "./Tooltip";
 export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const { parsedDist, parsedCohortDist } = useMemo(() => {
+    let d = [...(distribution?.distribution || [])];
+    let cd = [...(cohortDistribution?.distribution || [])];
+    
+    if (question?.id === "demo_generation") {
+      const genOrder = [
+        "Generation Alpha (born 2013-Present)",
+        "Generation Z (born 1997-2012)",
+        "Millennial/Gen Y (born 1981-1996)",
+        "Xennial/Oregon Trail (born approx. 1977-1983)",
+        "Generation X (born 1965-1980)",
+        "Baby Boomer (born 1946-1964)",
+        "Silent Generation (born 1928-1945)",
+        "Not sure / Prefer not to say"
+      ];
+      d.sort((a, b) => {
+        let idxA = genOrder.indexOf(a.label);
+        let idxB = genOrder.indexOf(b.label);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        if (idxA === 999 && idxB === 999) return b.n - a.n;
+        return idxA - idxB;
+      });
+      cd.sort((a, b) => {
+        let idxA = genOrder.indexOf(a.label);
+        let idxB = genOrder.indexOf(b.label);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        if (idxA === 999 && idxB === 999) return b.n - a.n;
+        return idxA - idxB;
+      });
+    }
+
+    // Heuristic: Auto-parse multi-select strings (lots of combinations joined by comma-space-Capital)
+    if (d.length > 15) {
+      const counts = {};
+      const cohortCounts = {};
+      
+      d.forEach(x => {
+        if (x.label) {
+          x.label.split(/, (?=[A-Z])/).forEach(p => {
+            const k = p.trim();
+            counts[k] = (counts[k] || 0) + x.n;
+          });
+        }
+      });
+      
+      cd.forEach(x => {
+        if (x.label) {
+          x.label.split(/, (?=[A-Z])/).forEach(p => {
+            const k = p.trim();
+            cohortCounts[k] = (cohortCounts[k] || 0) + x.n;
+          });
+        }
+      });
+      
+      const parsedKeys = Object.keys(counts);
+      
+      // If parsing reduced categories by at least 40%, it's definitely a multi-select
+      if (parsedKeys.length > 0 && parsedKeys.length < d.length * 0.6) {
+        let entries = parsedKeys.map(label => ({ label, n: counts[label] }));
+        entries.sort((a, b) => b.n - a.n);
+        
+        let cEntries = Object.keys(cohortCounts).map(label => ({ label, n: cohortCounts[label] }));
+        
+        // Bucket long tail into "Other / Custom Responses"
+        if (entries.length > 12) {
+          const top = entries.slice(0, 12);
+          const topSet = new Set(top.map(e => e.label));
+          
+          const otherN = entries.slice(12).reduce((s, e) => s + e.n, 0);
+          if (otherN > 0) top.push({ label: "Other / Custom Responses", n: otherN });
+          
+          const cTop = [];
+          let cOtherN = 0;
+          cEntries.forEach(ce => {
+            if (topSet.has(ce.label)) {
+              cTop.push(ce);
+            } else {
+              cOtherN += ce.n;
+            }
+          });
+          if (cOtherN > 0) cTop.push({ label: "Other / Custom Responses", n: cOtherN });
+          
+          return { parsedDist: top, parsedCohortDist: cTop };
+        }
+        
+        return { parsedDist: entries, parsedCohortDist: cEntries };
+      }
+    }
+    
+    return { parsedDist: d, parsedCohortDist: cd };
+  }, [distribution, cohortDistribution, question]);
+
+  const toggleItem = (label) => {
+    setHiddenItems(prev => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
 
   if (!distribution) {
     return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;
   }
-  let dist = distribution.distribution || [];
   
-  if (question?.id === "demo_generation") {
-    const genOrder = [
-      "Generation Alpha (born 2013-Present)",
-      "Generation Z (born 1997-2012)",
-      "Millennial/Gen Y (born 1981-1996)",
-      "Xennial/Oregon Trail (born approx. 1977-1983)",
-      "Generation X (born 1965-1980)",
-      "Baby Boomer (born 1946-1964)",
-      "Silent Generation (born 1928-1945)",
-      "Not sure / Prefer not to say"
-    ];
-    dist = [...dist].sort((a, b) => {
-      let idxA = genOrder.indexOf(a.label);
-      let idxB = genOrder.indexOf(b.label);
-      if (idxA === -1) idxA = 999;
-      if (idxB === -1) idxB = 999;
-      if (idxA === 999 && idxB === 999) return b.n - a.n;
-      return idxA - idxB;
-    });
-  }
-  
-  if (dist.length === 0) {
+  if (parsedDist.length === 0) {
     return (
       <div style={{
         padding: "1.5rem",
@@ -47,27 +129,16 @@ export default function DistributionChart({ title, distribution, cohortDistribut
     );
   }
 
-  const cohortDist = cohortDistribution?.distribution || [];
-  
-  const toggleItem = (label) => {
-    setHiddenItems(prev => {
-      const next = new Set(prev);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
-      return next;
-    });
-  };
-
   // Filter distributions based on hiddenItems
-  const activeDist = dist.filter(d => !hiddenItems.has(d.label));
-  const activeCohortDist = cohortDist.filter(d => !hiddenItems.has(d.label));
+  const activeDist = parsedDist.filter(d => !hiddenItems.has(d.label));
+  const activeCohortDist = parsedCohortDist.filter(d => !hiddenItems.has(d.label));
 
   const total = activeDist.reduce((s, d) => s + d.n, 0);
   const cohortTotal = activeCohortDist.reduce((s, d) => s + d.n, 0);
 
   // Build a map for cohort comparison
   const cohortMap = {};
-  for (const d of cohortDist) cohortMap[d.label] = d.n;
+  for (const d of parsedCohortDist) cohortMap[d.label] = d.n;
 
   return (
     <div style={{
@@ -114,7 +185,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
 
       {/* Legend / per-option rows */}
       <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-        {dist.map((d, i) => {
+        {(isExpanded ? parsedDist : parsedDist.slice(0, 10)).map((d, i) => {
           const isHidden = hiddenItems.has(d.label);
           // Percentages for the legend text
           const pct = total > 0 && !isHidden ? (d.n / total) * 100 : 0;
@@ -128,9 +199,9 @@ export default function DistributionChart({ title, distribution, cohortDistribut
               onClick={() => toggleItem(d.label)}
               style={{ 
                 display: "flex", 
-                alignItems: "center", 
+                alignItems: "flex-start", 
                 gap: "0.6rem",
-                padding: "0.25rem 0.5rem",
+                padding: "0.4rem 0.5rem",
                 margin: "0 -0.5rem",
                 borderRadius: 4,
                 cursor: "pointer",
@@ -144,16 +215,18 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                 width: 10, height: 10, borderRadius: 2,
                 background: isHidden ? C.ghost : colorForLabel(d.label, i),
                 flexShrink: 0,
+                marginTop: "0.2rem",
               }} />
               <div style={{
                 flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
-                color: isHidden ? C.muted : C.text, minWidth: 0, overflow: "hidden",
-                textOverflow: "ellipsis", whiteSpace: "nowrap",
-                textDecoration: isHidden ? "line-through" : "none"
+                color: isHidden ? C.muted : C.text, minWidth: 0,
+                textDecoration: isHidden ? "line-through" : "none",
+                lineHeight: 1.35
               }}>{d.label}</div>
               <div style={{
                 fontFamily: FONT.mono, fontSize: "0.74rem",
                 color: C.muted, minWidth: 70, textAlign: "right",
+                marginTop: "0.1rem",
               }}>
                 {isHidden ? "Hidden" : `${d.n} · ${pct.toFixed(1)}%`}
               </div>
@@ -163,6 +236,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                   color: isHidden ? C.muted : (cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted),
                   minWidth: 90, textAlign: "right",
                   fontWeight: 600,
+                  marginTop: "0.1rem",
                 }}>
                   {isHidden ? "—" : (cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —")}
                 </div>
@@ -171,6 +245,37 @@ export default function DistributionChart({ title, distribution, cohortDistribut
           );
         })}
       </div>
+
+      {parsedDist.length > 10 && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            background: "transparent",
+            border: `1px solid ${C.ghost}`,
+            color: C.muted,
+            fontFamily: FONT.condensed,
+            fontSize: "0.75rem",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            padding: "0.5rem",
+            borderRadius: 6,
+            marginTop: "0.8rem",
+            cursor: "pointer",
+            width: "100%",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = C.goldBright;
+            e.currentTarget.style.borderColor = C.gold;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = C.muted;
+            e.currentTarget.style.borderColor = C.ghost;
+          }}
+        >
+          {isExpanded ? "Show Less" : `Show All Options (${parsedDist.length - 10} more)`}
+        </button>
+      )}
 
       {/* Cohort caption */}
       {cohortDistribution && cohortTotal > 0 && (

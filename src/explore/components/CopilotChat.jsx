@@ -38,6 +38,29 @@ export default function CopilotChat({ routerState, updateState }) {
     e.preventDefault();
     if (!query.trim()) return;
 
+    const upperQ = query.trim().toUpperCase();
+    if (upperQ === 'SYS 64738' || upperQ === 'LOAD "*",8,1') {
+      document.body.classList.toggle('retro-override');
+      setResult({
+         answer: "READY.\nLOAD\n\nPRESS PLAY ON TAPE\n\nOK\n\nSEARCHING FOR CIRCUMSURVEY...\nLOADING...\n\nMODULE [RETRO_OVERRIDE] INITIALIZED.",
+         suggestions: ["Revert visual override?"],
+         quotes: [],
+         metadata: { intent: "system_override" }
+      });
+      return;
+    }
+    
+    // Check if they asked to revert
+    if (upperQ === 'REVERT VISUAL OVERRIDE?') {
+      document.body.classList.remove('retro-override');
+      setResult({
+        answer: "Visuals reverted to standard operating parameters.",
+        suggestions: [],
+        quotes: []
+      });
+      return;
+    }
+
     if (updateState) {
       updateState({ ai_query: query.trim() });
     }
@@ -268,12 +291,42 @@ export default function CopilotChat({ routerState, updateState }) {
                     </span>
                     <span style={{ fontStyle: "italic" }}>"{q.text}"</span>
                     <div style={{
-                      marginTop: "0.4rem",
+                      marginTop: "0.6rem",
                       fontSize: "0.75rem",
                       fontFamily: FONT.mono,
-                      color: C.dim
+                      color: C.dim,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
                     }}>
-                      — Pathway: {q.pathway} | Gen: {q.generation}
+                      <span>— Pathway: {q.pathway} | Gen: {q.generation}</span>
+                      {q.type !== 'static_context' && (
+                        <button
+                          onClick={() => {
+                            const sq = `Find a thematic match for this quote: "${q.text}". Search specifically for responses from DIFFERENT pathways to see how these experiences intersect.`;
+                            setQuery(sq);
+                            executeSearch(sq);
+                            if (updateState) updateState({ ai_query: sq });
+                          }}
+                          style={{
+                            background: "transparent",
+                            border: `1px solid ${C.ghost}`,
+                            color: C.goldBright,
+                            fontFamily: FONT.condensed,
+                            fontSize: "0.64rem",
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            padding: "0.3rem 0.6rem",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                          }}
+                          onMouseEnter={(e) => { e.target.style.background = "rgba(212,160,48,0.1)"; }}
+                          onMouseLeave={(e) => { e.target.style.background = "transparent"; }}
+                        >
+                          Find Cross-Pathway Match
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -94,10 +94,20 @@ export default function NarrativeList({ distribution }) {
           return (
             <div key={i} style={{
               background: "var(--c-bgSoft)",
-              border: `2px solid var(--c-ghost)`,
+              border: `1px solid var(--c-ghost)`,
               borderRadius: 8,
               position: "relative",
               overflow: "hidden",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.2)";
             }}>
               {/* Colored top border strip */}
               <div style={{ height: 4, background: pathwayColor }} />

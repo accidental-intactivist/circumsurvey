@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import { toPng } from "html-to-image";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
@@ -7,6 +8,26 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
+  const [chartType, setChartType] = useState("auto");
+  const chartRef = useRef(null);
+
+  const handleDownload = async () => {
+    if (!chartRef.current) return;
+    try {
+      const dataUrl = await toPng(chartRef.current, {
+        cacheBust: true,
+        style: {
+          background: C.bgSoft,
+        }
+      });
+      const link = document.createElement('a');
+      link.download = `chart-${question?.id || 'export'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to download image", err);
+    }
+  };
 
   const { parsedDist, parsedCohortDist } = useMemo(() => {
     let d = [...(distribution?.distribution || [])];
@@ -140,8 +161,10 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   const cohortMap = {};
   for (const d of parsedCohortDist) cohortMap[d.label] = d.n;
 
+  const activeChartType = chartType === "auto" ? (parsedDist.length < 8 ? "pie" : "bar") : chartType;
+
   return (
-    <div style={{
+    <div ref={chartRef} style={{
       background: C.bgSoft,
       border: `1px solid ${C.ghost}`,
       borderRadius: 8,
@@ -157,31 +180,119 @@ export default function DistributionChart({ title, distribution, cohortDistribut
             fontSize: "1.15rem",
             color: C.textBright,
             letterSpacing: "-0.01em",
+            maxWidth: "70%",
           }}>{cohortDistribution ? "Overall vs. Filtered distribution" : title}</h2>
-          <div style={{
-            fontFamily: FONT.mono,
-            fontSize: "0.75rem",
-            color: C.muted,
-          }}>{hiddenItems.size > 0 ? "n (visible) = " : "n = "}{total}</div>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", flexWrap: "wrap" }}>
+            <div style={{
+              fontFamily: FONT.mono,
+              fontSize: "0.75rem",
+              color: C.muted,
+              marginRight: "0.5rem"
+            }}>{hiddenItems.size > 0 ? "n (visible) = " : "n = "}{total}</div>
+
+            {/* Chart Type Toggle */}
+            <div style={{
+              display: "flex",
+              background: "rgba(0,0,0,0.2)",
+              borderRadius: 20,
+              padding: 2,
+              border: `1px solid ${C.ghost}`,
+            }}>
+              <button
+                onClick={() => setChartType("bar")}
+                style={{
+                  background: activeChartType === "bar" ? C.ghost : "transparent",
+                  color: activeChartType === "bar" ? C.textBright : C.muted,
+                  border: "none",
+                  borderRadius: 18,
+                  padding: "0.2rem 0.6rem",
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.7rem",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >Bar</button>
+              <button
+                onClick={() => setChartType("pie")}
+                style={{
+                  background: activeChartType === "pie" ? C.ghost : "transparent",
+                  color: activeChartType === "pie" ? C.textBright : C.muted,
+                  border: "none",
+                  borderRadius: 18,
+                  padding: "0.2rem 0.6rem",
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.7rem",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >Pie</button>
+            </div>
+            
+            <button 
+              onClick={handleDownload}
+              title="Download as PNG"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: C.muted,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0.2rem",
+                borderRadius: 4,
+                transition: "color 0.2s"
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.muted }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Stacked horizontal bars */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {/* Overall Stacked Bar */}
-        <div>
-          {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.muted, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
-          <StackedBar dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
-        </div>
-
-        {/* Cohort Stacked Bar */}
-        {cohortDistribution && cohortTotal > 0 && (
+      {/* Charts Area */}
+      {activeChartType === "bar" ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          {/* Overall Stacked Bar */}
           <div>
-            <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.goldBright, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
-            <StackedBar dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.muted, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
+            <StackedBar dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
           </div>
-        )}
-      </div>
+
+          {/* Cohort Stacked Bar */}
+          {cohortDistribution && cohortTotal > 0 && (
+            <div>
+              <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.goldBright, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
+              <StackedBar dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{ display: "flex", gap: "2rem", justifyContent: "center", flexWrap: "wrap", margin: "1rem 0" }}>
+          {/* Overall Pie Chart */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", flex: "1 1 150px", maxWidth: 220 }}>
+            {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
+            <PieChart dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+          </div>
+          
+          {/* Cohort Pie Chart */}
+          {cohortDistribution && cohortTotal > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", flex: "1 1 150px", maxWidth: 220 }}>
+              <div style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
+              <PieChart dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Legend / per-option rows */}
       <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
@@ -320,6 +431,69 @@ function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
             onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
             onMouseMove={moveTooltip}
             onMouseLeave={hideTooltip}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+function getCoordinatesForPercent(percent) {
+  const x = Math.cos(2 * Math.PI * percent);
+  const y = Math.sin(2 * Math.PI * percent);
+  return [x, y];
+}
+
+function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
+  if (total === 0) return null;
+  let cumulativePercent = 0;
+  
+  return (
+    <svg viewBox="-1.05 -1.05 2.1 2.1" style={{ transform: "rotate(-90deg)", width: "100%", height: "auto", maxWidth: "200px" }}>
+      {dist.map((d, i) => {
+        const percent = d.n / total;
+        if (percent === 0) return null;
+        
+        // Render a full circle if it's 100%
+        if (percent === 1) {
+           return (
+             <circle 
+               key={i}
+               cx={0} cy={0} r={1} 
+               fill={colorForLabel(d.label, i)} 
+               onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
+               onMouseMove={moveTooltip}
+               onMouseLeave={hideTooltip}
+               style={{ transition: "all 0.2s", cursor: "pointer" }}
+             />
+           );
+        }
+
+        const [startX, startY] = getCoordinatesForPercent(cumulativePercent);
+        cumulativePercent += percent;
+        const [endX, endY] = getCoordinatesForPercent(cumulativePercent);
+        const largeArcFlag = percent > 0.5 ? 1 : 0;
+        
+        const pathData = [
+          `M 0 0`,
+          `L ${startX} ${startY}`,
+          `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+          `Z`
+        ].join(' ');
+
+        return (
+          <path 
+            key={i} 
+            d={pathData} 
+            fill={colorForLabel(d.label, i)} 
+            stroke={C.bgSoft}
+            strokeWidth="0.02"
+            onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
+            onMouseMove={moveTooltip}
+            onMouseLeave={hideTooltip}
+            style={{ transition: "all 0.2s", cursor: "pointer" }}
+            onMouseOver={(e) => { e.currentTarget.style.opacity = 0.8 }}
+            onMouseOut={(e) => { e.currentTarget.style.opacity = 1 }}
           />
         );
       })}

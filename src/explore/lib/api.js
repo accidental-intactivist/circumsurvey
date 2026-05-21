@@ -99,6 +99,24 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
         }
       }
     });
+
+    // Provide context for vague prompts ("Additional comments", "Other (please specify)")
+    // by looking up the preceding question based on col_idx.
+    const sortedQs = [...data.questions].sort((a, b) => a.col_idx - b.col_idx);
+    const qByCol = new Map();
+    sortedQs.forEach(q => qByCol.set(q.col_idx, q));
+
+    data.questions.forEach(q => {
+      const p = q.prompt.trim().toLowerCase();
+      if (p === "additional comments" || p === "other (please specify)") {
+        const prev = qByCol.get(q.col_idx - 1);
+        if (prev) {
+          q.subtitle = q.subtitle 
+            ? `${q.subtitle} (Regarding: "${prev.prompt}")`
+            : `Regarding: "${prev.prompt}"`;
+        }
+      }
+    });
   }
   return data;
 }
@@ -167,11 +185,11 @@ export async function getSections(pathway = null) {
   return fetchJson(`${API_BASE}/sections?${params.toString()}`);
 }
 
-export async function queryCopilot(queryText) {
+export async function queryCopilot(queryText, context = null) {
   const r = await fetch(`${API_BASE}/ai/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: queryText }),
+    body: JSON.stringify({ query: queryText, context }),
   });
   if (!r.ok) {
     const errData = await r.json().catch(() => ({}));

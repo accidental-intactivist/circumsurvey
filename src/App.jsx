@@ -4,7 +4,6 @@ import ExplorePage from './pages/ExplorePage';
 import AboutPage from './pages/AboutPage';
 import FaqPage from './pages/FaqPage';
 import SpecialReportPage from './pages/SpecialReportPage';
-import TestScrollyPage from './pages/TestScrolly';
 import { ThemeProvider } from './explore/contexts/ThemeContext';
 
 export default function App() {
@@ -17,7 +16,6 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/special-report" element={<SpecialReportPage />} />
-          <Route path="/test-scrolly" element={<TestScrollyPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

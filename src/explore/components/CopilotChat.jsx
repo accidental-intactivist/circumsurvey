@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { C, FONT } from "../styles/tokens";
 import { queryCopilot } from "../lib/api";
 import BivariateHeatmap from "./BivariateHeatmap";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function CopilotChat({ routerState, updateState }) {
+  const { unlockTheme, setTheme } = useTheme();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -15,8 +17,14 @@ export default function CopilotChat({ routerState, updateState }) {
     setError(null);
     setResult(null);
 
+    const context = {
+      route: routerState?.route,
+      questionId: routerState?.params?.id,
+      cohort: routerState?.cohort
+    };
+
     try {
-      const data = await queryCopilot(searchQuery);
+      const data = await queryCopilot(searchQuery, context);
       setResult(data);
     } catch (err) {
       setError(err.message || String(err));
@@ -39,24 +47,14 @@ export default function CopilotChat({ routerState, updateState }) {
     if (!query.trim()) return;
 
     const upperQ = query.trim().toUpperCase();
-    if (upperQ === 'SYS 64738' || upperQ === 'LOAD "*",8,1') {
-      document.body.classList.toggle('retro-override');
+    if (upperQ === 'SYS 64738' || upperQ === 'LOAD"*",8,1') {
+      unlockTheme('frodo');
+      setTheme('frodo');
       setResult({
-         answer: "READY.\nLOAD\n\nPRESS PLAY ON TAPE\n\nOK\n\nSEARCHING FOR CIRCUMSURVEY...\nLOADING...\n\nMODULE [RETRO_OVERRIDE] INITIALIZED.",
-         suggestions: ["Revert visual override?"],
+         answer: "READY.\nLOAD\n\nPRESS PLAY ON TAPE\n\nOK\n\nSEARCHING FOR CIRCUMSURVEY...\nLOADING...\n\nMODULE [FRODO_THEME] UNLOCKED IN SETTINGS.",
+         suggestions: [],
          quotes: [],
          metadata: { intent: "system_override" }
-      });
-      return;
-    }
-    
-    // Check if they asked to revert
-    if (upperQ === 'REVERT VISUAL OVERRIDE?') {
-      document.body.classList.remove('retro-override');
-      setResult({
-        answer: "Visuals reverted to standard operating parameters.",
-        suggestions: [],
-        quotes: []
       });
       return;
     }
@@ -222,6 +220,25 @@ export default function CopilotChat({ routerState, updateState }) {
           }}>
             {result.answer}
           </div>
+
+          {result.metadata?.sql && (
+            <div style={{
+              marginTop: "1.5rem",
+              marginBottom: "1.5rem",
+              background: "rgba(0,0,0,0.2)",
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 6,
+              padding: "1rem",
+              fontFamily: FONT.mono,
+              fontSize: "0.75rem",
+              color: C.muted
+            }}>
+              <div style={{ color: C.dim, marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>🔍 Query Executed By AI</div>
+              <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: C.ltBlue }}>
+                {result.metadata.sql}
+              </pre>
+            </div>
+          )}
 
           {result.suggestions && result.suggestions.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.5rem" }}>

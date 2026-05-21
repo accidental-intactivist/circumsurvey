@@ -62,64 +62,6 @@ export default function DistributionChart({ title, distribution, cohortDistribut
       });
     }
 
-    // Heuristic: Auto-parse multi-select strings (lots of combinations joined by comma-space-Capital)
-    if (d.length > 15) {
-      const counts = {};
-      const cohortCounts = {};
-      
-      d.forEach(x => {
-        if (x.label) {
-          x.label.split(/, (?=[A-Z])/).forEach(p => {
-            const k = p.trim();
-            counts[k] = (counts[k] || 0) + x.n;
-          });
-        }
-      });
-      
-      cd.forEach(x => {
-        if (x.label) {
-          x.label.split(/, (?=[A-Z])/).forEach(p => {
-            const k = p.trim();
-            cohortCounts[k] = (cohortCounts[k] || 0) + x.n;
-          });
-        }
-      });
-      
-      const parsedKeys = Object.keys(counts);
-      
-      // If parsing reduced categories by at least 40%, it's definitely a multi-select
-      if (parsedKeys.length > 0 && parsedKeys.length < d.length * 0.6) {
-        let entries = parsedKeys.map(label => ({ label, n: counts[label] }));
-        entries.sort((a, b) => b.n - a.n);
-        
-        let cEntries = Object.keys(cohortCounts).map(label => ({ label, n: cohortCounts[label] }));
-        
-        // Bucket long tail into "Other / Custom Responses"
-        if (entries.length > 12) {
-          const top = entries.slice(0, 12);
-          const topSet = new Set(top.map(e => e.label));
-          
-          const otherN = entries.slice(12).reduce((s, e) => s + e.n, 0);
-          if (otherN > 0) top.push({ label: "Other / Custom Responses", n: otherN });
-          
-          const cTop = [];
-          let cOtherN = 0;
-          cEntries.forEach(ce => {
-            if (topSet.has(ce.label)) {
-              cTop.push(ce);
-            } else {
-              cOtherN += ce.n;
-            }
-          });
-          if (cOtherN > 0) cTop.push({ label: "Other / Custom Responses", n: cOtherN });
-          
-          return { parsedDist: top, parsedCohortDist: cTop };
-        }
-        
-        return { parsedDist: entries, parsedCohortDist: cEntries };
-      }
-    }
-    
     return { parsedDist: d, parsedCohortDist: cd };
   }, [distribution, cohortDistribution, question]);
 
@@ -384,7 +326,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
             e.currentTarget.style.borderColor = C.ghost;
           }}
         >
-          {isExpanded ? "Show Less" : `Show All Options (${parsedDist.length - 10} more)`}
+          {isExpanded ? "Show Fewer" : `Show All Options (${parsedDist.length - 10} more)`}
         </button>
       )}
 

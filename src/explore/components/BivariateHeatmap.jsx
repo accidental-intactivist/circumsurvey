@@ -14,14 +14,13 @@ function getHeatmapColor(value, max) {
 }
 
 export default function BivariateHeatmap({ metadata }) {
-  if (!metadata || metadata.intent !== "quantitative" || !metadata.rawData || !metadata.q1) {
-    return null;
-  }
-
-  const { q1, q2, rawData } = metadata;
+  const { q1, q2, rawData, intent, tool } = metadata || {};
 
   // Process data into a matrix
   const { rowLabels, colLabels, matrix, maxN } = useMemo(() => {
+    if (intent !== "quantitative" || !rawData || tool === "get_demographics") {
+      return { rowLabels: [], colLabels: [], matrix: {}, maxN: 0 };
+    }
     const rows = new Set();
     const cols = new Set();
 
@@ -56,7 +55,11 @@ export default function BivariateHeatmap({ metadata }) {
     });
 
     return { rowLabels: rArr, colLabels: cArr, matrix: mat, maxN: m };
-  }, [rawData, q2]);
+  }, [rawData, q2, intent, tool]);
+
+  if (intent !== "quantitative" || !rawData || tool === "get_demographics" || !q1) {
+    return null;
+  }
 
   return (
     <div style={{

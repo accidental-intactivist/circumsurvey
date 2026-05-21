@@ -16,7 +16,7 @@ import NarrativeList from "../components/NarrativeList";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
-import { applyLikert } from "../lib/formatters";
+import { applyLikert, flattenMultiSelect } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
 import ThemeToggle from "../components/ThemeToggle";
 import SharePopover from "../components/SharePopover";
@@ -35,11 +35,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const [cohortDistribution, setCohortDistribution] = useState(null);
   const [byPathway, setByPathway] = useState(null);
   const [error, setError] = useState(null);
-
-
+  const [selectedWord, setSelectedWord] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
+    setSelectedWord(null);
 
     getQuestions({ counts: true }).then((d) => {
       if (cancelled) return;
@@ -78,9 +78,13 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
   const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(question?.id);
 
-  // ── Narrative fetch (if open_text and not geographic) ─────────────────────
+  const isMulti = useMemo(() => {
+    return question?.type === "multi_select" || ["demo_ethnicity", "demo_race_ethnicity", "demo_gender_identity", "demo_sexuality"].includes(question?.id);
+  }, [question]);
+
+  // ── Narrative fetch (if open_text and not geographic and not multi-select) ──
   useEffect(() => {
-    if (!question || question.type !== "open_text" || isGeographic) return;
+    if (!question || question.type !== "open_text" || isGeographic || isMulti) return;
     let cancelled = false;
     getNarratives(questionId).then((d) => {
       if (!cancelled && d.narratives) {
@@ -97,41 +101,46 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     }
 
     return () => { cancelled = true; };
-  }, [question, isGeographic, JSON.stringify(cohort)]);
+  }, [question, isGeographic, isMulti, JSON.stringify(cohort)]);
 
   // ── Render Formatted Data ───────────────────────────────────────────────
   
 
-
   const displayDist = useMemo(() => {
     if (!allDistribution) return null;
+    let dist = allDistribution.distribution;
+    if (isMulti) dist = flattenMultiSelect(dist, question);
     return {
       ...allDistribution,
-      distribution: applyLikert(allDistribution.distribution, question)
+      distribution: applyLikert(dist, question)
     };
-  }, [allDistribution, question]);
+  }, [allDistribution, question, isMulti]);
 
   const displayCohortDist = useMemo(() => {
     if (!cohortDistribution?.distribution) return null;
+    let dist = cohortDistribution.distribution;
+    if (isMulti) dist = flattenMultiSelect(dist, question);
     return {
       ...cohortDistribution,
-      distribution: applyLikert(cohortDistribution.distribution, question)
+      distribution: applyLikert(dist, question)
     };
-  }, [cohortDistribution, question]);
+  }, [cohortDistribution, question, isMulti]);
 
   const displayByPathway = useMemo(() => {
     if (!byPathway?.results) return null;
     const cloned = JSON.parse(JSON.stringify(byPathway));
     for (const p in cloned.results) {
-      cloned.results[p].distribution = applyLikert(cloned.results[p].distribution, question);
+      let dist = cloned.results[p].distribution;
+      if (isMulti) dist = flattenMultiSelect(dist, question);
+      cloned.results[p].distribution = applyLikert(dist, question);
     }
     return cloned;
-  }, [byPathway, question]);
+  }, [byPathway, question, isMulti]);
 
   // ── Render ──────────────────────────────────────────────────────────────
 
   const pathwayObj = question?.pathway && question.pathway !== "all" ? PATHWAYS[question.pathway] : null;
-  const isOpenText = question?.type === "open_text" && !isGeographic;
+  const isOpenText = question?.type === "open_text" && !isGeographic && !isMulti;
 
   const captureRef = useRef(null);
 
@@ -204,7 +213,32 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             </>
           )}
           
-          <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.8rem" }}>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              {prevQ && (
+                <a href={`#/q/${prevQ.id}`} title="Previous Question" style={{
+                  fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
+                  textTransform: "uppercase", color: C.gold, textDecoration: "none"
+                }}
+                onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                onMouseLeave={e => { e.target.style.color = C.gold; }}>
+                  ← Prev
+                </a>
+              )}
+              {prevQ && nextQ && <span style={{ color: C.ghost, fontSize: "0.7rem" }}>|</span>}
+              {nextQ && (
+                <a href={`#/q/${nextQ.id}`} title="Next Question" style={{
+                  fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
+                  textTransform: "uppercase", color: C.gold, textDecoration: "none"
+                }}
+                onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                onMouseLeave={e => { e.target.style.color = C.gold; }}>
+                  Next →
+                </a>
+              )}
+            </div>
+            <div style={{ width: "1px", height: "16px", background: C.ghost }} />
+
             <AddToReportButton questionId={question?.id} />
             <SharePopover 
               url={window.location.href} 
@@ -347,8 +381,15 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             <main>
               {isOpenText ? (
                 <>
-                  <WordCloud narratives={cohortDistribution?.distribution || allDistribution?.distribution} />
-                  <NarrativeList distribution={cohortDistribution?.distribution || allDistribution?.distribution} />
+                  <WordCloud 
+                    narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
+                    selectedWord={selectedWord}
+                    onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
+                  />
+                  <NarrativeList 
+                    distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
+                    highlightWord={selectedWord}
+                  />
                 </>
               ) : isGeographic ? (
                 <>
@@ -364,10 +405,32 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
               ) : (
                 <>
                   <DistributionChart 
+                    question={question}
                     distribution={displayDist} 
                     cohortDistribution={displayCohortDist}
                     title="Overall vs. Filtered distribution" 
                   />
+
+                  {(cohortDistribution?.distribution || allDistribution?.distribution)?.length > 15 && (
+                    <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: `1px dashed var(--c-ghost)` }}>
+                      <h3 style={{ fontFamily: "var(--f-condensed)", color: "var(--c-gold)", marginBottom: "1.5rem", letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "1.1rem" }}>
+                        Explore The Long Tail ({(cohortDistribution?.distribution || allDistribution?.distribution).length} unique entries)
+                      </h3>
+                      <p style={{ color: "var(--c-dim)", fontSize: "0.9rem", marginBottom: "2rem", maxWidth: 800 }}>
+                        This question contains a large number of unique responses or fragmented combinations (likely due to "Other" write-ins). Use the word cloud to filter and explore the full variety of answers below.
+                      </p>
+                      <WordCloud 
+                        narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
+                        selectedWord={selectedWord}
+                        onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
+                      />
+                      <NarrativeList 
+                        distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
+                        highlightWord={selectedWord}
+                        hideChart={true}
+                      />
+                    </div>
+                  )}
 
                   {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
                     <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />

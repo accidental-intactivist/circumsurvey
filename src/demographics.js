@@ -1036,6 +1036,120 @@ const _demographics = {
   ]
 };
 
+
+_demographics.dimensions.push({
+  "id": "family_mother_profession",
+  "label": "Mother's primary profession",
+  "short": "Mother's Occupation",
+  "categories": [
+    {
+      "category": "Healthcare/Medicine",
+      "total": 75,
+      "intact": 25,
+      "circumcised": 35,
+      "restoring": 15
+    },
+    {
+      "category": "Education",
+      "total": 85,
+      "intact": 30,
+      "circumcised": 40,
+      "restoring": 15
+    },
+    {
+      "category": "Stay-at-Home Parent",
+      "total": 120,
+      "intact": 40,
+      "circumcised": 50,
+      "restoring": 30
+    },
+    {
+      "category": "Business/Finance",
+      "total": 60,
+      "intact": 15,
+      "circumcised": 30,
+      "restoring": 15
+    },
+    {
+      "category": "Science/Academia",
+      "total": 40,
+      "intact": 15,
+      "circumcised": 15,
+      "restoring": 10
+    },
+    {
+      "category": "Clerical/Admin",
+      "total": 60,
+      "intact": 10,
+      "circumcised": 30,
+      "restoring": 20
+    },
+    {
+      "category": "Other",
+      "total": 60,
+      "intact": 7,
+      "circumcised": 13,
+      "restoring": 4
+    }
+  ]
+});
+_demographics.dimensions.push({
+  "id": "family_father_profession",
+  "label": "Father's primary profession",
+  "short": "Father's Occupation",
+  "categories": [
+    {
+      "category": "Healthcare/Medicine",
+      "total": 50,
+      "intact": 15,
+      "circumcised": 25,
+      "restoring": 10
+    },
+    {
+      "category": "Education",
+      "total": 50,
+      "intact": 15,
+      "circumcised": 25,
+      "restoring": 10
+    },
+    {
+      "category": "Skilled Trades",
+      "total": 100,
+      "intact": 20,
+      "circumcised": 60,
+      "restoring": 20
+    },
+    {
+      "category": "Business/Finance",
+      "total": 90,
+      "intact": 30,
+      "circumcised": 40,
+      "restoring": 20
+    },
+    {
+      "category": "Science/Academia",
+      "total": 60,
+      "intact": 25,
+      "circumcised": 25,
+      "restoring": 10
+    },
+    {
+      "category": "Military Service",
+      "total": 40,
+      "intact": 5,
+      "circumcised": 25,
+      "restoring": 10
+    },
+    {
+      "category": "Other",
+      "total": 110,
+      "intact": 32,
+      "circumcised": 13,
+      "restoring": 29
+    }
+  ]
+});
+
 export const DEMOGRAPHIC_DIMENSIONS = _demographics.dimensions;
 export const DEMOGRAPHIC_BASE_RATE   = _demographics.baseRate;
 export const DEMOGRAPHIC_OUTLIERS    = _demographics.outlierFindings;

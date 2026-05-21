@@ -54,8 +54,10 @@ export const FONT = {
   mono: "'JetBrains Mono', monospace",             // IDs, counts, data
 };
 
-// Stable API base — points at the Worker mounted on findings subdomain
-export const API_BASE = "https://findings.circumsurvey.online/api";
+// Stable API base — points at the Worker mounted on findings subdomain in prod, or local wrangler in dev
+export const API_BASE = (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD)
+  ? "https://findings.circumsurvey.online/api"
+  : "http://localhost:8787/api";
 
 // Global stylesheet injection
 export const GLOBAL_CSS = `
@@ -228,8 +230,8 @@ export const GLOBAL_CSS = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   
-  /* ── RETRO OVERRIDE (Amiga/C64 Easter Egg) ── */
-  body.retro-override {
+  /* ── FRODO THEME (Amiga/C64 Easter Egg) ── */
+  [data-theme="frodo"] {
     --c-bg: #4040E0;
     --c-bgSoft: #4040E0;
     --c-bgCard: #4040E0;
@@ -245,12 +247,14 @@ export const GLOBAL_CSS = `
     --f-display: 'JetBrains Mono', monospace !important;
     --f-body: 'JetBrains Mono', monospace !important;
     --f-condensed: 'JetBrains Mono', monospace !important;
-    
+  }
+
+  [data-theme="frodo"] body {
     border: 4px solid #A0A0FF;
     padding: 2px;
   }
   
-  body.retro-override * {
+  [data-theme="frodo"] * {
     border-radius: 0 !important;
   }
 

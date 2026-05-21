@@ -62,7 +62,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     });
 
     const createHorizontalCurve = () => [
-      createNode('left'), createNode('inner'), createNode('inner'), createNode('right')
+      createNode('left'), createNode('inner', true), createNode('inner', true), createNode('right')
     ];
     const createVerticalCurve = () => [
       createNode('top'), createNode('inner', true), createNode('inner', true), createNode('bottom')
@@ -153,8 +153,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         waveX = Math.sin(t * n.fx * 5.5 + n.px) * (n.ax * 0.35);
         waveY = Math.cos(t * n.fy * 4.2 + n.py) * (n.ay * 0.35);
 
-        const swell = Math.pow(Math.sin(t * n.loopSwell + n.px), 6); 
-        const loopRadius = n.ax * 2.5 * swell;
+        const swell = Math.pow(Math.sin(t * n.loopSwell + n.px), 4); 
+        const loopRadius = n.ax * 7.5 * swell;
         
         waveX += Math.cos(t * n.loopSpeed + n.py) * loopRadius;
         waveY += Math.sin(t * n.loopSpeed + n.pz) * loopRadius;
@@ -315,6 +315,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         pointerEvents: 'none',
         zIndex: 0,
         opacity,
+        transition: 'opacity 1.5s ease',
       }}
     />
   );

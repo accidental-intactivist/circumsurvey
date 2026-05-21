@@ -18,7 +18,7 @@ import ThemeToggle from "../components/ThemeToggle";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 
 export default function IndexPage({ routerState, navigate, updateState }) {
-  const { pathway, view, search, section, cohort, observerRole } = routerState;
+  const { pathway, view, search, section, cohort, observerRole, format } = routerState;
 
   // ── Data fetch ──────────────────────────────────────────────────────────
   const [questions, setQuestions] = useState(null);
@@ -115,7 +115,16 @@ export default function IndexPage({ routerState, navigate, updateState }) {
       );
     }
 
-    // 5. Group by phase → section (in survey order)
+    // 5. Apply format filter
+    if (format) {
+      if (format === "open_text") {
+        filtered = filtered.filter(q => q.type === "open_text");
+      } else if (format === "multiple_choice") {
+        filtered = filtered.filter(q => q.type !== "open_text");
+      }
+    }
+
+    // 6. Group by phase → section (in survey order)
     const groups = [];
     const phaseOrder = ["universal", "branches", "synthesis"];
     for (const phaseId of phaseOrder) {
@@ -157,7 +166,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
     }
 
     return groups;
-  }, [questions, pathway, view, search, section, observerRole]);
+  }, [questions, pathway, view, search, section, observerRole, format]);
 
   // ── IntersectionObserver for lazy distribution loading ─────────────────
   useEffect(() => {
@@ -211,6 +220,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
           />
           <div style={{ marginLeft: "auto", display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap" }}>
             <SearchBox value={search || ""} onChange={(s) => updateState({ search: s })} />
+            <FormatToggle mode={format} onChange={(m) => updateState({ format: m })} />
             <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
             <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.2rem" }} />
             <ThemeToggle />
@@ -505,9 +515,9 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                 )}
                 {section && <span style={{ color: C.gold, marginLeft: "0.5rem" }}>· {section}</span>}
               </div>
-              {(pathway || section || search || cohort || observerRole) && (
+              {(pathway || section || search || cohort || observerRole || format) && (
                 <button
-                  onClick={() => updateState({ pathway: null, section: null, search: "", cohort: null, observerRole: null })}
+                  onClick={() => updateState({ pathway: null, section: null, search: "", cohort: null, observerRole: null, format: null })}
                   style={{
                     background: "transparent",
                     border: `1px solid ${C.ghost}`,
@@ -794,16 +804,10 @@ function EmptyNotice({ updateState }) {
       <div style={{ fontSize: "2rem", marginBottom: "0.8rem" }}>∅</div>
       <p style={{ marginBottom: "0.8rem" }}>No questions match these filters.</p>
       <button
-        onClick={() => updateState({ pathway: null, section: null, search: "", cohort: null, observerRole: null, view: "all" })}
+        onClick={() => updateState({ pathway: null, section: null, search: "", cohort: null, observerRole: null, format: null, view: "all" })}
         style={{
           background: "transparent",
           border: `1px solid ${C.gold}`,
-          color: C.gold,
-          fontFamily: FONT.condensed,
-          fontSize: "0.72rem",
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          cursor: "pointer",
           padding: "0.45rem 0.9rem",
           borderRadius: 4,
         }}
@@ -834,5 +838,71 @@ function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FormatToggle({ mode, onChange }) {
+  return (
+    <div style={{
+      display: "flex",
+      background: "var(--c-bgSoft)",
+      border: `1px solid var(--c-ghost)`,
+      borderRadius: 6,
+      overflow: "hidden",
+    }}>
+      <button
+        onClick={() => onChange(null)}
+        style={{
+          background: !mode ? "rgba(255,255,255,0.05)" : "transparent",
+          border: "none",
+          color: !mode ? "var(--c-textBright)" : "var(--c-muted)",
+          fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+          fontSize: "0.7rem",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          padding: "0.32rem 0.6rem",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        All Types
+      </button>
+      <button
+        onClick={() => onChange("multiple_choice")}
+        style={{
+          background: mode === "multiple_choice" ? "rgba(255,255,255,0.05)" : "transparent",
+          border: "none",
+          borderLeft: `1px solid var(--c-ghost)`,
+          color: mode === "multiple_choice" ? "var(--c-textBright)" : "var(--c-muted)",
+          fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+          fontSize: "0.7rem",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          padding: "0.32rem 0.6rem",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        Choices
+      </button>
+      <button
+        onClick={() => onChange("open_text")}
+        style={{
+          background: mode === "open_text" ? "rgba(255,255,255,0.05)" : "transparent",
+          border: "none",
+          borderLeft: `1px solid var(--c-ghost)`,
+          color: mode === "open_text" ? "var(--c-textBright)" : "var(--c-muted)",
+          fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+          fontSize: "0.7rem",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          padding: "0.32rem 0.6rem",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        Narratives
+      </button>
+    </div>
   );
 }

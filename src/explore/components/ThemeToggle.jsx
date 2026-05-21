@@ -5,6 +5,7 @@ import { FONT } from '../styles/tokens';
 export default function ThemeToggle() {
   const { 
     theme, setTheme, 
+    unlockedThemes,
     typeface, setTypeface,
     mode, setMode, 
     colorblind, setColorblind, 
@@ -102,7 +103,7 @@ export default function ThemeToggle() {
             <div>
               <div style={sectionLabelStyle}>Theme Aesthetic</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                {['standard', 'vaporwave', 'evergreen', 'ocean'].map(t => (
+                {['standard', 'vaporwave', 'evergreen', 'ocean', ...unlockedThemes].map(t => (
                   <button key={t} onClick={() => setTheme(t)} style={buttonStyle(theme === t)}>
                     {t}
                   </button>

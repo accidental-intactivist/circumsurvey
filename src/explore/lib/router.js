@@ -37,6 +37,8 @@ function parseHash() {
     route = "observer-triad";
   } else if (segments[0] === "methodology") {
     route = "methodology";
+  } else if (segments[0] === "report") {
+    route = "report";
   }
 
   // Extract standardized query state
@@ -46,6 +48,7 @@ function parseHash() {
     search: query.get("s") || "",
     section: query.get("section") || null,
     observerRole: query.get("role") || null,
+    format: query.get("format") || null,
     ai_query: query.get("ai_query") || "",
   };
 
@@ -69,6 +72,7 @@ function serializeState(route, params, state) {
   else if (route === "pairs") path = "/pairs";
   else if (route === "demographics") path = "/demographics";
   else if (route === "methodology") path = "/methodology";
+  else if (route === "report") path = "/report";
   else path = "/";
 
   const q = new URLSearchParams();
@@ -77,6 +81,7 @@ function serializeState(route, params, state) {
   if (state.search) q.set("s", state.search);
   if (state.section) q.set("section", state.section);
   if (state.observerRole) q.set("role", state.observerRole);
+  if (state.format) q.set("format", state.format);
   if (state.ai_query) q.set("ai_query", state.ai_query);
   if (state.cohort) {
     for (const [k, v] of Object.entries(state.cohort)) {

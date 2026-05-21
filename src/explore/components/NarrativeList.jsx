@@ -3,7 +3,7 @@ import { C, FONT } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import DistributionChart from "./DistributionChart";
 
-export default function NarrativeList({ distribution }) {
+export default function NarrativeList({ distribution, highlightWord = null, hideChart = false }) {
   const [limit, setLimit] = useState(20);
   
   if (!distribution || distribution.length === 0) {
@@ -12,8 +12,27 @@ export default function NarrativeList({ distribution }) {
   
   // Group identical responses (case-insensitive)
   const grouped = useMemo(() => {
+    let filteredDist = distribution;
+    if (highlightWord) {
+      const searchWord = highlightWord.toLowerCase();
+      // Use regex with word boundaries to ensure we match the word, not just a substring
+      // but fallback to substring if we can't build a clean regex
+      let regex;
+      try {
+        regex = new RegExp(`(?<![\\w'])${highlightWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w'])`, 'i');
+      } catch (e) {
+        regex = null;
+      }
+      
+      filteredDist = distribution.filter(item => {
+        const text = item.text || item.label || "";
+        if (regex) return regex.test(text);
+        return text.toLowerCase().includes(searchWord);
+      });
+    }
+
     const map = new Map();
-    distribution.forEach(item => {
+    filteredDist.forEach(item => {
       const text = item.text || item.label || "";
       const normalized = text.trim().toLowerCase();
       if (!normalized || normalized === "-" || normalized === "—") return;
@@ -36,7 +55,7 @@ export default function NarrativeList({ distribution }) {
       if (b.count !== a.count) return b.count - a.count;
       return a.text.localeCompare(b.text);
     });
-  }, [distribution]);
+  }, [distribution, highlightWord]);
 
   const visible = grouped.slice(0, limit);
   
@@ -51,7 +70,7 @@ export default function NarrativeList({ distribution }) {
   
   return (
     <div style={{ marginTop: "1rem" }}>
-      {chartData && (
+      {chartData && !hideChart && (
         <div style={{ marginBottom: "2rem" }}>
           <DistributionChart 
             title="Most Common Responses" 
@@ -133,22 +152,20 @@ export default function NarrativeList({ distribution }) {
                 </div>
                 <div style={{ color: "var(--c-muted)", fontFamily: FONT.mono, letterSpacing: "0.05em", fontSize: "0.65rem", display: "flex", gap: "0.5rem" }}>
                   {hasMeta && <span>{genStr} {locStr ? ` · ${locStr}` : ""}</span>}
-                  {count > 1 && (
-                    <span style={{ 
-                      color: C.goldBright, 
-                      background: "rgba(212,160,48,0.12)", 
-                      border: `1px solid rgba(212,160,48,0.3)`, 
-                      padding: "0.15rem 0.4rem", 
-                      borderRadius: 4 
-                    }}>
-                      n={count}
-                    </span>
-                  )}
+                  <span style={{ 
+                    color: C.goldBright, 
+                    background: "rgba(212,160,48,0.12)", 
+                    border: `1px solid rgba(212,160,48,0.3)`, 
+                    padding: "0.15rem 0.4rem", 
+                    borderRadius: 4 
+                  }}>
+                    n={count}
+                  </span>
                 </div>
               </div>
 
               <div style={{ padding: "1.25rem 1.5rem", color: "var(--c-textBright)", fontFamily: FONT.body, fontSize: "1.05rem", lineHeight: 1.6 }}>
-                "{text}"
+                "{highlightWord ? <HighlightText text={text} highlight={highlightWord} /> : text}"
               </div>
             </div>
           );
@@ -179,5 +196,35 @@ export default function NarrativeList({ distribution }) {
         </button>
       )}
     </div>
+  );
+}
+
+function HighlightText({ text, highlight }) {
+  if (!highlight) return <>{text}</>;
+  
+  // Use word boundary matching with apostrophe awareness
+  let parts;
+  try {
+    const regex = new RegExp(`(?<![\\w'])(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?![\\w'])`, 'gi');
+    parts = text.split(regex);
+  } catch (e) {
+    return <>{text}</>;
+  }
+
+  return (
+    <>
+      {parts.map((part, i) => 
+        part.toLowerCase() === highlight.toLowerCase() ? (
+          <mark key={i} style={{ 
+            background: "rgba(212,160,48,0.3)", 
+            color: "var(--c-goldBright)", 
+            padding: "0 2px", 
+            borderRadius: 2 
+          }}>
+            {part}
+          </mark>
+        ) : part
+      )}
+    </>
   );
 }

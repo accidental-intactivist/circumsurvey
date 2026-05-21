@@ -39,3 +39,47 @@ export function BarChart2({ size = 24, strokeWidth = 2, color = "currentColor", 
     </svg>
   );
 }
+
+export function CheckCircle2({ size = 24, strokeWidth = 2, color = "currentColor", ...props }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke={color} 
+      strokeWidth={strokeWidth} 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      {...props}
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M8 12l2 2 4-4"></path>
+    </svg>
+  );
+}
+
+export function ListChecks({ size = 24, strokeWidth = 2, color = "currentColor", ...props }) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke={color} 
+      strokeWidth={strokeWidth} 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      {...props}
+    >
+      <path d="M10 6h11"></path>
+      <path d="M10 12h11"></path>
+      <path d="M10 18h11"></path>
+      <path d="M3 6h.01"></path>
+      <path d="M3 12h.01"></path>
+      <path d="M3 18h.01"></path>
+    </svg>
+  );
+}

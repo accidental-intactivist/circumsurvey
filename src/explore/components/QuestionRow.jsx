@@ -6,7 +6,7 @@
 import { C, FONT } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import MiniSparkline from "./MiniSparkline";
-import { MessageSquareText, BarChart2 } from "./Icons";
+import { MessageSquareText, CheckCircle2, ListChecks } from "./Icons";
 import AddToReportButton from "./AddToReportButton";
 
 export default function QuestionRow({ q, index, distribution, cohortDistribution, onClick, searchTerm = "" }) {
@@ -98,8 +98,8 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
             </span>
           )}
 
-          {/* Qual / Quant Badge */}
-          <span title={q.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
+          {/* Format Badge */}
+          <span title={q.type === "open_text" ? "Qualitative Open Response" : q.type === "single_select" ? "Single Select Choice" : "Multiple Select Choices"} style={{
             fontFamily: FONT.condensed,
             fontSize: "0.58rem",
             fontWeight: 700,
@@ -116,9 +116,11 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
             gap: "0.25rem",
           }}>
             {q.type === "open_text" ? (
-              <><MessageSquareText size={10} strokeWidth={3} /> QUAL</>
+              <><MessageSquareText size={10} strokeWidth={3} /> QUALITATIVE</>
+            ) : q.type === "multi_select" ? (
+              <><ListChecks size={10} strokeWidth={3} /> MULTI-SELECT</>
             ) : (
-              <><BarChart2 size={10} strokeWidth={3} /> QUANT</>
+              <><CheckCircle2 size={10} strokeWidth={3} /> SINGLE-SELECT</>
             )}
           </span>
 

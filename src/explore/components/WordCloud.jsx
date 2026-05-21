@@ -21,7 +21,7 @@ const STOP_WORDS = new Set([
   "just", "like", "get", "think", "really", "even", "much", "many", "way", "make", "also", "one", "two", "know", "feel"
 ]);
 
-export default function WordCloud({ narratives = [] }) {
+export default function WordCloud({ narratives = [], selectedWord = null, onWordClick = () => {} }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -29,7 +29,8 @@ export default function WordCloud({ narratives = [] }) {
     if (!narratives || narratives.length === 0) return [];
 
     const counts = {};
-    narratives.forEach(text => {
+    narratives.forEach(item => {
+      const text = typeof item === 'string' ? item : (item.text || item.label || "");
       if (!text || typeof text !== 'string') return;
       
       // Basic tokenization
@@ -126,28 +127,36 @@ export default function WordCloud({ narratives = [] }) {
           {words.map((w, i) => (
             <span
               key={i}
+              onClick={() => onWordClick(w.text)}
               onMouseEnter={(e) => showTooltip(e, `Occurs ${w.value} times`)}
               onMouseMove={moveTooltip}
               onMouseLeave={hideTooltip}
               style={{
                 fontFamily: FONT.condensed,
                 fontSize: `${w.fontSize}rem`,
-                fontWeight: w.value > (words[0].value * 0.5) ? 700 : 400,
-                color: C.goldBright,
-                opacity: w.opacity,
+                fontWeight: w.value > (words[0].value * 0.5) || selectedWord === w.text ? 700 : 400,
+                color: selectedWord === w.text ? C.bgCard : C.goldBright,
+                background: selectedWord === w.text ? C.goldBright : "transparent",
+                padding: selectedWord === w.text ? "0 0.4rem" : "0",
+                borderRadius: 4,
+                opacity: selectedWord && selectedWord !== w.text ? 0.3 : (selectedWord === w.text ? 1 : w.opacity),
                 textTransform: "uppercase",
                 letterSpacing: "0.02em",
-                cursor: "default",
+                cursor: "pointer",
                 transition: "all 0.2s ease",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.color = C.textBright;
-                e.currentTarget.style.opacity = 1;
+                if (selectedWord !== w.text) {
+                  e.currentTarget.style.color = C.textBright;
+                  e.currentTarget.style.opacity = 1;
+                }
                 e.currentTarget.style.transform = "scale(1.05)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.color = C.goldBright;
-                e.currentTarget.style.opacity = w.opacity;
+                if (selectedWord !== w.text) {
+                  e.currentTarget.style.color = C.goldBright;
+                  e.currentTarget.style.opacity = selectedWord ? 0.3 : w.opacity;
+                }
                 e.currentTarget.style.transform = "scale(1)";
               }}
             >

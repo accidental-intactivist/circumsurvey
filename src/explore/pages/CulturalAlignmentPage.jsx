@@ -28,7 +28,7 @@ function describeCohort(cohort) {
   if (!cohort) return null;
   const parts = [];
   for (const [k, v] of Object.entries(cohort)) {
-    let label = v;
+    let label = Array.isArray(v) ? v.join(", ") : String(v);
     // Trim parenthetical era from generation labels
     label = label.replace(/\s*\([^)]*\)\s*$/, "");
     if (label.length > 30) label = label.slice(0, 27) + "…";

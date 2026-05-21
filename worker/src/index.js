@@ -559,7 +559,10 @@ async function handleEmbedStatic(env, request) {
 
 async function handleCopilotQuery(env, request, url) {
   try {
-    const { query } = await request.json();
+    const body = await request.json();
+    const query = body.query;
+    const context = body.context || null;
+    
     if (!query) return errorJson("Missing query", 400);
 
     // Step 1: Detect Intent
@@ -575,7 +578,6 @@ User Query: "${query}"`;
 
     let intent = "qualitative";
     try {
-      // Find JSON block in the response
       const jsonMatch = rawIntentResponse.response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
@@ -585,88 +587,143 @@ User Query: "${query}"`;
       console.log("Intent parsing failed, defaulting to qualitative", e);
     }
 
-    // Fire and forget logging
     env.DB.prepare("INSERT INTO ai_queries (query, intent) VALUES (?, ?)").bind(query, intent).run().catch(e => console.error("Logging error", e));
 
     // ── QUANTITATIVE FLOW ──
     if (intent === "quantitative") {
-      // 1. Fetch curated (tier 1) quantitative questions to stay within 8k context
       const { results: questions } = await env.DB.prepare(
-        "SELECT id, prompt FROM questions WHERE type != 'open_text' AND tier = 1"
+        "SELECT id, prompt FROM questions WHERE type != 'open_text' AND (tier = 1 OR id LIKE 'demo_%')"
       ).all();
-      
-      // Truncate prompts to keep total token count manageable
       const qListStr = questions.map(q => `${q.id}: ${(q.prompt || '').slice(0, 80)}`).join("\n");
       
-      // 2. Ask Llama to pick the two best questions
-      const pickPrompt = `Survey questions:\n${qListStr}\n\nUser asked: "${query}"\nPick TWO question IDs to cross-tabulate. Reply ONLY with JSON: {"q1": "id1", "q2": "id2"}\nIf only one needed, set q2 to null.`;
+      const toolPrompt = `You have access to the following tools to query the survey database:
+1. {"tool": "get_demographics", "args": {"pathway": string (optional), "country": string (optional)}} - Fetches counts for specific demographic populations.
+2. {"tool": "get_crosstab", "args": {"q1": string, "q2": string}} - Cross-tabulates two survey questions. Use valid survey question IDs.
+3. {"tool": "get_univariate", "args": {"questionId": string}} - Fetches the distribution for a single survey question.
 
-      const rawPickResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-        messages: [{ role: "user", content: pickPrompt }],
-        max_tokens: 150
+Available Questions for tools 2 & 3:
+${qListStr}
+
+Data Schema Mapping:
+- "intact" -> pathway: "intact"
+- "circumcised" -> pathway: "circumcised"
+- "restoring" -> pathway: "restoring"
+- "US", "USA", "America" -> country: "United States of America (USA)"
+- "UK", "Britain" -> country: "United Kingdom"
+- "Canada" -> country: "Canada"
+- Current UI Context: ${context ? JSON.stringify(context) : 'none'}
+
+User Query: "${query}"
+
+Based on the user's query and the current context, decide which tool to call. 
+Reply ONLY with a valid JSON tool call. Do not add any text before or after the JSON.
+Example: {"tool": "get_demographics", "args": {"pathway": "intact", "country": "United States"}}`;
+
+      const rawToolResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+        messages: [{ role: "user", content: toolPrompt }],
+        max_tokens: 200
       });
 
-      let q1 = null, q2 = null;
+      let toolCall = null;
       try {
-        const jsonMatch = rawPickResponse.response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          q1 = parsed.q1;
-          q2 = parsed.q2;
-        }
+        const jsonMatch = rawToolResponse.response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) toolCall = JSON.parse(jsonMatch[0]);
       } catch (e) {
-        console.error("Failed to parse question picks:", e);
+        console.error("Failed to parse tool call:", e);
       }
 
-      if (!q1) {
+      if (!toolCall || !toolCall.tool) {
         return json({ answer: "I couldn't identify the right quantitative metrics for that question. Try rephrasing?", quotes: [] });
       }
 
-      // 3. Execute Cross-Tabulation
-      let sql, bindings, dataStr;
+      let sql, bindings, dataStr, displaySql;
+      let aggResults = [];
+      let q1 = null, q2 = null;
       
-      if (q2) {
-        // Bivariate Cross-Tabulation
-        sql = `
-          SELECT r2.value_text AS bucket,
-                 COUNT(*) AS n,
-                 r1.value_text AS value_text
-          FROM responses r1
-          JOIN responses r2 ON r2.respondent_id = r1.respondent_id AND r2.question_id = ?
-          WHERE r1.question_id = ?
-          GROUP BY bucket, r1.value_text
-        `;
-        bindings = [q2, q1];
-      } else {
-        // Univariate
-        sql = `
-          SELECT r.value_text AS value_text, COUNT(*) AS n
-          FROM responses r
-          WHERE r.question_id = ?
-          GROUP BY r.value_text
-        `;
-        bindings = [q1];
+      try {
+        if (toolCall.tool === "get_demographics") {
+          let where = "WHERE 1=1";
+          bindings = [];
+          if (toolCall.args.pathway) {
+            where += " AND r.pathway = ?";
+            bindings.push(toolCall.args.pathway);
+          }
+          if (toolCall.args.country) {
+            where += " AND (d.country_born = ? OR d.country_now = ?)";
+            bindings.push(toolCall.args.country, toolCall.args.country);
+          }
+          sql = `
+            SELECT count(*) as count
+            FROM respondents r
+            LEFT JOIN demographics d ON d.respondent_id = r.id
+            ${where}
+          `;
+          const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+          aggResults = results;
+          displaySql = `SELECT count(*) FROM respondents r LEFT JOIN demographics d ON d.respondent_id = r.id ${where};\n/* bindings: ${JSON.stringify(bindings)} */`;
+          
+        } else if (toolCall.tool === "get_crosstab") {
+          q1 = toolCall.args.q1;
+          q2 = toolCall.args.q2;
+          sql = `
+            SELECT r2.value_text AS bucket, COUNT(*) AS n, r1.value_text AS value_text
+            FROM responses r1
+            JOIN responses r2 ON r2.respondent_id = r1.respondent_id AND r2.question_id = ?
+            WHERE r1.question_id = ?
+            GROUP BY bucket, r1.value_text
+          `;
+          bindings = [q2, q1];
+          const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+          aggResults = results;
+          displaySql = `SELECT r2.value_text AS bucket, COUNT(*) AS n, r1.value_text AS value_text \nFROM responses r1 \nJOIN responses r2 ON r2.respondent_id = r1.respondent_id AND r2.question_id = '${q2}' \nWHERE r1.question_id = '${q1}' \nGROUP BY bucket, r1.value_text;`;
+          
+        } else if (toolCall.tool === "get_univariate") {
+          q1 = toolCall.args.questionId;
+          sql = `
+            SELECT r.value_text AS value_text, COUNT(*) AS n
+            FROM responses r
+            WHERE r.question_id = ?
+            GROUP BY r.value_text
+          `;
+          bindings = [q1];
+          const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+          aggResults = results;
+          displaySql = `SELECT r.value_text AS value_text, COUNT(*) AS n \nFROM responses r \nWHERE r.question_id = '${q1}' \nGROUP BY r.value_text;`;
+        }
+      } catch(e) {
+        console.error("Tool execution failed", e);
+        return json({ answer: "I ran into a database error trying to fetch that data. Sorry!", quotes: [] });
       }
 
-      const { results: aggResults } = await env.DB.prepare(sql).bind(...bindings).all();
-      
       if (!aggResults || aggResults.length === 0) {
-        return json({ answer: "I couldn't find enough data for that correlation.", quotes: [] });
+        dataStr = "No matching data found in the database. The requested parameters or demographic intersection returned 0 results. The specific data point may not exist in the survey schema.";
+      } else {
+        dataStr = JSON.stringify(aggResults, null, 2);
+        if (dataStr.length > 4000) {
+          dataStr = dataStr.slice(0, 4000) + "\n...[TRUNCATED]...";
+        }
       }
 
-      dataStr = JSON.stringify(aggResults, null, 2);
-      if (dataStr.length > 4000) {
-        dataStr = dataStr.slice(0, 4000) + "\n...[TRUNCATED]...";
+      let totalContextStr = "";
+      try {
+        const { results: totals } = await env.DB.prepare("SELECT pathway, count(*) as count FROM respondents GROUP BY pathway").all();
+        const grandTotal = totals.reduce((s, r) => s + r.count, 0);
+        totalContextStr = `\nGlobal Survey Sample Context:\n- Total Respondents: ${grandTotal}\n`;
+        totals.forEach(t => {
+          if (t.pathway) totalContextStr += `- ${t.pathway.charAt(0).toUpperCase() + t.pathway.slice(1)} Pathway Respondents: ${t.count}\n`;
+        });
+      } catch (e) {
+        console.error("Failed to fetch global totals", e);
       }
 
       const synthPrompt = `You are a data scientist analyzing the CircumSurvey — a study on circumcision perspectives valuing bodily autonomy as a human right.
-If the data indicates bias or limitations, explain that the survey transparently targets specific affected populations by design. DO NOT suggest the survey is flawed for doing so.
+If the data indicates bias or limitations, explain that the survey transparently targets specific affected populations by design. DO NOT suggest the survey is flawed for doing so.${totalContextStr}
 User asked: "${query}"
 
-Data (${q1}${q2 ? ` × ${q2}` : ''}):
+Data from Database Tool (${toolCall.tool}):
 ${dataStr}
 
-Interpret the data with specific percentages. Draw 1-2 conclusions. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise.
+Interpret the data with specific percentages or counts. If the database returned no data, politely inform the user that this specific metric or intersection is unavailable and use your reasoning to explain why or pivot the conversation. If data is present, draw 1-2 conclusions. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise.
 IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
 
       const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
@@ -690,7 +747,7 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
         answer,
         suggestions,
         quotes: [],
-        metadata: { intent, q1, q2, rawData: aggResults }
+        metadata: { intent, tool: toolCall.tool, sql: displaySql, rawData: aggResults, q1, q2 }
       });
     }
 
@@ -749,12 +806,25 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
       };
     });
 
+    const uniqueQIds = [...new Set(quotes.map(q => q.question_id).filter(Boolean))];
+    let promptsMap = {};
+    if (uniqueQIds.length > 0) {
+      const placeholders = uniqueQIds.map(() => '?').join(',');
+      try {
+        const { results } = await env.DB.prepare(`SELECT id, prompt FROM questions WHERE id IN (${placeholders})`).bind(...uniqueQIds).all();
+        results.forEach(r => promptsMap[r.id] = r.prompt);
+      } catch (e) {
+        console.error("Failed to fetch prompts for qualitative query", e);
+      }
+    }
+
     let contextStr = quotes.map((q, i) => {
       if (q.type === 'static_context') {
         return `[${i+1}] (PROJECT DOCUMENTATION - ${q.title || 'FAQ'}): "${(q.text || '').slice(0, 500)}"`;
       }
-      return `[${i+1}] (RESPONDENT QUOTE - ${q.pathway || 'unknown'}, ${q.generation || 'unknown'}): "${(q.text || '').slice(0, 500)}"`;
-    }).join("\n");
+      const qPrompt = promptsMap[q.question_id] || q.question_id || 'Survey Question';
+      return `[${i+1}] (RESPONDENT QUOTE - ${q.pathway || 'unknown'}, ${q.generation || 'unknown'}) Answering: "${qPrompt}"\nResponse: "${(q.text || '').slice(0, 500)}"`;
+    }).join("\n\n");
 
     if (contextStr.length > 4000) {
       contextStr = contextStr.slice(0, 4000) + "\n...[TRUNCATED]...";

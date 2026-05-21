@@ -32,11 +32,13 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const dataMap = useMemo(() => {
     const map = {};
     let max = 0;
+    let total = 0;
     for (const d of activeDist) {
       map[d.label] = d.n;
       if (d.n > max) max = d.n;
+      total += d.n;
     }
-    return { map, max };
+    return { map, max, total };
   }, [activeDist]);
   
   const getScaleRange = (tab) => {
@@ -262,9 +264,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           background: `linear-gradient(to right, ${getScaleRange(activeTab)[0]}, ${getScaleRange(activeTab)[1]})`,
           borderRadius: 4
         }} />
-        <span>{dataMap.max}</span>
+        <span>{dataMap.max} (max per region)</span>
         <span style={{ marginLeft: "auto", fontFamily: FONT.mono, fontSize: "0.75rem" }}>
-          {cohortDistribution?.distribution?.length > 0 ? "Showing cohort distribution" : "Showing overall distribution"}
+          Total mapped: n={dataMap.total} &middot; {cohortDistribution?.distribution?.length > 0 ? "Showing cohort distribution" : "Showing overall distribution"}
         </span>
       </div>
 

@@ -7,6 +7,26 @@ export function ThemeProvider({ children }) {
     return localStorage.getItem('cs_theme_name') || 'standard';
   });
 
+  const [unlockedThemes, setUnlockedThemes] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cs_unlocked_themes');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const unlockTheme = (themeName) => {
+    setUnlockedThemes(prev => {
+      if (!prev.includes(themeName)) {
+        const next = [...prev, themeName];
+        localStorage.setItem('cs_unlocked_themes', JSON.stringify(next));
+        return next;
+      }
+      return prev;
+    });
+  };
+
   const [typeface, setTypeface] = useState(() => {
     return localStorage.getItem('cs_theme_typeface') || 'tomorrow';
   });
@@ -62,6 +82,7 @@ export function ThemeProvider({ children }) {
   return (
     <ThemeContext.Provider value={{ 
       theme, setTheme, 
+      unlockedThemes, unlockTheme,
       typeface, setTypeface,
       mode, setMode, 
       colorblind, setColorblind, 

@@ -29,10 +29,21 @@ export default function WordCloud({ narratives = [], selectedWord = null, onWord
     if (!narratives || narratives.length === 0) return [];
 
     const counts = {};
+    const fillers = [
+      "n/a", "na", "no", "none", "nothing", "nil", "not applicable", 
+      "no comment", "unsure", "unknown", "n.a", "n.a.", "none at all", 
+      "no.", "no response", "don't know", "dont know", "no one", "not sure",
+      "n a", "n / a", "none.", "no comments", "no comment.", "no one."
+    ];
+
     narratives.forEach(item => {
       const text = typeof item === 'string' ? item : (item.text || item.label || "");
       if (!text || typeof text !== 'string') return;
       
+      const normalized = text.trim().toLowerCase();
+      const clean = normalized.replace(/^[.\s\-_,]+|[.\s\-_,]+$/g, "").trim();
+      if (!clean || fillers.includes(clean)) return;
+
       // Basic tokenization
       const tokens = text.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, ' ') // Remove punctuation except hyphens

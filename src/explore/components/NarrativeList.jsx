@@ -32,10 +32,18 @@ export default function NarrativeList({ distribution, highlightWord = null, hide
     }
 
     const map = new Map();
+    const fillers = [
+      "n/a", "na", "no", "none", "nothing", "nil", "not applicable", 
+      "no comment", "unsure", "unknown", "n.a", "n.a.", "none at all", 
+      "no.", "no response", "don't know", "dont know", "no one", "not sure",
+      "n a", "n / a", "none.", "no comments", "no comment.", "no one."
+    ];
+
     filteredDist.forEach(item => {
       const text = item.text || item.label || "";
       const normalized = text.trim().toLowerCase();
-      if (!normalized || normalized === "-" || normalized === "—") return;
+      const clean = normalized.replace(/^[.\s\-_,]+|[.\s\-_,]+$/g, "").trim();
+      if (!clean || fillers.includes(clean)) return;
       
       if (!map.has(normalized)) {
         map.set(normalized, {

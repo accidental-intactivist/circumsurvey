@@ -115,6 +115,25 @@ export default function MiniSparkline({ distribution, width = 120, height = 8, c
   const total = distribution.reduce((s, d) => s + (d.n || 0), 0);
   if (total === 0) return null;
 
+  // Build a canonical color map from the overall distribution
+  const colorMap = {};
+  distribution.forEach((item, index) => {
+    colorMap[item.label] = colorForLabel(item.label, index);
+  });
+
+  // Sort cohort distribution to match the overall distribution label order
+  let sortedCohortDist = null;
+  if (cohortDistribution && cohortDistribution.length > 0) {
+    const labelOrder = distribution.map(item => item.label);
+    sortedCohortDist = [...cohortDistribution].sort((a, b) => {
+      let idxA = labelOrder.indexOf(a.label);
+      let idxB = labelOrder.indexOf(b.label);
+      if (idxA === -1) idxA = 999;
+      if (idxB === -1) idxB = 999;
+      return idxA - idxB;
+    });
+  }
+
   let xCursor = 0;
 
   return (
@@ -133,7 +152,7 @@ export default function MiniSparkline({ distribution, width = 120, height = 8, c
                 y={0}
                 width={pct}
                 height={height}
-                fill={colorForLabel(seg.label, i)}
+                fill={colorMap[seg.label] || colorForLabel(seg.label, i)}
                 onMouseEnter={(e) => showTooltip(e, `${seg.label}: ${seg.n} (${Math.round(seg.n / total * 100)}%)`)}
                 onMouseMove={moveTooltip}
                 onMouseLeave={hideTooltip}
@@ -143,15 +162,15 @@ export default function MiniSparkline({ distribution, width = 120, height = 8, c
       </svg>
 
       {/* Cohort overlay bar (thinner) — only rendered when cohort is active */}
-      {cohortDistribution && cohortDistribution.length > 0 && (
-        <CohortBar distribution={cohortDistribution} width={width} height={4} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+      {sortedCohortDist && sortedCohortDist.length > 0 && (
+        <CohortBar distribution={sortedCohortDist} width={width} height={4} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} colorMap={colorMap} />
       )}
       <Tooltip {...tooltip} />
     </div>
   );
 }
 
-function CohortBar({ distribution, width, height, showTooltip, moveTooltip, hideTooltip }) {
+function CohortBar({ distribution, width, height, showTooltip, moveTooltip, hideTooltip, colorMap }) {
   const total = distribution.reduce((s, d) => s + (d.n || 0), 0);
   if (total === 0) return null;
   let xCursor = 0;
@@ -163,7 +182,7 @@ function CohortBar({ distribution, width, height, showTooltip, moveTooltip, hide
         const x = xCursor;
         xCursor += pct;
         return <rect 
-          key={i} x={x} y={0} width={pct} height={height} fill={colorForLabel(seg.label, i)}
+          key={i} x={x} y={0} width={pct} height={height} fill={colorMap[seg.label] || colorForLabel(seg.label, i)}
           onMouseEnter={(e) => showTooltip(e, `cohort → ${seg.label}: ${seg.n}`)}
           onMouseMove={moveTooltip}
           onMouseLeave={hideTooltip}

@@ -36,10 +36,23 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const [byPathway, setByPathway] = useState(null);
   const [error, setError] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
+  const [showCopilot, setShowCopilot] = useState(true);
+  const [viewMode, setViewMode] = useState("single");
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    if (mode === "side-by-side") {
+      setShowCopilot(false);
+    } else if (mode === "single") {
+      setShowCopilot(true);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
     setSelectedWord(null);
+    setViewMode("single");
+    setShowCopilot(true);
 
     getQuestions({ counts: true }).then((d) => {
       if (cancelled) return;
@@ -169,7 +182,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
       fontFamily: FONT.body,
       padding: "1.5rem 1.1rem 3rem",
     }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ maxWidth: showCopilot ? 1100 : 1400, margin: "0 auto", transition: "max-width 0.2s ease" }}>
 
         {/* Header: breadcrumb + back */}
         <div style={{
@@ -248,6 +261,32 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             />
           </div>
 
+          <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
+          
+          <button
+            onClick={() => setShowCopilot(prev => !prev)}
+            title={showCopilot ? "Hide AI Assistant" : "Show AI Assistant"}
+            style={{
+              background: showCopilot ? "rgba(212,160,48,0.12)" : "transparent",
+              border: `1px solid ${showCopilot ? "rgba(212,160,48,0.3)" : C.ghost}`,
+              borderRadius: 6,
+              cursor: "pointer",
+              color: showCopilot ? C.goldBright : C.muted,
+              fontFamily: FONT.condensed,
+              fontSize: "0.68rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              padding: "0.25rem 0.5rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.25rem",
+              transition: "all 0.15s",
+            }}
+          >
+            <span>🤖</span>
+            <span>AI Copilot</span>
+          </button>
+          
           <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
           <ThemeToggle />
         </div>
@@ -330,7 +369,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             className="explore-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "260px 1fr 340px",
+              gridTemplateColumns: showCopilot ? "260px 1fr 340px" : "260px 1fr",
               gap: "1.2rem",
               alignItems: "start",
             }}
@@ -389,6 +428,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                   <NarrativeList 
                     distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
                     highlightWord={selectedWord}
+                    viewMode={viewMode}
+                    onViewModeChange={handleViewModeChange}
                   />
                 </>
               ) : isGeographic ? (
@@ -400,7 +441,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                     cohortDistribution={cohortDistribution}
                     byPathway={byPathway}
                   />
-                  <GenerationalTrendChart questionId={question.id} />
+                  <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
                 </>
               ) : (
                 <>
@@ -436,21 +477,23 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                     <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />
                   )}
                   
-                  <GenerationalTrendChart questionId={question.id} />
+                  <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
                 </>
               )}
             </main>
 
             {/* RIGHT: AI Assistant */}
-            <aside style={{
-              position: "sticky",
-              top: "1rem",
-              maxHeight: "calc(100vh - 2rem)",
-              overflowY: "auto",
-              paddingRight: "0.4rem"
-            }}>
-              <CopilotChat routerState={routerState} updateState={updateState} />
-            </aside>
+            {showCopilot && (
+              <aside style={{
+                position: "sticky",
+                top: "1rem",
+                maxHeight: "calc(100vh - 2rem)",
+                overflowY: "auto",
+                paddingRight: "0.4rem"
+              }}>
+                <CopilotChat routerState={routerState} updateState={updateState} />
+              </aside>
+            )}
           </div>
         )}
         </div>
@@ -497,6 +540,16 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
     .filter((id) => results[id] && results[id].n > 0)
     .map((id) => ({ id, ...results[id] }));
 
+  const colorMap = useMemo(() => {
+    const map = {};
+    if (overallDist) {
+      overallDist.forEach((item, index) => {
+        map[item.label] = colorForLabel(item.label, index);
+      });
+    }
+    return map;
+  }, [overallDist]);
+
   if (pathwaysWithData.length === 0) return null;
 
   // Compute missing major pathways for the "quick string"
@@ -535,6 +588,16 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
         {pathwaysWithData.map((p) => {
           const path = PATHWAYS[p.id];
           const total = p.distribution.reduce((s, d) => s + d.n, 0);
+
+          const sortedDist = overallDist ? [...p.distribution].sort((a, b) => {
+            const labelOrder = overallDist.map(item => item.label);
+            let idxA = labelOrder.indexOf(a.label);
+            let idxB = labelOrder.indexOf(b.label);
+            if (idxA === -1) idxA = 999;
+            if (idxB === -1) idxB = 999;
+            return idxA - idxB;
+          }) : p.distribution;
+
           let xCursor = 0;
           return (
             <div key={p.id}>
@@ -556,7 +619,7 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
               </div>
               <svg width="100%" height={12} style={{ display: "block", borderRadius: 2, overflow: "hidden" }}>
                 <rect x={0} y={0} width="100%" height={12} fill={C.ghost} />
-                {p.distribution.map((d, i) => {
+                {sortedDist.map((d, i) => {
                   const pct = (d.n / total) * 100;
                   const x = xCursor;
                   xCursor += pct;
@@ -567,7 +630,7 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
 
                   return (
                     <rect 
-                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label, canonicalIndex)}
+                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorMap[d.label] || colorForLabel(d.label, canonicalIndex)}
                       onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}

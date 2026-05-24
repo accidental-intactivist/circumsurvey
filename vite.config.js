@@ -6,6 +6,7 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
+    emptyOutDir: false,
     // Inline small assets to reduce requests
     assetsInlineLimit: 4096,
   },

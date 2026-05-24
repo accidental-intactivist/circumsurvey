@@ -60,6 +60,15 @@ export default function DistributionChart({ title, distribution, cohortDistribut
         if (idxA === 999 && idxB === 999) return b.n - a.n;
         return idxA - idxB;
       });
+    } else {
+      const labelOrder = d.map(item => item.label);
+      cd.sort((a, b) => {
+        let idxA = labelOrder.indexOf(a.label);
+        let idxB = labelOrder.indexOf(b.label);
+        if (idxA === -1) idxA = 999;
+        if (idxB === -1) idxB = 999;
+        return idxA - idxB;
+      });
     }
 
     return { parsedDist: d, parsedCohortDist: cd };
@@ -102,6 +111,15 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   // Build a map for cohort comparison
   const cohortMap = {};
   for (const d of parsedCohortDist) cohortMap[d.label] = d.n;
+
+  // Build a canonical color map from the overall distribution
+  const colorMap = useMemo(() => {
+    const map = {};
+    parsedDist.forEach((item, index) => {
+      map[item.label] = colorForLabel(item.label, index);
+    });
+    return map;
+  }, [parsedDist]);
 
   const activeChartType = chartType === "auto" ? (parsedDist.length < 8 ? "pie" : "bar") : chartType;
 
@@ -207,14 +225,14 @@ export default function DistributionChart({ title, distribution, cohortDistribut
           {/* Overall Stacked Bar */}
           <div>
             {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.muted, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
-            <StackedBar dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            <StackedBar dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} colorMap={colorMap} />
           </div>
 
           {/* Cohort Stacked Bar */}
           {cohortDistribution && cohortTotal > 0 && (
             <div>
               <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.goldBright, marginBottom: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
-              <StackedBar dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+              <StackedBar dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} colorMap={colorMap} />
             </div>
           )}
         </div>
@@ -223,14 +241,14 @@ export default function DistributionChart({ title, distribution, cohortDistribut
           {/* Overall Pie Chart */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", flex: "1 1 150px", maxWidth: 220 }}>
             {cohortDistribution && <div style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em" }}>Overall Sample (n={total})</div>}
-            <PieChart dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            <PieChart dist={activeDist} total={total} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} colorMap={colorMap} />
           </div>
           
           {/* Cohort Pie Chart */}
           {cohortDistribution && cohortTotal > 0 && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", flex: "1 1 150px", maxWidth: 220 }}>
               <div style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.08em" }}>Filtered Cohort (n={cohortTotal})</div>
-              <PieChart dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+              <PieChart dist={activeCohortDist} total={cohortTotal} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} colorMap={colorMap} />
             </div>
           )}
         </div>
@@ -266,7 +284,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
             >
               <div style={{
                 width: 10, height: 10, borderRadius: 2,
-                background: isHidden ? C.ghost : colorForLabel(d.label, i),
+                background: isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i)),
                 flexShrink: 0,
                 marginTop: "0.2rem",
               }} />
@@ -352,7 +370,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   );
 }
 
-function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
+function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip, colorMap }) {
   if (total === 0) return null;
   let xCursor = 0;
   return (
@@ -369,7 +387,7 @@ function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
             y={0}
             width={`${pct}%`}
             height={24}
-            fill={colorForLabel(d.label, i)}
+            fill={colorMap[d.label] || colorForLabel(d.label, i)}
             onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
             onMouseMove={moveTooltip}
             onMouseLeave={hideTooltip}
@@ -386,7 +404,7 @@ function getCoordinatesForPercent(percent) {
   return [x, y];
 }
 
-function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
+function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip, colorMap }) {
   if (total === 0) return null;
   let cumulativePercent = 0;
   
@@ -402,7 +420,7 @@ function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
              <circle 
                key={i}
                cx={0} cy={0} r={1} 
-               fill={colorForLabel(d.label, i)} 
+               fill={colorMap[d.label] || colorForLabel(d.label, i)} 
                onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
                onMouseMove={moveTooltip}
                onMouseLeave={hideTooltip}
@@ -427,7 +445,7 @@ function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip }) {
           <path 
             key={i} 
             d={pathData} 
-            fill={colorForLabel(d.label, i)} 
+            fill={colorMap[d.label] || colorForLabel(d.label, i)} 
             stroke={C.bgSoft}
             strokeWidth="0.02"
             onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}

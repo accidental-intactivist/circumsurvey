@@ -54,10 +54,10 @@ export const FONT = {
   mono: "'JetBrains Mono', monospace",             // IDs, counts, data
 };
 
-// Stable API base — points at the Worker mounted on findings subdomain in prod, or local wrangler in dev
-export const API_BASE = (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD)
-  ? "https://findings.circumsurvey.online/api"
-  : "http://localhost:8787/api";
+// Stable API base — points at the Worker mounted on findings subdomain in prod (or during frontend development)
+export const API_BASE = "https://findings.circumsurvey.online/api";
+// To develop the worker locally, comment the line above and uncomment the line below:
+// export const API_BASE = (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD) ? "https://findings.circumsurvey.online/api" : "http://localhost:8787/api";
 
 // Global stylesheet injection
 export const GLOBAL_CSS = `

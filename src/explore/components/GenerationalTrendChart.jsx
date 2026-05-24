@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getAggregate } from "../lib/api";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
 
-export default function GenerationalTrendChart({ questionId }) {
+export default function GenerationalTrendChart({ questionId, overallDist }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -24,6 +24,16 @@ export default function GenerationalTrendChart({ questionId }) {
       });
     return () => { cancelled = true; };
   }, [questionId]);
+
+  const colorMap = useMemo(() => {
+    const map = {};
+    if (overallDist) {
+      overallDist.forEach((item, index) => {
+        map[item.label] = colorForLabel(item.label, index);
+      });
+    }
+    return map;
+  }, [overallDist]);
 
   if (loading) {
     return <div style={{ padding: "1rem", color: C.dim, fontStyle: "italic" }}>Loading generation trends...</div>;
@@ -64,6 +74,16 @@ export default function GenerationalTrendChart({ questionId }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
         {generations.map((g) => {
           const total = g.distribution.reduce((s, d) => s + d.n, 0);
+          
+          const sortedDist = overallDist ? [...g.distribution].sort((a, b) => {
+            const labelOrder = overallDist.map(item => item.label);
+            let idxA = labelOrder.indexOf(a.label);
+            let idxB = labelOrder.indexOf(b.label);
+            if (idxA === -1) idxA = 999;
+            if (idxB === -1) idxB = 999;
+            return idxA - idxB;
+          }) : g.distribution;
+
           let xCursor = 0;
           return (
             <div key={g.id}>
@@ -84,13 +104,13 @@ export default function GenerationalTrendChart({ questionId }) {
               </div>
               <svg width="100%" height={12} style={{ display: "block", borderRadius: 2, overflow: "hidden" }}>
                 <rect x={0} y={0} width="100%" height={12} fill={C.ghost} />
-                {g.distribution.map((d, i) => {
+                {sortedDist.map((d, i) => {
                   const pct = (d.n / total) * 100;
                   const x = xCursor;
                   xCursor += pct;
                   return (
                     <rect 
-                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorForLabel(d.label)}
+                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorMap[d.label] || colorForLabel(d.label, i)}
                       onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}

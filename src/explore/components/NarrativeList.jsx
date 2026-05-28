@@ -51,7 +51,8 @@ export default function NarrativeList({
         const searchWord = highlightWord.toLowerCase();
         let regex;
         try {
-          regex = new RegExp(`(?<![\\w'])${highlightWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w'])`, 'i');
+          // Match the word with boundary checking and optional plural/possessive suffix ('s, s, ', s')
+          regex = new RegExp(`(?<![a-zA-Z0-9])(${highlightWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'i');
         } catch (e) {
           regex = null;
         }
@@ -466,19 +467,28 @@ export default function NarrativeList({
 function HighlightText({ text, highlight }) {
   if (!highlight) return <>{text}</>;
   
-  // Use word boundary matching with apostrophe awareness
   let parts;
   try {
-    const regex = new RegExp(`(?<![\\w'])(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?![\\w'])`, 'gi');
+    // Capture the word plus its optional plural/possessive suffix
+    const regex = new RegExp(`(?<![a-zA-Z0-9])(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'gi');
     parts = text.split(regex);
   } catch (e) {
     return <>{text}</>;
   }
 
+  const cleanHighlight = highlight.toLowerCase();
+
   return (
     <>
-      {parts.map((part, i) => 
-        part.toLowerCase() === highlight.toLowerCase() ? (
+      {parts.map((part, i) => {
+        const cleanPart = part.toLowerCase();
+        // Match base, plural, possessive singular/plural suffix variations
+        const isMatch = cleanPart === cleanHighlight || 
+                        cleanPart === cleanHighlight + "'s" || 
+                        cleanPart === cleanHighlight + "s" || 
+                        cleanPart === cleanHighlight + "'" || 
+                        cleanPart === cleanHighlight + "s'";
+        return isMatch ? (
           <mark key={i} style={{ 
             background: "rgba(212,160,48,0.3)", 
             color: "var(--c-goldBright)", 
@@ -487,8 +497,8 @@ function HighlightText({ text, highlight }) {
           }}>
             {part}
           </mark>
-        ) : part
-      )}
+        ) : part;
+      })}
     </>
   );
 }

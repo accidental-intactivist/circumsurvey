@@ -568,11 +568,11 @@ export default function ScrollyEngine() {
                 born from a lifetime of observation and a single, persistent question.
               </p>
               <p style={{ marginBottom: '1rem' }}>
-                By a conscious choice of my parents in the 1970s, I grew up intact — an outlier
-                in a US culture where routine infant circumcision was the unquestioned norm. I
+                By a conscious choice of my parents in the 1970s, I grew up intact — a complete outlier
+                in a US culture where routine infant circumcision (RIC) was the unquestioned, 90% norm. I
                 became an <em>accidental witness</em> to a profound alteration that nearly all
-                my friends, my partners, and men in the media had undergone — something my
-                parents had simply dismissed as unnecessary.
+                my friends and peers had undergone — something my parents had simply waved off
+                as unnecessary, refusing to subject their newborn son to a life-altering surgery.
               </p>
 
               <blockquote style={{
@@ -588,25 +588,23 @@ export default function ScrollyEngine() {
                 color: 'var(--c-textBright)',
                 lineHeight: 1.5,
               }}>
-                In a culture so obsessed with sex, where we seemingly want every experience to
-                be as good as possible, how did this one topic become so taboo?
+                If someone asked you honestly how you felt about your circumcision status, what would you say?
               </blockquote>
 
               <p style={{ marginBottom: '1rem' }}>
-                Everyone seems to have an opinion about whether infant circumcision should or
-                shouldn't be done — but I almost never hear adults talking honestly about their
-                own lived experience with their own anatomy.
+                That is the question I set out to ask when I built this anonymous survey.
+                I wanted to know: what makes parents like mine such outliers? What was the actual, lived experience of men in these bodies?
+                Historically, infant circumcision was popularized specifically to curb masturbation and diminish sexual experience.
+                Today, modern neuroscience and anatomical evidence unequivocally support the obvious claim that removing highly sensitive, functional tissue dictates sexual dysfunction.
+                Furthermore, the latest European clinical consensus states clearly that circumcision is non-therapeutic and should not be considered a medical procedure.
               </p>
               <p style={{ marginBottom: '1rem' }}>
-                I had so many questions. How did men actually <em>feel</em> about being cut?
-                Was it something they ever thought about? What was their sexual experience
-                truly like? This survey is my way of finally asking those questions.
+                Yet, nearly half of American parents still opt to circumcise their newborn boys. While that number is still high, it represents a significant historical decline. In fact, as highlighted in a Johns Hopkins press release, neonatal circumcision has officially dropped below 49% — making routine infant circumcision a <strong>minority procedure</strong> in the United States for the first time in a century.
               </p>
               <p style={{ marginBottom: '1rem' }}>
-                What follows is a data instrument, not an advocacy document. I am not here to
-                tell you how to feel. I am here to share what <em>five hundred people
-                said when finally asked</em> — and to bring these essential stories into
-                the light.
+                When given an anonymous platform to speak honestly, the data speaks clearly for itself.
+                The findings show that circumcised men are overwhelmingly dissatisfied and frequently require external lubrication for their entire lives.
+                Our goal is to bring agnostic readers, expectant parents, and medical professionals over to the side of bodily autonomy. We want to let the raw data and verbatim voices speak for themselves.
               </p>
             </div>
 
@@ -664,6 +662,14 @@ export default function ScrollyEngine() {
           }
           scrollingContent={
             <>
+              {/* Spacer 1: Show Orthographic Globe entry and spin animation */}
+              <ScrollyNarrative
+                onEnter={() => { setCiroDimension('geography'); setCiroSplitMode(false); }}
+                variant="void"
+              >
+                {/* Visual zone: Ambient globe entry */}
+              </ScrollyNarrative>
+
               <ScrollyNarrative
                 index={1}
                 setActiveStep={setActiveStep}
@@ -727,6 +733,14 @@ export default function ScrollyEngine() {
                 </div>
               </ScrollyNarrative>
 
+              {/* Spacer 2: Show flat North America map entry and dots flying/stacking in CIRO order */}
+              <ScrollyNarrative
+                onEnter={() => { setCiroDimension('geography_na'); setCiroSplitMode(false); }}
+                variant="void"
+              >
+                {/* Visual zone: North America geographic stacking */}
+              </ScrollyNarrative>
+
               <ScrollyNarrative
                 onEnter={() => { setCiroDimension('geography_na'); setCiroSplitMode(false); }}
                 variant="glass"
@@ -747,13 +761,21 @@ export default function ScrollyEngine() {
                 <ObserverLens />
               </ScrollyNarrative>
 
+              {/* Spacer 3: Show generational beeswarm layout transition */}
+              <ScrollyNarrative
+                onEnter={() => { setCiroDimension('demo_generation'); setCiroSplitMode(false); }}
+                variant="void"
+              >
+                {/* Visual zone: Beeswarm layout alignment */}
+              </ScrollyNarrative>
+
               <ScrollyNarrative
                 onEnter={() => { setCiroDimension('demo_generation'); setCiroSplitMode(false); }}
                 variant="glass"
                 accentColor="var(--c-gold)"
               >
                 <p style={{ marginBottom: '1.5rem' }}>
-                  They span the entire spectrum. Moderates and conservatives make up nearly half the respondents, while liberals and independents make up the rest. And generationally, they span decades:
+                  Our respondents span all political, socioeconomic, and generational lines. But generationally, we see a massive historical shift. In fact, routine infant circumcision (RIC) has officially become a <strong>minority procedure</strong> in the United States, with neonatal rates dropping below 49%—a decline famously lamented in a Johns Hopkins press release. Generationally, our survey captures this changing landscape:
                 </p>
 
                 <div style={{ margin: '3rem 0' }}>
@@ -970,7 +992,7 @@ export default function ScrollyEngine() {
             A procedure explicitly popularized in the Victorian era to diminish the male orgasm and curb masturbation was, decades later, conveniently "retconned" by the medical-industrial complex into a panacea for hygiene.
           </p>
           <p style={{ marginBottom: '1.5rem' }}>
-            The data confirms the original design: it purposefully degrades a boy's ability to experience full sexual pleasure. 
+            But the data confirms the original design: it purposefully degrades a boy's ability to experience full sexual pleasure. Today, modern neuroscience and anatomical evidence unequivocally support the obvious claim that removing highly sensitive, functional tissue necessarily dictates sexual dysfunction. Indeed, the latest European clinical consensus states unequivocally that routine infant circumcision is non-therapeutic and should not be considered a medical procedure.
           </p>
 
           <div style={{ margin: '3rem 0' }}>

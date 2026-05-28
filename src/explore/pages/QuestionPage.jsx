@@ -16,7 +16,7 @@ import NarrativeList from "../components/NarrativeList";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
-import { applyLikert, flattenMultiSelect } from "../lib/formatters";
+import { applyLikert, flattenMultiSelect, sortDistribution } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
 import ThemeToggle from "../components/ThemeToggle";
 import SharePopover from "../components/SharePopover";
@@ -38,6 +38,9 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const [selectedWord, setSelectedWord] = useState(null);
   const [showCopilot, setShowCopilot] = useState(true);
   const [viewMode, setViewMode] = useState("single");
+  const [questions, setQuestions] = useState([]);
+  const [notFound, setNotFound] = useState(false);
+  const [notFoundSearch, setNotFoundSearch] = useState("");
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -53,32 +56,49 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     setSelectedWord(null);
     setViewMode("single");
     setShowCopilot(true);
+    setNotFound(false);
+    setQuestion(null);
+    setAllDistribution(null);
+    setCohortDistribution(null);
+    setByPathway(null);
 
     getQuestions({ counts: true }).then((d) => {
       if (cancelled) return;
       const allQs = d.questions || [];
+      setQuestions(allQs);
       const foundIdx = allQs.findIndex((q) => q.id === questionId);
-      setQuestion(allQs[foundIdx] || null);
-      setPrevQ(foundIdx > 0 ? allQs[foundIdx - 1] : null);
-      setNextQ(foundIdx !== -1 && foundIdx < allQs.length - 1 ? allQs[foundIdx + 1] : null);
-    }).catch((e) => setError(e.message));
+      
+      if (foundIdx === -1) {
+        setNotFound(true);
+        // Auto-trigger AI Search fallback for non-found question
+        const fallbackQuery = `I was looking for the survey question ID "${questionId}". It was not found. What are the closest matching questions or topics in the study? Please list them.`;
+        if (updateState) {
+          updateState({ ai_query: fallbackQuery });
+        }
+      } else {
+        setNotFound(false);
+        setQuestion(allQs[foundIdx]);
+        setPrevQ(foundIdx > 0 ? allQs[foundIdx - 1] : null);
+        setNextQ(foundIdx < allQs.length - 1 ? allQs[foundIdx + 1] : null);
 
-    // Full-sample distribution
-    getResponseDistribution(questionId).then((d) => {
-      if (!cancelled) setAllDistribution(d);
-    }).catch((e) => setError(e.message));
+        // Full-sample distribution
+        getResponseDistribution(questionId).then((dist) => {
+          if (!cancelled) setAllDistribution(dist);
+        }).catch((e) => setError(e.message));
 
-    // Pathway breakdown
-    getAggregate(questionId, { by: "pathway" }).then((d) => {
-      if (!cancelled) setByPathway(d);
-    }).catch(() => {});  // aggregate can fail on pathway-specific questions — that's ok
+        // Pathway breakdown
+        getAggregate(questionId, { by: "pathway" }).then((agg) => {
+          if (!cancelled) setByPathway(agg);
+        }).catch(() => {});  // aggregate can fail on pathway-specific questions — that's ok
+      }
+    }).catch((e) => setError(e.message));
 
     return () => { cancelled = true; };
   }, [questionId]);
 
   // ── Cohort distribution (separate fetch, re-runs when cohort changes) ──
   useEffect(() => {
-    if (!cohort) {
+    if (!cohort || notFound) {
       setCohortDistribution(null);
       return;
     }
@@ -87,7 +107,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
       .then((d) => { if (!cancelled) setCohortDistribution(d); })
       .catch(() => { if (!cancelled) setCohortDistribution(null); });
     return () => { cancelled = true; };
-  }, [questionId, JSON.stringify(cohort)]);
+  }, [questionId, JSON.stringify(cohort), notFound]);
 
   const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(question?.id);
 
@@ -123,9 +143,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     if (!allDistribution) return null;
     let dist = allDistribution.distribution;
     if (isMulti) dist = flattenMultiSelect(dist, question);
+    dist = applyLikert(dist, question);
+    dist = sortDistribution(dist, question);
     return {
       ...allDistribution,
-      distribution: applyLikert(dist, question)
+      distribution: dist
     };
   }, [allDistribution, question, isMulti]);
 
@@ -133,9 +155,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     if (!cohortDistribution?.distribution) return null;
     let dist = cohortDistribution.distribution;
     if (isMulti) dist = flattenMultiSelect(dist, question);
+    dist = applyLikert(dist, question);
+    dist = sortDistribution(dist, question);
     return {
       ...cohortDistribution,
-      distribution: applyLikert(dist, question)
+      distribution: dist
     };
   }, [cohortDistribution, question, isMulti]);
 
@@ -206,8 +230,8 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             letterSpacing: "0.12em",
             textTransform: "uppercase",
             color: C.gold,
-          }}>{question?.section || "…"}</span>
-          {pathwayObj && (
+          }}>{notFound ? "Error" : (question?.section || "…")}</span>
+          {pathwayObj && !notFound && (
             <>
               <span style={{ color: C.dim }}>/</span>
               <span style={{
@@ -227,38 +251,44 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
           )}
           
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.8rem" }}>
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              {prevQ && (
-                <a href={`#/q/${prevQ.id}`} title="Previous Question" style={{
-                  fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
-                  textTransform: "uppercase", color: C.gold, textDecoration: "none"
-                }}
-                onMouseEnter={e => { e.target.style.color = C.goldBright; }}
-                onMouseLeave={e => { e.target.style.color = C.gold; }}>
-                  ← Prev
-                </a>
-              )}
-              {prevQ && nextQ && <span style={{ color: C.ghost, fontSize: "0.7rem" }}>|</span>}
-              {nextQ && (
-                <a href={`#/q/${nextQ.id}`} title="Next Question" style={{
-                  fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
-                  textTransform: "uppercase", color: C.gold, textDecoration: "none"
-                }}
-                onMouseEnter={e => { e.target.style.color = C.goldBright; }}
-                onMouseLeave={e => { e.target.style.color = C.gold; }}>
-                  Next →
-                </a>
-              )}
-            </div>
-            <div style={{ width: "1px", height: "16px", background: C.ghost }} />
+            {!notFound && (
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                {prevQ && (
+                  <a href={`#/q/${prevQ.id}`} title="Previous Question" style={{
+                    fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
+                    textTransform: "uppercase", color: C.gold, textDecoration: "none"
+                  }}
+                  onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                  onMouseLeave={e => { e.target.style.color = C.gold; }}>
+                    ← Prev
+                  </a>
+                )}
+                {prevQ && nextQ && <span style={{ color: C.ghost, fontSize: "0.7rem" }}>|</span>}
+                {nextQ && (
+                  <a href={`#/q/${nextQ.id}`} title="Next Question" style={{
+                    fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
+                    textTransform: "uppercase", color: C.gold, textDecoration: "none"
+                  }}
+                  onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                  onMouseLeave={e => { e.target.style.color = C.gold; }}>
+                    Next →
+                  </a>
+                )}
+              </div>
+            )}
+            {!notFound && <div style={{ width: "1px", height: "16px", background: C.ghost }} />}
 
-            <AddToReportButton questionId={question?.id} />
-            <SharePopover 
-              url={window.location.href} 
-              questionId={question?.id} 
-              questionPrompt={question?.prompt}
-              onExportImage={handleExport}
-            />
+            {!notFound && (
+              <>
+                <AddToReportButton questionId={question?.id} />
+                <SharePopover 
+                  url={window.location.href} 
+                  questionId={question?.id} 
+                  questionPrompt={question?.prompt}
+                  onExportImage={handleExport}
+                />
+              </>
+            )}
           </div>
 
           <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
@@ -294,72 +324,244 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
         {/* Rainbow accent */}
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, marginBottom: "1rem", opacity: 0.5 }} />
 
-        <div ref={captureRef}>
-          {/* Question heading */}
-        {!question && !error && (
+        {/* Loading and Error states (rendered outside/above the grid) */}
+        {!question && !error && !notFound && (
           <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
             Loading question…
           </div>
         )}
         {error && <ErrorBlock msg={error} />}
-        {question && (
-          <div style={{ marginBottom: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
-              {question.tier === 1 && (
-               <span style={{
-                 fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
-                 letterSpacing: "0.08em", color: C.gold,
-                 background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
-                 borderRadius: 999, padding: "0.15rem 0.5rem",
-                 flexShrink: 0, marginTop: "0.4rem",
-               }}>TIER 1 · CURATED</span>
-              )}
-              {/* Qual / Quant Badge */}
-              <span title={question.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
-                fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
-                letterSpacing: "0.06em", 
-                color: question.type === "open_text" ? "#a8b5c4" : C.dim, 
-                background: question.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
-                border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
-                borderRadius: 999, padding: "0.15rem 0.5rem",
-                flexShrink: 0, marginTop: "0.4rem",
-                display: "inline-flex",
+
+        {/* Two-panel: not found UI on left, AI copilot on right */}
+        {notFound && (
+          <div
+            className="explore-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: showCopilot ? "1fr 340px" : "1fr",
+              gap: "1.2rem",
+              alignItems: "start",
+            }}
+          >
+            {/* LEFT: Not Found UI */}
+            <main style={{
+              background: C.bgCard,
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 8,
+              padding: "1.5rem",
+              minHeight: "400px",
+            }}>
+              <div style={{
+                fontFamily: FONT.condensed,
+                fontSize: "0.65rem",
+                fontWeight: 700,
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                color: C.red,
+                marginBottom: "0.6rem",
+                display: "flex",
                 alignItems: "center",
-                gap: "0.25rem",
+                gap: "0.3rem"
               }}>
-                {question.type === "open_text" ? (
-                  <><MessageSquareText size={11} strokeWidth={3} /> QUAL</>
-                ) : (
-                  <><BarChart2 size={11} strokeWidth={3} /> QUANT</>
-                )}
-              </span>
-            </div>
-            <h1 style={{
-              fontFamily: FONT.display,
-              fontWeight: 700,
-              fontSize: "clamp(1.35rem, 3vw, 1.8rem)",
-              color: C.textBright,
-              lineHeight: 1.25,
-              letterSpacing: "-0.01em",
-              marginBottom: "0.45rem",
-            }}>{question.prompt}</h1>
-            {question.subtitle && (
+                <span>★</span> Question Not Found
+              </div>
+
+              <h1 style={{
+                fontFamily: FONT.display,
+                fontWeight: 700,
+                fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)",
+                color: C.textBright,
+                lineHeight: 1.3,
+                letterSpacing: "-0.015em",
+                marginBottom: "0.8rem",
+              }}>
+                We couldn't find the requested question ID.
+              </h1>
+
               <p style={{
                 fontFamily: FONT.body,
-                fontSize: "1.1rem",
-                lineHeight: 1.5,
+                fontSize: "0.82rem",
                 color: C.muted,
-                marginTop: "1rem",
-                marginBottom: 0,
-                maxWidth: 800
-              }}>{question.subtitle}</p>
+                lineHeight: 1.5,
+                marginBottom: "1.2rem",
+              }}>
+                The question ID <code style={{ fontFamily: FONT.mono, color: C.goldBright, background: "rgba(255,255,255,0.05)", padding: "0.1rem 0.35rem", borderRadius: 4 }}>{questionId}</code> is not in our database of 355 survey questions. This can happen if the link has a typo or the question was renamed.
+              </p>
+
+              {/* Inline Interactive Search */}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <div style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: C.gold,
+                  marginBottom: "0.4rem"
+                }}>
+                  Search All 355 Questions
+                </div>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.32rem 0.6rem",
+                  background: C.bgSoft,
+                  border: `1px solid ${C.ghost}`,
+                  borderRadius: 6,
+                }}>
+                  <span style={{ color: C.dim, fontSize: "0.85rem" }}>⌕</span>
+                  <input
+                    type="text"
+                    value={notFoundSearch}
+                    onChange={(e) => setNotFoundSearch(e.target.value)}
+                    placeholder="Type keyword, topic, or question ID..."
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      outline: "none",
+                      color: C.text,
+                      fontFamily: FONT.body,
+                      fontSize: "0.78rem",
+                      flex: 1,
+                    }}
+                  />
+                  {notFoundSearch && (
+                    <button
+                      onClick={() => setNotFoundSearch("")}
+                      style={{ background: "transparent", border: "none", color: C.dim, cursor: "pointer", fontSize: "0.8rem" }}
+                    >×</button>
+                  )}
+                </div>
+
+                {/* Inline Search Results */}
+                {notFoundSearch.trim().length >= 2 && (
+                  <div style={{
+                    marginTop: "0.5rem",
+                    border: `1px solid ${C.ghost}`,
+                    borderRadius: 6,
+                    maxHeight: "220px",
+                    overflowY: "auto",
+                    background: C.bgSoft,
+                  }}>
+                    {(() => {
+                      const query = notFoundSearch.toLowerCase();
+                      const matches = questions.filter(q => 
+                        (q.prompt || "").toLowerCase().includes(query) || 
+                        (q.id || "").toLowerCase().includes(query)
+                      ).slice(0, 15);
+
+                      if (matches.length === 0) {
+                        return (
+                          <div style={{ padding: "0.8rem", color: C.dim, fontSize: "0.8rem", fontStyle: "italic", textAlign: "center" }}>
+                            No matching questions found.
+                          </div>
+                        );
+                      }
+
+                      return matches.map(q => (
+                        <a
+                          key={q.id}
+                          href={`#/q/${q.id}`}
+                          style={{
+                            display: "block",
+                            padding: "0.6rem 0.8rem",
+                            borderBottom: `1px solid ${C.ghost}`,
+                            textDecoration: "none",
+                            transition: "background 0.15s",
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.15rem" }}>
+                            <span style={{ fontFamily: FONT.mono, fontSize: "0.65rem", color: C.gold }}>{q.id}</span>
+                            <span style={{ fontFamily: FONT.condensed, fontSize: "0.62rem", color: C.dim, textTransform: "uppercase" }}>{q.section}</span>
+                          </div>
+                          <div style={{ fontSize: "0.8rem", color: C.textBright, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {q.prompt}
+                          </div>
+                        </a>
+                      ));
+                    })()}
+                  </div>
+                )}
+              </div>
+
+              {/* Canned Recommendations */}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <div style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: C.gold,
+                  marginBottom: "0.5rem"
+                }}>
+                  Popular &amp; High-Interest Questions
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  {[
+                    { id: "circ_message_to_parents", text: "💬 Message to Parents (from Circumcised respondents)", emoji: "⚖️" },
+                    { id: "intact_message_to_others", text: "💬 Message to Others / Future Parents (from Intact respondents)", emoji: "⚖️" },
+                    { id: "exp_sex_rating_orgasm_intensity", text: "📊 Orgasm Intensity comparison across cohorts", emoji: "⚖️" },
+                    { id: "demo_sexuality", text: "📊 Sexual Orientation demographic profile", emoji: "📊" },
+                    { id: "final_transparent_monster_reason", text: "📜 Societal pressures & cultural alignment", emoji: "📜" },
+                  ].map(rec => (
+                    <a
+                      key={rec.id}
+                      href={`#/q/${rec.id}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        padding: "0.45rem 0.7rem",
+                        background: "rgba(255,255,255,0.02)",
+                        border: `1px solid ${C.ghost}`,
+                        borderRadius: 6,
+                        color: C.textBright,
+                        fontSize: "0.78rem",
+                        textDecoration: "none",
+                        transition: "all 0.15s"
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = C.ghost; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
+                    >
+                      <span style={{ fontSize: "0.95rem" }}>{rec.emoji}</span>
+                      <span style={{ flex: 1, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{rec.text}</span>
+                      <span style={{ fontSize: "0.7rem", color: C.dim, fontFamily: FONT.mono }}>{rec.id} →</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI Assistant guidance banner */}
+              <div style={{
+                padding: "0.5rem 0.8rem",
+                background: "rgba(212,160,48,0.06)",
+                border: `1px solid rgba(212,160,48,0.18)`,
+                borderRadius: 6,
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem"
+              }}>
+                <span style={{ fontSize: "1rem" }}>🤖</span>
+                <span style={{ fontFamily: FONT.body, fontSize: "0.74rem", color: C.muted, lineHeight: 1.45 }}>
+                  The <strong>AI Copilot</strong> on the right has been initialized to search for questions similar to <code style={{ color: C.goldBright }}>{questionId}</code>. See its recommendations or ask a follow-up.
+                </span>
+              </div>
+            </main>
+
+            {/* RIGHT: AI Assistant */}
+            {showCopilot && (
+              <aside style={{
+                position: "sticky",
+                top: "1rem",
+                maxHeight: "calc(100vh - 2rem)",
+                overflowY: "auto",
+                paddingRight: "0.4rem"
+              }}>
+                <CopilotChat routerState={routerState} updateState={updateState} question={null} />
+              </aside>
             )}
-            <div style={{
-              fontFamily: FONT.mono,
-              fontSize: "0.7rem",
-              color: C.dim,
-              marginTop: "0.5rem"
-            }}>{question.id} · col_idx {question.col_idx}</div>
           </div>
         )}
 
@@ -418,68 +620,131 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
             {/* CENTER: content */}
             <main>
-              {isOpenText ? (
-                <>
-                  <WordCloud 
-                    narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
-                    selectedWord={selectedWord}
-                    onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
-                  />
-                  <NarrativeList 
-                    distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
-                    highlightWord={selectedWord}
-                    viewMode={viewMode}
-                    onViewModeChange={handleViewModeChange}
-                  />
-                </>
-              ) : isGeographic ? (
-                <>
-                  <GeographicHeatmap 
-                    questionId={question.id}
-                    title="Geographic distribution"
-                    distribution={allDistribution}
-                    cohortDistribution={cohortDistribution}
-                    byPathway={byPathway}
-                  />
-                  <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
-                </>
-              ) : (
-                <>
-                  <DistributionChart 
-                    question={question}
-                    distribution={displayDist} 
-                    cohortDistribution={displayCohortDist}
-                    title="Overall vs. Filtered distribution" 
-                  />
-
-                  {(cohortDistribution?.distribution || allDistribution?.distribution)?.length > 15 && (
-                    <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: `1px dashed var(--c-ghost)` }}>
-                      <h3 style={{ fontFamily: "var(--f-condensed)", color: "var(--c-gold)", marginBottom: "1.5rem", letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "1.1rem" }}>
-                        Explore The Long Tail ({(cohortDistribution?.distribution || allDistribution?.distribution).length} unique entries)
-                      </h3>
-                      <p style={{ color: "var(--c-dim)", fontSize: "0.9rem", marginBottom: "2rem", maxWidth: 800 }}>
-                        This question contains a large number of unique responses or fragmented combinations (likely due to "Other" write-ins). Use the word cloud to filter and explore the full variety of answers below.
-                      </p>
-                      <WordCloud 
-                        narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
-                        selectedWord={selectedWord}
-                        onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
-                      />
-                      <NarrativeList 
-                        distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
-                        highlightWord={selectedWord}
-                        hideChart={true}
-                      />
-                    </div>
+              <div ref={captureRef}>
+                {/* Question heading */}
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
+                    {question.tier === 1 && (
+                      <span style={{
+                        fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
+                        letterSpacing: "0.08em", color: C.gold,
+                        background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
+                        borderRadius: 999, padding: "0.15rem 0.5rem",
+                        flexShrink: 0, marginTop: "0.4rem",
+                      }}>TIER 1 · CURATED</span>
+                    )}
+                    {/* Qual / Quant Badge */}
+                    <span title={question.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
+                      fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
+                      letterSpacing: "0.06em", 
+                      color: question.type === "open_text" ? "#a8b5c4" : C.dim, 
+                      background: question.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
+                      border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
+                      borderRadius: 999, padding: "0.15rem 0.5rem",
+                      flexShrink: 0, marginTop: "0.4rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                    }}>
+                      {question.type === "open_text" ? (
+                        <><MessageSquareText size={11} strokeWidth={3} /> QUAL</>
+                      ) : (
+                        <><BarChart2 size={11} strokeWidth={3} /> QUANT</>
+                      )}
+                    </span>
+                  </div>
+                  <h1 style={{
+                    fontFamily: FONT.display,
+                    fontWeight: 700,
+                    fontSize: "clamp(1.35rem, 3vw, 1.8rem)",
+                    color: C.textBright,
+                    lineHeight: 1.25,
+                    letterSpacing: "-0.01em",
+                    marginBottom: "0.45rem",
+                  }}>{question.prompt}</h1>
+                  {question.subtitle && (
+                    <p style={{
+                      fontFamily: FONT.body,
+                      fontSize: "1.1rem",
+                      lineHeight: 1.5,
+                      color: C.muted,
+                      marginTop: "1rem",
+                      marginBottom: 0,
+                      maxWidth: 800
+                    }}>{question.subtitle}</p>
                   )}
+                  <div style={{
+                    fontFamily: FONT.mono,
+                    fontSize: "0.7rem",
+                    color: C.dim,
+                    marginTop: "0.5rem"
+                  }}>{question.id} · col_idx {question.col_idx}</div>
+                </div>
 
-                  {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
-                    <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />
-                  )}
-                  
-                  <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
-                </>
-              )}
+                {/* Main visualizations */}
+                {isOpenText ? (
+                  <>
+                    <WordCloud 
+                      narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
+                      selectedWord={selectedWord}
+                      onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
+                    />
+                    <NarrativeList 
+                      distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
+                      highlightWord={selectedWord}
+                      viewMode={viewMode}
+                      onViewModeChange={handleViewModeChange}
+                    />
+                  </>
+                ) : isGeographic ? (
+                  <>
+                    <GeographicHeatmap 
+                      questionId={question.id}
+                      title="Geographic distribution"
+                      distribution={allDistribution}
+                      cohortDistribution={cohortDistribution}
+                      byPathway={byPathway}
+                    />
+                    <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
+                  </>
+                ) : (
+                  <>
+                    <DistributionChart 
+                      question={question}
+                      distribution={displayDist} 
+                      cohortDistribution={displayCohortDist}
+                      title="Overall vs. Filtered distribution" 
+                    />
+
+                    {(cohortDistribution?.distribution || allDistribution?.distribution)?.length > 15 && (
+                      <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: `1px dashed var(--c-ghost)` }}>
+                        <h3 style={{ fontFamily: "var(--f-condensed)", color: "var(--c-gold)", marginBottom: "1.5rem", letterSpacing: "0.1em", textTransform: "uppercase", fontSize: "1.1rem" }}>
+                          Explore The Long Tail ({(cohortDistribution?.distribution || allDistribution?.distribution).length} unique entries)
+                        </h3>
+                        <p style={{ color: "var(--c-dim)", fontSize: "0.9rem", marginBottom: "2rem", maxWidth: 800 }}>
+                          This question contains a large number of unique responses or fragmented combinations (likely due to "Other" write-ins). Use the word cloud to filter and explore the full variety of answers below.
+                        </p>
+                        <WordCloud 
+                          narratives={cohortDistribution?.distribution || allDistribution?.distribution} 
+                          selectedWord={selectedWord}
+                          onWordClick={(word) => setSelectedWord(word === selectedWord ? null : word)}
+                        />
+                        <NarrativeList 
+                          distribution={cohortDistribution?.distribution || allDistribution?.distribution} 
+                          highlightWord={selectedWord}
+                          hideChart={true}
+                        />
+                      </div>
+                    )}
+
+                    {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
+                      <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />
+                    )}
+                    
+                    <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
+                  </>
+                )}
+              </div>
             </main>
 
             {/* RIGHT: AI Assistant */}
@@ -491,12 +756,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                 overflowY: "auto",
                 paddingRight: "0.4rem"
               }}>
-                <CopilotChat routerState={routerState} updateState={updateState} />
+                <CopilotChat routerState={routerState} updateState={updateState} question={question} />
               </aside>
             )}
           </div>
         )}
-        </div>
 
         {/* Sequential Navigation */}
         {question && (

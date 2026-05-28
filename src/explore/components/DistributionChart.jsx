@@ -3,6 +3,7 @@ import { toPng } from "html-to-image";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
+import { sortDistribution } from "../lib/formatters";
 
 export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -33,43 +34,18 @@ export default function DistributionChart({ title, distribution, cohortDistribut
     let d = [...(distribution?.distribution || [])];
     let cd = [...(cohortDistribution?.distribution || [])];
     
-    if (question?.id === "demo_generation") {
-      const genOrder = [
-        "Generation Alpha (born 2013-Present)",
-        "Generation Z (born 1997-2012)",
-        "Millennial/Gen Y (born 1981-1996)",
-        "Xennial/Oregon Trail (born approx. 1977-1983)",
-        "Generation X (born 1965-1980)",
-        "Baby Boomer (born 1946-1964)",
-        "Silent Generation (born 1928-1945)",
-        "Not sure / Prefer not to say"
-      ];
-      d.sort((a, b) => {
-        let idxA = genOrder.indexOf(a.label);
-        let idxB = genOrder.indexOf(b.label);
-        if (idxA === -1) idxA = 999;
-        if (idxB === -1) idxB = 999;
-        if (idxA === 999 && idxB === 999) return b.n - a.n;
-        return idxA - idxB;
-      });
-      cd.sort((a, b) => {
-        let idxA = genOrder.indexOf(a.label);
-        let idxB = genOrder.indexOf(b.label);
-        if (idxA === -1) idxA = 999;
-        if (idxB === -1) idxB = 999;
-        if (idxA === 999 && idxB === 999) return b.n - a.n;
-        return idxA - idxB;
-      });
-    } else {
-      const labelOrder = d.map(item => item.label);
-      cd.sort((a, b) => {
-        let idxA = labelOrder.indexOf(a.label);
-        let idxB = labelOrder.indexOf(b.label);
-        if (idxA === -1) idxA = 999;
-        if (idxB === -1) idxB = 999;
-        return idxA - idxB;
-      });
-    }
+    // Apply custom sort for generation, politics, etc.
+    d = sortDistribution(d, question);
+    
+    // Sort cohort distribution to match the overall distribution order
+    const labelOrder = d.map(item => item.label);
+    cd.sort((a, b) => {
+      let idxA = labelOrder.indexOf(a.label);
+      let idxB = labelOrder.indexOf(b.label);
+      if (idxA === -1) idxA = 999;
+      if (idxB === -1) idxB = 999;
+      return idxA - idxB;
+    });
 
     return { parsedDist: d, parsedCohortDist: cd };
   }, [distribution, cohortDistribution, question]);
@@ -82,6 +58,15 @@ export default function DistributionChart({ title, distribution, cohortDistribut
       return next;
     });
   };
+
+  // Build a canonical color map from the overall distribution
+  const colorMap = useMemo(() => {
+    const map = {};
+    parsedDist.forEach((item, index) => {
+      map[item.label] = colorForLabel(item.label, index);
+    });
+    return map;
+  }, [parsedDist]);
 
   if (!distribution) {
     return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;
@@ -111,15 +96,6 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   // Build a map for cohort comparison
   const cohortMap = {};
   for (const d of parsedCohortDist) cohortMap[d.label] = d.n;
-
-  // Build a canonical color map from the overall distribution
-  const colorMap = useMemo(() => {
-    const map = {};
-    parsedDist.forEach((item, index) => {
-      map[item.label] = colorForLabel(item.label, index);
-    });
-    return map;
-  }, [parsedDist]);
 
   const activeChartType = chartType === "auto" ? (parsedDist.length < 8 ? "pie" : "bar") : chartType;
 

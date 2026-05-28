@@ -10,6 +10,7 @@
     "tail": "wrangler tail",
     "db:schema": "wrangler d1 execute circumsurvey --remote --file ../schemas/schema.sql",
     "db:seed": "wrangler d1 execute circumsurvey --remote --file ../data/seed.sql",
+    "db:questions": "wrangler d1 execute circumsurvey --remote --file ../data/questions_seed.sql",
     "db:count": "wrangler d1 execute circumsurvey --remote --command 'SELECT COUNT(*) FROM respondents'"
   },
   "devDependencies": {

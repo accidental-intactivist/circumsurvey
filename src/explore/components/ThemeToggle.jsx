@@ -102,8 +102,8 @@ export default function ThemeToggle() {
             {/* THEME */}
             <div>
               <div style={sectionLabelStyle}>Theme Aesthetic</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                {['standard', 'vaporwave', 'evergreen', 'ocean', ...unlockedThemes].map(t => (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
+                {['standard', 'vaporwave', 'evergreen', 'ocean', 'phosphor', 'amber', 'pbs', 'paper', 'mono', ...unlockedThemes].map(t => (
                   <button key={t} onClick={() => setTheme(t)} style={buttonStyle(theme === t)}>
                     {t}
                   </button>

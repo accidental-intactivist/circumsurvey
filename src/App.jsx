@@ -5,10 +5,12 @@ import AboutPage from './pages/AboutPage';
 import FaqPage from './pages/FaqPage';
 import SpecialReportPage from './pages/SpecialReportPage';
 import { ThemeProvider } from './explore/contexts/ThemeContext';
+import { GLOBAL_CSS } from './explore/styles/tokens';
 
 export default function App() {
   return (
     <ThemeProvider>
+      <style>{GLOBAL_CSS}</style>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />

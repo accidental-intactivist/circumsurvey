@@ -4,7 +4,7 @@
 // Used inline in QuestionRow. Fed raw distribution data (label, n) pairs.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { C } from "../styles/tokens";
+import { C, resolveCssColor } from "../styles/tokens";
 import { useTooltip, Tooltip } from "./Tooltip";
 
 
@@ -41,10 +41,16 @@ const DISTINCT_COLORS = [
 ];
 
 function getCategoricalColor(index) {
+  const varName = `--chart-${index % 10}`;
+  if (typeof window !== "undefined") {
+    const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    if (val) return val;
+  }
   return DISTINCT_COLORS[index % DISTINCT_COLORS.length];
 }
 
-function adjustColor(hex, index) {
+function adjustColor(colorVal, index) {
+  const hex = resolveCssColor(colorVal);
   if (index === 0) return hex;
   // Create variations by alternately darkening and lightening based on index
   const sign = index % 2 === 1 ? -1 : 1;
@@ -55,9 +61,9 @@ function adjustColor(hex, index) {
   let color = hex.replace("#", "");
   if (color.length === 3) color = color[0]+color[0]+color[1]+color[1]+color[2]+color[2];
   
-  let r = parseInt(color.substr(0, 2), 16);
-  let g = parseInt(color.substr(2, 2), 16);
-  let b = parseInt(color.substr(4, 2), 16);
+  let r = parseInt(color.substr(0, 2), 16) || 0;
+  let g = parseInt(color.substr(2, 2), 16) || 0;
+  let b = parseInt(color.substr(4, 2), 16) || 0;
   
   // Blend towards white or black to preserve hue
   if (sign > 0) {
@@ -81,13 +87,13 @@ function colorForLabel(label, index = 0) {
   const l = (label || "").toLowerCase();
   
   // Distinctive vibrant colors for generation cohorts (no variation needed as they are uniquely named)
-  if (/gen alpha|2013-present/i.test(l)) return "#d94f4f"; // Red
-  if (/gen z|1997-2012/i.test(l)) return "#e8a44a"; // Orange
-  if (/millennial|1981-1996/i.test(l)) return "#e8c868"; // Yellow
-  if (/xennial|1977-1983/i.test(l)) return "#68b878"; // Green
-  if (/gen x|generation x|1965-1980/i.test(l)) return "#8bb8d9"; // Lt Blue
-  if (/boomer|1946-1964/i.test(l)) return "#5b93c7"; // Blue
-  if (/silent|1928-1945/i.test(l)) return "#7868b8"; // Purple
+  if (/gen alpha|2013-present/i.test(l)) return resolveCssColor("var(--c-red)");
+  if (/gen z|1997-2012/i.test(l)) return resolveCssColor("var(--c-orange)");
+  if (/millennial|1981-1996/i.test(l)) return resolveCssColor("var(--c-yellow)");
+  if (/xennial|1977-1983/i.test(l)) return resolveCssColor("var(--c-green)");
+  if (/gen x|generation x|1965-1980/i.test(l)) return resolveCssColor("var(--c-ltBlue)");
+  if (/boomer|1946-1964/i.test(l)) return resolveCssColor("var(--c-blue)");
+  if (/silent|1928-1945/i.test(l)) return resolveCssColor("var(--c-purple)");
   
   if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$/.test(l)) return adjustColor(C.grey, index);
   if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$/i.test(l)) return adjustColor(C.blue, index);

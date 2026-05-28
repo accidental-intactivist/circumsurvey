@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
-import { C, FONT, PATH_COLORS } from "../styles/tokens";
+import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
 import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
 
@@ -43,14 +43,14 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   
   const getScaleRange = (tab) => {
     switch (tab) {
-      case "intact": return ["#182838", PATH_COLORS.intact];
-      case "circumcised": return ["#381818", PATH_COLORS.circumcised];
-      case "restoring": return ["#383018", PATH_COLORS.restoring];
-      case "observer": return ["#383838", PATH_COLORS.observer];
-      case "trans_vaginoplasty": return ["#381818", PATH_COLORS.trans_vaginoplasty];
-      case "trans_phalloplasty": return ["#381818", PATH_COLORS.trans_phalloplasty];
-      case "intersex": return ["#282828", PATH_COLORS.intersex];
-      default: return ["#4a3a1d", C.goldBright];
+      case "intact": return ["#182838", resolveCssColor(PATH_COLORS.intact)];
+      case "circumcised": return ["#381818", resolveCssColor(PATH_COLORS.circumcised)];
+      case "restoring": return ["#383018", resolveCssColor(PATH_COLORS.restoring)];
+      case "observer": return ["#383838", resolveCssColor(PATH_COLORS.observer)];
+      case "trans_vaginoplasty": return ["#381818", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
+      case "trans_phalloplasty": return ["#381818", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
+      case "intersex": return ["#282828", resolveCssColor(PATH_COLORS.intersex)];
+      default: return ["#4a3a1d", resolveCssColor(C.goldBright)];
     }
   };
 

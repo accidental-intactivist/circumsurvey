@@ -115,7 +115,7 @@ async function handleQuestions(env, url) {
   const pathwayParam = url.searchParams.get("pathway");
   const withCounts = url.searchParams.get("counts") === "1";
   let sql = `SELECT id, section, pathway, prompt, subtitle, type, opts_json, tier, col_idx
-             FROM questions WHERE 1=1`;
+             FROM questions WHERE id NOT IN ('contact_followup_consent', 'contact_email', 'contact_other_method', 'contact_contrib_interest', 'restore_thank_you', 'observe_multi_hat_selection', 'observe_parent_intact_lawsuit_cta_knowledge')`;
   const bindings = [];
   if (tierParam) {
     const tiers = tierParam.split(",").map((t) => parseInt(t, 10)).filter((t) => !isNaN(t));

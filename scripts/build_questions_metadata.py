@@ -146,7 +146,217 @@ def section_from_slug(slug):
     return "Uncategorized"
 
 
-def infer_type_and_opts(values):
+def split_outside_paren(s):
+    """Splits a string by commas, but only if the comma is outside of parentheses."""
+    parts = []
+    current = []
+    paren_depth = 0
+    i = 0
+    while i < len(s):
+        c = s[i]
+        if c == '(':
+            paren_depth += 1
+            current.append(c)
+        elif c == ')':
+            paren_depth -= 1
+            current.append(c)
+        elif c == ',' and paren_depth == 0:
+            parts.append("".join(current).strip())
+            current = []
+            if i + 1 < len(s) and s[i+1] == ' ':
+                i += 1
+        else:
+            current.append(c)
+        i += 1
+    if current:
+        parts.append("".join(current).strip())
+    return [p for p in parts if p]
+
+
+FORCED_QUESTION_CHOICES = {
+    "circ_parents_influences": (
+        "multi_select",
+        [
+            'Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).',
+            'Institutional Medical Norm: The general belief that "this is just the standard procedure" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).',
+            'Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that "it\'s what the men in our family have always done." (The power of heritage).',
+            'Paternal Influence (The "Like Father" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).',
+            'Peer & Social Pressure (The "Fitting In" Factor): The widespread belief that "everyone else is doing it," and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).',
+            'Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).',
+            'Prevailing Health & Hygiene Beliefs: General societal "knowledge" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural \'truth\').',
+            'Popular Media & Parenting "Experts": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media).',
+            'Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).',
+            'Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually "neater," "more attractive," or the "correct" look. (The power of aesthetics).',
+            'I have absolutely no idea what influenced them.',
+            'Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):'
+        ]
+    ),
+    "family_mother_profession": (
+        "multi_select",
+        [
+            'Stay-at-Home Parent / Homemaker',
+            'Clerical / Administrative Support (e.g., Secretary, Office Clerk)',
+            'Education (e.g., K-12 Teacher, Professor, School Administrator)',
+            'Business/Finance/Management',
+            'Healthcare/Medicine (e.g., Doctor, Nurse, Therapist, Technician)',
+            'Law/Government/Public Service/Civil Servant',
+            'Science/Research/Academia',
+            'Factory / Manufacturing / General Labor',
+            'Arts/Humanities/Entertainment (e.g., Artist, Writer, Musician)',
+            'Skilled Trades (e.g., Electrician, Carpenter, Mechanic, Cosmetologist)',
+            'Personal Care / Service',
+            'Retail / Customer Service / Hospitality',
+            'Military Service',
+            'I\'m not sure'
+        ]
+    ),
+    "family_father_profession": (
+        "multi_select",
+        [
+            'Skilled Trades (e.g., Electrician, Carpenter, Mechanic, Cosmetologist)',
+            'Business/Finance/Management',
+            'Factory / Manufacturing / General Labor',
+            'Law/Government/Public Service',
+            'Healthcare/Medicine (e.g., Doctor, Nurse, Therapist, Technician)',
+            'Retail / Customer Service / Hospitality',
+            'Science/Research/Academia',
+            'Education (e.g., K-12 Teacher, Professor, School Administrator)',
+            'Arts/Humanities/Entertainment',
+            'Military Service',
+            'Clerical / Administrative Support (e.g., Secretary, Office Clerk)',
+            'Stay-at-Home Parent / Homemaker',
+            'Personal Care / Service',
+            'I\'m not sure'
+        ]
+    ),
+    "intact_parents_info_sources": (
+        "multi_select",
+        [
+            'Advice from a specific group or community (e.g., La Leche League, a natural health co-op)',
+            'A specific medical statement or article (e.g., the 1971 AAP statement disavowing medical need)',
+            'Family history or cultural background from a non-circumcising country/culture',
+            'Influence from a foreign-born, foreign-trained, or older doctor/nurse who was skeptical of the practice',
+            'Don\'t Know / Unsure'
+        ]
+    ),
+    "intact_parents_traits_values": (
+        "multi_select",
+        [
+            'Highly valued scientific evidence and did their own research',
+            'Fiscally conscious (questioned unnecessary medical costs)',
+            'Strongly principled about consent and bodily autonomy in general',
+            'Valued natural, holistic, or low-intervention approaches to health',
+            'Identified as non-conformist or counter-cultural',
+            'Generally skeptical of medical authority or "doctor knows best"',
+            'None of the above feel particularly accurate',
+            'Unsure'
+        ]
+    ),
+    "circ_adult_motivation_details": (
+        "multi_select",
+        [
+            'Aesthetic Preference: I (or my partner/parents) preferred the appearance of a circumcised penis.',
+            'Perceived Hygiene Benefits: A belief that it would be cleaner or easier to care for.',
+            'Social Conformity: A desire to "look like" peers or fit a cultural norm.',
+            'Sensation: A belief or hope that it would change or improve sexual sensation (e.g., help with premature ejaculation).',
+            'Medical Diagnosis: Phimosis (inability to retract the foreskin)',
+            'Medical Diagnosis: Recurring Balanitis/Infections',
+            'Medical Diagnosis: Other specific condition',
+            'Religious Conversion or Affirmation'
+        ]
+    ),
+    "observe_curious_shaping_factors": (
+        "multi_select",
+        [
+            'Personal experiences with intimate partners',
+            'Independent research I\'ve done myself (intactivist sites, documentaries, etc.)',
+            'Conversations with male friends or partners about their experiences',
+            'Feminist principles of bodily autonomy and consent',
+            'Information or advice from doctors or medical professionals',
+            'Media portrayals (movies, TV, internet)',
+            'Conversations with friends',
+            'Religious or cultural teachings',
+            'The norms in my family or the community I grew up in'
+        ]
+    ),
+    "observe_parent_intact_factors": (
+        "multi_select",
+        [
+            'Ethical beliefs about bodily autonomy and a child\'s right to consent',
+            'Information about the functions and sensitivity of the foreskin',
+            'Lack of a clear medical necessity for the procedure',
+            'Concerns about surgical risks and potential complications',
+            'Independent research (documentaries, articles, online communities)',
+            'My partner\'s preference was to keep him intact',
+            'The medical benefit claims did not make sense.'
+        ]
+    ),
+    "intact_parents_neg_catalyst": (
+        "multi_select",
+        [
+            'Yes, I believe one of my parents (e.g., my father) had a negative personal experience with their own circumcision.',
+            'No',
+            'Unsure / Don\'t Know'
+        ]
+    ),
+    "demo_ethnicity": (
+        "multi_select",
+        [
+            'Asian / Asian American (e.g., East Asian, South Asian, Southeast Asian)',
+            'Black / African American / African / Afro-Caribbean',
+            'Native American / Alaska Native / Indigenous / First Nations',
+            'White / Caucasian / European American',
+            'Hispanic / Latino / Latina / Latinx',
+            'Native Hawaiian / Other Pacific Islander',
+            'Middle Eastern / North African (MENA)',
+            'Multiracial / Biracial',
+            'Prefer not to say'
+        ]
+    ),
+    "demo_race_ethnicity": (
+        "multi_select",
+        [
+            'Asian / Asian American (e.g., East Asian, South Asian, Southeast Asian)',
+            'Black / African American / African / Afro-Caribbean',
+            'Native American / Alaska Native / Indigenous / First Nations',
+            'White / Caucasian / European American',
+            'Hispanic / Latino / Latina / Latinx',
+            'Native Hawaiian / Other Pacific Islander',
+            'Middle Eastern / North African (MENA)',
+            'Multiracial / Biracial',
+            'Prefer not to say'
+        ]
+    ),
+    "restore_techniques_used": (
+        "multi_select",
+        [
+            'Manual tugging (Andre\'s method, etc)',
+            'T-Tape',
+            'O-rings / retaining cones',
+            'Dual-tension devices (DTR, Mantis, etc)',
+            'Air inflation devices (Foreskinned Air, HyperRestore, etc)',
+            'Weights (PUD, stealth retainers with weights, etc)',
+            'Surgical restoration / Foregen clinical trials',
+            'I haven\'t started yet'
+        ]
+    ),
+    "observe_advocate_future_focus": (
+        "multi_select",
+        [
+            'Legal challenges and lawsuits (like the Equal Protection cases)',
+            'Legislative action (e.g., defunding Medicaid for RIC)',
+            'Direct outreach and education for expectant parents',
+            'Reforming medical school curricula and hospital protocols',
+            'High-visibility public protests and awareness campaigns',
+            'Creating high-quality media (documentaries, articles)',
+            'Supporting foreskin restoration and regeneration research',
+            'Building broader coalitions with other human rights groups'
+        ]
+    )
+}
+
+
+def infer_type_and_opts(slug, values):
     """
     Given the list of non-empty response values for a column, infer:
       - type: scale_1_5 | single_select | multi_select | open_text
@@ -158,6 +368,9 @@ def infer_type_and_opts(values):
       - If distinct count ≤ 25 and max length ≤ 200 → single_select
       - Otherwise → open_text
     """
+    if slug in FORCED_QUESTION_CHOICES:
+        return FORCED_QUESTION_CHOICES[slug]
+
     if not values:
         return "open_text", None
 
@@ -175,10 +388,10 @@ def infer_type_and_opts(values):
     # Multi-select detection: lots of comma-containing values
     comma_count = sum(1 for v in values if ',' in str(v))
     if comma_count / n >= 0.30 and len(distinct) > 2:
-        # Build option list by splitting on commas and deduping
+        # Build option list by splitting on commas (outside paren) and deduping
         opts = set()
         for v in values:
-            parts = [p.strip() for p in str(v).split(',') if p.strip()]
+            parts = split_outside_paren(str(v))
             opts.update(parts)
         # Guard against runaway splits (commas inside free text)
         if len(opts) <= 50:
@@ -306,7 +519,7 @@ def build_questions(header, data, col_to_meta):
                 if v_str:
                     values.append(v_str)
 
-        qtype, opts = infer_type_and_opts(values)
+        qtype, opts = infer_type_and_opts(slug, values)
         section = section_from_slug(slug)
         tier = infer_tier(slug, prompt_clean, pathway, qtype)
 
@@ -379,12 +592,12 @@ def write_sql(questions, out_path):
     lines.append("")
     lines.append(f"-- {len(questions)} rows inserted")
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text("\n".join(lines))
+    out_path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_json(questions, out_path):
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(questions, indent=2, ensure_ascii=False))
+    out_path.write_text(json.dumps(questions, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def main():
@@ -419,8 +632,8 @@ def main():
     print("\nBy pathway:")
     for p, n in sorted(by_pathway.items(), key=lambda x: -x[1]):
         print(f"  {n:4d}  {p}")
-    print(f"\n✓ Wrote {args.out_sql}")
-    print(f"✓ Wrote {args.out_json}")
+    print(f"\nOK: Wrote {args.out_sql}")
+    print(f"OK: Wrote {args.out_json}")
 
 
 if __name__ == "__main__":

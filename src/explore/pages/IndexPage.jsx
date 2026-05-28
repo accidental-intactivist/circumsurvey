@@ -5,8 +5,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { C, FONT, RAINBOW } from "../styles/tokens";
-import { PATHWAYS, SURVEY_PHASES, isQuestionRelevant, phaseForQuestion, observerSubrolesForQuestion } from "../lib/pathways";
+import { C, FONT, RAINBOW, resolveCssColor } from "../styles/tokens";
+import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, isQuestionRelevant, phaseForQuestion, observerSubrolesForQuestion } from "../lib/pathways";
 import { getQuestions, getResponseDistribution } from "../lib/api";
 import SurveyMapNav from "../components/SurveyMapNav";
 import DemographicFilterBar from "../components/DemographicFilterBar";
@@ -17,8 +17,20 @@ import CopilotChat from "../components/CopilotChat";
 import ThemeToggle from "../components/ThemeToggle";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 
+const EXHIBITS = [
+  { id: "pairs", num: "01", title: "Mirror Pairs", emoji: "⚖️", desc: "Compare parallel question responses across Intact and Circumcised cohorts side-by-side.", link: "#/pairs", colorVar: "var(--c-gold)" },
+  { id: "pleasure", num: "02", title: "The Pleasure Gap", emoji: "⚖️", desc: "Clustered ratings comparing sensation, sensitivity, and orgasms across cohorts.", link: "#/pleasure-gap", colorVar: "var(--c-red)" },
+  { id: "alignment", num: "03", title: "Cultural Alignment", emoji: "📊", desc: "Dynamic heatmap exploring how personal pathways align with or defy cultural norms.", link: "#/tools/cultural-alignment", colorVar: "var(--c-blue)" },
+  { id: "demographics", num: "04", title: "Demographics", emoji: "📊", desc: "Explore the age, sexuality, generation, education, and geography profile of respondents.", link: "#/demographics", colorVar: "var(--c-ltBlue)" },
+  { id: "narrative", num: "05", title: "Narrative Mirrors", emoji: "📜", desc: "Side-by-side Word Clouds and text search for open-ended narratives across cohorts.", link: "#/narrative-mirrors", colorVar: "var(--c-green)" },
+  { id: "generational", num: "06", title: "Generational Faultlines", emoji: "⏳", desc: "Chronological attitude tracking from the Silent Generation down to Gen Z.", link: "#/generational-faultlines", colorVar: "var(--c-orange)" },
+  { id: "observer", num: "07", title: "The Observer Triad", emoji: "👁️", desc: "Analyze perspectives of partners, parents, and medical professionals.", link: "#/observer-triad", colorVar: "var(--c-purple)" },
+  { id: "religion", num: "08", title: "Religious Mirrors", emoji: "⚖️", desc: "Compare Jewish, Christian, and Islamic attitudes and norms on circumcision.", link: "#/religious-mirrors", colorVar: "var(--c-gold)" }
+];
+
 export default function IndexPage({ routerState, navigate, updateState }) {
   const { pathway, view, search, section, cohort, observerRole, format } = routerState;
+  const hasPathway = pathway && (Array.isArray(pathway) ? pathway.length > 0 : true);
 
   // ── Data fetch ──────────────────────────────────────────────────────────
   const [questions, setQuestions] = useState(null);
@@ -98,8 +110,9 @@ export default function IndexPage({ routerState, navigate, updateState }) {
     // 2. Apply relevance + pathway filter
     filtered = filtered.filter((q) => isQuestionRelevant(q, pathway, view));
 
-    // 3. Apply observer sub-role filter (only meaningful if pathway=observer)
-    if (pathway === "observer" && observerRole && observerRole !== "universal") {
+    // 3. Apply observer sub-role filter (only meaningful if pathway includes observer)
+    const hasObserverSelected = Array.isArray(pathway) ? pathway.includes("observer") : pathway === "observer";
+    if (hasObserverSelected && observerRole && observerRole !== "universal") {
       filtered = filtered.filter((q) => {
         const roles = observerSubrolesForQuestion(q);
         return roles.includes(observerRole);
@@ -204,28 +217,88 @@ export default function IndexPage({ routerState, navigate, updateState }) {
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.1rem 3rem" }}>
 
-        {/* Top control strip: pathway chips + view toggle + search */}
-        <div style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.8rem",
-          alignItems: "center",
-          padding: "1rem 0 1.1rem",
-          borderBottom: `1px solid ${C.ghost}`,
-          marginBottom: "1rem",
-        }}>
-          <PathwayChips
-            selected={pathway}
-            onSelect={(id) => updateState({ pathway: id, section: null, observerRole: null })}
-          />
-          <div style={{ marginLeft: "auto", display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap" }}>
-            <SearchBox value={search || ""} onChange={(s) => updateState({ search: s })} />
-            <FormatToggle mode={format} onChange={(m) => updateState({ format: m })} />
-            <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
-            <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.2rem" }} />
-            <ThemeToggle />
+        {/* Relocated controls moved into the center panel main column */}
+
+        {/* Interactive Exhibits Grid */}
+        {(!hasPathway && !section && !search && !cohort && !observerRole) && (
+          <div style={{ marginBottom: "1.2rem", marginTop: "0.4rem" }}>
+            <div style={{
+              fontFamily: FONT.condensed,
+              fontSize: "0.68rem",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: C.goldBright,
+              fontWeight: 700,
+              marginBottom: "0.6rem",
+              paddingLeft: "0.2rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem"
+            }}>
+              <span style={{ color: "var(--c-red)" }}>★</span> Interactive Exhibits &amp; Tools
+            </div>
+            
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+              gap: "0.5rem"
+            }}>
+              {EXHIBITS.map(ex => {
+                const accentColor = resolveCssColor(ex.colorVar);
+                return (
+                  <a
+                    key={ex.id}
+                    href={ex.link}
+                    className="exhibit-card"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      background: C.bgCard,
+                      border: `1px solid ${C.ghost}`,
+                      borderLeft: `3px solid ${accentColor}`,
+                      borderRadius: 6,
+                      padding: "0.5rem 0.75rem",
+                      textDecoration: "none",
+                      position: "relative",
+                      transition: "all 0.2s ease-in-out",
+                      cursor: "pointer"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      e.currentTarget.style.borderColor = accentColor;
+                      e.currentTarget.style.boxShadow = `0 4px 12px rgba(0,0,0,0.4), inset 0 0 6px ${accentColor}12`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.borderColor = C.ghost;
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    <span style={{ fontSize: "1.1rem", display: "inline-flex", alignItems: "center" }}>{ex.emoji}</span>
+                    <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
+                      <h3 style={{
+                        fontFamily: FONT.display,
+                        fontSize: "0.82rem",
+                        fontWeight: 700,
+                        color: C.textBright,
+                        margin: 0,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {ex.title}
+                      </h3>
+                      <span style={{ fontFamily: FONT.mono, fontSize: "0.55rem", color: C.muted, marginTop: "0.05rem" }}>
+                        EXHIBIT {ex.num}
+                      </span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Three-panel grid */}
         <div
@@ -242,13 +315,14 @@ export default function IndexPage({ routerState, navigate, updateState }) {
             className="explore-nav"
             style={{
               position: "sticky",
-              top: "1rem",
-              maxHeight: "calc(100vh - 2rem)",
+              top: "5rem",
+              maxHeight: "calc(100vh - 6.5rem)",
               overflowY: "auto",
               paddingRight: "0.4rem",
               display: "flex",
               flexDirection: "column",
               gap: "1.4rem",
+              transition: "top 0.3s ease, maxHeight 0.3s ease",
             }}
           >
             <SurveyMapNav
@@ -439,6 +513,29 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                 📊 Cultural Alignment Matrix →
               </a>
 
+              <a
+                href="#/pleasure-gap"
+                style={{
+                  display: "block",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(217,79,79,0.08)",
+                  border: `1px solid rgba(217,79,79,0.25)`,
+                  borderRadius: 6,
+                  color: C.red,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                ⚖️ The Pleasure Gap Matrix →
+              </a>
+
               {/* Link to Pathway Map page */}
               <a
                 href="#/pathways"
@@ -466,22 +563,57 @@ export default function IndexPage({ routerState, navigate, updateState }) {
 
           {/* CENTER: question list */}
           <main>
+            {/* Relocated Controls Block */}
+            <div style={{
+              background: C.bgCard,
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 8,
+              padding: "0.6rem 0.8rem",
+              marginBottom: "0.8rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem",
+            }}>
+              {/* Pathway Selector Dropdown */}
+              <PathwayDropdown
+                selected={pathway}
+                onChange={(next) => updateState({ pathway: next, section: null, observerRole: null })}
+              />
+
+              {/* Search and Filters row */}
+              <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "0.6rem",
+              }}>
+                <div style={{ flex: 1, minWidth: 160 }}>
+                  <SearchBox value={search || ""} onChange={(s) => updateState({ search: s })} />
+                </div>
+                <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexWrap: "wrap" }}>
+                  <FormatToggle mode={format} onChange={(m) => updateState({ format: m })} />
+                  <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
+                </div>
+              </div>
+            </div>
+
             {/* Instructive Guidance Banner */}
-            {(!pathway && !section && !search && !cohort && !observerRole) && (
+            {(!hasPathway && !section && !search && !cohort && !observerRole) && (
               <div style={{
                 background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.02) 100%)`,
                 border: `1px solid rgba(212,160,48,0.25)`,
                 borderRadius: 8,
-                padding: "0.85rem 1.2rem",
-                marginBottom: "1.5rem",
+                padding: "0.5rem 0.8rem",
+                marginBottom: "0.8rem",
                 display: "flex",
                 alignItems: "flex-start",
-                gap: "0.8rem"
+                gap: "0.6rem"
               }}>
-                <span style={{ fontSize: "1.2rem", marginTop: "-0.1rem" }}>💡</span>
-                <div style={{ fontFamily: FONT.body, fontSize: "0.82rem", color: C.textBright, lineHeight: 1.5 }}>
+                <span style={{ fontSize: "1rem", marginTop: "-0.05rem" }}>💡</span>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: C.textBright, lineHeight: 1.45 }}>
                   <strong style={{ color: C.goldBright, fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.4rem" }}>How to explore:</strong> 
-                  By default, you are seeing all questions. Click on a <strong>Pathway Chip</strong> above to isolate respondents by their circumcision state. Use the <strong>Survey Map</strong> and <strong>Demographic Filters</strong> on the left to drill down into specific sections or cohorts (e.g. Millennials, North America).
+                  Use the <strong>Cohort / Pathway</strong> dropdown above to isolate respondents (multiple selections allowed). Combine <strong>Map Navigation</strong> (which questions) and <strong>Cohort Filter</strong> (whose responses) on the left — they work in tandem to dynamically update all chart data.
                 </div>
               </div>
             )}
@@ -508,14 +640,21 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   {loading ? "—" : totalVisible}
                 </span>
                 <span> of {totalAll} questions</span>
-                {pathway && (
-                  <span style={{ color: PATHWAYS[pathway].color, marginLeft: "0.5rem" }}>
-                    · viewing as {PATHWAYS[pathway].label}
+                {hasPathway && (
+                  <span style={{ marginLeft: "0.5rem" }}>
+                    · viewing: {Array.isArray(pathway) 
+                      ? pathway.map((p, i) => (
+                          <span key={p} style={{ color: PATHWAYS[p]?.color || C.gold }}>
+                            {i > 0 && ", "}{PATHWAYS[p]?.label || p}
+                          </span>
+                        ))
+                      : <span style={{ color: PATHWAYS[pathway]?.color }}>{PATHWAYS[pathway]?.label}</span>
+                    }
                   </span>
                 )}
                 {section && <span style={{ color: C.gold, marginLeft: "0.5rem" }}>· {section}</span>}
               </div>
-              {(pathway || section || search || cohort || observerRole || format) && (
+              {(hasPathway || section || search || cohort || observerRole || format) && (
                 <button
                   onClick={() => updateState({ pathway: null, section: null, search: "", cohort: null, observerRole: null, format: null })}
                   style={{
@@ -562,10 +701,11 @@ export default function IndexPage({ routerState, navigate, updateState }) {
           {/* RIGHT: AI Assistant */}
           <aside style={{
             position: "sticky",
-            top: "1rem",
-            maxHeight: "calc(100vh - 2rem)",
+            top: "5rem",
+            maxHeight: "calc(100vh - 6.5rem)",
             overflowY: "auto",
-            paddingRight: "0.4rem"
+            paddingRight: "0.4rem",
+            transition: "top 0.3s ease, maxHeight 0.3s ease",
           }}>
             <CopilotChat routerState={routerState} updateState={updateState} />
           </aside>
@@ -580,41 +720,94 @@ export default function IndexPage({ routerState, navigate, updateState }) {
 // ── Sub-components ───────────────────────────────────────────────────────
 
 function Masthead() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <header style={{
-      padding: "1.5rem 1.1rem 1rem",
+      padding: scrolled ? "0.65rem 1.1rem" : "1.5rem 1.1rem 1rem",
       textAlign: "center",
       borderBottom: `1px solid ${C.ghost}`,
-      background: C.bg,
-      position: "relative",
-      overflow: "hidden"
+      background: scrolled ? "rgba(10, 10, 12, 0.88)" : C.bg,
+      backdropFilter: scrolled ? "blur(12px)" : "none",
+      position: "sticky",
+      top: 0,
+      zIndex: 1000,
+      overflow: "hidden",
+      transition: "padding 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease",
+      boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.3)" : "none",
     }}>
-      <HarmonicCanvas opacity={0.3} />
+      <HarmonicCanvas opacity={scrolled ? 0.15 : 0.3} />
+      
+      {/* Absolute positioned settings button inside header */}
+      <div style={{
+        position: "absolute",
+        top: scrolled ? "50%" : "2.4rem",
+        transform: scrolled ? "translateY(-50%)" : "none",
+        right: "1.5rem",
+        zIndex: 10,
+        transition: "all 0.3s ease",
+      }}>
+        <ThemeToggle />
+      </div>
+
       <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        <div style={{ height: 3, background: RAINBOW, borderRadius: 2, marginBottom: "1rem" }} />
+        {/* Under full mode, render the rainbow accent line */}
+        <div style={{
+          height: scrolled ? 0 : 3,
+          opacity: scrolled ? 0 : 1,
+          background: RAINBOW,
+          borderRadius: 2,
+          marginBottom: scrolled ? 0 : "1rem",
+          overflow: "hidden",
+          transition: "all 0.3s ease",
+        }} />
+
+        {/* Kicker */}
         <div style={{
           fontFamily: FONT.condensed,
           fontWeight: 700,
-          fontSize: "0.7rem",
+          fontSize: scrolled ? "0px" : "0.7rem",
           letterSpacing: "0.28em",
           textTransform: "uppercase",
           color: C.gold,
-          marginBottom: "0.3rem",
+          marginBottom: scrolled ? 0 : "0.3rem",
+          opacity: scrolled ? 0 : 1,
+          height: scrolled ? 0 : "auto",
+          overflow: "hidden",
+          transition: "all 0.3s ease",
         }}>★ The Accidental Intactivist's Inquiry ★</div>
+
+        {/* Main Title */}
         <h1 style={{
           fontFamily: FONT.display,
           fontWeight: 800,
-          fontSize: "clamp(1.6rem, 3.5vw, 2.2rem)",
+          fontSize: scrolled ? "1.2rem" : "clamp(1.6rem, 3.5vw, 2.2rem)",
           color: C.textBright,
           lineHeight: 1.1,
           letterSpacing: "-0.01em",
-          marginBottom: "0.25rem",
+          margin: 0,
+          transition: "all 0.3s ease",
         }}>Explore the Data</h1>
+
+        {/* Subtitle */}
         <div style={{
           fontFamily: FONT.display,
           fontStyle: "italic",
-          fontSize: "0.88rem",
+          fontSize: scrolled ? "0px" : "0.88rem",
           color: C.muted,
+          marginTop: scrolled ? 0 : "0.25rem",
+          opacity: scrolled ? 0 : 1,
+          height: scrolled ? 0 : "auto",
+          overflow: "hidden",
+          transition: "all 0.3s ease",
         }}>501 Voices · 8 Pathways · 355 Questions</div>
       </div>
     </header>
@@ -903,6 +1096,193 @@ function FormatToggle({ mode, onChange }) {
       >
         Narratives
       </button>
+    </div>
+  );
+}
+
+function PathwayDropdown({ selected, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    function clickOutside(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) document.addEventListener("mousedown", clickOutside);
+    return () => document.removeEventListener("mousedown", clickOutside);
+  }, [isOpen]);
+
+  const toggleOption = (id) => {
+    let next;
+    const current = selected ? (Array.isArray(selected) ? selected : [selected]) : [];
+    if (current.includes(id)) {
+      next = current.filter(v => v !== id);
+    } else {
+      next = [...current, id];
+    }
+    onChange(next.length === 0 ? null : next);
+  };
+
+  const clearAll = (e) => {
+    e.stopPropagation();
+    onChange(null);
+  };
+
+  const currentList = selected ? (Array.isArray(selected) ? selected : [selected]) : [];
+  
+  // Compute display label
+  let displayLabel = "All (501)";
+  if (currentList.length === 1) {
+    displayLabel = `${PATHWAYS[currentList[0]]?.label || currentList[0]} (${PATHWAYS[currentList[0]]?.n || 0})`;
+  } else if (currentList.length > 1) {
+    const totalN = currentList.reduce((acc, id) => acc + (PATHWAYS[id]?.n || 0), 0);
+    displayLabel = `${currentList.map(id => PATHWAYS[id]?.label).join(", ")} (${totalN})`;
+  }
+
+  return (
+    <div ref={containerRef} style={{ position: "relative", zIndex: 60 }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          padding: "0.32rem 0.6rem",
+          background: C.bgCard,
+          border: `1px solid ${currentList.length > 0 ? "rgba(212,160,48,0.35)" : C.ghost}`,
+          borderRadius: 6,
+          color: currentList.length > 0 ? C.goldBright : C.text,
+          fontFamily: FONT.body,
+          fontSize: "0.78rem",
+          fontWeight: 500,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.4rem",
+          transition: "all 0.15s",
+          width: "100%",
+          textAlign: "left",
+        }}
+      >
+        <span style={{
+          fontFamily: FONT.condensed,
+          fontSize: "0.68rem",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: C.muted,
+          flexShrink: 0,
+        }}>
+          Cohort / Pathway
+        </span>
+        <span style={{
+          flex: 1,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          fontSize: "0.74rem",
+        }}>
+          {displayLabel}
+        </span>
+        {currentList.length > 0 && (
+          <span 
+            onClick={clearAll}
+            style={{
+              color: C.muted,
+              fontSize: "0.8rem",
+              padding: "0 0.2rem",
+              cursor: "pointer",
+            }}
+            title="Clear cohort pathway filter"
+          >
+            ×
+          </span>
+        )}
+        <span style={{
+          color: isOpen ? C.goldBright : C.dim,
+          fontSize: "0.55rem",
+          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          transition: "transform 0.2s",
+        }}>▼</span>
+      </button>
+
+      {isOpen && (
+        <div style={{
+          position: "absolute",
+          top: "100%",
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          background: C.bgSoft,
+          border: `1px solid ${C.ghost}`,
+          borderRadius: 6,
+          zIndex: 70,
+          maxHeight: 260,
+          overflowY: "auto",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+          minWidth: 220,
+        }}>
+          <button
+            onClick={clearAll}
+            style={{
+              width: "100%",
+              padding: "0.45rem 0.7rem",
+              background: "transparent",
+              border: "none",
+              borderBottom: `1px solid ${C.ghost}`,
+              color: C.muted,
+              fontFamily: FONT.condensed,
+              fontSize: "0.7rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              textAlign: "left",
+              fontStyle: "italic",
+            }}
+          >
+            — All Pathways (501) —
+          </button>
+          {PATHWAY_IDS.map((id) => {
+            const p = PATHWAYS[id];
+            const isSelected = currentList.includes(id);
+            return (
+              <div
+                key={id}
+                onClick={() => toggleOption(id)}
+                style={{
+                  width: "100%",
+                  padding: "0.4rem 0.7rem",
+                  background: isSelected ? `${p.color}15` : "transparent",
+                  color: isSelected ? p.color : C.text,
+                  fontFamily: FONT.body,
+                  fontSize: "0.76rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  fontWeight: isSelected ? 600 : 400,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = isSelected ? `${p.color}25` : "rgba(255,255,255,0.03)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? `${p.color}15` : "transparent"; }}
+              >
+                <div style={{
+                  width: 13, height: 13, borderRadius: 3, flexShrink: 0,
+                  border: `1px solid ${isSelected ? p.color : C.dim}`,
+                  background: isSelected ? p.color : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center"
+                }}>
+                  {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
+                </div>
+                <span style={{ fontSize: "0.9rem", marginRight: "0.25rem" }}>{p.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {p.label}
+                </div>
+                <span style={{ fontFamily: FONT.mono, fontSize: "0.62rem", color: C.muted }}>
+                  n={p.n || 0}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

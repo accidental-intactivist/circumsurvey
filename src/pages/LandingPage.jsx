@@ -1,4 +1,4 @@
-﻿// ├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É
+// ├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É
 // v7 — "The Special Report" final form
 // Editorial design language ├ù Magazine-quality editorial motion
 // ├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É
@@ -805,11 +805,11 @@ function EditorsLetter() {
             born from a lifetime of observation and a single, persistent question.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            By a conscious choice of my parents in the 1970s, I grew up intact — an outlier
-            in a US culture where routine infant circumcision was the unquestioned norm. I
+            By a conscious choice of my parents in the 1970s, I grew up intact — a complete outlier
+            in a US culture where routine infant circumcision (RIC) was the unquestioned, 90% norm. I
             became an <em>accidental witness</em> to a profound alteration that nearly all
-            my friends, my partners, and men in the media had undergone — something my
-            parents had simply dismissed as unnecessary.
+            my friends and peers had undergone — something my parents had simply waved off
+            as unnecessary, refusing to subject their newborn son to a life-altering surgery.
           </p>
 
           <p style={{
@@ -825,19 +825,18 @@ function EditorsLetter() {
             color: C.paperInk,
             lineHeight: 1.5,
           }}>
-            In a culture so obsessed with sex, where we seemingly want every experience to
-            be as good as possible, how did this one topic become so taboo?
+            If someone asked you honestly how you felt about your circumcision status, what would you say?
           </p>
 
           <p style={{ marginBottom: "1rem" }}>
-            Everyone seems to have an opinion about whether infant circumcision should or
-            shouldn't be done — but I almost never hear adults talking honestly about their
-            own lived experience with their own anatomy.
+            That is the question I set out to ask when I built this anonymous survey.
+            I wanted to know: what makes parents like mine such outliers? What was the actual, lived experience of men in these bodies?
+            Historically, infant circumcision was popularized specifically to curb masturbation and diminish sexual experience.
+            Today, modern neuroscience and anatomical evidence unequivocally support the obvious claim that removing highly sensitive, functional tissue dictates sexual dysfunction.
+            Furthermore, the latest European clinical consensus states clearly that circumcision is non-therapeutic and should not be considered a medical procedure.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            I had so many questions. How did men actually <em>feel</em> about being cut?
-            Was it something they ever thought about? What was their sexual experience
-            truly like? This survey is my way of finally asking those questions.
+            Yet, nearly half of American parents still opt to circumcise their newborn boys. While that number is still high, it represents a significant historical decline. In fact, as highlighted in a Johns Hopkins press release, neonatal circumcision has officially dropped below 49% — making routine infant circumcision a <strong>minority procedure</strong> in the United States for the first time in a century.
           </p>
 
           <h3 style={{
@@ -848,39 +847,20 @@ function EditorsLetter() {
             letterSpacing: "-0.01em",
             marginTop: "2rem",
             marginBottom: "0.75rem",
-          }}>So — what did we find?</h3>
+          }}>What did the data volunteer?</h3>
 
           <p style={{ marginBottom: "1rem" }}>
-            It turns out this is a conversation a lot of people have been waiting to have.
-            We are now the custodians of <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>hundreds of
-            vivid, often heartbreaking accounts</strong> of a procedure performed on millions,
-            usually without their consent.
+            When given an anonymous platform to speak honestly, the data speaks clearly for itself.
+            The findings show that circumcised men are overwhelmingly dissatisfied and frequently require external lubrication for their entire lives.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of every pathway agrees</strong> the
-            child should have the right to decide. Intact, circumcised, restoring, observer
-            — no other question in this survey produces a consensus that strong. It is the
-            rare finding where everyone quietly agrees on the ethics, and yet the default
-            practice continues anyway.
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of respondents across all pathways</strong> agree that the child should have the right to decide. Intact, circumcised, restoring, and observers alike — no other question in this survey produces a consensus this strong.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>86% of circumcised respondents</strong> report
-            some level of resentment, loss, anger, or grief. Only 14% say "no, never." The
-            cultural shorthand that "they don't remember, they don't care" collapses on
-            contact with the data.
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>86% of circumcised respondents</strong> report experiencing resentment, loss, anger, or grief. Only 14% say they have never felt negative about it. The myth that "they don't remember, so they don't care" collapses under the weight of their own testimonies.
           </p>
           <p style={{ marginBottom: "1.5rem" }}>
-            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>Only 2.7% of circumcised respondents</strong>{" "}
-            say the decision was presented to their parents as a neutral choice with pros
-            and cons. Nearly half — 47.6% — describe it as "routine or automatic." That is
-            not informed consent. That is cultural autopilot.
-          </p>
-
-          <p style={{ marginBottom: "1rem" }}>
-            What follows is a data instrument, not an advocacy document. I am not here to
-            tell you how to feel. I am here to share what <em>{respondentsAsProse(META.totalRespondents)} people
-            said when finally asked</em> — and to bring these essential stories into
-            the light.
+            Our goal is to bring agnostic readers, expectant parents, and medical professionals over to the side of bodily autonomy. We want to let the raw data and verbatim voices speak for themselves.
           </p>
         </div>
 
@@ -3461,10 +3441,7 @@ function DemographicsExplorerCard() {
               color: C.paperSubtle,
               lineHeight: 1.65,
             }}>
-              My own parents made a "conscious choice" in the 1970s that put me in the 30.5%
-              intact minority of this sample. Within their cohort — U.S.-born Boomers, middle-class,
-              college-educated — that choice was especially rare. What distinguished them? A
-              question mark, instead of the default.
+              My own parents made a "conscious choice" in the 1970s, waving off a life-altering procedure that 90% of my peers went through. Today, we can say that choice has finally become mainstream. Thanks to a significant historical decrease, routine infant circumcision (RIC) is officially a minority procedure in the United States. Neonatal rates have dropped below 49%—a decline famously lamented in a Johns Hopkins press release. Yet, nearly 50% of parents still opt for it. For what? Modern neuroscience and anatomical evidence unequivocally support the obvious claim that removing highly sensitive, functional tissue dictates dysfunction. Expectant parents and medical professionals are finally choosing a question mark over the default.
             </div>
             <div style={{
               fontFamily: "'Barlow Condensed', sans-serif",

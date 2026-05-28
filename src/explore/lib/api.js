@@ -76,6 +76,17 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
   const data = await fetchJson(`${API_BASE}/questions?${params.toString()}`);
   
   if (data && data.questions) {
+    const excludedIds = [
+      "contact_followup_consent",
+      "contact_email",
+      "contact_other_method",
+      "contact_contrib_interest",
+      "restore_thank_you",
+      "observe_multi_hat_selection",
+      "observe_parent_intact_lawsuit_cta_knowledge"
+    ];
+    data.questions = data.questions.filter(q => !excludedIds.includes(q.id));
+
     data.questions.forEach(q => {
       if (q.section === "Uncategorized" || !q.section) {
         if (q.col_idx >= 346 && q.col_idx <= 355) {

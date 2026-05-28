@@ -4,7 +4,7 @@ import { queryCopilot } from "../lib/api";
 import BivariateHeatmap from "./BivariateHeatmap";
 import { useTheme } from "../contexts/ThemeContext";
 
-export default function CopilotChat({ routerState, updateState }) {
+export default function CopilotChat({ routerState, updateState, question }) {
   const { unlockTheme, setTheme } = useTheme();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,10 @@ export default function CopilotChat({ routerState, updateState }) {
     const context = {
       route: routerState?.route,
       questionId: routerState?.params?.id,
-      cohort: routerState?.cohort
+      cohort: routerState?.cohort,
+      questionPrompt: question?.prompt,
+      questionOptions: question?.opts ? JSON.stringify(question.opts) : undefined,
+      questionPathway: question?.pathway
     };
 
     try {

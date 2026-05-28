@@ -222,14 +222,20 @@ export function isQuestionRelevant(q, selectedPathway, mode) {
   const phase = phaseForQuestion(q);
 
   if (mode === "mine") {
-    // Only show pathway-specific questions for the selected pathway
+    // Only show pathway-specific questions for the selected pathway(s)
+    if (Array.isArray(selectedPathway)) {
+      return selectedPathway.includes(q.pathway);
+    }
     return q.pathway === selectedPathway;
   }
 
   if (mode === "relevant") {
     // Universal and Synthesis always visible; pathway-specific only if matches
     if (phase === "universal" || phase === "synthesis") return true;
-    if (!selectedPathway) return false;  // when no pathway selected, hide all branches
+    if (!selectedPathway || (Array.isArray(selectedPathway) && selectedPathway.length === 0)) return false;
+    if (Array.isArray(selectedPathway)) {
+      return selectedPathway.includes(q.pathway);
+    }
     return q.pathway === selectedPathway;
   }
 

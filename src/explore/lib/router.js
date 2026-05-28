@@ -35,6 +35,8 @@ function parseHash() {
     route = "generational-faultlines";
   } else if (segments[0] === "observer-triad") {
     route = "observer-triad";
+  } else if (segments[0] === "pleasure-gap") {
+    route = "pleasure-gap";
   } else if (segments[0] === "methodology") {
     route = "methodology";
   } else if (segments[0] === "report") {
@@ -42,8 +44,9 @@ function parseHash() {
   }
 
   // Extract standardized query state
+  const rawPathway = query.get("pathway");
   const state = {
-    pathway: query.get("pathway") || null,
+    pathway: rawPathway ? (rawPathway.includes(",") ? rawPathway.split(",") : [rawPathway]) : null,
     view: query.get("view") || "all", // mine | relevant | all
     search: query.get("s") || "",
     section: query.get("section") || null,
@@ -71,12 +74,19 @@ function serializeState(route, params, state) {
   else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
   else if (route === "pairs") path = "/pairs";
   else if (route === "demographics") path = "/demographics";
+  else if (route === "pleasure-gap") path = "/pleasure-gap";
   else if (route === "methodology") path = "/methodology";
   else if (route === "report") path = "/report";
   else path = "/";
 
   const q = new URLSearchParams();
-  if (state.pathway) q.set("pathway", state.pathway);
+  if (state.pathway) {
+    if (Array.isArray(state.pathway)) {
+      if (state.pathway.length > 0) q.set("pathway", state.pathway.join(","));
+    } else {
+      q.set("pathway", state.pathway);
+    }
+  }
   if (state.view && state.view !== "relevant") q.set("view", state.view);
   if (state.search) q.set("s", state.search);
   if (state.section) q.set("section", state.section);

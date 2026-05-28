@@ -141,7 +141,31 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
         alignItems: "center",
         justifyContent: "space-between",
       }}>
-        <span>★ Filter by Cohort</span>
+        <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+          <span>★</span> Cohort Filter
+          <span 
+            title="Respondent Filter: Restricts charts and counts dynamically to show only responses from specific demographics (e.g., Millennials, USA). Updates sparklines and response percentages."
+            style={{
+              cursor: "help",
+              color: C.muted,
+              fontSize: "0.7rem",
+              background: "rgba(255,255,255,0.06)",
+              border: `1px solid ${C.ghost}`,
+              width: 15,
+              height: 15,
+              borderRadius: "50%",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: FONT.mono,
+              fontWeight: "normal",
+              textTransform: "none",
+              letterSpacing: "normal",
+            }}
+          >
+            ?
+          </span>
+        </span>
         {activeDims.length > 0 && (
           <button
             onClick={clearAll}

@@ -8,7 +8,6 @@
 // shareable (e.g., findings.circumsurvey.online/explore#/q/exp_appearance_feeling).
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { GLOBAL_CSS } from "./styles/tokens";
 import { useRouter } from "./lib/router";
 import { useTheme } from "./contexts/ThemeContext";
 import HarmonicCanvas from "../components/HarmonicCanvas";
@@ -18,6 +17,7 @@ import QuestionPage from "./pages/QuestionPage";
 import CulturalAlignmentPage from "./pages/CulturalAlignmentPage";
 import MirrorPairsPage from "./pages/MirrorPairsPage";
 import DemographicsDashboardPage from "./pages/DemographicsDashboardPage";
+import PleasureGapPage from "./pages/PleasureGapPage";
 import ReligiousMirrorsPage from "./pages/ReligiousMirrorsPage";
 import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
 import GenerationalFaultlinesPage from "./pages/GenerationalFaultlinesPage";
@@ -45,6 +45,8 @@ export default function ExploreShell() {
     page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "demographics") {
     page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+  } else if (route === "pleasure-gap") {
+    page = <PleasureGapPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "religious-mirrors") {
     page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
   } else if (route === "narrative-mirrors") {
@@ -63,7 +65,6 @@ export default function ExploreShell() {
 
   return (
     <>
-      <style>{GLOBAL_CSS}</style>
       <div style={{ position: "fixed", inset: 0, zIndex: -1 }}>
         <HarmonicCanvas position="fixed" opacity={0.12} themeKey={`${theme}-${mode}-${colorblind}`} />
       </div>

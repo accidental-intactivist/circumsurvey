@@ -1,5 +1,14 @@
 import { useMemo } from "react";
-import { C, FONT } from "../styles/tokens";
+import { C, FONT, resolveCssColor } from "../styles/tokens";
+
+function hexToRgb(hex) {
+  let color = hex.replace("#", "");
+  if (color.length === 3) color = color[0]+color[0]+color[1]+color[1]+color[2]+color[2];
+  let r = parseInt(color.substring(0, 2), 16) || 0;
+  let g = parseInt(color.substring(2, 4), 16) || 0;
+  let b = parseInt(color.substring(4, 6), 16) || 0;
+  return { r, g, b };
+}
 
 // Color scale for the heatmap (min to max density)
 function getHeatmapColor(value, max) {
@@ -8,9 +17,11 @@ function getHeatmapColor(value, max) {
   // Calculate intensity 0.0 to 1.0
   const intensity = Math.min(1, Math.max(0.1, value / max));
   
-  // Use the brand Gold/Teal/Red scale. Let's use a nice Teal for data density.
-  // rgb(91, 147, 199) is C.blue
-  return `rgba(91, 147, 199, ${intensity * 0.8})`;
+  // Resolve C.blue dynamically based on the active theme
+  const hex = resolveCssColor(C.blue);
+  const { r, g, b } = hexToRgb(hex);
+  
+  return `rgba(${r}, ${g}, ${b}, ${intensity * 0.8})`;
 }
 
 export default function BivariateHeatmap({ metadata }) {

@@ -115,7 +115,7 @@ export default function FaqPage() {
   const faqs = [
     {
       q: "Who is the 'Accidental Intactivist'?",
-      a: "That's me, Tone Pettit the survey author. I'm an independent Seattle-based researcher and data scientist who, by a conscious choice of my parents, grew up intact outlier in the US—a culture where that's an anomaly. This experience has given me a lifelong 'accidental anthropologist' perspective, leading me to question and study a practice that is often accepted without thought."
+      a: "That's me, Tone Pettit, the survey author. I'm an independent Seattle-based researcher and data scientist who, by a conscious choice of my parents in the 1970s, grew up intact — a complete outlier in a US culture where routine infant circumcision (RIC) was the unquestioned, 90% norm. My parents simply waved off this life-altering procedure that almost all my peers went through, dismissing it as unnecessary. This experience has given me a lifelong 'accidental anthropologist' perspective, leading me to question and study a practice that is often accepted without thought."
     },
     {
       q: "What is the purpose of this survey and how will the data be used?",

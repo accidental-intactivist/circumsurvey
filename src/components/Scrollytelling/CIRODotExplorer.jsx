@@ -211,8 +211,9 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
       }
     });
 
-    // Sort by pathway to create clean stacked color bands
-    arr.sort((a, b) => PATHWAYS.findIndex(p => p.id === a.pathway) - PATHWAYS.findIndex(p => p.id === b.pathway));
+    // Sort by pathway in cohort (CIRO) order: Circumcised at bottom, then Intact, then Restoring, then Observer on top
+    const CIRO_ORDER = ['circumcised', 'intact', 'restoring', 'observer'];
+    arr.sort((a, b) => CIRO_ORDER.indexOf(a.pathway) - CIRO_ORDER.indexOf(b.pathway));
     
     // Assign stack index per region
     const counts = {};
@@ -239,6 +240,7 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
     ctx.scale(dpr, dpr);
 
     const projectionGlobe = geoOrthographic().fitSize([width * 0.9, height * 0.9], worldData).translate([width/2, height/2]);
+    const projectionBack = geoOrthographic().rotate(projectionGlobe.rotate()).scale(projectionGlobe.scale()).translate(projectionGlobe.translate()).clipAngle(180);
     const projectionNA = geoAlbers().scale(width * 1.2).translate([width/2, height/2]);
     
     const isGlobe = activeDimension === 'geography';
@@ -274,7 +276,7 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
           // Globe swarm
           const cat = d.category_country_birth;
           const coords = COORDS[cat] || COORDS["USA"];
-          const p = projectionGlobe(coords);
+          const p = projectionBack(coords);
           if (p) {
              d.vx += (p[0] - d.x) * alpha * 0.2;
              d.vy += (p[1] - d.y) * alpha * 0.2;
@@ -313,6 +315,14 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
         // Draw nodes (from bottom of stack to top)
         // Since they are sorted by pathway, the stack naturally renders bottom to top
         nodes.forEach(d => {
+          if (isGlobe) {
+            // Hide dots if they are on the back side of the globe
+            const cat = d.category_country_birth;
+            const coords = COORDS[cat] || COORDS["USA"];
+            const p = projectionGlobe(coords);
+            if (!p) return; // Clipped/back side, do not draw!
+          }
+
           ctx.beginPath();
           // Draw poker chip style for NA
           if (isNA) {
@@ -396,6 +406,7 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
         if (!start) start = timestamp;
         const elapsed = timestamp - start;
         projectionGlobe.rotate([elapsed * 0.005 - 60, -20, 0]);
+        projectionBack.rotate(projectionGlobe.rotate()); // Sync back projection rotation
         simulation.alpha(0.1).restart();
         rotationFrameId = requestAnimationFrame(rotate);
       };
@@ -411,6 +422,7 @@ export default function CIRODotExplorer({ controlledDimension, controlledSplit, 
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       projectionGlobe.fitSize([width * 0.9, height * 0.9], worldData).translate([width/2, height/2]);
+      projectionBack.scale(projectionGlobe.scale()).translate(projectionGlobe.translate()); // Sync back projection size
       projectionNA.scale(width * 1.2).translate([width/2, height/2]);
       applyForces();
     };

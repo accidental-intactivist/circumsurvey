@@ -826,12 +826,43 @@ export const GLOBAL_CSS = `
 `;
 
 export function resolveCssColor(varStr) {
-  if (typeof window === "undefined") return "#888888";
   const match = String(varStr).match(/var\(([^)]+)\)/);
   if (match) {
     const varName = match[1];
-    const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-    if (val) return val;
+    if (typeof window !== "undefined") {
+      const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      if (val) return val;
+    } else {
+      const staticFallbacks = {
+        "--c-bg": "#0a0a0c",
+        "--c-bgSoft": "#131316",
+        "--c-bgCard": "#18181c",
+        "--c-bgDeep": "#050506",
+        "--c-text": "#eee",
+        "--c-textBright": "#fff",
+        "--c-muted": "#999",
+        "--c-dim": "#555",
+        "--c-ghost": "#2a2a30",
+        "--c-gold": "#d4a030",
+        "--c-goldBright": "#e8b840",
+        "--c-red": "#d94f4f",
+        "--c-orange": "#e8a44a",
+        "--c-yellow": "#e8c868",
+        "--c-green": "#68b878",
+        "--c-ltBlue": "#8bb8d9",
+        "--c-blue": "#5b93c7",
+        "--c-grey": "#a0a0a0",
+        "--c-purple": "#7868b8",
+        "--path-intact": "#5b93c7",
+        "--path-circumcised": "#d94f4f",
+        "--path-restoring": "#e8c868",
+        "--path-observer": "#e8a44a",
+        "--path-trans-vag": "#e85d50",
+        "--path-trans-phal": "#c64639",
+        "--path-intersex": "#b0a888"
+      };
+      if (staticFallbacks[varName]) return staticFallbacks[varName];
+    }
   }
   if (typeof varStr === "string" && (varStr.startsWith("#") || varStr.startsWith("rgb") || varStr.startsWith("hsl"))) {
     return varStr;

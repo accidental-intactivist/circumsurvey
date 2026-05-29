@@ -762,12 +762,47 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
       "about_bias", "faq_purpose", "faq_health_benefits"
     ];
     
-    // Fetch top 5 respondent quotes
-    const matchesPromise = env.VECTORIZE.query(queryVector, { topK: 5, returnMetadata: true });
-    // Fetch all static docs by ID
+    let matches;
     const staticPromise = env.VECTORIZE.getByIds(staticIds);
 
-    const [matches, staticDocsRaw] = await Promise.all([matchesPromise, staticPromise]);
+    if (context && context.questionId) {
+      const specificPromise = env.VECTORIZE.query(queryVector, {
+        topK: 4,
+        returnMetadata: true,
+        filter: { question_id: context.questionId }
+      });
+      const globalPromise = env.VECTORIZE.query(queryVector, {
+        topK: 3,
+        returnMetadata: true
+      });
+      
+      const [specificRes, globalRes, staticDocsRaw] = await Promise.all([
+        specificPromise,
+        globalPromise,
+        staticPromise
+      ]);
+      
+      const seen = new Set();
+      const combinedMatches = [];
+      
+      // Prioritize question specific matches
+      for (const m of [...(specificRes.matches || []), ...(globalRes.matches || [])]) {
+        if (m && m.id && !seen.has(m.id)) {
+          seen.add(m.id);
+          combinedMatches.push(m);
+        }
+      }
+      
+      matches = { matches: combinedMatches.slice(0, 5) };
+      var staticDocsRawVal = staticDocsRaw;
+    } else {
+      const matchesPromise = env.VECTORIZE.query(queryVector, { topK: 5, returnMetadata: true });
+      const [mRes, staticDocsRaw] = await Promise.all([matchesPromise, staticPromise]);
+      matches = mRes;
+      var staticDocsRawVal = staticDocsRaw;
+    }
+    
+    const staticDocsRaw = staticDocsRawVal;
 
     // Manual cosine similarity for static docs (vectors are pre-normalized, so dot product = cosine similarity)
     const staticDocsScored = staticDocsRaw.map(doc => {
@@ -834,7 +869,13 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
 
 Context contains both RESPONDENT QUOTES and PROJECT DOCUMENTATION (Methodology, FAQ, Author info). The author of the survey, Tone Pettit, is male. Use "he/him" pronouns when referring to him.
 
-You will be provided with retrieved quotes from the survey database. You must critically evaluate these quotes against the user's prompt. If a quote does not directly and logically answer the user's specific question or challenge, you MUST ignore it. Do not attempt to force irrelevant quotes into your synthesis.
+Current UI Context:
+- Active Question ID: ${context?.questionId || "None"}
+- Active Question Prompt: "${context?.questionPrompt || "None"}"
+- Active Question Pathway: ${context?.questionPathway || "All"}
+- Active Demographic Cohort: ${context?.cohort ? JSON.stringify(context.cohort) : "None"}
+
+You will be provided with retrieved quotes from the survey database. You must critically evaluate these quotes against the user's prompt and current UI context. If a quote does not directly and logically answer the user's specific question or challenge, you MUST ignore it. Do not attempt to force irrelevant quotes into your synthesis.
 
 Based ONLY on the provided Context, answer the user's question. Use citations like [1], [3]. Don't invent info.
 

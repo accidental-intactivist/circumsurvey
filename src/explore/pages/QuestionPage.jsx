@@ -738,7 +738,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
                     )}
 
                     {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
-                      <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist.distribution} />
+                      <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist?.distribution || []} />
                     )}
                     
                     <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />

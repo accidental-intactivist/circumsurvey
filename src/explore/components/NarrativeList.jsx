@@ -48,20 +48,23 @@ export default function NarrativeList({
     return (items) => {
       let filteredDist = items;
       if (highlightWord) {
-        const searchWord = highlightWord.toLowerCase();
-        let regex;
-        try {
-          // Match the word with boundary checking and optional plural/possessive suffix ('s, s, ', s')
-          regex = new RegExp(`(?<![a-zA-Z0-9])(${highlightWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'i');
-        } catch (e) {
-          regex = null;
+        const trimmedWord = highlightWord.trim();
+        if (trimmedWord) {
+          const searchWord = trimmedWord.toLowerCase();
+          let regex;
+          try {
+            // Match the word with boundary checking and optional plural/possessive suffix ('s, s, ', s')
+            regex = new RegExp(`(?<![a-zA-Z0-9])(${trimmedWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'i');
+          } catch (e) {
+            regex = null;
+          }
+          
+          filteredDist = items.filter(item => {
+            const text = item.text || item.label || "";
+            if (regex) return regex.test(text);
+            return text.toLowerCase().includes(searchWord);
+          });
         }
-        
-        filteredDist = items.filter(item => {
-          const text = item.text || item.label || "";
-          if (regex) return regex.test(text);
-          return text.toLowerCase().includes(searchWord);
-        });
       }
 
       const map = new Map();
@@ -465,18 +468,19 @@ export default function NarrativeList({
 }
 
 function HighlightText({ text, highlight }) {
-  if (!highlight) return <>{text}</>;
+  const trimmedHighlight = (highlight || "").trim();
+  if (!trimmedHighlight) return <>{text}</>;
   
   let parts;
   try {
     // Capture the word plus its optional plural/possessive suffix
-    const regex = new RegExp(`(?<![a-zA-Z0-9])(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'gi');
+    const regex = new RegExp(`(?<![a-zA-Z0-9])(${trimmedHighlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|s|'|s')?)(?![a-zA-Z0-9])`, 'gi');
     parts = text.split(regex);
   } catch (e) {
     return <>{text}</>;
   }
 
-  const cleanHighlight = highlight.toLowerCase();
+  const cleanHighlight = trimmedHighlight.toLowerCase();
 
   return (
     <>

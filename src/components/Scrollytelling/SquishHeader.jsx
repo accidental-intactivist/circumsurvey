@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import ThemeToggle from '../../explore/components/ThemeToggle';
 import HarmonicCanvas from '../../components/HarmonicCanvas';
+import { useTheme } from '../../explore/contexts/ThemeContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -148,6 +149,7 @@ function RotatingFact() {
 }
 
 export default function SquishHeader() {
+  const { theme, mode, colorblind } = useTheme();
   const containerRef = useRef(null);
   const headerRef = useRef(null);
   const titleGroupRef = useRef(null);
@@ -156,6 +158,7 @@ export default function SquishHeader() {
   const subRef = useRef(null);
   const factsRef = useRef(null);
   const navContentRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useGSAP(() => {
     // We want the squish to complete over the first 600px of scrolling
@@ -177,6 +180,12 @@ export default function SquishHeader() {
       background: "rgba(10,10,12,0.85)", // Glassmorphic background
       backdropFilter: "blur(12px)",
       borderBottom: "1px solid var(--c-ghost)",
+      ease: "none"
+    }, 0);
+
+    // Fade the canvas background opacity as the header squishes/docks
+    tl.to(canvasRef.current, {
+      opacity: 0.15,
       ease: "none"
     }, 0);
 
@@ -246,6 +255,23 @@ export default function SquishHeader() {
           overflow: 'hidden',
         }}
       >
+        {/* Harmonic background canvas that squishes (crops) with the header height */}
+        <div 
+          ref={canvasRef}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '85vh',
+            pointerEvents: 'none',
+            zIndex: 0,
+            opacity: 0.8,
+          }}
+        >
+          <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} />
+        </div>
+
         {/* Rainbow accent line at the bottom of the masthead (always there, but moves up) */}
         <div style={{
           position: 'absolute',

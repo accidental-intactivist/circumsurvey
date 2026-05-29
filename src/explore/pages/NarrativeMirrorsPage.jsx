@@ -73,6 +73,8 @@ export default function NarrativeMirrorsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedConceptId, setSelectedConceptId] = useState(NARRATIVE_CONCEPTS[0].id);
 
+  const [selectedWord, setSelectedWord] = useState(null);
+
   useEffect(() => {
     async function load() {
       try {
@@ -88,6 +90,10 @@ export default function NarrativeMirrorsPage() {
     }
     load();
   }, []);
+
+  useEffect(() => {
+    setSelectedWord(null);
+  }, [selectedConceptId]);
 
   const activeConcept = NARRATIVE_CONCEPTS.find(c => c.id === selectedConceptId);
 
@@ -196,7 +202,12 @@ export default function NarrativeMirrorsPage() {
                 </div>
 
                 {question ? (
-                  <NarrativeLoader qid={conf.qid} pathway={conf.pathway} />
+                  <NarrativeLoader 
+                    qid={conf.qid} 
+                    pathway={conf.pathway} 
+                    selectedWord={selectedWord}
+                    setSelectedWord={setSelectedWord}
+                  />
                 ) : (
                   <div style={{ color: C.dim, padding: "2rem" }}>Loading...</div>
                 )}
@@ -210,16 +221,14 @@ export default function NarrativeMirrorsPage() {
 }
 
 // ── COHORT NARRATIVE LOADER ────────────────────────────────────────────────
-function NarrativeLoader({ qid, pathway }) {
+function NarrativeLoader({ qid, pathway, selectedWord, setSelectedWord }) {
   const [data, setData] = useState(null);
-  const [selectedWord, setSelectedWord] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setData(null);
-    setSelectedWord(null);
     
     getNarratives(qid, { pathway })
       .then(d => {

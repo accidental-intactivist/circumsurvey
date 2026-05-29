@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { hashLink } from "../lib/router";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
-import { getQuestions, getResponseDistribution, getAggregate } from "../lib/api";
+import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
 import DistributionChart from "../components/DistributionChart";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { useTooltip, Tooltip } from "../components/Tooltip";
@@ -39,6 +39,155 @@ const MIRROR_PAIRS = [
   { id: "aesthetic_appeal", concept: "Aesthetic Appeal (Visual)", universal: "final_aesthetic_preference" },
   { id: "future_child_decision", concept: "Decision for AMAB Child Today", universal: "final_child_decision_reason" }
 ];
+
+function normalizeMirrorLabel(label) {
+  if (!label) return "";
+  let clean = String(label).trim();
+  
+  // 1. Age of awareness normalization
+  if (clean.toLowerCase().includes("always just known") || clean.toLowerCase().includes("always known")) {
+    return "I've always just known";
+  }
+  if (clean.toLowerCase().includes("early childhood")) {
+    return "Early childhood";
+  }
+  if (clean.toLowerCase().includes("pre-teen")) {
+    return "Pre-teen years";
+  }
+  if (clean.toLowerCase().includes("teenage")) {
+    return "Teenage years";
+  }
+  if (clean.toLowerCase().includes("adulthood")) {
+    return "Adulthood";
+  }
+  if (clean.toLowerCase().includes("not applicable - grew up intact") || clean.toLowerCase().includes("not entirely sure what was done") || clean.toLowerCase().includes("not applicable") || clean.toLowerCase().includes("not sure what was done")) {
+    return "Not applicable / Unsure";
+  }
+
+  // 2. Conversations with parents
+  if (clean.toLowerCase().includes("detailed conversation")) {
+    return "Detailed conversation";
+  }
+  if (clean.toLowerCase().includes("discussed it briefly") || clean.toLowerCase().includes("discussed briefly")) {
+    return "Discussed briefly";
+  }
+  if (clean.toLowerCase().includes("tried to bring it up") || clean.toLowerCase().includes("tried to bring up")) {
+    return "Tried to ask / brief discussion";
+  }
+  if (clean.toLowerCase().includes("never asked") || clean.toLowerCase().includes("never discussed")) {
+    return "Never asked / discussed";
+  }
+  if (clean.toLowerCase().includes("parents are deceased")) {
+    return "Not applicable";
+  }
+
+  // 3. Resentment / Regret
+  if (clean.toLowerCase().includes("strong and frequent") || clean.toLowerCase().includes("frequent resentment")) {
+    return "Strong and frequent";
+  }
+  if (clean.toLowerCase().includes("experience some of these") || clean.toLowerCase().includes("sometimes")) {
+    return "Sometimes";
+  }
+  if (clean.toLowerCase().includes("rarely")) {
+    return "Rarely";
+  }
+  if (clean.toLowerCase().includes("never")) {
+    return "Never";
+  }
+
+  return clean;
+}
+
+const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist, intactQ, circQ) => {
+  if (!intactDist?.distribution || !circDist?.distribution) return null;
+
+  const processSide = (dist, cohortDist) => {
+    const rawItems = dist.distribution || [];
+    const cohortMap = new Map();
+    if (cohortDist?.distribution) {
+      cohortDist.distribution.forEach(d => {
+        cohortMap.set(normalizeMirrorLabel(d.label), d.n);
+      });
+    }
+
+    const aggregated = new Map();
+    rawItems.forEach(item => {
+      const normLabel = normalizeMirrorLabel(item.label);
+      if (!normLabel) return;
+      const existing = aggregated.get(normLabel) || { label: normLabel, n: 0, cohortN: null };
+      existing.n += item.n;
+      if (cohortDist?.distribution) {
+        existing.cohortN = (existing.cohortN || 0) + (cohortMap.get(normLabel) || 0);
+      }
+      aggregated.set(normLabel, existing);
+    });
+
+    return aggregated;
+  };
+
+  const intactMap = processSide(intactDist, intactCohortDist);
+  const circMap = processSide(circDist, circCohortDist);
+
+  const allLabels = Array.from(new Set([
+    ...intactMap.keys(),
+    ...circMap.keys()
+  ]));
+
+  let unionObjects = allLabels.map(label => {
+    const intactN = intactMap.get(label)?.n || 0;
+    const circN = circMap.get(label)?.n || 0;
+    return { label, n: intactN + circN };
+  });
+
+  let sortedUnion = [];
+  if (circQ) {
+    sortedUnion = sortDistribution(unionObjects, circQ);
+  } else if (intactQ) {
+    sortedUnion = sortDistribution(unionObjects, intactQ);
+  } else {
+    sortedUnion = [...unionObjects].sort((a, b) => b.n - a.n);
+  }
+
+  const intactResult = [];
+  const circResult = [];
+
+  const intactTotal = Array.from(intactMap.values()).reduce((sum, item) => sum + item.n, 0);
+  const circTotal = Array.from(circMap.values()).reduce((sum, item) => sum + item.n, 0);
+
+  const intactCohortTotal = intactCohortDist?.distribution
+    ? Array.from(intactMap.values()).reduce((sum, item) => sum + (item.cohortN || 0), 0)
+    : 0;
+  const circCohortTotal = circCohortDist?.distribution
+    ? Array.from(circMap.values()).reduce((sum, item) => sum + (item.cohortN || 0), 0)
+    : 0;
+
+  sortedUnion.forEach(u => {
+    const label = u.label;
+    
+    const intactItem = intactMap.get(label) || { label, n: 0, cohortN: null };
+    intactResult.push({
+      label,
+      n: intactItem.n,
+      cohortN: intactItem.cohortN
+    });
+
+    const circItem = circMap.get(label) || { label, n: 0, cohortN: null };
+    circResult.push({
+      label,
+      n: circItem.n,
+      cohortN: circItem.cohortN
+    });
+  });
+
+  return {
+    intactList: intactResult,
+    circList: circResult,
+    intactTotal,
+    circTotal,
+    intactCohortTotal,
+    circCohortTotal
+  };
+};
 
 export default function MirrorPairsPage({ routerState }) {
   const [questionsMap, setQuestionsMap] = useState({});
@@ -124,32 +273,10 @@ export default function MirrorPairsPage({ routerState }) {
   );
 }
 
-function MirrorSideBureau({ question, distribution, cohortDistribution }) {
+function MirrorSideBureau({ question, list, total, cohortTotal, hasCohort }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
-  const sortedDist = useMemo(() => {
-    if (!distribution?.distribution) return [];
-    let d = [...distribution.distribution];
-    return sortDistribution(d, question);
-  }, [distribution, question]);
-
-  const total = useMemo(() => {
-    return sortedDist.reduce((s, d) => s + d.n, 0);
-  }, [sortedDist]);
-
-  const cohortMap = useMemo(() => {
-    if (!cohortDistribution?.distribution) return null;
-    const map = {};
-    cohortDistribution.distribution.forEach(d => {
-      map[d.label] = d.n;
-    });
-    return map;
-  }, [cohortDistribution]);
-
-  const cohortTotal = useMemo(() => {
-    if (!cohortDistribution?.distribution) return 0;
-    return cohortDistribution.distribution.reduce((s, d) => s + d.n, 0);
-  }, [cohortDistribution]);
+  const sortedDist = list || [];
 
   const colorMap = useMemo(() => {
     const map = {};
@@ -159,23 +286,15 @@ function MirrorSideBureau({ question, distribution, cohortDistribution }) {
     return map;
   }, [sortedDist]);
 
-  if (!distribution) {
-    return <div style={{ color: C.dim, fontSize: "0.85rem", fontStyle: "italic" }}>Loading...</div>;
-  }
-
   if (question.type === "open_text") {
-    return (
-      <div style={{ padding: "1rem", background: C.bgDeep, borderRadius: 6, color: C.dim, fontSize: "0.85rem", fontStyle: "italic" }}>
-        Open text responses are available in the individual question view or Narrative Mirrors.
-      </div>
-    );
+    return null;
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.5rem" }}>
         <span style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted }}>
-          {cohortTotal > 0 ? `n = ${cohortTotal} (filtered) / ${total} (total)` : `n = ${total}`}
+          {hasCohort && cohortTotal > 0 ? `n = ${cohortTotal} (filtered) / ${total} (total)` : `n = ${total}`}
         </span>
       </div>
 
@@ -184,8 +303,8 @@ function MirrorSideBureau({ question, distribution, cohortDistribution }) {
           const overallPct = total > 0 ? (d.n / total) * 100 : 0;
           
           let cohortPct = null;
-          if (cohortMap !== null) {
-            const cohortN = cohortMap[d.label] || 0;
+          if (hasCohort) {
+            const cohortN = d.cohortN || 0;
             cohortPct = cohortTotal > 0 ? (cohortN / cohortTotal) * 100 : 0;
           }
 
@@ -197,7 +316,7 @@ function MirrorSideBureau({ question, distribution, cohortDistribution }) {
               key={i} 
               onMouseEnter={(e) => {
                 const tooltipText = cohortPct !== null
-                  ? `${d.label}: ${cohortPct.toFixed(1)}% (n=${cohortMap[d.label] || 0}) vs overall ${overallPct.toFixed(1)}% (n=${d.n})`
+                  ? `${d.label}: ${cohortPct.toFixed(1)}% (n=${d.cohortN || 0}) vs overall ${overallPct.toFixed(1)}% (n=${d.n})`
                   : `${d.label}: ${overallPct.toFixed(1)}% (n=${d.n})`;
                 showTooltip(e, tooltipText);
               }}
@@ -269,6 +388,10 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
   const circQ = isUniversal ? null : questionsMap[pair.circ];
   const universalQ = isUniversal ? questionsMap[pair.universal] : null;
 
+  const isNarrative = useMemo(() => {
+    return (intactQ && intactQ.type === "open_text") || (circQ && circQ.type === "open_text");
+  }, [intactQ, circQ]);
+
   const [intactDist, setIntactDist] = useState(null);
   const [circDist, setCircDist] = useState(null);
   const [intactCohortDist, setIntactCohortDist] = useState(null);
@@ -281,6 +404,11 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
 
   const [inView, setInView] = useState(false);
   const blockRef = useRef(null);
+
+  const aligned = useMemo(() => {
+    if (isUniversal || isNarrative) return null;
+    return alignAndSortPair(intactDist, circDist, intactCohortDist, circCohortDist, intactQ, circQ);
+  }, [intactDist, circDist, intactCohortDist, circCohortDist, intactQ, circQ, isUniversal, isNarrative]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -314,26 +442,50 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
             setUniversalCohortDist(null);
           }
         } else {
-          if (intactQ && !intactDist) {
-            const d = await getResponseDistribution(pair.intact);
-            setIntactDist(d);
-          }
-          if (intactQ && cohort) {
-            const cd = await getResponseDistribution(pair.intact, { cohort });
-            setIntactCohortDist(cd);
-          } else {
-            setIntactCohortDist(null);
-          }
+          if (isNarrative) {
+            if (intactQ && !intactDist) {
+              const d = await getNarratives(pair.intact);
+              setIntactDist(d);
+            }
+            if (intactQ && cohort) {
+              const cd = await getNarratives(pair.intact, { cohort });
+              setIntactCohortDist(cd);
+            } else {
+              setIntactCohortDist(null);
+            }
 
-          if (circQ && !circDist) {
-            const d = await getResponseDistribution(pair.circ);
-            setCircDist(d);
-          }
-          if (circQ && cohort) {
-            const cd = await getResponseDistribution(pair.circ, { cohort });
-            setCircCohortDist(cd);
+            if (circQ && !circDist) {
+              const d = await getNarratives(pair.circ);
+              setCircDist(d);
+            }
+            if (circQ && cohort) {
+              const cd = await getNarratives(pair.circ, { cohort });
+              setCircCohortDist(cd);
+            } else {
+              setCircCohortDist(null);
+            }
           } else {
-            setCircCohortDist(null);
+            if (intactQ && !intactDist) {
+              const d = await getResponseDistribution(pair.intact);
+              setIntactDist(d);
+            }
+            if (intactQ && cohort) {
+              const cd = await getResponseDistribution(pair.intact, { cohort });
+              setIntactCohortDist(cd);
+            } else {
+              setIntactCohortDist(null);
+            }
+
+            if (circQ && !circDist) {
+              const d = await getResponseDistribution(pair.circ);
+              setCircDist(d);
+            }
+            if (circQ && cohort) {
+              const cd = await getResponseDistribution(pair.circ, { cohort });
+              setCircCohortDist(cd);
+            } else {
+              setCircCohortDist(null);
+            }
           }
         }
       } catch (err) {
@@ -341,7 +493,7 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
       }
     }
     fetchDist();
-  }, [inView, pair, intactQ, circQ, universalQ, cohort, isUniversal]);
+  }, [inView, pair, intactQ, circQ, universalQ, cohort, isUniversal, isNarrative]);
 
   if (isUniversal) {
     return (
@@ -383,8 +535,30 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
 
             {universalDist ? (
               universalQ.type === "open_text" ? (
-                <div style={{ padding: "1rem", background: C.bgDeep, borderRadius: 6, color: C.dim, fontSize: "0.85rem", fontStyle: "italic" }}>
-                  Open text responses are available in the individual question view or Narrative Mirrors.
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div style={{ padding: "1rem", background: C.bgDeep, borderRadius: 6, color: C.dim, fontSize: "0.85rem", fontStyle: "italic" }}>
+                    Open text responses are available in the individual question view or Narrative Mirrors.
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <a 
+                      href={hashLink("question", { id: universalQ.id })}
+                      style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.74rem",
+                        color: C.goldBright,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${C.goldBright}40`,
+                        paddingBottom: "0.1rem",
+                        transition: "border-color 0.2s"
+                      }}
+                      onMouseOver={e => e.target.style.borderBottomColor = C.goldBright}
+                      onMouseOut={e => e.target.style.borderBottomColor = `${C.goldBright}40`}
+                    >
+                      See all answers →
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
@@ -397,6 +571,26 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
                   {byPathway && Object.keys(byPathway.results || {}).length > 0 && (
                     <PathwayBreakdown byPathway={byPathway} overallDist={universalDist?.distribution || []} />
                   )}
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <a 
+                      href={hashLink("question", { id: universalQ.id })}
+                      style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.74rem",
+                        color: C.goldBright,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${C.goldBright}40`,
+                        paddingBottom: "0.1rem",
+                        transition: "border-color 0.2s"
+                      }}
+                      onMouseOver={e => e.target.style.borderBottomColor = C.goldBright}
+                      onMouseOut={e => e.target.style.borderBottomColor = `${C.goldBright}40`}
+                    >
+                      See all answers & full breakdown →
+                    </a>
+                  </div>
                 </div>
               )
             ) : (
@@ -432,59 +626,119 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
         }}>{pair.concept}</h2>
       </div>
       
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, padding: "1.5rem", minWidth: "280px" }}>
-          <div>
-            <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-              Intact Pathway
-            </h3>
-            <p style={{ fontFamily: FONT.body, fontSize: "1rem", lineHeight: 1.4, color: C.textBright, marginBottom: intactQ?.subtitle ? "0.5rem" : "1.5rem" }}>
-              {intactQ ? intactQ.prompt : "No matching question."}
-            </p>
-            {intactQ?.subtitle && (
-              <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", lineHeight: 1.4, color: C.muted, marginBottom: "1.5rem", fontStyle: "italic" }}>
-                {intactQ.subtitle}
+      {isNarrative ? (
+        <MirrorNarrativeBlock 
+          intactQ={intactQ}
+          circQ={circQ}
+          intactDist={intactDist}
+          circDist={circDist}
+          intactCohortDist={intactCohortDist}
+          circCohortDist={circCohortDist}
+          hasCohort={!!cohort}
+        />
+      ) : (
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <div style={{ flex: 1, padding: "1.5rem", minWidth: "280px" }}>
+            <div>
+              <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                Intact Pathway
+              </h3>
+              <p style={{ fontFamily: FONT.body, fontSize: "1rem", lineHeight: 1.4, color: C.textBright, marginBottom: intactQ?.subtitle ? "0.5rem" : "1.5rem" }}>
+                {intactQ ? intactQ.prompt : "No matching question."}
               </p>
-            )}
-            {intactDist ? (
-              <MirrorSideBureau 
-                question={intactQ}
-                distribution={intactDist} 
-                cohortDistribution={intactCohortDist} 
-              />
-            ) : (
-              <div style={{ color: C.dim }}>Loading...</div>
-            )}
+              {intactQ?.subtitle && (
+                <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", lineHeight: 1.4, color: C.muted, marginBottom: "1.5rem", fontStyle: "italic" }}>
+                  {intactQ.subtitle}
+                </p>
+              )}
+              {aligned ? (
+                <>
+                  <MirrorSideBureau 
+                    question={intactQ}
+                    list={aligned.intactList}
+                    total={aligned.intactTotal}
+                    cohortTotal={aligned.intactCohortTotal}
+                    hasCohort={!!cohort}
+                  />
+                  <div style={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}>
+                    <a 
+                      href={hashLink("question", { id: intactQ.id })}
+                      style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.74rem",
+                        color: PATH_COLORS.intact,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${PATH_COLORS.intact}40`,
+                        paddingBottom: "0.1rem",
+                        transition: "border-color 0.2s"
+                      }}
+                      onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.intact}
+                      onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.intact}40`}
+                    >
+                      See all answers →
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <div style={{ color: C.dim }}>Loading...</div>
+              )}
+            </div>
           </div>
-        </div>
-          
-        <div style={{ width: 1, background: C.ghost }} />
+            
+          <div style={{ width: 1, background: C.ghost }} />
 
-        <div style={{ flex: 1, padding: "1.5rem", minWidth: "280px" }}>
-          <div>
-            <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-              Circumcised Pathway
-            </h3>
-            <p style={{ fontFamily: FONT.body, fontSize: "1rem", lineHeight: 1.4, color: C.textBright, marginBottom: circQ?.subtitle ? "0.5rem" : "1.5rem" }}>
-              {circQ ? circQ.prompt : "No matching question."}
-            </p>
-            {circQ?.subtitle && (
-              <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", lineHeight: 1.4, color: C.muted, marginBottom: "1.5rem", fontStyle: "italic" }}>
-                {circQ.subtitle}
+          <div style={{ flex: 1, padding: "1.5rem", minWidth: "280px" }}>
+            <div>
+              <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                Circumcised Pathway
+              </h3>
+              <p style={{ fontFamily: FONT.body, fontSize: "1rem", lineHeight: 1.4, color: C.textBright, marginBottom: circQ?.subtitle ? "0.5rem" : "1.5rem" }}>
+                {circQ ? circQ.prompt : "No matching question."}
               </p>
-            )}
-            {circDist ? (
-              <MirrorSideBureau 
-                question={circQ}
-                distribution={circDist} 
-                cohortDistribution={circCohortDist} 
-              />
-            ) : (
-              <div style={{ color: C.dim }}>Loading...</div>
-            )}
+              {circQ?.subtitle && (
+                <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", lineHeight: 1.4, color: C.muted, marginBottom: "1.5rem", fontStyle: "italic" }}>
+                  {circQ.subtitle}
+                </p>
+              )}
+              {aligned ? (
+                <>
+                  <MirrorSideBureau 
+                    question={circQ}
+                    list={aligned.circList}
+                    total={aligned.circTotal}
+                    cohortTotal={aligned.circCohortTotal}
+                    hasCohort={!!cohort}
+                  />
+                  <div style={{ marginTop: "1rem", display: "flex", justifyContent: "flex-end" }}>
+                    <a 
+                      href={hashLink("question", { id: circQ.id })}
+                      style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.74rem",
+                        color: PATH_COLORS.circumcised,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        textDecoration: "none",
+                        borderBottom: `1px solid ${PATH_COLORS.circumcised}40`,
+                        paddingBottom: "0.1rem",
+                        transition: "border-color 0.2s"
+                      }}
+                      onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.circumcised}
+                      onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.circumcised}40`}
+                    >
+                      See all answers →
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <div style={{ color: C.dim }}>Loading...</div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
@@ -583,6 +837,246 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
         })}
       </div>
       <Tooltip {...tooltip} />
+    </div>
+  );
+}
+
+function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCohortDist, circCohortDist, hasCohort }) {
+  const [shuffleTrigger, setShuffleTrigger] = useState(0);
+
+  const getActiveNarratives = (fullDist, cohortDist) => {
+    if (hasCohort) {
+      return cohortDist?.narratives || [];
+    }
+    return fullDist?.narratives || [];
+  };
+
+  const intactNarratives = getActiveNarratives(intactDist, intactCohortDist);
+  const circNarratives = getActiveNarratives(circDist, circCohortDist);
+
+  const cleanFilter = (items) => {
+    const fillers = [
+      "n/a", "na", "no", "none", "nothing", "nil", "not applicable", 
+      "no comment", "unsure", "unknown", "n.a", "n.a.", "none at all", 
+      "no.", "no response", "don't know", "dont know", "no one", "not sure",
+      "n a", "n / a", "none.", "no comments", "no comment.", "no one."
+    ];
+    return items.filter(item => {
+      const text = item.text || item.label || "";
+      const clean = text.trim().toLowerCase().replace(/^[.\s\-_,]+|[.\s\-_,]+$/g, "");
+      return clean && !fillers.includes(clean);
+    });
+  };
+
+  const cleanIntact = useMemo(() => cleanFilter(intactNarratives), [intactNarratives]);
+  const cleanCirc = useMemo(() => cleanFilter(circNarratives), [circNarratives]);
+
+  const randomIntact = useMemo(() => {
+    if (cleanIntact.length === 0) return [];
+    const shuffled = [...cleanIntact].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  }, [cleanIntact, shuffleTrigger]);
+
+  const randomCirc = useMemo(() => {
+    if (cleanCirc.length === 0) return [];
+    const shuffled = [...cleanCirc].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  }, [cleanCirc, shuffleTrigger]);
+
+  const renderQuoteCard = (item, idx, pathwayColor) => {
+    let genStr = item.generation || "";
+    if (genStr.includes("(born")) {
+      genStr = genStr.split("(born")[0].trim();
+    }
+    if (genStr === "Boomer") genStr = "Baby Boomer";
+    
+    let locStr = "";
+    let region = item.us_state_now || item.canada_province_now;
+    if (region && typeof region === 'string' && region.includes(" - ")) {
+      region = region.split(" - ").pop().trim();
+    }
+    let country = item.country_now;
+    if (country === "United States of America (USA)") country = "USA";
+    else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
+
+    if (region && country) locStr = `${region}, ${country}`;
+    else if (country) locStr = country;
+
+    return (
+      <div key={idx} style={{
+        background: "var(--c-bgSoft)",
+        border: `1px solid var(--c-ghost)`,
+        borderLeft: `3px solid ${pathwayColor}`,
+        borderRadius: 8,
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        padding: "1.2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
+        transition: "transform 0.2s, box-shadow 0.2s"
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = "translateY(-1px)";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+      }}>
+        <div style={{
+          color: "var(--c-muted)",
+          fontSize: "0.65rem",
+          fontFamily: FONT.condensed,
+          textTransform: "uppercase",
+          letterSpacing: "0.08em",
+          display: "flex",
+          justifyContent: "space-between",
+        }}>
+          <span>{genStr || "Unknown Gen"}</span>
+          <span>{locStr}</span>
+        </div>
+        <p style={{
+          margin: 0,
+          fontFamily: FONT.display,
+          fontStyle: "italic",
+          fontSize: "0.95rem",
+          lineHeight: 1.5,
+          color: "var(--c-textBright)"
+        }}>
+          "{item.text || item.label}"
+        </p>
+      </div>
+    );
+  };
+
+  const hasResponses = cleanIntact.length > 0 || cleanCirc.length > 0;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem" }}>
+        
+        {/* Left Column: Intact */}
+        <div style={{ flex: 1, minWidth: "280px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
+            <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
+              Intact Pathway
+            </h3>
+            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+              <span style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted }}>
+                Pool: {cleanIntact.length}
+              </span>
+              <span style={{ color: C.dim, fontSize: "0.7rem" }}>·</span>
+              <a 
+                href={hashLink("question", { id: intactQ.id })}
+                style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.72rem",
+                  color: PATH_COLORS.intact,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  textDecoration: "none",
+                  borderBottom: `1px solid ${PATH_COLORS.intact}40`,
+                  paddingBottom: "0.1rem",
+                  transition: "border-color 0.2s"
+                }}
+                onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.intact}
+                onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.intact}40`}
+              >
+                See all →
+              </a>
+            </div>
+          </div>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {randomIntact.map((item, idx) => renderQuoteCard(item, idx, PATH_COLORS.intact))}
+            {cleanIntact.length === 0 && (
+              <div style={{ color: C.dim, fontStyle: "italic", padding: "1.5rem 0", fontSize: "0.85rem" }}>
+                No matching narrative responses.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: Circumcised */}
+        <div style={{ flex: 1, minWidth: "280px", display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
+            <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
+              Circumcised Pathway
+            </h3>
+            <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
+              <span style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted }}>
+                Pool: {cleanCirc.length}
+              </span>
+              <span style={{ color: C.dim, fontSize: "0.7rem" }}>·</span>
+              <a 
+                href={hashLink("question", { id: circQ.id })}
+                style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.72rem",
+                  color: PATH_COLORS.circumcised,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  textDecoration: "none",
+                  borderBottom: `1px solid ${PATH_COLORS.circumcised}40`,
+                  paddingBottom: "0.1rem",
+                  transition: "border-color 0.2s"
+                }}
+                onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.circumcised}
+                onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.circumcised}40`}
+              >
+                See all →
+              </a>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {randomCirc.map((item, idx) => renderQuoteCard(item, idx, PATH_COLORS.circumcised))}
+            {cleanCirc.length === 0 && (
+              <div style={{ color: C.dim, fontStyle: "italic", padding: "1.5rem 0", fontSize: "0.85rem" }}>
+                No matching narrative responses.
+              </div>
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {hasResponses && (
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
+          <button
+            onClick={() => setShuffleTrigger(s => s + 1)}
+            style={{
+              padding: "0.5rem 1.2rem",
+              background: "transparent",
+              border: `1px solid ${C.ghost}`,
+              color: C.goldBright,
+              borderRadius: 6,
+              fontFamily: FONT.condensed,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              fontSize: "0.75rem",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem"
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.background = C.ghost;
+              e.currentTarget.style.borderColor = C.gold;
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.borderColor = C.ghost;
+            }}
+          >
+            <span>Shuffle Responses</span>
+            <span>↺</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

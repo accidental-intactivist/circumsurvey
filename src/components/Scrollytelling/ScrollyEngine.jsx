@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import HarmonicCanvas from '../HarmonicCanvas';
 import PlotterCanvas from './PlotterCanvas';
 import RegistrationMarks from './RegistrationMarks';
 import ScrollyNarrative from './ScrollyNarrative';
@@ -484,9 +483,6 @@ export default function ScrollyEngine() {
       color: 'var(--c-text)',
       transition: 'background 0.3s ease, color 0.3s ease',
     }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1, pointerEvents: 'none' }}>
-        <HarmonicCanvas opacity={activeStep === 0 ? 1 : 0} />
-      </div>
 
       {/* Layer 0: Plotter Canvas Engine (z-index 0) */}
       {/* Fades to 0.2 during data-dense Acts III-IV so charts are legible */}

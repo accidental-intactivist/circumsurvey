@@ -1,5 +1,4 @@
 import { useState, useMemo, useRef } from "react";
-import { toPng } from "html-to-image";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
@@ -15,6 +14,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   const handleDownload = async () => {
     if (!chartRef.current) return;
     try {
+      const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(chartRef.current, {
         cacheBust: true,
         style: {

@@ -4,13 +4,19 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('cs_theme_name') || 'standard';
+    try {
+      return localStorage.getItem('cs_theme_name') || 'standard';
+    } catch {
+      return 'standard';
+    }
   });
 
   const [unlockedThemes, setUnlockedThemes] = useState(() => {
     try {
       const saved = localStorage.getItem('cs_unlocked_themes');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }
@@ -18,48 +24,69 @@ export function ThemeProvider({ children }) {
 
   const unlockTheme = (themeName) => {
     setUnlockedThemes(prev => {
-      if (!prev.includes(themeName)) {
-        const next = [...prev, themeName];
-        localStorage.setItem('cs_unlocked_themes', JSON.stringify(next));
+      const currentList = Array.isArray(prev) ? prev : [];
+      if (!currentList.includes(themeName)) {
+        const next = [...currentList, themeName];
+        try {
+          localStorage.setItem('cs_unlocked_themes', JSON.stringify(next));
+        } catch {}
         return next;
       }
-      return prev;
+      return currentList;
     });
   };
 
   const [typeface, setTypeface] = useState(() => {
-    return localStorage.getItem('cs_theme_typeface') || 'tomorrow';
+    try {
+      return localStorage.getItem('cs_theme_typeface') || 'tomorrow';
+    } catch {
+      return 'tomorrow';
+    }
   });
 
   const [mode, setMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cs_theme_mode');
-      if (saved) return saved;
-      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    }
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('cs_theme_mode');
+        if (saved) return saved;
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+    } catch {}
     return 'dark';
   });
   
   const [colorblind, setColorblind] = useState(() => {
-    return localStorage.getItem('cs_theme_colorblind') === 'true';
+    try {
+      return localStorage.getItem('cs_theme_colorblind') === 'true';
+    } catch {
+      return false;
+    }
   });
 
   const [dyslexicFont, setDyslexicFont] = useState(() => {
-    return localStorage.getItem('cs_theme_dyslexic') === 'true';
+    try {
+      return localStorage.getItem('cs_theme_dyslexic') === 'true';
+    } catch {
+      return false;
+    }
   });
   
   const [typeScale, setTypeScale] = useState(() => {
-    return localStorage.getItem('cs_theme_scale') || 'standard';
+    try {
+      return localStorage.getItem('cs_theme_scale') || 'standard';
+    } catch {
+      return 'standard';
+    }
   });
 
   // Apply attributes to the root <html> element
   useEffect(() => {
     const root = document.documentElement;
-    root.setAttribute('data-theme', theme);
-    root.setAttribute('data-typeface', typeface);
-    root.setAttribute('data-mode', mode);
-    root.setAttribute('data-colorblind', colorblind.toString());
-    root.setAttribute('data-dyslexic', dyslexicFont.toString());
+    root.setAttribute('data-theme', theme || 'standard');
+    root.setAttribute('data-typeface', typeface || 'tomorrow');
+    root.setAttribute('data-mode', mode || 'dark');
+    root.setAttribute('data-colorblind', String(!!colorblind));
+    root.setAttribute('data-dyslexic', String(!!dyslexicFont));
     
     // Manage CSS multiplier for typography scale
     let scaleMultiplier = 1;
@@ -71,12 +98,14 @@ export function ThemeProvider({ children }) {
     // 100% is 16px by default. 
     root.style.fontSize = `${scaleMultiplier * 100}%`;
 
-    localStorage.setItem('cs_theme_name', theme);
-    localStorage.setItem('cs_theme_typeface', typeface);
-    localStorage.setItem('cs_theme_mode', mode);
-    localStorage.setItem('cs_theme_colorblind', colorblind.toString());
-    localStorage.setItem('cs_theme_dyslexic', dyslexicFont.toString());
-    localStorage.setItem('cs_theme_scale', typeScale);
+    try {
+      localStorage.setItem('cs_theme_name', theme || 'standard');
+      localStorage.setItem('cs_theme_typeface', typeface || 'tomorrow');
+      localStorage.setItem('cs_theme_mode', mode || 'dark');
+      localStorage.setItem('cs_theme_colorblind', String(!!colorblind));
+      localStorage.setItem('cs_theme_dyslexic', String(!!dyslexicFont));
+      localStorage.setItem('cs_theme_scale', typeScale || 'standard');
+    } catch {}
   }, [theme, typeface, mode, colorblind, dyslexicFont, typeScale]);
 
   return (

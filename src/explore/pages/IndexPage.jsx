@@ -740,7 +740,7 @@ function Masthead() {
       position: "sticky",
       top: 0,
       zIndex: 1000,
-      overflow: "hidden",
+      overflow: "visible",
       transition: "padding 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease",
       boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.3)" : "none",
     }}>

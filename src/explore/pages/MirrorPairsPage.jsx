@@ -101,7 +101,7 @@ function normalizeMirrorLabel(label) {
 const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist, intactQ, circQ) => {
   if (!intactDist?.distribution || !circDist?.distribution) return null;
 
-  const processSide = (dist, cohortDist) => {
+  const processSide = (dist, cohortDist, q) => {
     const rawItems = dist.distribution || [];
     const cohortMap = new Map();
     if (cohortDist?.distribution) {
@@ -110,23 +110,48 @@ const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist
       });
     }
 
+    const standardLabels = q?.opts ? new Set(q.opts.map(normalizeMirrorLabel)) : null;
+
     const aggregated = new Map();
+    const otherNarratives = [];
+
     rawItems.forEach(item => {
       const normLabel = normalizeMirrorLabel(item.label);
       if (!normLabel) return;
-      const existing = aggregated.get(normLabel) || { label: normLabel, n: 0, cohortN: null };
-      existing.n += item.n;
-      if (cohortDist?.distribution) {
-        existing.cohortN = (existing.cohortN || 0) + (cohortMap.get(normLabel) || 0);
+      
+      const isStandard = !standardLabels || standardLabels.has(normLabel);
+      
+      if (isStandard) {
+        const existing = aggregated.get(normLabel) || { label: normLabel, n: 0, cohortN: null };
+        existing.n += item.n;
+        if (cohortDist?.distribution) {
+          existing.cohortN = (existing.cohortN || 0) + (cohortMap.get(normLabel) || 0);
+        }
+        aggregated.set(normLabel, existing);
+      } else {
+        otherNarratives.push({
+          text: item.label,
+          n: item.n
+        });
+
+        const otherLabel = "Other";
+        const existing = aggregated.get(otherLabel) || { label: otherLabel, n: 0, cohortN: null };
+        existing.n += item.n;
+        if (cohortDist?.distribution) {
+          existing.cohortN = (existing.cohortN || 0) + (cohortMap.get(normLabel) || 0);
+        }
+        aggregated.set(otherLabel, existing);
       }
-      aggregated.set(normLabel, existing);
     });
 
-    return aggregated;
+    return { aggregated, otherNarratives };
   };
 
-  const intactMap = processSide(intactDist, intactCohortDist);
-  const circMap = processSide(circDist, circCohortDist);
+  const intactData = processSide(intactDist, intactCohortDist, intactQ);
+  const circData = processSide(circDist, circCohortDist, circQ);
+
+  const intactMap = intactData.aggregated;
+  const circMap = circData.aggregated;
 
   const allLabels = Array.from(new Set([
     ...intactMap.keys(),
@@ -146,6 +171,13 @@ const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist
     sortedUnion = sortDistribution(unionObjects, intactQ);
   } else {
     sortedUnion = [...unionObjects].sort((a, b) => b.n - a.n);
+  }
+
+  // Move "Other" to the end of sortedUnion if present
+  const otherIndex = sortedUnion.findIndex(u => u.label === "Other");
+  if (otherIndex !== -1) {
+    const [otherItem] = sortedUnion.splice(otherIndex, 1);
+    sortedUnion.push(otherItem);
   }
 
   const intactResult = [];
@@ -185,7 +217,9 @@ const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist
     intactTotal,
     circTotal,
     intactCohortTotal,
-    circCohortTotal
+    circCohortTotal,
+    intactOtherNarratives: intactData.otherNarratives,
+    circOtherNarratives: circData.otherNarratives
   };
 };
 
@@ -677,9 +711,63 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
                       onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.intact}
                       onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.intact}40`}
                     >
-                      See all answers →
+                      See all →
                     </a>
                   </div>
+                  {aligned.intactOtherNarratives && aligned.intactOtherNarratives.length > 0 && (
+                    <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+                      <h4 style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.75rem",
+                        color: C.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        margin: "0 0 0.2rem"
+                      }}>
+                        Other Write-In Responses ({aligned.intactOtherNarratives.length})
+                      </h4>
+                      <div style={{ 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        gap: "0.6rem", 
+                        maxHeight: "280px", 
+                        overflowY: "auto",
+                        paddingRight: "0.4rem"
+                      }}>
+                        {aligned.intactOtherNarratives.map((item, idx) => (
+                          <div key={idx} style={{
+                            background: "rgba(255,255,255,0.02)",
+                            border: `1px solid ${C.ghost}`,
+                            borderLeft: `3px solid ${PATH_COLORS.intact}`,
+                            borderRadius: 6,
+                            padding: "0.8rem 1rem",
+                          }}>
+                            <p style={{
+                              margin: 0,
+                              fontFamily: FONT.display,
+                              fontStyle: "italic",
+                              fontSize: "0.88rem",
+                              lineHeight: 1.45,
+                              color: C.textBright
+                            }}>
+                              "{item.text}"
+                            </p>
+                            {item.n > 1 && (
+                              <div style={{ 
+                                fontFamily: FONT.mono, 
+                                fontSize: "0.65rem", 
+                                color: C.goldBright, 
+                                marginTop: "0.3rem",
+                                textAlign: "right" 
+                              }}>
+                                n = {item.n}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div style={{ color: C.dim }}>Loading...</div>
@@ -728,9 +816,63 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
                       onMouseOver={e => e.target.style.borderBottomColor = PATH_COLORS.circumcised}
                       onMouseOut={e => e.target.style.borderBottomColor = `${PATH_COLORS.circumcised}40`}
                     >
-                      See all answers →
+                      See all →
                     </a>
                   </div>
+                  {aligned.circOtherNarratives && aligned.circOtherNarratives.length > 0 && (
+                    <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+                      <h4 style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.75rem",
+                        color: C.muted,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        margin: "0 0 0.2rem"
+                      }}>
+                        Other Write-In Responses ({aligned.circOtherNarratives.length})
+                      </h4>
+                      <div style={{ 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        gap: "0.6rem", 
+                        maxHeight: "280px", 
+                        overflowY: "auto",
+                        paddingRight: "0.4rem"
+                      }}>
+                        {aligned.circOtherNarratives.map((item, idx) => (
+                          <div key={idx} style={{
+                            background: "rgba(255,255,255,0.02)",
+                            border: `1px solid ${C.ghost}`,
+                            borderLeft: `3px solid ${PATH_COLORS.circumcised}`,
+                            borderRadius: 6,
+                            padding: "0.8rem 1rem",
+                          }}>
+                            <p style={{
+                              margin: 0,
+                              fontFamily: FONT.display,
+                              fontStyle: "italic",
+                              fontSize: "0.88rem",
+                              lineHeight: 1.45,
+                              color: C.textBright
+                            }}>
+                              "{item.text}"
+                            </p>
+                            {item.n > 1 && (
+                              <div style={{ 
+                                fontFamily: FONT.mono, 
+                                fontSize: "0.65rem", 
+                                color: C.goldBright, 
+                                marginTop: "0.3rem",
+                                textAlign: "right" 
+                              }}>
+                                n = {item.n}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div style={{ color: C.dim }}>Loading...</div>

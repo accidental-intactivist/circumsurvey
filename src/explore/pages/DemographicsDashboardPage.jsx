@@ -208,57 +208,72 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
       fontFamily: FONT.body,
       paddingBottom: "6rem",
     }}>
-      {/* Section quick-nav pills */}
-      <div style={{ 
-        display: "flex", gap: "0.5rem", justifyContent: "center", flexWrap: "wrap",
-        padding: "1rem 1.5rem", borderBottom: `1px solid ${C.ghost}`,
-        background: C.bgCard, position: "sticky", top: "var(--header-height, 56px)", zIndex: 100,
-      }}>
-        {[
-          { id: "geo", label: "Geographic Origins", icon: "◈" },
-          { id: "mosaic", label: "Demographic Flow", icon: "〰" },
-          { id: "dna", label: "Pathway DNA", icon: "≡" },
-          { id: "radar", label: "Divergence Radar", icon: "◎" },
-          { id: "corr", label: "Correlation Matrix", icon: "▥" },
-        ].map(s => (
-          <button
-            key={s.id}
-            onClick={() => scrollTo(s.id)}
-            style={{
-              background: activeSection === s.id ? `${resolveCssColor(C.goldBright)}22` : C.bgSoft, 
-              border: `1px solid ${activeSection === s.id ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost)}`, 
-              borderRadius: 20,
-              padding: "0.4rem 1rem", 
-              color: activeSection === s.id ? resolveCssColor(C.goldBright) : C.text, 
-              fontFamily: FONT.condensed,
-              fontSize: "0.72rem", letterSpacing: "0.06em", textTransform: "uppercase",
-              cursor: "pointer", display: "flex", alignItems: "center", gap: "0.35rem",
-              transition: "all 0.3s",
-            }}
-            onMouseEnter={e => { 
-              if (activeSection !== s.id) {
-                e.currentTarget.style.borderColor = resolveCssColor(C.gold); 
-                e.currentTarget.style.color = resolveCssColor(C.goldBright); 
-              }
-            }}
-            onMouseLeave={e => { 
-              if (activeSection !== s.id) {
-                e.currentTarget.style.borderColor = resolveCssColor(C.ghost); 
-                e.currentTarget.style.color = resolveCssColor(C.text); 
-              }
-            }}
-          >
-            <span>{s.icon}</span> {s.label}
-          </button>
-        ))}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "1.5rem 2rem 0" }}>
+        <InlineBreadcrumb currentRoute="demographics" navigate={navigate} />
       </div>
 
-      {/* ── MAIN CONTENT ── */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1.5rem" }}>
-        <InlineBreadcrumb currentRoute="demographics" navigate={navigate} />
+      <div style={{ padding: "4rem 2rem", maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "260px 1fr", gap: "3rem", alignItems: "start" }}>
         
-        {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
-        <SectionAnchor id="geo" />
+        {/* Left Column: Topic Navigator */}
+        <aside style={{
+          position: "sticky",
+          top: "calc(var(--header-height, 56px) + 1.5rem)",
+          maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          zIndex: 100,
+        }}>
+          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.goldBright, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            Exhibits
+          </h3>
+          {[
+            { id: "geo", label: "Geographic Origins", icon: "◈" },
+            { id: "mosaic", label: "Demographic Flow", icon: "〰" },
+            { id: "dna", label: "Pathway DNA", icon: "≡" },
+            { id: "radar", label: "Divergence Radar", icon: "◎" },
+            { id: "corr", label: "Correlation Matrix", icon: "▥" },
+          ].map(s => (
+            <div
+              key={s.id}
+              onClick={() => scrollTo(s.id)}
+              style={{
+                cursor: "pointer",
+                fontFamily: FONT.body,
+                fontSize: "0.9rem",
+                color: activeSection === s.id ? resolveCssColor(C.goldBright) : C.text,
+                padding: "0.45rem 0.75rem",
+                borderRadius: 6,
+                background: activeSection === s.id ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                border: `1px solid ${activeSection === s.id ? resolveCssColor(C.gold) : C.ghost}`,
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem"
+              }}
+              onMouseEnter={e => { 
+                if (activeSection !== s.id) {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)"; 
+                  e.currentTarget.style.borderColor = C.gold; 
+                }
+              }}
+              onMouseLeave={e => { 
+                if (activeSection !== s.id) {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.02)"; 
+                  e.currentTarget.style.borderColor = C.ghost; 
+                }
+              }}
+            >
+              <span style={{ fontSize: "1.1em" }}>{s.icon}</span> {s.label}
+            </div>
+          ))}
+        </aside>
+
+        {/* Right Column: Exhibits */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
+          {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
+          <SectionAnchor id="geo" />
         <GeographicOrigins cohort={cohort} />
         
         {/* ═══ SECTION 2: DEMOGRAPHIC FLOW (SANKEY) ═══ */}
@@ -293,9 +308,14 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
                     outline: "none"
                   }}
                 >
-                  {DEMOGRAPHIC_DIMENSIONS.map(d => (
-                    <option key={d.id} value={d.id}>{d.label === "Pathway" ? "Experiential Pathway" : d.label}</option>
-                  ))}
+                  {DEMOGRAPHIC_DIMENSIONS.map(d => {
+                    const isSelectedElsewhere = sankeyDims.some((selectedDim, i) => i !== idx && selectedDim.id === d.id);
+                    return (
+                      <option key={d.id} value={d.id} disabled={isSelectedElsewhere}>
+                        {d.label === "Pathway" ? "Experiential Pathway" : d.label}
+                      </option>
+                    );
+                  })}
                 </select>
                 {idx < 2 && <span style={{ color: C.dim }}>→</span>}
               </div>
@@ -317,6 +337,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
         {/* ═══ SECTION 5: CORRELATION MATRIX ═══ */}
         <SectionAnchor id="corr" />
         <CorrelationSection cohort={cohort} />
+        </div>
       </div>
 
       <Tooltip {...tooltip} />

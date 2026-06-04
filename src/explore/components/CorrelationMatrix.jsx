@@ -247,13 +247,17 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                 const intensity = maxAbsResidual > 0 ? (Math.abs(residual) / maxAbsResidual) * 100 : 0;
                 
                 // For very low intensity, give it a baseline so it doesn't disappear completely if there is data
-                const visualIntensity = Math.max(8, intensity);
+                const visualIntensity = Math.max(0, intensity);
 
-                let bgColor = "transparent";
+                const centerColor = "#FDFBF7"; // Bright Cream
+                const hotColor = "#B91C1C";    // Dark Red
+                const coldColor = "#1D4ED8";   // Dark Blue
+
+                let bgColor = centerColor;
                 if (val > 0 || Math.abs(residual) > 0.5) {
                   bgColor = residual > 0 
-                    ? `color-mix(in srgb, #F97316 ${visualIntensity}%, transparent)` 
-                    : `color-mix(in srgb, #3B82F6 ${visualIntensity}%, transparent)`;
+                    ? `color-mix(in srgb, ${hotColor} ${visualIntensity}%, ${centerColor})` 
+                    : `color-mix(in srgb, ${coldColor} ${visualIntensity}%, ${centerColor})`;
                 }
 
                 return (
@@ -271,14 +275,14 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                       height: "40px",
                       background: bgColor,
                       border: isHovered 
-                        ? `1px solid ${residual > 0 ? "#F97316" : "#3B82F6"}` 
-                        : (val === 0 ? `1px dashed ${C.ghost}` : `1px solid transparent`),
+                        ? `2px solid ${residual > 0 ? hotColor : coldColor}` 
+                        : (val === 0 ? `1px dashed rgba(0,0,0,0.15)` : `1px solid transparent`),
                       borderRadius: 4,
                       cursor: (val > 0 || expected > 0.5) ? "pointer" : "default",
                       transition: "all 0.15s",
                       position: "relative",
                       zIndex: isHovered ? 2 : 1,
-                      boxShadow: isHovered && (val > 0 || expected > 0.5) ? "0 4px 12px rgba(0,0,0,0.3)" : "none"
+                      boxShadow: isHovered && (val > 0 || expected > 0.5) ? "0 4px 12px rgba(0,0,0,0.4)" : "none"
                     }}
                   />
                 );
@@ -303,15 +307,15 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: FONT.body, fontSize: "0.85rem", color: C.text }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#F97316" }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#B91C1C" }}></div>
               <div><strong>Positive Correlation</strong> (More than expected)</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "transparent", border: `1px dashed ${C.ghost}` }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#FDFBF7", border: `1px solid ${C.ghost}` }}></div>
               <div style={{ color: C.muted }}>Matches Expectation (Neutral)</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#3B82F6" }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#1D4ED8" }}></div>
               <div><strong>Negative Correlation</strong> (Fewer than expected)</div>
             </div>
           </div>
@@ -347,7 +351,7 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                   padding: "0.4rem 0.6rem",
                   background: "rgba(0,0,0,0.2)",
                   borderRadius: 4,
-                  color: residual > 0 ? "#F97316" : "#3B82F6", 
+                  color: residual > 0 ? "#EF4444" : "#3B82F6", 
                   fontWeight: "bold",
                   display: "inline-block",
                   width: "fit-content"

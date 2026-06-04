@@ -557,10 +557,17 @@ function DivergenceRadar({ cohort, tooltip }) {
 
   // All possible cohorts for this dimension
   const dimensionCohorts = useMemo(() => {
-    return activeDimension?.options.map(opt => 
+    let options = activeDimension?.options.map(opt => 
       typeof opt === "string" ? { value: opt, label: shortenLabel(opt) } : opt
     ) || [];
-  }, [activeDimension]);
+    
+    // Omit 'observer' from radar charts when examining pathways
+    if (activeDimensionId === "pathway") {
+      options = options.filter(o => o.value !== "observer");
+    }
+    
+    return options;
+  }, [activeDimension, activeDimensionId]);
 
   useEffect(() => {
     if (!inView) return;

@@ -142,8 +142,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           
           return (
             <button
-              key={pathKey}
-              onClick={() => setActiveTab(pathKey)}
+              key={tabKey}
+              onClick={() => setActiveTab(tabKey)}
               style={{
                 background: isActive ? `${color}22` : "transparent",
                 border: `1px solid ${isActive ? color : C.ghost}`,

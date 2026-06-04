@@ -869,25 +869,46 @@ function GeographicOrigins({ cohort }) {
   const [ref, inView] = useInView();
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mapLevel, setMapLevel] = useState("country");
+  const [splitBy, setSplitBy] = useState("pathway");
 
   useEffect(() => {
     if (!inView) return;
     setLoading(true);
 
-    fetch(`${API_BASE}/geo?level=country&by=pathway`)
+    fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}`)
       .then(r => r.json())
       .then(data => {
         setGeoData(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [inView]);
+  }, [inView, mapLevel, splitBy]);
+
+  const cohortData = useMemo(() => {
+    if (!geoData || !geoData.locations) return { results: {} };
+    const splitKey = `by_${splitBy}`;
+    const cohortKeys = new Set();
+    geoData.locations.forEach(loc => {
+      if (loc[splitKey]) Object.keys(loc[splitKey]).forEach(k => cohortKeys.add(k));
+    });
+    const results = {};
+    for (const key of cohortKeys) {
+      results[key] = {
+        distribution: geoData.locations.map(loc => ({
+          label: loc.location,
+          n: loc[splitKey]?.[key] || 0
+        })).filter(d => d.n > 0)
+      };
+    }
+    return { results };
+  }, [geoData, splitBy]);
 
   return (
     <section ref={ref} className="xray-section" style={{ marginBottom: "4rem", minHeight: "600px" }}>
       <SectionHeader 
         title="Geographic Origins"
-        subtitle="Where do survey respondents come from? Top countries by total participation, broken down by pathway."
+        subtitle="Where do survey respondents come from? View mapped participation by region."
         icon="◈"
       />
 
@@ -895,28 +916,51 @@ function GeographicOrigins({ cohort }) {
         background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
         padding: "2rem",
       }}>
+        {/* Controls */}
+        <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "0.75rem", color: C.muted, marginBottom: "0.4rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em" }}>Region Level</label>
+            <select 
+              value={mapLevel} 
+              onChange={e => setMapLevel(e.target.value)}
+              style={{
+                background: C.bg, color: C.textBright, border: `1px solid ${C.ghost}`,
+                padding: "0.5rem 1rem", borderRadius: 6, fontFamily: FONT.body, cursor: "pointer", minWidth: 150
+              }}
+            >
+              <option value="country">World</option>
+              <option value="us_state">United States</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: "0.75rem", color: C.muted, marginBottom: "0.4rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em" }}>Split By</label>
+            <select 
+              value={splitBy} 
+              onChange={e => setSplitBy(e.target.value)}
+              style={{
+                background: C.bg, color: C.textBright, border: `1px solid ${C.ghost}`,
+                padding: "0.5rem 1rem", borderRadius: 6, fontFamily: FONT.body, cursor: "pointer", minWidth: 180
+              }}
+            >
+              {DEMOGRAPHIC_DIMENSIONS.map(d => (
+                <option key={d.id} value={d.id}>{d.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {loading || !geoData ? (
           <div style={{ textAlign: "center", padding: "3rem", color: C.muted, fontStyle: "italic" }}>
             Mapping origins…
           </div>
         ) : (
           <GeographicHeatmap 
-            questionId="country"
-            title="World Map of Respondents"
+            questionId={mapLevel === "country" ? "country" : "us_state"}
+            title={mapLevel === "country" ? "World Map of Respondents" : "United States Respondents"}
             distribution={{
               distribution: geoData.locations.map(loc => ({ label: loc.location, n: loc.n }))
             }}
-            byPathway={{
-              results: PATHWAYS.reduce((acc, p) => {
-                acc[p.id] = {
-                  distribution: geoData.locations.map(loc => ({
-                    label: loc.location,
-                    n: loc.by_pathway?.[p.id] || 0
-                  })).filter(d => d.n > 0)
-                };
-                return acc;
-              }, {})
-            }}
+            byCohort={cohortData}
           />
         )}
       </div>

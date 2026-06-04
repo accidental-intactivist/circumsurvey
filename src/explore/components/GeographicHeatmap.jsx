@@ -9,7 +9,7 @@ const WORLD_TOPO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
-export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byPathway }) {
+export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort }) {
   const [tooltip, setTooltip] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   
@@ -27,7 +27,12 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     
   const activeDist = activeTab === "all"
     ? baseDist
-    : (byPathway?.results?.[activeTab]?.distribution || []);
+    : (byCohort?.results?.[activeTab]?.distribution || []);
+    
+  const tabKeys = useMemo(() => {
+    if (!byCohort || !byCohort.results) return ["all"];
+    return ["all", ...Object.keys(byCohort.results)];
+  }, [byCohort]);
     
   const dataMap = useMemo(() => {
     const map = {};
@@ -41,46 +46,61 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     return { map, max, total };
   }, [activeDist]);
   
-  const getScaleRange = (tab) => {
-    switch (tab) {
-      case "intact": return ["#062417", "#059669", resolveCssColor(PATH_COLORS.intact)];
-      case "circumcised": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.circumcised)];
-      case "restoring": return ["#2e1f06", "#d97706", resolveCssColor(PATH_COLORS.restoring)];
-      case "observer": return ["#2a1005", "#c2410c", resolveCssColor(PATH_COLORS.observer)];
-      case "trans_vaginoplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
-      case "trans_phalloplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
-      case "intersex": return ["#1f1f1f", "#525252", resolveCssColor(PATH_COLORS.intersex)];
-      default: return ["#1f1135", "#be123c", resolveCssColor(C.goldBright)]; // Striking Dark Purple -> Crimson -> Gold
+  const getScaleRange = (tab, idx) => {
+    if (tab === "all") return ["#1f1135", "#be123c", resolveCssColor(C.goldBright)];
+    
+    if (PATHWAYS[tab]) {
+      switch (tab) {
+        case "intact": return ["#062417", "#059669", resolveCssColor(PATH_COLORS.intact)];
+        case "circumcised": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.circumcised)];
+        case "restoring": return ["#2e1f06", "#d97706", resolveCssColor(PATH_COLORS.restoring)];
+        case "observer": return ["#2a1005", "#c2410c", resolveCssColor(PATH_COLORS.observer)];
+        case "trans_vaginoplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
+        case "trans_phalloplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
+        case "intersex": return ["#1f1f1f", "#525252", resolveCssColor(PATH_COLORS.intersex)];
+      }
     }
+    
+    const fallbacks = [
+      ["#0a192f", "#2563eb", resolveCssColor(C.blue)],
+      ["#2e0c10", "#e11d48", resolveCssColor(C.red)],
+      ["#062417", "#10b981", resolveCssColor(C.green)],
+      ["#2e1f06", "#f59e0b", resolveCssColor(C.yellow)],
+      ["#2a1005", "#f97316", resolveCssColor(C.orange)],
+      ["#1e1b4b", "#8b5cf6", resolveCssColor(C.ltBlue)],
+      ["#1f2937", "#6b7280", resolveCssColor(C.grey)],
+    ];
+    return fallbacks[idx % fallbacks.length];
   };
 
   const colorScale = useMemo(() => {
-    const range = getScaleRange(activeTab);
+    const idx = tabKeys.indexOf(activeTab);
+    const range = getScaleRange(activeTab, idx);
     const max = dataMap.max || 1;
     // For a 3-stop scale, use [1, mid, max]
     return scaleLinear()
       .domain([1, max / 2, max])
       .range(range);
-  }, [dataMap.max, activeTab]);
+  }, [dataMap.max, activeTab, tabKeys]);
 
   const aggregatedDist = useMemo(() => rollUpDistribution(activeDist), [activeDist]);
 
-  const pathwayMap = useMemo(() => {
+  const cohortMap = useMemo(() => {
     const map = {};
-    if (!byPathway || !byPathway.results) return map;
+    if (!byCohort || !byCohort.results) return map;
     
-    for (const [pathwayId, data] of Object.entries(byPathway.results)) {
+    for (const [cohortId, data] of Object.entries(byCohort.results)) {
       if (!data.distribution) continue;
       for (const d of data.distribution) {
         if (!d.label) continue;
         const norm = normalizeName(d.label);
         if (!map[norm]) map[norm] = {};
-        if (!map[norm][pathwayId]) map[norm][pathwayId] = 0;
-        map[norm][pathwayId] += d.n;
+        if (!map[norm][cohortId]) map[norm][cohortId] = 0;
+        map[norm][cohortId] += d.n;
       }
     }
     return map;
-  }, [byPathway]);
+  }, [byCohort]);
 
   return (
     <div style={{
@@ -100,15 +120,25 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         marginBottom: "0.8rem"
       }}>{title}</h2>
       
-      {/* Pathway Filters */}
+      {/* Cohort Filters */}
       <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
-        {["all", ...PATHWAY_IDS].map(pathKey => {
-          // Only show pathways that have data in byPathway
-          if (pathKey !== "all" && (!byPathway?.results || !byPathway.results[pathKey] || byPathway.results[pathKey].n === 0)) return null;
+        {tabKeys.map((tabKey, idx) => {
+          if (tabKey !== "all" && (!byCohort?.results || !byCohort.results[tabKey] || byCohort.results[tabKey].n === 0)) return null;
           
-          const isActive = activeTab === pathKey;
-          const color = pathKey === "all" ? C.goldBright : PATHWAYS[pathKey]?.color || C.muted;
-          const label = pathKey === "all" ? "All Pathways" : PATHWAYS[pathKey]?.label || pathKey;
+          const isActive = activeTab === tabKey;
+          let color = C.muted;
+          let label = tabKey;
+          
+          if (tabKey === "all") {
+            color = C.goldBright;
+            label = "All Participants";
+          } else if (PATHWAYS[tabKey]) {
+            color = PATHWAYS[tabKey].color;
+            label = PATHWAYS[tabKey].label;
+          } else {
+            const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
+            color = cList[idx % cList.length];
+          }
           
           return (
             <button
@@ -153,7 +183,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         </div>
       )}
 
-      <div style={{ width: "100%", aspectRatio: "16/9", background: C.bgDeep, borderRadius: 6, overflow: "hidden" }}>
+      <div style={{ width: "100%", aspectRatio: "16/9", background: `color-mix(in srgb, ${C.bgSoft} 50%, transparent)`, borderRadius: 6, overflow: "hidden" }}>
         <ComposableMap 
           projection={isUS ? "geoAlbersUsa" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
           width={950}
@@ -190,12 +220,12 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                         const norm = normalizeName(geoName);
                         let content = `${geoName}: ${val}`;
                         
-                        if (val > 0 && pathwayMap[norm]) {
-                          const pData = pathwayMap[norm];
+                        if (val > 0 && cohortMap[norm]) {
+                          const pData = cohortMap[norm];
                           const breakdown = [];
-                          for (const pid of PATHWAY_IDS) {
-                            if (pData[pid] > 0) {
-                              breakdown.push({ id: pid, n: pData[pid] });
+                          for (const cid of tabKeys) {
+                            if (cid !== "all" && pData[cid] > 0) {
+                              breakdown.push({ id: cid, n: pData[cid] });
                             }
                           }
                           
@@ -210,11 +240,24 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                                 }}>
                                   <strong>{geoName}</strong>: {val}
                                 </div>
-                                {breakdown.map(b => (
-                                  <div key={b.id}>
-                                    <span style={{ color: PATHWAYS[b.id].color }}>●</span> {PATHWAYS[b.id].label}: {b.n}
-                                  </div>
-                                ))}
+                                {breakdown.map((b, bIdx) => {
+                                  // Fallback color logic
+                                  let bColor = C.muted;
+                                  let bLabel = b.id;
+                                  if (PATHWAYS[b.id]) {
+                                    bColor = PATHWAYS[b.id].color;
+                                    bLabel = PATHWAYS[b.id].label;
+                                  } else {
+                                    const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
+                                    bColor = cList[(tabKeys.indexOf(b.id) - 1) % cList.length] || C.muted;
+                                  }
+                                  
+                                  return (
+                                    <div key={b.id}>
+                                      <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             );
                           }
@@ -226,19 +269,19 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                       }}
                       style={{
                         default: {
-                          fill: val > 0 ? colorScale(val) : "#0f0f13", // Very dark base
-                          stroke: "#2a2a30", // Ghost stroke
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgDeep} 40%, transparent)`,
+                          stroke: `color-mix(in srgb, ${C.ghost} 20%, transparent)`,
                           strokeWidth: 0.6,
                           outline: "none"
                         },
                         hover: {
-                          fill: val > 0 ? colorScale(val) : "#1f1f24",
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgCard} 50%, transparent)`,
                           stroke: C.textBright,
                           strokeWidth: 1.5,
                           outline: "none"
                         },
                         pressed: {
-                          fill: val > 0 ? colorScale(val) : "#1f1f24",
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgCard} 50%, transparent)`,
                           outline: "none"
                         }
                       }}

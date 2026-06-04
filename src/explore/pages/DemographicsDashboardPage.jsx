@@ -91,8 +91,19 @@ function getChartColor(idx) {
 
 function optionToValue(opt) {
   if (!opt) return null;
+  
+  // Standard 1-5 numerical prefixes
   const match = opt.match(/^([1-5])/);
-  return match ? parseInt(match[1], 10) : null;
+  if (match) return parseInt(match[1], 10);
+  
+  // Specific mappings for Pride & Satisfaction
+  if (opt === "Very proud and satisfied") return 5;
+  if (opt === "Generally proud and satisfied") return 4;
+  if (opt === "Neutral or ambivalent") return 3;
+  if (opt === "Somewhat dissatisfied") return 2;
+  if (opt === "Very dissatisfied") return 1;
+  
+  return null;
 }
 
 function calculateWeightedAvg(distribution) {

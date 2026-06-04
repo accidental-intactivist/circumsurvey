@@ -249,9 +249,9 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                 // For very low intensity, give it a baseline so it doesn't disappear completely if there is data
                 const visualIntensity = Math.max(0, intensity);
 
-                const centerColor = "#FDFBF7"; // Bright Cream
-                const hotColor = "#B91C1C";    // Dark Red
-                const coldColor = "#1D4ED8";   // Dark Blue
+                const centerColor = "#10B981"; // Green (Matches Expectations)
+                const hotColor = "#FBBF24";    // Yellow (Positive Outlier)
+                const coldColor = "#3B82F6";   // Blue (Negative Outlier)
 
                 let bgColor = centerColor;
                 if (val > 0 || Math.abs(residual) > 0.5) {
@@ -276,7 +276,7 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                       background: bgColor,
                       border: isHovered 
                         ? `2px solid ${residual > 0 ? hotColor : coldColor}` 
-                        : (val === 0 ? `1px dashed rgba(0,0,0,0.15)` : `1px solid transparent`),
+                        : (val === 0 ? `1px dashed rgba(0,0,0,0.2)` : `1px solid transparent`),
                       borderRadius: 4,
                       cursor: (val > 0 || expected > 0.5) ? "pointer" : "default",
                       transition: "all 0.15s",
@@ -307,15 +307,15 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: FONT.body, fontSize: "0.85rem", color: C.text }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#B91C1C" }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#FBBF24" }}></div>
               <div><strong>Positive Correlation</strong> (More than expected)</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#FDFBF7", border: `1px solid ${C.ghost}` }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#10B981", border: `1px solid ${C.ghost}` }}></div>
               <div style={{ color: C.muted }}>Matches Expectation (Neutral)</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#1D4ED8" }}></div>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#3B82F6" }}></div>
               <div><strong>Negative Correlation</strong> (Fewer than expected)</div>
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                   padding: "0.4rem 0.6rem",
                   background: "rgba(0,0,0,0.2)",
                   borderRadius: 4,
-                  color: residual > 0 ? "#EF4444" : "#3B82F6", 
+                  color: residual > 0 ? "#FBBF24" : "#3B82F6", 
                   fontWeight: "bold",
                   display: "inline-block",
                   width: "fit-content"

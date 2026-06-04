@@ -80,6 +80,61 @@ export const DEMOGRAPHIC_DIMENSIONS = [
       "No significant religious/spiritual/cultural tradition influencing this topic.",
     ],
   },
+  {
+    id: "sexuality",
+    label: "Sexuality",
+    column: "sexuality",
+    options: [
+      "Straight/Heterosexual",
+      "Gay",
+      "Bisexual",
+      "Pansexual",
+      "Lesbian",
+      "Asexual",
+      "Questioning",
+    ],
+  },
+  {
+    id: "education",
+    label: "Education",
+    column: "education",
+    options: [
+      "Less than high school diploma or equivalent",
+      "High school diploma or GED (or equivalent)",
+      "Trade School Certificate / Pre-Apprenticeship Program",
+      "Journeyman Certification / Licensed Tradesperson",
+      "Some college / Associate's degree",
+      "Bachelor's degree (e.g., BA, BS)",
+      "Master's degree (e.g., MA, MS, MBA, MEd)",
+      "Professional degree (e.g., MD, JD, DDS, PharmD)",
+      "Doctoral degree (e.g., PhD, EdD)",
+    ],
+  },
+  {
+    id: "socioeconomic",
+    label: "Socioeconomic Status",
+    column: "socioeconomic",
+    options: [
+      "Upper income / Wealthy (Family had significant financial resources, wealth, or passive income)",
+      "Upper-middle income (Family was financially secure, could comfortably afford needs and wants, saved regularly, maybe owned property beyond primary home)",
+      "Middle income (Family was generally comfortable, could afford needs and some wants, maybe saved a bit)",
+      "Working class / Lower-middle income (Family generally met basic needs but had few financial extras or savings)",
+      "Lower income (Family struggled to consistently meet basic needs like housing, food, healthcare)",
+      "Prefer not to say / Unsure"
+    ],
+  },
+  {
+    id: "family_upbringing",
+    label: "Family Upbringing",
+    column: "family_upbringing",
+    options: [
+      "I was raised by one or both of my birth/biological parents.",
+      "I was adopted as an infant (typically within the first year of life).",
+      "I was adopted as a child or teenager (after the age of one).",
+      "I was raised primarily in a different family structure (e.g., by other relatives like grandparents, in foster care, with legal guardians).",
+      "Prefer not to say.",
+    ],
+  },
 ];
 
 export default function DemographicFilterBar({ cohort, onChange, compact = false }) {

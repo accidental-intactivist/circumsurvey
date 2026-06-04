@@ -33,6 +33,13 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     if (!byCohort || !byCohort.results) return ["all"];
     return ["all", ...Object.keys(byCohort.results)];
   }, [byCohort]);
+  
+  // Reset active tab if the dimension changes and the old tab is no longer valid
+  useEffect(() => {
+    if (!tabKeys.includes(activeTab)) {
+      setActiveTab("all");
+    }
+  }, [tabKeys, activeTab]);
     
   const dataMap = useMemo(() => {
     const map = {};
@@ -70,7 +77,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       ["#1e1b4b", "#8b5cf6", resolveCssColor(C.ltBlue)],
       ["#1f2937", "#6b7280", resolveCssColor(C.grey)],
     ];
-    return fallbacks[idx % fallbacks.length];
+    return fallbacks[Math.max(0, idx) % fallbacks.length];
   };
 
   const colorScale = useMemo(() => {
@@ -249,7 +256,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                                     bLabel = PATHWAYS[b.id].label;
                                   } else {
                                     const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
-                                    bColor = cList[(tabKeys.indexOf(b.id) - 1) % cList.length] || C.muted;
+                                    const safeIdx = Math.max(0, tabKeys.indexOf(b.id) - 1);
+                                    bColor = cList[safeIdx % cList.length] || C.muted;
                                   }
                                   
                                   return (

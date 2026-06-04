@@ -35,13 +35,16 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
     return () => { cancelled = true; };
   }, [rowQuestion?.id, colQuestion?.id, cohort, crossTabData]);
 
-  const { rowLabels, colLabels, matrix, maxN } = useMemo(() => {
+  const { rowLabels, colLabels, matrix, expectedMatrix, maxN, maxAbsResidual } = useMemo(() => {
+    let cols = [];
+    let rows = [];
+    let mat = [];
+    let max = 0;
+
     if (crossTabData) {
-      // Process pre-calculated crossTabData (from DemographicsDashboard)
-      // crossTabData.cohorts = [{ option: "Gen Z", distribution: [...] }]
-      if (!crossTabData.cohorts) return { rowLabels: [], colLabels: [], matrix: [], maxN: 0 };
+      if (!crossTabData.cohorts) return { rowLabels: [], colLabels: [], matrix: [], expectedMatrix: [], maxN: 0, maxAbsResidual: 1 };
       
-      const cols = crossTabData.cohorts.map(c => c.option);
+      cols = crossTabData.cohorts.map(c => c.option);
       const rowSet = new Set();
       crossTabData.cohorts.forEach(c => {
         c.distribution.forEach(d => {
@@ -49,9 +52,8 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
         });
       });
       
-      const rows = Array.from(rowSet).sort();
-      let max = 0;
-      const mat = rows.map(r => {
+      rows = Array.from(rowSet).sort();
+      mat = rows.map(r => {
         return crossTabData.cohorts.map(c => {
           const found = c.distribution.find(d => d.label === r);
           const n = found ? found.n : 0;
@@ -59,38 +61,57 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
           return n;
         });
       });
-      return { rowLabels: rows, colLabels: cols, matrix: mat, maxN: max };
+    } else {
+      if (!data || !data.results) return { rowLabels: [], colLabels: [], matrix: [], expectedMatrix: [], maxN: 0, maxAbsResidual: 1 };
+      
+      cols = Object.keys(data.results).filter(k => k !== "null" && k !== "");
+      const rowSet = new Set();
+      
+      cols.forEach(c => {
+        if (data.results[c].distribution) {
+          data.results[c].distribution.forEach(d => {
+            if (d.label && d.label !== "null" && d.label !== "") rowSet.add(d.label);
+          });
+        }
+      });
+      
+      rows = Array.from(rowSet).sort();
+      mat = rows.map(r => {
+        return cols.map(c => {
+          const dist = data.results[c].distribution || [];
+          const found = dist.find(d => d.label === r);
+          const n = found ? found.n : 0;
+          if (n > max) max = n;
+          return n;
+        });
+      });
     }
 
-    if (!data || !data.results) return { rowLabels: [], colLabels: [], matrix: [], maxN: 0 };
-    
-    // The keys of data.results are the answers to colQuestion
-    const cols = Object.keys(data.results).filter(k => k !== "null" && k !== "");
-    const rowSet = new Set();
-    
-    cols.forEach(c => {
-      if (data.results[c].distribution) {
-        data.results[c].distribution.forEach(d => {
-          if (d.label && d.label !== "null" && d.label !== "") rowSet.add(d.label);
-        });
-      }
-    });
-    
-    const rows = Array.from(rowSet).sort(); // Ideally sort by actual survey order if available
-    
-    let max = 0;
-    const mat = rows.map(r => {
-      return cols.map(c => {
-        const dist = data.results[c].distribution || [];
-        const found = dist.find(d => d.label === r);
-        const n = found ? found.n : 0;
-        if (n > max) max = n;
-        return n;
+    // --- NEW: Calculate Diverging Residuals ---
+    const rowTotals = mat.map(row => row.reduce((a, b) => a + b, 0));
+    const colTotals = cols.map((_, cIdx) => mat.reduce((sum, row) => sum + row[cIdx], 0));
+    const grandTotal = rowTotals.reduce((a, b) => a + b, 0);
+
+    let maxAbsRes = 0;
+    const expectedMat = mat.map((row, rIdx) => {
+      return cols.map((_, cIdx) => {
+        if (grandTotal === 0) return 0;
+        const expected = (rowTotals[rIdx] * colTotals[cIdx]) / grandTotal;
+        const residual = mat[rIdx][cIdx] - expected;
+        if (Math.abs(residual) > maxAbsRes) maxAbsRes = Math.abs(residual);
+        return expected;
       });
     });
     
-    return { rowLabels: rows, colLabels: cols, matrix: mat, maxN: max };
-  }, [data]);
+    return { 
+      rowLabels: rows, 
+      colLabels: cols, 
+      matrix: mat, 
+      expectedMatrix: expectedMat,
+      maxN: max,
+      maxAbsResidual: maxAbsRes === 0 ? 1 : maxAbsRes
+    };
+  }, [data, crossTabData]);
 
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredCol, setHoveredCol] = useState(null);
@@ -200,18 +221,44 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                 const isHovered = isRowHovered && isColHovered;
                 const cLabel = colLabels[cIdx];
                 
+                const expected = expectedMatrix ? expectedMatrix[rIdx][cIdx] : 0;
+                const residual = val - expected;
+                // Intensity from 0 to 100
+                const intensity = maxAbsResidual > 0 ? (Math.abs(residual) / maxAbsResidual) * 100 : 0;
+                
+                // For very low intensity, give it a baseline so it doesn't disappear completely if there is data
+                const visualIntensity = Math.max(8, intensity);
+
+                let bgColor = "transparent";
+                if (val > 0 || Math.abs(residual) > 0.5) {
+                  bgColor = residual > 0 
+                    ? `color-mix(in srgb, #F97316 ${visualIntensity}%, transparent)` 
+                    : `color-mix(in srgb, #3B82F6 ${visualIntensity}%, transparent)`;
+                }
+
                 return (
                   <div
                     key={`cell-${rIdx}-${cIdx}`}
                     onMouseEnter={(e) => {
                       setHoveredRow(rIdx);
                       setHoveredCol(cIdx);
-                      if (val > 0) {
+                      if (val > 0 || expected > 0.5) {
                         showTooltip(e, (
                           <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
                             <div>Row: {rLabel}</div>
                             <div>Col: {cLabel}</div>
-                            <div style={{ color: "var(--c-gold)", fontWeight: "bold", marginTop: "4px" }}>Count: {val}</div>
+                            <div style={{ margin: "4px 0", borderTop: `1px solid ${C.ghost}`, paddingTop: "4px" }}>
+                              <strong style={{ color: C.textBright }}>Observed Count: {val}</strong>
+                            </div>
+                            <div style={{ color: C.muted }}>Expected Count: {expected.toFixed(1)}</div>
+                            <div style={{ 
+                              color: residual > 0 ? "#F97316" : "#3B82F6", 
+                              fontWeight: "bold",
+                              marginTop: "2px" 
+                            }}>
+                              {residual > 0 ? "Positive Correlation" : "Negative Correlation"} 
+                              {" "}(Residual: {residual > 0 ? "+" : ""}{residual.toFixed(1)})
+                            </div>
                           </div>
                         ));
                       }
@@ -224,18 +271,16 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                     }}
                     style={{
                       height: "40px",
-                      background: val === 0 
-                        ? "transparent" 
-                        : `color-mix(in srgb, var(--c-gold) ${Math.max(12, (val / maxN) * 100)}%, transparent)`,
-                      border: val === 0 
-                        ? `1px dashed ${C.ghost}`
-                        : isHovered ? `1px solid var(--c-goldBright)` : `1px solid transparent`,
+                      background: bgColor,
+                      border: isHovered 
+                        ? `1px solid ${residual > 0 ? "#F97316" : "#3B82F6"}` 
+                        : (val === 0 ? `1px dashed ${C.ghost}` : `1px solid transparent`),
                       borderRadius: 4,
-                      cursor: val > 0 ? "pointer" : "default",
+                      cursor: (val > 0 || expected > 0.5) ? "pointer" : "default",
                       transition: "all 0.15s",
                       position: "relative",
                       zIndex: isHovered ? 2 : 1,
-                      boxShadow: isHovered && val > 0 ? "0 4px 12px rgba(0,0,0,0.3)" : "none"
+                      boxShadow: isHovered && (val > 0 || expected > 0.5) ? "0 4px 12px rgba(0,0,0,0.3)" : "none"
                     }}
                   />
                 );

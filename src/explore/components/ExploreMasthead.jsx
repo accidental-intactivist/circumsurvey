@@ -56,7 +56,7 @@ const ROUTE_META = {
   },
   demographics: {
     kicker: "Exhibit 05",
-    title: "Cohort X-Ray",
+    title: "Demographic Explorer",
     desc: "Explore the demographic composition of each cohort — age, generation, sexuality, education, religion, and geographic distribution.",
     navTitle: "Demographics",
   },
@@ -109,7 +109,7 @@ export const EXHIBIT_ROUTES = [
   { route: "pairs", num: "Exhibit 02", label: "Mirror Pairs" },
   { route: "pleasure-gap", num: "Exhibit 03", label: "The Pleasure Gap" },
   { route: "correlations", num: "Exhibit 04", label: "Correlations Explorer" },
-  { route: "demographics", num: "Exhibit 05", label: "Cohort X-Ray" },
+  { route: "demographics", num: "Exhibit 05", label: "Demographic Explorer" },
   { route: "narrative-mirrors", num: "Exhibit 06", label: "Narrative Mirrors" },
   { route: "generational-faultlines", num: "Exhibit 07", label: "Generational Faultlines" },
   { route: "observer-triad", num: "Exhibit 08", label: "The Observer Triad" },

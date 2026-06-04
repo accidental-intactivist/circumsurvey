@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { C, FONT } from "../styles/tokens";
 
 export function useTooltip() {
@@ -20,13 +21,13 @@ export function useTooltip() {
 }
 
 export function Tooltip({ visible, content, x, y }) {
-  if (!visible) return null;
+  if (!visible || typeof window === 'undefined') return null;
   
   // Keep tooltip on screen
-  const safeX = typeof window !== 'undefined' ? Math.min(x + 15, window.innerWidth - 150) : x + 15;
-  const safeY = typeof window !== 'undefined' ? Math.min(y + 15, window.innerHeight - 50) : y + 15;
+  const safeX = Math.min(x + 15, window.innerWidth - 150);
+  const safeY = Math.min(y + 15, window.innerHeight - 50);
 
-  return (
+  return createPortal(
     <div style={{
       position: "fixed",
       top: safeY,
@@ -34,16 +35,17 @@ export function Tooltip({ visible, content, x, y }) {
       pointerEvents: "none",
       background: C.bgDeep,
       border: `1px solid ${C.ghost}`,
-      padding: "0.4rem 0.6rem",
-      borderRadius: 4,
+      padding: "0.5rem 0.75rem",
+      borderRadius: 6,
       fontFamily: FONT.mono,
       fontSize: "0.75rem",
       color: C.text,
       whiteSpace: "pre-wrap",
-      zIndex: 9999,
-      boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
+      zIndex: 99999,
+      boxShadow: "0 8px 24px rgba(0,0,0,0.6)"
     }}>
       {content}
-    </div>
+    </div>,
+    document.body
   );
 }

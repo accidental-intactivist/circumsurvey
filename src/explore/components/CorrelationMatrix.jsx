@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { getAggregate } from "../lib/api";
 import { C, FONT } from "../styles/tokens";
-import { useTooltip, Tooltip } from "./Tooltip";
 
 /**
  * Renders a cross-tabulation matrix (bubble chart) between two questions.
@@ -10,7 +9,6 @@ import { useTooltip, Tooltip } from "./Tooltip";
 export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = null, crossTabData = null }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(!crossTabData);
-  const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   useEffect(() => {
     if (crossTabData) {
@@ -242,32 +240,10 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
                     onMouseEnter={(e) => {
                       setHoveredRow(rIdx);
                       setHoveredCol(cIdx);
-                      if (val > 0 || expected > 0.5) {
-                        showTooltip(e, (
-                          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                            <div>Row: {rLabel}</div>
-                            <div>Col: {cLabel}</div>
-                            <div style={{ margin: "4px 0", borderTop: `1px solid ${C.ghost}`, paddingTop: "4px" }}>
-                              <strong style={{ color: C.textBright }}>Observed Count: {val}</strong>
-                            </div>
-                            <div style={{ color: C.muted }}>Expected Count: {expected.toFixed(1)}</div>
-                            <div style={{ 
-                              color: residual > 0 ? "#F97316" : "#3B82F6", 
-                              fontWeight: "bold",
-                              marginTop: "2px" 
-                            }}>
-                              {residual > 0 ? "Positive Correlation" : "Negative Correlation"} 
-                              {" "}(Residual: {residual > 0 ? "+" : ""}{residual.toFixed(1)})
-                            </div>
-                          </div>
-                        ));
-                      }
                     }}
-                    onMouseMove={moveTooltip}
                     onMouseLeave={() => {
                       setHoveredRow(null);
                       setHoveredCol(null);
-                      hideTooltip();
                     }}
                     style={{
                       height: "40px",
@@ -289,7 +265,82 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
           );
         })}
       </div>
-      <Tooltip {...tooltip} />
+
+      {/* Legend & Inspector Panel */}
+      <div style={{
+        marginTop: "1.5rem",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: "1.5rem",
+        alignItems: "stretch"
+      }}>
+        {/* Color Legend */}
+        <div style={{ background: C.bgDeep, border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1rem 1.25rem" }}>
+          <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: C.dim, marginBottom: "0.75rem", fontWeight: 700 }}>
+            Color Legend
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: FONT.body, fontSize: "0.85rem", color: C.text }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#F97316" }}></div>
+              <div><strong>Positive Correlation</strong> (More than expected)</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "transparent", border: `1px dashed ${C.ghost}` }}></div>
+              <div style={{ color: C.muted }}>Matches Expectation (Neutral)</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: "#3B82F6" }}></div>
+              <div><strong>Negative Correlation</strong> (Fewer than expected)</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hover Inspector */}
+        <div style={{ background: C.bgCard, border: `1px solid ${C.dim}`, borderRadius: 8, padding: "1rem 1.25rem", minHeight: 120 }}>
+          <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: C.goldBright, marginBottom: "0.75rem", fontWeight: 700 }}>
+            Cell Inspector
+          </div>
+          {hoveredRow !== null && hoveredCol !== null ? (() => {
+            const val = matrix[hoveredRow][hoveredCol];
+            const expected = expectedMatrix[hoveredRow][hoveredCol];
+            const residual = val - expected;
+            const rLabel = rowLabels[hoveredRow];
+            const cLabel = colLabels[hoveredCol];
+            return (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: FONT.body, fontSize: "0.9rem", color: C.textBright }}>
+                <div style={{ display: "flex", gap: "0.5rem" }}><strong style={{color: C.muted}}>Row:</strong> <span>{rLabel}</span></div>
+                <div style={{ display: "flex", gap: "0.5rem" }}><strong style={{color: C.muted}}>Col:</strong> <span>{cLabel}</span></div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.5rem", paddingTop: "0.5rem", borderTop: `1px solid ${C.ghost}` }}>
+                  <div>
+                    <div style={{ fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Observed</div>
+                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{val}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>Expected</div>
+                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>{expected.toFixed(1)}</div>
+                  </div>
+                </div>
+                <div style={{ 
+                  marginTop: "0.5rem",
+                  padding: "0.4rem 0.6rem",
+                  background: "rgba(0,0,0,0.2)",
+                  borderRadius: 4,
+                  color: residual > 0 ? "#F97316" : "#3B82F6", 
+                  fontWeight: "bold",
+                  display: "inline-block",
+                  width: "fit-content"
+                }}>
+                  {residual > 0 ? "Positive" : "Negative"} Correlation ({residual > 0 ? "+" : ""}{residual.toFixed(1)})
+                </div>
+              </div>
+            );
+          })() : (
+            <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.9rem", marginTop: "1rem" }}>
+              Hover over any cell in the matrix to inspect its data...
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

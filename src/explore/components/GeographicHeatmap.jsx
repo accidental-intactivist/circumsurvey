@@ -43,21 +43,24 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   
   const getScaleRange = (tab) => {
     switch (tab) {
-      case "intact": return ["#182838", resolveCssColor(PATH_COLORS.intact)];
-      case "circumcised": return ["#381818", resolveCssColor(PATH_COLORS.circumcised)];
-      case "restoring": return ["#383018", resolveCssColor(PATH_COLORS.restoring)];
-      case "observer": return ["#383838", resolveCssColor(PATH_COLORS.observer)];
-      case "trans_vaginoplasty": return ["#381818", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
-      case "trans_phalloplasty": return ["#381818", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
-      case "intersex": return ["#282828", resolveCssColor(PATH_COLORS.intersex)];
-      default: return ["#4a3a1d", resolveCssColor(C.goldBright)];
+      case "intact": return ["#062417", "#059669", resolveCssColor(PATH_COLORS.intact)];
+      case "circumcised": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.circumcised)];
+      case "restoring": return ["#2e1f06", "#d97706", resolveCssColor(PATH_COLORS.restoring)];
+      case "observer": return ["#2a1005", "#c2410c", resolveCssColor(PATH_COLORS.observer)];
+      case "trans_vaginoplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
+      case "trans_phalloplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
+      case "intersex": return ["#1f1f1f", "#525252", resolveCssColor(PATH_COLORS.intersex)];
+      default: return ["#1f1135", "#be123c", resolveCssColor(C.goldBright)]; // Striking Dark Purple -> Crimson -> Gold
     }
   };
 
   const colorScale = useMemo(() => {
+    const range = getScaleRange(activeTab);
+    const max = dataMap.max || 1;
+    // For a 3-stop scale, use [1, mid, max]
     return scaleLinear()
-      .domain([1, dataMap.max || 1])
-      .range(getScaleRange(activeTab));
+      .domain([1, max / 2, max])
+      .range(range);
   }, [dataMap.max, activeTab]);
 
   const aggregatedDist = useMemo(() => rollUpDistribution(activeDist), [activeDist]);
@@ -223,19 +226,19 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                       }}
                       style={{
                         default: {
-                          fill: val > 0 ? colorScale(val) : "#1f1f24",
-                          stroke: "#33333a",
-                          strokeWidth: 0.5,
+                          fill: val > 0 ? colorScale(val) : "#0f0f13", // Very dark base
+                          stroke: "#2a2a30", // Ghost stroke
+                          strokeWidth: 0.6,
                           outline: "none"
                         },
                         hover: {
-                          fill: C.ltBlue,
-                          stroke: C.ghost,
-                          strokeWidth: 1,
+                          fill: val > 0 ? colorScale(val) : "#1f1f24",
+                          stroke: C.textBright,
+                          strokeWidth: 1.5,
                           outline: "none"
                         },
                         pressed: {
-                          fill: C.blue,
+                          fill: val > 0 ? colorScale(val) : "#1f1f24",
                           outline: "none"
                         }
                       }}

@@ -45,6 +45,10 @@ const DNA_DIMENSIONS = [
   { id: "generation", label: "Generation", by: "generation" },
   { id: "country_born", label: "Country of Birth", by: "country_born" },
   { id: "primary_tradition", label: "Religion", by: "religion" },
+  { id: "sexuality", label: "Sexuality", by: "sexuality" },
+  { id: "education", label: "Education", by: "education" },
+  { id: "socioeconomic", label: "Socioeconomic Status", by: "socioeconomic" },
+  { id: "family_upbringing", label: "Family Upbringing", by: "family_upbringing" },
 ];
 
 // A universal question that every pathway answers — used to get demographic breakdowns
@@ -66,15 +70,13 @@ const WAFFLE_DIMENSIONS = [
   { id: "generation", label: "Generation" },
   { id: "country_born", label: "Country" },
   { id: "primary_tradition", label: "Religion" },
+  { id: "sexuality", label: "Sexuality" },
+  { id: "education", label: "Education" },
+  { id: "socioeconomic", label: "Socioeconomic" },
+  { id: "family_upbringing", label: "Upbringing" },
 ];
 
-// Cohort options for radar selectors
-const RADAR_COHORTS = [
-  { id: "circumcised", label: "Circumcised", pathway: "circumcised" },
-  { id: "intact", label: "Intact", pathway: "intact" },
-  { id: "restoring", label: "Restoring", pathway: "restoring" },
-  { id: "observer", label: "Observer", pathway: "observer" },
-];
+// Removed RADAR_COHORTS
 
 // ── Color palette for non-pathway dimensions ───────────────────────────────
 const CHART_COLORS = [
@@ -174,7 +176,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
   
   const [sankeyDims, setSankeyDims] = useState([
     DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "country_born"),
-    DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "politics"),
+    DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "generation"),
     DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "pathway")
   ]);
 
@@ -542,19 +544,32 @@ function DNADimensionRow({ dimension, aggregateData, tooltip }) {
 
 function DivergenceRadar({ cohort, tooltip }) {
   const [ref, inView] = useInView();
-  const [cohortA, setCohortA] = useState("circumcised");
-  const [cohortB, setCohortB] = useState("intact");
+  // Default to pathway
+  const [activeDimensionId, setActiveDimensionId] = useState("pathway");
+  const [activeCohorts, setActiveCohorts] = useState(["intact", "restoring"]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // The full dimension object
+  const activeDimension = useMemo(() => 
+    DEMOGRAPHIC_DIMENSIONS.find(d => d.id === activeDimensionId), 
+  [activeDimensionId]);
+
+  // All possible cohorts for this dimension
+  const dimensionCohorts = useMemo(() => {
+    return activeDimension?.options.map(opt => 
+      typeof opt === "string" ? { value: opt, label: shortenLabel(opt) } : opt
+    ) || [];
+  }, [activeDimension]);
 
   useEffect(() => {
     if (!inView) return;
     setLoading(true);
 
-    // Fetch each radar axis's aggregate, grouped by pathway
+    // Fetch each radar axis's aggregate, grouped by activeDimension.column
     Promise.all(
       RADAR_AXES.map(axis =>
-        getAggregate(axis.id, { by: "pathway", cohort })
+        getAggregate(axis.id, { by: activeDimension.column, cohort })
           .then(res => ({ axis, results: res.results || {} }))
           .catch(() => ({ axis, results: {} }))
       )
@@ -562,24 +577,53 @@ function DivergenceRadar({ cohort, tooltip }) {
       const mapped = {};
       allResults.forEach(({ axis, results }) => {
         mapped[axis.id] = {};
-        // For each pathway, calculate the weighted average
-        Object.entries(results).forEach(([pathwayId, pathData]) => {
-          mapped[axis.id][pathwayId] = calculateWeightedAvg(pathData.distribution);
+        // For each cohort in the results, calculate the weighted average
+        Object.entries(results).forEach(([cohortId, pathData]) => {
+          mapped[axis.id][cohortId] = calculateWeightedAvg(pathData.distribution);
         });
       });
       setData(mapped);
       setLoading(false);
     });
-  }, [inView, JSON.stringify(cohort)]);
+  }, [inView, activeDimension.column, JSON.stringify(cohort)]);
+
+  // Handle changing the dimension
+  const handleDimensionChange = (e) => {
+    const newDimId = e.target.value;
+    setActiveDimensionId(newDimId);
+    
+    // Pick the first 2 cohorts as the default active ones for the new dimension
+    const newDim = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === newDimId);
+    const newCohorts = newDim?.options.slice(0, 2).map(opt => 
+      typeof opt === "string" ? opt : opt.value
+    ) || [];
+    setActiveCohorts(newCohorts);
+  };
+
+  const toggleCohort = (cohortId) => {
+    setActiveCohorts(prev => 
+      prev.includes(cohortId) 
+        ? prev.filter(c => c !== cohortId) 
+        : [...prev, cohortId]
+    );
+  };
+
+  // Helper to get color for a cohort
+  const getCohortColor = useCallback((cohortId, index) => {
+    if (activeDimensionId === "pathway") {
+      return resolveCssColor(PATH_COLORS[cohortId] || getChartColor(index));
+    }
+    return resolveCssColor(getChartColor(index));
+  }, [activeDimensionId]);
 
   // Build polygon points for a given cohort
-  const buildPolygon = useCallback((cohortId, data) => {
+  const buildPolygon = useCallback((cohortId) => {
     if (!data) return { points: "", values: [] };
     const n = RADAR_AXES.length;
     const cx = 150, cy = 150, maxR = 110;
     const values = [];
     
-    RADAR_AXES.forEach((axis, i) => {
+    RADAR_AXES.forEach((axis) => {
       const val = data[axis.id]?.[cohortId] || 0;
       // Scale: 1-5 → 0-1
       const normalized = Math.max(0, (val - 1) / 4);
@@ -593,34 +637,81 @@ function DivergenceRadar({ cohort, tooltip }) {
     }).join(" ");
 
     return { points, values };
-  }, []);
+  }, [data]);
 
-  const polyA = useMemo(() => buildPolygon(cohortA, data), [data, cohortA, buildPolygon]);
-  const polyB = useMemo(() => buildPolygon(cohortB, data), [data, cohortB, buildPolygon]);
-
-  const cohortAInfo = RADAR_COHORTS.find(c => c.id === cohortA);
-  const cohortBInfo = RADAR_COHORTS.find(c => c.id === cohortB);
-  const colorA = resolveCssColor(PATH_COLORS[cohortA] || C.gold);
-  const colorB = resolveCssColor(PATH_COLORS[cohortB] || C.blue);
+  // Pre-calculate all polygons for active cohorts
+  const polygons = useMemo(() => {
+    return activeCohorts.map((cohortId) => {
+      const cohortIndex = dimensionCohorts.findIndex(c => c.value === cohortId);
+      return {
+        id: cohortId,
+        label: dimensionCohorts.find(c => c.value === cohortId)?.label || cohortId,
+        color: getCohortColor(cohortId, cohortIndex !== -1 ? cohortIndex : 0),
+        ...buildPolygon(cohortId)
+      };
+    });
+  }, [activeCohorts, dimensionCohorts, getCohortColor, buildPolygon]);
 
   return (
     <section ref={ref} className="xray-section" style={{ marginBottom: "4rem", minHeight: "600px" }}>
       <SectionHeader 
         title="Demographic Divergence Radar"
-        subtitle="Select two cohorts to compare their average scores across key experience metrics. Where do they diverge?"
+        subtitle="Explore how experience metrics diverge across different demographic dimensions."
         icon="◎"
       />
 
-      {/* Cohort selectors */}
-      <div style={{
-        display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap",
-        alignItems: "center",
-      }}>
-        <CohortSelector label="Cohort A" value={cohortA} onChange={setCohortA} color={colorA} />
-        <span style={{ fontFamily: FONT.condensed, fontSize: "0.8rem", color: C.dim, textTransform: "uppercase" }}>
-          vs
-        </span>
-        <CohortSelector label="Cohort B" value={cohortB} onChange={setCohortB} color={colorB} />
+      {/* Dimension & Cohort selectors */}
+      <div style={{ marginBottom: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+        
+        {/* Dimension Dropdown */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+          <label style={{
+            fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
+            textTransform: "uppercase", color: C.muted, fontWeight: 600,
+          }}>
+            Compare Across:
+          </label>
+          <select
+            value={activeDimensionId}
+            onChange={handleDimensionChange}
+            style={{
+              padding: "0.35rem 0.6rem", background: resolveCssColor(C.bgDeep),
+              color: resolveCssColor(C.textBright), border: `1px solid ${resolveCssColor(C.gold)}`,
+              borderRadius: 6, fontFamily: FONT.body, fontSize: "0.82rem",
+              cursor: "pointer", outline: "none",
+            }}
+          >
+            {DEMOGRAPHIC_DIMENSIONS.map(dim => (
+              <option key={dim.id} value={dim.id}>{dim.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Cohort Pills */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+          {dimensionCohorts.map((cohortOpt, idx) => {
+            const isActive = activeCohorts.includes(cohortOpt.value);
+            const color = getCohortColor(cohortOpt.value, idx);
+            
+            return (
+              <button
+                key={cohortOpt.value}
+                onClick={() => toggleCohort(cohortOpt.value)}
+                style={{
+                  background: isActive ? `${color}20` : "transparent",
+                  border: `1px solid ${isActive ? color : resolveCssColor(C.ghost)}`,
+                  color: isActive ? resolveCssColor(C.textBright) : resolveCssColor(C.dim),
+                  padding: "0.25rem 0.6rem", borderRadius: 16, cursor: "pointer",
+                  fontFamily: FONT.condensed, fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.4rem",
+                  transition: "all 0.2s"
+                }}
+              >
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: isActive ? color : resolveCssColor(C.ghost) }} />
+                {cohortOpt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div style={{
@@ -636,7 +727,7 @@ function DivergenceRadar({ cohort, tooltip }) {
           <>
             {/* SVG Radar */}
             <div style={{ flex: "1 1 320px", maxWidth: 400, minWidth: 280 }}>
-              <svg viewBox="0 0 300 300" style={{ width: "100%" }}>
+              <svg viewBox="0 0 300 300" style={{ width: "100%", overflow: "visible" }}>
                 {/* Grid rings */}
                 {[0.25, 0.5, 0.75, 1].map(pct => (
                   <circle
@@ -674,70 +765,45 @@ function DivergenceRadar({ cohort, tooltip }) {
                   );
                 })}
 
-                {/* Cohort B polygon (under) */}
-                <polygon
-                  points={polyB.points}
-                  fill={colorB}
-                  fillOpacity={0.15}
-                  stroke={colorB}
-                  strokeWidth={2}
-                  strokeLinejoin="round"
-                />
-
-                {/* Cohort A polygon (on top) */}
-                <polygon
-                  points={polyA.points}
-                  fill={colorA}
-                  fillOpacity={0.15}
-                  stroke={colorA}
-                  strokeWidth={2}
-                  strokeLinejoin="round"
-                />
-
-                {/* Data points for A */}
-                {polyA.values.map((v, i) => {
-                  const n = RADAR_AXES.length;
-                  const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-                  const r = v.normalized * 110;
-                  const cx = 150 + r * Math.cos(angle);
-                  const cy = 150 + r * Math.sin(angle);
-                  return (
-                    <circle
-                      key={`a-${i}`}
-                      cx={cx} cy={cy} r={4}
-                      fill={colorA} stroke="#fff" strokeWidth={1}
-                      style={{ cursor: "pointer" }}
-                      onMouseEnter={(e) => tooltip.showTooltip(e, `${cohortAInfo?.label}: ${v.axis.label} = ${v.val.toFixed(2)}/5`)}
-                      onMouseMove={tooltip.moveTooltip}
-                      onMouseLeave={tooltip.hideTooltip}
+                {/* Polygons */}
+                {polygons.map((poly) => (
+                  <g key={poly.id}>
+                    <polygon
+                      points={poly.points}
+                      fill={poly.color}
+                      fillOpacity={0.15}
+                      stroke={poly.color}
+                      strokeWidth={2}
+                      strokeLinejoin="round"
+                      style={{ transition: "all 0.3s" }}
                     />
-                  );
-                })}
-
-                {/* Data points for B */}
-                {polyB.values.map((v, i) => {
-                  const n = RADAR_AXES.length;
-                  const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-                  const r = v.normalized * 110;
-                  const cx = 150 + r * Math.cos(angle);
-                  const cy = 150 + r * Math.sin(angle);
-                  return (
-                    <circle
-                      key={`b-${i}`}
-                      cx={cx} cy={cy} r={4}
-                      fill={colorB} stroke="#fff" strokeWidth={1}
-                      style={{ cursor: "pointer" }}
-                      onMouseEnter={(e) => tooltip.showTooltip(e, `${cohortBInfo?.label}: ${v.axis.label} = ${v.val.toFixed(2)}/5`)}
-                      onMouseMove={tooltip.moveTooltip}
-                      onMouseLeave={tooltip.hideTooltip}
-                    />
-                  );
-                })}
+                    
+                    {/* Data points */}
+                    {poly.values.map((v, i) => {
+                      const n = RADAR_AXES.length;
+                      const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                      const r = v.normalized * 110;
+                      const cx = 150 + r * Math.cos(angle);
+                      const cy = 150 + r * Math.sin(angle);
+                      return (
+                        <circle
+                          key={`${poly.id}-${i}`}
+                          cx={cx} cy={cy} r={4}
+                          fill={poly.color} stroke="#fff" strokeWidth={1}
+                          style={{ cursor: "pointer", transition: "all 0.3s" }}
+                          onMouseEnter={(e) => tooltip.showTooltip(e, `${poly.label}: ${v.axis.label} = ${v.val.toFixed(2)}/5`)}
+                          onMouseMove={tooltip.moveTooltip}
+                          onMouseLeave={tooltip.hideTooltip}
+                        />
+                      );
+                    })}
+                  </g>
+                ))}
               </svg>
             </div>
 
             {/* Axis-by-axis comparison table */}
-            <div style={{ flex: "1 1 300px", minWidth: 260 }}>
+            <div style={{ flex: "1 1 300px", minWidth: 260, overflowX: "auto" }}>
               <div style={{
                 fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.14em",
                 textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700,
@@ -745,87 +811,53 @@ function DivergenceRadar({ cohort, tooltip }) {
                 Axis-by-Axis Comparison
               </div>
               
+              {/* Header row for cohorts */}
+              <div style={{
+                display: "grid", gridTemplateColumns: `1fr repeat(${polygons.length}, minmax(40px, auto))`,
+                gap: "0.6rem", paddingBottom: "0.45rem", borderBottom: `1px solid ${resolveCssColor(C.ghost)}`
+              }}>
+                <span />
+                {polygons.map((poly) => (
+                  <span key={`header-${poly.id}`} style={{ 
+                    fontFamily: FONT.condensed, fontSize: "0.65rem", color: poly.color, 
+                    fontWeight: 600, textAlign: "right", whiteSpace: "nowrap"
+                  }}>
+                    {shortenLabel(poly.label)}
+                  </span>
+                ))}
+              </div>
+
+              {/* Data rows */}
               {RADAR_AXES.map((axis, i) => {
-                const valA = polyA.values[i]?.val || 0;
-                const valB = polyB.values[i]?.val || 0;
-                const delta = valA - valB;
                 return (
                   <div key={axis.id} style={{
-                    display: "grid", gridTemplateColumns: "1fr auto auto auto",
+                    display: "grid", gridTemplateColumns: `1fr repeat(${polygons.length}, minmax(40px, auto))`,
                     gap: "0.6rem", padding: "0.45rem 0",
-                    borderBottom: i < RADAR_AXES.length - 1 ? `1px solid ${C.ghost}` : "none",
+                    borderBottom: i < RADAR_AXES.length - 1 ? `1px solid ${resolveCssColor(C.ghost)}` : "none",
                     alignItems: "center",
                   }}>
-                    <span style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: C.text }}>
+                    <span style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: resolveCssColor(C.text) }}>
                       {axis.label}
                     </span>
-                    <span style={{ fontFamily: FONT.mono, fontSize: "0.75rem", color: colorA, fontWeight: 600 }}>
-                      {valA.toFixed(2)}
-                    </span>
-                    <span style={{ fontFamily: FONT.mono, fontSize: "0.75rem", color: colorB, fontWeight: 600 }}>
-                      {valB.toFixed(2)}
-                    </span>
-                    <span style={{
-                      fontFamily: FONT.mono, fontSize: "0.7rem", fontWeight: 700,
-                      color: delta > 0 ? resolveCssColor(C.green) : delta < 0 ? resolveCssColor(C.red) : resolveCssColor(C.dim),
-                    }}>
-                      {delta > 0 ? "+" : ""}{delta.toFixed(2)}
-                    </span>
+                    {polygons.map((poly) => {
+                      const val = poly.values[i]?.val || 0;
+                      return (
+                        <span key={`${poly.id}-${axis.id}`} style={{ 
+                          fontFamily: FONT.mono, fontSize: "0.75rem", color: poly.color, 
+                          fontWeight: 600, textAlign: "right"
+                        }}>
+                          {val > 0 ? val.toFixed(2) : "—"}
+                        </span>
+                      );
+                    })}
                   </div>
                 );
               })}
-
-              {/* Legend */}
-              <div style={{ display: "flex", gap: "1rem", marginTop: "0.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: colorA }} />
-                  <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", color: C.muted }}>
-                    {cohortAInfo?.label}
-                  </span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: colorB }} />
-                  <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", color: C.muted }}>
-                    {cohortBInfo?.label}
-                  </span>
-                </div>
-              </div>
             </div>
           </>
         )}
       </div>
     </section>
-  );
-}
-
-function CohortSelector({ label, value, onChange, color }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-      <div style={{
-        width: 12, height: 12, borderRadius: "50%",
-        background: color, boxShadow: `0 0 8px ${color}40`,
-      }} />
-      <label style={{
-        fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
-        textTransform: "uppercase", color: C.muted, fontWeight: 600,
-      }}>
-        {label}:
-      </label>
-      <select
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        style={{
-          padding: "0.35rem 0.6rem", background: resolveCssColor(C.bgDeep),
-          color: resolveCssColor(C.textBright), border: `1px solid ${color}`,
-          borderRadius: 6, fontFamily: FONT.body, fontSize: "0.82rem",
-          cursor: "pointer",
-        }}
-      >
-        {RADAR_COHORTS.map(c => (
-          <option key={c.id} value={c.id}>{c.label}</option>
-        ))}
-      </select>
-    </div>
   );
 }
 

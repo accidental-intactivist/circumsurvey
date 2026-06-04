@@ -92,6 +92,9 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
     return { rowLabels: rows, colLabels: cols, matrix: mat, maxN: max };
   }, [data]);
 
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [hoveredCol, setHoveredCol] = useState(null);
+
   if (loading) {
     return <div style={{ padding: "2rem", color: C.dim, textAlign: "center" }}>Calculating correlation matrix...</div>;
   }
@@ -99,14 +102,6 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
   if (!matrix || matrix.length === 0 || maxN === 0) {
     return <div style={{ padding: "2rem", color: C.dim }}>No intersection data available for these factors.</div>;
   }
-
-  // SVG Geometry
-  const CELL_SIZE = 40;
-  const MARGIN_LEFT = 180;
-  const MARGIN_BOTTOM = 180;
-  
-  const width = MARGIN_LEFT + (colLabels.length * CELL_SIZE);
-  const height = (rowLabels.length * CELL_SIZE) + MARGIN_BOTTOM;
 
   return (
     <div style={{
@@ -128,79 +123,126 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
         Comparing <strong>{rowQuestion.prompt}</strong> (Rows) against <strong>{colQuestion.prompt}</strong> (Columns).
       </p>
 
-      <div style={{ minWidth: width }}>
-        <svg width={width} height={height} style={{ overflow: "visible", display: "block" }}>
-          {/* Row Labels */}
-          {rowLabels.map((rLabel, rIdx) => (
-            <text
-              key={`row-${rIdx}`}
-              x={MARGIN_LEFT - 10}
-              y={(rIdx * CELL_SIZE) + (CELL_SIZE / 2)}
-              textAnchor="end"
-              alignmentBaseline="middle"
-              fill={C.text}
-              style={{ fontFamily: FONT.condensed, fontSize: "0.75rem" }}
-            >
-              {rLabel.length > 30 ? rLabel.substring(0, 27) + "..." : rLabel}
-            </text>
-          ))}
-
-          {/* Column Labels (Rotated) */}
+      <div style={{ minWidth: "fit-content", paddingBottom: "1rem" }}>
+        
+        {/* Column Headers */}
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: `minmax(200px, 1fr) repeat(${colLabels.length}, 40px)`, 
+          gap: "2px", 
+          marginBottom: "4px" 
+        }}>
+          <div></div> {/* Empty top-left cell */}
           {colLabels.map((cLabel, cIdx) => (
-            <g key={`col-${cIdx}`} transform={`translate(${MARGIN_LEFT + (cIdx * CELL_SIZE) + (CELL_SIZE / 2)}, ${(rowLabels.length * CELL_SIZE) + 10})`}>
-              <text
-                x={0}
-                y={0}
-                transform="rotate(-45)"
-                textAnchor="end"
-                fill={C.text}
-                style={{ fontFamily: FONT.condensed, fontSize: "0.75rem" }}
-              >
-                {cLabel.length > 30 ? cLabel.substring(0, 27) + "..." : cLabel}
-              </text>
-            </g>
+            <div 
+              key={`col-${cIdx}`}
+              style={{
+                display: "flex",
+                alignItems: "flex-end", // Push text to bottom near the grid
+                justifyContent: "center",
+                height: "140px",
+              }}
+            >
+              <div style={{
+                writingMode: "vertical-rl",
+                transform: "rotate(180deg)",
+                fontFamily: FONT.condensed,
+                fontSize: "0.75rem",
+                color: hoveredCol === cIdx ? C.goldBright : C.muted,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                maxHeight: "140px",
+                transition: "color 0.2s"
+              }}>
+                {cLabel}
+              </div>
+            </div>
           ))}
+        </div>
 
-          {/* Matrix Cells */}
-          {matrix.map((row, rIdx) => {
-            return row.map((val, cIdx) => {
-              if (val === 0) return null;
-              
-              // Map count to radius (square root scale so area is proportional to count)
-              const maxRadius = (CELL_SIZE / 2) - 2;
-              const radius = Math.sqrt(val / maxN) * maxRadius;
-              
-              // We could change the ellipse rotation here if we had expected values to calculate Pearson r.
-              // For now, we use a perfectly scaled circle/ellipse to denote density.
-              
-              const cx = MARGIN_LEFT + (cIdx * CELL_SIZE) + (CELL_SIZE / 2);
-              const cy = (rIdx * CELL_SIZE) + (CELL_SIZE / 2);
+        {/* Rows */}
+        {matrix.map((row, rIdx) => {
+          const rLabel = rowLabels[rIdx];
+          const isRowHovered = hoveredRow === rIdx;
+          
+          return (
+            <div key={`row-${rIdx}`} style={{
+              display: "grid", 
+              gridTemplateColumns: `minmax(200px, 1fr) repeat(${colLabels.length}, 40px)`, 
+              gap: "2px",
+              marginBottom: "2px",
+              background: isRowHovered ? "rgba(255,255,255,0.03)" : "transparent",
+              borderRadius: 4,
+              transition: "background 0.15s"
+            }}>
+              {/* Row Header */}
+              <div 
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  paddingRight: "0.8rem",
+                  fontFamily: FONT.body,
+                  fontSize: "0.75rem",
+                  color: isRowHovered ? C.textBright : C.text,
+                  textAlign: "right",
+                  lineHeight: 1.3,
+                  transition: "color 0.15s"
+                }}
+              >
+                {rLabel}
+              </div>
 
-              return (
-                <circle
-                  key={`cell-${rIdx}-${cIdx}`}
-                  cx={cx}
-                  cy={cy}
-                  r={radius}
-                  fill={C.ltBlue}
-                  opacity={0.8}
-                  style={{ transition: "all 0.2s ease", cursor: "pointer" }}
-                  onMouseEnter={(e) => {
-                    e.target.setAttribute("fill", C.goldBright);
-                    e.target.setAttribute("opacity", "1");
-                    showTooltip(e, `Count: ${val}`);
-                  }}
-                  onMouseMove={moveTooltip}
-                  onMouseLeave={(e) => {
-                    e.target.setAttribute("fill", C.ltBlue);
-                    e.target.setAttribute("opacity", "0.8");
-                    hideTooltip();
-                  }}
-                />
-              );
-            });
-          })}
-        </svg>
+              {/* Data Cells */}
+              {row.map((val, cIdx) => {
+                const isColHovered = hoveredCol === cIdx;
+                const isHovered = isRowHovered && isColHovered;
+                const cLabel = colLabels[cIdx];
+                
+                return (
+                  <div
+                    key={`cell-${rIdx}-${cIdx}`}
+                    onMouseEnter={(e) => {
+                      setHoveredRow(rIdx);
+                      setHoveredCol(cIdx);
+                      if (val > 0) {
+                        showTooltip(e, (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                            <div>Row: {rLabel}</div>
+                            <div>Col: {cLabel}</div>
+                            <div style={{ color: "var(--c-gold)", fontWeight: "bold", marginTop: "4px" }}>Count: {val}</div>
+                          </div>
+                        ));
+                      }
+                    }}
+                    onMouseMove={moveTooltip}
+                    onMouseLeave={() => {
+                      setHoveredRow(null);
+                      setHoveredCol(null);
+                      hideTooltip();
+                    }}
+                    style={{
+                      height: "40px",
+                      background: val === 0 
+                        ? "transparent" 
+                        : `color-mix(in srgb, var(--c-gold) ${Math.max(12, (val / maxN) * 100)}%, transparent)`,
+                      border: val === 0 
+                        ? `1px dashed ${C.ghost}`
+                        : isHovered ? `1px solid var(--c-goldBright)` : `1px solid transparent`,
+                      borderRadius: 4,
+                      cursor: val > 0 ? "pointer" : "default",
+                      transition: "all 0.15s",
+                      position: "relative",
+                      zIndex: isHovered ? 2 : 1,
+                      boxShadow: isHovered && val > 0 ? "0 4px 12px rgba(0,0,0,0.3)" : "none"
+                    }}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
       <Tooltip {...tooltip} />
     </div>

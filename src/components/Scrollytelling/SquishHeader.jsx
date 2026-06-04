@@ -149,7 +149,8 @@ function RotatingFact() {
 }
 
 export default function SquishHeader() {
-  const { theme, mode, colorblind } = useTheme();
+  const { theme, mode, colorblind, typeface } = useTheme();
+  const isTomorrow = typeface === "tomorrow";
   const containerRef = useRef(null);
   const headerRef = useRef(null);
   const titleGroupRef = useRef(null);
@@ -207,6 +208,7 @@ export default function SquishHeader() {
     tl.to(titleRef.current, {
       fontSize: "1.2rem", // Nav bar size
       letterSpacing: "0.02em",
+      y: isTomorrow ? -3 : 0,
       ease: "none"
     }, 0);
 
@@ -260,10 +262,11 @@ export default function SquishHeader() {
           ref={canvasRef}
           style={{
             position: 'absolute',
-            top: 0,
+            top: '50%',
             left: 0,
             width: '100%',
             height: '85vh',
+            transform: 'translateY(-50%)',
             pointerEvents: 'none',
             zIndex: 0,
             opacity: 0.8,
@@ -291,7 +294,7 @@ export default function SquishHeader() {
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 1.5rem',
-            zIndex: 10,
+            zIndex: 100,
             pointerEvents: 'none', // Prevent clicking when invisible
           }}
         >
@@ -375,6 +378,8 @@ export default function SquishHeader() {
               lineHeight: 1.05,
               letterSpacing: "-0.015em",
               margin: 0,
+              textTransform: "uppercase",
+              transform: isTomorrow ? "translateY(-6px)" : "none",
             }}
           >
             The Accidental Intactivist's Inquiry

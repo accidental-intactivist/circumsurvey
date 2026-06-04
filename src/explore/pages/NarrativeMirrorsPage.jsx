@@ -3,6 +3,7 @@ import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { getQuestions, getNarratives } from "../lib/api";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
+import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 const NARRATIVE_CONCEPTS = [
   {
@@ -68,7 +69,7 @@ const NARRATIVE_CONCEPTS = [
   }
 ];
 
-export default function NarrativeMirrorsPage() {
+export default function NarrativeMirrorsPage({ navigate }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedConceptId, setSelectedConceptId] = useState(NARRATIVE_CONCEPTS[0].id);
@@ -109,16 +110,11 @@ export default function NarrativeMirrorsPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
-      <header style={{ padding: "3rem 2rem 2.5rem", textAlign: "center", borderBottom: `1px solid ${C.ghost}`, background: C.bgCard }}>
-        <h1 style={{ fontFamily: FONT.display, fontSize: "2.5rem", color: C.goldBright, marginBottom: "0.5rem" }}>
-          In Their Own Words
-        </h1>
-        <p style={{ fontFamily: FONT.body, fontSize: "1.05rem", color: C.muted, maxWidth: 800, margin: "0 auto 1.5rem", lineHeight: 1.6 }}>
-          Qualitative comparative dashboard. Read and filter long-form narrative responses from Intact, Circumcised, and Restoring cohorts side-by-side.
-        </p>
 
-        {/* Concept Selector Dropdown */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
+      <div style={{ maxWidth: 1600, margin: "0 auto", padding: "1.5rem 1.5rem 0" }}>
+        <InlineBreadcrumb currentRoute="narrative-mirrors" navigate={navigate} />
+        {/* Concept Selector */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
           <select
             value={selectedConceptId}
             onChange={(e) => setSelectedConceptId(e.target.value)}
@@ -142,10 +138,8 @@ export default function NarrativeMirrorsPage() {
             ))}
           </select>
         </div>
-      </header>
 
-      <div style={{ maxWidth: 1600, margin: "0 auto", padding: "2.5rem 1.5rem" }}>
-        
+
         {/* Concept Metadata */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 style={{ fontFamily: FONT.display, fontSize: "2rem", color: C.textBright, marginBottom: "0.5rem" }}>

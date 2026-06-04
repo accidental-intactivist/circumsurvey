@@ -120,7 +120,7 @@ export const OBSERVER_SUBROLES = [
     label: "Universal (all observers)",
     emoji: "👥",
     desc: "Questions every observer answered regardless of role",
-    match: (q) => /^\[ALL\]|^What primarily motivated|Are You Wearing Any Other Hat/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_all_") || q.id === "observe_motivation" || q.id === "observe_multi_hat_selection" || /^\[ALL\]|^What primarily motivated|Are You Wearing Any Other Hat/i.test(q.prompt || ""),
     n: 37,
   },
   {
@@ -128,7 +128,7 @@ export const OBSERVER_SUBROLES = [
     label: "As a Partner",
     emoji: "🤝",
     desc: "Intimacy observations, cultural difference impact",
-    match: (q) => /^\[PARTNER\]|as a PARTNER/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_partner_") || /^\[PARTNER\]|as a PARTNER/i.test(q.prompt || ""),
     n: 5,
   },
   {
@@ -136,7 +136,7 @@ export const OBSERVER_SUBROLES = [
     label: "As a Parent / Guardian",
     emoji: "👶",
     desc: "Decision factors, info quality, emotional state, regret",
-    match: (q) => /^\[PARENT\]|as a PARENT|PARENT or GUARDIAN|PARENTS\/GUARDIANS/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_parent_") || /^\[PARENT\]|as a PARENT|PARENT or GUARDIAN|PARENTS\/GUARDIANS/i.test(q.prompt || ""),
     n: 7,
   },
   {
@@ -144,7 +144,7 @@ export const OBSERVER_SUBROLES = [
     label: "As an Expectant Parent",
     emoji: "🤰",
     desc: "Decision in progress, information gaps, cultural pressure",
-    match: (q) => /currently pregnant|expectant parent/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_undecided_") || /currently pregnant|expectant parent/i.test(q.prompt || ""),
     n: 1,
     rare: true,
   },
@@ -153,7 +153,7 @@ export const OBSERVER_SUBROLES = [
     label: "As a Healthcare Provider",
     emoji: "🏥",
     desc: "Counseling stance, training protocols, attitude changes",
-    match: (q) => /^\[HEALTHCARE\]|HEALTHCARE PROVIDER|MEDICAL PROFESSIONAL|HEALTHCARE/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_healthcare_") || (q.id || "").startsWith("observe_professional_") || /^\[HEALTHCARE\]|HEALTHCARE PROVIDER|MEDICAL PROFESSIONAL|HEALTHCARE/i.test(q.prompt || ""),
     n: 2,
   },
   {
@@ -161,7 +161,7 @@ export const OBSERVER_SUBROLES = [
     label: "As an Advocate / Intactivist",
     emoji: "📣",
     desc: "Tipping point, strategies, FGM parallels",
-    match: (q) => /^\[ADVOCATE\]|advocate|intactivist|tipping point|FGM/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_advocate_") || /^\[ADVOCATE\]|advocate|intactivist|tipping point|FGM/i.test(q.prompt || ""),
     n: 7,
   },
   {
@@ -169,7 +169,7 @@ export const OBSERVER_SUBROLES = [
     label: "As a Woman",
     emoji: "♀",
     desc: "Blind spots, societal misconceptions",
-    match: (q) => /^\[WOMAN\]|As a WOMAN/i.test(q.prompt || ""),
+    match: (q) => (q.id || "").startsWith("observe_woman_") || /^\[WOMAN\]|As a WOMAN/i.test(q.prompt || ""),
     n: 3,
   },
   {
@@ -177,7 +177,7 @@ export const OBSERVER_SUBROLES = [
     label: "Curious / Researcher",
     emoji: "🎓",
     desc: "Shaping factors, social climate, researcher perspective",
-    match: (q) => /^\[CURIOUS\]|student_|curious_/i.test(q.prompt || "") || /observe_(curious|student)_/i.test(q.id || ""),
+    match: (q) => (q.id || "").startsWith("observe_curious_") || (q.id || "").startsWith("observe_student_") || /^\[CURIOUS\]|student_|curious_/i.test(q.prompt || "") || /observe_(curious|student)_/i.test(q.id || ""),
     n: 5,
   },
   {

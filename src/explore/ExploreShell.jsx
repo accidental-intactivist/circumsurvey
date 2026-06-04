@@ -8,13 +8,13 @@
 // shareable (e.g., findings.circumsurvey.online/explore#/q/exp_appearance_feeling).
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { useState, useEffect } from "react";
 import { useRouter } from "./lib/router";
-import { useTheme } from "./contexts/ThemeContext";
-import HarmonicCanvas from "../components/HarmonicCanvas";
+import ExploreMasthead from "./components/ExploreMasthead";
 import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
 import QuestionPage from "./pages/QuestionPage";
-import CulturalAlignmentPage from "./pages/CulturalAlignmentPage";
+import CorrelationExplorerPage from "./pages/CorrelationExplorerPage";
 import MirrorPairsPage from "./pages/MirrorPairsPage";
 import DemographicsDashboardPage from "./pages/DemographicsDashboardPage";
 import PleasureGapPage from "./pages/PleasureGapPage";
@@ -28,46 +28,50 @@ import ReportBuilderPage from "./pages/ReportBuilderPage";
 export default function ExploreShell() {
   const router = useRouter();
   const { route, params, state, navigate, updateState } = router;
-  const { theme, mode, colorblind } = useTheme();
 
   // The routerState prop is just the flat state object, so pages don't need
   // to know about the router's internals.
   const routerState = { ...state, params };
 
+  const [customMeta, setCustomMeta] = useState(null);
+
+  // Reset custom page metadata whenever the route or active question ID changes
+  useEffect(() => {
+    setCustomMeta(null);
+  }, [route, params.id]);
+
   let page;
   if (route === "pathways") {
-    page = <PathwayPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <PathwayPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "question") {
-    page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} />;
-  } else if (route === "cultural-alignment") {
-    page = <CulturalAlignmentPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+  } else if (route === "correlations") {
+    page = <CorrelationExplorerPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "pairs") {
-    page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "demographics") {
-    page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "pleasure-gap") {
-    page = <PleasureGapPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <PleasureGapPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "religious-mirrors") {
-    page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "narrative-mirrors") {
-    page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "generational-faultlines") {
-    page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "observer-triad") {
-    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "methodology") {
-    page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "report") {
-    page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else {
-    page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} />;
+    page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   }
 
   return (
     <>
-      <div style={{ position: "fixed", inset: 0, zIndex: -1 }}>
-        <HarmonicCanvas position="fixed" opacity={0.12} themeKey={`${theme}-${mode}-${colorblind}`} />
-      </div>
+      <ExploreMasthead route={route || "index"} navigate={navigate} customMeta={customMeta} />
       {page}
     </>
   );

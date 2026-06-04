@@ -85,7 +85,7 @@ export default function ThemeToggle() {
           position: "absolute",
           top: "calc(100% + 0.5rem)",
           right: 0,
-          width: "280px",
+          width: "min(18.5rem, 90vw)",
           background: "var(--c-bgCard)",
           border: "1px solid var(--c-ghost)",
           borderRadius: 8,
@@ -103,7 +103,7 @@ export default function ThemeToggle() {
             <div>
               <div style={sectionLabelStyle}>Theme Aesthetic</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.4rem" }}>
-                {['standard', 'vaporwave', 'evergreen', 'ocean', 'phosphor', 'amber', 'pbs', 'paper', 'mono', ...(Array.isArray(unlockedThemes) ? unlockedThemes : [])].map(t => (
+                {['standard', 'vaporwave', 'evergreen', 'ocean', 'amber', 'paper', 'pueblo', 'brick', 'mono', ...(Array.isArray(unlockedThemes) ? unlockedThemes : [])].map(t => (
                   <button key={t} onClick={() => setTheme(t)} style={buttonStyle(theme === t)}>
                     {t}
                   </button>

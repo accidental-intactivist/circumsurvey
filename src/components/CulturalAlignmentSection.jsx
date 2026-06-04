@@ -11,7 +11,23 @@
 //   <CulturalAlignmentSection />
 // ═══════════════════════════════════════════════════════════════════════════
 
-import CulturalAlignmentMatrix from "./CulturalAlignmentMatrix";
+import UniversalMatrix from "./UniversalMatrix";
+import { C } from "../explore/styles/tokens";
+
+const PATHWAY_ROWS = [
+  { key: "intact", label: "Intact", color: C.blue },
+  { key: "circumcised", label: "Circumcised", color: C.red },
+  { key: "restoring", label: "Restoring", color: C.gold },
+  { key: "observer", label: "Observer", color: C.green },
+];
+
+const NORM_COLUMNS = [
+  { key: "I+", short: "Intact overwhelming", match: "The intact state is overwhelmingly seen as the normal and expected standard.", sankeyLines: ["INTACT", "(OVERWHELMINGLY)"] },
+  { key: "I",  short: "Intact favored",      match: "Both states are common, but the intact state is more typical or favored.", sankeyLines: ["INTACT", "(FAVORED)"] },
+  { key: "=",  short: "Both equally",        match: "Both states are common and viewed more or less equally.", sankeyLines: ["BOTH", "EQUALLY"] },
+  { key: "C",  short: "Circ favored",        match: "Both states are common, but circumcision is more typical or favored.", sankeyLines: ["CIRC", "(FAVORED)"] },
+  { key: "C+", short: "Circ overwhelming",   match: "Circumcision is overwhelmingly seen as the normal and expected standard.", sankeyLines: ["CIRC", "(OVERWHELMINGLY)"] },
+];
 
 // Pre-computed observed matrix — data frozen at 501 respondents, 480 who
 // answered final_social_norm_perception. Regenerate by running:
@@ -68,12 +84,14 @@ export default function CulturalAlignmentSection() {
       <div style={{ maxWidth: 920, margin: "0 auto" }}>
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.5, marginBottom: "2rem" }} />
 
-        <CulturalAlignmentMatrix
+        <UniversalMatrix
+          xOptions={NORM_COLUMNS}
+          yOptions={PATHWAY_ROWS}
           observed={OBSERVED}
           stories={STORIES}
           autoStories={false}
           eyebrow="Pathway × Cultural Norm"
-          title="Cultural alignment &amp; defiance"
+          title="Cultural alignment & defiance"
           subtitle="Each respondent's body arrived in a specific cultural context — a set of expectations about what is normal. This matrix asks: did their pathway match the culture, or contradict it? Cells are colored by standardized residual — how much higher or lower the count is than pure chance would predict if pathway and cultural norm were independent."
         />
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { C, FONT, API_BASE } from "../styles/tokens";
 import NarrativeList from "../components/NarrativeList";
 import DistributionChart from "../components/DistributionChart";
+import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 // Curated flagship questions for each Observer sub-role
 const TRIAD_COLUMNS = [
@@ -40,7 +41,7 @@ const TRIAD_COLUMNS = [
   }
 ];
 
-export default function ObserverTriadPage() {
+export default function ObserverTriadPage({ navigate }) {
   const [questionsMap, setQuestionsMap] = useState({});
 
   useEffect(() => {
@@ -55,23 +56,17 @@ export default function ObserverTriadPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
-      <header style={{ padding: "4rem 2rem 3rem", textAlign: "center", borderBottom: `1px solid ${C.ghost}`, background: C.bgCard }}>
-        <h1 style={{ fontFamily: FONT.display, fontSize: "2.8rem", color: C.goldBright, marginBottom: "0.5rem" }}>
-          The Observer Triad
-        </h1>
-        <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.muted, maxWidth: 800, margin: "0 auto 1.5rem", lineHeight: 1.6 }}>
-          Compare the unique perspectives of the three primary "Observer" roles: Partners, Parents, and Healthcare Professionals. 
-          Each column highlights the most revealing quantitative and qualitative data for that specific role.
-        </p>
-      </header>
+      <div style={{ maxWidth: 1600, margin: "0 auto", padding: "1.5rem 2rem 0" }}>
+        <InlineBreadcrumb currentRoute="observer-triad" navigate={navigate} />
+      </div>
 
-      <div style={{ padding: "4rem 2rem", maxWidth: 1600, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "3rem" }}>
+      <div style={{ padding: "2rem", maxWidth: 1600, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "3rem" }}>
         {TRIAD_COLUMNS.map(col => (
           <div key={col.role}>
             {/* Column Header */}
             <div style={{ 
               position: "sticky", 
-              top: 0, 
+              top: "var(--header-height, 56px)", 
               background: `linear-gradient(to bottom, ${C.bg} 85%, transparent)`, 
               padding: "1rem 0 2rem", 
               zIndex: 10,

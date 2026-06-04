@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { C, FONT, API_BASE } from "../styles/tokens";
 import DistributionChart from "../components/DistributionChart";
+import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 const UNIVERSAL_QUESTIONS = [
   { id: "culture_body_intervention_view", concept: "Body & Interventions" },
@@ -46,7 +47,7 @@ const TRADITIONS = [
   { id: "Islamic", label: "Islamic", emoji: "☪️", color: "#68b878" },
 ];
 
-export default function ReligiousMirrorsPage() {
+export default function ReligiousMirrorsPage({ navigate }) {
   const [questionsMap, setQuestionsMap] = useState({});
 
   useEffect(() => {
@@ -61,18 +62,9 @@ export default function ReligiousMirrorsPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
-      <header style={{ padding: "4rem 2rem 3rem", textAlign: "center", borderBottom: `1px solid ${C.ghost}`, background: C.bgCard }}>
-        <h1 style={{ fontFamily: FONT.display, fontSize: "2.8rem", color: C.goldBright, marginBottom: "0.5rem" }}>
-          Religious & Secular Mirrors
-        </h1>
-        <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.muted, maxWidth: 800, margin: "0 auto 1.5rem", lineHeight: 1.6 }}>
-          Explore how foundational beliefs and theological paradigms shape the circumcision debate. 
-          The first section compares Universal perspectives across all four major belief cohorts. 
-          The second section dives into the theological weeds for the three Abrahamic traditions.
-        </p>
-      </header>
 
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "4rem 2rem" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem" }}>
+        <InlineBreadcrumb currentRoute="religious-mirrors" navigate={navigate} />
         
         {/* SECTION A: UNIVERSAL (4-COLUMN) */}
         <div style={{ marginBottom: "6rem" }}>

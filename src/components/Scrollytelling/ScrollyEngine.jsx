@@ -16,6 +16,16 @@ import { META, PATHWAY, MIRROR_PAIRS } from '../../data.js';
 import { DEMOGRAPHIC_DIMENSIONS } from '../../demographics.js';
 import { VOICES_THEMES } from '../../voices.js';
 
+// Interactive components from the Explore dashboard
+import GenerationalTrendChart from '../../explore/components/GenerationalTrendChart';
+import GeographicHeatmap from '../../explore/components/GeographicHeatmap';
+import WordCloud from '../../explore/components/WordCloud';
+import NarrativeList from '../../explore/components/NarrativeList';
+
+// API methods for real-time querying
+import { getNarratives, getAggregate, getQuestions, getResponseDistribution } from '../../explore/lib/api';
+
+
 gsap.registerPlugin(ScrollTrigger);
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -463,6 +473,100 @@ export default function ScrollyEngine() {
     };
   }, []);
 
+  const [geoDist, setGeoDist] = useState(null);
+  const [geoByPathway, setGeoByPathway] = useState(null);
+  const [selectedGenQuestion, setSelectedGenQuestion] = useState("final_social_norm_perception");
+  const [voicesPathway, setVoicesPathway] = useState("circumcised");
+  const [wordCloudNarratives, setWordCloudNarratives] = useState([]);
+  const [selectedWord, setSelectedWord] = useState(null);
+
+  React.useEffect(() => {
+    // 1. Fetch geographic distribution
+    getAggregate("demographics_country_born", { by: "pathway" })
+      .then(res => setGeoByPathway(res))
+      .catch(err => console.error("Error fetching geo aggregation", err));
+
+    getResponseDistribution("demographics_country_born")
+      .then(res => setGeoDist(res))
+      .catch(err => console.error("Error fetching geo distribution", err));
+  }, []);
+
+  React.useEffect(() => {
+    // 2. Fetch narratives for selected pathway
+    const qid = voicesPathway === "circumcised" ? "circ_message_to_parents" : "intact_message_to_others";
+    getNarratives(qid)
+      .then(res => {
+        if (res && res.narratives) {
+          setWordCloudNarratives(res.narratives);
+        }
+      })
+      .catch(err => console.error("Error fetching narratives", err));
+  }, [voicesPathway]);
+
+  const [selectedPleasureGen, setSelectedPleasureGen] = useState("all");
+  const [pleasureCohort, setPleasureCohort] = useState(null);
+  const [pleasureData, setPleasureData] = useState(null);
+  const [pleasureLoading, setPleasureLoading] = useState(true);
+
+  React.useEffect(() => {
+    if (selectedPleasureGen === "all") {
+      setPleasureCohort(null);
+    } else {
+      setPleasureCohort({ generation: selectedPleasureGen });
+    }
+  }, [selectedPleasureGen]);
+
+  React.useEffect(() => {
+    setPleasureLoading(true);
+    const questions = [
+      { id: "exp_sex_rating_orgasm_intensity", key: "Orgasm Intensity" },
+      { id: "exp_sex_rating_ease_of_orgasm", key: "Ease of Orgasm" },
+      { id: "exp_sex_rating_variety_of_sensation", key: "Variety of Sensation" },
+      { id: "exp_sex_rating_sensitivity_light_touch", key: "Light Touch Sensitivity" },
+      { id: "exp_sex_rating_pleasure_mobile_skin", key: "Pleasure from Mobile Skin" }
+    ];
+
+    Promise.all(
+      questions.map(q => getAggregate(q.id, { by: "pathway", cohort: pleasureCohort }))
+    )
+      .then(results => {
+        const formatted = questions.map((q, idx) => {
+          const res = results[idx].results || {};
+          
+          const getVal = (pathwayId) => {
+            const pathData = res[pathwayId];
+            if (!pathData || !pathData.distribution) return 0;
+            let sumProduct = 0;
+            let totalN = 0;
+            pathData.distribution.forEach(d => {
+              const match = d.label.match(/^([1-5])/);
+              const val = match ? parseInt(match[1], 10) : null;
+              if (val !== null) {
+                sumProduct += val * d.n;
+                totalN += d.n;
+              }
+            });
+            return totalN > 0 ? parseFloat((sumProduct / totalN).toFixed(2)) : 0;
+          };
+
+          return {
+            group: q.key,
+            values: {
+              circ: getVal("circumcised"),
+              rest: getVal("restoring"),
+              intact: getVal("intact")
+            }
+          };
+        });
+        setPleasureData(formatted);
+        setPleasureLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching pleasure data", err);
+        setPleasureLoading(false);
+      });
+  }, [pleasureCohort]);
+
   useGSAP(() => {
     ScrollTrigger.create({
       trigger: containerRef.current,
@@ -748,11 +852,39 @@ export default function ScrollyEngine() {
                   color: 'var(--c-muted)',
                   fontStyle: 'italic',
                   lineHeight: 1.6,
+                  marginBottom: '2rem',
                 }}>
                   As the survey continues, the experiences of Trans and Intersex 
                   respondents will further deepen our understanding. The data explorer 
                   updates in real time — this report captures the Phase 1 snapshot.
                 </p>
+
+                {geoDist && (
+                  <div style={{ margin: '2rem 0' }}>
+                    <GeographicHeatmap 
+                      questionId="demographics_country_born"
+                      title="Origin of Survey Respondents"
+                      distribution={geoDist}
+                      byPathway={geoByPathway}
+                    />
+                    <div style={{ marginTop: '1.25rem', textAlign: 'center', marginBottom: '2rem' }}>
+                      <a href="/explore#/demographics" style={{
+                        fontFamily: "var(--f-condensed)",
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        color: 'var(--c-gold)',
+                        textDecoration: 'none',
+                        borderBottom: '1px solid var(--c-ghost)',
+                        paddingBottom: '0.15rem',
+                        transition: 'color 0.2s',
+                      }}>
+                        Explore Full Demographics Exhibit →
+                      </a>
+                    </div>
+                  </div>
+                )}
 
                 <ObserverLens />
               </ScrollyNarrative>
@@ -774,15 +906,51 @@ export default function ScrollyEngine() {
                   Our respondents span all political, socioeconomic, and generational lines. But generationally, we see a massive historical shift. In fact, routine infant circumcision (RIC) has officially become a <strong>minority procedure</strong> in the United States, with neonatal rates dropping below 49%—a decline famously lamented in a Johns Hopkins press release. Generationally, our survey captures this changing landscape:
                 </p>
 
-                <div style={{ margin: '3rem 0' }}>
-                  <ScrollyDataChart
-                    variant="horizontal"
-                    title="Generational Breakdown"
-                    subtitle="Responses span all age groups, primarily Millennials and Gen Z."
-                    data={GEN_DATA}
-                    categories={GEN_CATEGORIES}
-                    format="number"
-                  />
+                <div style={{ margin: '2rem 0', background: 'var(--c-bgSoft)', border: '1px solid var(--c-ghost)', borderRadius: 12, padding: '1.5rem' }}>
+                  <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <label style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
+                      Interactive Generational Faultlines:
+                    </label>
+                    <select
+                      value={selectedGenQuestion}
+                      onChange={(e) => setSelectedGenQuestion(e.target.value)}
+                      style={{
+                        background: 'var(--c-bg)',
+                        color: 'var(--c-textBright)',
+                        border: '1px solid var(--c-ghost)',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: 6,
+                        fontFamily: 'var(--f-condensed)',
+                        fontSize: '0.8rem',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="final_social_norm_perception">Shifting Social Norms</option>
+                      <option value="exp_pride_satisfaction_rating">Pride & Satisfaction</option>
+                      <option value="circ_regret_feeling">Circumcised Resentment</option>
+                      <option value="intact_regret_feeling">Intact Regret</option>
+                    </select>
+                  </div>
+                  
+                  <GenerationalTrendChart questionId={selectedGenQuestion} />
+                  
+                  <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                    <a href="/explore#/generational-faultlines" style={{
+                      fontFamily: "var(--f-condensed)",
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: 'var(--c-gold)',
+                      textDecoration: 'none',
+                      borderBottom: '1px solid var(--c-ghost)',
+                      paddingBottom: '0.15rem',
+                      transition: 'color 0.2s',
+                    }}>
+                      Explore Full Generational Faultlines Exhibit →
+                    </a>
+                  </div>
                 </div>
               </ScrollyNarrative>
 
@@ -885,6 +1053,85 @@ export default function ScrollyEngine() {
               </div>
             </div>
           </div>
+
+          <div style={{ marginTop: '2.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--c-ghost)', borderRadius: 8, padding: 3 }}>
+              <button
+                onClick={() => { setVoicesPathway("circumcised"); setSelectedWord(null); }}
+                style={{
+                  background: voicesPathway === "circumcised" ? 'var(--path-circumcised)' : 'transparent',
+                  color: voicesPathway === "circumcised" ? 'var(--c-bg)' : 'var(--c-muted)',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.35rem 0.85rem',
+                  fontFamily: 'var(--f-condensed)',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                🔵 Circumcised Voice
+              </button>
+              <button
+                onClick={() => { setVoicesPathway("intact"); setSelectedWord(null); }}
+                style={{
+                  background: voicesPathway === "intact" ? 'var(--path-intact)' : 'transparent',
+                  color: voicesPathway === "intact" ? 'var(--c-bg)' : 'var(--c-muted)',
+                  border: 'none',
+                  borderRadius: 6,
+                  padding: '0.35rem 0.85rem',
+                  fontFamily: 'var(--f-condensed)',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                🟢 Intact Voice
+              </button>
+            </div>
+          </div>
+
+          {wordCloudNarratives.length > 0 ? (
+            <div style={{ margin: '2rem 0' }}>
+              <WordCloud 
+                narratives={wordCloudNarratives}
+                selectedWord={selectedWord}
+                onWordClick={(w) => setSelectedWord(w === selectedWord ? null : w)}
+              />
+              <div style={{ marginTop: '1rem', maxHeight: '400px', overflowY: 'auto', border: '1px solid var(--c-ghost)', borderRadius: 8, padding: '1rem', background: 'rgba(0,0,0,0.1)' }}>
+                <NarrativeList 
+                  distribution={wordCloudNarratives}
+                  highlightWord={selectedWord}
+                  hideChart={true}
+                />
+              </div>
+              
+              <div style={{ marginTop: '1.25rem', textAlign: 'center', marginBottom: '3rem' }}>
+                <a href="/explore#/narrative-mirrors" style={{
+                  fontFamily: "var(--f-condensed)",
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: 'var(--c-gold)',
+                  textDecoration: 'none',
+                  borderBottom: '1px solid var(--c-ghost)',
+                  paddingBottom: '0.15rem',
+                  transition: 'color 0.2s',
+                }}>
+                  Explore Full Narrative Mirrors Exhibit →
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--c-muted)', fontStyle: 'italic', marginBottom: '3rem' }}>
+              Loading verbatim narratives...
+            </div>
+          )}
 
           {/* Teaser stats from Phase 1 data */}
           <div style={{ margin: '3rem 0' }}>
@@ -1007,17 +1254,67 @@ export default function ScrollyEngine() {
             But now look at how those same men feel about it, and how the physical reality compares.
           </p>
 
-          <div style={{ margin: '3rem 0' }}>
-            <ScrollyDataChart 
-              variant="grouped"
-              title="Direct Comparison of Sexual Experience by Status"
-              subtitle="Please rate the following aspects of your own sexual experience on a scale of 1 to 5"
-              data={PLEASURE_DATA}
-              categories={PLEASURE_CATEGORIES}
-              yDomain={[0, 5]}
-              yTicks={6}
-              height={360}
-            />
+          <div style={{ margin: '2rem 0', background: 'var(--c-bgSoft)', border: '1px solid var(--c-ghost)', borderRadius: 12, padding: '1.5rem' }}>
+            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <label style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
+                Filter Pleasure Gap by Generation:
+              </label>
+              <select
+                value={selectedPleasureGen}
+                onChange={(e) => setSelectedPleasureGen(e.target.value)}
+                style={{
+                  background: 'var(--c-bg)',
+                  color: 'var(--c-textBright)',
+                  border: '1px solid var(--c-ghost)',
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: 6,
+                  fontFamily: 'var(--f-condensed)',
+                  fontSize: '0.8rem',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="all">All Generations</option>
+                <option value="Generation Z (born 1997-2012)">Gen Z</option>
+                <option value="Millennial/Gen Y (born 1981-1996)">Millennial</option>
+                <option value="Generation X (born 1965-1980)">Gen X</option>
+                <option value="Baby Boomer (born 1946-1964)">Baby Boomer</option>
+              </select>
+            </div>
+
+            {pleasureLoading ? (
+              <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--c-muted)', fontStyle: 'italic' }}>
+                Calculating sexual experience averages...
+              </div>
+            ) : pleasureData ? (
+              <ScrollyDataChart 
+                variant="grouped"
+                title="Direct Comparison of Sexual Experience by Status"
+                subtitle="Please rate the following aspects of your own sexual experience on a scale of 1 to 5"
+                data={pleasureData}
+                categories={PLEASURE_CATEGORIES}
+                yDomain={[0, 5]}
+                yTicks={6}
+                height={360}
+              />
+            ) : null}
+
+            <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+              <a href="/explore#/pleasure-gap" style={{
+                fontFamily: "var(--f-condensed)",
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'var(--c-gold)',
+                textDecoration: 'none',
+                borderBottom: '1px solid var(--c-ghost)',
+                paddingBottom: '0.15rem',
+                transition: 'color 0.2s',
+              }}>
+                Explore Full Pleasure Gap Matrix →
+              </a>
+            </div>
           </div>
 
           {/* Sons decision */}

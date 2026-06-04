@@ -3,7 +3,6 @@ import { useReport } from "../contexts/ReportContext";
 import { C, FONT } from "../styles/tokens";
 import { getQuestions, getResponseDistribution, getNarratives, getAggregate } from "../lib/api";
 import { applyLikert } from "../lib/formatters";
-import ThemeToggle from "../components/ThemeToggle";
 import DistributionChart from "../components/DistributionChart";
 import GeographicHeatmap from "../components/GeographicHeatmap";
 import NarrativeList from "../components/NarrativeList";
@@ -177,57 +176,46 @@ export default function ReportBuilderPage({ navigate }) {
 
       <div className="print-container" style={{ maxWidth: 900, margin: "0 auto" }}>
         
-        {/* Header */}
-        <div className="no-print" style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "2rem",
-          flexWrap: "wrap",
-        }}>
-          <a href="#/" style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.8rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: C.gold,
-            textDecoration: "none"
-          }}>← Back to Index</a>
-          
-          <div style={{ flex: 1 }} />
-
-          {reportQuestions.length > 0 && (
-            <>
-              <button style={buttonStyle} onClick={exportCSV}
-                onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-                onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
-                📊 Export CSV
-              </button>
-              <button style={buttonStyle} onClick={exportText}
-                onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-                onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
-                📝 Export Text
-              </button>
-              <button style={buttonStyle} onClick={exportImage}
-                onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-                onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
-                📸 Save as Image
-              </button>
-              <button style={buttonStyle} onClick={() => window.print()}
-                onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
-                onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
-                🖨️ Print / PDF
-              </button>
-              <button style={{...buttonStyle, color: C.red, borderColor: "transparent"}} onClick={clearReport}
-                onMouseEnter={(e) => { e.target.style.background = "rgba(217,79,79,0.1)"; }}
-                onMouseLeave={(e) => { e.target.style.background = "transparent"; }}>
-                Clear All
-              </button>
-            </>
-          )}
-          <div style={{ width: "1px", height: "24px", background: C.ghost }} />
-          <ThemeToggle />
-        </div>
+        {/* Action Toolbar */}
+        {reportQuestions.length > 0 && (
+          <div className="no-print" style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "0.8rem",
+            marginBottom: "2.5rem",
+            flexWrap: "wrap",
+            paddingBottom: "1.5rem",
+            borderBottom: `1px solid ${C.ghost}`
+          }}>
+            <button style={buttonStyle} onClick={exportCSV}
+              onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+              onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
+              📊 Export CSV
+            </button>
+            <button style={buttonStyle} onClick={exportText}
+              onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+              onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
+              📝 Export Text
+            </button>
+            <button style={buttonStyle} onClick={exportImage}
+              onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+              onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
+              📸 Save as Image
+            </button>
+            <button style={buttonStyle} onClick={() => window.print()}
+              onMouseEnter={(e) => { e.target.style.color = C.goldBright; e.target.style.borderColor = C.gold; }}
+              onMouseLeave={(e) => { e.target.style.color = C.muted; e.target.style.borderColor = C.ghost; }}>
+              🖨️ Print / PDF
+            </button>
+            <div style={{ width: "1px", height: "20px", background: C.ghost }} />
+            <button style={{...buttonStyle, color: C.red, borderColor: "transparent"}} onClick={clearReport}
+              onMouseEnter={(e) => { e.target.style.background = "rgba(217,79,79,0.1)"; }}
+              onMouseLeave={(e) => { e.target.style.background = "transparent"; }}>
+              Clear All
+            </button>
+          </div>
+        )}
 
         <div ref={reportRef}>
           <h1 style={{

@@ -20,11 +20,7 @@ export const DEMOGRAPHIC_DIMENSIONS = [
       { value: "intact", label: "Intact" },
       { value: "circumcised", label: "Circumcised" },
       { value: "restoring", label: "Restoring" },
-      { value: "observer", label: "Observer" },
-      { value: "trans", label: "Transgender (All)" },
-      { value: "trans_vaginoplasty", label: "Post-Vaginoplasty" },
-      { value: "trans_phalloplasty", label: "Post-Phalloplasty" },
-      { value: "intersex", label: "Intersex" }
+      { value: "observer", label: "Observer" }
     ],
   },
   {

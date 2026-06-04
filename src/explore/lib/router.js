@@ -23,6 +23,8 @@ function parseHash() {
     params.id = segments[1];
   } else if (segments[0] === "tools" && segments[1] === "cultural-alignment") {
     route = "cultural-alignment";
+  } else if (segments[0] === "correlations") {
+    route = "correlations";
   } else if (segments[0] === "pairs") {
     route = "pairs";
   } else if (segments[0] === "demographics") {
@@ -72,6 +74,7 @@ function serializeState(route, params, state) {
   if (route === "pathways") path = "/pathways";
   else if (route === "question") path = `/q/${params.id}`;
   else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
+  else if (route === "correlations") path = "/correlations";
   else if (route === "pairs") path = "/pairs";
   else if (route === "demographics") path = "/demographics";
   else if (route === "pleasure-gap") path = "/pleasure-gap";

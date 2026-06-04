@@ -3,6 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('cs_theme_name') || 'standard';
+          var mode = localStorage.getItem('cs_theme_mode');
+          if (!mode) {
+            mode = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          var typeface = localStorage.getItem('cs_theme_typeface') || 'tomorrow';
+          var colorblind = localStorage.getItem('cs_theme_colorblind') === 'true';
+          var dyslexic = localStorage.getItem('cs_theme_dyslexic') === 'true';
+          var scale = localStorage.getItem('cs_theme_scale') || 'standard';
+          
+          var root = document.documentElement;
+          root.setAttribute('data-theme', theme);
+          root.setAttribute('data-mode', mode);
+          root.setAttribute('data-typeface', typeface);
+          root.setAttribute('data-colorblind', String(colorblind));
+          root.setAttribute('data-dyslexic', String(dyslexic));
+          
+          var scaleMultiplier = 1;
+          if (scale === 'large') scaleMultiplier = 1.15;
+          if (scale === 'xlarge') scaleMultiplier = 1.3;
+          root.style.fontSize = (scaleMultiplier * 100) + '%';
+        } catch (e) {}
+      })();
+    </script>
     <title>The Accidental Intactivist's Inquiry — Findings</title>
     <meta name="description" content="The largest comparative survey of intact, circumcised, and restoring populations ever assembled from lived experience. 500+ respondents across six pathways." />
 
@@ -17,7 +44,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Josefin+Sans:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/index-C5IHO9eb.js"></script>
+    <script type="module" crossorigin src="/assets/index-BB_fKAcc.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-CgmGrYHG.css">
   </head>
   <body>

@@ -9,21 +9,30 @@ import { API_BASE } from "../styles/tokens";
 const cache = new Map();
 const TTL_MS = 5 * 60 * 1000;
 
-async function fetchJson(url) {
+async function fetchJson(url, retries = 3) {
   const key = url;
   const now = Date.now();
   const cached = cache.get(key);
   if (cached && now - cached.ts < TTL_MS) {
     return cached.data;
   }
-  const r = await fetch(url);
-  if (!r.ok) {
-    const text = await r.text().catch(() => "");
-    throw new Error(`API ${r.status}: ${text.slice(0, 200)}`);
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) {
+        const text = await r.text().catch(() => "");
+        throw new Error(`API ${r.status}: ${text.slice(0, 200)}`);
+      }
+      const data = await r.json();
+      cache.set(key, { ts: now, data });
+      return data;
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      // Exponential backoff
+      await new Promise(res => setTimeout(res, 500 * Math.pow(2, i)));
+    }
   }
-  const data = await r.json();
-  cache.set(key, { ts: now, data });
-  return data;
 }
 
 // ── Cohort filter serialization ────────────────────────────────────────────
@@ -81,6 +90,7 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
       "contact_email",
       "contact_other_method",
       "contact_contrib_interest",
+      "contact_contrib_format",
       "restore_thank_you",
       "observe_multi_hat_selection",
       "observe_parent_intact_lawsuit_cta_knowledge"
@@ -88,12 +98,22 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
     data.questions = data.questions.filter(q => !excludedIds.includes(q.id));
 
     data.questions.forEach(q => {
-      if (q.section === "Uncategorized" || !q.section) {
-        if (q.col_idx >= 346 && q.col_idx <= 355) {
-          q.section = "Gender-Affirming Surgery (Transmasculine / Transfeminine)";
-        } else if (q.col_idx >= 357 && q.col_idx <= 359) {
-          q.section = "Intersex Experience";
-        } else if (q.id.startsWith("observe_parent_") || q.id.startsWith("observe_undecided_")) {
+      if (q.id === "culture_additional_comments") {
+        q.prompt = "Additional Comments (Culture & Attitudes)";
+        q.subtitle = "Are there any other thoughts you'd like to share regarding societal attitudes, cultural expectations, or religious norms related to circumcision?";
+      }
+      if (q.pathway === "trans") {
+        if (q.col_idx >= 346 && q.col_idx <= 350) {
+          q.pathway = "trans_vaginoplasty";
+          q.section = "Post-Vaginoplasty Pathway";
+        } else if (q.col_idx >= 351 && q.col_idx <= 356) {
+          q.pathway = "trans_phalloplasty";
+          q.section = "Post-Phalloplasty Pathway";
+        }
+      } else if (q.pathway === "intersex") {
+        q.section = "Intersex Pathway";
+      } else if (q.section === "Uncategorized" || !q.section) {
+        if (q.id.startsWith("observe_parent_") || q.id.startsWith("observe_undecided_")) {
           q.section = "Parents & Guardians";
         } else if (q.id.startsWith("observe_partner_") || ["q255", "q269", "q272", "q302"].includes(q.id)) {
           q.section = "Partners & Intimacy";

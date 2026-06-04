@@ -1,4 +1,4 @@
-import { C, FONT, RAINBOW } from "../styles/tokens";
+import { C, FONT } from "../styles/tokens";
 
 export default function MethodologyPage() {
   return (
@@ -10,42 +10,7 @@ export default function MethodologyPage() {
       padding: "1.5rem 1.1rem 5rem",
     }}>
       <div style={{ maxWidth: 800, margin: "0 auto" }}>
-        {/* Header: breadcrumb + back */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.8rem",
-          marginBottom: "3rem",
-        }}>
-          <a href="#/" style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: C.muted,
-            textDecoration: "none"
-          }}>← Master Index</a>
-          <span style={{ color: C.dim }}>/</span>
-          <span style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: C.gold,
-          }}>Methodology & Data Rigor</span>
-        </div>
-
-        <h1 style={{
-          fontFamily: FONT.display,
-          fontWeight: 700,
-          fontSize: "2.4rem",
-          color: C.textBright,
-          letterSpacing: "-0.02em",
-          marginBottom: "1rem",
-        }}>Methodology & Data Rigor</h1>
         
-        <div style={{ height: 4, width: 80, background: RAINBOW, borderRadius: 2, marginBottom: "3rem" }} />
-
         <div style={{ 
           display: "flex", 
           flexDirection: "column", 

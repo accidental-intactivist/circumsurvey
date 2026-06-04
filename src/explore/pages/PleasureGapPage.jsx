@@ -4,6 +4,10 @@ import { C, FONT, RAINBOW, resolveCssColor } from "../styles/tokens";
 import DemographicFilterBar from "../components/DemographicFilterBar";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import { PATHWAYS } from "../lib/pathways";
+import PleasureBarChart from "../components/PleasureBarChart";
+import PleasureDumbbellChart from "../components/PleasureDumbbellChart";
+import PleasureRadarChart from "../components/PleasureRadarChart";
+import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 const QUESTIONS = [
   { id: "exp_sex_rating_ease_of_orgasm", label: "Ease of Orgasm", colorVar: "--chart-0" },
@@ -16,8 +20,8 @@ const QUESTIONS = [
 
 const COHORTS = [
   { id: "intact", label: "Intact", colorVar: "--path-intact" },
-  { id: "circumcised", label: "Circumcised", colorVar: "--path-circumcised" },
-  { id: "restoring", label: "Restoring/Restored", colorVar: "--path-restoring" }
+  { id: "restoring", label: "Restoring/Restored", colorVar: "--path-restoring" },
+  { id: "circumcised", label: "Circumcised", colorVar: "--path-circumcised" }
 ];
 
 // Helper to extract rating value from option text
@@ -53,6 +57,8 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groupBy, setGroupBy] = useState("cohort"); // "cohort" or "factor"
+  const [viewMode, setViewMode] = useState("columns");
+  const [activeCohorts, setActiveCohorts] = useState({ intact: true, circumcised: true, restoring: true });
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   // Fetch averages whenever the cohort filter changes
@@ -104,7 +110,14 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
     // Average N across the factors for descriptive display
     const avgN = Math.round(totalN / QUESTIONS.length);
 
-    return { matrix, totalN, avgN };
+    // Dynamic Sorting: Sort QUESTIONS based on Intact score (lowest to highest)
+    const sortedQuestions = [...QUESTIONS].sort((a, b) => {
+      const scoreA = matrix["intact"]?.[a.id]?.average || 0;
+      const scoreB = matrix["intact"]?.[b.id]?.average || 0;
+      return scoreA - scoreB;
+    });
+
+    return { matrix, totalN, avgN, sortedQuestions };
   }, [data]);
 
   // Cohort labels list for active description filter
@@ -344,38 +357,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-        {/* Breadcrumb */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.8rem",
-          marginBottom: "1.2rem",
-          flexWrap: "wrap",
-        }}>
-          <a href="#/" style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: C.muted,
-          }}>← Master Index</a>
-          <span style={{ color: C.dim }}>/</span>
-          <span style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: C.gold,
-          }}>Tools</span>
-          <span style={{ color: C.dim }}>/</span>
-          <span style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: C.textBright,
-          }}>The Pleasure Gap</span>
-        </div>
+        <InlineBreadcrumb currentRoute="pleasure-gap" navigate={navigate} />
 
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.5, marginBottom: "1.5rem" }} />
 
@@ -420,6 +402,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
               <br/><br/>
               Apply a demographic filter on the left to see how these ratios adapt across generations, locations, or upbringing environments.
             </div>
+
           </aside>
 
           {/* RIGHT: Main Chart Panel */}
@@ -462,73 +445,120 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
                   </p>
                 </div>
 
-                {/* Group By Controls */}
-                <div style={{
-                  display: "flex",
-                  background: "rgba(0,0,0,0.3)",
-                  borderRadius: 20,
-                  padding: 3,
-                  border: `1px solid ${C.ghost}`,
-                }}>
-                  <button
-                    onClick={() => setGroupBy("cohort")}
-                    style={{
-                      background: groupBy === "cohort" ? C.ghost : "transparent",
-                      color: groupBy === "cohort" ? C.textBright : C.muted,
-                      border: "none",
-                      borderRadius: 18,
-                      padding: "0.35rem 0.8rem",
-                      fontFamily: FONT.condensed,
-                      fontSize: "0.72rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                  >Group by Cohort</button>
-                  <button
-                    onClick={() => setGroupBy("factor")}
-                    style={{
-                      background: groupBy === "factor" ? C.ghost : "transparent",
-                      color: groupBy === "factor" ? C.textBright : C.muted,
-                      border: "none",
-                      borderRadius: 18,
-                      padding: "0.35rem 0.8rem",
-                      fontFamily: FONT.condensed,
-                      fontSize: "0.72rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                  >Group by Factor</button>
-                </div>
+                {/* Control Panel */}
+                {!error && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
+                    
+                    {/* View Toggles */}
+                    <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${C.ghost}` }}>
+                      <button
+                        onClick={() => setViewMode("dumbbell")}
+                        style={{
+                          background: viewMode === "dumbbell" ? C.bgCard : "transparent",
+                          color: viewMode === "dumbbell" ? C.textBright : C.muted,
+                          border: "none",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: 6,
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.8rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          cursor: "pointer",
+                          boxShadow: viewMode === "dumbbell" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        The Gap Plot
+                      </button>
+                      <button
+                        onClick={() => setViewMode("radar")}
+                        style={{
+                          background: viewMode === "radar" ? C.bgCard : "transparent",
+                          color: viewMode === "radar" ? C.textBright : C.muted,
+                          border: "none",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: 6,
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.8rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          cursor: "pointer",
+                          boxShadow: viewMode === "radar" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        Radar View
+                      </button>
+                      <button
+                        onClick={() => setViewMode("columns")}
+                        style={{
+                          background: viewMode === "columns" ? C.bgCard : "transparent",
+                          color: viewMode === "columns" ? C.textBright : C.muted,
+                          border: "none",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: 6,
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.8rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          cursor: "pointer",
+                          boxShadow: viewMode === "columns" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        Classic Columns
+                      </button>
+                    </div>
+
+                    {/* Group By Pivot (Only for Columns) */}
+                    {viewMode === "columns" && (
+                      <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${C.ghost}` }}>
+                        <button
+                          onClick={() => setGroupBy("factor")}
+                          style={{
+                            background: groupBy === "factor" ? C.bgCard : "transparent",
+                            color: groupBy === "factor" ? C.textBright : C.muted,
+                            border: "none",
+                            padding: "0.4rem 0.8rem",
+                            borderRadius: 6,
+                            fontFamily: FONT.condensed,
+                            fontSize: "0.8rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            cursor: "pointer",
+                            boxShadow: groupBy === "factor" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          By Parameter
+                        </button>
+                        <button
+                          onClick={() => setGroupBy("cohort")}
+                          style={{
+                            background: groupBy === "cohort" ? C.bgCard : "transparent",
+                            color: groupBy === "cohort" ? C.textBright : C.muted,
+                            border: "none",
+                            padding: "0.4rem 0.8rem",
+                            borderRadius: 6,
+                            fontFamily: FONT.condensed,
+                            fontSize: "0.8rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            cursor: "pointer",
+                            boxShadow: groupBy === "cohort" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                            transition: "all 0.2s"
+                          }}
+                        >
+                          By Cohort
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Cohort badge */}
-              {cohortLabel && (
-                <div style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.45rem",
-                  padding: "0.3rem 0.7rem",
-                  background: "rgba(212,160,48,0.1)",
-                  border: `1px solid rgba(212,160,48,0.35)`,
-                  borderRadius: 999,
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: C.goldBright,
-                  marginBottom: "1rem",
-                }}>
-                  <span style={{ opacity: 0.7 }}>Cohort:</span>
-                  <span style={{ fontWeight: 700 }}>{cohortLabel}</span>
-                </div>
-              )}
-
               {/* Chart rendering or loaders */}
-              {loading && (
+              {loading && !data && (
                 <div style={{ padding: "4rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
                   Calculating sexual experience averages...
                 </div>
@@ -538,17 +568,58 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
                   <strong>Failed to render Pleasure Gap:</strong> {error}
                 </div>
               )}
-              {!loading && !error && svgChart}
+              {!error && data && (
+                <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s", pointerEvents: loading ? "none" : "auto" }}>
+                  {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  {viewMode === "radar" && <PleasureRadarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} groupBy={groupBy} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                </div>
+              )}
             </div>
 
+            {/* Bottom Controls (Legend and Toggles) */}
+            {!error && data && (
+              <div style={{ marginTop: "1.5rem", marginBottom: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+                
+                {/* Interactive Toggles */}
+                <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", justifyContent: "center" }}>
+                  {COHORTS.map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => setActiveCohorts(prev => ({ ...prev, [c.id]: !prev[c.id] }))}
+                      style={{
+                        background: activeCohorts[c.id] ? `var(${c.colorVar})` : "transparent",
+                        color: activeCohorts[c.id] ? C.bg : `var(${c.colorVar})`,
+                        border: `1px solid var(${c.colorVar})`,
+                        padding: "0.3rem 0.8rem",
+                        borderRadius: 20,
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.75rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Raw Numerical Table */}
-            {!loading && !error && data && (
+            {!error && data && (
               <div style={{
-                background: C.bgCard,
-                border: `1px solid ${C.ghost}`,
-                borderRadius: 8,
-                padding: "1.2rem",
-                overflowX: "auto"
+                background: "rgba(0, 0, 0, 0.25)",
+                backdropFilter: "blur(12px)",
+                border: `1px solid rgba(255,255,255,0.05)`,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                borderRadius: 12,
+                padding: "1.5rem",
+                overflowX: "auto",
+                opacity: loading ? 0.5 : 1,
+                transition: "opacity 0.2s"
               }}>
                 <h3 style={{
                   fontFamily: FONT.condensed,
@@ -557,31 +628,36 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
                   color: C.goldBright,
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
-                  marginBottom: "0.8rem",
-                  borderBottom: `1px solid ${C.ghost}`,
-                  paddingBottom: "0.4rem"
+                  marginBottom: "1rem",
+                  borderBottom: `1px solid rgba(255,255,255,0.08)`,
+                  paddingBottom: "0.6rem"
                 }}>
                   Detailed Matrix (Average Ratings &amp; Samples)
                 </h3>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FONT.body, fontSize: "0.85rem", color: C.text }}>
                   <thead>
-                    <tr style={{ borderBottom: `2px solid ${C.ghost}` }}>
-                      <th style={{ textAlign: "left", padding: "0.5rem", color: C.muted }}>Sexual Experience Factor</th>
+                    <tr style={{ borderBottom: `2px solid rgba(255,255,255,0.1)` }}>
+                      <th style={{ textAlign: "left", padding: "0.5rem", color: C.muted, position: "sticky", top: 0 }}>Sexual Experience Factor</th>
                       {COHORTS.map(c => (
-                        <th key={c.id} style={{ textAlign: "right", padding: "0.5rem", color: C.textBright, fontWeight: 600 }}>{c.label}</th>
+                        <th key={c.id} style={{ textAlign: "right", padding: "0.5rem", color: C.textBright, fontWeight: 600, position: "sticky", top: 0 }}>{c.label}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {QUESTIONS.map((q, idx) => (
-                      <tr key={q.id} style={{ borderBottom: `1px solid ${C.ghost}`, background: idx % 2 === 0 ? "rgba(255,255,255,0.01)" : "transparent" }}>
-                        <td style={{ padding: "0.6rem 0.5rem", fontWeight: 500 }}>{q.label}</td>
+                    {stats.sortedQuestions.map((q, idx) => (
+                      <tr key={q.id} style={{ borderBottom: `1px solid rgba(255,255,255,0.05)`, background: idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent", transition: "background 0.2s" }} onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"} onMouseOut={e => e.currentTarget.style.background = idx % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"}>
+                        <td style={{ padding: "0.8rem 0.5rem", fontWeight: 500 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <div style={{ width: 10, height: 10, borderRadius: 2, background: `var(${q.colorVar})` }} />
+                            <span>{q.label}</span>
+                          </div>
+                        </td>
                         {COHORTS.map(c => {
                           const valObj = stats.matrix[c.id]?.[q.id] || { average: 0, n: 0 };
                           return (
-                            <td key={c.id} style={{ padding: "0.6rem 0.5rem", textAlign: "right" }}>
-                              <span style={{ fontFamily: FONT.mono, fontWeight: 700, color: C.textBright }}>{valObj.average.toFixed(2)}</span>
-                              <span style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginLeft: "0.3rem" }}>n={valObj.n}</span>
+                            <td key={c.id} style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>
+                              <span style={{ fontFamily: FONT.mono, fontWeight: 700, color: C.textBright, fontSize: "0.9rem" }}>{valObj.average.toFixed(2)}</span>
+                              <span style={{ fontFamily: FONT.mono, fontSize: "0.7rem", color: C.muted, marginLeft: "0.4rem" }}>n={valObj.n}</span>
                             </td>
                           );
                         })}

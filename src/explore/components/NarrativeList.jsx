@@ -23,12 +23,9 @@ export default function NarrativeList({
     }
   };
   
-  if (!distribution || distribution.length === 0) {
-    return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
-  }
-
   // Detect which pathways have narratives present
   const availablePathways = useMemo(() => {
+    if (!distribution) return [];
     const paths = new Set();
     distribution.forEach(item => {
       if (item.pathway) {
@@ -46,6 +43,7 @@ export default function NarrativeList({
   // Helper to run independent cleaning, grouping, and filtering
   const getProcessedGrouped = useMemo(() => {
     return (items) => {
+      if (!items) return [];
       let filteredDist = items;
       if (highlightWord) {
         const trimmedWord = highlightWord.trim();
@@ -103,7 +101,7 @@ export default function NarrativeList({
 
   // Process the overall list
   const grouped = useMemo(() => {
-    return getProcessedGrouped(distribution);
+    return getProcessedGrouped(distribution || []);
   }, [distribution, getProcessedGrouped]);
 
   const visible = grouped.slice(0, limit);
@@ -118,6 +116,7 @@ export default function NarrativeList({
   }, [grouped]);
 
   const anyRemaining = useMemo(() => {
+    if (!distribution) return false;
     if (viewMode === "single") {
       return limit < grouped.length;
     } else {
@@ -128,6 +127,10 @@ export default function NarrativeList({
       });
     }
   }, [viewMode, limit, grouped.length, activePathwaysOrdered, distribution, getProcessedGrouped]);
+
+  if (!distribution || distribution.length === 0) {
+    return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
+  }
   
   return (
     <div style={{ marginTop: "1rem" }}>
@@ -212,25 +215,28 @@ export default function NarrativeList({
             const item = group.items[0];
             
             // Only show metadata if this is a unique response
-            const hasMeta = count === 1 && (item.pathway || item.generation);
-            
-            let genStr = item.generation || "Unknown Gen";
+            let genStr = item.generation || "";
             if (genStr.includes("(born")) {
               genStr = genStr.split("(born")[0].trim();
             }
             if (genStr === "Boomer") genStr = "Baby Boomer";
             
             let locStr = "";
-            let region = item.us_state_now || item.canada_province_now;
+            let region = item.us_state_now || item.canada_province_now || item.us_state_born || item.canada_province_born;
             if (region && typeof region === 'string' && region.includes(" - ")) {
               region = region.split(" - ").pop().trim();
             }
-            let country = item.country_now;
+            let country = item.country_now || item.country_born;
             if (country === "United States of America (USA)") country = "USA";
             else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
 
             if (region && country) locStr = `${region}, ${country}`;
             else if (country) locStr = country;
+
+            let respondentMeta = "";
+            if (genStr && locStr) respondentMeta = `${genStr} · ${locStr}`;
+            else if (genStr) respondentMeta = genStr;
+            else if (locStr) respondentMeta = locStr;
             
             const pathwayColor = item.pathway && PATHWAYS[item.pathway.toLowerCase()] 
               ? PATHWAYS[item.pathway.toLowerCase()].color 
@@ -277,7 +283,6 @@ export default function NarrativeList({
                     {item.pathway ? item.pathway.charAt(0).toUpperCase() + item.pathway.slice(1) + " Pathway" : "Response"}
                   </div>
                   <div style={{ color: "var(--c-muted)", fontFamily: FONT.mono, letterSpacing: "0.05em", fontSize: "0.65rem", display: "flex", gap: "0.5rem" }}>
-                    {hasMeta && <span>{genStr} {locStr ? ` · ${locStr}` : ""}</span>}
                     <span style={{ 
                       color: C.goldBright, 
                       background: "rgba(212,160,48,0.12)", 
@@ -285,7 +290,7 @@ export default function NarrativeList({
                       padding: "0.15rem 0.4rem", 
                       borderRadius: 4 
                     }}>
-                      n={count}
+                      {count === 1 ? (respondentMeta || `n=${count}`) : `n=${count}`}
                     </span>
                   </div>
                 </div>
@@ -396,7 +401,7 @@ export default function NarrativeList({
                         letterSpacing: "0.08em",
                       }}>
                         <div style={{ color: "var(--c-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70%" }}>
-                          {count === 1 && (genStr || locStr) ? `${genStr}${locStr ? ` · ${locStr}` : ""}` : ""}
+                          {count === 1 ? respondentMeta : ""}
                         </div>
                         {count > 1 && (
                           <span style={{ 

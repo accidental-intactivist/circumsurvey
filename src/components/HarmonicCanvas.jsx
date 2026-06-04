@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { resolveCssColor } from '../explore/styles/tokens';
 
 export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '' }) {
   const canvasRef = useRef(null);
@@ -48,35 +49,37 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     const createNode = (type, wavy = false) => ({
       type,
       wavy,
-      ax: Math.random() * 0.2 + 0.9,
-      ay: Math.random() * 0.2 + 0.9,
-      az: (Math.random() * 0.5 + 0.5) * 800,
-      fx: (Math.random() * 0.00035) + 0.00015,
-      fy: (Math.random() * 0.00035) + 0.00015,
-      fz: (Math.random() * 0.00035) + 0.00015,
+      ax: Math.random() * 0.5 + 0.7,
+      ay: Math.random() * 0.5 + 0.7,
+      az: (Math.random() * 0.5 + 0.5) * 600,
+      fx: (Math.random() * 0.0015) + 0.0005,
+      fy: (Math.random() * 0.0015) + 0.0005,
+      fz: (Math.random() * 0.0015) + 0.0005,
       px: Math.random() * Math.PI * 2,
       py: Math.random() * Math.PI * 2,
       pz: Math.random() * Math.PI * 2,
-      loopSpeed: (Math.random() * 0.002) + 0.001,
-      loopSwell: (Math.random() * 0.0008) + 0.0004,
     });
 
-    const createHorizontalCurve = () => [
-      createNode('left'), createNode('inner', true), createNode('inner', true), createNode('right')
+    const createHorizontalCurve = (offsetYMultiplier = 0) => [
+      { ...createNode('left'), xFract: 0.0, offsetYMultiplier },
+      { ...createNode('inner', true), xFract: 0.33, offsetYMultiplier },
+      { ...createNode('inner', true), xFract: 0.66, offsetYMultiplier },
+      { ...createNode('right'), xFract: 1.0, offsetYMultiplier }
     ];
-    const createVerticalCurve = () => [
-      createNode('top'), createNode('inner', true), createNode('inner', true), createNode('bottom')
-    ];
-    const curve1A = createHorizontalCurve();
-    const curve1B = createHorizontalCurve();
-    const curve2A = createVerticalCurve();
-    const curve2B = createVerticalCurve();
+
+    // Define the Two Invisible Parent Lines for Ribbon 1
+    const r1_p1 = createHorizontalCurve(-0.35);
+    const r1_p2 = createHorizontalCurve(0.35);
+
+    // Define the Two Invisible Parent Lines for Ribbon 2
+    const r2_p1 = createHorizontalCurve(-0.25);
+    const r2_p2 = createHorizontalCurve(0.45);
 
     // Custom colors
     // ── Read theme colors from CSS custom properties ──
     // Falls back to the standard palette if vars aren't set.
     const parseColor = (cssVar, fallback) => {
-      const raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+      const raw = resolveCssColor(`var(${cssVar})`);
       if (!raw) return fallback;
       // Handle hex
       if (raw.startsWith('#')) {
@@ -91,36 +94,43 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       return fallback;
     };
 
-    const cRed = parseColor('--c-red', [217, 79, 79]);
-    const cGold = parseColor('--c-gold', [212, 160, 48]);
-    const cBlue = parseColor('--c-blue', [91, 147, 199]);
-
     const focalLength = 800;
 
-    // 36 steps: denser than the original 45 but smoother than 24
-    const steps = 36;
-    const halfSteps = Math.floor(steps / 2);
-    
-    // Pre-compute color styles — rebuilt if theme changes (via effect re-run)
-    const precomputedStyles1 = [];
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
-      const r = Math.round(lerp(cRed[0], cGold[0], t));
-      const g = Math.round(lerp(cRed[1], cGold[1], t));
-      const b = Math.round(lerp(cRed[2], cGold[2], t));
-      precomputedStyles1.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
-    }
+    // Higher density of steps to make it look like a detailed mesh ribbon, similar to the ad
+    const steps = 48;
+    const halfSteps = 32;
 
+    let initialized = false;
+    let deferTimer;
+    const precomputedStyles1 = [];
     const precomputedStyles2 = [];
-    for (let i = 0; i <= halfSteps; i++) {
-      const t = i / halfSteps;
-      const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
-      const r = Math.round(lerp(cGold[0], cBlue[0], t));
-      const g = Math.round(lerp(cGold[1], cBlue[1], t));
-      const b = Math.round(lerp(cGold[2], cBlue[2], t));
-      precomputedStyles2.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
-    }
+
+    const initColors = () => {
+      const cRed = parseColor('--c-red', [217, 79, 79]);
+      const cGold = parseColor('--c-gold', [212, 160, 48]);
+      const cBlue = parseColor('--c-blue', [91, 147, 199]);
+
+      precomputedStyles1.length = 0;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
+        const r = Math.round(lerp(cRed[0], cGold[0], t));
+        const g = Math.round(lerp(cRed[1], cGold[1], t));
+        const b = Math.round(lerp(cRed[2], cGold[2], t));
+        precomputedStyles1.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+      }
+
+      precomputedStyles2.length = 0;
+      for (let i = 0; i <= halfSteps; i++) {
+        const t = i / halfSteps;
+        const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
+        const r = Math.round(lerp(cGold[0], cBlue[0], t));
+        const g = Math.round(lerp(cGold[1], cBlue[1], t));
+        const b = Math.round(lerp(cGold[2], cBlue[2], t));
+        precomputedStyles2.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+      }
+      initialized = true;
+    };
 
     const totalLines = (steps + 1) + (halfSteps + 1);
     const linesToDraw = Array.from({ length: totalLines }, () => ({
@@ -142,88 +152,91 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // (≈666 units/sec). We slow it down to ~50 units/sec for a very chilled feel.
     const SPEED = 0.03;
 
-    const evalNode = (n, t) => {
-      const z = Math.sin(t * n.fz + n.pz) * n.az;
-      const scale = focalLength / Math.max(1, focalLength + z);
-      
-      let waveX = 0;
-      let waveY = 0;
-      
-      if (n.wavy) {
-        waveX = Math.sin(t * n.fx * 5.5 + n.px) * (n.ax * 0.35);
-        waveY = Math.cos(t * n.fy * 4.2 + n.py) * (n.ay * 0.35);
-
-        const swell = Math.pow(Math.sin(t * n.loopSwell + n.px), 4); 
-        const loopRadius = n.ax * 7.5 * swell;
-        
-        waveX += Math.cos(t * n.loopSpeed + n.py) * loopRadius;
-        waveY += Math.sin(t * n.loopSpeed + n.pz) * loopRadius;
-      }
-
-      let x, y;
-      // Use a SQUARE virtual coordinate space based on the larger dimension.
-      // This prevents curves from squishing into flat bands in wide/short 
-      // containers like the explore masthead. The canvas clips the overflow.
+    const evalParentNode = (n, t) => {
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;
       const span = Math.max(cw, ch);
       const half = span / 2;
 
-      // Increased multipliers (from ~1.1 to ~3.5) push the nodes far outside 
-      // the visible canvas bounds. This ensures 60%+ of the geometry is off-screen
-      // at any given time, resulting in large, sweeping, curvier lines traversing the viewport.
-      if (n.type === 'inner') {
-        x = (Math.sin(t * n.fx + n.px) * n.ax + waveX) * half * 3.2;
-        y = (Math.cos(t * n.fy + n.py) * n.ay + waveY) * half * 3.2;
-      } else if (n.type === 'left') {
-        x = -(half + 50) / scale; 
-        y = sweep(t * n.fy + n.py) * n.ay * half * 3.5;
-      } else if (n.type === 'right') {
-        x = (half + 50) / scale;
-        y = sweep(t * n.fy + n.py) * n.ay * half * 3.5;
-      } else if (n.type === 'top') {
-        x = sweep(t * n.fx + n.px) * n.ax * half * 3.5;
-        y = -(half + 50) / scale;
-      } else if (n.type === 'bottom') {
-        x = sweep(t * n.fx + n.px) * n.ax * half * 3.5;
-        y = (half + 50) / scale;
-      }
+      const xFract = n.xFract ?? 0.5;
+      const xBase = -half - 100 + xFract * (span + 200);
+
+      const speed = 0.0012;
+      const waveFreq = 2.8; // Increased for more waves (scarf-like)
+      const travelingPhase = t * speed - xFract * waveFreq * Math.PI * 2;
+
+      const phaseX = t * n.fx + n.px + travelingPhase;
+      const phaseY = t * n.fy + n.py + travelingPhase * 1.5;
+      
+      // Secondary fast ripple for scarf-in-the-wind effect
+      const ripplePhase = t * (speed * 2.2) - xFract * (waveFreq * 2.5) * Math.PI * 2 + n.px;
+      
+      // "Unstarched" looping phase to force figure-8 knots and backward folds
+      const loopPhase = t * (speed * 1.9) - xFract * (waveFreq * 1.7) * Math.PI * 2 + n.py;
+
+      const ampX = half * 0.55 * n.ax;
+      const ampY = half * 0.75 * n.ay; 
+      const rippleAmp = half * 0.20 * n.ay; 
+      const loopAmp = half * 0.35 * n.ax; // Large enough horizontal push to fold the fabric backwards
+
+      // X includes the base traveling sweep + a looping modifier
+      const x = xBase + Math.cos(phaseX) * ampX + Math.sin(loopPhase) * loopAmp;
+      
+      const offset = (n.offsetYMultiplier ?? 0) * half;
+      
+      // Y includes base sweep + wind ripples + a figure-8 vertical knot component tied to the loop
+      const y = Math.sin(phaseY) * ampY + Math.cos(ripplePhase) * rippleAmp + Math.cos(loopPhase * 1.5) * (rippleAmp * 1.2) + offset;
+      
+      const z = Math.sin(t * n.fz + n.pz) * n.az;
+
       return { x, y, z };
     };
 
-    const generateRibbon = (cA, cB, precomputedStyles, ribbonSteps, startIdx) => {
-      const p0A = evalNode(cA[0], time), p1A = evalNode(cA[1], time);
-      const p2A = evalNode(cA[2], time), p3A = evalNode(cA[3], time);
-      const p0B = evalNode(cB[0], time), p1B = evalNode(cB[1], time);
-      const p2B = evalNode(cB[2], time), p3B = evalNode(cB[3], time);
+    const lerpNode = (pA, pB, t) => ({
+      x: lerp(pA.x, pB.x, t),
+      y: lerp(pA.y, pB.y, t),
+      z: lerp(pA.z, pB.z, t)
+    });
 
+    const generateRibbon = (parent1, parent2, precomputedStyles, ribbonSteps, startIdx) => {
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;
       const cx = cw / 2;
       const cy = ch / 2;
 
+      const p1_0 = evalParentNode(parent1[0], time);
+      const p1_1 = evalParentNode(parent1[1], time);
+      const p1_2 = evalParentNode(parent1[2], time);
+      const p1_3 = evalParentNode(parent1[3], time);
+
+      const p2_0 = evalParentNode(parent2[0], time);
+      const p2_1 = evalParentNode(parent2[1], time);
+      const p2_2 = evalParentNode(parent2[2], time);
+      const p2_3 = evalParentNode(parent2[3], time);
+
       let lineIdx = startIdx;
       for (let i = 0; i <= ribbonSteps; i++) {
-        const t = i / ribbonSteps;
+        // Faux 3D Shading: Cosine interpolation bunches lines up at the edges (0 and 1) and spreads them out in the middle
+        const linearBlend = i / ribbonSteps;
+        const blend = 0.5 - Math.cos(linearBlend * Math.PI) * 0.5;
+        const c0 = lerpNode(p1_0, p2_0, blend);
+        const c1 = lerpNode(p1_1, p2_1, blend);
+        const c2 = lerpNode(p1_2, p2_2, blend);
+        const c3 = lerpNode(p1_3, p2_3, blend);
 
-        const p0x = lerp(p0A.x, p0B.x, t), p0y = lerp(p0A.y, p0B.y, t), p0z = lerp(p0A.z, p0B.z, t);
-        const p1x = lerp(p1A.x, p1B.x, t), p1y = lerp(p1A.y, p1B.y, t), p1z = lerp(p1A.z, p1B.z, t);
-        const p2x = lerp(p2A.x, p2B.x, t), p2y = lerp(p2A.y, p2B.y, t), p2z = lerp(p2A.z, p2B.z, t);
-        const p3x = lerp(p3A.x, p3B.x, t), p3y = lerp(p3A.y, p3B.y, t), p3z = lerp(p3A.z, p3B.z, t);
-
-        const scale0 = focalLength / Math.max(1, focalLength + p0z);
-        const scale1 = focalLength / Math.max(1, focalLength + p1z);
-        const scale2 = focalLength / Math.max(1, focalLength + p2z);
-        const scale3 = focalLength / Math.max(1, focalLength + p3z);
+        const scale0 = focalLength / Math.max(1, focalLength + c0.z);
+        const scale1 = focalLength / Math.max(1, focalLength + c1.z);
+        const scale2 = focalLength / Math.max(1, focalLength + c2.z);
+        const scale3 = focalLength / Math.max(1, focalLength + c3.z);
 
         const line = linesToDraw[lineIdx++];
         
-        line.x0 = cx + p0x * scale0; line.y0 = cy + p0y * scale0;
-        line.x1 = cx + p1x * scale1; line.y1 = cy + p1y * scale1;
-        line.x2 = cx + p2x * scale2; line.y2 = cy + p2y * scale2;
-        line.x3 = cx + p3x * scale3; line.y3 = cy + p3y * scale3;
+        line.x0 = cx + c0.x * scale0; line.y0 = cy + c0.y * scale0;
+        line.x1 = cx + c1.x * scale1; line.y1 = cy + c1.y * scale1;
+        line.x2 = cx + c2.x * scale2; line.y2 = cy + c2.y * scale2;
+        line.x3 = cx + c3.x * scale3; line.y3 = cy + c3.y * scale3;
 
-        line.avgZ = (p0z + p1z + p2z + p3z) * 0.25;
+        line.avgZ = (c0.z + c1.z + c2.z + c3.z) * 0.25;
         line.scale = (scale0 + scale1 + scale2 + scale3) * 0.25;
         line.style = precomputedStyles[i];
       }
@@ -231,6 +244,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     };
 
     const render = (now) => {
+      if (!initialized) return;
       if (!isVisible) {
         animationFrameId = null;
         return;
@@ -260,8 +274,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       ctx.clearRect(0, 0, cw, ch);
 
       let idx = 0;
-      idx = generateRibbon(curve1A, curve1B, precomputedStyles1, steps, idx);
-      generateRibbon(curve2A, curve2B, precomputedStyles2, halfSteps, idx);
+      idx = generateRibbon(r1_p1, r1_p2, precomputedStyles1, steps, idx);
+      generateRibbon(r2_p1, r2_p2, precomputedStyles2, halfSteps, idx);
 
       // Z-sort for depth ordering
       linesToDraw.sort((a, b) => b.avgZ - a.avgZ);
@@ -270,8 +284,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       // Group by style to minimize state changes (significant perf win on canvas)
       const styleGroups = new Map();
       for (const line of linesToDraw) {
-        const w = Math.max(0.3, line.scale * 1.4 * sizeScale);
-        const key = `${line.style}|${w.toFixed(1)}`;
+        // Significantly increase thickness for bolder lines (from 0.7 to 1.8)
+        const w = Math.max(0.4, line.scale * 1.8 * sizeScale);
+        const key = `${line.style}|${w.toFixed(2)}`;
         if (!styleGroups.has(key)) {
           styleGroups.set(key, { style: line.style, width: w, lines: [] });
         }
@@ -292,11 +307,18 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       animationFrameId = requestAnimationFrame(render);
     };
 
-    animationFrameId = requestAnimationFrame(render);
+    deferTimer = setTimeout(() => {
+      initColors();
+      if (isVisible && !animationFrameId) {
+        lastFrameTime = performance.now();
+        animationFrameId = requestAnimationFrame(render);
+      }
+    }, 0);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       observer.disconnect();
+      if (deferTimer) clearTimeout(deferTimer);
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }

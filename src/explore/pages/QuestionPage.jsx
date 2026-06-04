@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useState, useRef } from "react";
-import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
+import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
 import { colorForLabel } from "../components/MiniSparkline";
@@ -18,12 +18,12 @@ import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
 import { applyLikert, flattenMultiSelect, sortDistribution } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
-import ThemeToggle from "../components/ThemeToggle";
+
 import SharePopover from "../components/SharePopover";
 import AddToReportButton from "../components/AddToReportButton";
 import WordCloud from "../components/WordCloud";
 
-export default function QuestionPage({ routerState, navigate, updateState }) {
+export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta }) {
   const { params, cohort } = routerState;
   const questionId = params.id;
 
@@ -41,6 +41,29 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
   const [questions, setQuestions] = useState([]);
   const [notFound, setNotFound] = useState(false);
   const [notFoundSearch, setNotFoundSearch] = useState("");
+
+  // Update dynamic header metadata when the question is loaded or not found
+  useEffect(() => {
+    if (question && setCustomMeta) {
+      setCustomMeta({
+        kicker: "The Accidental Intactivist's Inquiry",
+        title: "Accidental Intactivists Inquiry Dataset",
+        desc: `Detailed cohort breakdown and response narrative analysis for question ${question.id}.`,
+        navTitle: question.section || "Question",
+      });
+    }
+  }, [question, setCustomMeta]);
+
+  useEffect(() => {
+    if (notFound && setCustomMeta) {
+      setCustomMeta({
+        kicker: "The Accidental Intactivist's Inquiry",
+        title: "Question Not Found",
+        desc: `We couldn't find the requested question ID "${questionId}".`,
+        navTitle: "Error",
+      });
+    }
+  }, [notFound, questionId, setCustomMeta]);
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -187,7 +210,13 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
       const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(captureRef.current, { 
         backgroundColor: C.bg,
-        style: { padding: "1.5rem" } 
+        style: { padding: "1.5rem" },
+        filter: (node) => {
+          if (node.classList && (node.classList.contains("no-capture") || node.classList.contains("no-print"))) {
+            return false;
+          }
+          return true;
+        }
       });
       const link = document.createElement('a');
       link.download = `circumsurvey-${questionId}.png`;
@@ -208,90 +237,27 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
     }}>
       <div style={{ maxWidth: showCopilot ? 1100 : 1400, margin: "0 auto", transition: "max-width 0.2s ease" }}>
 
-        {/* Header: breadcrumb + back */}
-        <div style={{
+        {/* Actions bar at top */}
+        <div className="no-print no-capture" style={{
           display: "flex",
+          justifyContent: "flex-end",
           alignItems: "center",
           gap: "0.8rem",
-          marginBottom: "1.1rem",
+          marginBottom: "1.2rem",
           flexWrap: "wrap",
         }}>
-          <a href="#/" style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: C.muted,
-          }}>← Master Index</a>
-          <span style={{ color: C.dim }}>/</span>
-          <span style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: C.gold,
-          }}>{notFound ? "Error" : (question?.section || "…")}</span>
-          {pathwayObj && !notFound && (
+          {!notFound && question && (
             <>
-              <span style={{ color: C.dim }}>/</span>
-              <span style={{
-                fontFamily: FONT.condensed,
-                fontSize: "0.7rem",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: pathwayObj.color,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.3rem",
-              }}>
-                <span>{pathwayObj.emoji}</span>
-                <span>{pathwayObj.label}</span>
-              </span>
+              <AddToReportButton questionId={question.id} />
+              <SharePopover 
+                url={window.location.href} 
+                questionId={question.id} 
+                questionPrompt={question.prompt}
+                onExportImage={handleExport}
+              />
+              <div style={{ width: "1px", height: "20px", background: C.ghost }} />
             </>
           )}
-          
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.8rem" }}>
-            {!notFound && (
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                {prevQ && (
-                  <a href={`#/q/${prevQ.id}`} title="Previous Question" style={{
-                    fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
-                    textTransform: "uppercase", color: C.gold, textDecoration: "none"
-                  }}
-                  onMouseEnter={e => { e.target.style.color = C.goldBright; }}
-                  onMouseLeave={e => { e.target.style.color = C.gold; }}>
-                    ← Prev
-                  </a>
-                )}
-                {prevQ && nextQ && <span style={{ color: C.ghost, fontSize: "0.7rem" }}>|</span>}
-                {nextQ && (
-                  <a href={`#/q/${nextQ.id}`} title="Next Question" style={{
-                    fontFamily: FONT.condensed, fontSize: "0.68rem", letterSpacing: "0.08em",
-                    textTransform: "uppercase", color: C.gold, textDecoration: "none"
-                  }}
-                  onMouseEnter={e => { e.target.style.color = C.goldBright; }}
-                  onMouseLeave={e => { e.target.style.color = C.gold; }}>
-                    Next →
-                  </a>
-                )}
-              </div>
-            )}
-            {!notFound && <div style={{ width: "1px", height: "16px", background: C.ghost }} />}
-
-            {!notFound && (
-              <>
-                <AddToReportButton questionId={question?.id} />
-                <SharePopover 
-                  url={window.location.href} 
-                  questionId={question?.id} 
-                  questionPrompt={question?.prompt}
-                  onExportImage={handleExport}
-                />
-              </>
-            )}
-          </div>
-
-          <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
           
           <button
             onClick={() => setShowCopilot(prev => !prev)}
@@ -316,13 +282,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             <span>🤖</span>
             <span>AI Copilot</span>
           </button>
-          
-          <div style={{ width: "1px", height: "24px", background: C.ghost, margin: "0 0.1rem" }} />
-          <ThemeToggle />
         </div>
-
-        {/* Rainbow accent */}
-        <div style={{ height: 2, background: RAINBOW, borderRadius: 2, marginBottom: "1rem", opacity: 0.5 }} />
 
         {/* Loading and Error states (rendered outside/above the grid) */}
         {!question && !error && !notFound && (
@@ -351,6 +311,29 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
               padding: "1.5rem",
               minHeight: "400px",
             }}>
+              {/* Back to master index breadcrumb */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "1rem",
+                borderBottom: `1px solid ${C.ghost}`,
+                paddingBottom: "0.6rem",
+              }}>
+                <a href="#/" style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: C.muted,
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+                onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                onMouseLeave={e => { e.target.style.color = C.muted; }}>
+                  ← Master Index
+                </a>
+              </div>
+
               <div style={{
                 fontFamily: FONT.condensed,
                 fontSize: "0.65rem",
@@ -554,10 +537,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             {showCopilot && (
               <aside style={{
                 position: "sticky",
-                top: "1rem",
-                maxHeight: "calc(100vh - 2rem)",
+                top: "calc(var(--header-height, 56px) + 1rem)",
+                maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
                 overflowY: "auto",
-                paddingRight: "0.4rem"
+                paddingRight: "0.4rem",
+                zIndex: 100,
               }}>
                 <CopilotChat routerState={routerState} updateState={updateState} question={null} />
               </aside>
@@ -577,7 +561,14 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             }}
           >
             {/* LEFT: cohort filter */}
-            <aside className="explore-nav" style={{ position: "sticky", top: "1rem", maxHeight: "calc(100vh - 2rem)", overflowY: "auto", paddingRight: "0.3rem" }}>
+            <aside className="explore-nav" style={{
+              position: "sticky",
+              top: "calc(var(--header-height, 56px) + 1rem)",
+              maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
+              overflowY: "auto",
+              paddingRight: "0.3rem",
+              zIndex: 100,
+            }}>
               <DemographicFilterBar
                 cohort={cohort}
                 onChange={(c) => updateState({ cohort: c })}
@@ -621,65 +612,182 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             {/* CENTER: content */}
             <main>
               <div ref={captureRef}>
-                {/* Question heading */}
-                <div style={{ marginBottom: "1.5rem" }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
-                    {question.tier === 1 && (
-                      <span style={{
-                        fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
-                        letterSpacing: "0.08em", color: C.gold,
-                        background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
-                        borderRadius: 999, padding: "0.15rem 0.5rem",
-                        flexShrink: 0, marginTop: "0.4rem",
-                      }}>TIER 1 · CURATED</span>
-                    )}
-                    {/* Qual / Quant Badge */}
-                    <span title={question.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
-                      fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
-                      letterSpacing: "0.06em", 
-                      color: question.type === "open_text" ? "#a8b5c4" : C.dim, 
-                      background: question.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
-                      borderRadius: 999, padding: "0.15rem 0.5rem",
-                      flexShrink: 0, marginTop: "0.4rem",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                    }}>
-                      {question.type === "open_text" ? (
-                        <><MessageSquareText size={11} strokeWidth={3} /> QUAL</>
-                      ) : (
-                        <><BarChart2 size={11} strokeWidth={3} /> QUANT</>
-                      )}
-                    </span>
-                  </div>
-                  <h1 style={{
-                    fontFamily: FONT.display,
-                    fontWeight: 700,
-                    fontSize: "clamp(1.35rem, 3vw, 1.8rem)",
-                    color: C.textBright,
-                    lineHeight: 1.25,
-                    letterSpacing: "-0.01em",
-                    marginBottom: "0.45rem",
-                  }}>{question.prompt}</h1>
-                  {question.subtitle && (
-                    <p style={{
-                      fontFamily: FONT.body,
-                      fontSize: "1.1rem",
-                      lineHeight: 1.5,
-                      color: C.muted,
-                      marginTop: "1rem",
-                      marginBottom: 0,
-                      maxWidth: 800
-                    }}>{question.subtitle}</p>
-                  )}
+                {/* Combined Breadcrumb */}
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "1rem",
+                  borderBottom: `1px solid ${C.ghost}`,
+                  paddingBottom: "0.6rem",
+                }}>
+                  {/* Left: Breadcrumbs */}
                   <div style={{
-                    fontFamily: FONT.mono,
-                    fontSize: "0.7rem",
-                    color: C.dim,
-                    marginTop: "0.5rem"
-                  }}>{question.id} · col_idx {question.col_idx}</div>
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.72rem",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                  }}>
+                    <a href="#/" className="no-capture no-print" style={{
+                      color: C.muted,
+                      transition: "color 0.15s",
+                      textDecoration: "none",
+                    }}
+                    onMouseEnter={e => { e.target.style.color = C.goldBright; }}
+                    onMouseLeave={e => { e.target.style.color = C.muted; }}>
+                      ← Master Index
+                    </a>
+                    <span className="no-capture no-print" style={{ color: C.dim }}>/</span>
+                    {(() => {
+                      const sectionStr = question.section || "Question";
+                      const isRedundant = pathwayObj && sectionStr.toUpperCase().includes(pathwayObj.label.toUpperCase());
+                      return (
+                        <>
+                          <span style={{ color: C.muted, display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                            {isRedundant && <span>{pathwayObj.emoji}</span>}
+                            <span>{sectionStr}</span>
+                          </span>
+                          {pathwayObj && !isRedundant && (
+                            <>
+                              <span className="no-capture no-print" style={{ color: C.dim }}>/</span>
+                              <span style={{
+                                color: pathwayObj.color,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.25rem",
+                              }}>
+                                <span>{pathwayObj.emoji}</span>
+                                <span>{pathwayObj.label}</span>
+                              </span>
+                            </>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
+
+                {/* Question Prompt */}
+                <h1 style={{
+                  fontFamily: FONT.display,
+                  fontWeight: 800,
+                  fontSize: "clamp(1.4rem, 3vw, 2.0rem)",
+                  color: C.textBright,
+                  lineHeight: 1.25,
+                  letterSpacing: "-0.01em",
+                  marginBottom: "0.8rem",
+                  textTransform: "uppercase",
+                }}>
+                  {question.prompt}
+                </h1>
+
+                {/* Question Subtitle (context) */}
+                {question.subtitle && (
+                  <p style={{
+                    fontFamily: FONT.body,
+                    fontSize: "0.95rem",
+                    color: C.muted,
+                    lineHeight: 1.5,
+                    fontStyle: "italic",
+                    marginTop: "-0.4rem",
+                    marginBottom: "1.2rem",
+                  }}>
+                    {question.subtitle}
+                  </p>
+                )}
+
+                {/* Question metadata badges */}
+                <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.6rem", flexWrap: "wrap", alignItems: "center" }}>
+                  {question.tier === 1 && (
+                    <span style={{
+                      fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
+                      letterSpacing: "0.08em", color: C.gold,
+                      background: "rgba(212,160,48,0.12)", border: "1px solid rgba(212,160,48,0.3)",
+                      borderRadius: 999, padding: "0.15rem 0.5rem",
+                      flexShrink: 0,
+                    }}>TIER 1 · CURATED</span>
+                  )}
+                  {/* Qual / Quant Badge */}
+                  <span title={question.type === "open_text" ? "Qualitative Open Response" : "Quantitative Metric"} style={{
+                    fontFamily: FONT.condensed, fontSize: "0.62rem", fontWeight: 700,
+                    letterSpacing: "0.06em", 
+                    color: question.type === "open_text" ? "#a8b5c4" : C.dim, 
+                    background: question.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
+                    borderRadius: 999, padding: "0.15rem 0.5rem",
+                    flexShrink: 0,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                  }}>
+                    {question.type === "open_text" ? (
+                      <><MessageSquareText size={11} strokeWidth={3} /> QUAL</>
+                    ) : (
+                      <><BarChart2 size={11} strokeWidth={3} /> QUANT</>
+                    )}
+                  </span>
+                  <span style={{
+                    fontFamily: FONT.mono,
+                    fontSize: "0.65rem",
+                    color: C.dim,
+                    background: "rgba(255,255,255,0.03)",
+                    border: `1px solid ${C.ghost}`,
+                    borderRadius: 999, padding: "0.15rem 0.5rem",
+                    flexShrink: 0,
+                  }}>{question.id} · Index #{question.col_idx}</span>
+                </div>
+
+                {/* Top Split Navigation (Non-Printing) */}
+                {!notFound && (
+                  <div className="no-capture no-print" style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: "-0.5rem",
+                    marginBottom: "1.5rem",
+                    userSelect: "none",
+                  }}>
+                    {prevQ ? (
+                      <a href={`#/q/${prevQ.id}`} style={{
+                        fontFamily: FONT.condensed,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.15em",
+                        color: C.gold,
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        transition: "color 0.15s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = C.goldBright; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = C.gold; }}>
+                        <span style={{ fontSize: "1.1rem" }}>←</span> Previous Question
+                      </a>
+                    ) : <div />}
+
+                    {nextQ ? (
+                      <a href={`#/q/${nextQ.id}`} style={{
+                        fontFamily: FONT.condensed,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.15em",
+                        color: C.gold,
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        transition: "color 0.15s",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = C.goldBright; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = C.gold; }}>
+                        Next Question <span style={{ fontSize: "1.1rem" }}>→</span>
+                      </a>
+                    ) : <div />}
+                  </div>
+                )}
 
                 {/* Main visualizations */}
                 {isOpenText ? (
@@ -751,10 +859,11 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
             {showCopilot && (
               <aside style={{
                 position: "sticky",
-                top: "1rem",
-                maxHeight: "calc(100vh - 2rem)",
+                top: "calc(var(--header-height, 56px) + 1rem)",
+                maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
                 overflowY: "auto",
-                paddingRight: "0.4rem"
+                paddingRight: "0.4rem",
+                zIndex: 100,
               }}>
                 <CopilotChat routerState={routerState} updateState={updateState} question={question} />
               </aside>
@@ -764,7 +873,7 @@ export default function QuestionPage({ routerState, navigate, updateState }) {
 
         {/* Sequential Navigation */}
         {question && (
-          <div style={{
+          <div className="no-capture no-print" style={{
             display: "flex",
             justifyContent: "space-between",
             marginTop: "3rem",

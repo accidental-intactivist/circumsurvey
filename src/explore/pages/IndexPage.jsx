@@ -14,18 +14,19 @@ import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
 import CopilotChat from "../components/CopilotChat";
-import ThemeToggle from "../components/ThemeToggle";
-import HarmonicCanvas from "../../components/HarmonicCanvas";
+
+
 
 const EXHIBITS = [
-  { id: "pairs", num: "01", title: "Mirror Pairs", emoji: "⚖️", desc: "Compare parallel question responses across Intact and Circumcised cohorts side-by-side.", link: "#/pairs", colorVar: "var(--c-gold)" },
-  { id: "pleasure", num: "02", title: "The Pleasure Gap", emoji: "⚖️", desc: "Clustered ratings comparing sensation, sensitivity, and orgasms across cohorts.", link: "#/pleasure-gap", colorVar: "var(--c-red)" },
-  { id: "alignment", num: "03", title: "Cultural Alignment", emoji: "📊", desc: "Dynamic heatmap exploring how personal pathways align with or defy cultural norms.", link: "#/tools/cultural-alignment", colorVar: "var(--c-blue)" },
-  { id: "demographics", num: "04", title: "Demographics", emoji: "📊", desc: "Explore the age, sexuality, generation, education, and geography profile of respondents.", link: "#/demographics", colorVar: "var(--c-ltBlue)" },
-  { id: "narrative", num: "05", title: "Narrative Mirrors", emoji: "📜", desc: "Side-by-side Word Clouds and text search for open-ended narratives across cohorts.", link: "#/narrative-mirrors", colorVar: "var(--c-green)" },
-  { id: "generational", num: "06", title: "Generational Faultlines", emoji: "⏳", desc: "Chronological attitude tracking from the Silent Generation down to Gen Z.", link: "#/generational-faultlines", colorVar: "var(--c-orange)" },
-  { id: "observer", num: "07", title: "The Observer Triad", emoji: "👁️", desc: "Analyze perspectives of partners, parents, and medical professionals.", link: "#/observer-triad", colorVar: "var(--c-purple)" },
-  { id: "religion", num: "08", title: "Religious Mirrors", emoji: "⚖️", desc: "Compare Jewish, Christian, and Islamic attitudes and norms on circumcision.", link: "#/religious-mirrors", colorVar: "var(--c-gold)" }
+  { id: "pathway", num: "01", title: "The Survey Map", emoji: "🗺️", desc: "Interactive flowchart of the complete survey architecture — from Universal questions through the Pathway Fork and into each cohort's unique question sets.", link: "#/pathways", colorVar: "var(--c-cyan)" },
+  { id: "pairs", num: "02", title: "Mirror Pairs", emoji: "⚖️", desc: "Compare parallel question responses across Intact and Circumcised cohorts side-by-side.", link: "#/pairs", colorVar: "var(--c-gold)" },
+  { id: "pleasure", num: "03", title: "The Pleasure Gap", emoji: "⚖️", desc: "Clustered ratings comparing sensation, sensitivity, and orgasms across cohorts.", link: "#/pleasure-gap", colorVar: "var(--c-red)" },
+  { id: "alignment", num: "04", title: "Correlations", emoji: "📊", desc: "Dynamic matrix exploring correlations between any two demographic or survey variables.", link: "#/correlations", colorVar: "var(--c-blue)" },
+  { id: "demographics", num: "05", title: "Demographics", emoji: "📊", desc: "Explore the age, sexuality, generation, education, and geography profile of respondents.", link: "#/demographics", colorVar: "var(--c-ltBlue)" },
+  { id: "narrative", num: "06", title: "Narrative Mirrors", emoji: "📜", desc: "Side-by-side Word Clouds and text search for open-ended narratives across cohorts.", link: "#/narrative-mirrors", colorVar: "var(--c-green)" },
+  { id: "generational", num: "07", title: "Generational Faultlines", emoji: "⏳", desc: "Chronological attitude tracking from the Silent Generation down to Gen Z.", link: "#/generational-faultlines", colorVar: "var(--c-orange)" },
+  { id: "observer", num: "08", title: "The Observer Triad", emoji: "👁️", desc: "Analyze perspectives of partners, parents, and medical professionals.", link: "#/observer-triad", colorVar: "var(--c-purple)" },
+  { id: "religion", num: "09", title: "Religious Mirrors", emoji: "⚖️", desc: "Compare Jewish, Christian, and Islamic attitudes and norms on circumcision.", link: "#/religious-mirrors", colorVar: "var(--c-gold)" }
 ];
 
 export default function IndexPage({ routerState, navigate, updateState }) {
@@ -213,7 +214,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
       color: C.text,
       fontFamily: FONT.body,
     }}>
-      <Masthead />
+
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 1.1rem 3rem" }}>
 
@@ -315,14 +316,14 @@ export default function IndexPage({ routerState, navigate, updateState }) {
             className="explore-nav"
             style={{
               position: "sticky",
-              top: "5rem",
-              maxHeight: "calc(100vh - 6.5rem)",
+              top: "calc(var(--header-height, 56px) + 1.5rem)",
+              maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
               overflowY: "auto",
               paddingRight: "0.4rem",
               display: "flex",
               flexDirection: "column",
               gap: "1.4rem",
-              transition: "top 0.3s ease, maxHeight 0.3s ease",
+              zIndex: 100,
             }}
           >
             <SurveyMapNav
@@ -491,7 +492,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
               </a>
 
               <a
-                href="#/tools/cultural-alignment"
+                href="#/correlations"
                 style={{
                   display: "block",
                   padding: "0.55rem 0.7rem",
@@ -510,7 +511,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   marginBottom: "0.8rem",
                 }}
               >
-                📊 Cultural Alignment Matrix →
+                📊 Correlation Explorer →
               </a>
 
               <a
@@ -536,7 +537,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                 ⚖️ The Pleasure Gap Matrix →
               </a>
 
-              {/* Link to Pathway Map page */}
+              {/* Link to Survey Map page */}
               <a
                 href="#/pathways"
                 style={{
@@ -556,7 +557,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   transition: "all 0.15s",
                 }}
               >
-                🗺 View Full Pathway Map →
+                🗺 View Full Survey Map →
               </a>
             </div>
           </aside>
@@ -701,11 +702,11 @@ export default function IndexPage({ routerState, navigate, updateState }) {
           {/* RIGHT: AI Assistant */}
           <aside style={{
             position: "sticky",
-            top: "5rem",
-            maxHeight: "calc(100vh - 6.5rem)",
+            top: "calc(var(--header-height, 56px) + 1.5rem)",
+            maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
             overflowY: "auto",
             paddingRight: "0.4rem",
-            transition: "top 0.3s ease, maxHeight 0.3s ease",
+            zIndex: 100,
           }}>
             <CopilotChat routerState={routerState} updateState={updateState} />
           </aside>
@@ -719,100 +720,7 @@ export default function IndexPage({ routerState, navigate, updateState }) {
 
 // ── Sub-components ───────────────────────────────────────────────────────
 
-function Masthead() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
-  return (
-    <header style={{
-      padding: scrolled ? "0.65rem 1.1rem" : "1.5rem 1.1rem 1rem",
-      textAlign: "center",
-      borderBottom: `1px solid ${C.ghost}`,
-      background: scrolled ? "rgba(10, 10, 12, 0.88)" : C.bg,
-      backdropFilter: scrolled ? "blur(12px)" : "none",
-      position: "sticky",
-      top: 0,
-      zIndex: 1000,
-      overflow: "visible",
-      transition: "padding 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease",
-      boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.3)" : "none",
-    }}>
-      <HarmonicCanvas opacity={scrolled ? 0.15 : 0.3} />
-      
-      {/* Absolute positioned settings button inside header */}
-      <div style={{
-        position: "absolute",
-        top: scrolled ? "50%" : "2.4rem",
-        transform: scrolled ? "translateY(-50%)" : "none",
-        right: "1.5rem",
-        zIndex: 10,
-        transition: "all 0.3s ease",
-      }}>
-        <ThemeToggle />
-      </div>
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        {/* Under full mode, render the rainbow accent line */}
-        <div style={{
-          height: scrolled ? 0 : 3,
-          opacity: scrolled ? 0 : 1,
-          background: RAINBOW,
-          borderRadius: 2,
-          marginBottom: scrolled ? 0 : "1rem",
-          overflow: "hidden",
-          transition: "all 0.3s ease",
-        }} />
-
-        {/* Kicker */}
-        <div style={{
-          fontFamily: FONT.condensed,
-          fontWeight: 700,
-          fontSize: scrolled ? "0px" : "0.7rem",
-          letterSpacing: "0.28em",
-          textTransform: "uppercase",
-          color: C.gold,
-          marginBottom: scrolled ? 0 : "0.3rem",
-          opacity: scrolled ? 0 : 1,
-          height: scrolled ? 0 : "auto",
-          overflow: "hidden",
-          transition: "all 0.3s ease",
-        }}>★ The Accidental Intactivist's Inquiry ★</div>
-
-        {/* Main Title */}
-        <h1 style={{
-          fontFamily: FONT.display,
-          fontWeight: 800,
-          fontSize: scrolled ? "1.2rem" : "clamp(1.6rem, 3.5vw, 2.2rem)",
-          color: C.textBright,
-          lineHeight: 1.1,
-          letterSpacing: "-0.01em",
-          margin: 0,
-          transition: "all 0.3s ease",
-        }}>Explore the Data</h1>
-
-        {/* Subtitle */}
-        <div style={{
-          fontFamily: FONT.display,
-          fontStyle: "italic",
-          fontSize: scrolled ? "0px" : "0.88rem",
-          color: C.muted,
-          marginTop: scrolled ? 0 : "0.25rem",
-          opacity: scrolled ? 0 : 1,
-          height: scrolled ? 0 : "auto",
-          overflow: "hidden",
-          transition: "all 0.3s ease",
-        }}>501 Voices · 8 Pathways · 355 Questions</div>
-      </div>
-    </header>
-  );
-}
 
 function SearchBox({ value, onChange }) {
   return (

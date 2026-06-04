@@ -13,6 +13,17 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
+const EXCLUDED_IDS = [
+  "contact_followup_consent",
+  "contact_email",
+  "contact_other_method",
+  "contact_contrib_interest",
+  "contact_contrib_format",
+  "restore_thank_you",
+  "observe_multi_hat_selection",
+  "observe_parent_intact_lawsuit_cta_knowledge"
+];
+
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
     status,
@@ -114,8 +125,9 @@ async function handleQuestions(env, url) {
   const sectionParam = url.searchParams.get("section");
   const pathwayParam = url.searchParams.get("pathway");
   const withCounts = url.searchParams.get("counts") === "1";
+  const excludedIdsStr = EXCLUDED_IDS.map((id) => `'${id}'`).join(", ");
   let sql = `SELECT id, section, pathway, prompt, subtitle, type, opts_json, tier, col_idx
-             FROM questions WHERE id NOT IN ('contact_followup_consent', 'contact_email', 'contact_other_method', 'contact_contrib_interest', 'restore_thank_you', 'observe_multi_hat_selection', 'observe_parent_intact_lawsuit_cta_knowledge')`;
+             FROM questions WHERE id NOT IN (${excludedIdsStr})`;
   const bindings = [];
   if (tierParam) {
     const tiers = tierParam.split(",").map((t) => parseInt(t, 10)).filter((t) => !isNaN(t));
@@ -190,24 +202,31 @@ async function handleAggregate(env, url) {
   const filters = url.searchParams.getAll("filter");
   const pathways = url.searchParams.getAll("pathway");
   if (!questionId) return errorJson("Missing required parameter: q", 400);
+  if (EXCLUDED_IDS.includes(questionId) || (byQuestion && EXCLUDED_IDS.includes(byQuestion))) {
+    return errorJson("Forbidden", 403);
+  }
 
   const bindings = [];
   
   let groupCol = "resp.pathway";
   let groupJoin = "JOIN respondents resp ON resp.id = r.respondent_id";
+  
+  const allowedDemographics = ["country_born", "country_now", "us_state_born", "us_state_now", "race_ethnicity", "age_bracket", "generation", "education", "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
+  const allowedReligion = ["upbringing_significance", "primary_tradition", "cultural_background", "christian_denomination", "jewish_denomination", "islamic_madhhab"];
+
   if (byQuestion) {
     groupJoin = `JOIN responses r2 ON r2.respondent_id = r.respondent_id AND r2.question_id = ?`;
     groupCol = "r2.value_text";
     bindings.push(byQuestion);
-  } else if (by === "generation") {
+  } else if (allowedDemographics.includes(by)) {
     groupJoin += " JOIN demographics dem ON dem.respondent_id = r.respondent_id";
-    groupCol = "dem.generation";
-  } else if (by === "religion") {
+    groupCol = `dem.${by}`;
+  } else if (allowedReligion.includes(by)) {
+    groupJoin += " LEFT JOIN religion rel ON rel.respondent_id = r.respondent_id";
+    groupCol = `rel.${by}`;
+  } else if (by === "religion") { // Legacy fallback
     groupJoin += " LEFT JOIN religion rel ON rel.respondent_id = r.respondent_id";
     groupCol = "rel.primary_tradition";
-  } else if (by === "country_born") {
-    groupJoin += " JOIN demographics dem ON dem.respondent_id = r.respondent_id";
-    groupCol = "dem.country_born";
   }
 
   bindings.push(questionId);
@@ -281,6 +300,9 @@ async function handleResponseDistribution(env, url) {
   const filters = url.searchParams.getAll("filter");
 
   if (!questionId) return errorJson("Missing required parameter: q", 400);
+  if (EXCLUDED_IDS.includes(questionId)) {
+    return errorJson("Forbidden", 403);
+  }
 
   const bindings = [questionId];
   let pathwayWhere = "";
@@ -335,6 +357,9 @@ async function handleNarratives(env, url) {
   const pathways = url.searchParams.getAll("pathway");
   const filters = url.searchParams.getAll("filter");
   if (!questionId) return errorJson("Missing required parameter: q", 400);
+  if (EXCLUDED_IDS.includes(questionId)) {
+    return errorJson("Forbidden", 403);
+  }
 
   const bindings = [questionId];
   let pathwayWhere = "";
@@ -494,7 +519,7 @@ async function handleEmbedBatch(env, url) {
     FROM responses r
     JOIN respondents resp ON resp.id = r.respondent_id
     LEFT JOIN demographics d ON d.respondent_id = r.respondent_id
-    WHERE r.question_id IN (SELECT id FROM questions WHERE type = 'open_text')
+    WHERE r.question_id IN (SELECT id FROM questions WHERE type = 'open_text' AND id NOT IN (${EXCLUDED_IDS.map(id => `'${id}'`).join(", ")}))
     AND r.value_text IS NOT NULL AND r.value_text != '' AND r.value_text != '-'
     ORDER BY r.respondent_id, r.question_id
     LIMIT ? OFFSET ?
@@ -634,6 +659,14 @@ Example: {"tool": "get_demographics", "args": {"pathway": "intact", "country": "
 
       if (!toolCall || !toolCall.tool) {
         return json({ answer: "I couldn't identify the right quantitative metrics for that question. Try rephrasing?", quotes: [] });
+      }
+
+      if (
+        (toolCall.args?.questionId && EXCLUDED_IDS.includes(toolCall.args.questionId)) ||
+        (toolCall.args?.q1 && EXCLUDED_IDS.includes(toolCall.args.q1)) ||
+        (toolCall.args?.q2 && EXCLUDED_IDS.includes(toolCall.args.q2))
+      ) {
+        return json({ answer: "Access to the requested question is restricted for privacy reasons.", quotes: [] });
       }
 
       let sql, bindings, dataStr, displaySql;

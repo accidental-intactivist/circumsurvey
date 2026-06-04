@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { getAggregate } from "../lib/api";
 import { C, FONT } from "../styles/tokens";
+import { getSortScore } from "../../components/UniversalMatrix";
 
 /**
  * Renders a cross-tabulation matrix (bubble chart) between two questions.
@@ -42,7 +43,12 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
     if (crossTabData) {
       if (!crossTabData.cohorts) return { rowLabels: [], colLabels: [], matrix: [], expectedMatrix: [], maxN: 0, maxAbsResidual: 1 };
       
-      cols = crossTabData.cohorts.map(c => c.option);
+      cols = crossTabData.cohorts.map(c => c.option).sort((a, b) => {
+        const scoreA = getSortScore(a);
+        const scoreB = getSortScore(b);
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        return a.localeCompare(b);
+      });
       const rowSet = new Set();
       crossTabData.cohorts.forEach(c => {
         c.distribution.forEach(d => {
@@ -50,10 +56,16 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
         });
       });
       
-      rows = Array.from(rowSet).sort();
+      rows = Array.from(rowSet).sort((a, b) => {
+        const scoreA = getSortScore(a);
+        const scoreB = getSortScore(b);
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        return a.localeCompare(b);
+      });
       mat = rows.map(r => {
-        return crossTabData.cohorts.map(c => {
-          const found = c.distribution.find(d => d.label === r);
+        return cols.map(col => {
+          const c = crossTabData.cohorts.find(c => c.option === col);
+          const found = c ? c.distribution.find(d => d.label === r) : null;
           const n = found ? found.n : 0;
           if (n > max) max = n;
           return n;
@@ -62,7 +74,12 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
     } else {
       if (!data || !data.results) return { rowLabels: [], colLabels: [], matrix: [], expectedMatrix: [], maxN: 0, maxAbsResidual: 1 };
       
-      cols = Object.keys(data.results).filter(k => k !== "null" && k !== "");
+      cols = Object.keys(data.results).filter(k => k !== "null" && k !== "").sort((a, b) => {
+        const scoreA = getSortScore(a);
+        const scoreB = getSortScore(b);
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        return a.localeCompare(b);
+      });
       const rowSet = new Set();
       
       cols.forEach(c => {
@@ -73,7 +90,12 @@ export default function CorrelationMatrix({ rowQuestion, colQuestion, cohort = n
         }
       });
       
-      rows = Array.from(rowSet).sort();
+      rows = Array.from(rowSet).sort((a, b) => {
+        const scoreA = getSortScore(a);
+        const scoreB = getSortScore(b);
+        if (scoreA !== scoreB) return scoreA - scoreB;
+        return a.localeCompare(b);
+      });
       mat = rows.map(r => {
         return cols.map(c => {
           const dist = data.results[c].distribution || [];

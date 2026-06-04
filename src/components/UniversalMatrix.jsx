@@ -191,7 +191,7 @@ function consolidateLabel(rawLabel, questionId) {
 }
 
 // Heuristics to rank Likert/Ordinal labels logically instead of alphabetically
-function getSortScore(label) {
+export function getSortScore(label) {
   const l = label.toLowerCase();
   
   // Politics
@@ -256,6 +256,13 @@ function getSortScore(label) {
   if (l.includes("50/50 choice")) return 71;
   if (l.includes("very common")) return 72;
   if (l.includes("circumcised was the norm") || l.includes("unquestioned norm; i believe nearly all boys")) return 73;
+
+  // Social Norm Perceptions (Specific user requested order)
+  if (l.includes("circumcised state is overwhelmingly seen as the normal")) return 80;
+  if (l.includes("circumcised state is generally seen as more normal")) return 81;
+  if (l.includes("both are seen as equally normal")) return 82;
+  if (l.includes("intact state is generally seen as more normal")) return 83;
+  if (l.includes("intact state is overwhelmingly seen as the normal")) return 84;
 
   return 9999;
 }

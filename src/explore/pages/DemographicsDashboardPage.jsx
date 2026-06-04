@@ -286,70 +286,75 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
         {/* Right Column: Exhibits */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
           {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
-          <SectionAnchor id="geo" />
-        <GeographicOrigins cohort={cohort} />
+          <SectionAnchor id="geo">
+            <GeographicOrigins cohort={cohort} />
+          </SectionAnchor>
         
         {/* ═══ SECTION 2: DEMOGRAPHIC FLOW (SANKEY) ═══ */}
-        <SectionAnchor id="mosaic" />
-        <section className="xray-section" id="xray-mosaic" style={{ marginBottom: "4rem", minHeight: "600px" }}>
-          <SectionHeader 
-            title="Demographic Flow Explorer"
-            subtitle="Build your own intersectional flow chart by selecting the three demographic dimensions you want to trace."
-            icon="〰"
-          />
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", justifyContent: "center", alignItems: "center" }}>
-            {[0, 1, 2].map((idx) => (
-              <div key={idx} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <select
-                  value={sankeyDims[idx].id}
-                  onChange={(e) => {
-                    const newDims = [...sankeyDims];
-                    newDims[idx] = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === e.target.value);
-                    setSankeyDims(newDims);
-                  }}
-                  style={{
-                    background: C.bgDeep,
-                    color: C.goldBright,
-                    border: `1px solid ${C.ghost}`,
-                    borderRadius: 6,
-                    padding: "0.4rem 0.8rem",
-                    fontFamily: FONT.condensed,
-                    fontSize: "0.85rem",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    cursor: "pointer",
-                    outline: "none"
-                  }}
-                >
-                  {DEMOGRAPHIC_DIMENSIONS.map(d => {
-                    const isSelectedElsewhere = sankeyDims.some((selectedDim, i) => i !== idx && selectedDim.id === d.id);
-                    return (
-                      <option key={d.id} value={d.id} disabled={isSelectedElsewhere}>
-                        {d.label === "Pathway" ? "Experiential Pathway" : d.label}
-                      </option>
-                    );
-                  })}
-                </select>
-                {idx < 2 && <span style={{ color: C.dim }}>→</span>}
-              </div>
-            ))}
-          </div>
-          <div style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem" }}>
-            <DemographicSankey cohort={cohort} dimensions={sankeyDims} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
-          </div>
-        </section>
+        <SectionAnchor id="mosaic">
+          <section className="xray-section" style={{ marginBottom: "4rem", minHeight: "600px" }}>
+            <SectionHeader 
+              title="Demographic Flow Explorer"
+              subtitle="Build your own intersectional flow chart by selecting the three demographic dimensions you want to trace."
+              icon="〰"
+            />
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", justifyContent: "center", alignItems: "center" }}>
+              {[0, 1, 2].map((idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <select
+                    value={sankeyDims[idx].id}
+                    onChange={(e) => {
+                      const newDims = [...sankeyDims];
+                      newDims[idx] = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === e.target.value);
+                      setSankeyDims(newDims);
+                    }}
+                    style={{
+                      background: C.bgDeep,
+                      color: C.goldBright,
+                      border: `1px solid ${C.ghost}`,
+                      borderRadius: 6,
+                      padding: "0.4rem 0.8rem",
+                      fontFamily: FONT.condensed,
+                      fontSize: "0.85rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      cursor: "pointer",
+                      outline: "none"
+                    }}
+                  >
+                    {DEMOGRAPHIC_DIMENSIONS.map(d => {
+                      const isSelectedElsewhere = sankeyDims.some((selectedDim, i) => i !== idx && selectedDim.id === d.id);
+                      return (
+                        <option key={d.id} value={d.id} disabled={isSelectedElsewhere}>
+                          {d.label === "Pathway" ? "Experiential Pathway" : d.label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {idx < 2 && <span style={{ color: C.dim }}>→</span>}
+                </div>
+              ))}
+            </div>
+            <div style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem" }}>
+              <DemographicSankey cohort={cohort} dimensions={sankeyDims} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+            </div>
+          </section>
+        </SectionAnchor>
 
         {/* ═══ SECTION 3: PATHWAY DNA STRIP ═══ */}
-        <SectionAnchor id="dna" />
-        <PathwayDNAStrip cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+        <SectionAnchor id="dna">
+          <PathwayDNAStrip cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+        </SectionAnchor>
 
         {/* ═══ SECTION 4: DIVERGENCE RADAR ═══ */}
-        <SectionAnchor id="radar" />
-        <DivergenceRadar cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+        <SectionAnchor id="radar">
+          <DivergenceRadar cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+        </SectionAnchor>
 
         {/* ═══ SECTION 5: CORRELATION MATRIX ═══ */}
-        <SectionAnchor id="corr" />
-        <CorrelationSection cohort={cohort} />
+        <SectionAnchor id="corr">
+          <CorrelationSection cohort={cohort} />
+        </SectionAnchor>
         </div>
       </div>
 
@@ -358,8 +363,12 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
   );
 }
 
-function SectionAnchor({ id }) {
-  return <div id={`xray-${id}`} style={{ scrollMarginTop: "2rem", height: 1 }} />;
+function SectionAnchor({ id, children }) {
+  return (
+    <div id={`xray-${id}`} style={{ scrollMarginTop: "2rem" }}>
+      {children}
+    </div>
+  );
 }
 
 

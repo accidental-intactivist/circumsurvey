@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker, useMapContext } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 import { geoCentroid } from "d3-geo";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
@@ -52,11 +52,151 @@ const getCoordinates = (geo) => {
   return null;
 };
 
+// SafeMarker wrapper to handle D3 projection boundaries (e.g. US territories on geoAlbersUsa)
+function SafeMarker({ coordinates, children, ...markerProps }) {
+  const { projection } = useMapContext();
+  if (!projection) return null;
+  
+  try {
+    const projected = projection(coordinates);
+    if (!projected || isNaN(projected[0]) || isNaN(projected[1])) {
+      return null;
+    }
+  } catch (e) {
+    return null;
+  }
+  
+  return (
+    <Marker coordinates={coordinates} {...markerProps}>
+      {children}
+    </Marker>
+  );
+}
+
+// Subcomponent to safely handle side-effects and report loaded geographies back to parent
+function GeographiesReporter({ geographies, onGeographiesLoaded }) {
+  useEffect(() => {
+    if (geographies && geographies.length > 0) {
+      onGeographiesLoaded(geographies);
+    }
+  }, [geographies, onGeographiesLoaded]);
+  return null;
+}
+
+// Subcomponent to safely handle Geographies rendering
+function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortMap, tabKeys, activeTab, getCohortColor, setTooltip, colorScale }) {
+  return (
+    <Geographies geography={geoUrl}>
+      {({ geographies }) => {
+        const geographyElements = geographies.map((geo) => {
+          const geoName = geo.properties.name;
+          
+          let val = 0;
+          for (const label of Object.keys(dataMap.map)) {
+            if (normalizeName(label) === normalizeName(geoName)) {
+              val = dataMap.map[label];
+              break;
+            }
+          }
+          
+          const defaultFill = visType === "bullseye"
+            ? (val > 0 ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.015)")
+            : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`);
+
+          const hoverFill = visType === "bullseye"
+            ? (val > 0 ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.03)")
+            : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`);
+          
+          return (
+            <Geography
+              key={geo.rsmKey}
+              geography={geo}
+              onMouseEnter={() => {
+                const norm = normalizeName(geoName);
+                let content = `${geoName}: ${val}`;
+                
+                if (val > 0 && cohortMap[norm]) {
+                  const pData = cohortMap[norm];
+                  const breakdown = [];
+                  for (const cid of tabKeys) {
+                    if (cid !== "all" && pData[cid] > 0) {
+                      breakdown.push({ id: cid, n: pData[cid] });
+                    }
+                  }
+                  
+                  if (breakdown.length > 0) {
+                    content = (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        <div style={{ 
+                          borderBottom: `1px solid ${C.ghost}`, 
+                          paddingBottom: "0.25rem", 
+                          marginBottom: "0.1rem",
+                          color: C.textBright
+                        }}>
+                          <strong>{geoName}</strong>: {val}
+                        </div>
+                        {breakdown.map((b) => {
+                          let bColor = getCohortColor(b.id);
+                          let bLabel = b.id;
+                          const mappedKey = b.id === "unclassified" ? "observer" : b.id;
+                          if (PATHWAYS[mappedKey]) {
+                            bLabel = PATHWAYS[mappedKey].label;
+                          }
+                          
+                          return (
+                            <div key={b.id}>
+                              <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+                }
+                setTooltip(content);
+              }}
+              onMouseLeave={() => {
+                setTooltip("");
+              }}
+              style={{
+                default: {
+                  fill: defaultFill,
+                  stroke: `color-mix(in srgb, ${C.ghost} ${visType === "bullseye" ? "20%" : "30%"}, transparent)`,
+                  strokeWidth: 0.6,
+                  outline: "none"
+                },
+                hover: {
+                  fill: hoverFill,
+                  stroke: C.textBright,
+                  strokeWidth: 1.5,
+                  outline: "none"
+                },
+                pressed: {
+                  fill: hoverFill,
+                  outline: "none"
+                }
+              }}
+            />
+          );
+        });
+
+        return (
+          <>
+            <GeographiesReporter geographies={geographies} onGeographiesLoaded={onGeographiesLoaded} />
+            {geographyElements}
+          </>
+        );
+      }}
+    </Geographies>
+  );
+}
+
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort }) {
   const [geoLevel, setGeoLevel] = useState("us_state"); // Options: "country", "us_state", "ca_province"
   const [activeTab, setActiveTab] = useState("all");
   const [visType, setVisType] = useState("bullseye"); // Options: "bullseye", "heatmap"
   const [tooltip, setTooltip] = useState("");
+  const [geographies, setGeographies] = useState([]);
   
   const isUS = questionId.includes("us_state");
   const isCanada = questionId.includes("can_province");
@@ -94,6 +234,11 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       setVisType("heatmap");
     }
   }, [tabKeys]);
+
+  // Clear loaded geographies when geoUrl changes to prevent rendering stale bullseyes
+  useEffect(() => {
+    setGeographies([]);
+  }, [geoUrl]);
     
   const dataMap = useMemo(() => {
     const map = {};
@@ -183,8 +328,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     return resolveCssColor(cList[Math.max(0, idx - 1) % cList.length] || C.muted);
   };
 
-  const renderBullseyes = (geographies) => {
-    return geographies.map((geo) => {
+  const renderBullseyes = (geos) => {
+    if (!geos || geos.length === 0) return null;
+    return geos.map((geo) => {
       const geoName = geo.properties.name;
       const norm = normalizeName(geoName);
       const regionData = cohortMap[norm];
@@ -227,7 +373,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       });
       
       return (
-        <Marker key={`bullseye-${geo.rsmKey}`} coordinates={coords}>
+        <SafeMarker key={`bullseye-${geo.rsmKey}`} coordinates={coords}>
           <g style={{ pointerEvents: "none" }}>
             {circles.map((circle, idx) => {
               const isSelectedCohort = activeTab === circle.id;
@@ -247,7 +393,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               );
             })}
           </g>
-        </Marker>
+        </SafeMarker>
       );
     });
   };
@@ -406,205 +552,37 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
             { scale: 140 }
           }
         >
-          {isUS ? (
-            <Geographies geography={geoUrl}>
-              {({ geographies }) => (
-                <>
-                  {geographies.map((geo) => {
-                    const geoName = geo.properties.name;
-                    
-                    let val = 0;
-                    for (const label of Object.keys(dataMap.map)) {
-                      if (normalizeName(label) === normalizeName(geoName)) {
-                        val = dataMap.map[label];
-                        break;
-                      }
-                    }
-                    
-                    const defaultFill = visType === "bullseye"
-                      ? (val > 0 ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.015)")
-                      : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`);
+          {isUS && (
+            <MapGeographies
+              geoUrl={geoUrl}
+              visType={visType}
+              onGeographiesLoaded={setGeographies}
+              dataMap={dataMap}
+              cohortMap={cohortMap}
+              tabKeys={tabKeys}
+              activeTab={activeTab}
+              getCohortColor={getCohortColor}
+              setTooltip={setTooltip}
+              colorScale={colorScale}
+            />
+          )}
+          {isUS && visType === "bullseye" && renderBullseyes(geographies)}
 
-                    const hoverFill = visType === "bullseye"
-                      ? (val > 0 ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.03)")
-                      : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`);
-                    
-                    return (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        onMouseEnter={() => {
-                          const norm = normalizeName(geoName);
-                          let content = `${geoName}: ${val}`;
-                          
-                          if (val > 0 && cohortMap[norm]) {
-                            const pData = cohortMap[norm];
-                            const breakdown = [];
-                            for (const cid of tabKeys) {
-                              if (cid !== "all" && pData[cid] > 0) {
-                                breakdown.push({ id: cid, n: pData[cid] });
-                              }
-                            }
-                            
-                            if (breakdown.length > 0) {
-                              content = (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                                  <div style={{ 
-                                    borderBottom: `1px solid ${C.ghost}`, 
-                                    paddingBottom: "0.25rem", 
-                                    marginBottom: "0.1rem",
-                                    color: C.textBright
-                                  }}>
-                                    <strong>{geoName}</strong>: {val}
-                                  </div>
-                                  {breakdown.map((b) => {
-                                    let bColor = getCohortColor(b.id);
-                                    let bLabel = b.id;
-                                    const mappedKey = b.id === "unclassified" ? "observer" : b.id;
-                                    if (PATHWAYS[mappedKey]) {
-                                      bLabel = PATHWAYS[mappedKey].label;
-                                    }
-                                    
-                                    return (
-                                      <div key={b.id}>
-                                        <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              );
-                            }
-                          }
-                          setTooltip(content);
-                        }}
-                        onMouseLeave={() => {
-                          setTooltip("");
-                        }}
-                        style={{
-                          default: {
-                            fill: defaultFill,
-                            stroke: `color-mix(in srgb, ${C.ghost} ${visType === "bullseye" ? "20%" : "30%"}, transparent)`,
-                            strokeWidth: 0.6,
-                            outline: "none"
-                          },
-                          hover: {
-                            fill: hoverFill,
-                            stroke: C.textBright,
-                            strokeWidth: 1.5,
-                            outline: "none"
-                          },
-                          pressed: {
-                            fill: hoverFill,
-                            outline: "none"
-                          }
-                        }}
-                      />
-                    );
-                  })}
-                  {visType === "bullseye" && renderBullseyes(geographies)}
-                </>
-              )}
-            </Geographies>
-          ) : (
+          {!isUS && (
             <ZoomableGroup center={[0, 20]} zoom={1} maxZoom={4} translateExtent={[[ -200, -100 ], [ 1150, 700 ]]}>
-              <Geographies geography={geoUrl}>
-                {({ geographies }) => (
-                  <>
-                    {geographies.map((geo) => {
-                      const geoName = geo.properties.name;
-                      
-                      let val = 0;
-                      for (const label of Object.keys(dataMap.map)) {
-                        if (normalizeName(label) === normalizeName(geoName)) {
-                          val = dataMap.map[label];
-                          break;
-                        }
-                      }
-                      
-                      const defaultFill = visType === "bullseye"
-                        ? (val > 0 ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.015)")
-                        : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`);
-
-                      const hoverFill = visType === "bullseye"
-                        ? (val > 0 ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.03)")
-                        : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`);
-                      
-                      return (
-                        <Geography
-                          key={geo.rsmKey}
-                          geography={geo}
-                          onMouseEnter={() => {
-                            const norm = normalizeName(geoName);
-                            let content = `${geoName}: ${val}`;
-                            
-                            if (val > 0 && cohortMap[norm]) {
-                              const pData = cohortMap[norm];
-                              const breakdown = [];
-                              for (const cid of tabKeys) {
-                                if (cid !== "all" && pData[cid] > 0) {
-                                  breakdown.push({ id: cid, n: pData[cid] });
-                                }
-                              }
-                              
-                              if (breakdown.length > 0) {
-                                content = (
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                                    <div style={{ 
-                                      borderBottom: `1px solid ${C.ghost}`, 
-                                      paddingBottom: "0.25rem", 
-                                      marginBottom: "0.1rem",
-                                      color: C.textBright
-                                    }}>
-                                      <strong>{geoName}</strong>: {val}
-                                    </div>
-                                    {breakdown.map((b) => {
-                                      let bColor = getCohortColor(b.id);
-                                      let bLabel = b.id;
-                                      const mappedKey = b.id === "unclassified" ? "observer" : b.id;
-                                      if (PATHWAYS[mappedKey]) {
-                                        bLabel = PATHWAYS[mappedKey].label;
-                                      }
-                                      
-                                      return (
-                                        <div key={b.id}>
-                                          <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                );
-                              }
-                            }
-                            setTooltip(content);
-                          }}
-                          onMouseLeave={() => {
-                            setTooltip("");
-                          }}
-                          style={{
-                            default: {
-                              fill: defaultFill,
-                              stroke: `color-mix(in srgb, ${C.ghost} ${visType === "bullseye" ? "20%" : "30%"}, transparent)`,
-                              strokeWidth: 0.6,
-                              outline: "none"
-                            },
-                            hover: {
-                              fill: hoverFill,
-                              stroke: C.textBright,
-                              strokeWidth: 1.5,
-                              outline: "none"
-                            },
-                            pressed: {
-                              fill: hoverFill,
-                              outline: "none"
-                            }
-                          }}
-                        />
-                      );
-                    })}
-                    {visType === "bullseye" && renderBullseyes(geographies)}
-                  </>
-                )}
-              </Geographies>
+              <MapGeographies
+                geoUrl={geoUrl}
+                visType={visType}
+                onGeographiesLoaded={setGeographies}
+                dataMap={dataMap}
+                cohortMap={cohortMap}
+                tabKeys={tabKeys}
+                activeTab={activeTab}
+                getCohortColor={getCohortColor}
+                setTooltip={setTooltip}
+                colorScale={colorScale}
+              />
+              {visType === "bullseye" && renderBullseyes(geographies)}
             </ZoomableGroup>
           )}
         </ComposableMap>

@@ -22,5 +22,5 @@ binding = "AI"
 binding = "VECTORIZE"
 index_name = "circumsurvey-narratives"
 
-[assets]
-directory = "./empty_assets"
+# [assets]
+# directory = "./empty_assets"

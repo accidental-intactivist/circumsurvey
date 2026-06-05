@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
@@ -10,8 +10,9 @@ const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort }) {
-  const [tooltip, setTooltip] = useState("");
+  const [geoLevel, setGeoLevel] = useState("us_state"); // Options: "country", "us_state", "ca_province"
   const [activeTab, setActiveTab] = useState("all");
+  const [tooltip, setTooltip] = useState("");
   
   const isUS = questionId.includes("us_state");
   const isCanada = questionId.includes("can_province");
@@ -56,8 +57,10 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const getScaleRange = (tab, idx) => {
     if (tab === "all") return ["#1f1135", "#be123c", resolveCssColor(C.goldBright)];
     
-    if (PATHWAYS[tab]) {
-      switch (tab) {
+    const mappedTab = tab === "unclassified" ? "observer" : tab;
+    
+    if (PATHWAYS[mappedTab]) {
+      switch (mappedTab) {
         case "intact": return ["#062417", "#059669", resolveCssColor(PATH_COLORS.intact)];
         case "circumcised": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.circumcised)];
         case "restoring": return ["#2e1f06", "#d97706", resolveCssColor(PATH_COLORS.restoring)];
@@ -71,13 +74,13 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     const fallbacks = [
       ["#0a192f", "#2563eb", resolveCssColor(C.blue)],
       ["#2e0c10", "#e11d48", resolveCssColor(C.red)],
-      ["#062417", "#10b981", resolveCssColor(C.green)],
-      ["#2e1f06", "#f59e0b", resolveCssColor(C.yellow)],
-      ["#2a1005", "#f97316", resolveCssColor(C.orange)],
-      ["#1e1b4b", "#8b5cf6", resolveCssColor(C.ltBlue)],
-      ["#1f2937", "#6b7280", resolveCssColor(C.grey)],
+      ["#0f2e1a", "#16a34a", resolveCssColor(C.green)],
+      ["#3a2003", "#eab308", resolveCssColor(C.yellow)],
+      ["#1f102b", "#9333ea", resolveCssColor(C.purple)],
     ];
-    return fallbacks[Math.max(0, idx) % fallbacks.length];
+    
+    const fallbackIdx = Math.max(0, tabKeys.indexOf(tab) - 1);
+    return fallbacks[fallbackIdx % fallbacks.length];
   };
 
   const colorScale = useMemo(() => {
@@ -129,22 +132,27 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       
       {/* Cohort Filters */}
       <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
-        {tabKeys.map((tabKey, idx) => {
+        {tabKeys.map(tabKey => {
           if (tabKey !== "all" && (!byCohort?.results || !byCohort.results[tabKey] || byCohort.results[tabKey].n === 0)) return null;
           
           const isActive = activeTab === tabKey;
-          let color = C.muted;
-          let label = tabKey;
+          const isAll = tabKey === "all";
           
-          if (tabKey === "all") {
-            color = C.goldBright;
+          // Map backend "unclassified" to "observer"
+          const mappedKey = tabKey === "unclassified" ? "observer" : tabKey;
+          
+          let label = mappedKey;
+          let color = C.muted;
+          
+          if (isAll) {
             label = "All Participants";
-          } else if (PATHWAYS[tabKey]) {
-            color = PATHWAYS[tabKey].color;
-            label = PATHWAYS[tabKey].label;
+            color = C.goldBright;
+          } else if (PATHWAYS[mappedKey]) {
+            label = PATHWAYS[mappedKey].label;
+            color = PATHWAYS[mappedKey].color;
           } else {
             const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
-            color = cList[idx % cList.length];
+            color = cList[tabKeys.indexOf(tabKey) % cList.length];
           }
           
           return (
@@ -190,7 +198,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         </div>
       )}
 
-      <div style={{ width: "100%", aspectRatio: "16/9", background: `color-mix(in srgb, ${C.bgSoft} 50%, transparent)`, borderRadius: 6, overflow: "hidden" }}>
+      <div style={{ width: "100%", aspectRatio: "16/9", background: `linear-gradient(to bottom right, color-mix(in srgb, ${C.blue} 5%, ${C.bgCard}), color-mix(in srgb, ${C.purple} 2%, ${C.bgSoft}))`, borderRadius: 12, overflow: "hidden", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
         <ComposableMap 
           projection={isUS ? "geoAlbersUsa" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
           width={950}
@@ -198,10 +206,10 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           projectionConfig={
             isUS ? { scale: 1000 } : 
             isCanada ? { rotate: [95, -60, 0], scale: 800 } : 
-            { scale: 125 }
+            { scale: 140 }
           }
         >
-          <ZoomableGroup>
+          {isUS ? (
             <Geographies geography={geoUrl}>
               {({ geographies }) =>
                 geographies.map((geo) => {
@@ -277,19 +285,19 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                       }}
                       style={{
                         default: {
-                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgDeep} 40%, transparent)`,
-                          stroke: `color-mix(in srgb, ${C.ghost} 20%, transparent)`,
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`,
+                          stroke: `color-mix(in srgb, ${C.ghost} 30%, transparent)`,
                           strokeWidth: 0.6,
                           outline: "none"
                         },
                         hover: {
-                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgCard} 50%, transparent)`,
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`,
                           stroke: C.textBright,
                           strokeWidth: 1.5,
                           outline: "none"
                         },
                         pressed: {
-                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.bgCard} 50%, transparent)`,
+                          fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`,
                           outline: "none"
                         }
                       }}
@@ -298,7 +306,106 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                 })
               }
             </Geographies>
-          </ZoomableGroup>
+          ) : (
+            <ZoomableGroup center={[0, 20]} zoom={1} maxZoom={4} translateExtent={[[ -200, -100 ], [ 1150, 700 ]]}>
+              <Geographies geography={geoUrl}>
+                {({ geographies }) =>
+                  geographies.map((geo) => {
+                    const geoName = geo.properties.name;
+                    
+                    // Match TopoJSON names with our data labels
+                    let matchedLabel = null;
+                    let val = 0;
+                    
+                    for (const label of Object.keys(dataMap.map)) {
+                      if (normalizeName(label) === normalizeName(geoName)) {
+                        matchedLabel = label;
+                        val = dataMap.map[label];
+                        break;
+                      }
+                    }
+                    
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        onMouseEnter={() => {
+                          const norm = normalizeName(geoName);
+                          let content = `${geoName}: ${val}`;
+                          
+                          if (val > 0 && cohortMap[norm]) {
+                            const pData = cohortMap[norm];
+                            const breakdown = [];
+                            for (const cid of tabKeys) {
+                              if (cid !== "all" && pData[cid] > 0) {
+                                breakdown.push({ id: cid, n: pData[cid] });
+                              }
+                            }
+                            
+                            if (breakdown.length > 0) {
+                              content = (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                  <div style={{ 
+                                    borderBottom: `1px solid ${C.ghost}`, 
+                                    paddingBottom: "0.25rem", 
+                                    marginBottom: "0.1rem",
+                                    color: C.textBright
+                                  }}>
+                                    <strong>{geoName}</strong>: {val}
+                                  </div>
+                                  {breakdown.map((b, bIdx) => {
+                                    // Fallback color logic
+                                    let bColor = C.muted;
+                                    let bLabel = b.id;
+                                    if (PATHWAYS[b.id]) {
+                                      bColor = PATHWAYS[b.id].color;
+                                      bLabel = PATHWAYS[b.id].label;
+                                    } else {
+                                      const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
+                                      const safeIdx = Math.max(0, tabKeys.indexOf(b.id) - 1);
+                                      bColor = cList[safeIdx % cList.length] || C.muted;
+                                    }
+                                    
+                                    return (
+                                      <div key={b.id}>
+                                        <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            }
+                          }
+                          setTooltip(content);
+                        }}
+                        onMouseLeave={() => {
+                          setTooltip("");
+                        }}
+                        style={{
+                          default: {
+                            fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`,
+                            stroke: `color-mix(in srgb, ${C.ghost} 30%, transparent)`,
+                            strokeWidth: 0.6,
+                            outline: "none"
+                          },
+                          hover: {
+                            fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`,
+                            stroke: C.textBright,
+                            strokeWidth: 1.5,
+                            outline: "none"
+                          },
+                          pressed: {
+                            fill: val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`,
+                            outline: "none"
+                          }
+                        }}
+                      />
+                    );
+                  })
+                }
+              </Geographies>
+            </ZoomableGroup>
+          )}
         </ComposableMap>
       </div>
       

@@ -43,6 +43,7 @@ function errorJson(message, status = 500) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    console.log("REQUEST RECEIVED:", request.url);
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
@@ -414,14 +415,34 @@ async function handleGeo(env, url) {
   const col = colMap[level];
   if (!col) return errorJson(`Unknown level: ${level}`, 400);
 
+  const allowedDemographics = ["country_born", "country_now", "us_state_born", "us_state_now", "race_ethnicity", "age_bracket", "generation", "education", "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
+  const allowedReligion = ["upbringing_significance", "primary_tradition", "cultural_background", "christian_denomination", "jewish_denomination", "islamic_madhhab"];
+
   let sql;
   if (by === "pathway") {
     sql = `
-      SELECT d.${col} AS location, resp.pathway AS pathway, COUNT(*) AS n
+      SELECT d.${col} AS location, resp.pathway AS bucket, COUNT(*) AS n
       FROM demographics d
       JOIN respondents resp ON resp.id = d.respondent_id
       WHERE d.${col} IS NOT NULL AND d.${col} != ''
       GROUP BY d.${col}, resp.pathway
+      ORDER BY d.${col}, n DESC
+    `;
+  } else if (allowedDemographics.includes(by)) {
+    sql = `
+      SELECT d.${col} AS location, d.${by} AS bucket, COUNT(*) AS n
+      FROM demographics d
+      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      GROUP BY d.${col}, d.${by}
+      ORDER BY d.${col}, n DESC
+    `;
+  } else if (allowedReligion.includes(by)) {
+    sql = `
+      SELECT d.${col} AS location, rel.${by} AS bucket, COUNT(*) AS n
+      FROM demographics d
+      LEFT JOIN religion rel ON rel.respondent_id = d.respondent_id
+      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      GROUP BY d.${col}, rel.${by}
       ORDER BY d.${col}, n DESC
     `;
   } else {
@@ -432,13 +453,21 @@ async function handleGeo(env, url) {
       GROUP BY d.${col} ORDER BY n DESC
     `;
   }
+  
   const { results } = await env.DB.prepare(sql).all();
-  if (by === "pathway") {
+  
+  if (by === "pathway" || allowedDemographics.includes(by) || allowedReligion.includes(by)) {
     const byLoc = {};
+    const splitKey = `by_${by}`;
+    
     for (const row of results) {
-      if (!byLoc[row.location]) byLoc[row.location] = { location: row.location, n: 0, by_pathway: {} };
+      if (!byLoc[row.location]) byLoc[row.location] = { location: row.location, n: 0, [splitKey]: {} };
       byLoc[row.location].n += row.n;
-      byLoc[row.location].by_pathway[row.pathway || "unclassified"] = row.n;
+      let val = row.bucket;
+      if (!val) {
+          val = by === "pathway" ? "unclassified" : "Unknown";
+      }
+      byLoc[row.location][splitKey][val] = row.n;
     }
     return json({
       level, when: usingBorn ? "born" : "now", by,

@@ -570,9 +570,9 @@ function DivergenceRadar({ cohort, tooltip }) {
       typeof opt === "string" ? { value: opt, label: shortenLabel(opt) } : opt
     ) || [];
     
-    // Omit 'observer' from radar charts when examining pathways
+    // Omit 'observer' and 'unclassified' from radar charts when examining pathways
     if (activeDimensionId === "pathway") {
-      options = options.filter(o => o.value !== "observer");
+      options = options.filter(o => o.value !== "observer" && o.value !== "unclassified");
     }
     
     return options;
@@ -885,7 +885,7 @@ function GeographicOrigins({ cohort }) {
   const [ref, inView] = useInView();
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mapLevel, setMapLevel] = useState("country");
+  const [mapLevel, setMapLevel] = useState("us_state");
   const [splitBy, setSplitBy] = useState("pathway");
 
   useEffect(() => {

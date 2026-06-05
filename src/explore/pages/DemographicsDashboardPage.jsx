@@ -887,6 +887,7 @@ function GeographicOrigins({ cohort }) {
   const [loading, setLoading] = useState(true);
   const [mapLevel, setMapLevel] = useState("us_state");
   const [splitBy, setSplitBy] = useState("pathway");
+  const [locationTime, setLocationTime] = useState("born");
 
   useEffect(() => {
     if (!inView) return;
@@ -894,8 +895,8 @@ function GeographicOrigins({ cohort }) {
 
     if (mapLevel === "us_state") {
       Promise.all([
-        fetch(`${API_BASE}/geo?level=us_state&by=${splitBy}`).then(r => r.json()),
-        fetch(`${API_BASE}/geo?level=ca_province&by=${splitBy}`).then(r => r.json())
+        fetch(`${API_BASE}/geo?level=us_state&by=${splitBy}&when=${locationTime}`).then(r => r.json()),
+        fetch(`${API_BASE}/geo?level=canada_province&by=${splitBy}&when=${locationTime}`).then(r => r.json())
       ])
         .then(([usRes, caRes]) => {
           const mergedLocations = [
@@ -910,7 +911,7 @@ function GeographicOrigins({ cohort }) {
         })
         .catch(() => setLoading(false));
     } else {
-      fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}`)
+      fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}&when=${locationTime}`)
         .then(r => r.json())
         .then(data => {
           setGeoData(data);
@@ -918,7 +919,7 @@ function GeographicOrigins({ cohort }) {
         })
         .catch(() => setLoading(false));
     }
-  }, [inView, mapLevel, splitBy]);
+  }, [inView, mapLevel, splitBy, locationTime]);
 
   const cohortData = useMemo(() => {
     if (!geoData || !geoData.locations) return { results: {} };
@@ -968,6 +969,20 @@ function GeographicOrigins({ cohort }) {
             </select>
           </div>
           <div>
+            <label style={{ display: "block", fontSize: "0.75rem", color: C.muted, marginBottom: "0.4rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em" }}>Location Type</label>
+            <select 
+              value={locationTime} 
+              onChange={e => setLocationTime(e.target.value)}
+              style={{
+                background: C.bg, color: C.textBright, border: `1px solid ${C.ghost}`,
+                padding: "0.5rem 1rem", borderRadius: 6, fontFamily: FONT.body, cursor: "pointer", minWidth: 150
+              }}
+            >
+              <option value="born">Location of Birth</option>
+              <option value="now">Current Location</option>
+            </select>
+          </div>
+          <div>
             <label style={{ display: "block", fontSize: "0.75rem", color: C.muted, marginBottom: "0.4rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em" }}>Split By</label>
             <select 
               value={splitBy} 
@@ -996,6 +1011,7 @@ function GeographicOrigins({ cohort }) {
               distribution: geoData.locations.map(loc => ({ label: loc.location, n: loc.n }))
             }}
             byCohort={cohortData}
+            splitBy={splitBy}
           />
         )}
       </div>

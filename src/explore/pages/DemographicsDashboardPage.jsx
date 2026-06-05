@@ -892,13 +892,32 @@ function GeographicOrigins({ cohort }) {
     if (!inView) return;
     setLoading(true);
 
-    fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}`)
-      .then(r => r.json())
-      .then(data => {
-        setGeoData(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    if (mapLevel === "us_state") {
+      Promise.all([
+        fetch(`${API_BASE}/geo?level=us_state&by=${splitBy}`).then(r => r.json()),
+        fetch(`${API_BASE}/geo?level=ca_province&by=${splitBy}`).then(r => r.json())
+      ])
+        .then(([usRes, caRes]) => {
+          const mergedLocations = [
+            ...(usRes.locations || []),
+            ...(caRes.locations || [])
+          ];
+          setGeoData({
+            ...usRes,
+            locations: mergedLocations
+          });
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    } else {
+      fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}`)
+        .then(r => r.json())
+        .then(data => {
+          setGeoData(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
   }, [inView, mapLevel, splitBy]);
 
   const cohortData = useMemo(() => {
@@ -945,7 +964,7 @@ function GeographicOrigins({ cohort }) {
               }}
             >
               <option value="country">World</option>
-              <option value="us_state">United States</option>
+              <option value="us_state">North America</option>
             </select>
           </div>
           <div>
@@ -972,7 +991,7 @@ function GeographicOrigins({ cohort }) {
         ) : (
           <GeographicHeatmap 
             questionId={mapLevel === "country" ? "country" : "us_state"}
-            title={mapLevel === "country" ? "World Map of Respondents" : "United States Respondents"}
+            title={mapLevel === "country" ? "World Map of Respondents" : "United States & Canada Respondents"}
             distribution={{
               distribution: geoData.locations.map(loc => ({ label: loc.location, n: loc.n }))
             }}

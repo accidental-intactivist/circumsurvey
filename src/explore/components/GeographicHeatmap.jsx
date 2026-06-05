@@ -100,11 +100,11 @@ function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortM
           }
           
           const defaultFill = visType === "bullseye"
-            ? (val > 0 ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.015)")
+            ? (val > 0 ? "color-mix(in srgb, var(--c-text) 5%, transparent)" : "color-mix(in srgb, var(--c-text) 1.5%, transparent)")
             : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`);
 
           const hoverFill = visType === "bullseye"
-            ? (val > 0 ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.03)")
+            ? (val > 0 ? "color-mix(in srgb, var(--c-text) 12%, transparent)" : "color-mix(in srgb, var(--c-text) 4%, transparent)")
             : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`);
           
           return (
@@ -161,13 +161,13 @@ function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortM
               style={{
                 default: {
                   fill: defaultFill,
-                  stroke: `color-mix(in srgb, ${C.ghost} ${visType === "bullseye" ? "20%" : "30%"}, transparent)`,
-                  strokeWidth: 0.6,
+                  stroke: visType === "bullseye" ? "color-mix(in srgb, var(--c-text) 45%, transparent)" : "color-mix(in srgb, var(--c-text) 20%, transparent)",
+                  strokeWidth: visType === "bullseye" ? 1.0 : 0.6,
                   outline: "none"
                 },
                 hover: {
                   fill: hoverFill,
-                  stroke: C.textBright,
+                  stroke: "var(--c-textBright)",
                   strokeWidth: 1.5,
                   outline: "none"
                 },
@@ -197,6 +197,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const [visType, setVisType] = useState("bullseye"); // Options: "bullseye", "heatmap"
   const [tooltip, setTooltip] = useState("");
   const [geographies, setGeographies] = useState([]);
+  const [geographiesCA, setGeographiesCA] = useState([]);
   
   const isUS = questionId.includes("us_state");
   const isCanada = questionId.includes("can_province");
@@ -238,6 +239,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   // Clear loaded geographies when geoUrl changes to prevent rendering stale bullseyes
   useEffect(() => {
     setGeographies([]);
+    setGeographiesCA([]);
   }, [geoUrl]);
     
   const dataMap = useMemo(() => {
@@ -361,7 +363,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       
       // Sizing calculation (Area proportional to total count in region)
       const minRadius = 4;
-      const maxRadiusLimit = isUS ? 26 : 14;
+      const maxRadiusLimit = isUS ? 24 : 14;
       const R_max = minRadius + (maxRadiusLimit - minRadius) * Math.sqrt(T / maxT);
       
       // Calculate concentric rings
@@ -373,7 +375,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       });
       
       return (
-        <SafeMarker key={`bullseye-${geo.rsmKey}`} coordinates={coords}>
+        <SafeMarker key={`bullseye-${geo.rsmKey || geoName}`} coordinates={coords}>
           <g style={{ pointerEvents: "none" }}>
             {circles.map((circle, idx) => {
               const isSelectedCohort = activeTab === circle.id;
@@ -543,18 +545,18 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
 
       <div style={{ width: "100%", aspectRatio: "16/9", background: `linear-gradient(to bottom right, color-mix(in srgb, ${C.blue} 5%, ${C.bgCard}), color-mix(in srgb, ${C.purple} 2%, ${C.bgSoft}))`, borderRadius: 12, overflow: "hidden", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
         <ComposableMap 
-          projection={isUS ? "geoAlbersUsa" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
+          projection={isUS ? "geoAlbers" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
           width={950}
           height={600}
           projectionConfig={
-            isUS ? { scale: 1000 } : 
+            isUS ? { center: [0, 48], rotate: [96, 0, 0], scale: 650 } : 
             isCanada ? { rotate: [95, -60, 0], scale: 800 } : 
             { scale: 140 }
           }
         >
           {isUS && (
             <MapGeographies
-              geoUrl={geoUrl}
+              geoUrl={US_TOPO_URL}
               visType={visType}
               onGeographiesLoaded={setGeographies}
               dataMap={dataMap}
@@ -566,7 +568,21 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               colorScale={colorScale}
             />
           )}
-          {isUS && visType === "bullseye" && renderBullseyes(geographies)}
+          {isUS && (
+            <MapGeographies
+              geoUrl={CANADA_GEO_URL}
+              visType={visType}
+              onGeographiesLoaded={setGeographiesCA}
+              dataMap={dataMap}
+              cohortMap={cohortMap}
+              tabKeys={tabKeys}
+              activeTab={activeTab}
+              getCohortColor={getCohortColor}
+              setTooltip={setTooltip}
+              colorScale={colorScale}
+            />
+          )}
+          {isUS && visType === "bullseye" && renderBullseyes([...geographies, ...geographiesCA])}
 
           {!isUS && (
             <ZoomableGroup center={[0, 20]} zoom={1} maxZoom={4} translateExtent={[[ -200, -100 ], [ 1150, 700 ]]}>

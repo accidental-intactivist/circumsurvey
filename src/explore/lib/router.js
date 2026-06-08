@@ -37,12 +37,16 @@ function parseHash() {
     route = "generational-faultlines";
   } else if (segments[0] === "observer-triad") {
     route = "observer-triad";
+  } else if (segments[0] === "numbers") {
+    route = "numbers";
   } else if (segments[0] === "pleasure-gap") {
     route = "pleasure-gap";
   } else if (segments[0] === "methodology") {
     route = "methodology";
   } else if (segments[0] === "report") {
     route = "report";
+  } else if (segments[0] === "restoration-journey") {
+    route = "restoration-journey";
   }
 
   // Extract standardized query state
@@ -80,6 +84,12 @@ function serializeState(route, params, state) {
   else if (route === "pleasure-gap") path = "/pleasure-gap";
   else if (route === "methodology") path = "/methodology";
   else if (route === "report") path = "/report";
+  else if (route === "numbers") path = "/numbers";
+  else if (route === "restoration-journey") path = "/restoration-journey";
+  else if (route === "religious-mirrors") path = "/religious-mirrors";
+  else if (route === "narrative-mirrors") path = "/narrative-mirrors";
+  else if (route === "generational-faultlines") path = "/generational-faultlines";
+  else if (route === "observer-triad") path = "/observer-triad";
   else path = "/";
 
   const q = new URLSearchParams();

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { C, FONT } from '../styles/tokens';
 
-export default function PleasureBarChart({ stats, activeCohortsList, groupBy, showTooltip, moveTooltip, hideTooltip }) {
+export default function PleasureBarChart({ stats, activeCohortsList, groupBy, showGap, quotes, showTooltip, moveTooltip, hideTooltip }) {
   const [hoverState, setHoverState] = useState({ active: false, score: 3, colorVar: "--c-ghost" });
   const chartWidth = 900;
   const chartHeight = 360;
@@ -39,6 +39,11 @@ export default function PleasureBarChart({ stats, activeCohortsList, groupBy, sh
 
   return (
     <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} style={{ width: "100%", height: "auto", overflow: "visible" }}>
+      <defs>
+        <pattern id="deficitPattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke={C.red} strokeWidth="2" opacity="0.6" />
+        </pattern>
+      </defs>
       <g className="column-grid">
         {ticks.map(t => (
           <g key={`tick-${t}`}>
@@ -71,6 +76,7 @@ export default function PleasureBarChart({ stats, activeCohortsList, groupBy, sh
               const cId = groupBy === "factor" ? item.id : group.id;
               
               const score = stats.matrix[cId]?.[qId]?.average || 0;
+              const intactScore = stats.matrix['intact']?.[qId]?.average || score; // Reference baseline
               if (score === 0) return null;
               const n = stats.matrix[cId]?.[qId]?.n || 0;
               
@@ -78,8 +84,14 @@ export default function PleasureBarChart({ stats, activeCohortsList, groupBy, sh
               const barY = getY(score);
               const barH = Math.max(2, (yMarginTop + innerHeight) - barY);
 
+              // Calculate explicit gap geometry
+              const gapY = getY(intactScore);
+              const gapH = Math.max(0, barY - gapY);
+              const isGapVisible = showGap && cId !== 'intact' && gapH > 5;
+
               return (
                 <g key={`col-${item.id}`} style={{ transition: "all 0.3s ease" }}>
+                  {/* The actual score bar */}
                   <rect 
                     x={barX} 
                     y={barY} 
@@ -88,14 +100,28 @@ export default function PleasureBarChart({ stats, activeCohortsList, groupBy, sh
                     fill={`var(${item.colorVar})`} 
                     opacity={0.85}
                     rx={3}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer", transition: "all 0.4s ease" }}
                     onMouseEnter={(e) => {
                       e.target.setAttribute("opacity", "1");
                       setHoverState({ active: true, score, colorVar: item.colorVar });
                       const tooltipLabel = groupBy === "factor" 
                         ? `${group.label} · ${item.label}`
                         : `${item.label} · ${group.label}`;
-                      showTooltip(e, `${tooltipLabel}: ${score.toFixed(2)} (n=${n})`);
+                        
+                      const tooltipQuote = quotes?.[cId]?.[qId];
+                      showTooltip(e, (
+                        <div style={{ maxWidth: 260, fontFamily: FONT.body, fontSize: "0.85rem", lineHeight: 1.4 }}>
+                          <div style={{ fontWeight: 700, color: C.goldBright, marginBottom: "0.2rem" }}>{tooltipLabel}</div>
+                          <div style={{ fontFamily: FONT.mono, fontSize: "1rem", color: C.textBright, marginBottom: "0.4rem" }}>
+                            Avg Score: {score.toFixed(2)} <span style={{ fontSize: "0.7rem", color: C.muted }}>(n={n})</span>
+                          </div>
+                          {tooltipQuote && (
+                            <div style={{ fontStyle: "italic", color: C.muted, borderTop: `1px solid ${C.ghost}`, paddingTop: "0.5rem", marginTop: "0.3rem" }}>
+                              "{tooltipQuote}"
+                            </div>
+                          )}
+                        </div>
+                      ));
                     }}
                     onMouseMove={moveTooltip}
                     onMouseLeave={(e) => {
@@ -104,11 +130,46 @@ export default function PleasureBarChart({ stats, activeCohortsList, groupBy, sh
                       hideTooltip();
                     }}
                   />
+                  
+                  {/* The explicitly rendered Deficit Gap */}
+                  {isGapVisible && (
+                    <rect
+                      x={barX}
+                      y={gapY}
+                      width={barWidth}
+                      height={gapH}
+                      fill="url(#deficitPattern)"
+                      opacity={1}
+                      rx={3}
+                      style={{ transition: "all 0.5s ease", pointerEvents: "none" }}
+                    />
+                  )}
+
+                  {/* Explicit Deficit Label */}
+                  {isGapVisible && (
+                    <text
+                      x={barX + barWidth / 2}
+                      y={gapY - 6}
+                      textAnchor="middle"
+                      style={{ fontFamily: FONT.mono, fontWeight: 700, fontSize: "11px", fill: C.red, transition: "all 0.4s ease" }}
+                    >
+                      -{ (intactScore - score).toFixed(2) }
+                    </text>
+                  )}
+
+                  {/* Standard Score Label */}
                   <text 
                     x={barX + barWidth / 2} 
-                    y={barY - 10} 
+                    y={isGapVisible ? barY + 14 : barY - 10} 
                     textAnchor="middle" 
-                    style={{ fontFamily: FONT.mono, fontWeight: 700, fontSize: "13px", fill: `var(${item.colorVar})` }}
+                    style={{ 
+                      fontFamily: FONT.mono, 
+                      fontWeight: 700, 
+                      fontSize: "13px", 
+                      fill: isGapVisible ? C.bg : `var(${item.colorVar})`,
+                      transition: "all 0.4s ease",
+                      pointerEvents: "none"
+                    }}
                   >
                     {score.toFixed(2)}
                   </text>

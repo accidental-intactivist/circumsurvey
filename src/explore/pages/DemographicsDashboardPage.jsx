@@ -5,11 +5,14 @@
 // how do their demographics shape their experience?"
 //
 // Sections:
-//   1. Population Mosaic  — Waffle chart showing proportional breakdown
-//   2. Pathway DNA Strip  — Side-by-side stacked bars per demographic
-//   3. Divergence Radar   — Spider chart comparing any two cohorts
-//   4. Geographic Origins — World/US map reusing GeographicHeatmap
-//   5. Correlation Matrix — Retained from v1
+//   1. Geographic Origins — World/US map + linked region-comparison radar
+//   2. Geographic Flow    — Sankey with Source locked to geography
+//   3. Pathway DNA Strip  — Side-by-side stacked bars per demographic
+//   4. Divergence Radar   — Spider chart comparing any two cohorts
+//
+// (The standalone Correlations Explorer at #/correlations is the
+//  Swiss-army-knife surface for any X×Y matrix or any 3-way flow that
+//  isn't anchored to geography.)
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
@@ -21,8 +24,6 @@ import { C, FONT, PATH_COLORS, API_BASE, resolveCssColor } from "../styles/token
 gsap.registerPlugin(ScrollTrigger);
 import { getResponseDistribution, getAggregate, getCount } from "../lib/api";
 import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
-import CorrelationMatrix from "../components/CorrelationMatrix";
-
 import AddToReportButton from "../components/AddToReportButton";
 import SharePopover from "../components/SharePopover";
 import { useTooltip, Tooltip } from "../components/Tooltip";
@@ -133,6 +134,8 @@ function shortenLabel(label) {
   s = s.replace("United States of America", "USA");
   s = s.replace("United Kingdom", "UK");
   s = s.replace("Secular / Atheist / Agnostic", "Secular/Atheist");
+  s = s.replace("Atheist / Agnostic / Secular", "Secular/Atheist");
+  s = s.replace("No significant religious/spiritual/cultural tradition influencing this topic.", "Secular/Atheist");
   s = s.replace("Spiritual but not religious", "Spiritual");
   s = s.replace("Pagan / Indigenous / Earth-based", "Pagan/Indigenous");
   if (s.length > 20) s = s.slice(0, 18) + "…";
@@ -167,7 +170,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   // Section refs for scroll navigation
-  const sectionIds = ["mosaic", "dna", "radar", "geo", "corr"];
+  const sectionIds = ["geo", "mosaic", "dna", "radar"];
   const scrollTo = useCallback((id) => {
     document.getElementById(`xray-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
@@ -243,10 +246,9 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           </h3>
           {[
             { id: "geo", label: "Geographic Origins", icon: "◈" },
-            { id: "mosaic", label: "Demographic Flow", icon: "〰" },
+            { id: "mosaic", label: "Geographic Flow", icon: "〰" },
             { id: "dna", label: "Pathway DNA", icon: "≡" },
             { id: "radar", label: "Divergence Radar", icon: "◎" },
-            { id: "corr", label: "Correlation Matrix", icon: "▥" },
           ].map(s => (
             <div
               key={s.id}
@@ -287,56 +289,77 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
         <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
           {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
           <SectionAnchor id="geo">
-            <GeographicOrigins cohort={cohort} />
+            <GeographicOrigins cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
           </SectionAnchor>
         
-        {/* ═══ SECTION 2: DEMOGRAPHIC FLOW (SANKEY) ═══ */}
+        {/* ═══ SECTION 2: GEOGRAPHIC FLOW (SANKEY, GEO-ANCHORED) ═══ */}
         <SectionAnchor id="mosaic">
           <section className="xray-section" style={{ marginBottom: "4rem", minHeight: "600px" }}>
-            <SectionHeader 
-              title="Demographic Flow Explorer"
-              subtitle="Build your own intersectional flow chart by selecting the three demographic dimensions you want to trace."
+            <SectionHeader
+              title="Geographic Flow"
+              subtitle="Trace how respondents from a region flow through identity and outcome. The Source is locked to geography; pick what you want to trace it through."
               icon="〰"
             />
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", justifyContent: "center", alignItems: "center" }}>
-              {[0, 1, 2].map((idx) => (
-                <div key={idx} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                  <select
-                    value={sankeyDims[idx].id}
-                    onChange={(e) => {
-                      const newDims = [...sankeyDims];
-                      newDims[idx] = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === e.target.value);
-                      setSankeyDims(newDims);
-                    }}
-                    style={{
-                      background: C.bgDeep,
-                      color: C.goldBright,
-                      border: `1px solid ${C.ghost}`,
-                      borderRadius: 6,
-                      padding: "0.4rem 0.8rem",
-                      fontFamily: FONT.condensed,
-                      fontSize: "0.85rem",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      cursor: "pointer",
-                      outline: "none"
-                    }}
-                  >
-                    {DEMOGRAPHIC_DIMENSIONS.map(d => {
-                      const isSelectedElsewhere = sankeyDims.some((selectedDim, i) => i !== idx && selectedDim.id === d.id);
-                      return (
-                        <option key={d.id} value={d.id} disabled={isSelectedElsewhere}>
-                          {d.label === "Pathway" ? "Experiential Pathway" : d.label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  {idx < 2 && <span style={{ color: C.dim }}>→</span>}
-                </div>
-              ))}
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
+              {[0, 1, 2].map((idx) => {
+                const stageLabel = idx === 0 ? "From" : idx === 1 ? "Through" : "To";
+                // Source dim is locked to geographic dimensions; the other two are unrestricted.
+                const optionPool = idx === 0
+                  ? DEMOGRAPHIC_DIMENSIONS.filter(d => /^(country|us_state|can_province)/.test(d.column || d.id))
+                  : DEMOGRAPHIC_DIMENSIONS;
+                return (
+                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      <span style={{ fontFamily: FONT.condensed, fontSize: "0.6rem", letterSpacing: "0.14em", textTransform: "uppercase", color: C.dim, fontWeight: 700 }}>
+                        {stageLabel}
+                      </span>
+                      <select
+                        value={sankeyDims[idx].id}
+                        onChange={(e) => {
+                          const newDims = [...sankeyDims];
+                          newDims[idx] = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === e.target.value);
+                          setSankeyDims(newDims);
+                        }}
+                        style={{
+                          background: C.bgDeep,
+                          color: C.goldBright,
+                          border: `1px solid ${C.ghost}`,
+                          borderRadius: 6,
+                          padding: "0.4rem 0.8rem",
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.85rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          cursor: "pointer",
+                          outline: "none"
+                        }}
+                      >
+                        {optionPool.map(d => {
+                          const isSelectedElsewhere = sankeyDims.some((selectedDim, i) => i !== idx && selectedDim.id === d.id);
+                          return (
+                            <option key={d.id} value={d.id} disabled={isSelectedElsewhere}>
+                              {d.label === "Pathway" ? "Experiential Pathway" : d.label}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    {idx < 2 && <span style={{ color: C.dim, alignSelf: "flex-end", marginBottom: "0.4rem" }}>→</span>}
+                  </div>
+                );
+              })}
             </div>
             <div style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem" }}>
               <DemographicSankey cohort={cohort} dimensions={sankeyDims} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+            </div>
+            <div style={{
+              marginTop: "1rem",
+              fontFamily: FONT.body,
+              fontSize: "0.78rem",
+              color: C.muted,
+              lineHeight: 1.45,
+            }}>
+              For free-form flows across any three dimensions (or any X × Y matrix), use the <a href="#/correlations" style={{ color: C.goldBright, borderBottom: `1px solid ${C.goldBright}40`, paddingBottom: "0.1rem" }}>Correlations Explorer</a>.
             </div>
           </section>
         </SectionAnchor>
@@ -351,10 +374,14 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           <DivergenceRadar cohort={cohort} tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
         </SectionAnchor>
 
-        {/* ═══ SECTION 5: CORRELATION MATRIX ═══ */}
-        <SectionAnchor id="corr">
-          <CorrelationSection cohort={cohort} />
-        </SectionAnchor>
+        {/*
+          Section 5 (Correlation Matrix) intentionally removed.
+          Its job — pick X × Y from any combination of demographics or outcome
+          questions — has been promoted to the standalone Correlations Explorer
+          at #/correlations, which now also offers a 3-way Flow (Sankey) mode.
+          Keeping the section here would create the redundancy this consolidation
+          was meant to eliminate.
+        */}
         </div>
       </div>
 
@@ -881,13 +908,39 @@ function DivergenceRadar({ cohort, tooltip }) {
 // SECTION 4: GEOGRAPHIC ORIGINS
 // ═══════════════════════════════════════════════════════════════════════════
 
-function GeographicOrigins({ cohort }) {
+function GeographicOrigins({ cohort, tooltip }) {
   const [ref, inView] = useInView();
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mapLevel, setMapLevel] = useState("us_state");
   const [splitBy, setSplitBy] = useState("pathway");
   const [locationTime, setLocationTime] = useState("born");
+  // Selected regions for the linked radar. Up to 3, each shape: { name, level }.
+  // We clear this whenever the map's region level or location-time changes, since
+  // the previously-selected region IDs aren't comparable across map projections.
+  const [selectedRegions, setSelectedRegions] = useState([]);
+
+  // Clear selection when the user changes which map is showing or whether we're
+  // looking at birth vs current location — the underlying filter column changes,
+  // so old selections wouldn't be meaningful any more.
+  useEffect(() => {
+    setSelectedRegions([]);
+  }, [mapLevel, locationTime]);
+
+  const handleRegionClick = useCallback((regionName, regionLevel) => {
+    setSelectedRegions((prev) => {
+      // Toggle: if this exact name is already selected, remove it.
+      const existingIdx = prev.findIndex(
+        (r) => r.name === regionName && r.level === regionLevel
+      );
+      if (existingIdx !== -1) {
+        return prev.filter((_, i) => i !== existingIdx);
+      }
+      // Cap at 3 — adding a 4th drops the oldest.
+      const next = [...prev, { name: regionName, level: regionLevel }];
+      return next.length > 3 ? next.slice(next.length - 3) : next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!inView) return;
@@ -1004,15 +1057,26 @@ function GeographicOrigins({ cohort }) {
             Mapping origins…
           </div>
         ) : (
-          <GeographicHeatmap 
-            questionId={mapLevel === "country" ? "country" : "us_state"}
-            title={mapLevel === "country" ? "World Map of Respondents" : "United States & Canada Respondents"}
-            distribution={{
-              distribution: geoData.locations.map(loc => ({ label: loc.location, n: loc.n }))
-            }}
-            byCohort={cohortData}
-            splitBy={splitBy}
-          />
+          <>
+            <GeographicHeatmap
+              questionId={mapLevel === "country" ? "country" : "us_state"}
+              title={mapLevel === "country" ? "World Map of Respondents" : "United States & Canada Respondents"}
+              distribution={{
+                distribution: geoData.locations.map(loc => ({ label: loc.location, n: loc.n }))
+              }}
+              byCohort={cohortData}
+              splitBy={splitBy}
+              onRegionClick={handleRegionClick}
+              selectedRegions={selectedRegions}
+            />
+            <LinkedRegionRadar
+              selectedRegions={selectedRegions}
+              locationTime={locationTime}
+              onRemoveRegion={handleRegionClick}
+              onClearAll={() => setSelectedRegions([])}
+              tooltip={tooltip}
+            />
+          </>
         )}
       </div>
     </section>
@@ -1020,130 +1084,388 @@ function GeographicOrigins({ cohort }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 5: CORRELATION MATRIX (Retained from v1)
+// LINKED REGION RADAR — sits beneath the choropleth in Geographic Origins.
+// Picks up to 3 regions selected on the map and compares them on the same
+// 6 experience axes as the Divergence Radar. Each region becomes one polygon.
+// Region color is taken from the chart-N palette (intentionally not the
+// pathway palette — these aren't pathways, and re-using pathway colors here
+// would confuse readers who've internalized red=Circumcised etc).
 // ═══════════════════════════════════════════════════════════════════════════
 
-const OUTCOME_QUESTIONS = [
-  { id: "circ_regret_feeling", text: "Circumcised: Resentment or Regret" },
-  { id: "intact_regret_feeling", text: "Intact: Resentment or Regret" },
-  { id: "circ_awareness_age", text: "Circumcised: Age of Awareness" },
-  { id: "intact_circ_awareness_age", text: "Intact: Age of Awareness" },
-  { id: "exp_pride_satisfaction_rating", text: "Pride & Satisfaction Rating" },
-  { id: "final_social_norm_perception", text: "Social Norm Perception" },
-];
+const REGION_LEVEL_LABEL = {
+  country: "Country",
+  us_state: "U.S. State",
+  can_province: "Canadian Province",
+};
 
-function CorrelationSection({ cohort }) {
-  const [ref, inView] = useInView();
-  const [activeDemographic, setActiveDemographic] = useState(DEMOGRAPHIC_DIMENSIONS[0]);
-  const [activeOutcome, setActiveOutcome] = useState(OUTCOME_QUESTIONS[0]);
-  const [crossTabData, setCrossTabData] = useState(null);
+function regionFilterColumn(level, locationTime) {
+  // Returns the demographics column name that getResponseDistribution will accept.
+  // locationTime is "born" or "now".
+  if (level === "country") return `country_${locationTime}`;
+  if (level === "us_state") return `us_state_${locationTime}`;
+  if (level === "can_province") return `can_province_${locationTime}`;
+  return null;
+}
+
+function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onClearAll, tooltip }) {
+  const [data, setData] = useState({});      // { "regionKey": { axisId: { avg, n } } }
   const [loading, setLoading] = useState(false);
 
+  // A stable identifier per region so we can key fetches and color slots
+  const regionKey = useCallback((r) => `${r.level}:${r.name}`, []);
+
   useEffect(() => {
-    if (!inView) return;
+    if (selectedRegions.length === 0) {
+      setData({});
+      return;
+    }
+    let cancelled = false;
     setLoading(true);
 
-    const cleanCohort = { ...(cohort || {}) };
-    delete cleanCohort[activeDemographic.column];
-
-    const baseDist = getResponseDistribution(activeOutcome.id, { cohort: cleanCohort });
-    const cohortPromises = activeDemographic.options.map(async (opt) => {
-      const optValue = typeof opt === "string" ? opt : opt.value;
-      const optLabel = typeof opt === "string" ? opt : opt.label;
-      const optionCohort = { ...cleanCohort, [activeDemographic.column]: optValue };
-      const dist = await getResponseDistribution(activeOutcome.id, { cohort: optionCohort });
-      return { option: optLabel, distribution: dist.distribution || [], n: dist.n || 0 };
+    const fetches = selectedRegions.flatMap((r) => {
+      const col = regionFilterColumn(r.level, locationTime);
+      if (!col) return [];
+      return RADAR_AXES.map((axis) =>
+        getResponseDistribution(axis.id, { cohort: { [col]: r.name } })
+          .then((res) => ({
+            key: regionKey(r),
+            axisId: axis.id,
+            avg: calculateWeightedAvg(res.distribution || []),
+            n: (res.distribution || []).reduce((s, d) => s + d.n, 0),
+          }))
+          .catch(() => ({ key: regionKey(r), axisId: axis.id, avg: 0, n: 0 }))
+      );
     });
 
-    Promise.all([baseDist, Promise.all(cohortPromises)]).then(([base, results]) => {
-      const maxN = Math.max(...results.map(r => r.n), base?.n || 0);
-      setCrossTabData({
-        baseline: {
-          option: Object.keys(cleanCohort).length > 0 ? "All Cohort Respondents" : "All Respondents",
-          distribution: base?.distribution || [], n: base?.n || 0,
-        },
-        cohorts: results,
-        maxN,
-      });
+    Promise.all(fetches).then((results) => {
+      if (cancelled) return;
+      const next = {};
+      for (const r of results) {
+        if (!next[r.key]) next[r.key] = {};
+        next[r.key][r.axisId] = { avg: r.avg, n: r.n };
+      }
+      setData(next);
       setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [inView, activeDemographic, activeOutcome, JSON.stringify(cohort)]);
+    });
+
+    return () => { cancelled = true; };
+  }, [JSON.stringify(selectedRegions), locationTime, regionKey]);
+
+  // Compute one polygon per selected region. Skip regions with n<5 per axis to
+  // respect the brief's minimum-sample rule.
+  const polygons = useMemo(() => {
+    return selectedRegions.map((r, idx) => {
+      const key = regionKey(r);
+      const regionData = data[key] || {};
+      const color = resolveCssColor(getChartColor(idx));
+      // Use the largest n across axes as the headline sample size for the chip.
+      const maxN = Math.max(0, ...RADAR_AXES.map((a) => regionData[a.id]?.n || 0));
+
+      const n = 6;
+      const cx = 150, cy = 150, maxR = 110;
+      const values = RADAR_AXES.map((axis, i) => {
+        const point = regionData[axis.id] || { avg: 0, n: 0 };
+        // Suppress points where this axis has fewer than 5 responses
+        const useable = point.n >= 5;
+        const normalized = useable ? Math.max(0, (point.avg - 1) / 4) : 0;
+        return { axis, avg: point.avg, n: point.n, useable, normalized };
+      });
+
+      const points = values.map((v, i) => {
+        const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+        const r = v.normalized * maxR;
+        return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+      }).join(" ");
+
+      return {
+        key,
+        name: r.name,
+        level: r.level,
+        color,
+        n: maxN,
+        smallSample: maxN > 0 && maxN < 20,
+        zeroSample: maxN < 5,
+        points,
+        values,
+      };
+    });
+  }, [selectedRegions, data, regionKey]);
+
+  // Empty state — show a hint card with what the visitor can do, but don't shout.
+  if (selectedRegions.length === 0) {
+    return (
+      <div style={{
+        marginTop: "1.5rem",
+        padding: "1.25rem 1.5rem",
+        background: "rgba(255,255,255,0.02)",
+        border: `1px dashed ${C.ghost}`,
+        borderRadius: 8,
+        fontFamily: FONT.body,
+        fontSize: "0.85rem",
+        color: C.muted,
+        lineHeight: 1.5,
+      }}>
+        <span style={{ color: C.goldBright, fontWeight: 600 }}>Click a region on the map</span>
+        {" "}to compare how its respondents rated the six experience metrics. Pick up to three regions to overlay them.
+      </div>
+    );
+  }
 
   return (
-    <section ref={ref} className="xray-section" style={{ marginBottom: "4rem", minHeight: "800px" }}>
-      <SectionHeader 
-        title="Correlation Matrix"
-        subtitle="Cross-tabulate demographic dimensions against outcome variables to spot patterns."
-        icon="▥"
-      />
-
-      {/* Control Panel */}
+    <div style={{
+      marginTop: "1.5rem",
+      background: C.bgCard,
+      border: `1px solid ${C.ghost}`,
+      borderRadius: 12,
+      padding: "1.5rem 2rem",
+    }}>
+      {/* Header + chip strip + clear */}
       <div style={{
-        background: C.bgSoft, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "1.25rem", marginBottom: "1.5rem",
-        display: "flex", flexWrap: "wrap", gap: "1.25rem",
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "0.8rem",
+        marginBottom: "1rem",
       }}>
-        <div style={{ flex: "1 1 240px" }}>
-          <label style={{
-            display: "block", fontFamily: FONT.condensed, fontSize: "0.72rem",
-            color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.1em",
-            marginBottom: "0.4rem", fontWeight: 700,
+        <div>
+          <div style={{
+            fontFamily: FONT.condensed,
+            fontSize: "0.65rem",
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: C.gold,
+            fontWeight: 700,
           }}>
-            Demographic (X-Axis)
-          </label>
-          <select
-            value={activeDemographic.id}
-            onChange={e => setActiveDemographic(DEMOGRAPHIC_DIMENSIONS.find(d => d.id === e.target.value))}
-            style={{
-              width: "100%", padding: "0.55rem", background: resolveCssColor(C.bgDeep),
-              color: resolveCssColor(C.text), border: `1px solid ${resolveCssColor(C.ghost)}`,
-              borderRadius: 6, fontFamily: FONT.body, fontSize: "0.85rem",
-            }}
-          >
-            {DEMOGRAPHIC_DIMENSIONS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
-          </select>
-        </div>
-
-        <div style={{ flex: "1 1 320px" }}>
-          <label style={{
-            display: "block", fontFamily: FONT.condensed, fontSize: "0.72rem",
-            color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.1em",
-            marginBottom: "0.4rem", fontWeight: 700,
-          }}>
-            Outcome (Y-Axis)
-          </label>
-          <select
-            value={activeOutcome.id}
-            onChange={e => setActiveOutcome(OUTCOME_QUESTIONS.find(d => d.id === e.target.value))}
-            style={{
-              width: "100%", padding: "0.55rem", background: resolveCssColor(C.bgDeep),
-              color: resolveCssColor(C.text), border: `1px solid ${resolveCssColor(C.ghost)}`,
-              borderRadius: 6, fontFamily: FONT.body, fontSize: "0.85rem",
-            }}
-          >
-            {OUTCOME_QUESTIONS.map(q => <option key={q.id} value={q.id}>{q.text}</option>)}
-          </select>
-        </div>
-      </div>
-
-      {/* Matrix Visualization */}
-      <div style={{
-        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "2rem",
-      }}>
-        {loading || !crossTabData ? (
-          <div style={{ textAlign: "center", padding: "3rem", color: C.muted, fontStyle: "italic" }}>
-            Building correlation matrix…
+            Cross-Region Comparison
           </div>
-        ) : (
-          <CorrelationMatrix
-            rowQuestion={{ prompt: activeOutcome.text }}
-            colQuestion={{ prompt: activeDemographic.label }}
-            crossTabData={crossTabData}
-          />
-        )}
+          <div style={{
+            fontFamily: FONT.body,
+            fontSize: "0.82rem",
+            color: C.muted,
+            marginTop: "0.2rem",
+          }}>
+            Six experience metrics, averaged across all pathways within each selected region.
+          </div>
+        </div>
+        <button
+          onClick={onClearAll}
+          style={{
+            background: "transparent",
+            border: `1px solid ${C.ghost}`,
+            color: C.muted,
+            fontFamily: FONT.condensed,
+            fontSize: "0.62rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            padding: "0.3rem 0.7rem",
+            borderRadius: 4,
+          }}
+        >
+          Clear all
+        </button>
       </div>
-    </section>
+
+      {/* Region chips */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.25rem" }}>
+        {polygons.map((p) => (
+          <div
+            key={p.key}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.45rem",
+              padding: "0.25rem 0.55rem 0.25rem 0.7rem",
+              borderRadius: 999,
+              border: `1px solid ${p.color}`,
+              background: `color-mix(in srgb, ${p.color} 12%, transparent)`,
+              fontFamily: FONT.body,
+              fontSize: "0.78rem",
+              color: C.textBright,
+            }}
+          >
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: p.color }} />
+            <span>{p.name}</span>
+            <span style={{
+              fontFamily: FONT.mono,
+              fontSize: "0.65rem",
+              color: p.smallSample ? C.orange : C.muted,
+            }}>
+              {p.zeroSample
+                ? "n<5"
+                : p.smallSample
+                  ? `n=${p.n} · small sample`
+                  : `n=${p.n}`}
+            </span>
+            <button
+              onClick={() => onRemoveRegion(p.name, p.level)}
+              aria-label={`Remove ${p.name}`}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: C.muted,
+                fontSize: "0.9rem",
+                lineHeight: 1,
+                cursor: "pointer",
+                padding: "0 0.1rem",
+              }}
+            >×</button>
+          </div>
+        ))}
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "2.5rem", color: C.muted, fontStyle: "italic" }}>
+          Aligning the regions…
+        </div>
+      ) : (
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "2rem",
+          alignItems: "center",
+        }}>
+          {/* SVG radar */}
+          <div style={{ flex: "1 1 320px", maxWidth: 400, minWidth: 280 }}>
+            <svg viewBox="0 0 300 300" style={{ width: "100%", overflow: "visible" }}>
+              {/* Grid rings */}
+              {[0.25, 0.5, 0.75, 1].map((pct) => (
+                <circle
+                  key={pct}
+                  cx={150} cy={150} r={pct * 110}
+                  fill="none" stroke={resolveCssColor(C.ghost)} strokeWidth={0.5}
+                  strokeDasharray="3,3"
+                />
+              ))}
+
+              {/* Axis lines + labels */}
+              {RADAR_AXES.map((axis, i) => {
+                const n = RADAR_AXES.length;
+                const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                const x2 = 150 + 110 * Math.cos(angle);
+                const y2 = 150 + 110 * Math.sin(angle);
+                const labelX = 150 + 130 * Math.cos(angle);
+                const labelY = 150 + 130 * Math.sin(angle);
+                return (
+                  <g key={axis.id}>
+                    <line
+                      x1={150} y1={150} x2={x2} y2={y2}
+                      stroke={resolveCssColor(C.ghost)} strokeWidth={0.5}
+                    />
+                    <text
+                      x={labelX} y={labelY}
+                      textAnchor="middle"
+                      alignmentBaseline="middle"
+                      fill={resolveCssColor(C.muted)}
+                      style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "9px", fontWeight: 600 }}
+                    >
+                      {axis.short}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Polygons — skip regions with no data at all */}
+              {polygons.filter((p) => !p.zeroSample).map((poly) => (
+                <g key={poly.key}>
+                  <polygon
+                    points={poly.points}
+                    fill={poly.color}
+                    fillOpacity={0.15}
+                    stroke={poly.color}
+                    strokeWidth={2}
+                    strokeLinejoin="round"
+                  />
+                  {poly.values.map((v, i) => {
+                    if (!v.useable) return null;
+                    const n = RADAR_AXES.length;
+                    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
+                    const r = v.normalized * 110;
+                    const px = 150 + r * Math.cos(angle);
+                    const py = 150 + r * Math.sin(angle);
+                    return (
+                      <circle
+                        key={`${poly.key}-${i}`}
+                        cx={px} cy={py} r={4}
+                        fill={poly.color} stroke="#fff" strokeWidth={1}
+                        style={{ cursor: "pointer" }}
+                        onMouseEnter={(e) => tooltip?.showTooltip(e, `${poly.name}: ${v.axis.label} = ${v.avg.toFixed(2)} / 5 (n=${v.n})`)}
+                        onMouseMove={tooltip?.moveTooltip}
+                        onMouseLeave={tooltip?.hideTooltip}
+                      />
+                    );
+                  })}
+                </g>
+              ))}
+            </svg>
+          </div>
+
+          {/* Axis-by-axis comparison table */}
+          <div style={{ flex: "1 1 320px", minWidth: 280, overflowX: "auto" }}>
+            <div style={{
+              fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.14em",
+              textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700,
+            }}>
+              Axis-by-Axis Comparison
+            </div>
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: `1fr repeat(${polygons.length}, minmax(48px, auto))`,
+              gap: "0.6rem",
+              paddingBottom: "0.4rem",
+              borderBottom: `1px solid ${resolveCssColor(C.ghost)}`,
+            }}>
+              <span />
+              {polygons.map((p) => (
+                <span key={`hdr-${p.key}`} style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.62rem",
+                  color: p.color,
+                  fontWeight: 700,
+                  textAlign: "right",
+                  whiteSpace: "nowrap",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}>
+                  {p.name.length > 14 ? p.name.slice(0, 13) + "…" : p.name}
+                </span>
+              ))}
+            </div>
+
+            {RADAR_AXES.map((axis, i) => (
+              <div key={axis.id} style={{
+                display: "grid",
+                gridTemplateColumns: `1fr repeat(${polygons.length}, minmax(48px, auto))`,
+                gap: "0.6rem",
+                padding: "0.45rem 0",
+                borderBottom: i < RADAR_AXES.length - 1 ? `1px solid ${resolveCssColor(C.ghost)}` : "none",
+                alignItems: "center",
+              }}>
+                <span style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: resolveCssColor(C.text) }}>
+                  {axis.label}
+                </span>
+                {polygons.map((p) => {
+                  const pt = p.values[i];
+                  return (
+                    <span key={`${p.key}-${axis.id}`} style={{
+                      fontFamily: FONT.mono,
+                      fontSize: "0.75rem",
+                      color: pt.useable ? p.color : C.dim,
+                      fontWeight: 600,
+                      textAlign: "right",
+                    }}>
+                      {pt.useable ? pt.avg.toFixed(2) : "—"}
+                    </span>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

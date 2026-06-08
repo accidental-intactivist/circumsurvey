@@ -14,6 +14,8 @@ function shortLabel(label) {
   s = s.replace("Millennial/Gen Y", "Millennial");
   s = s.replace("Xennial/Oregon Trail", "Xennial");
   s = s.replace("Secular / Atheist / Agnostic", "Secular");
+  s = s.replace("Atheist / Agnostic / Secular", "Secular");
+  s = s.replace("No significant religious/spiritual/cultural tradition influencing this topic.", "Secular");
   s = s.replace("Spiritual but not religious", "Spiritual");
   s = s.replace("Pagan / Indigenous / Earth-based", "Pagan");
   s = s.replace("Catholicism", "Catholic");
@@ -43,11 +45,24 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
         return;
       }
 
+      // Defensive: a 3-stage Sankey requires three distinct dimensions.
+      // If two slots share an id, makeId() produces colliding node ids and
+      // d3-sankey throws on the resulting self-loop. Bail out cleanly with
+      // an empty graph so the page degrades instead of white-screening.
+      // (The Correlations Explorer page already prevents this via disabled
+      // dropdown options; this is just defense in depth.)
+      const dimIds = dimensions.map(d => d?.id);
+      if (new Set(dimIds.filter(Boolean)).size !== dimIds.filter(Boolean).length) {
+        setData({ nodes: [], links: [] });
+        setLoading(false);
+        return;
+      }
+
       try {
         const nodes = [];
         const links = [];
         const nodeIndexMap = new Map();
-        
+
         function addNode(id, name, type, color) {
           if (!nodeIndexMap.has(id)) {
             nodeIndexMap.set(id, nodes.length);

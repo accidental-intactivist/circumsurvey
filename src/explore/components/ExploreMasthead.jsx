@@ -84,6 +84,12 @@ const ROUTE_META = {
     desc: "Compare attitudes across Jewish, Christian, and Islamic respondents. Where does faith intersect with — or diverge from — personal experience?",
     navTitle: "Religious Mirrors",
   },
+  "restoration-journey": {
+    kicker: "Exhibit 10",
+    title: "Restoration Journey",
+    desc: "Track the methods, motivations, and physical/psychological progress (RCI scores, sensitivity gains, and orgasm quality) of the restoring cohort.",
+    navTitle: "Restoring",
+  },
   methodology: {
     kicker: "Reference",
     title: "Methodology",
@@ -114,6 +120,7 @@ export const EXHIBIT_ROUTES = [
   { route: "generational-faultlines", num: "Exhibit 07", label: "Generational Faultlines" },
   { route: "observer-triad", num: "Exhibit 08", label: "The Observer Triad" },
   { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors" },
+  { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta }) {
@@ -442,7 +449,6 @@ export default function ExploreMasthead({ route, navigate, customMeta }) {
             top: 136, // Center of the hero area (56px + 184px/2) shifted up slightly
             transform: `translate(-50%, calc(-50% + ${translateY + tomorrowOffset}px)) scale(${scale})`,
             transformOrigin: "center",
-            textTransform: "uppercase", // Force ALL CAPS
             transition: "transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.35s ease, font-size 0.35s ease",
             fontFamily: FONT.display,
             fontWeight: 800,

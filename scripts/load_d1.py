@@ -175,8 +175,7 @@ def load_from_xlsx(xlsx_path):
         46: "religion_islamic_intactness_reconcile",
     }
     for k, v in religion_manual.items():
-        if k not in col_to_meta:
-            col_to_meta[k] = v
+        col_to_meta[k] = v
 
     col_to_meta[65] = PATHWAY_SLUG
 

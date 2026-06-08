@@ -24,6 +24,8 @@ import GenerationalFaultlinesPage from "./pages/GenerationalFaultlinesPage";
 import ObserverTriadPage from "./pages/ObserverTriadPage";
 import MethodologyPage from "./pages/MethodologyPage";
 import ReportBuilderPage from "./pages/ReportBuilderPage";
+import ByTheNumbersPage from "./pages/ByTheNumbersPage";
+import RestorationJourneyPage from "./pages/RestorationJourneyPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -65,6 +67,10 @@ export default function ExploreShell() {
     page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else if (route === "report") {
     page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+  } else if (route === "numbers") {
+    page = <ByTheNumbersPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+  } else if (route === "restoration-journey") {
+    page = <RestorationJourneyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
   }

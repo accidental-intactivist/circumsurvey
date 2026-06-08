@@ -4,6 +4,7 @@ import { getQuestions, getNarratives } from "../lib/api";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
+import IconifyEmoji from "../components/IconifyEmoji";
 
 const NARRATIVE_CONCEPTS = [
   {
@@ -58,14 +59,6 @@ const NARRATIVE_CONCEPTS = [
     intact: { qid: "final_partner_preference_reason", pathway: "intact", label: "Intact Perception", emoji: "🟢" },
     circ: { qid: "final_partner_preference_reason", pathway: "circumcised", label: "Circumcised Perception", emoji: "🔵" },
     restoring: { qid: "final_partner_preference_reason", pathway: "restoring", label: "Restoring Perception", emoji: "🟣" }
-  },
-  {
-    id: "transparent_monster_resonances",
-    label: "The 'Transparent Monster' Metaphor (Universal)",
-    desc: "A universal question: Why does (or doesn't) the 'transparent monster' metaphor feel accurate to you?",
-    intact: { qid: "final_transparent_monster_reason", pathway: "intact", label: "Intact Alignment", emoji: "🟢" },
-    circ: { qid: "final_transparent_monster_reason", pathway: "circumcised", label: "Circumcised Alignment", emoji: "🔵" },
-    restoring: { qid: "final_transparent_monster_reason", pathway: "restoring", label: "Restoring Alignment", emoji: "🟣" }
   }
 ];
 
@@ -187,7 +180,7 @@ export default function NarrativeMirrorsPage({ navigate }) {
                     alignItems: "center",
                     gap: "0.4rem"
                   }}>
-                    <span>{conf.emoji}</span>
+                    <IconifyEmoji emoji={conf.emoji} style={{ color }} />
                     <span>{conf.label}</span>
                   </h3>
                   <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.muted, marginTop: "0.5rem", fontStyle: "italic", lineHeight: 1.4 }}>

@@ -10,21 +10,27 @@ describe('Data Formatters', () => {
       const dist = [{ label: '3.0', n: 10 }];
       const q = { id: 'religion_jewish_identity_importance', type: 'likert' };
       const res = applyLikert(dist, q);
-      expect(res[0].label).toBe('3');
+      expect(res.length).toBe(5);
+      expect(res[2].label).toBe('3');
+      expect(res[2].n).toBe(10);
     });
 
     it('replaces 1 with Extremely Important', () => {
       const dist = [{ label: '1.0', n: 5 }];
       const q = { id: 'some_importance_question', type: 'single_select' };
       const res = applyLikert(dist, q);
+      expect(res.length).toBe(5);
       expect(res[0].label).toBe('1 - Extremely Important');
+      expect(res[0].n).toBe(5);
     });
 
     it('replaces 5 with Not Important At All', () => {
       const dist = [{ label: '5.0', n: 2 }];
       const q = { id: 'importance_of_x', type: 'likert' };
       const res = applyLikert(dist, q);
-      expect(res[0].label).toBe('5 - Not Important At All');
+      expect(res.length).toBe(5);
+      expect(res[4].label).toBe('5 - Not Important At All');
+      expect(res[4].n).toBe(2);
     });
 
     it('does nothing if the question does not contain importance', () => {
@@ -588,6 +594,40 @@ describe('Data Formatters', () => {
       expect(res[4].label).toBe('I never really notice or think about this.');
       expect(res[5].label).toBe('Not applicable / I am rarely or never in such situations.');
     });
+
+    it('flattens intact_regret_feeling options correctly', () => {
+      const q = { id: 'intact_regret_feeling' };
+      const dist = [
+        { label: 'Yes, I experience some of these feelings sometimes., Yes, these feelings are or have been strong and frequent.', n: 5 }
+      ];
+      const res = flattenMultiSelect(dist, q);
+      expect(res.length).toBe(2);
+      expect(res.find(item => item.label.includes('strong and frequent')).n).toBe(5);
+      expect(res.find(item => item.label.includes('sometimes')).n).toBe(5);
+    });
+
+    it('flattens intact_ppp_awareness / circ_ppp_awareness options correctly', () => {
+      const q = { id: 'intact_ppp_awareness' };
+      const dist = [
+        { label: 'I do not have them., I used to have them, but they seem to have faded over time.', n: 10 }
+      ];
+      const res = flattenMultiSelect(dist, q);
+      expect(res.length).toBe(2);
+      expect(res.find(item => item.label.includes('do not have them')).n).toBe(10);
+      expect(res.find(item => item.label.includes('faded over time')).n).toBe(10);
+    });
+
+    it('flattens intact_pressure_to_circ options correctly', () => {
+      const q = { id: 'intact_pressure_to_circ' };
+      const dist = [
+        { label: 'I have felt some societal/cultural pressure or expectation to be circumcised, but never seriously considered it for myself., I have never felt any pressure and have never considered getting circumcised; I value being intact.', n: 8 }
+      ];
+      const res = flattenMultiSelect(dist, q);
+      expect(res.length).toBe(2);
+      expect(res.find(item => item.label.includes('value being intact')).n).toBe(8);
+      expect(res.find(item => item.label.includes('societal/cultural pressure')).n).toBe(8);
+    });
   });
 });
+
 

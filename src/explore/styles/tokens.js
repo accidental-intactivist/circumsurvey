@@ -631,28 +631,42 @@ export const GLOBAL_CSS = `
   
   /* ── FRODO THEME (Amiga/C64 Easter Egg) ── */
   [data-theme="frodo"] {
-    --c-bg: #4040E0;
-    --c-bgSoft: #4040E0;
-    --c-bgCard: #4040E0;
-    --c-bgDeep: #4040E0;
-    --c-text: #A0A0FF;
+    --c-bg: #352879;
+    --c-bgSoft: #352879;
+    --c-bgCard: #352879;
+    --c-bgDeep: #000000;
+    --c-text: #6C5EB5;
     --c-textBright: #FFFFFF;
-    --c-muted: #A0A0FF;
-    --c-dim: #A0A0FF;
-    --c-ghost: #A0A0FF;
-    --c-gold: #FFFFFF;
-    --c-goldBright: #FFFFFF;
+    --c-muted: #6C5EB5;
+    --c-dim: #6C5EB5;
+    --c-ghost: #6C5EB5;
+    --c-gold: #B8C76F;
+    --c-goldBright: #B8C76F;
+    
+    --c-red: #9A6759;
+    --c-orange: #6F4F25;
+    --c-yellow: #B8C76F;
+    --c-green: #588D43;
+    --c-ltBlue: #70A4B2;
+    --c-blue: #352879;
+    --c-grey: #6C6C6C;
+    --c-purple: #6F3D86;
+
+    --path-intact: #9AD284;
+    --path-circumcised: #9A6759;
+    --path-restoring: #6C5EB5;
+    --path-observer: #B8C76F;
     
     --chart-0: #FFFFFF;
-    --chart-1: #A0A0FF;
-    --chart-2: #000000;
-    --chart-3: #5050C0;
-    --chart-4: #FFFFFF;
-    --chart-5: #A0A0FF;
-    --chart-6: #000000;
-    --chart-7: #5050C0;
-    --chart-8: #FFFFFF;
-    --chart-9: #A0A0FF;
+    --chart-1: #6C5EB5;
+    --chart-2: #B8C76F;
+    --chart-3: #70A4B2;
+    --chart-4: #588D43;
+    --chart-5: #9A6759;
+    --chart-6: #6F3D86;
+    --chart-7: #6F4F25;
+    --chart-8: #959595;
+    --chart-9: #444444;
     
     --f-display: 'JetBrains Mono', monospace !important;
     --f-body: 'JetBrains Mono', monospace !important;
@@ -660,7 +674,7 @@ export const GLOBAL_CSS = `
   }
 
   [data-theme="frodo"] body {
-    border: 4px solid #A0A0FF;
+    border: 4px solid #6C5EB5;
     padding: 2px;
   }
   

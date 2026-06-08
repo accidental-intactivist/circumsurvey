@@ -224,10 +224,14 @@ async function handleAggregate(env, url) {
     groupCol = `dem.${by}`;
   } else if (allowedReligion.includes(by)) {
     groupJoin += " LEFT JOIN religion rel ON rel.respondent_id = r.respondent_id";
-    groupCol = `rel.${by}`;
+    if (by === "primary_tradition") {
+      groupCol = "CASE WHEN rel.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR rel.primary_tradition IS NULL OR rel.primary_tradition = 'None' OR rel.primary_tradition = '' THEN 'Atheist / Agnostic / Secular' ELSE rel.primary_tradition END";
+    } else {
+      groupCol = `rel.${by}`;
+    }
   } else if (by === "religion") { // Legacy fallback
     groupJoin += " LEFT JOIN religion rel ON rel.respondent_id = r.respondent_id";
-    groupCol = "rel.primary_tradition";
+    groupCol = "CASE WHEN rel.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR rel.primary_tradition IS NULL OR rel.primary_tradition = 'None' OR rel.primary_tradition = '' THEN 'Atheist / Agnostic / Secular' ELSE rel.primary_tradition END";
   }
 
   bindings.push(questionId);
@@ -437,12 +441,15 @@ async function handleGeo(env, url) {
       ORDER BY d.${col}, n DESC
     `;
   } else if (allowedReligion.includes(by)) {
+    const bucketCol = by === "primary_tradition"
+      ? "CASE WHEN rel.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR rel.primary_tradition IS NULL OR rel.primary_tradition = 'None' OR rel.primary_tradition = '' THEN 'Atheist / Agnostic / Secular' ELSE rel.primary_tradition END"
+      : `rel.${by}`;
     sql = `
-      SELECT d.${col} AS location, rel.${by} AS bucket, COUNT(*) AS n
+      SELECT d.${col} AS location, ${bucketCol} AS bucket, COUNT(*) AS n
       FROM demographics d
       LEFT JOIN religion rel ON rel.respondent_id = d.respondent_id
       WHERE d.${col} IS NOT NULL AND d.${col} != ''
-      GROUP BY d.${col}, rel.${by}
+      GROUP BY d.${col}, bucket
       ORDER BY d.${col}, n DESC
     `;
   } else {
@@ -522,13 +529,41 @@ function buildFilterWhere(filters) {
   
   for (const group of Object.values(filterMap)) {
     const alias = group.table === "religion" ? "rg" : "d";
-    if (group.values.length === 1) {
-      filterWhere += ` AND ${alias}.${group.col} = ?`;
-      bindings.push(group.values[0]);
+    
+    if (group.table === "religion" && group.col === "primary_tradition") {
+      const secularValues = [
+        "Atheist / Agnostic / Secular",
+        "No significant religious/spiritual/cultural tradition influencing this topic."
+      ];
+      const hasSecular = group.values.some(v => secularValues.includes(v));
+      const nonSecular = group.values.filter(v => !secularValues.includes(v));
+      
+      const subClauses = [];
+      if (nonSecular.length > 0) {
+        if (nonSecular.length === 1) {
+          subClauses.push(`${alias}.primary_tradition = ?`);
+          bindings.push(nonSecular[0]);
+        } else {
+          const placeholders = nonSecular.map(() => "?").join(",");
+          subClauses.push(`${alias}.primary_tradition IN (${placeholders})`);
+          bindings.push(...nonSecular);
+        }
+      }
+      
+      if (hasSecular) {
+        subClauses.push(`(${alias}.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR ${alias}.primary_tradition IS NULL OR ${alias}.primary_tradition = 'None' OR ${alias}.primary_tradition = '')`);
+      }
+      
+      filterWhere += ` AND (${subClauses.join(" OR ")})`;
     } else {
-      const placeholders = group.values.map(() => "?").join(",");
-      filterWhere += ` AND ${alias}.${group.col} IN (${placeholders})`;
-      bindings.push(...group.values);
+      if (group.values.length === 1) {
+        filterWhere += ` AND ${alias}.${group.col} = ?`;
+        bindings.push(group.values[0]);
+      } else {
+        const placeholders = group.values.map(() => "?").join(",");
+        filterWhere += ` AND ${alias}.${group.col} IN (${placeholders})`;
+        bindings.push(...group.values);
+      }
     }
   }
   

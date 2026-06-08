@@ -84,13 +84,16 @@ function GeographiesReporter({ geographies, onGeographiesLoaded }) {
 }
 
 // Subcomponent to safely handle Geographies rendering
-function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortMap, tabKeys, activeTab, getCohortColor, setTooltip, colorScale, balanceColorScale }) {
+function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortMap, tabKeys, activeTab, getCohortColor, setTooltip, colorScale, balanceColorScale, onRegionClick, selectedRegionNorms, regionLevel }) {
   return (
     <Geographies geography={geoUrl}>
       {({ geographies }) => {
         const geographyElements = geographies.map((geo) => {
           const geoName = geo.properties.name;
-          
+          const geoNorm = normalizeName(geoName);
+          const isSelected = !!selectedRegionNorms && selectedRegionNorms.has(geoNorm);
+          const isClickable = !!onRegionClick;
+
           let val = 0;
           for (const label of Object.keys(dataMap.map)) {
             if (normalizeName(label) === normalizeName(geoName)) {
@@ -98,7 +101,7 @@ function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortM
               break;
             }
           }
-          
+
           let defaultFill = `color-mix(in srgb, ${C.ghost} 15%, transparent)`;
           let hoverFill = `color-mix(in srgb, ${C.ghost} 25%, transparent)`;
 
@@ -197,18 +200,22 @@ function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortM
               onMouseLeave={() => {
                 setTooltip("");
               }}
+              onClick={isClickable ? () => onRegionClick(geoName, regionLevel) : undefined}
+              tabIndex={isClickable ? 0 : -1}
               style={{
                 default: {
-                  fill: defaultFill,
-                  stroke: visType === "bullseye" ? "color-mix(in srgb, var(--c-text) 45%, transparent)" : "color-mix(in srgb, var(--c-text) 20%, transparent)",
-                  strokeWidth: visType === "bullseye" ? 1.0 : 0.6,
-                  outline: "none"
+                  fill: isSelected ? `color-mix(in srgb, var(--c-gold) 22%, transparent)` : defaultFill,
+                  stroke: isSelected ? "var(--c-goldBright)" : (visType === "bullseye" ? "color-mix(in srgb, var(--c-text) 45%, transparent)" : "color-mix(in srgb, var(--c-text) 20%, transparent)"),
+                  strokeWidth: isSelected ? 2.2 : (visType === "bullseye" ? 1.0 : 0.6),
+                  outline: "none",
+                  cursor: isClickable ? "pointer" : "default"
                 },
                 hover: {
-                  fill: hoverFill,
-                  stroke: "var(--c-textBright)",
-                  strokeWidth: 1.5,
-                  outline: "none"
+                  fill: isSelected ? `color-mix(in srgb, var(--c-gold) 32%, transparent)` : hoverFill,
+                  stroke: isSelected ? "var(--c-goldBright)" : "var(--c-textBright)",
+                  strokeWidth: isSelected ? 2.4 : 1.5,
+                  outline: "none",
+                  cursor: isClickable ? "pointer" : "default"
                 },
                 pressed: {
                   fill: hoverFill,
@@ -230,7 +237,12 @@ function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortM
   );
 }
 
-export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy }) {
+export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions }) {
+  // Pre-compute the set of normalized selected region names for O(1) lookup in <Geography>
+  const selectedRegionNorms = useMemo(() => {
+    if (!selectedRegions || selectedRegions.length === 0) return new Set();
+    return new Set(selectedRegions.map((r) => normalizeName(r.name)));
+  }, [selectedRegions]);
   const [geoLevel, setGeoLevel] = useState("us_state"); // Options: "country", "us_state", "ca_province"
   const [activeTab, setActiveTab] = useState("all");
   const [visType, setVisType] = useState("bullseye"); // Options: "bullseye", "heatmap"
@@ -631,6 +643,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               setTooltip={setTooltip}
               colorScale={colorScale}
               balanceColorScale={balanceColorScale}
+              onRegionClick={onRegionClick}
+              selectedRegionNorms={selectedRegionNorms}
+              regionLevel="us_state"
             />
           )}
           {isUS && (
@@ -646,6 +661,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               setTooltip={setTooltip}
               colorScale={colorScale}
               balanceColorScale={balanceColorScale}
+              onRegionClick={onRegionClick}
+              selectedRegionNorms={selectedRegionNorms}
+              regionLevel="can_province"
             />
           )}
           {isUS && visType === "bullseye" && renderBullseyes([...geographies, ...geographiesCA])}
@@ -664,6 +682,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                 setTooltip={setTooltip}
                 colorScale={colorScale}
                 balanceColorScale={balanceColorScale}
+                onRegionClick={onRegionClick}
+                selectedRegionNorms={selectedRegionNorms}
+                regionLevel="country"
               />
               {visType === "bullseye" && renderBullseyes(geographies)}
             </ZoomableGroup>

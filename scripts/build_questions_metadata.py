@@ -352,6 +352,17 @@ FORCED_QUESTION_CHOICES = {
             'Supporting foreskin restoration and regeneration research',
             'Building broader coalitions with other human rights groups'
         ]
+    ),
+    "religion_jewish_brit_milah_view": (
+        "single_select",
+        [
+            "As a non-negotiable religious commandment (mitzvah) central to Jewish identity.",
+            "As an important tradition and cultural marker, though perhaps with some flexibility in interpretation or practice.",
+            "As a practice open to discussion, with varying opinions on its necessity or form in modern times.",
+            "As a practice that some in my community/family questioned or chose alternatives to.",
+            "Primarily as a medical/hygienic procedure that also fulfilled a religious/cultural role.",
+            "Not a significant topic of discussion or emphasis in my specific context."
+        ]
     )
 }
 
@@ -379,7 +390,7 @@ def infer_type_and_opts(slug, values):
 
     # Scale detection: values starting with "1", "2", ..., "5" followed by
     # punctuation/space OR just bare integers
-    scale_pat = re.compile(r"^\s*[1-5](\s*[-–—:]|\s|$)")
+    scale_pat = re.compile(r"^\s*[1-5](\.0)?(\s*[-–—:]|\s|$)")
     scale_count = sum(1 for v in values if scale_pat.match(str(v)))
     if scale_count / n >= 0.95 and len(distinct) <= 10:
         # Extract the distinct scale labels for display
@@ -479,8 +490,7 @@ def load_form_data(xlsx_path):
         46: "religion_islamic_intactness_reconcile",
     }
     for k, v in religion_manual.items():
-        if k not in col_to_meta:
-            col_to_meta[k] = v
+        col_to_meta[k] = v
 
     col_to_meta[65] = "pathway_state"
 

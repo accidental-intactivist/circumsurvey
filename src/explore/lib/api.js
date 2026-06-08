@@ -47,6 +47,7 @@ export function cohortToFilterParams(cohort) {
   if (entries.length === 0) return [];
   
   const demoCols = ["country_born", "country_now", "us_state_born", "us_state_now",
+    "can_province_born", "can_province_now",
     "race_ethnicity", "age_bracket", "generation", "education",
     "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
   const religionCols = ["upbringing_significance", "primary_tradition", "cultural_background",

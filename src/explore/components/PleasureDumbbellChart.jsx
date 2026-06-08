@@ -1,7 +1,7 @@
 import React from 'react';
 import { C, FONT } from '../styles/tokens';
 
-export default function PleasureDumbbellChart({ stats, activeCohortsList, showTooltip, moveTooltip, hideTooltip }) {
+export default function PleasureDumbbellChart({ stats, activeCohortsList, showGap, quotes, showTooltip, moveTooltip, hideTooltip }) {
   const chartWidth = 900;
   const rowHeight = 60;
   const chartHeight = Math.max(300, stats.sortedQuestions.length * rowHeight + 80);
@@ -26,6 +26,9 @@ export default function PleasureDumbbellChart({ stats, activeCohortsList, showTo
           <stop offset="0%" stopColor={C.purple} />
           <stop offset="100%" stopColor={C.green} />
         </linearGradient>
+        <pattern id="deficitPattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke={C.red} strokeWidth="3" opacity="0.6" />
+        </pattern>
       </defs>
 
       {/* Grid */}
@@ -77,11 +80,11 @@ export default function PleasureDumbbellChart({ stats, activeCohortsList, showTo
                 y1={y} 
                 x2={getX(maxScore)} 
                 y2={y} 
-                stroke="url(#gapGradient)" 
-                strokeWidth="6" 
+                stroke={showGap ? "url(#deficitPattern)" : "url(#gapGradient)"} 
+                strokeWidth={showGap ? "20" : "6"} 
                 strokeLinecap="round"
-                opacity={0.8}
-                style={{ transition: "all 0.5s ease" }}
+                opacity={showGap ? 1 : 0.8}
+                style={{ transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)" }}
               />
             )}
 
@@ -89,11 +92,17 @@ export default function PleasureDumbbellChart({ stats, activeCohortsList, showTo
             {minScore !== maxScore && (
               <text 
                 x={getX(minScore) + (getX(maxScore) - getX(minScore)) / 2} 
-                y={y - 12} 
+                y={y - (showGap ? 18 : 12)} 
                 textAnchor="middle" 
-                style={{ fontFamily: FONT.mono, fontSize: "11px", fill: C.goldBright, fontWeight: 700 }}
+                style={{ 
+                  fontFamily: FONT.mono, 
+                  fontSize: showGap ? "13px" : "11px", 
+                  fill: showGap ? C.red : C.goldBright, 
+                  fontWeight: 700,
+                  transition: "all 0.4s ease"
+                }}
               >
-                +{(maxScore - minScore).toFixed(2)}
+                {showGap ? "GAP " : ""}-{(maxScore - minScore).toFixed(2)}
               </text>
             )}
 
@@ -108,7 +117,20 @@ export default function PleasureDumbbellChart({ stats, activeCohortsList, showTo
                   onMouseEnter={(e) => {
                     e.currentTarget.querySelector('.dot-halo').setAttribute("opacity", "0.4");
                     e.currentTarget.querySelector('.dot-core').setAttribute("r", "10");
-                    showTooltip(e, `${c.label} · ${q.label}: ${score.toFixed(2)} (n=${n})`);
+                    const quote = quotes?.[c.id]?.[q.id];
+                    showTooltip(e, (
+                      <div style={{ maxWidth: 260, fontFamily: FONT.body, fontSize: "0.85rem", lineHeight: 1.4 }}>
+                        <div style={{ fontWeight: 700, color: C.goldBright, marginBottom: "0.2rem" }}>{c.label} &middot; {q.label}</div>
+                        <div style={{ fontFamily: FONT.mono, fontSize: "1rem", color: C.textBright, marginBottom: "0.4rem" }}>
+                          Avg Score: {score.toFixed(2)} <span style={{ fontSize: "0.7rem", color: C.muted }}>(n={n})</span>
+                        </div>
+                        {quote && (
+                          <div style={{ fontStyle: "italic", color: C.muted, borderTop: `1px solid ${C.ghost}`, paddingTop: "0.5rem", marginTop: "0.3rem" }}>
+                            "{quote}"
+                          </div>
+                        )}
+                      </div>
+                    ));
                   }}
                   onMouseMove={moveTooltip}
                   onMouseLeave={(e) => {

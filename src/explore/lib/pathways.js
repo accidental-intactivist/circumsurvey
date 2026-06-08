@@ -20,7 +20,7 @@ export const PATHWAYS = {
     emoji: "🔵",
     color: PATH_COLORS.circumcised,
     n: 213,
-    desc: "Circumcised, generally as infants",
+    desc: "Circumcised as infants or later in life",
   },
   restoring: {
     id: "restoring",
@@ -197,6 +197,41 @@ export function observerSubrolesForQuestion(q) {
   const hits = [];
   for (const r of OBSERVER_SUBROLES) {
     if (r.multi) continue;
+    if (r.match(q)) hits.push(r.id);
+  }
+  return hits.length > 0 ? hits : ["universal"];
+}
+
+export const CIRCUMCISED_SUBROLES = [
+  {
+    id: "universal",
+    label: "Universal (all circumcised)",
+    emoji: "👥",
+    desc: "Questions every circumcised respondent saw",
+    match: (q) => (q.id || "").startsWith("circ_") && !q.id.startsWith("circ_parents_") && !q.id.startsWith("circ_adult_"),
+    n: 213,
+  },
+  {
+    id: "infant",
+    label: "Circumcised as Infant / Parent Decision",
+    emoji: "👶",
+    desc: "Information quality, emotional state, and parent reasons",
+    match: (q) => (q.id || "").startsWith("circ_parents_"),
+    n: 191,
+  },
+  {
+    id: "adult",
+    label: "Circumcised Later in Life / Teen & Adult",
+    emoji: "🙋‍♂️",
+    desc: "Before/after satisfaction comparison, consent, and new normal",
+    match: (q) => (q.id || "").startsWith("circ_adult_"),
+    n: 22,
+  }
+];
+
+export function circumcisedSubrolesForQuestion(q) {
+  const hits = [];
+  for (const r of CIRCUMCISED_SUBROLES) {
     if (r.match(q)) hits.push(r.id);
   }
   return hits.length > 0 ? hits : ["universal"];

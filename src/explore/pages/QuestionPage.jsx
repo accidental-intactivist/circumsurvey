@@ -18,6 +18,7 @@ import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
 import { applyLikert, flattenMultiSelect, sortDistribution } from "../lib/formatters";
 import CopilotChat from "../components/CopilotChat";
+import IconifyEmoji from "../components/IconifyEmoji";
 
 import SharePopover from "../components/SharePopover";
 import AddToReportButton from "../components/AddToReportButton";
@@ -487,7 +488,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     { id: "intact_message_to_others", text: "💬 Message to Others / Future Parents (from Intact respondents)", emoji: "⚖️" },
                     { id: "exp_sex_rating_orgasm_intensity", text: "📊 Orgasm Intensity comparison across cohorts", emoji: "⚖️" },
                     { id: "demo_sexuality", text: "📊 Sexual Orientation demographic profile", emoji: "📊" },
-                    { id: "final_transparent_monster_reason", text: "📜 Societal pressures & cultural alignment", emoji: "📜" },
+                    { id: "exp_sensitivity_desc", text: "💬 Physical sensation in respondents' own words", emoji: "💬" },
                   ].map(rec => (
                     <a
                       key={rec.id}
@@ -508,7 +509,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       onMouseEnter={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = C.ghost; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
                     >
-                      <span style={{ fontSize: "0.95rem" }}>{rec.emoji}</span>
+                      <IconifyEmoji emoji={rec.emoji} size="0.95rem" />
                       <span style={{ flex: 1, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{rec.text}</span>
                       <span style={{ fontSize: "0.7rem", color: C.dim, fontFamily: FONT.mono }}>{rec.id} →</span>
                     </a>
@@ -646,7 +647,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       return (
                         <>
                           <span style={{ color: C.muted, display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
-                            {isRedundant && <span>{pathwayObj.emoji}</span>}
+                            {isRedundant && <IconifyEmoji emoji={pathwayObj.emoji} style={{ color: pathwayObj.color }} />}
                             <span>{sectionStr}</span>
                           </span>
                           {pathwayObj && !isRedundant && (
@@ -658,7 +659,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                                 alignItems: "center",
                                 gap: "0.25rem",
                               }}>
-                                <span>{pathwayObj.emoji}</span>
+                                <IconifyEmoji emoji={pathwayObj.emoji} style={{ color: pathwayObj.color }} />
                                 <span>{pathwayObj.label}</span>
                               </span>
                             </>
@@ -697,6 +698,29 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     {question.subtitle}
                   </p>
                 )}
+
+                {/* PPP Anatomical Diagram callout */}
+                {["intact_ppp_awareness", "circ_ppp_awareness", "intact_ppp_impact", "circ_ppp_impact"].includes(question.id) && (
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "1.5rem",
+                    background: "#fff",
+                    padding: "1rem",
+                    borderRadius: 8,
+                    border: `1px solid ${C.ghost}`,
+                    maxWidth: "360px",
+                    marginLeft: "0",
+                    marginRight: "auto",
+                  }}>
+                    <img 
+                      src="/ppp_diagram.png" 
+                      alt="Pearly Penile Papules (PPP) Diagram" 
+                      style={{ width: "100%", height: "auto", display: "block" }} 
+                    />
+                  </div>
+                )}
+
 
                 {/* Question metadata badges */}
                 <div style={{ marginBottom: "1.5rem", display: "flex", gap: "0.6rem", flexWrap: "wrap", alignItems: "center" }}>
@@ -975,7 +999,7 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
           return (
             <div key={p.id}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
-                <span style={{ fontSize: "0.85rem" }}>{path.emoji}</span>
+                <IconifyEmoji emoji={path.emoji} size="0.85rem" style={{ color: path.color }} />
                 <span style={{
                   fontFamily: FONT.condensed,
                   fontWeight: 700,

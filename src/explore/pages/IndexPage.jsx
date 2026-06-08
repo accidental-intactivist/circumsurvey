@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { C, FONT, RAINBOW, resolveCssColor } from "../styles/tokens";
-import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, isQuestionRelevant, phaseForQuestion, observerSubrolesForQuestion } from "../lib/pathways";
+import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, isQuestionRelevant, phaseForQuestion, observerSubrolesForQuestion, circumcisedSubrolesForQuestion } from "../lib/pathways";
 import { getQuestions, getResponseDistribution } from "../lib/api";
 import SurveyMapNav from "../components/SurveyMapNav";
 import DemographicFilterBar from "../components/DemographicFilterBar";
@@ -14,19 +14,22 @@ import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
 import CopilotChat from "../components/CopilotChat";
-
+import * as Icons from "../components/Icons";
+import IconifyEmoji from "../components/IconifyEmoji";
 
 
 const EXHIBITS = [
-  { id: "pathway", num: "01", title: "The Survey Map", emoji: "🗺️", desc: "Interactive flowchart of the complete survey architecture — from Universal questions through the Pathway Fork and into each cohort's unique question sets.", link: "#/pathways", colorVar: "var(--c-cyan)" },
-  { id: "pairs", num: "02", title: "Mirror Pairs", emoji: "⚖️", desc: "Compare parallel question responses across Intact and Circumcised cohorts side-by-side.", link: "#/pairs", colorVar: "var(--c-gold)" },
-  { id: "pleasure", num: "03", title: "The Pleasure Gap", emoji: "⚖️", desc: "Clustered ratings comparing sensation, sensitivity, and orgasms across cohorts.", link: "#/pleasure-gap", colorVar: "var(--c-red)" },
-  { id: "alignment", num: "04", title: "Correlations", emoji: "📊", desc: "Dynamic matrix exploring correlations between any two demographic or survey variables.", link: "#/correlations", colorVar: "var(--c-blue)" },
-  { id: "demographics", num: "05", title: "Demographics", emoji: "📊", desc: "Explore the age, sexuality, generation, education, and geography profile of respondents.", link: "#/demographics", colorVar: "var(--c-ltBlue)" },
-  { id: "narrative", num: "06", title: "Narrative Mirrors", emoji: "📜", desc: "Side-by-side Word Clouds and text search for open-ended narratives across cohorts.", link: "#/narrative-mirrors", colorVar: "var(--c-green)" },
-  { id: "generational", num: "07", title: "Generational Faultlines", emoji: "⏳", desc: "Chronological attitude tracking from the Silent Generation down to Gen Z.", link: "#/generational-faultlines", colorVar: "var(--c-orange)" },
-  { id: "observer", num: "08", title: "The Observer Triad", emoji: "👁️", desc: "Analyze perspectives of partners, parents, and medical professionals.", link: "#/observer-triad", colorVar: "var(--c-purple)" },
-  { id: "religion", num: "09", title: "Religious Mirrors", emoji: "⚖️", desc: "Compare Jewish, Christian, and Islamic attitudes and norms on circumcision.", link: "#/religious-mirrors", colorVar: "var(--c-gold)" }
+  { id: "pathway", num: "01", title: "The Survey Map", icon: "Compass", desc: "Interactive flowchart of the complete survey architecture — from Universal questions through the Pathway Fork and into each cohort's unique question sets.", link: "#/pathways", colorVar: "var(--c-cyan)" },
+  { id: "pairs", num: "02", title: "Mirror Pairs", icon: "Scale", desc: "Compare parallel question responses across Intact and Circumcised cohorts side-by-side.", link: "#/pairs", colorVar: "var(--c-gold)" },
+  { id: "pleasure", num: "03", title: "The Pleasure Gap", icon: "Heart", desc: "Clustered ratings comparing sensation, sensitivity, and orgasms across cohorts.", link: "#/pleasure-gap", colorVar: "var(--c-red)" },
+  { id: "alignment", num: "04", title: "Correlations", icon: "Grid", desc: "Dynamic matrix exploring correlations between any two demographic or survey variables.", link: "#/correlations", colorVar: "var(--c-blue)" },
+  { id: "demographics", num: "05", title: "Demographics", icon: "Users", desc: "Explore the age, sexuality, generation, education, and geography profile of respondents.", link: "#/demographics", colorVar: "var(--c-ltBlue)" },
+  { id: "narrative", num: "06", title: "Narrative Mirrors", icon: "MessageSquareText", desc: "Side-by-side Word Clouds and text search for open-ended narratives across cohorts.", link: "#/narrative-mirrors", colorVar: "var(--c-green)" },
+  { id: "generational", num: "07", title: "Generational Faultlines", icon: "Clock", desc: "Chronological attitude tracking from the Silent Generation down to Gen Z.", link: "#/generational-faultlines", colorVar: "var(--c-orange)" },
+  { id: "observer", num: "08", title: "The Observer Triad", icon: "Eye", desc: "Analyze perspectives of partners, parents, and medical professionals.", link: "#/observer-triad", colorVar: "var(--c-purple)" },
+  { id: "religion", num: "09", title: "Religious Mirrors", icon: "BookOpen", desc: "Compare Jewish, Christian, and Islamic attitudes and norms on circumcision.", link: "#/religious-mirrors", colorVar: "var(--c-gold)" },
+  { id: "restoring", num: "10", title: "Restoration Journey", icon: "RefreshCw", desc: "Track methods, motivations, and physical/psychological progress (RCI scores, sensitivity gains) of the restoring cohort.", link: "#/restoration-journey", colorVar: "var(--c-purple)" },
+  { id: "numbers", num: "11", title: "By The Numbers", icon: "BarChart2", desc: "Interactive dashboard summarizing key outcome statistics and percentages.", link: "#/numbers", colorVar: "var(--c-yellow)" }
 ];
 
 export default function IndexPage({ routerState, navigate, updateState }) {
@@ -116,6 +119,15 @@ export default function IndexPage({ routerState, navigate, updateState }) {
     if (hasObserverSelected && observerRole && observerRole !== "universal") {
       filtered = filtered.filter((q) => {
         const roles = observerSubrolesForQuestion(q);
+        return roles.includes(observerRole);
+      });
+    }
+
+    // 3b. Apply circumcised sub-role filter (only meaningful if pathway includes circumcised)
+    const hasCircumcisedSelected = Array.isArray(pathway) ? pathway.includes("circumcised") : pathway === "circumcised";
+    if (hasCircumcisedSelected && observerRole && observerRole !== "universal") {
+      filtered = filtered.filter((q) => {
+        const roles = circumcisedSubrolesForQuestion(q);
         return roles.includes(observerRole);
       });
     }
@@ -276,7 +288,20 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    <span style={{ fontSize: "1.1rem", display: "inline-flex", alignItems: "center" }}>{ex.emoji}</span>
+                    {(() => {
+                      const IconComp = Icons[ex.icon];
+                      return IconComp ? (
+                        <IconComp 
+                          size={20} 
+                          color={accentColor} 
+                          style={{ 
+                            display: "inline-flex", 
+                            alignItems: "center", 
+                            flexShrink: 0 
+                          }} 
+                        />
+                      ) : null;
+                    })()}
                     <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
                       <h3 style={{
                         fontFamily: FONT.display,
@@ -354,9 +379,12 @@ export default function IndexPage({ routerState, navigate, updateState }) {
               }}>Tools</div>
 
               <a
-                href="#/pairs"
+                href="#/numbers"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -367,19 +395,48 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.5rem",
                 }}
               >
-                ⚖️ Mirror Pairs View →
+                <Icons.BarChart2 size={13} style={{ flexShrink: 0 }} />
+                <span>By the Numbers View →</span>
+              </a>
+
+              <a
+                href="#/pairs"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
+                  padding: "0.55rem 0.7rem",
+                  background: "rgba(255,255,255,0.03)",
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: 6,
+                  color: C.textBright,
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                  transition: "all 0.15s",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                <Icons.Scale size={13} style={{ flexShrink: 0 }} />
+                <span>Mirror Pairs View →</span>
               </a>
 
               <a
                 href="#/demographics"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -390,19 +447,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                📊 Demographics Dashboard →
+                <Icons.Users size={13} style={{ flexShrink: 0 }} />
+                <span>Demographics Dashboard →</span>
               </a>
 
               <a
                 href="#/religious-mirrors"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -413,19 +473,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                ⚖️ Religious Mirrors View →
+                <Icons.BookOpen size={13} style={{ flexShrink: 0 }} />
+                <span>Religious Mirrors View →</span>
               </a>
 
               <a
                 href="#/narrative-mirrors"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -436,19 +499,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                📜 Narrative Mirrors View →
+                <Icons.MessageSquareText size={13} style={{ flexShrink: 0 }} />
+                <span>Narrative Mirrors View →</span>
               </a>
 
               <a
                 href="#/generational-faultlines"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -459,19 +525,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                ⏳ Generational Faultlines →
+                <Icons.Clock size={13} style={{ flexShrink: 0 }} />
+                <span>Generational Faultlines →</span>
               </a>
 
               <a
                 href="#/observer-triad"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(255,255,255,0.03)",
                   border: `1px solid rgba(255,255,255,0.1)`,
@@ -482,19 +551,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                👁️ The Observer Triad →
+                <Icons.Eye size={13} style={{ flexShrink: 0 }} />
+                <span>The Observer Triad →</span>
               </a>
 
               <a
                 href="#/correlations"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(91,147,199,0.08)",
                   border: `1px solid rgba(91,147,199,0.25)`,
@@ -505,19 +577,22 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                📊 Correlation Explorer →
+                <Icons.Grid size={13} style={{ flexShrink: 0 }} />
+                <span>Correlation Explorer →</span>
               </a>
 
               <a
                 href="#/pleasure-gap"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(217,79,79,0.08)",
                   border: `1px solid rgba(217,79,79,0.25)`,
@@ -528,20 +603,23 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                   marginBottom: "0.8rem",
                 }}
               >
-                ⚖️ The Pleasure Gap Matrix →
+                <Icons.Heart size={13} style={{ flexShrink: 0 }} />
+                <span>The Pleasure Gap Matrix →</span>
               </a>
 
               {/* Link to Survey Map page */}
               <a
                 href="#/pathways"
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.45rem",
                   padding: "0.55rem 0.7rem",
                   background: "rgba(212,160,48,0.08)",
                   border: `1px solid rgba(212,160,48,0.25)`,
@@ -552,12 +630,12 @@ export default function IndexPage({ routerState, navigate, updateState }) {
                   fontSize: "0.72rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  textAlign: "center",
                   textDecoration: "none",
                   transition: "all 0.15s",
                 }}
               >
-                🗺 View Full Survey Map →
+                <Icons.Compass size={13} style={{ flexShrink: 0 }} />
+                <span>View Full Survey Map →</span>
               </a>
             </div>
           </aside>
@@ -787,7 +865,7 @@ function SectionGroup({ group, pathway, distributions, cohortDistributions, navi
           color: pathwayObj ? pathwayObj.color : C.textBright,
           letterSpacing: "-0.01em",
         }}>
-          {pathwayObj && <span style={{ marginRight: "0.4rem" }}>{pathwayObj.emoji}</span>}
+          {pathwayObj && <IconifyEmoji emoji={pathwayObj.emoji} style={{ marginRight: "0.4rem", color: pathwayObj.color }} />}
           {group.section}
         </h3>
         <span style={{
@@ -870,7 +948,7 @@ function LoadingNotice() {
       fontFamily: FONT.body,
       fontStyle: "italic",
     }}>
-      Loading 355 questions from D1…
+      Pulling the question index…
     </div>
   );
 }
@@ -1179,7 +1257,7 @@ function PathwayDropdown({ selected, onChange }) {
                 }}>
                   {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
                 </div>
-                <span style={{ fontSize: "0.9rem", marginRight: "0.25rem" }}>{p.emoji}</span>
+                <IconifyEmoji emoji={p.emoji} size="0.9rem" style={{ marginRight: "0.25rem", color: p.color }} />
                 <div style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {p.label}
                 </div>

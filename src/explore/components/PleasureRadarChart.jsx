@@ -1,7 +1,7 @@
 import React from 'react';
 import { C, FONT } from '../styles/tokens';
 
-export default function PleasureRadarChart({ stats, activeCohortsList, showTooltip, moveTooltip, hideTooltip }) {
+export default function PleasureRadarChart({ stats, activeCohortsList, showGap, quotes, showTooltip, moveTooltip, hideTooltip }) {
   const size = 600;
   const center = size / 2;
   const maxRadius = size / 2 - 80; // Leave room for labels
@@ -28,6 +28,12 @@ export default function PleasureRadarChart({ stats, activeCohortsList, showToolt
     <div style={{ display: "flex", justifyContent: "center", padding: "1rem" }}>
       <svg viewBox={`0 0 ${size} ${size}`} style={{ width: "100%", maxWidth: 650, height: "auto", overflow: "visible" }}>
         
+        <defs>
+          <pattern id="deficitPattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke={C.red} strokeWidth="2" opacity="0.6" />
+          </pattern>
+        </defs>
+
         {/* Background Grids (Concentric Polygons) */}
         {ticks.map(t => {
           const points = questions.map((_, i) => {
@@ -76,11 +82,11 @@ export default function PleasureRadarChart({ stats, activeCohortsList, showToolt
             <polygon 
               key={`poly-${c.id}`}
               points={points}
-              fill={`var(${c.colorVar})`}
-              fillOpacity={0.15}
-              stroke={`var(${c.colorVar})`}
-              strokeWidth="3"
-              style={{ transition: "all 0.5s ease", cursor: "pointer", mixBlendMode: "screen" }}
+              fill={showGap && c.id === 'intact' ? "url(#deficitPattern)" : showGap && c.id !== 'intact' ? C.bg : `var(${c.colorVar})`}
+              fillOpacity={showGap && c.id === 'intact' ? 1 : showGap ? 0.95 : 0.15}
+              stroke={showGap && c.id === 'intact' ? C.red : `var(${c.colorVar})`}
+              strokeWidth={showGap && c.id === 'intact' ? "4" : "3"}
+              style={{ transition: "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)", cursor: "pointer", mixBlendMode: showGap ? "normal" : "screen" }}
               onMouseEnter={(e) => {
                 e.target.setAttribute("fill-opacity", "0.35");
                 e.target.setAttribute("stroke-width", "5");
@@ -113,7 +119,20 @@ export default function PleasureRadarChart({ stats, activeCohortsList, showToolt
                 style={{ cursor: "pointer", transition: "all 0.5s ease" }}
                 onMouseEnter={(e) => {
                   e.target.setAttribute("r", "7");
-                  showTooltip(e, `${c.label} · ${q.label}: ${score.toFixed(2)} (n=${n})`);
+                  const quote = quotes?.[c.id]?.[q.id];
+                  showTooltip(e, (
+                    <div style={{ maxWidth: 260, fontFamily: FONT.body, fontSize: "0.85rem", lineHeight: 1.4 }}>
+                      <div style={{ fontWeight: 700, color: C.goldBright, marginBottom: "0.2rem" }}>{c.label} &middot; {q.label}</div>
+                      <div style={{ fontFamily: FONT.mono, fontSize: "1rem", color: C.textBright, marginBottom: "0.4rem" }}>
+                        Avg Score: {score.toFixed(2)} <span style={{ fontSize: "0.7rem", color: C.muted }}>(n={n})</span>
+                      </div>
+                      {quote && (
+                        <div style={{ fontStyle: "italic", color: C.muted, borderTop: `1px solid ${C.ghost}`, paddingTop: "0.5rem", marginTop: "0.3rem" }}>
+                          "{quote}"
+                        </div>
+                      )}
+                    </div>
+                  ));
                 }}
                 onMouseMove={moveTooltip}
                 onMouseLeave={(e) => {

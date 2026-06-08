@@ -20,6 +20,7 @@ import {
 import CulturalAlignmentSection from "../components/CulturalAlignmentSection.jsx";
 import HarmonicCanvas from "../components/HarmonicCanvas.jsx";
 import ThemeToggle from "../explore/components/ThemeToggle.jsx";
+import IconifyEmoji from "../explore/components/IconifyEmoji.jsx";
 
 // ΓöÇΓöÇ Type scale (bumped per Tone's feedback) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 const TYPE = {
@@ -156,7 +157,7 @@ const ALL_CIRC_META = {
   label: "All Circumcised Respondents",
   short: "All Circ.",
   n: (PATHWAY.circumcised?.n || 0) + (PATHWAY.restoring?.n || 0),
-  emoji: "≡ƒö╡≡ƒƒú",
+  emoji: "🔵🟣",
 };
 
 function getCombinedData(q) {
@@ -1750,7 +1751,7 @@ function PathwayChips({ pathways, active, onChange, showCombined }) {
             border: on ? `1.5px solid ${color}` : `1px solid ${C.paperRuleDash}`,
             transform: on ? "scale(1.05)" : "",
             transition: "all 0.15s",
-          }}>{meta.emoji} {meta.short}</button>
+          }}><IconifyEmoji emoji={meta.emoji} /> {meta.short}</button>
         );
       })}
     </div>
@@ -2222,7 +2223,7 @@ function QCard({ q, defaultPathway, forceCardLabel }) {
               ) : (
                 /* NON-AVG CARDS: keep the existing Response Distribution */
                 <FormField
-                  label={`Response Distribution — ${currentMeta.emoji} ${currentMeta.label} (n = ${currentMeta.n})`}
+                  label={<span>Response Distribution — <IconifyEmoji emoji={currentMeta.emoji} /> {currentMeta.label} (n = {currentMeta.n})</span>}
                   last
                 >
                   <div style={{ marginTop: "0.5rem" }}>
@@ -2273,7 +2274,7 @@ function AnimatedBar({ color, targetHeight, label, emoji }) {
     <div ref={ref} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem" }}>
       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.62rem", fontWeight: 700, color }}>{label}</span>
       <div style={{ width: 24, height: `${h}px`, background: color, borderRadius: "3px 3px 0 0", transition: "height 0.05s linear" }} />
-      <span style={{ fontSize: "0.5rem", color: C.paperGhost }}>{emoji}</span>
+      <span style={{ fontSize: "0.5rem", color: C.paperGhost }}><IconifyEmoji emoji={emoji} size="0.6rem" /></span>
     </div>
   );
 }
@@ -2294,7 +2295,7 @@ function MirrorSide({ side, colors, bgColor }) {
         fontSize: "0.9rem",
         color,
         marginBottom: "0.2rem",
-      }}>{meta.emoji} {meta.label}</div>
+      }}><IconifyEmoji emoji={meta.emoji} /> {meta.label}</div>
       <div style={{
         fontFamily: "'Barlow', sans-serif",
         fontWeight: 400,
@@ -2410,7 +2411,7 @@ function MirrorCard({ pair }) {
 // /api/count mutates META (see useLiveMeta hook in App).
 const PATHWAY_META_EXT = [
   {
-    id: "intact", emoji: "≡ƒƒó", label: "The Intact Pathway",
+    id: "intact", emoji: "🟢", label: "The Intact Pathway",
     short: "Intact",
     get n() { return META.pathwayCounts?.intact ?? 142; },
     color: "#5b93c7",
@@ -2418,7 +2419,7 @@ const PATHWAY_META_EXT = [
     featured_in: "chapters 1–7, plus demographics & voices",
   },
   {
-    id: "circumcised", emoji: "≡ƒö╡", label: "The Circumcised Pathway",
+    id: "circumcised", emoji: "🔵", label: "The Circumcised Pathway",
     short: "Circumcised",
     get n() { return META.pathwayCounts?.circumcised ?? 213; },
     color: "#d94f4f",
@@ -2426,7 +2427,7 @@ const PATHWAY_META_EXT = [
     featured_in: "chapters 1–7, plus demographics & voices",
   },
   {
-    id: "restoring", emoji: "≡ƒƒú", label: "The Restoration Pathway",
+    id: "restoring", emoji: "🟣", label: "The Restoration Pathway",
     short: "Restoring",
     get n() { return META.pathwayCounts?.restoring ?? 109; },
     color: "#e8c868",
@@ -2434,7 +2435,7 @@ const PATHWAY_META_EXT = [
     featured_in: "chapters on restoration & voices",
   },
   {
-    id: "observer", emoji: "≡ƒƒá", label: "The Observer, Partner & Ally Pathway",
+    id: "observer", emoji: "🟠", label: "The Observer, Partner & Ally Pathway",
     short: "Observer",
     get n() { return META.pathwayCounts?.observer ?? 37; },
     color: "#a0a0a0",
@@ -2442,7 +2443,7 @@ const PATHWAY_META_EXT = [
     featured_in: "universal questions & voices",
   },
   {
-    id: "trans", emoji: "≡ƒö┤", label: "The Trans · Gender-Affirming Surgery Pathway",
+    id: "trans", emoji: "🔴", label: "The Trans · Gender-Affirming Surgery Pathway",
     short: "Trans",
     get n() { return META.pathwayCounts?.trans ?? 0; },
     color: "#e85d50",
@@ -2451,7 +2452,7 @@ const PATHWAY_META_EXT = [
     dormant: true,
   },
   {
-    id: "intersex", emoji: "ΓÜ¬", label: "The Intersex Pathway",
+    id: "intersex", emoji: "⚪", label: "The Intersex Pathway",
     short: "Intersex",
     get n() { return META.pathwayCounts?.intersex ?? 0; },
     color: "#b0a888",
@@ -2511,7 +2512,7 @@ function SixPathwaysCard() {
                   gap: "0.55rem",
                   marginBottom: "0.2rem",
                 }}>
-                  <span style={{ fontSize: "1.35rem" }}>{p.emoji}</span>
+                  <IconifyEmoji emoji={p.emoji} size="1.35rem" />
                   <div style={{
                     fontFamily: "'Playfair Display', serif",
                     fontWeight: 700,
@@ -2677,7 +2678,7 @@ function PathwayColumn({ pathwayId, pathwayMeta, subtitle, quotes, expanded, onT
       opacity: dormant ? 0.85 : 1,
     }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: "0.45rem", marginBottom: "0.25rem" }}>
-        <span style={{ fontSize: "1.1rem" }}>{pathwayMeta.emoji}</span>
+        <IconifyEmoji emoji={pathwayMeta.emoji} size="1.1rem" />
         <div style={{
           fontFamily: "'Playfair Display', serif",
           fontWeight: 700,

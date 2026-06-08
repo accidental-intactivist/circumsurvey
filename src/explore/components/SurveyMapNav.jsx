@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
-import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, OBSERVER_SUBROLES } from "../lib/pathways";
+import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, OBSERVER_SUBROLES, CIRCUMCISED_SUBROLES } from "../lib/pathways";
 
 // A single nav row
 function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, indent = 0, smaller = false, rare = false, waiting = false, multi = false }) {
@@ -263,6 +263,34 @@ export default function SurveyMapNav({
                 waiting={p.waiting}
                 onClick={() => onSelectPathway(isSelected ? null : id)}
               />
+
+              {/* Circumcised sub-pathways expand inline when Circumcised is selected */}
+              {id === "circumcised" && isSelected && (
+                <div style={{
+                  marginLeft: "0.6rem",
+                  marginTop: "0.1rem",
+                  paddingLeft: "0.5rem",
+                  borderLeft: `1px dashed ${p.color}40`,
+                }}>
+                  {CIRCUMCISED_SUBROLES.map((role) => {
+                    const isRoleSelected = selectedObserverRole === role.id;
+                    return (
+                      <NavRow
+                        key={role.id}
+                        emoji={role.emoji}
+                        label={role.label}
+                        desc={null}
+                        count={role.n}
+                        smaller
+                        indent={0}
+                        selected={isRoleSelected}
+                        color={p.color}
+                        onClick={() => onSelectObserverRole(isRoleSelected ? null : role.id)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Observer sub-pathways expand inline when Observer is selected */}
               {id === "observer" && isSelected && (

@@ -242,12 +242,13 @@ export const flattenMultiSelect = (distArray, q) => {
       "Teenage years (e.g., health class, peer discussions)",
       "I'm still not entirely sure what was done"
     ];
-  } else if (qId === "circ_curiosity_about_intact") {
+  } else if (qId === "circ_curiosity_about_intact" || qId === "intact_curiosity_about_circ") {
     prefixes = [
       "Yes, I've often wondered",
       "I experienced this before being circumcised",
       "Yes, I've occasionally wondered",
       "No, I believe being circumcised is preferable",
+      "No, I believe being intact is preferable",
       "Not really, I'm happy with my experience",
       "I've never thought about it"
     ];
@@ -363,7 +364,35 @@ export const flattenMultiSelect = (distArray, q) => {
       "I am a HEALTHCARE PROVIDER / MEDICAL PROFESSIONAL.",
       "General curiosity about the topic"
     ];
+  } else if (qId === "intact_regret_feeling") {
+    prefixes = [
+      "Yes, these feelings are or have been strong and frequent.",
+      "Yes, I experience some of these feelings sometimes.",
+      "Yes, but rarely.",
+      "No, never; I have always been glad to be intact."
+    ];
+  } else if (qId === "intact_ppp_awareness" || qId === "circ_ppp_awareness") {
+    prefixes = [
+      "I do not have them.",
+      "I'm not sure if I have them.",
+      "I have them and have always known what they were.",
+      "I have them and was worried about them until I learned they were normal.",
+      "I have them but didn't know what they were.",
+      "I have them and am still concerned about their appearance.",
+      "I used to have them, but they seem to have faded over time."
+    ];
+  } else if (qId === "intact_pressure_to_circ") {
+    prefixes = [
+      "I have never felt any pressure and have never considered getting circumcised; I value being intact.",
+      "I've never felt pressure, but never seriously considered it for myself.",
+      "I've never felt pressure, but I have been curious enough to research what circumcision entails and why others choose it.",
+      "I have felt some societal/cultural pressure or expectation to be circumcised, but never seriously considered it for myself.",
+      "I have felt pressure AND have briefly considered or researched getting circumcised for myself.",
+      "I have felt pressure AND have seriously considered getting circumcised for myself at some point.",
+      "I am planning getting circumcised for myself at some point."
+    ];
   }
+
 
   distArray.forEach(item => {
     if (!item || !item.label) return;
@@ -430,18 +459,60 @@ export const flattenMultiSelect = (distArray, q) => {
  */
 export const applyLikert = (distArray, q) => {
   if (!q || !distArray) return distArray || [];
-  return distArray
+  
+  // Normalize labels first
+  let normalized = distArray
     .filter(d => d.label && d.label.trim() !== "-" && d.label.trim() !== "—" && d.label.trim() !== "")
     .map(d => {
       let label = d.label;
-      if (q.id.includes("importance")) {
+      if (q.id.includes("importance") || q.type === "scale_1_5") {
         const num = parseFloat(label);
         if (num === 1) label = "1 - Extremely Important";
         else if (num === 5) label = "5 - Not Important At All";
-        else if (!isNaN(num)) label = String(num);
+        else if (!isNaN(num)) label = String(Math.round(num));
       }
       return { ...d, label };
     });
+
+  // If it's a 1-5 scale, ensure all 5 options exist!
+  const isScale = q.type === "scale_1_5" || q.id.includes("importance");
+  if (isScale) {
+    const scaleLabels = [
+      "1 - Extremely Important",
+      "2",
+      "3",
+      "4",
+      "5 - Not Important At All"
+    ];
+    
+    // We check if we have any representation in the normalized array
+    const existing = new Map();
+    normalized.forEach(item => {
+      const match = String(item.label).match(/^\s*([1-5])/);
+      if (match) {
+        existing.set(parseInt(match[1]), item);
+      }
+    });
+
+    const result = [];
+    for (let i = 1; i <= 5; i++) {
+      if (existing.has(i)) {
+        result.push({
+          ...existing.get(i),
+          label: scaleLabels[i - 1]
+        });
+      } else {
+        result.push({
+          label: scaleLabels[i - 1],
+          n: 0,
+          pct: 0
+        });
+      }
+    }
+    return result;
+  }
+
+  return normalized;
 };
 
 /**
@@ -517,6 +588,15 @@ export const rollUpDistribution = (distArray) => {
 export const sortDistribution = (distArray, question) => {
   if (!distArray || !Array.isArray(distArray)) return [];
   const qId = question?.id || "";
+
+  const isScale = question?.type === "scale_1_5" || qId.includes("importance") || qId.includes("rating_");
+  if (isScale) {
+    const getScaleValue = (label) => {
+      const match = String(label || "").match(/^\s*([1-5])/);
+      return match ? parseFloat(match[1]) : 999;
+    };
+    return [...distArray].sort((a, b) => getScaleValue(a.label) - getScaleValue(b.label));
+  }
 
   if (qId === "family_politics" || qId.includes("politics")) {
     const getPoliticalIndex = (label) => {

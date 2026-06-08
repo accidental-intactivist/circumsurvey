@@ -7,7 +7,8 @@ import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { colorForLabel } from "../components/MiniSparkline";
-import { sortDistribution } from "../lib/formatters";
+import { sortDistribution, flattenMultiSelect } from "../lib/formatters";
+import IconifyEmoji from "../components/IconifyEmoji";
 
 const MIRROR_PAIRS = [
   { id: "advantages", concept: "Perceived Advantages", intact: "intact_advantages_desc", circ: "circ_advantages_desc" },
@@ -24,8 +25,8 @@ const MIRROR_PAIRS = [
   { id: "curiosity", concept: "Curiosity About the Other", intact: "intact_curiosity_about_circ", circ: "circ_curiosity_about_intact" },
   { id: "curiosity_aspects", concept: "Curiosity (Specifics)", intact: "intact_curiosity_about_circ_aspects", circ: "circ_curiosity_about_intact_aspects" },
   { id: "thought_level", concept: "Prior Thought Level", intact: "intact_prior_thought_level", circ: "circ_prior_thought_level" },
-  { id: "ppp_awareness", concept: "PPP Awareness", intact: "intact_ppp_awareness", circ: "circ_ppp_awareness" },
-  { id: "ppp_impact", concept: "PPP Impact", intact: "intact_ppp_impact", circ: "circ_ppp_impact" },
+  { id: "ppp", concept: "Pearly Penile Papules (PPP)", intact: "intact_ppp_awareness", circ: "circ_ppp_awareness", intactImpact: "intact_ppp_impact", circImpact: "circ_ppp_impact" },
+
   
   // Perceptions of Society's Thoughts & Norms (Universal Questions)
   { id: "social_norm_perception", concept: "Social Norm Perception", universal: "final_social_norm_perception" },
@@ -38,14 +39,42 @@ const MIRROR_PAIRS = [
   { id: "pleasure_potential", concept: "Pleasure & Sensation Potential", universal: "final_pleasure_potential_belief" },
   { id: "average_pleasure_fulfillment", concept: "Average Pleasure & Orgasm", universal: "final_avg_pleasure_belief" },
   { id: "aesthetic_appeal", concept: "Aesthetic Appeal (Visual)", universal: "final_aesthetic_preference" },
-  { id: "future_child_decision", concept: "Decision for AMAB Child Today", universal: "final_child_decision_reason" }
+  { id: "future_child_decision", concept: "Decision for AMAB Child Today", universal: "final_child_decision_reason" },
+  
+  // Physical & Sensory Experience (Universal Questions)
+  { id: "sensory_light_touch", concept: "Sensitivity to Light Touch", universal: "exp_sex_rating_sensitivity_light_touch" },
+  { id: "sensory_mobile_skin", concept: "Pleasure of Mobile Skin", universal: "exp_sex_rating_pleasure_mobile_skin" },
+  { id: "sensory_variety", concept: "Variety of Sensation", universal: "exp_sex_rating_variety_of_sensation" },
+  { id: "orgasm_intensity", concept: "Orgasm Intensity", universal: "exp_sex_rating_orgasm_intensity" },
+  { id: "lubrication_need", concept: "Need for Artificial Lubrication", universal: "exp_lubrication_need" }
 ];
+
 
 function normalizeMirrorLabel(label) {
   if (!label) return "";
   let clean = String(label).trim();
   let lower = clean.toLowerCase();
   
+  // 9. Curiosity about the other cohort (Checked first to avoid catch-all word collision, e.g. "never")
+  if (lower.includes("being intact is preferable") || lower.includes("being circumcised is preferable")) {
+    return "Believe own state preferable";
+  }
+  if (lower.includes("experienced this before")) {
+    return "Experienced natural state before";
+  }
+  if (lower.includes("often wondered")) {
+    return "I've often wondered";
+  }
+  if (lower.includes("occasionally wondered")) {
+    return "I've occasionally wondered";
+  }
+  if (lower.includes("happy with my experience")) {
+    return "I'm happy with my experience";
+  }
+  if (lower.includes("never thought about it") || lower.includes("never really thought about it") || lower.includes("grew up where intact is the norm")) {
+    return "Never thought about it";
+  }
+
   // 1. Age of awareness normalization
   if (lower.includes("always just known") || lower.includes("always known")) {
     return "I've always just known";
@@ -197,14 +226,6 @@ function normalizeMirrorLabel(label) {
     return "Not applicable";
   }
 
-  // 9. Curiosity about the other cohort
-  if (lower.includes("being intact is preferable") || lower.includes("being circumcised is preferable")) {
-    return "Believe own state preferable";
-  }
-  if (lower.includes("experienced this before")) {
-    return "Experienced natural state before";
-  }
-
   return clean;
 }
 
@@ -212,13 +233,29 @@ const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist
   if (!intactDist?.distribution || !circDist?.distribution) return null;
 
   const processSide = (dist, cohortDist, q) => {
-    const rawItems = dist.distribution || [];
+    let cleanDist = dist;
+    let cleanCohortDist = cohortDist;
+    if (q && q.type === "multi_select") {
+      cleanDist = {
+        ...dist,
+        distribution: flattenMultiSelect(dist.distribution, q)
+      };
+      if (cohortDist?.distribution) {
+        cleanCohortDist = {
+          ...cohortDist,
+          distribution: flattenMultiSelect(cohortDist.distribution, q)
+        };
+      }
+    }
+
+    const rawItems = cleanDist.distribution || [];
     const cohortMap = new Map();
-    if (cohortDist?.distribution) {
-      cohortDist.distribution.forEach(d => {
+    if (cleanCohortDist?.distribution) {
+      cleanCohortDist.distribution.forEach(d => {
         cohortMap.set(normalizeMirrorLabel(d.label), d.n);
       });
     }
+
 
     const standardLabels = q?.opts ? new Set(q.opts.map(normalizeMirrorLabel)) : null;
 
@@ -487,9 +524,8 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem" }}>
-      {/* Controls & Headers */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
-        
+      {/* Pathway Headers */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
         {/* Intact Header */}
         <div style={{ flex: 1, minWidth: 200 }}>
           <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
@@ -503,11 +539,26 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
           </div>
         </div>
 
-        {/* Sort Controls */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", margin: "0 1rem" }}>
+        {/* Circ Header */}
+        <div style={{ flex: 1, minWidth: 200, textAlign: "right" }}>
+          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+            Circumcised Pathway 🔵
+          </h3>
+          <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
+            {circQ ? circQ.prompt : "No matching question."}
+          </p>
+          <div style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginTop: "0.3rem" }}>
+            {hasCohort && aligned.circCohortTotal > 0 ? `n = ${aligned.circCohortTotal} / ${aligned.circTotal}` : `n = ${aligned.circTotal}`}
+          </div>
+        </div>
+      </div>
+
+      {/* Sort Controls */}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Sort By</span>
           <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: 20, padding: "0.2rem" }}>
-            {["diff", "intact", "circ"].map(opt => (
+            {["intact", "diff", "circ"].map(opt => (
               <button
                 key={opt}
                 onClick={() => setSortBy(opt)}
@@ -524,22 +575,9 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                   transition: "all 0.2s"
                 }}
               >
-                {opt === "diff" ? "Difference" : opt === "intact" ? "Intact" : "Circ"}
+                {opt === "diff" ? "Difference" : opt === "intact" ? "Intact" : "Circumcised"}
               </button>
             ))}
-          </div>
-        </div>
-
-        {/* Circ Header */}
-        <div style={{ flex: 1, minWidth: 200, textAlign: "right" }}>
-          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-            Circumcised Pathway 🟣
-          </h3>
-          <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
-            {circQ ? circQ.prompt : "No matching question."}
-          </p>
-          <div style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginTop: "0.3rem" }}>
-            {hasCohort && aligned.circCohortTotal > 0 ? `n = ${aligned.circCohortTotal} / ${aligned.circTotal}` : `n = ${aligned.circTotal}`}
           </div>
         </div>
       </div>
@@ -555,7 +593,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                 <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.6rem" }}>
                    <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.intactPct.toFixed(1)}%</span>
                    <div 
-                      style={{ width: "70%", height: 16, background: "rgba(255,255,255,0.04)", borderRadius: 4, display: "flex", justifyContent: "flex-end", overflow: "hidden", cursor: "pointer" }}
+                      style={{ width: "70%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", justifyContent: "flex-end", overflow: "hidden", cursor: "pointer" }}
                       onMouseEnter={(e) => {
                         const tooltipText = hasCohort
                           ? `${item.intactRawLabel}: ${item.intactPct.toFixed(1)}% (n=${item.intactN}) vs overall ${item.intactOverallPct.toFixed(1)}% (n=${item.intactOverallN})`
@@ -565,7 +603,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}
                    >
-                     <div style={{ width: `${item.intactPct}%`, background: PATH_COLORS.intact, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
+                     <div style={{ width: `${item.intactPct}%`, height: "100%", background: PATH_COLORS.intact, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
                    </div>
                 </div>
 
@@ -584,7 +622,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                 {/* Circ Right Side */}
                 <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "0.6rem" }}>
                    <div 
-                      style={{ width: "70%", height: 16, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden", cursor: "pointer" }}
+                      style={{ width: "70%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", overflow: "hidden", cursor: "pointer" }}
                       onMouseEnter={(e) => {
                         const tooltipText = hasCohort
                           ? `${item.circRawLabel}: ${item.circPct.toFixed(1)}% (n=${item.circN}) vs overall ${item.circOverallPct.toFixed(1)}% (n=${item.circOverallN})`
@@ -594,7 +632,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}
                    >
-                     <div style={{ width: `${item.circPct}%`, background: PATH_COLORS.circumcised, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
+                     <div style={{ width: `${item.circPct}%`, height: "100%", background: PATH_COLORS.circumcised, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
                    </div>
                    <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.circPct.toFixed(1)}%</span>
                 </div>
@@ -675,6 +713,11 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
   const [circDist, setCircDist] = useState(null);
   const [intactCohortDist, setIntactCohortDist] = useState(null);
   const [circCohortDist, setCircCohortDist] = useState(null);
+
+  const [intactNarratives, setIntactNarratives] = useState(null);
+  const [circNarratives, setCircNarratives] = useState(null);
+  const [intactCohortNarratives, setIntactCohortNarratives] = useState(null);
+  const [circCohortNarratives, setCircCohortNarratives] = useState(null);
 
   // Universal state
   const [universalDist, setUniversalDist] = useState(null);
@@ -766,6 +809,29 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
               setCircCohortDist(null);
             }
           }
+
+          // Fetch narrative impact if present (e.g. combined PPP block)
+          if (pair.intactImpact && !intactNarratives) {
+            const d = await getNarratives(pair.intactImpact);
+            setIntactNarratives(d);
+          }
+          if (pair.intactImpact && cohort) {
+            const cd = await getNarratives(pair.intactImpact, { cohort });
+            setIntactCohortNarratives(cd);
+          } else {
+            setIntactCohortNarratives(null);
+          }
+
+          if (pair.circImpact && !circNarratives) {
+            const d = await getNarratives(pair.circImpact);
+            setCircNarratives(d);
+          }
+          if (pair.circImpact && cohort) {
+            const cd = await getNarratives(pair.circImpact, { cohort });
+            setCircCohortNarratives(cd);
+          } else {
+            setCircCohortNarratives(null);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch distributions for pair", pair.id, err);
@@ -773,6 +839,7 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
     }
     fetchDist();
   }, [inView, pair, intactQ, circQ, universalQ, cohort, isUniversal, isNarrative]);
+
 
   if (isUniversal) {
     return (
@@ -905,7 +972,59 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
         }}>{pair.concept}</h2>
       </div>
       
+      {/* Educational callout and PPP diagram for Pearly Penile Papules */}
+      {pair.id === "ppp" && (
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1rem",
+          padding: "1.5rem 1.5rem 0",
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "2rem",
+            background: "rgba(255,255,255,0.02)",
+            border: `1px solid ${C.ghost}`,
+            borderRadius: 8,
+            padding: "1.2rem",
+            width: "100%",
+            maxWidth: "800px",
+            flexWrap: "wrap",
+          }}>
+            <div style={{
+              flex: "1 1 200px",
+              background: "#fff",
+              padding: "0.8rem",
+              borderRadius: 6,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+              <img 
+                src="/ppp_diagram.png" 
+                alt="Pearly Penile Papules (PPP) Diagram" 
+                style={{ width: "100%", maxWidth: "240px", height: "auto", display: "block" }} 
+              />
+            </div>
+            <div style={{ flex: "2 1 300px", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <h4 style={{ fontFamily: FONT.condensed, color: C.goldBright, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>
+                What are Pearly Penile Papules (PPP)?
+              </h4>
+              <p style={{ fontFamily: FONT.body, fontSize: "0.88rem", lineHeight: 1.5, color: C.textBright, margin: 0 }}>
+                Pearly Penile Papules (PPP) are small, harmless, dome-shaped bumps that often appear in rows around the corona (ridge of the glans). They are an entirely normal, non-contagious anatomical variation present in many men.
+              </p>
+              <p style={{ fontFamily: FONT.body, fontSize: "0.82rem", lineHeight: 1.5, color: C.muted, margin: 0 }}>
+                Despite their harmless nature, they are frequently mistaken for STIs (like HPV/genital warts), leading to significant anxiety, confusion, or medical consultations. The survey findings below highlight the levels of awareness, worry, and social impact across cohorts.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isNarrative ? (
+
         <MirrorNarrativeBlock 
           intactQ={intactQ}
           circQ={circQ}
@@ -916,16 +1035,36 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
           hasCohort={!!cohort}
         />
       ) : (
-        aligned ? (
-          <ButterflyChart 
-            aligned={aligned}
-            intactQ={intactQ}
-            circQ={circQ}
-            hasCohort={!!cohort}
-          />
-        ) : (
-          <div style={{ padding: "3rem", textAlign: "center", color: C.dim }}>Loading comparison...</div>
-        )
+        <>
+          {aligned ? (
+            <ButterflyChart 
+              aligned={aligned}
+              intactQ={intactQ}
+              circQ={circQ}
+              hasCohort={!!cohort}
+            />
+          ) : (
+            <div style={{ padding: "3rem", textAlign: "center", color: C.dim }}>Loading comparison...</div>
+          )}
+          
+          {pair.intactImpact && pair.circImpact && (
+            <div style={{ borderTop: `1px solid ${C.ghost}`, marginTop: "1rem" }}>
+              {intactNarratives && circNarratives ? (
+                <MirrorNarrativeBlock 
+                  intactQ={questionsMap[pair.intactImpact] || { id: pair.intactImpact }}
+                  circQ={questionsMap[pair.circImpact] || { id: pair.circImpact }}
+                  intactDist={intactNarratives}
+                  circDist={circNarratives}
+                  intactCohortDist={intactCohortNarratives}
+                  circCohortDist={circCohortNarratives}
+                  hasCohort={!!cohort}
+                />
+              ) : (
+                <div style={{ padding: "2rem", textAlign: "center", color: C.dim }}>Loading narrative impact...</div>
+              )}
+            </div>
+          )}
+        </>
       )}
     </section>
   );
@@ -985,7 +1124,7 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
           return (
             <div key={p.id}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
-                <span style={{ fontSize: "0.85rem" }}>{path.emoji}</span>
+                <IconifyEmoji emoji={path.emoji} size="0.85rem" style={{ color: path.color }} />
                 <span style={{
                   fontFamily: FONT.condensed,
                   fontWeight: 700,
@@ -1177,6 +1316,27 @@ function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCoho
             </div>
           </div>
           
+          {intactQ?.prompt && (
+            <div style={{
+              background: "rgba(255,255,255,0.01)",
+              borderLeft: `3px solid ${PATH_COLORS.intact}`,
+              borderRadius: "0 4px 4px 0",
+              padding: "0.5rem 0.8rem",
+              marginBottom: "0.2rem"
+            }}>
+              <p style={{
+                margin: 0,
+                fontFamily: FONT.body,
+                fontSize: "0.85rem",
+                lineHeight: 1.45,
+                color: C.muted,
+                fontStyle: "italic"
+              }}>
+                "{intactQ.prompt}"
+              </p>
+            </div>
+          )}
+          
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {randomIntact.map((item, idx) => renderQuoteCard(item, idx, PATH_COLORS.intact))}
             {cleanIntact.length === 0 && (
@@ -1218,6 +1378,27 @@ function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCoho
               </a>
             </div>
           </div>
+
+          {circQ?.prompt && (
+            <div style={{
+              background: "rgba(255,255,255,0.01)",
+              borderLeft: `3px solid ${PATH_COLORS.circumcised}`,
+              borderRadius: "0 4px 4px 0",
+              padding: "0.5rem 0.8rem",
+              marginBottom: "0.2rem"
+            }}>
+              <p style={{
+                margin: 0,
+                fontFamily: FONT.body,
+                fontSize: "0.85rem",
+                lineHeight: 1.45,
+                color: C.muted,
+                fontStyle: "italic"
+              }}>
+                "{circQ.prompt}"
+              </p>
+            </div>
+          )}
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             {randomCirc.map((item, idx) => renderQuoteCard(item, idx, PATH_COLORS.circumcised))}

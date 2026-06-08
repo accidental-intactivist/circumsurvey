@@ -58,6 +58,37 @@ export default function ObserverTriadPage({ navigate }) {
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
       <div style={{ maxWidth: 1600, margin: "0 auto", padding: "1.5rem 2rem 0" }}>
         <InlineBreadcrumb currentRoute="observer-triad" navigate={navigate} />
+        
+        {/* Editorial introduction block */}
+        <div style={{ marginTop: "2.5rem", marginBottom: "1rem", maxWidth: 900 }}>
+          <div style={{
+            fontFamily: FONT.condensed,
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: C.gold,
+            marginBottom: "0.4rem",
+          }}>★ Special Perspective ★</div>
+          <h1 style={{
+            fontFamily: FONT.display,
+            fontSize: "2.2rem",
+            fontWeight: 800,
+            color: C.textBright,
+            margin: 0,
+            lineHeight: 1.2,
+          }}>The Observer Triad</h1>
+          <p style={{
+            fontFamily: FONT.body,
+            fontSize: "1.05rem",
+            color: C.muted,
+            lineHeight: 1.6,
+            marginTop: "0.6rem",
+            marginBottom: 0
+          }}>
+            Not all respondents were writing about their own bodies. The Observer pathway captures testimonies from partners, parents, and healthcare professionals—those who witness the physical, emotional, and systemic consequences of circumcision from the outside. Their perspectives form a critical triangulation of the practice.
+          </p>
+        </div>
       </div>
 
       <div style={{ padding: "2rem", maxWidth: 1600, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "3rem" }}>

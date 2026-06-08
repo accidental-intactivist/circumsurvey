@@ -536,15 +536,14 @@
     "pathway": "all",
     "prompt": "In your upbringing or current understanding within your Jewish context, how was/is Brit Milah (ritual circumcision) generally viewed?",
     "subtitle": "",
-    "type": "multi_select",
+    "type": "single_select",
     "opts": [
       "As a non-negotiable religious commandment (mitzvah) central to Jewish identity.",
-      "As a practice open to discussion",
+      "As an important tradition and cultural marker, though perhaps with some flexibility in interpretation or practice.",
+      "As a practice open to discussion, with varying opinions on its necessity or form in modern times.",
       "As a practice that some in my community/family questioned or chose alternatives to.",
-      "As an important tradition and cultural marker",
-      "Not a significant topic of discussion or emphasis in my specific context.",
-      "though perhaps with some flexibility in interpretation or practice.",
-      "with varying opinions on its necessity or form in modern times."
+      "Primarily as a medical/hygienic procedure that also fulfilled a religious/cultural role.",
+      "Not a significant topic of discussion or emphasis in my specific context."
     ],
     "tier": 2,
     "col_idx": 29,
@@ -567,7 +566,7 @@
     "n_responses": 12
   },
   {
-    "id": "religion_islamic_theology_reasons",
+    "id": "religion_jewish_theology_reasons",
     "section": "Religion",
     "pathway": "all",
     "prompt": "If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?",
@@ -592,7 +591,7 @@
     "pathway": "all",
     "prompt": "How important is the act of Brit Milah to your personal sense of Jewish identity or connection to the Jewish people?",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1.0",
       "3.0",
@@ -603,7 +602,7 @@
     "n_responses": 12
   },
   {
-    "id": "religion_jewish_alternatives_awareness",
+    "id": "religion_jewish_alt_interpretations",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Have you ever encountered or explored interpretations within Judaism that question the necessity of physical circumcision or offer alternative ways to express covenant or Jewish identity?",
@@ -623,7 +622,7 @@
     "n_responses": 12
   },
   {
-    "id": "religion_jewish_alternatives_thoughts",
+    "id": "religion_jewish_alt_thoughts",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Any thoughts on these alternative interpretations?",
@@ -654,7 +653,7 @@
     "n_responses": 8
   },
   {
-    "id": "religion_jewish_diversity_view",
+    "id": "religion_jewish_diversity_room",
     "section": "Religion",
     "pathway": "all",
     "prompt": "From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Brit Milah within contemporary Jewish life?",
@@ -683,7 +682,7 @@
     "n_responses": 9
   },
   {
-    "id": "religion_jewish_brit_shalom_awareness",
+    "id": "religion_jewish_brit_shalom",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Have you/your family participated in or considered alternative welcoming ceremonies, like a Brit Shalom (Covenant of Peace) or similar non-cutting ritual?",
@@ -701,7 +700,7 @@
     "n_responses": 12
   },
   {
-    "id": "religion_islamic_school",
+    "id": "religion_islamic_madhhab",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Which school of Islamic thought (madhhab), theological branch, or cultural expression of Islam do you (or your family during your upbringing) most closely identify with, if any?",
@@ -735,7 +734,7 @@
     "n_responses": 9
   },
   {
-    "id": "religion_islamic_theology_awareness",
+    "id": "religion_islamic_religious_awareness",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Were you aware of or taught about specific religious reasons or justifications for Khitan?",
@@ -751,7 +750,27 @@
     "n_responses": 9
   },
   {
-    "id": "religion_islamic_fard_vs_sunnah",
+    "id": "religion_islamic_religious_reasons",
+    "section": "Religion",
+    "pathway": "all",
+    "prompt": "If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?",
+    "subtitle": null,
+    "type": "multi_select",
+    "opts": [
+      "As a child",
+      "Cleaner",
+      "Hygiene",
+      "I was told that this was an Islamic custom and that as a Muslim you had to be circumcised",
+      "and god intending penis to be cut as a passage to manhood",
+      "but I never accepted this.",
+      "more beautiful Penis is what I remembered. I don't think they told me about the religious aspect tho. It was simply about a better looking clean penis. I only learned about the religious significance of it a few years later as a child"
+    ],
+    "tier": 2,
+    "col_idx": 40,
+    "n_responses": 3
+  },
+  {
+    "id": "religion_islamic_fard_or_sunnah",
     "section": "Religion",
     "pathway": "all",
     "prompt": "In your understanding, is Khitan considered a direct commandment (Fard) from the Quran, or more of an emphasized Sunnah (prophetic tradition) and cultural norm?",
@@ -773,7 +792,7 @@
     "pathway": "all",
     "prompt": "How important is the act of Khitan to your personal sense of Muslim identity, adherence to Sunnah, or feeling of ritual purity?",
     "subtitle": "",
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1.0",
       "4.0",
@@ -784,7 +803,7 @@
     "n_responses": 9
   },
   {
-    "id": "religion_islamic_alternatives_awareness",
+    "id": "religion_islamic_alt_interpretations",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Have you ever encountered or explored interpretations within Islam that question the absolute necessity of Khitan, discuss potential harms, or emphasize the Quran's silence on the matter?",
@@ -803,7 +822,7 @@
     "n_responses": 9
   },
   {
-    "id": "religion_islamic_alternatives_thoughts",
+    "id": "religion_islamic_alt_thoughts",
     "section": "Religion",
     "pathway": "all",
     "prompt": "Any thoughts on these alternative interpretations or perspectives?",
@@ -832,7 +851,50 @@
     "n_responses": 5
   },
   {
-    "id": "religion_islamic_intact_reconciliation",
+    "id": "religion_islamic_diversity_room",
+    "section": "Religion",
+    "pathway": "all",
+    "prompt": "From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Khitan within contemporary Islamic life?",
+    "subtitle": "",
+    "type": "multi_select",
+    "opts": [
+      "Among very religious Muslims",
+      "As of now",
+      "I don't care at all for restrictive",
+      "I get why others do. I do think that more people should consider the type of perspective I have on Islam",
+      "I think everyone experiences God/religion/faith/spirituality/etc differently and no one will see exactly eye to eye on anything and that's what God intended. I think questioning",
+      "I think muslims should stop circumcising and not see it as a religious thing to do to begin with. But I accept people as they are and don't think it's my place to control or change people.",
+      "None",
+      "Not sure what you mean by how much room. I imagine you mean something like \"is it okay to question/debate this or do we just have to shut up and do what we're told\". I don't believe anything is the latter",
+      "Shia and Ibadi.\n\nEspecially since it's more of a highly \"recommended\" tradition",
+      "accept science.",
+      "afaik they treat it like shaving your armpits or pubes",
+      "although much later than other more conservative Muslims.\n\nIt's pretty much what makes a Muslim men and an thinking of dropping this tradition is a thought no Muslim",
+      "and normally done on adolesents only western muslims do it on infants because it's offered.",
+      "but hey",
+      "controlling forms of religion that prevent people from asking questions",
+      "discussing",
+      "dogmatic",
+      "especially young people",
+      "etc is always a good thing. While I personally don't think circumcision has any merit in or out of the Islamic religious context",
+      "everyone's different so I can't really expect that to happen. That said",
+      "if there is a conflict between religion and science",
+      "it is more of an obligatory rite.\n\nEven the most secular Muslims like the once in turkey circumcised their children",
+      "it is seen as just a thing everyone does and has. It isn't questioned.",
+      "it's really just not needed",
+      "no room whatsoever.\n\nIt's too deeply ingrained within the Muslim tradition both Sunni",
+      "people",
+      "secular or religious",
+      "so I think there should always be room to discuss things. But I guess long story short",
+      "there is little flexibility. But in my country (Iran)",
+      "wants to even entertain.\n\nI think even secular Jews are more open of dropping the Brit Milah then secular Muslims even"
+    ],
+    "tier": 2,
+    "col_idx": 45,
+    "n_responses": 5
+  },
+  {
+    "id": "religion_islamic_intactness_reconcile",
     "section": "Religion",
     "pathway": "all",
     "prompt": "How do you/your family reconcile the choice of intactness with the common practice of Khitan in many Muslim cultures?",
@@ -886,7 +948,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Intensity of Orgasm]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -904,7 +966,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Duration of Orgasm Sensation]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -922,7 +984,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Overall Ease of Reaching Orgasm]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -940,7 +1002,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Sensitivity to Light Touch]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -958,7 +1020,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Pleasure from Mobile Skin]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -976,7 +1038,7 @@
     "pathway": "all",
     "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Variety of Pleasurable Sensations]",
     "subtitle": null,
-    "type": "single_select",
+    "type": "scale_1_5",
     "opts": [
       "1 (Low/Poor)",
       "2.0",
@@ -2853,8 +2915,8 @@
     "id": "culture_additional_comments",
     "section": "Culture & Attitudes",
     "pathway": "all",
-    "prompt": "Additional Comments (Culture & Attitudes)",
-    "subtitle": "Are there any other thoughts you'd like to share regarding societal attitudes, cultural expectations, or religious norms related to circumcision?",
+    "prompt": "Additional comments",
+    "subtitle": null,
     "type": "open_text",
     "opts": null,
     "tier": 3,

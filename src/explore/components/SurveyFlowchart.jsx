@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
-import { PATHWAYS, OBSERVER_SUBROLES, observerSubrolesForQuestion, phaseForQuestion } from "../lib/pathways";
+import { PATHWAYS, OBSERVER_SUBROLES, observerSubrolesForQuestion, CIRCUMCISED_SUBROLES, circumcisedSubrolesForQuestion, phaseForQuestion } from "../lib/pathways";
 import { getQuestions } from "../lib/api";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { useReport } from "../contexts/ReportContext";
@@ -32,7 +32,7 @@ const SYNTHESIS_SECTIONS = [
 
 const BRANCH_CONFIGS = [
   { id: "intact", label: "Intact", emoji: "🟢", color: PATH_COLORS.intact, desc: "Never circumcised", sections: ["Intact Pathway"] },
-  { id: "circumcised", label: "Circumcised", emoji: "🔵", color: PATH_COLORS.circumcised, desc: "Circumcised (typically as infant)", sections: ["Circumcised Pathway"] },
+  { id: "circumcised", label: "Circumcised", emoji: "🔵", color: PATH_COLORS.circumcised, desc: "Circumcised as infants or later in life", sections: ["Circumcised Pathway"], hasSubRoles: true },
   { id: "restoring", label: "Restoring", emoji: "🟣", color: PATH_COLORS.restoring, desc: "Actively restoring foreskin", sections: ["Restoring Pathway"] },
   { id: "observer", label: "Observer", emoji: "🟠", color: PATH_COLORS.observer, desc: "Partners, parents, providers, advocates", sections: ["Observer Pathway"], hasSubRoles: true },
   { id: "trans", label: "Trans", emoji: "🔴", color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
@@ -591,7 +591,7 @@ export default function SurveyFlowchart({ navigate }) {
                     </button>
                   </div>
 
-                  {!isObserver && !isTrans && branch.sections.length === 1 ? (
+                  {!branch.hasSubRoles && !isTrans && branch.sections.length === 1 ? (
                     <div style={{
                       display: "flex",
                       flexDirection: "column",
@@ -611,6 +611,15 @@ export default function SurveyFlowchart({ navigate }) {
                       gridTemplateColumns: k === 1 ? "repeat(auto-fill, minmax(320px, 1fr))" : "1fr",
                       gap: "0.85rem",
                     }}>
+                      {/* Circumcised: show sub-roles */}
+                      {branch.id === "circumcised" && (
+                        <CircumcisedSubRoles
+                          questions={questions}
+                          navigate={navigate}
+                          isSingleColumn={k > 1}
+                        />
+                      )}
+
                       {/* Observer: show sub-roles */}
                       {isObserver && (
                         <ObserverSubRoles
@@ -1786,6 +1795,288 @@ function ObserverSubRoles({ questions, navigate, isSingleColumn }) {
             <strong style={{ color: C.goldBright, fontSize: "0.78rem", display: "block" }}>Merge to Synthesis</strong>
             Proceed to the final survey phase to answer the Culture & Attitudes and Follow-up sections
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── CircumcisedSubRoles ───────────────────────────────────────────────────────
+// Circumcised pathway with nested timing sub-role chips
+
+function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
+  const [selectedRoleId, setSelectedRoleId] = useState("universal");
+
+  const circumcisedQuestions = useMemo(() =>
+    questions.filter((q) => q.pathway === "circumcised"),
+    [questions]
+  );
+
+  const universalRole = CIRCUMCISED_SUBROLES.find(r => r.id === "universal");
+  const universalQs = useMemo(() => {
+    return circumcisedQuestions.filter((q) =>
+      circumcisedSubrolesForQuestion(q).includes("universal")
+    );
+  }, [circumcisedQuestions]);
+
+  const activeRole = CIRCUMCISED_SUBROLES.find((r) => r.id === selectedRoleId);
+  const activeRoleQs = useMemo(() => {
+    return circumcisedQuestions.filter((q) =>
+      circumcisedSubrolesForQuestion(q).includes(selectedRoleId)
+    ).sort((a, b) => (a.col_idx || 0) - (b.col_idx || 0));
+  }, [circumcisedQuestions, selectedRoleId]);
+
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.8rem",
+      gridColumn: "1 / -1"
+    }}>
+
+      {/* 1. Universal entry node */}
+      <div
+        onClick={() => setSelectedRoleId("universal")}
+        style={{
+          borderRadius: 8,
+          border: `1px solid ${selectedRoleId === "universal" ? PATH_COLORS.circumcised : C.ghost}`,
+          background: selectedRoleId === "universal" ? `${PATH_COLORS.circumcised}15` : "rgba(255, 255, 255, 0.02)",
+          cursor: "pointer",
+          padding: "0.6rem 0.8rem",
+          userSelect: "none",
+          transition: "all 0.2s ease",
+          boxShadow: selectedRoleId === "universal" ? `0 0 12px ${PATH_COLORS.circumcised}25` : "none",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.8rem",
+        }}
+        onMouseEnter={(e) => {
+          if (selectedRoleId !== "universal") {
+            e.currentTarget.style.borderColor = `${PATH_COLORS.circumcised}80`;
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (selectedRoleId !== "universal") {
+            e.currentTarget.style.borderColor = C.ghost;
+            e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)";
+          }
+        }}
+      >
+        <span style={{ fontSize: "1.4rem" }}>👥</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+            <span style={{
+              fontFamily: FONT.display,
+              fontWeight: 700,
+              fontSize: "0.82rem",
+              color: selectedRoleId === "universal" ? C.textBright : C.text,
+              textTransform: "uppercase",
+              letterSpacing: "0.03em",
+            }}>UNIVERSAL (ALL CIRCUMCISED)</span>
+            <span style={{
+              fontFamily: FONT.mono,
+              fontSize: "0.55rem",
+              color: selectedRoleId === "universal" ? PATH_COLORS.circumcised : C.muted,
+              background: "rgba(255,255,255,0.03)",
+              padding: "0.05rem 0.3rem",
+              borderRadius: 4,
+              border: `1px solid ${selectedRoleId === "universal" ? PATH_COLORS.circumcised + "30" : C.ghost}`,
+            }}>{universalQs.length}q · n={universalRole.n}</span>
+          </div>
+          <div style={{
+            fontFamily: FONT.body,
+            fontSize: "0.68rem",
+            color: selectedRoleId === "universal" ? C.text : C.dim,
+            marginTop: "0.1rem",
+          }}>{universalRole.desc}</div>
+        </div>
+        {selectedRoleId === "universal" && (
+          <span style={{
+            fontFamily: FONT.mono,
+            fontSize: "0.6rem",
+            color: PATH_COLORS.circumcised,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}>Active Entry</span>
+        )}
+      </div>
+
+      {/* Downward branching connector */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", margin: "0.1rem 0" }}>
+        <div style={{
+          width: 2,
+          height: 24,
+          background: `linear-gradient(to bottom, ${PATH_COLORS.circumcised}, ${PATH_COLORS.circumcised}50)`,
+        }} />
+        <span style={{
+          position: "absolute",
+          top: "50%",
+          transform: "translateY(-50%)",
+          background: C.bgSoft,
+          border: `1px solid ${PATH_COLORS.circumcised}40`,
+          borderRadius: 4,
+          padding: "0.1rem 0.4rem",
+          fontFamily: FONT.mono,
+          fontSize: "0.55rem",
+          textTransform: "uppercase",
+          color: PATH_COLORS.circumcised,
+          letterSpacing: "0.05em",
+        }}>BRANCH BY TIMING</span>
+      </div>
+
+      {/* 2. Specific Roles Grid */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isSingleColumn ? "1fr" : "1fr 1fr",
+        gap: "0.6rem",
+      }}>
+        {CIRCUMCISED_SUBROLES.filter(r => r.id !== "universal").map((role) => {
+          const roleQs = circumcisedQuestions.filter((q) =>
+            circumcisedSubrolesForQuestion(q).includes(role.id)
+          );
+          const isSelected = selectedRoleId === role.id;
+
+          return (
+            <div
+              key={role.id}
+              onClick={() => setSelectedRoleId(role.id)}
+              style={{
+                borderRadius: 8,
+                overflow: "hidden",
+                border: `1px solid ${isSelected ? PATH_COLORS.circumcised : C.ghost}`,
+                background: isSelected ? `${PATH_COLORS.circumcised}15` : "rgba(255, 255, 255, 0.02)",
+                cursor: "pointer",
+                padding: "0.55rem 0.7rem",
+                userSelect: "none",
+                transition: "all 0.2s ease",
+                boxShadow: isSelected ? `0 0 12px ${PATH_COLORS.circumcised}25` : "none",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: "0.25rem",
+              }}
+              onMouseEnter={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.borderColor = `${PATH_COLORS.circumcised}80`;
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.borderColor = C.ghost;
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)";
+                }
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
+                <span style={{ fontSize: "0.9rem", marginTop: "0.05rem" }}>{role.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
+                    <span style={{
+                      fontFamily: FONT.body,
+                      fontWeight: 600,
+                      fontSize: "0.72rem",
+                      color: isSelected ? C.textBright : C.text,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    }}>{role.label}</span>
+                  </div>
+                  <div style={{
+                    fontFamily: FONT.body,
+                    fontSize: "0.62rem",
+                    color: isSelected ? C.text : C.dim,
+                    marginTop: "0.05rem",
+                    lineHeight: 1.2,
+                  }}>{role.desc}</div>
+                </div>
+              </div>
+              <div style={{
+                alignSelf: "flex-end",
+                fontFamily: FONT.mono,
+                fontSize: "0.55rem",
+                color: isSelected ? PATH_COLORS.circumcised : C.muted,
+                background: "rgba(255,255,255,0.03)",
+                padding: "0.02rem 0.25rem",
+                borderRadius: 4,
+                border: `1px solid ${isSelected ? PATH_COLORS.circumcised + "30" : C.ghost}`,
+              }}>
+                {roleQs.length}q · n={role.n}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 3. Selected Sub-role Questions List */}
+      {selectedRoleId && (
+        <div style={{
+          border: `1px solid ${PATH_COLORS.circumcised}20`,
+          borderRadius: 8,
+          background: "rgba(0, 0, 0, 0.15)",
+          padding: "0.8rem 1rem",
+          marginTop: "0.4rem",
+        }}>
+          <div style={{
+            fontFamily: FONT.display,
+            fontWeight: 600,
+            fontSize: "0.85rem",
+            color: PATH_COLORS.circumcised,
+            marginBottom: "0.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            borderBottom: `1px solid ${PATH_COLORS.circumcised}15`,
+            paddingBottom: "0.4rem",
+          }}>
+            <span>{activeRole.emoji}</span>
+            <span style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{activeRole.label} Questions</span>
+            <span style={{
+              fontFamily: FONT.mono,
+              fontSize: "0.62rem",
+              color: C.muted,
+              background: "rgba(255,255,255,0.05)",
+              padding: "0.1rem 0.4rem",
+              borderRadius: 999,
+              border: `1px solid ${C.ghost}`,
+            }}>{activeRoleQs.length}q</span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            {activeRoleQs.map((q, i) => (
+              <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Downward merging connector */}
+      <div style={{ display: "flex", justifyContent: "center", margin: "0.2rem 0 0.1rem" }}>
+        <div style={{
+          width: 2,
+          height: 16,
+          background: `linear-gradient(to bottom, ${PATH_COLORS.circumcised}40, ${C.gold}40)`,
+        }} />
+      </div>
+
+      {/* Exit Node */}
+      <div style={{
+        border: `1px dashed ${C.gold}40`,
+        borderRadius: 8,
+        padding: "0.6rem 0.8rem",
+        background: "rgba(212, 160, 48, 0.02)",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.6rem",
+        fontFamily: FONT.body,
+        fontSize: "0.72rem",
+        color: C.muted,
+        lineHeight: 1.4,
+        marginTop: "0.1rem",
+      }}>
+        <span style={{ fontSize: "1.2rem", filter: `drop-shadow(0 0 4px ${C.gold}40)` }}>🔀</span>
+        <div>
+          <strong style={{ color: C.goldBright, fontSize: "0.78rem", display: "block" }}>Merge to Synthesis</strong>
+          Proceed to the final survey phase to answer the Culture & Attitudes and Follow-up sections
         </div>
       </div>
     </div>

@@ -2,9 +2,9 @@ import { useState, useMemo, useRef } from "react";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
-import { sortDistribution } from "../lib/formatters";
+import { sortDistribution, applyLikert } from "../lib/formatters";
 
-export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader }) {
+export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
@@ -34,6 +34,10 @@ export default function DistributionChart({ title, distribution, cohortDistribut
     let d = [...(distribution?.distribution || [])];
     let cd = [...(cohortDistribution?.distribution || [])];
     
+    // Normalize Likert scales and fill in missing options
+    d = applyLikert(d, question);
+    cd = applyLikert(cd, question);
+
     // Apply custom sort for generation, politics, etc.
     d = sortDistribution(d, question);
     
@@ -255,8 +259,23 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                 transition: "all 0.15s",
                 opacity: isHidden ? 0.4 : 1
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                if (shortenLabels) {
+                  showTooltip(e, d.label);
+                }
+              }}
+              onMouseMove={(e) => {
+                if (shortenLabels) {
+                  moveTooltip(e);
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                if (shortenLabels) {
+                  hideTooltip();
+                }
+              }}
             >
               <div style={{
                 width: 10, height: 10, borderRadius: 2,
@@ -268,8 +287,13 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                 flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
                 color: isHidden ? C.muted : C.text, minWidth: 0,
                 textDecoration: isHidden ? "line-through" : "none",
-                lineHeight: 1.35
-              }}>{d.label}</div>
+                lineHeight: 1.35,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: shortenLabels ? "nowrap" : "normal"
+              }}>
+                {shortenLabels && d.label.includes(":") ? d.label.split(":")[0].trim() : d.label}
+              </div>
               <div style={{
                 fontFamily: FONT.mono, fontSize: "0.74rem",
                 color: C.muted, minWidth: 70, textAlign: "right",

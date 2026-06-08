@@ -24,6 +24,33 @@ const COHORTS = [
   { id: "circumcised", label: "Circumcised", colorVar: "--path-circumcised" }
 ];
 
+const QUALITATIVE_QUOTES = {
+  "intact": {
+    "exp_sex_rating_ease_of_orgasm": "It’s not a struggle to reach orgasm. The head of my penis is sensitive and feels every thrust.",
+    "exp_sex_rating_sensitivity_light_touch": "It is very sensitive to all types of touch and I love that. The most sensitive areas for me are my glans and of course my frenulum.",
+    "exp_sex_rating_variety_of_sensation": "The most pleasurable parts are the tip of the foreskin and the inner foreskin. The glans is sensitive too.",
+    "exp_sex_rating_orgasm_duration": "The feeling kind of pulses out from the genitals. Lasts about 15-20 seconds... always satisfying.",
+    "exp_sex_rating_pleasure_mobile_skin": "The build-up is usually very gradual and long-lasting. The final release is intensely pleasurable, focused mainly on the foreskin opening and inner foreskin.",
+    "exp_sex_rating_orgasm_intensity": "When I reach orgasm it starts from the top of my foreskin and sends a wave of full body release that is incredibly intense."
+  },
+  "circumcised": {
+    "exp_sex_rating_ease_of_orgasm": "Currently my penis is less sensitive and requires effort to erect and orgasm.",
+    "exp_sex_rating_sensitivity_light_touch": "My penis roughly the same degree of sensitivity as my forearm, with it being the most sensitive at its base and getting less sensitive towards the tip.",
+    "exp_sex_rating_variety_of_sensation": "The most sensitive parts (inner skin and frenulum remnant) ends abruptly into the rest of the shaft skin.",
+    "exp_sex_rating_orgasm_duration": "I feel very little build up. It comes on suddenly... short and unsatisfying.",
+    "exp_sex_rating_pleasure_mobile_skin": "Lube for masturbation makes things messier and less easy. Female partners don't seem to realize they require lube.",
+    "exp_sex_rating_orgasm_intensity": "There is almost no sensation during buildup. Upon getting close to orgasm, the sensitivity increases and then quickly drops off. It feels like a release, like a sneeze."
+  },
+  "restoring": {
+    "exp_sex_rating_ease_of_orgasm": "Relatively quick build up then release is largely focused on genital areas but this is improving with restoration.",
+    "exp_sex_rating_sensitivity_light_touch": "Not very sensitive outside of the frenulum remnant and the area at the base of my glans that has started to dekeratinize from restoration.",
+    "exp_sex_rating_variety_of_sensation": "Specific sensitive areas before foreskin restoration: frenulum remnants. Specific sensitive areas after starting: glans, sulcus, frenulum remnants.",
+    "exp_sex_rating_orgasm_duration": "Quick, mild, underwhelming... but I've started noticing more reaction/sensation as I've been restoring.",
+    "exp_sex_rating_pleasure_mobile_skin": "Usually the slower build up leads to more intense orgasm. I almost exclusively stimulate myself by rolling the foreskin back and forth over my corona.",
+    "exp_sex_rating_orgasm_intensity": "Gradual, and in no hurry, ending with a breathtaking whole body orgasm... total release... feeling of completeness."
+  }
+};
+
 // Helper to extract rating value from option text
 function optionToValue(opt) {
   if (!opt) return null;
@@ -57,7 +84,8 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groupBy, setGroupBy] = useState("cohort"); // "cohort" or "factor"
-  const [viewMode, setViewMode] = useState("columns");
+  const [viewMode, setViewMode] = useState("dumbbell");
+  const [showGap, setShowGap] = useState(false);
   const [activeCohorts, setActiveCohorts] = useState({ intact: true, circumcised: true, restoring: true });
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
@@ -132,220 +160,6 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
     }
     return parts.join(" · ");
   }, [cohort]);
-
-  // Render SVG Chart
-  const svgChart = useMemo(() => {
-    if (loading || error || !data) return null;
-
-    const chartWidth = 550;
-    const chartHeight = 300;
-    const yTop = 30;
-    const yBottom = 330;
-    const xMarginLeft = 45;
-    
-    // Y scale mapping
-    const getY = (score) => yBottom - (score / 5) * chartHeight;
-
-    // Grid ticks (0 to 5)
-    const ticks = [0, 1, 2, 3, 4, 5];
-    const halfTicks = [0.5, 1.5, 2.5, 3.5, 4.5];
-
-    if (groupBy === "cohort") {
-      // Grouping by Cohort: X-axis has 3 cohorts. Under each, 6 factors.
-      const groupWidth = 140;
-      const groupGap = 25;
-      
-      return (
-        <svg viewBox="0 0 740 380" style={{ width: "100%", height: "auto", overflow: "visible" }}>
-          {/* Grid lines */}
-          {ticks.map(t => (
-            <g key={t}>
-              <line x1={xMarginLeft} y1={getY(t)} x2={chartWidth + 10} y2={getY(t)} stroke={C.ghost} strokeWidth="1" />
-              <text x={xMarginLeft - 10} y={getY(t) + 4} textAnchor="end" style={{ fontFamily: FONT.mono, fontSize: "10px", fill: C.muted }}>
-                {t.toFixed(1)}
-              </text>
-            </g>
-          ))}
-          {halfTicks.map(t => (
-            <line key={t} x1={xMarginLeft} y1={getY(t)} x2={chartWidth + 10} y2={getY(t)} stroke={C.ghost} strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-          ))}
-
-          {/* Render clusters */}
-          {COHORTS.map((c, cIdx) => {
-            const groupX = xMarginLeft + 20 + cIdx * (groupWidth + groupGap);
-            const factorBarWidth = 16;
-            const factorBarGap = 2;
-            const clusterWidth = QUESTIONS.length * factorBarWidth + (QUESTIONS.length - 1) * factorBarGap;
-            const offsetLeft = (groupWidth - clusterWidth) / 2;
-
-            return (
-              <g key={c.id}>
-                {/* Cohort Label underneath cluster */}
-                <text 
-                  x={groupX + groupWidth / 2} 
-                  y={yBottom + 22} 
-                  textAnchor="middle" 
-                  style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "12px", fill: C.textBright, letterSpacing: "0.05em", textTransform: "uppercase" }}
-                >
-                  {c.label}
-                </text>
-
-                {/* Factors inside this cohort */}
-                {QUESTIONS.map((q, qIdx) => {
-                  const factorRes = stats.matrix[c.id]?.[q.id] || { average: 0, n: 0 };
-                  const barX = groupX + offsetLeft + qIdx * (factorBarWidth + factorBarGap);
-                  const barHeight = (factorRes.average / 5) * chartHeight;
-                  const barColor = resolveCssColor(q.colorVar);
-
-                  return (
-                    <g key={q.id}>
-                      <rect
-                        x={barX}
-                        y={getY(factorRes.average)}
-                        width={factorBarWidth}
-                        height={barHeight}
-                        fill={barColor}
-                        rx="2"
-                        onMouseEnter={(e) => showTooltip(e, `${c.label} · ${q.label}: ${factorRes.average.toFixed(2)} (n=${factorRes.n})`)}
-                        onMouseMove={moveTooltip}
-                        onMouseLeave={hideTooltip}
-                        style={{ cursor: "pointer", transition: "all 0.2s" }}
-                      />
-                      {/* Numeric value label on top of bar */}
-                      {factorRes.average > 0 && (
-                        <text
-                          x={barX + factorBarWidth / 2}
-                          y={getY(factorRes.average) - 6}
-                          textAnchor="middle"
-                          style={{ fontFamily: FONT.mono, fontSize: "9px", fill: C.textBright, fontWeight: 600 }}
-                        >
-                          {factorRes.average.toFixed(1)}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
-              </g>
-            );
-          })}
-
-          {/* Chart Legend on the Right */}
-          <g transform={`translate(${chartWidth + 35}, ${yTop})`}>
-            <text x="0" y="-8" style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "11px", fill: C.goldBright, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Rating Factor
-            </text>
-            {QUESTIONS.map((q, idx) => (
-              <g key={q.id} transform={`translate(0, ${idx * 22 + 10})`}>
-                <rect width="12" height="12" rx="2" fill={resolveCssColor(q.colorVar)} />
-                <text x="20" y="10" style={{ fontFamily: FONT.body, fontSize: "11px", fill: C.text }}>
-                  {q.label}
-                </text>
-              </g>
-            ))}
-          </g>
-        </svg>
-      );
-    } else {
-      // Grouping by Factor: X-axis has 6 factors. Under each, 3 cohorts.
-      const clusterWidth = 72;
-      const clusterGap = 12;
-      
-      return (
-        <svg viewBox="0 0 740 380" style={{ width: "100%", height: "auto", overflow: "visible" }}>
-          {/* Grid lines */}
-          {ticks.map(t => (
-            <g key={t}>
-              <line x1={xMarginLeft} y1={getY(t)} x2={chartWidth + 10} y2={getY(t)} stroke={C.ghost} strokeWidth="1" />
-              <text x={xMarginLeft - 10} y={getY(t) + 4} textAnchor="end" style={{ fontFamily: FONT.mono, fontSize: "10px", fill: C.muted }}>
-                {t.toFixed(1)}
-              </text>
-            </g>
-          ))}
-          {halfTicks.map(t => (
-            <line key={t} x1={xMarginLeft} y1={getY(t)} x2={chartWidth + 10} y2={getY(t)} stroke={C.ghost} strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-          ))}
-
-          {/* Render clusters */}
-          {QUESTIONS.map((q, qIdx) => {
-            const clusterX = xMarginLeft + 10 + qIdx * (clusterWidth + clusterGap);
-            const cohortBarWidth = 18;
-            const cohortBarGap = 2;
-            const totalBarWidth = COHORTS.length * cohortBarWidth + (COHORTS.length - 1) * cohortBarGap;
-            const offsetLeft = (clusterWidth - totalBarWidth) / 2;
-
-            return (
-              <g key={q.id}>
-                {/* Factor Label underneath cluster */}
-                <text 
-                  x={clusterX + clusterWidth / 2} 
-                  y={yBottom + 22} 
-                  textAnchor="middle" 
-                  style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "9px", fill: C.textBright, letterSpacing: "0.02em", textTransform: "uppercase" }}
-                >
-                  {q.label.split(" ").map((word, wIdx) => (
-                    <tspan key={wIdx} x={clusterX + clusterWidth / 2} dy={wIdx > 0 ? "11" : "0"}>
-                      {word}
-                    </tspan>
-                  ))}
-                </text>
-
-                {/* Cohorts inside this factor */}
-                {COHORTS.map((c, cIdx) => {
-                  const factorRes = stats.matrix[c.id]?.[q.id] || { average: 0, n: 0 };
-                  const barX = clusterX + offsetLeft + cIdx * (cohortBarWidth + cohortBarGap);
-                  const barHeight = (factorRes.average / 5) * chartHeight;
-                  const barColor = resolveCssColor(c.colorVar);
-
-                  return (
-                    <g key={c.id}>
-                      <rect
-                        x={barX}
-                        y={getY(factorRes.average)}
-                        width={cohortBarWidth}
-                        height={barHeight}
-                        fill={barColor}
-                        rx="2"
-                        onMouseEnter={(e) => showTooltip(e, `${q.label} · ${c.label}: ${factorRes.average.toFixed(2)} (n=${factorRes.n})`)}
-                        onMouseMove={moveTooltip}
-                        onMouseLeave={hideTooltip}
-                        style={{ cursor: "pointer", transition: "all 0.2s" }}
-                      />
-                      {/* Numeric value label on top of bar */}
-                      {factorRes.average > 0 && (
-                        <text
-                          x={barX + cohortBarWidth / 2}
-                          y={getY(factorRes.average) - 6}
-                          textAnchor="middle"
-                          style={{ fontFamily: FONT.mono, fontSize: "9px", fill: C.textBright, fontWeight: 600 }}
-                        >
-                          {factorRes.average.toFixed(1)}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
-              </g>
-            );
-          })}
-
-          {/* Chart Legend on the Right */}
-          <g transform={`translate(${chartWidth + 35}, ${yTop + 30})`}>
-            <text x="0" y="-8" style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "11px", fill: C.goldBright, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Cohort
-            </text>
-            {COHORTS.map((c, idx) => (
-              <g key={c.id} transform={`translate(0, ${idx * 22 + 10})`}>
-                <rect width="12" height="12" rx="2" fill={resolveCssColor(c.colorVar)} />
-                <text x="20" y="10" style={{ fontFamily: FONT.body, fontSize: "11px", fill: C.text }}>
-                  {c.label}
-                </text>
-              </g>
-            ))}
-          </g>
-        </svg>
-      );
-    }
-  }, [loading, error, data, groupBy, stats]);
 
   return (
     <div style={{
@@ -433,15 +247,15 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
                     lineHeight: 1.15,
                     letterSpacing: "-0.01em",
                     marginBottom: "0.4rem",
-                  }}>A Look at the Pleasure Gap</h2>
+                  }}>The Pleasure Gap</h2>
                   <p style={{
                     fontFamily: FONT.body,
                     fontSize: "0.88rem",
                     color: C.muted,
                     lineHeight: 1.5,
                   }}>
-                    Averaged scores for male-pathway sexual experiences. 
-                    {stats.avgN > 0 && ` Mean sample size per factor: n≈${stats.avgN}.`}
+                    Across six measures of sexual experience, circumcised respondents rated their experiences lower than intact respondents on every axis. The largest gap, pleasure from mobile skin, was 2.5 points on a 5-point scale.
+                    {stats.avgN > 0 && ` (Mean sample size per factor: n≈${stats.avgN}.)`}
                   </p>
                 </div>
 
@@ -510,6 +324,34 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
                       </button>
                     </div>
 
+                    {/* Show Deficit Toggle */}
+                    <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${showGap ? C.red : C.ghost}` }}>
+                      <button
+                        onClick={() => setShowGap(!showGap)}
+                        style={{
+                          background: showGap ? C.bgCard : "transparent",
+                          color: showGap ? C.red : C.muted,
+                          border: "none",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: 6,
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.8rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          cursor: "pointer",
+                          boxShadow: showGap ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                          transition: "all 0.2s",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          fontWeight: showGap ? 700 : 500
+                        }}
+                      >
+                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: showGap ? C.red : "transparent", border: `1px solid ${showGap ? C.red : C.muted}` }} />
+                        Highlight Sensation Gap
+                      </button>
+                    </div>
+
                     {/* Group By Pivot (Only for Columns) */}
                     {viewMode === "columns" && (
                       <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${C.ghost}` }}>
@@ -570,9 +412,9 @@ export default function PleasureGapPage({ routerState, navigate, updateState }) 
               )}
               {!error && data && (
                 <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s", pointerEvents: loading ? "none" : "auto" }}>
-                  {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
-                  {viewMode === "radar" && <PleasureRadarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
-                  {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} groupBy={groupBy} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  {viewMode === "radar" && <PleasureRadarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} groupBy={groupBy} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
                 </div>
               )}
             </div>

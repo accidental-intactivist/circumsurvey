@@ -77,7 +77,7 @@ export const DEMOGRAPHIC_DIMENSIONS = [
       "Hinduism",
       "Buddhism",
       "New Age / Spiritual but not religious",
-      "No significant religious/spiritual/cultural tradition influencing this topic.",
+      { value: "Atheist / Agnostic / Secular", label: "Atheist / Secular" },
     ],
   },
   {

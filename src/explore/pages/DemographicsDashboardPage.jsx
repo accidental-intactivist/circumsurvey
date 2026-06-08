@@ -22,7 +22,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { C, FONT, PATH_COLORS, API_BASE, resolveCssColor } from "../styles/tokens";
 
 gsap.registerPlugin(ScrollTrigger);
-import { getResponseDistribution, getAggregate, getCount } from "../lib/api";
+import { getResponseDistribution, getAggregate, getCount, getGeo } from "../lib/api";
 import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
 import AddToReportButton from "../components/AddToReportButton";
 import SharePopover from "../components/SharePopover";
@@ -283,6 +283,8 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
               <span style={{ fontSize: "1.1em" }}>{s.icon}</span> {s.label}
             </div>
           ))}
+          <div style={{ height: 1, background: C.ghost, margin: "1.5rem 0", opacity: 0.3 }} />
+          <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
         </aside>
 
         {/* Right Column: Exhibits */}
@@ -948,8 +950,8 @@ function GeographicOrigins({ cohort, tooltip }) {
 
     if (mapLevel === "us_state") {
       Promise.all([
-        fetch(`${API_BASE}/geo?level=us_state&by=${splitBy}&when=${locationTime}`).then(r => r.json()),
-        fetch(`${API_BASE}/geo?level=canada_province&by=${splitBy}&when=${locationTime}`).then(r => r.json())
+        getGeo("us_state", { by: splitBy, when: locationTime, cohort }),
+        getGeo("canada_province", { by: splitBy, when: locationTime, cohort })
       ])
         .then(([usRes, caRes]) => {
           const mergedLocations = [
@@ -964,15 +966,14 @@ function GeographicOrigins({ cohort, tooltip }) {
         })
         .catch(() => setLoading(false));
     } else {
-      fetch(`${API_BASE}/geo?level=${mapLevel}&by=${splitBy}&when=${locationTime}`)
-        .then(r => r.json())
+      getGeo(mapLevel, { by: splitBy, when: locationTime, cohort })
         .then(data => {
           setGeoData(data);
           setLoading(false);
         })
         .catch(() => setLoading(false));
     }
-  }, [inView, mapLevel, splitBy, locationTime]);
+  }, [inView, mapLevel, splitBy, locationTime, JSON.stringify(cohort)]);
 
   const cohortData = useMemo(() => {
     if (!geoData || !geoData.locations) return { results: {} };
@@ -1075,6 +1076,7 @@ function GeographicOrigins({ cohort, tooltip }) {
               onRemoveRegion={handleRegionClick}
               onClearAll={() => setSelectedRegions([])}
               tooltip={tooltip}
+              cohort={cohort}
             />
           </>
         )}
@@ -1107,7 +1109,7 @@ function regionFilterColumn(level, locationTime) {
   return null;
 }
 
-function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onClearAll, tooltip }) {
+function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onClearAll, tooltip, cohort }) {
   const [data, setData] = useState({});      // { "regionKey": { axisId: { avg, n } } }
   const [loading, setLoading] = useState(false);
 
@@ -1126,7 +1128,7 @@ function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onCl
       const col = regionFilterColumn(r.level, locationTime);
       if (!col) return [];
       return RADAR_AXES.map((axis) =>
-        getResponseDistribution(axis.id, { cohort: { [col]: r.name } })
+        getResponseDistribution(axis.id, { cohort: { ...cohort, [col]: r.name } })
           .then((res) => ({
             key: regionKey(r),
             axisId: axis.id,
@@ -1149,7 +1151,7 @@ function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onCl
     });
 
     return () => { cancelled = true; };
-  }, [JSON.stringify(selectedRegions), locationTime, regionKey]);
+  }, [JSON.stringify(selectedRegions), locationTime, regionKey, JSON.stringify(cohort)]);
 
   // Compute one polygon per selected region. Skip regions with n<5 per axis to
   // respect the brief's minimum-sample rule.

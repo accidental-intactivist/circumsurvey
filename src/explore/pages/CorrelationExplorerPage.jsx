@@ -4,7 +4,7 @@ import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/Demo
 import DemographicSankey from "../components/DemographicSankey";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { useTooltip, Tooltip } from "../components/Tooltip";
-import { getQuestions, getAggregate } from "../lib/api";
+import { getQuestions, getAggregate, cohortToFilterParams } from "../lib/api";
 import { C, FONT, API_BASE } from "../styles/tokens";
 
 // ── Mirror-pair aggregates ─────────────────────────────────────────────────
@@ -310,19 +310,9 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
     let url = `${API_BASE}/aggregate?q=${activeX.id}&by=${activeY.id}`;
 
     if (cohort) {
-      const entries = Object.entries(cohort).filter(([, v]) => v);
-      if (entries.length > 0) {
-        const [col, val] = entries[0];
-        const demoCols = ["country_born", "country_now", "us_state_born", "us_state_now",
-          "can_province_born", "can_province_now",
-          "race_ethnicity", "age_bracket", "generation", "education",
-          "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
-        const religionCols = ["upbringing_significance", "primary_tradition", "cultural_background",
-          "christian_denomination", "jewish_denomination", "islamic_madhhab"];
-        const table = religionCols.includes(col) ? "religion" : demoCols.includes(col) ? "demographics" : null;
-        if (table) {
-          url += `&filter=${table}.${col}=${encodeURIComponent(val)}`;
-        }
+      const filters = cohortToFilterParams(cohort);
+      for (const f of filters) {
+        url += `&filter=${f}`;
       }
     }
     return url;

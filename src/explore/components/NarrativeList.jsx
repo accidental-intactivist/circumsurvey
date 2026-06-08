@@ -370,6 +370,11 @@ export default function NarrativeList({
                   if (region && country) locStr = `${region}, ${country}`;
                   else if (country) locStr = country;
 
+                  let respondentMeta = "";
+                  if (genStr && locStr) respondentMeta = `${genStr} · ${locStr}`;
+                  else if (genStr) respondentMeta = genStr;
+                  else if (locStr) respondentMeta = locStr;
+
                   return (
                     <div key={idx} style={{
                       background: "var(--c-bgSoft)",

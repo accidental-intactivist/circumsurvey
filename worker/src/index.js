@@ -422,13 +422,25 @@ async function handleGeo(env, url) {
   const allowedDemographics = ["country_born", "country_now", "us_state_born", "us_state_now", "race_ethnicity", "age_bracket", "generation", "education", "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
   const allowedReligion = ["upbringing_significance", "primary_tradition", "cultural_background", "christian_denomination", "jewish_denomination", "islamic_madhhab"];
 
+  const filters = url.searchParams.getAll("filter");
+  const filterData = buildFilterWhere(filters);
+  const filterWhere = filterData.filterWhere;
+  const bindings = [];
+  bindings.push(...filterData.bindings);
+
+  let filterJoin = "";
+  if (filterData.needsReligion) {
+    filterJoin += " LEFT JOIN religion rg ON rg.respondent_id = d.respondent_id";
+  }
+
   let sql;
   if (by === "pathway") {
     sql = `
       SELECT d.${col} AS location, resp.pathway AS bucket, COUNT(*) AS n
       FROM demographics d
       JOIN respondents resp ON resp.id = d.respondent_id
-      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      ${filterJoin}
+      WHERE d.${col} IS NOT NULL AND d.${col} != '' ${filterWhere}
       GROUP BY d.${col}, resp.pathway
       ORDER BY d.${col}, n DESC
     `;
@@ -436,19 +448,22 @@ async function handleGeo(env, url) {
     sql = `
       SELECT d.${col} AS location, d.${by} AS bucket, COUNT(*) AS n
       FROM demographics d
-      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      ${filterJoin}
+      WHERE d.${col} IS NOT NULL AND d.${col} != '' ${filterWhere}
       GROUP BY d.${col}, d.${by}
       ORDER BY d.${col}, n DESC
     `;
   } else if (allowedReligion.includes(by)) {
+    let religionJoin = filterData.needsReligion ? "" : " LEFT JOIN religion rg ON rg.respondent_id = d.respondent_id";
     const bucketCol = by === "primary_tradition"
-      ? "CASE WHEN rel.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR rel.primary_tradition IS NULL OR rel.primary_tradition = 'None' OR rel.primary_tradition = '' THEN 'Atheist / Agnostic / Secular' ELSE rel.primary_tradition END"
-      : `rel.${by}`;
+      ? "CASE WHEN rg.primary_tradition = 'No significant religious/spiritual/cultural tradition influencing this topic.' OR rg.primary_tradition IS NULL OR rg.primary_tradition = 'None' OR rg.primary_tradition = '' THEN 'Atheist / Agnostic / Secular' ELSE rg.primary_tradition END"
+      : `rg.${by}`;
     sql = `
       SELECT d.${col} AS location, ${bucketCol} AS bucket, COUNT(*) AS n
       FROM demographics d
-      LEFT JOIN religion rel ON rel.respondent_id = d.respondent_id
-      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      ${filterJoin}
+      ${religionJoin}
+      WHERE d.${col} IS NOT NULL AND d.${col} != '' ${filterWhere}
       GROUP BY d.${col}, bucket
       ORDER BY d.${col}, n DESC
     `;
@@ -456,12 +471,14 @@ async function handleGeo(env, url) {
     sql = `
       SELECT d.${col} AS location, COUNT(*) AS n
       FROM demographics d
-      WHERE d.${col} IS NOT NULL AND d.${col} != ''
+      ${filterJoin}
+      WHERE d.${col} IS NOT NULL AND d.${col} != '' ${filterWhere}
       GROUP BY d.${col} ORDER BY n DESC
     `;
   }
   
-  const { results } = await env.DB.prepare(sql).all();
+  const stmt = bindings.length > 0 ? env.DB.prepare(sql).bind(...bindings) : env.DB.prepare(sql);
+  const { results } = await stmt.all();
   
   if (by === "pathway" || allowedDemographics.includes(by) || allowedReligion.includes(by)) {
     const byLoc = {};

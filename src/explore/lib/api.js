@@ -211,6 +211,19 @@ export async function getAggregate(questionId, { by = "pathway", cohort = null }
   return fetchJson(`${API_BASE}/aggregate?${params.toString()}`);
 }
 
+export async function getGeo(level, { by = null, when = "born", cohort = null } = {}) {
+  const params = new URLSearchParams();
+  params.set("level", level);
+  if (by) params.set("by", by);
+  if (when) params.set("when", when);
+  
+  const filters = cohortToFilterParams(cohort);
+  for (const f of filters) {
+    params.append("filter", f);
+  }
+  return fetchJson(`${API_BASE}/geo?${params.toString()}`);
+}
+
 export async function getSections(pathway = null) {
   const params = new URLSearchParams();
   if (pathway) params.set("pathway", pathway);

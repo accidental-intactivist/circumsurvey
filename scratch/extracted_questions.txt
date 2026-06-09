@@ -1,0 +1,2902 @@
+=== EXTRACTED QUESTIONS BY TOPIC ===
+
+ID: family_politics
+Section: Family
+Pathway: all
+Type: single_select
+Tier: 2
+N: 490
+Prompt: Politically, how would you generally describe your views or your family's views during your upbringing?
+Options: [
+  "Apolitical / Not focused on politics",
+  "Conservative",
+  "Liberal / Progressive",
+  "Libertarian",
+  "Moderate / Centrist",
+  "Prefer not to say / Unsure",
+  "Very Conservative / Right-Leaning",
+  "Very Liberal / Progressive / Left-Leaning"
+]
+--------------------------------------------------
+
+ID: religion_christian_circ_view
+Section: Religion
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 215
+Prompt: Within your specific Christian tradition/upbringing, was infant circumcision generally viewed as
+Options: [
+  "A cultural norm to follow",
+  "A non-issue",
+  "A recommended practice for health/hygiene",
+  "Discouraged or seen as unnecessary",
+  "left to parents"
+]
+--------------------------------------------------
+
+ID: religion_jewish_brit_milah_view
+Section: Religion
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 12
+Prompt: In your upbringing or current understanding within your Jewish context, how was/is Brit Milah (ritual circumcision) generally viewed?
+Options: [
+  "As a non-negotiable religious commandment (mitzvah) central to Jewish identity.",
+  "As a practice open to discussion",
+  "As a practice that some in my community/family questioned or chose alternatives to.",
+  "As an important tradition and cultural marker",
+  "Not a significant topic of discussion or emphasis in my specific context.",
+  "though perhaps with some flexibility in interpretation or practice.",
+  "with varying opinions on its necessity or form in modern times."
+]
+--------------------------------------------------
+
+ID: religion_jewish_diversity_view
+Section: Religion
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Brit Milah within contemporary Jewish life?
+Options: [
+  "I think Judaism often supports individualism and therefor Brit Milah isn’t as mandatory as taught. But no one who avoids Brit Milah talks about it. It’s done secretively I think.",
+  "I think it's unacceptable for non practicing Jews to commit those atrocities. We have enough ways to be unique.",
+  "I think our religion is an ever evolving dialogue with God and as such doversity of viewpoints and discussion is very important.",
+  "I'm against indoctrinating children",
+  "Minimal room within communities",
+  "Not much",
+  "There is room in who does it or how it's done. But most Jews I know don't question the mandate to do it.",
+  "There is some room",
+  "Traditionally? Not much – but I think that is changing. As more people question medical heterodoxy and look for more natural",
+  "and it's growing",
+  "and think religion and circumcision should be left for the kid to decide when he's 18+. Children aren't old enough to understand what it is they're being forced to believe without question.",
+  "and worse than that",
+  "but it is still very small. I think most Jews still view circumcision as non-negotiable",
+  "circumcision often comes to light as another point to dig deep on. I have had more conversations about it in recent years than prior to that. I think a major shift happened since 2020.",
+  "do not understand why it is wrong.",
+  "integrative lifestyles"
+]
+--------------------------------------------------
+
+ID: religion_islamic_school
+Section: Religion
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: Which school of Islamic thought (madhhab), theological branch, or cultural expression of Islam do you (or your family during your upbringing) most closely identify with, if any?
+Options: [
+  "Culturally Muslim / Secular",
+  "Just Muslim / Unaffiliated with a specific school/branch",
+  "Progressive/Liberal Muslim",
+  "Shia",
+  "Sunni"
+]
+--------------------------------------------------
+
+ID: religion_islamic_khitan_view
+Section: Religion
+Pathway: all
+Type: single_select
+Tier: 2
+N: 9
+Prompt: In your upbringing or current understanding within your Islamic context, how was/is Khitan (penile circumcision, also sometimes known as Sunnet) generally viewed?
+Options: [
+  "As a highly recommended Sunnah (prophetic tradition) and an important act of purification/hygiene.",
+  "As a strong cultural practice deeply intertwined with Muslim identity, even if not explicitly mandated by the Quran.",
+  "Not a major topic of discussion or emphasis in my specific familial or community context."
+]
+--------------------------------------------------
+
+ID: religion_islamic_fard_vs_sunnah
+Section: Religion
+Pathway: all
+Type: single_select
+Tier: 2
+N: 9
+Prompt: In your understanding, is Khitan considered a direct commandment (Fard) from the Quran, or more of an emphasized Sunnah (prophetic tradition) and cultural norm?
+Options: [
+  "A cultural practice with religious associations",
+  "A mix of these",
+  "Primarily an emphasized Sunnah",
+  "Unsure"
+]
+--------------------------------------------------
+
+ID: religion_islamic_alternatives_awareness
+Section: Religion
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: Have you ever encountered or explored interpretations within Islam that question the absolute necessity of Khitan, discuss potential harms, or emphasize the Quran's silence on the matter?
+Options: [
+  "Aware of them",
+  "Not interested in such interpretations",
+  "Yes",
+  "but haven't deeply explored",
+  "extensively",
+  "somewhat"
+]
+--------------------------------------------------
+
+ID: exp_lubrication_need
+Section: Sexual Experience
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 463
+Prompt: Do you generally need to use artificial LUBRICATION (e.g., store-bought lube, saliva, lotion) for comfortable and pleasurable masturbation or partnered sex?
+Options: [
+  "Never find it necessary; my body's natural lubrication (or saliva) is sufficient.",
+  "Not applicable / No sexual experience of this kind.",
+  "Often helpful for maximizing pleasure",
+  "Rarely find it necessary.",
+  "Sometimes",
+  "Yes",
+  "but not strictly necessary for basic comfort.",
+  "depending on the situation or partner.",
+  "it's always or almost always necessary for comfort and pleasure."
+]
+--------------------------------------------------
+
+ID: exp_pleasure_comm_difficulty
+Section: Sexual Experience
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 464
+Prompt: When it comes to partnered sex and intimacy, have you ever felt it was difficult to communicate what types of touch provide you with genuine pleasure?
+Options: [
+  "I generally feel my partners understand what provides me pleasure.",
+  "I've never really thought about it in these terms.",
+  "I've occasionally experienced this.",
+  "I've often felt this kind of disconnect or difficulty in communication.",
+  "No",
+  "Not applicable / No partnered sexual experience of this kind.",
+  "Yes"
+]
+--------------------------------------------------
+
+ID: exp_pre_ejaculate_awareness
+Section: Experience
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 464
+Prompt: Thinking about your typical sexual arousal, do you notice the presence of pre-ejaculate fluid (sometimes called 'pre-cum' or Cowper's gland fluid – a clear fluid released from the penis before orgasm/ejaculation)?
+Options: [
+  "A Moderate Amount: I produce a noticeable amount",
+  "A Significant Amount: I produce a significant amount",
+  "A Small Amount: I typically notice a drop or two",
+  "None or Barely Noticeable: I produce very little to no noticeable pre-ejaculate.",
+  "Unsure / I haven't paid attention to this.",
+  "Varies Greatly: The amount changes significantly depending on arousal level",
+  "etc.",
+  "making it hard to generalize.",
+  "or a slight moistness at the tip of my penis.",
+  "time"
+]
+--------------------------------------------------
+
+ID: exp_needs_comm_ability
+Section: Experience
+Pathway: all
+Type: single_select
+Tier: 2
+N: 457
+Prompt: How would you describe your ability to communicate your sexual needs and what provides you pleasure to a partner?
+Options: [
+  "Generally easy",
+  "Not applicable",
+  "Often difficult",
+  "Sometimes challenging",
+  "Very easy, I'm very open"
+]
+--------------------------------------------------
+
+ID: intact_circ_awareness_age
+Section: Intact Pathway
+Pathway: intact
+Type: single_select
+Tier: 2
+N: 140
+Prompt: Can you recall when you first understood what "being circumcised" actually meant—not just that some boys were different, but the specifics of it being a surgical alteration of genitals?
+Options: [
+  "Adulthood",
+  "Early childhood",
+  "I've always just known about the distinction",
+  "Not applicable - grew up where intact is the norm and was unaware of circumcision as a common practice elsewhere",
+  "Pre-teen years",
+  "Teenage years (e.g., health class, peer discussions)"
+]
+--------------------------------------------------
+
+ID: intact_foreskin_role_sex
+Section: Intact Pathway
+Pathway: intact
+Type: open_text
+Tier: 3
+N: 120
+Prompt: How would you describe your complete FORESKIN (the moveable sheath of skin) play in your sexual experiences (masturbation or partnered sex)?
+--------------------------------------------------
+
+ID: intact_curiosity_about_circ_aspects
+Section: Intact Pathway
+Pathway: intact
+Type: open_text
+Tier: 3
+N: 95
+Prompt: If you have wondered, what aspects are you most curious about (e.g., different sensations, the impact of constant glans exposure, different mechanics)?
+--------------------------------------------------
+
+ID: intact_partner_comparison_observation
+Section: Intact Pathway
+Pathway: intact
+Type: multi_select
+Tier: 2
+N: 130
+Prompt: If you have had sexual experiences with circumcised partners, have you discussed with them or observed any differences in their reported sensitivity, sexual function, orgasm quality, or need for lubrication compared to your own experience as an intact person?
+Options: [
+  "No",
+  "Not applicable - no same-sex partners or no partners with differing status",
+  "Unsure or not enough experience to compare",
+  "Yes",
+  "not really or no opportunity for such discussion",
+  "some differences noted",
+  "we've discussed/I've observed significant differences"
+]
+--------------------------------------------------
+
+ID: intact_partner_comparison_desc
+Section: Intact Pathway
+Pathway: intact
+Type: open_text
+Tier: 3
+N: 49
+Prompt: If yes, can you briefly describe the types of differences you've noted?
+--------------------------------------------------
+
+ID: intact_pressure_to_circ
+Section: Intact Pathway
+Pathway: intact
+Type: multi_select
+Tier: 1
+N: 135
+Prompt: As an intact individual, have you ever felt pressure (social, cultural, from partners, or medical professionals) to consider circumcision for yourself, or have you ever personally researched or seriously contemplated getting circumcised?
+Options: [
+  "I am planning getting circumcised for myself at some point.",
+  "I have felt pressure AND have briefly considered or researched getting circumcised for myself.",
+  "I have felt pressure AND have seriously considered getting circumcised for myself at some point.",
+  "I have felt some societal/cultural pressure or expectation to be circumcised",
+  "I have never felt any pressure and have never considered getting circumcised; I value being intact.",
+  "I've never felt pressure",
+  "No",
+  "Yes",
+  "but I have been curious enough to research what circumcision entails and why others choose it.",
+  "but never seriously considered it for myself."
+]
+--------------------------------------------------
+
+ID: intact_prior_thought_level
+Section: Intact Pathway
+Pathway: intact
+Type: single_select
+Tier: 2
+N: 129
+Prompt: Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are intact, or to the specifics of why your penis wasn't surgically altered?
+Options: [
+  "A great deal of thought",
+  "A moderate amount",
+  "Little thought",
+  "Some thought",
+  "Virtually no thought at al"
+]
+--------------------------------------------------
+
+ID: circ_physical_characteristics_desc
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: open_text
+Tier: 3
+N: 267
+Prompt: When you look at your penis, how would you describe the specific characteristics of your circumcision?
+Subtitle: (e.g., amount of shaft skin remaining, tightness during erection, scar visibility/texture, evenness of skin removal, glans exposure when flaccid/erect)
+--------------------------------------------------
+
+ID: circ_prior_thought_level
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: single_select
+Tier: 2
+N: 312
+Prompt: Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are circumcised, or to the specifics of how/why your penis was surgically altered?
+Options: [
+  "A great deal of thought",
+  "A moderate amount",
+  "Little thought",
+  "Some thought",
+  "Virtually no thought at all"
+]
+--------------------------------------------------
+
+ID: family_sibling_status_mixed_reason
+Section: Family
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 27
+Prompt: Since there is a mix of circumcision states among you and your siblings(s), do you know anything about why the decision was different for different children?
+Options: [
+  "Different mother",
+  "Haven't a clue. Brief conversation on the subject revealed it was a matter of routine when I was delivered by my GP",
+  "He never had phimosis.",
+  "He was born premature and with health problems. Later he got a frenulectomy or some kind of surgery but not a full circumcision",
+  "I don't know what exactly changed their minds",
+  "I think it was literally the GP just acting on routine and my parents not knowing better or caring.",
+  "In my case there was a - supposedly - clear 'medical' reason to have me circumcised at the age of 7. It was not an RIC. So logically that set me apart from anyone else.",
+  "It was a different doctor with him (we also lived in a different city)",
+  "Later in life medical issue.",
+  "Medical decision due to slight scar on the foreskin around teenage years and lie from doctor on the procedure",
+  "Mine was a \"medical\" recomendation",
+  "My bother was born with a different father",
+  "My father was intact",
+  "My mother regretted having me done",
+  "My older brother is a lot older and was left intact.",
+  "My parents didn't mutilate my brother because he had Down's Syndrome so they didn't care about his future sexuality.",
+  "My younger brother had a phimosis issue that created a need for circumcision. The doctor cut the minimal amount necessary to correct the issue.",
+  "Neither of us was circumcised at birth. I chose to get circumcised when I was 15.",
+  "No",
+  "Older half brother was a home birth",
+  "One brother was born in a country where circumcision is not common.",
+  "Only son",
+  "They did not have a doctor notice phimosis",
+  "We were all born intact. That's according to my culture. I chose to be circumcised.",
+  "Yes. I had minor issues with irritation so I was cut like my father",
+  "Youngest brother born 10 years later",
+  "and I believe he is circumcised",
+  "apparently my parents debated a lot and my mom thought I shouldn't be but didn't mind much either way and was ok with my dad deciding I should be just because he is and maybe wanting to cater to my mom's religious family not sure",
+  "as was his son.  My mother cut her son and me.",
+  "because I voluntarily decided to do so at the age of 25",
+  "born to different fathers and birthed in a different hospital",
+  "both of us were premature",
+  "but I think my brother may have been delivered by a different doctor. It wasn't a religious thing on the part of my parents",
+  "but his mother decided against it to save him pain after birth. Was also born in a different province. Where I was born in my city's jewish hospital if that matters...",
+  "he was born in China. My father was a Jewish man",
+  "no doctor involved. The rest of us were born in a hospital with a doctor making decisions",
+  "so my younger brother was left intact. My step brother was born with a different mother",
+  "so the surgery was not considered for them.",
+  "they only did it to their younger sons",
+  "who believed in the medical superstitions attributed to circumcision"
+]
+--------------------------------------------------
+
+ID: restore_openness
+Section: Restoring Pathway
+Pathway: restoring
+Type: open_text
+Tier: 3
+N: 98
+Prompt: Have you been open with partners, friends, or family about your restoration journey?
+--------------------------------------------------
+
+ID: restore_sensitivity_change_desc
+Section: Restoring Pathway
+Pathway: restoring
+Type: open_text
+Tier: 3
+N: 97
+Prompt: Have you experienced noticeable changes in penile SENSITIVITY (general or specific, like in the frenular area) as a result of your restoration?
+Subtitle: Please describe
+--------------------------------------------------
+
+ID: restore_lubrication_change
+Section: Restoring Pathway
+Pathway: restoring
+Type: single_select
+Tier: 2
+N: 107
+Prompt: How has restoration affected your need for LUBRICATION during masturbation or partnered sex?
+Options: [
+  "No significant change",
+  "Not applicable",
+  "Significantly reduced need",
+  "Somewhat reduced need"
+]
+--------------------------------------------------
+
+ID: restore_terminology_view
+Section: Restoring Pathway
+Pathway: restoring
+Type: open_text
+Tier: 3
+N: 99
+Prompt: From your perspective, what does the term "uncircumcised" or "uncut" mean to you as someone who has restored?
+--------------------------------------------------
+
+ID: observe_motivation
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 23
+Prompt: What primarily motivated you to take this survey and explore these topics?
+Options: [
+  "General curiosity about the topic",
+  "I am a HEALTHCARE PROVIDER / MEDICAL PROFESSIONAL.",
+  "I am a PARENT / STEP-PARENT / GUARDIAN who has made (or is making) a decision about infant circumcision for a child in my care.",
+  "I am a parent who has made/is considering a decision about infant circumcision for my son",
+  "I am an ADVOCATE ALLY",
+  "I am the PARTNER of a man (intact, circumcised, or restoring).",
+  "I am the partner of an intact man",
+  "Supporting the survey author's work",
+  "or INTACTIVIST"
+]
+--------------------------------------------------
+
+ID: observe_partner_experience
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 6
+Prompt: As a PARTNER, what have you observed or experienced regarding your partner's genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, their sexual pleasure, or their feelings about their body?
+Options: [
+  "He was circumcised at birth and feels that it has not impacted him – but how would he really know that?",
+  "It's can be a delicate subject to talk about because he is aware that circumcision is sexual abuse of children so it's hard for him to think about what he went through as an infant that was circumcised. Thankfully he has no issues with body image or pleasure",
+  "My partner is intact. It causes less vaginal chafing issues during sex",
+  "Not a significant difference for me either way",
+  "Not as much lubricationnis needed. He seems to get more pleasure during intimate time",
+  "They struggle to reach orgasm and use my body aggressively in that aim. I have to bear discomfort being used for that goal. Their movements don't bring me pleasure. No matter what the emotions are (emotionally close, etc)  their cut bodies have limitations and can't please mine. The men get frustrated upset or angry that they can't please me and I refuse to fake orgasm. They cheat or get abusive out of their resentment toward me not faking orgasm for them. They want anal sex. They get obsessed with strange porn practices. They refuse to acknowledge that their being cut radically changed their sexual function. They threaten to sexually mutilate their future sons. They interact less sexually. Some seek other partners",
+  "alcohol",
+  "and each partner only has experienced sex as circumcised or uncircumcised but not both so have no point of comparison",
+  "and makes sex more fun because of the added stimulation when the foreskin is pulled back. Sometimes",
+  "can provide more early lubrication as the foreskin holds preseminal fluid",
+  "cleanliness. For us",
+  "especially at the head",
+  "etc. Seems to be that there is some grief or even sadness for what he went through as an infant.",
+  "he has good hygiene",
+  "hygiene",
+  "it's a great fidget toy.",
+  "it's a non-issue. This has not been the case with other partners",
+  "it's not an issue: we have a fetish for him smelling like us/me. Separately",
+  "more than any circumcized person I have been with. There was some communication needed in the beginning because I had never been with someone who was intact but he was very knowledgable and just kind of told me the differences between the two. It was never an issue.",
+  "or ?? drugs",
+  "other interests",
+  "porn",
+  "prostitutes",
+  "sensation",
+  "so even when we're not engaging in sexual play or fantasies",
+  "solo hobbies",
+  "there are concerns about smell",
+  "where the hygiene is a concern and has given me a UTI before. Plus"
+]
+--------------------------------------------------
+
+ID: observe_partner_cultural_diff
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 2
+Prompt: If you are the PARTNER of someone whose circumcision status is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?
+Options: [
+  "It hasn't really affected any of those 3 areas. Id say the big change that occurred from what I grew up with is I became very anti-circumcision",
+  "N/A"
+]
+--------------------------------------------------
+
+ID: observe_parent_decision_factors
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 1
+Prompt: As a PARENT or GUARDIAN What were/are the most significant factors influencing your decision (or your thought process if undecided) about circumcision for your child or children
+Options: [
+  "Ethical considerations, Religious beliefs, Information about risks/benefits"
+]
+--------------------------------------------------
+
+ID: observe_parent_info_quality
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: As a PARENT or GUARDIAN, how adequate or biased did you find the information available to you from medical professionals or other sources when making this decision?
+Options: [
+  "Adequate but Biased: I received information",
+  "Completely Inadequate or Absent: I received no real information and felt I was simply following a hospital default or a strong recommendation without context.",
+  "I found it poor and that healthcare professionals were pushing it",
+  "Minimal & Rushed: It was presented as a routine choice needing little discussion",
+  "Not Applicable: The decision was primarily driven by non-medical factors (e.g., religious/cultural tradition).",
+  "and I was given very little information.",
+  "but it was clearly biased towards promoting circumcision.",
+  "even when I questioned them on why / their own knowledge of the procedure (or the latest research)."
+]
+--------------------------------------------------
+
+ID: observe_parent_emotional_state
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 10
+Prompt: As PARENTS/GUARDIANS which statement best captures the emotional state you (or your partner) are/were in regarding their whether to circumcise your child or children?
+Options: [
+  "Confident & Unconflicted: We were confident in our decision and did not experience significant doubt or anxiety.",
+  "Feeling Uninformed but Trusting: We didn't have a lot of information but trusted the hospital/doctor to guide us correctly.",
+  "None of these capture my experience."
+]
+--------------------------------------------------
+
+ID: observe_parent_regret
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Have you ever experienced feelings of REGRET or reconsidered that decision based on information learned later or changes in your perspective?
+--------------------------------------------------
+
+ID: observe_professional_counseling_stance
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: What is your general stance or approach when counseling parents about routine infant circumcision?
+Subtitle: [With PARENTS in a clinical setting]
+Options: [
+  "I actively recommend AGAINST the procedure",
+  "I avoid the topic / The topic does not come up.",
+  "I present it as a completely neutral choice with pros and cons.",
+  "citing ethical/medical reasons."
+]
+--------------------------------------------------
+
+ID: observe_professional_training_protocol
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: What training, guidelines, or protocols have most influenced how you present circumcision to parents?
+Options: [
+  "American Academy of Pediatrics (AAP) policy statements",
+  "Conversations with mentors or senior colleagues",
+  "Guidelines from international medical bodies (e.g., from Europe, Canada, Australia)",
+  "Hospital or clinic protocols",
+  "Independent research I've done myself",
+  "Other (please specify)",
+  "Personal beliefs or experiences"
+]
+--------------------------------------------------
+
+ID: observe_healthcare_parent_questions
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: In your practice, what are the most common questions or concerns you hear from parents regarding this procedure?
+Options: [
+  "Not applicable.",
+  "Questions about pain",
+  "and healing process",
+  "bleeding",
+  "“What about what his father thinks?”"
+]
+--------------------------------------------------
+
+ID: observe_professional_attitudes_change
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: What, if any, changes have you observed in medical consensus or parental attitudes towards routine infant circumcision (RIC) over the course of your career?
+Options: [
+  "Has definitely decreased",
+  "Honestly perspective is shifting. In nursing school 10+ years ago I refused to participate in a circ saying it was technically illegal. Physician used a 15 scalpel and sugar water doing the procedure regardless. Baby got a collapsed lung from screaming. Providers now are at least giving anesthetic (usually)",
+  "Not applicable.",
+  "no longer seems to be the norm. Is now a parent-driven intervention unless medically recommended based on condition"
+]
+--------------------------------------------------
+
+ID: observe_barrier_to_recognition
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 10
+Prompt: What was your personal "tipping point" that moved you from a passive observer to an active advocate?
+Options: [
+  "A friend of mine shared his story about his botched circumcision and how it has affected his life.",
+  "Becoming a parent",
+  "Brother K came to town!",
+  "Having my first child",
+  "Having to refuse to make a child for my married spouse and divorce",
+  "I researched circumcision to understand what it really was and what difference it made. I ended up watching a video of a real circumcision",
+  "I suddenly had the free time and the passion",
+  "Pregnancy with my son",
+  "Realizing the sensitivity of my foreskin",
+  "The level of misinformation out there about how normal this is in our society",
+  "When I was a teenager",
+  "and how critical it is for fathers and sons to match. Also",
+  "and recognizing that people have had their access to sex and pleasure destroyed",
+  "and that turned me against the practice forever.",
+  "being Christian also opened my eyes.",
+  "due to his insistence to sexually mutilate a son. Around that time I was realizing that many of my peers I thought would never ever sexually mutilate a child like they were",
+  "for no reason.",
+  "had done so or would do so. I never imagined this insane thing that was done to our dads",
+  "how medically important it is to do a circumcision",
+  "that it is ESSENTIAL for my sexual contact",
+  "the boomers",
+  "the lack of information about how negatively impactful circumcision is – when people learn this",
+  "they are more likely to make a different decision.",
+  "watching elephant in the hospital on YouTube",
+  "without their consent",
+  "would be something my generation would repeat. I realized it was a hazing sickness with a domino effect."
+]
+--------------------------------------------------
+
+ID: observe_effective_strategy
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 7
+Prompt: Conversely, what strategy or argument have you found to be the least effective or most likely to backfire and shut down a conversation?
+Options: [
+  "Debunking health/hygiene myths never really works",
+  "Highlighting that most of the world does not practice circumcision doesn't help persuade people",
+  "Insulting the parents",
+  "Religion aspects",
+  "Simply asking what people believe about circumcision and why; this opens the door to a real dialogue.",
+  "Talking to Jewish mothers of mutilated sons",
+  "as people are too intent on believing them and will fire back with their own pro-circ sources. Making FGM comparisons is also a no-go",
+  "as the topic is too charged and even those against circumcision may shut you down.",
+  "highlighting that most of the world does not practice it.",
+  "most don't change their minds",
+  "no one wants to be called a terrible person for doing what they think is best for their child"
+]
+--------------------------------------------------
+
+ID: observe_advocate_fgm_mgm_parallel
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 1
+Prompt: Do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or FGM (female genital mutilation)?
+--------------------------------------------------
+
+ID: observe_woman_blind_spot
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 22
+Prompt: From your unique standpoint, what is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding male circumcision, intactness, or their lifelong impacts?
+Options: [
+  "A vast majority of circumcised people do not like being circumcised. They are at best neutral to it",
+  "Babies are not inanimate objects.",
+  "Circumcision was designed to DIMINISH sexual function and make sex WORSE. People right now",
+  "Cultural bias",
+  "I do not think they understand the deep medical and lifelong impact this has on men – as well as the mental health impact.",
+  "I've know people who have regrets both getting and not getting circumcised",
+  "It is not hygienic to perform unnecessary surgery on infants genitals immediately after birth.",
+  "It's sexual abuse and has lifelong psychological influence.",
+  "Lots of people including medical and childcare professionals have incorrect information about proper care for an intact infant or young child",
+  "Many parents do not research",
+  "Most of the pushback I hear people give is that its unhygienic but in actually the hygiene to maintain it can be taught very early on. Any time Ive heard of someone having an issue with being uncut themselves",
+  "My blind guess is that some people are uncomfortable with sexuality and wouldn't push back against a norm that reduced sexual pleasure",
+  "Not understanding that forced RETRACTION is the cause of the damage caused and the reason why circumcision is carried out for later -in-life circumcision trauma giving people the misconception that carrying out the procedure is \"better\" and somehow \"easier\" in infancy.",
+  "People see the procedure as minor and medical. People want their son to match dad.",
+  "People think it’s for health and sanitation",
+  "Sleeping with a long term parter who was a cut man he hated that his mother had a forever decision in our sex life",
+  "That \"foreskin\" is a valuable body part.",
+  "That it has no bearing on sexual pleasure and it’s just cleaner",
+  "The biggest misconception I feel is that bodily autonomy is the distinct right of a parent as a matter of authority over a child. To me",
+  "The body autonomy side. This is irreversible",
+  "The medical fraud",
+  "and I am not unique.",
+  "and at worst actively suicidal because of the trauma done to them as a child.\n\nAdditionally",
+  "and could have lasting effects.",
+  "and makes orgasm very difficult as the foreskin is a key erogenous zone.\n\nIt is by far THE most sensitive part of my penis",
+  "and would choose to give their kid all the future happiness",
+  "assume since it was done to them or their partner and the hospital/doctor recommends it",
+  "but my hope is that they just don't realize what they are denying their kid",
+  "if they knew",
+  "it makes sex more difficult due to a lack of lubrication and protection for the nerves in the glans",
+  "it was always something that developed from a lack of education on how to properly clean themselves",
+  "must be good and should go ahead with it. They don’t feel the need to do their own research to learn more about it and its significance.",
+  "propagated by the for profit medical industry.",
+  "similar to when a child gets their ears pierced prematurely. It is a lifelong decision that I don't feel a parent should make for their child.",
+  "so I assume many parents do as well.",
+  "so no matter what choice you make you cns still get it \"wrong\"",
+  "that the risk for it being botched is low/unimportant.",
+  "then it is the norm",
+  "think that somehow it makes it better. They are completely wrong. They also think that it's somehow healthier",
+  "this is a topic of consent and often I feel that it should be the decision of the child",
+  "when in fact it leads to problems like meatal stenosis. There is no improving the penis by radically changing its form and function through a major amputation.",
+  "who have only ever known mutilated diminished sex"
+]
+--------------------------------------------------
+
+ID: observe_woman_final_thoughts
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 15
+Prompt: Is there anything else you'd like to share based on your observations, experiences, or your reasons for being interested in this topic?
+Options: [
+  "1930s around 50/50",
+  "Before I was ever pregnant I heard many conversations about it among people who were parents.  They appeared to be aware of how painful it was",
+  "Body autonomy for all ❤️",
+  "Christians are starting to (re)realize circumcision is wrong. It used to be considered wrong and became more normal as modern medicine picked up. But there is a reemergence of keeping boys intact in the Christian church. It would be a good place to get advocates and outreach",
+  "Circumcision trauma has deep and systemic dysfunction that ripples out through our society and holds several negative implications that are not often linked to or associated but are undoubtedly related. Relationship",
+  "I am Jewish and being a Jewish mom who said well in advance of having a baby boy that she would keep her son intact – and then doing so – genuinely sparked a LOT of anger in people. From what I can tell",
+  "I gave birth in 2020 and 2022 to boys and both times I was asked multiple times from multiple healthcare professionals if I wanted to circumcise",
+  "I was very interested in birth and babies from a very early age.  Also had a brother very close in age.  Grew up believing that's how they were born.  Eventually found my way to more alternative literature about birth where I first learned about it.  It was never talked about when I was growing up.  My mother wasn't aware that she had a choice when she had my brother.  As a health aide",
+  "It does not respect the agency of the individual to circumcise them at birth",
+  "It really is an unnecessarily cruel procedure that people campaign against for avoidable reasons. Its ridiculous",
+  "N/a",
+  "No",
+  "People have a right to bodily autonomy",
+  "Thank you!",
+  "The reason I chose \"unsure / it depends\" is because I imagine people who were cut don't know anything else",
+  "This survey felt biased",
+  "This topic is extremely difficult for people to look at.  I believe that our brains literally block the information because of the pain that the truth would cause us to go through (self-preservation).  Considering that it is harmful means accepting that our parents",
+  "aggression",
+  "and disturbing as we became parents (first to a baby girl and then, a few years later, to our son). The willingness to not question",
+  "and emotional intelligence being stunted or overall negatively impacted",
+  "and others who we may love in one way or another have been complicit in causing harm.  In my case",
+  "and questioned about it when I said no",
+  "and to continue perpetrating this on baby boys – in the name of religion – is a reminder that beautiful",
+  "and would shudder or sound angry when talking about it",
+  "and would then maybe miss it",
+  "attachment and connection issues",
+  "but I've certainly met people who didn't or wouldn't.  Only comment I ever got about my sons was from a former midwife who was helping out by changing a diaper and complimented me on leaving them intact.  No one else ever said anything about it.",
+  "but there still seemed to be very little questioning of it.  As far as my interest",
+  "having nothing to compare it to; but I would assume that if they could flip back and forth",
+  "in my experience",
+  "intimacy",
+  "it is our job to do what is best for our children and not follow doctrine or dogma.",
+  "lack of empathy in victims and in family dynamics. All can be linked through psychology and the neurological impacts and behavior stemming from deep subconsciously held trauma. Stopping this unethical practice can become a way to heal these issues and heal our broken fragmented society as a whole",
+  "meaningful religions / cultures can still lose their way. As humans and parents",
+  "medical professionals",
+  "most after 1940 were circumcised unless from a dif culture or born in another country.  I think it's mostly the default around here",
+  "most men born in the 1920s were intact",
+  "my own country (government) caused the harm and still does not acknowledge it.  It's more difficult when it may be our own body",
+  "our own child or our own siblings who have been harmed.  I think that there has been no other social movement that so deeply affects our our psychology and sociology.",
+  "people refuse to acknowledge that this is a \"rite\" and \"commandment\" of sorts that we could (should) question (or if we do question it, we should still perform it). The anger I received about it was not only upsetting for me and my husband but it was invasive",
+  "pervasive",
+  "porn addiction",
+  "religious leaders",
+  "so may not feel it had any impact on them",
+  "they would perhaps choose to be intact",
+  "to turn a blind eye",
+  "which is pretty crazy and concerning",
+  "which may impact results"
+]
+--------------------------------------------------
+
+ID: culture_body_intervention_view
+Section: Culture & Attitudes
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 488
+Prompt: In general, how do you view the relationship between the human body's natural state and medical interventions?
+Options: [
+  "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
+  "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",
+  "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon",
+  "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear",
+  "even in the absence of disease.\"",
+  "manage",
+  "or optimize the body's natural state",
+  "present medical problem.\""
+]
+--------------------------------------------------
+
+ID: culture_community_expectation
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 488
+Prompt: In your family or the community you grew up in, what was the general EXPECTATION for newborn boys regarding circumcision?
+Options: [
+  "I'm not sure what the expectation was.",
+  "It was a 50/50 choice with no strong expectation either way.",
+  "It was the unquestioned norm; I believe nearly all boys were circumcised.",
+  "It was uncommon; being left intact was the more typical path.",
+  "It was very common, but not universal; there was some awareness of intact boys."
+]
+--------------------------------------------------
+
+ID: culture_primary_view_of_circ
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 491
+Prompt: In your view, or based on what you understood from your upbringing/community, penile circumcision is primarily seen as
+Options: [
+  "A combination of the above (please briefly explain which ones seem most prominent).",
+  "A cosmetic preference.",
+  "A cultural tradition or rite of passage.",
+  "A medically necessary or beneficial health procedure.",
+  "A religious requirement.",
+  "I've never really categorized it.",
+  "Something else entirely (please specify)."
+]
+--------------------------------------------------
+
+ID: culture_additional_comments
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 233
+Prompt: Additional comments
+--------------------------------------------------
+
+ID: culture_stereotype_intact
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 383
+Prompt: Thinking back to your upbringing or just general societal messages (from peers, media, family, health class), what was a common STEREOTYPE, assumption, or "fact" that 'everyone seemed to know' about INTACT (uncircumcised) penises?
+--------------------------------------------------
+
+ID: culture_stereotype_circ
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 371
+Prompt: Similarly, what was a common STEREOTYPE, assumption, or "fact" that 'everyone seemed to know' about CIRCUMCISED penises?
+--------------------------------------------------
+
+ID: culture_assoc_medically_healthier
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 474
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Medically Healthier]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_hygienic
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 472
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Hygienic / Cleaner]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_natural
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 475
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Natural' Looking]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_aesthetic
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 1
+N: 473
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Aesthetically Pleasing / "Better" Looking]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_sensitive
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 474
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Sensitive / Greater Pleasure Potential]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_easier_care
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 475
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Easier to Care For]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_masculine
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 472
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Manly' or 'Masculine']
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_modern
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 471
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Modern / Progressive]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_traditional
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 472
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Traditional / Old-Fashioned]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_more_socially_acceptable
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 471
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Socially Acceptable (in your primary culture)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_partner_preference
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 473
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Preferred by Sexual Partners (in general)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_higher_education
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 468
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Intelligence/Education (of parents who choose it)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_higher_ses
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 470
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Socioeconomic Status (of parents who choose it)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_liberal_values
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 470
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Liberal/Progressive Values (of parents who choose it)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: culture_assoc_conservative_values
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 467
+Prompt: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Conservative/Traditional Values (of parents who choose it)]
+Options: [
+  "Definitely Circumcised",
+  "Definitely Intact",
+  "Likely Circumcised",
+  "Likely Intact",
+  "No Significant Difference / Equally Likely",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: final_healthier_hygienic_belief
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 489
+Prompt: Putting aside your personal satisfaction or feelings, which state do you generally believe to be MEDICALLY HEALTHIER or more HYGIENIC overall?
+Options: [
+  "I am genuinely unsure which is considered healthier.",
+  "The circumcised state is significantly healthier/more due to specific medical benefits",
+  "The circumcised state is slightly healthier/more hygienic.",
+  "The intact state (with normal hygiene) is significantly healthier.",
+  "The intact state (with normal hygiene) is slightly healthier due to the protective function of the foreskin.",
+  "There is no significant health or hygiene difference between the two states."
+]
+--------------------------------------------------
+
+ID: final_pleasure_potential_belief
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 487
+Prompt: Again, putting aside your own personal level of satisfaction, which state do you generally BELIEVE offers a greater POTENTIAL for physical sexual pleasure and sensation?
+Options: [
+  "I am genuinely unsure which state offers greater potential for pleasure.",
+  "The circumcised state offers significantly more potential for pleasure/sensation.",
+  "The circumcised state offers slightly more potential for pleasure/sensation.",
+  "The intact state (with its additional structures like the complete foreskin and frenulum) offers slightly more potential for pleasure/sensation.",
+  "The intact state offers significantly more potential for pleasure/sensation.",
+  "There is no significant difference in the potential for pleasure/sensation between the two states."
+]
+--------------------------------------------------
+
+ID: final_partner_preference_belief
+Section: Culture & Attitudes
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 482
+Prompt: Based on your life experiences, conversations, and media consumption, what do you believe is the general preference of sexual partners (of any gender) regarding a partner's circumcision state (intact vs. circumcised) in your culture?
+Options: [
+  "A strong preference for circumcised partners is the overwhelming norm.",
+  "A strong preference for intact partners is becoming the norm.",
+  "I have no idea; it varies too much to generalize.",
+  "Most partners have no strong preference and are open to or curious about both.",
+  "Most partners tend to prefer circumcised partners",
+  "Most partners tend to prefer intact partners",
+  "but it's not a 'deal-breaker.'"
+]
+--------------------------------------------------
+
+ID: final_partner_preference_reason
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 328
+Prompt: What do you believe has most shaped this perceived preference?
+--------------------------------------------------
+
+ID: final_aesthetic_preference
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 1
+N: 490
+Prompt: Purely in terms of AESTHETICS (visual appearance), which look do you personally find more appealing?
+Options: [
+  "I have no aesthetic preference; both look equally normal/appealing to me.",
+  "I slightly prefer the appearance of the circumcised penis.",
+  "I slightly prefer the appearance of the intact (uncircumcised) penis.",
+  "I strongly prefer the appearance of the circumcised penis.",
+  "I strongly prefer the appearance of the intact (uncircumcised) penis."
+]
+--------------------------------------------------
+
+ID: final_avg_pleasure_belief
+Section: Culture & Attitudes
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 484
+Prompt: Based on your own experiences, observations, and everything you've heard or read, which group of men do you believe, on average, experiences more intense or fulfilling SEXUAL PLEASURE AND ORGASM?
+Options: [
+  "Circumcised men",
+  "Circumcised men likely experience slightly better sexual pleasure.",
+  "I have no basis to form an opinion on this.",
+  "Intact men",
+  "Intact men likely experience slightly better sexual pleasure.",
+  "There is no significant difference in pleasure potential between the two groups.",
+  "likely experience significantly superior sexual pleasure.",
+  "likely experience superior sexual pleasure.",
+  "on average"
+]
+--------------------------------------------------
+
+ID: final_social_norm_perception
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 1
+N: 483
+Prompt: In your specific cultural context (e.g., in the US, in Europe, in your community), which state do you believe is perceived as more SOCIALLY NORMAL and ACCEPTABLE?
+Options: [
+  "Both are seen as equally normal and acceptable.",
+  "The circumcised state is generally seen as more normal and socially advantageous.",
+  "The circumcised state is overwhelmingly seen as the normal and expected standard.",
+  "The intact state is generally seen as more normal or is becoming the new standard.",
+  "The intact state is overwhelmingly seen as the normal and expected standard."
+]
+--------------------------------------------------
+
+ID: final_child_decision_reason
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 482
+Prompt: Based on everything you know and have experienced, if you were to have a child assigned male at birth today, what would your decision regarding circumcision be, and what is the single most important reason for that choice?
+Options: [
+  "I would be undecided and need more information",
+  "I would choose to have my child circumcised.",
+  "I would ensure my child remains intact.",
+  "Not applicable / I do not plan to have children.",
+  "This decision would primarily be up to my partner."
+]
+--------------------------------------------------
+
+ID: final_core_principle_choice
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 482
+Prompt: When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant (meaning there is no existing disease to treat), which principle do you believe should be given more weight?
+--------------------------------------------------
+
+ID: final_missing_info_opinion
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 378
+Prompt: What do you think is the single most important piece of information that people (especially expectant parents or young men) are MISSING when it comes to understanding male genital anatomy, intactness, and the lifelong impacts of circumcision?
+--------------------------------------------------
+
+ID: final_transparent_monster_resonance
+Section: Culture & Attitudes
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 485
+Prompt: The "Accidental Intactivist" (that's me, the survey author!) argues that routine infant circumcision is a "transparent monster" – a significant harm hiding in plain sight, normalized by culture. Does this metaphor resonate with your own observations or feelings?
+Subtitle: Why or why not?
+Options: [
+  "I don't see it that way.",
+  "I understand the metaphor",
+  "No",
+  "Unsure.",
+  "Yes",
+  "but I see it differently.",
+  "it resonates somewhat.",
+  "it resonates very strongly with my view."
+]
+--------------------------------------------------
+
+ID: final_transparent_monster_reason
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 275
+Prompt: Please feel free to briefly explain your answer. Why does (or doesn't) this metaphor feel accurate to you?
+--------------------------------------------------
+
+ID: final_anything_else
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 186
+Prompt: Is there anything else you'd like to share about your experiences, observations, feelings about this topic, or anything this survey didn't cover that you feel is important?
+--------------------------------------------------
+
+ID: contact_followup_consent
+Section: Follow-up
+Pathway: all
+Type: single_select
+Tier: 2
+N: 487
+Prompt: Would you be willing to be contacted anonymously by the survey author and team (the 'Accidental Intactivist') for a potential follow-up interview to discuss your experiences in more detail for research purposes?
+Subtitle: Your identity would remain confidential
+Options: [
+  "No",
+  "Yes"
+]
+--------------------------------------------------
+
+ID: circ_notice_same_status
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: single_select
+Tier: 2
+N: 307
+Prompt: To what extent do you typically notice or pay attention to whether other men have the SAME circumcision state as you do?
+Options: [
+  "I almost always notice and am very aware of this.",
+  "I frequently notice.",
+  "I never really notice or think about this.",
+  "I rarely notice or pay attention to this specifically.",
+  "I sometimes notice.",
+  "Not applicable / I am rarely or never in such situations."
+]
+--------------------------------------------------
+
+ID: intact_notice_diff_status
+Section: Intact Pathway
+Pathway: circumcised
+Type: single_select
+Tier: 2
+N: 303
+Prompt: And to what extent do you typically notice or pay attention to whether other men have a DIFFERENT circumcision state than you do?
+Options: [
+  "I almost always notice and am very aware of this.",
+  "I frequently notice.",
+  "I never really notice or think about this.",
+  "I rarely notice or pay attention to this specifically.",
+  "I sometimes notice.",
+  "Not applicable / I am rarely or never in such situations."
+]
+--------------------------------------------------
+
+ID: intact_notice_significance
+Section: Intact Pathway
+Pathway: circumcised
+Type: multi_select
+Tier: 2
+N: 306
+Prompt: When you DO notice someone's circumcision state (whether same or different from yours), how significant or prominent is that observation for you compared to other physical characteristics you might notice about a person (e.g., height, build, hair color, tattoos, etc.)?
+Options: [
+  "I notice it",
+  "I only really notice it if I'm consciously looking for it or thinking about the topic.",
+  "It's a noticeable characteristic",
+  "It's a very minor observation for me",
+  "It's one of the very first and most prominent things I notice.",
+  "Not applicable / I rarely or never notice.",
+  "but it's generally on par with many other physical details.",
+  "but not necessarily the first or most prominent.",
+  "if I notice at all."
+]
+--------------------------------------------------
+
+ID: intact_notice_same_status
+Section: Intact Pathway
+Pathway: intact
+Type: single_select
+Tier: 2
+N: 136
+Prompt: To what extent do you typically notice or pay attention to whether other men have the SAME intact status as you do?
+Options: [
+  "I almost always notice and am very aware of this.",
+  "I frequently notice.",
+  "I never really notice or think about this.",
+  "I rarely notice or pay attention to this specifically.",
+  "I sometimes notice.",
+  "Not applicable / I am rarely or never in such situations."
+]
+--------------------------------------------------
+
+ID: family_cultural_background
+Section: Family
+Pathway: all
+Type: open_text
+Tier: 3
+N: 67
+Prompt: CULTURAL BACKGROUND:
+Subtitle: Which religious or spiritual tradition(s), if any, best describes the CULTURAL or ANCESTRAL background of your family?
+--------------------------------------------------
+
+ID: intact_ppp_impact
+Section: Intact Pathway
+Pathway: intact
+Type: multi_select
+Tier: 2
+N: 24
+Prompt: If you have (or had) PPP, has their presence ever impacted your self-consciousness, body image, or interactions with partners?
+Subtitle: Please share any relevant experiences
+Options: [
+  "I don't have them",
+  "I have tiny spots that may be ppp",
+  "I just assumed every guy had them and never worried about their existence.",
+  "I never considered them to be unnatural",
+  "I remember wondering about them as my penis developed and I began to use my foreskin to masturbate (therefore exposing the glans). But read that they were normal. Interestingly",
+  "I seem to recall I had them when I was young",
+  "I was concerned about them for a while due to look and concern it might be a disease. No longer an issue as now know they are normal and they aren't as prominent looking as they used to be.",
+  "I was embarrassed about them until I found out what they were and how common they are",
+  "It was certainly a concern when I was younger but they were never very pronounced and looking now have seemed to almost completely disappeared.",
+  "I’ve never had negative comments about them from any partners…",
+  "N/\nA",
+  "Na.",
+  "No",
+  "No issues",
+  "No. I didn’t even know anyone didn’t have those until this survey. I just assumed it was part of the anatomy.",
+  "Nope",
+  "Yes",
+  "Yes dating as a young man was shaped by interactions with people who didn't know any better and assumed all men are circumcised.",
+  "and I may have been self conscious of them as a teen",
+  "and no partner has ever commented on them",
+  "and they are super sensitive and my girlfriend loves them too",
+  "because I always think it's an additional hurdle people have to overcome to appreciate my penis. My current partner said something he things he saw or read about those being potential vestigial penile spines like a cat. I haven't ever seen anything peer reviewed to indicate that...",
+  "but I don't anymore. I never thought much of them and I think they were gone by the time I became sexually active",
+  "but if they weren't none of my partners ever said anything about them.",
+  "but they're pretty nonexistent and no one has even commented. Once I saw real ones online I felt fine about myself in that regard.",
+  "it adds some \"texture\" she says.",
+  "never worried about them",
+  "no",
+  "not as much as having an actual foreskin.",
+  "the completely vanished in my late 30s.",
+  "yes. Girlfriends didn't see them as normal."
+]
+--------------------------------------------------
+
+ID: circ_parents_social_norm
+Section: Circumcised Pathway
+Pathway: intact
+Type: single_select
+Tier: 2
+N: 51
+Prompt: To the best of your knowledge, what was the circumcision norm within your parents' immediate social circle (close friends, family) at the time of your birth?
+Options: [
+  "It was a mix; there were other families making a similar choice.",
+  "Most other boys in their circle were being left intact (Circumcision was the outlier choice).",
+  "Nearly all other boys in their circle were being circumcised (My parents were significant outliers).",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: intact_parents_neg_catalyst
+Section: Intact Pathway
+Pathway: intact
+Type: multi_select
+Tier: 2
+N: 51
+Prompt: Do you have any reason to believe your parents' decision was influenced by a negative personal or observed experience with circumcision?
+Options: [
+  "Yes, I believe one of my parents (e.g., my father) had a negative personal experience with their own circumcision.",
+  "No",
+  "Unsure / Don't Know"
+]
+--------------------------------------------------
+
+ID: intact_parents_resistance_faced
+Section: Intact Pathway
+Pathway: intact
+Type: multi_select
+Tier: 2
+N: 52
+Prompt: Based on what you've been told, did your parents encounter any pushback or questioning from medical staff, family, or friends when they made their decision to keep you intact?
+Options: [
+  "No",
+  "They were actually praised or supported for their decision.",
+  "Unsure / Don't Know",
+  "Yes",
+  "their decision was accepted without much comment.",
+  "they faced significant pushback or were repeatedly questioned by doctors/nurses.",
+  "they faced some questioning from family or friends."
+]
+--------------------------------------------------
+
+ID: circ_parents_regret
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: multi_select
+Tier: 2
+N: 144
+Prompt: Have you ever sensed or discussed whether your parents, in retrospect, had any second thoughts or regrets about their decision, especially as more information has become available over the years?
+Options: [
+  "I believe they remain fully confident in their decision.",
+  "I sense they may have second thoughts",
+  "No",
+  "Not Applicable / Unsure",
+  "The topic is taboo or has never come up in a way that would reveal this.",
+  "Yes",
+  "but we haven't discussed it openly.",
+  "they have explicitly expressed regret or said they would choose differently today."
+]
+--------------------------------------------------
+
+ID: restore_disclosure_reaction
+Section: Restoring Pathway
+Pathway: restoring
+Type: open_text
+Tier: 3
+N: 51
+Prompt: When you have chosen to disclose your restoration journey to others (partners, friends, family, medical professionals), what has the general reaction been?
+--------------------------------------------------
+
+ID: restore_success_definition
+Section: Restoring Pathway
+Pathway: restoring
+Type: open_text
+Tier: 3
+N: 49
+Prompt: What does "success" or "completion" look like for you in your restoration journey?
+--------------------------------------------------
+
+ID: observe_curious_shaping_factors
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 21
+Prompt: What has most shaped your current understanding or opinion about penile circumcision?
+Options: [
+  "Personal experiences with intimate partners",
+  "Independent research I've done myself (intactivist sites, documentaries, etc.)",
+  "Conversations with male friends or partners about their experiences",
+  "Feminist principles of bodily autonomy and consent",
+  "Information or advice from doctors or medical professionals",
+  "Media portrayals (movies, TV, internet)",
+  "Conversations with friends",
+  "Religious or cultural teachings",
+  "The norms in my family or the community I grew up in"
+]
+--------------------------------------------------
+
+ID: observe_all_social_climate_discussion
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 21
+Prompt: In your personal experience and social circles, how is the topic of infant circumcision generally treated or discussed?
+Options: [
+  "It's a complete non-issue; circumcision is the unquestioned default.",
+  "It's becoming a topic of active debate and diverse opinions.",
+  "It's considered a private",
+  "It's generally viewed negatively",
+  "It's rarely discussed",
+  "Unsure / Not Applicable",
+  "almost taboo subject that isn't discussed.",
+  "but when it is",
+  "it's assumed to be a normal",
+  "positive choice.",
+  "with intactness being the norm."
+]
+--------------------------------------------------
+
+ID: observe_all_perceived_significance
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 21
+Prompt: When you think about the decision to circumcise a newborn, how significant or impactful do you perceive that choice to be in the grand scheme of a person's life?
+Options: [
+  "A major",
+  "A significant health and identity decision",
+  "Unsure / It depends",
+  "but not necessarily life-altering.",
+  "life-altering decision with lifelong physical and psychological consequences."
+]
+--------------------------------------------------
+
+ID: observe_all_comfort_discussing
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 21
+Prompt: Imagine a close friend or family member was expecting a boy and asked for your thoughts on circumcision. How comfortable and prepared would you feel to discuss the pros and cons from different perspectives?
+Options: [
+  "Somewhat comfortable; I know my own opinion but might struggle to represent other sides fairly.",
+  "Very comfortable and well-informed; I could confidently discuss various viewpoints."
+]
+--------------------------------------------------
+
+ID: final_ethical_consideration_belief
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 243
+Prompt: Reflecting on media you've consumed throughout your life (e.g., movies, TV, pornography, health education), how do you believe it has shaped the cultural "default" or "ideal" for what a penis should look like?
+Options: [
+  "I haven't really noticed or thought about media's influence on this.",
+  "It has shifted over time, with more diversity in recent years.",
+  "It overwhelmingly portrayed the circumcised penis as the default or \"normal\" look.",
+  "It portrayed both intact and circumcised penises as equally normal.",
+  "It rarely, if ever, showed intact penises, contributing to their perceived strangeness."
+]
+--------------------------------------------------
+
+ID: culture_social_pressure_role
+Section: Culture & Attitudes
+Pathway: all
+Type: multi_select
+Tier: 2
+N: 249
+Prompt: How significant a role do you believe social pressures—like the fear of a child "looking different" in a locker room or to future partners—play in the continuation of routine infant circumcision in cultures where it's common?
+Options: [
+  "It's a minor factor",
+  "It's a primary driver",
+  "It's a significant factor",
+  "It's an outdated concern that has very little influence today.",
+  "Unsure / I've never considered this.",
+  "but not the most important one.",
+  "but still plays a role.",
+  "perhaps more powerful than any medical argument."
+]
+--------------------------------------------------
+
+ID: final_ethics_cosmetic_alteration_minor
+Section: Culture & Attitudes
+Pathway: all
+Type: single_select
+Tier: 2
+N: 248
+Prompt: Broadening the lens for a moment:
+Subtitle: What is your general stance on performing medically unnecessary, permanent cosmetic alterations on a minor who cannot consent?
+Options: [
+  "Should be allowed with parental consent, as parents have the right to make such decisions for their children.",
+  "Should generally be avoided, but can be acceptable in some cultural or family contexts.",
+  "Should never be done; the individual must be old enough to consent for themselves.",
+  "Unsure / It depends heavily on the specific procedure."
+]
+--------------------------------------------------
+
+ID: final_prediction_future_of_ric
+Section: Culture & Attitudes
+Pathway: all
+Type: open_text
+Tier: 3
+N: 249
+Prompt: Looking forward 20-30 years, where do you predict the practice of routine infant circumcision will be in your primary country/culture?
+--------------------------------------------------
+
+ID: circ_adult_new_normal_desc
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: multi_select
+Tier: 2
+N: 14
+Prompt: In your own words, what has the transition to your "new normal" been like?
+Options: [
+  "A whole new body awareness; I have become much more aware of my penis.",
+  "As stated before: Before the circumcission partnered intercourse",
+  "Ashamed being circ. It re-inforced my Will to transition MtF.",
+  "Hygiene got easier.",
+  "I didn't know about circumcision styles. The doc opted to remove all foreskin",
+  "I felt more confident about myself because I had been considering it practically all my life.",
+  "I felt more confident. I knew what I wanted to do. After doing it",
+  "I never thought it would feel so good",
+  "It was difficult. I went through healing and had to learn how to masturbate and find pleasure points. Tried lube",
+  "It was two weeks of hell to heal but was worth it.",
+  "It was very easy",
+  "The most challenging part is waiting for the wound to heal.",
+  "The most positive outcome is my self-confidence. I love the way my penis looks and feels.\n\nI was surprised that when I lived in Taiwan for 8 years",
+  "Was fairly straightforward",
+  "but I experienced phantom foreskin for a while. I sometimes had the feeling I neede to adjust my foreskin as always and was like \"oh",
+  "but feels great when I get the opportunity. Cleanliness and overall partner satisfaction is a big positive change.",
+  "especially after 44 years",
+  "etc to enhance feeling. It's just different after living south a foreskin for 28 years previously.",
+  "frenulum and a lot of shaft skin too",
+  "great best decision",
+  "including inner foreskin",
+  "it's gone\" and I used to pull on the shaft skin while peeing because I was so used to pulling the foreskin back",
+  "penetration was not pleasurable to me due to a medical condition. But masturbation of any form of touching was feeling good as the foreskin could still glide well enough. After the operation touching was only pleasurable at the base and the scarring of the tissue sourrounding the head made me insecure. The head often seems dry.",
+  "resulting in very tight shaft skin when I get erections. Needing lube to masturbate was a surprise",
+  "the women actually expressed a preference for bare glans despite it being normal to be uncircumcised there. The reason was that most men there have a permanently retracted foreskin or less than 50% glans coverage. It was extremely rare to see full coverage or overhang. It seems to be cultural there to either teach your sons to retract early and keep it retracted or for middle schoolers to forcefully (and painfully) retract themselves and keep it retracted. The penis outgrows the foreskin through puberty.",
+  "toys",
+  "was not a big change in my opinion"
+]
+--------------------------------------------------
+
+ID: circ_adult_retrospective_feeling
+Section: Circumcised Pathway
+Pathway: circumcised
+Type: single_select
+Tier: 2
+N: 22
+Prompt: Overall, looking back, how do you feel about your choice to be circumcised (or the decision that was made for you)?
+Options: [
+  "I generally regret the decision.",
+  "I have mixed feelings; there are both positives and negatives.",
+  "I'm generally happy with the choice and the outcome.",
+  "It was one of the best choices of my life; I'm extremely happy with the result.",
+  "happy to be circumcised, but truly wish it was performed much tighter"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_regret_reasons
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What are the primary reasons you now feel regret or have second thoughts about your decision?
+--------------------------------------------------
+
+ID: observe_partner_observations
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: As a PARTNER, what have you observed or experienced regarding his genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, his sexual pleasure, or his feelings about his body?
+--------------------------------------------------
+
+ID: q255
+Section: Uncategorized
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: If your PARTNER'S circumcision state is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?
+Options: [
+  "A delicate subject to discuss and when we were expecting our first child it was hard for him to consider having to circumcise a boy but it's the \"normal\" thing and for some reason everyone has a (negative) opinion on intact boys. Especially his family",
+  "Circumcision status has not impacted the relationship",
+  "It impacts our relationship positively. We both enjoy him being in tact",
+  "and ease of sex between us.",
+  "for different reasons mostly related to fetish",
+  "sexual pleasure"
+]
+--------------------------------------------------
+
+ID: observe_healthcare_counseling_stance
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What is your general stance or approach when counseling parents about routine infant circumcision?
+--------------------------------------------------
+
+ID: observe_healthcare_training_protocol
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What training or protocols influenced how you present circumcision to parents?
+Subtitle: Have you noticed changes over your career?
+--------------------------------------------------
+
+ID: observe_healthcare_attitudes_change
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What, if any, changes have you observed in medical consensus or parental attitudes towards RIC over your career?
+--------------------------------------------------
+
+ID: observe_advocate_barrier_to_recognition
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?
+--------------------------------------------------
+
+ID: observe_advocate_effective_strategy
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What strategy or piece of information do you find most effective in engaging people in thoughtful conversation about this topic?
+--------------------------------------------------
+
+ID: q262
+Section: Uncategorized
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 2
+Prompt: As a WOMAN, do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or FGM (female genital mutilation)?
+--------------------------------------------------
+
+ID: observe_parent_multi_hat_selection
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: Which of the following best describes your family's situation regarding the circumcision of your son(s) or AMAB children?
+Options: [
+  "All of my sons/AMAB children are INTACT",
+  "I am currently pregnant and confident in the decision to leave a baby intact"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_complications_exist
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Did your child require any follow-up medical interventions due to complications from being circumcised?
+--------------------------------------------------
+
+ID: observe_parent_circ_lawsuit_cta_openness
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Knowing this, would you be open to confidentially learning more about what becoming a plaintiff in such a case might entail for your family?
+--------------------------------------------------
+
+ID: observe_multi_hat_selection
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 17
+Prompt: Are You Wearing Any Other Hat(s) Today?
+Options: [
+  "I am FINISHED with this section; please take me to the final reflections."
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_complications_desc
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: If yes, is there anything you're willing to share about any complications or medical treatments your child required following their circumcision?
+--------------------------------------------------
+
+ID: observe_parent_birth_location
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: Thinking about the birth of your child or children, what was the primary type of location where they were/will be born?
+Options: [
+  "Home (Homebirth)",
+  "Hospital",
+  "tried for home birth, needed to be cesarian (after 32 hrs labor ugh)"
+]
+--------------------------------------------------
+
+ID: q269
+Section: Uncategorized
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: What is/was the circumcision state of your CO-PARENT or PRIMARY PARTNER during this decision-making process?
+Options: [
+  "He is circumcised.",
+  "He is intact (not circumcised).",
+  "Not applicable (I was a single parent, or my partner is not male/AMAB)."
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_exposure
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: Before you gave birth to your child, had you ever had any direct, personal experience with an intact (uncircumcised) penis?
+Options: [
+  "No",
+  "Yes"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_social_norm
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: In your immediate social circle (close friends, peers, family) at the time, what was the general expectation or norm for newborn boys?
+Options: [
+  "Being left intact was the more common or expected choice.",
+  "Circumcision was the unquestioned norm; nearly all boys were circumcised.",
+  "I'm not sure what the norm was.",
+  "It was a mix; there was no strong expectation either way."
+]
+--------------------------------------------------
+
+ID: q272
+Section: Uncategorized
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 4
+Prompt: What is the circumcision state of your primary PARTNER, or the partner whose experience is most relevant to your answers here?
+Options: [
+  "He is / They are Circumcised.",
+  "He is / They are Intact (not circumcised).",
+  "I have had partners with a mix of different statuses."
+]
+--------------------------------------------------
+
+ID: observe_parent_son_youngest_yob
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 8
+Prompt: To help us understand the time frame of you as a parent in what year was your youngest son/AMAB child born?
+Options: [
+  "1990 - 1999",
+  "2000 - 2009",
+  "2010 - 2014",
+  "2015 - 2019",
+  "2020 - Present"
+]
+--------------------------------------------------
+
+ID: observe_parent_son_oldest_yob
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: In what year was your OLDEST son/AMAB child born?
+--------------------------------------------------
+
+ID: observe_parent_youngest_son_decision
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Thinking about your YOUNGEST son/AMAB child, what was the decision you made regarding his circumcision?
+--------------------------------------------------
+
+ID: observe_parent_primary_role
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 8
+Prompt: To begin, which of the following best describes your primary parenting or guardianship role for the AMAB (Assigned Male at Birth) child(ren) relevant to your answers?
+Options: [
+  "Biological Parent"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_decision_maker
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Were you (and your spouse/partner if applicable,) the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through family blending or adoption)?
+--------------------------------------------------
+
+ID: observe_parent_mixed_shift_factors
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Between these children, something shifted in your decision-making process. What were the key factors that led you to make a DIFFERENT choice?
+--------------------------------------------------
+
+ID: observe_parent_mixed_shift_story
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: If you're willing to share, could you tell us the story of that evolution in your own words?
+--------------------------------------------------
+
+ID: observe_parent_mixed_family_experience
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What was the experience of making a different choice like for your family?
+--------------------------------------------------
+
+ID: observe_parent_mixed_retrospective_feeling
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Looking back now, how do you feel about having children with different statuses?
+--------------------------------------------------
+
+ID: observe_parent_oldest_son_decision
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Thinking about your OLDEST son/AMAB child, what was the decision you made regarding his circumcision?
+--------------------------------------------------
+
+ID: observe_parent_intact_factors
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: As a PARENT or GUARDIAN, what were the most significant factors influencing your decision to keep your child or children intact?
+Options: [
+  "Ethical beliefs about bodily autonomy and a child's right to consent",
+  "Information about the functions and sensitivity of the foreskin",
+  "Lack of a clear medical necessity for the procedure",
+  "Concerns about surgical risks and potential complications",
+  "Independent research (documentaries, articles, online communities)",
+  "My partner's preference was to keep him intact",
+  "The medical benefit claims did not make sense."
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_social_norm_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 8
+Prompt: To the best of your knowledge, what was the circumcision norm within your immediate social circle (close friends, family) at the time you made this choice?
+Options: [
+  "Being left intact was the more common or expected choice in our circle.",
+  "Circumcision was the unquestioned norm; our choice was a significant departure.",
+  "I'm not sure what the norm was.",
+  "It was a mix; there were other families making a similar choice to ours."
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_resistance_faced
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: Did you encounter any pushback, questioning, or pressure from medical staff, family, or friends regarding your decision to keep your child or children intact?
+Options: [
+  "No",
+  "We were actually praised or supported for our decision.",
+  "Yes",
+  "our decision was accepted without much comment or resistance.",
+  "we faced significant pressure or were repeatedly questioned by doctors/nurses.",
+  "we faced some questioning or criticism from family or friends."
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_regret_reconsider
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 7
+Prompt: Looking back, have you ever experienced feelings of REGRET or reconsidered that decision to keep your child or children intact?
+Options: [
+  "I am extremely proud and confident it was the right decision."
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_advice
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: What advice would you give to a new parent who is undecided about circumcising their child?
+Options: [
+  "Child sexual abuse is a felony",
+  "His body his choice: he can always get it done as an adult",
+  "I'd advise lots of research from a wide variety of sources",
+  "It's the way nature made them and it should stay that way.",
+  "Leave it up to them",
+  "Look at the anatomy and functions of what gets removed.  Once you learn that",
+  "The choice should belong to the owner of the penis",
+  "all the medical benefit claims seem ridiculous.",
+  "as-is",
+  "exploration of that in conjunction  with their own beliefs and values.  Would try to correct any misinformation.",
+  "he cannot get it undone. There is no medical reason for it and it causes pain.",
+  "the body works pretty darn well"
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_lawsuit_cta_knowledge
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 17
+Prompt: Do you personally know of a parent who might fit this specific profile?
+Options: [
+  "No, I do not."
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_tipping_point
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: Beyond the general factors you just selected, can you pinpoint any specific resources, events, or key pieces of information that acted as a "tipping point" for your decision?
+Options: [
+  "A news article or scientific study I/we encountered",
+  "A specific documentary or film",
+  "Information from an online community",
+  "Just when I first learned what the procedure was I was horrified",
+  "Not applicable; being intact was the default and required no specific information.",
+  "The birth taking place in a less-medicalized setting (e.g., homebirth, birthing center)",
+  "There was no single \"tipping point\"; it was a combination of factors.",
+  "Various sources over a period of many years.  Own research.",
+  "or forum (e.g., NOCIRC, Intact America)",
+  "website",
+  "why would you ever cut off part of a penis?"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_factors
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What were the most significant factors influencing your decision to have your child or children circumcised?
+--------------------------------------------------
+
+ID: observe_parent_intact_decision_timeline
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: Thinking about the timeline, when did you finalize your decision to keep your son intact?
+Options: [
+  "A deeply held conviction: It was a decision I/we had made long before pregnancy",
+  "During pregnancy",
+  "During pregnancy - didn't do research",
+  "During pregnancy: We did our research and made a firm decision before the birth.",
+  "against all medical staff and family hounding me to do it",
+  "based on core beliefs.",
+  "just decided"
+]
+--------------------------------------------------
+
+ID: observe_parent_circ_decision_timeline
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Thinking about the timeline, when did you finalize your decision to have your (first) son circumcised?
+--------------------------------------------------
+
+ID: observe_parent_circ_exposure_to_critique
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Before making your decision, were you ever exposed to information or perspectives that were critical of or advised against routine infant circumcision?
+--------------------------------------------------
+
+ID: observe_parent_circ_son_feedback
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Has your son ever given you any feedback or expressed feelings (positive, negative, or neutral) about his circumcision?
+--------------------------------------------------
+
+ID: observe_parent_intact_son_feedback_emotion
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: If your son did express feelings about it, what was your emotional experience as a parent during that conversation?
+--------------------------------------------------
+
+ID: observe_parent_intact_exposure_to_pro
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: Before making your decision, were you ever exposed to information or perspectives that were strongly in favor of routine infant circumcision?
+Options: [
+  "I/we never encountered any significant information promoting the procedure.",
+  "No",
+  "Yes",
+  "and I/we found it unconvincing or dismissed it.",
+  "and it made me/us pause and consider",
+  "but we chose to remain intact anyway."
+]
+--------------------------------------------------
+
+ID: observe_parent_intact_son_feedback
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 8
+Prompt: Have any of your son(s)/AMAB children ever given you any feedback or expressed feelings (positive, negative, or neutral) about their intact status?
+Options: [
+  "He's not old enough",
+  "My son is not yet old enough to have this conversation.",
+  "Twins.  Talked about it with them a bit when they were little.  Haven't talked about it since.",
+  "Yes",
+  "but dude",
+  "but he's never had any health issues they claim that he'd have.",
+  "he has expressed positive feelings (e.g., gladness that he is intact).",
+  "it's fine",
+  "just get over it and wash your body",
+  "they somehow find it annoying to spend two seconds pulling back to clean in the shower"
+]
+--------------------------------------------------
+
+ID: q302
+Section: Uncategorized
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 4
+Prompt: Has your partner's circumcision state ever been a direct topic of conversation between you?
+Options: [
+  "Yes, we've discussed it openly and in-depth.",
+  "Yes, we've touched on it briefly a few times."
+]
+--------------------------------------------------
+
+ID: observe_partner_emotional_state
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 4
+Prompt: From your perspective, which of the following statements best describes your partner's emotional relationship with his own genital anatomy and circumcision state?
+Options: [
+  "Actively Resentful or Grieved: He has expressed clear and consistent resentment, anger, grief, or dissatisfaction about being circumcised.",
+  "Proud & Content: He expresses clear satisfaction, pride, or gratitude with his body as it is (whether intact or circumcised)."
+]
+--------------------------------------------------
+
+ID: observe_partner_advice
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 4
+Prompt: What advice would you offer to other partners to foster a more empathetic and connected intimate relationship, considering the nuances of circumcision state?
+Options: [
+  "Be gentle and curious",
+  "Don't ignore the elephant in the bedroom. Don't sacrifice your body in ways that are not ok for you physically or emotionally. Encourage sensation preservation (SenSlip, etc) and for him to look at norm.org. Never ever make a child for someone without \"no circumcision\" in your wedding prenup or a pre-pregnancy legal document you have drawn up by a lawyer to protect you and the child before ever getting pregnant. Be ready to go to jail if necessary to prevent someone mutilating your child. Don't assume an individual who claims to be about nature",
+  "N/a",
+  "Ultimately this comes down to shining a light on shame of bodies",
+  "and circd men often find themselves on an endless search for a partner that can please them",
+  "and especially in sexual contexts. I am very lucky to be a part of communities (furry, BDSM, kink, Leather, queer) where talking openly and honestly about these topics is generally positively welcomed. Listen to the concerns of people",
+  "and frustration for circd men and the partners of circd men. In the process many people end up with STDs",
+  "and the real experience of sex is with both partners intact with no condom. Condom sex and circd sex are both lackluster and will never give a female satisfaction",
+  "and western medical doctors. Intact is normal.",
+  "breaking up",
+  "but being curious and lending an ear can be helpful in just getting to know someone better.",
+  "can end up incels due to the difficulty male circumcision creates in sex for the circumcised male and his partners.",
+  "difficulty attempting blended families",
+  "discussion of them",
+  "etc. Both males and females",
+  "etc. results in children in broken homes",
+  "etc. will be anti-circ. Logic goes out the window when a man feels threatened that someone will have more penis than him. Don't assume that a man is \"selfish\" in bed as a character flaw if he's circumcised it's likely the only way his damaged parts work. You're not obligated to stay in a relationship that doesn't work for you sexually. In cultures where most men are mutilated and most are not going to put in the work to create re-coverage",
+  "human rights",
+  "may find themselves on an endless search for a compatible partner",
+  "only the male to some minor degree. The constant churn of dissatisfied partners partnering",
+  "perpetual dating",
+  "refusing to face the truth of the damage that was done to them and abusing others as a result sexually and/or emotionally. It leads to a lot of divorce",
+  "repartnering",
+  "straight and gay",
+  "their partners don't have many good options. People whose bodies and hearts can't tolerate their body being used and abused by a circd male for his own satisfaction",
+  "thoughtful questions are helpful. A circumcised man went through trauma and so it can be a sensitive topic but it's important for a circumcised man to understand this trauma started at birth. He may have to forgive his mom or family",
+  "try to understand where they're coming from. You don't have to understand fully"
+]
+--------------------------------------------------
+
+ID: observe_partner_comm_challenges
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 4
+Prompt: How has your partner's circumcision state impacted communication about sexual pleasure in your relationship?
+Options: [
+  "It has been a topic of open, easy, and positive communication.",
+  "It has never been a significant topic of conversation for us.",
+  "It has sometimes been a source of frustration or difficulty in communication."
+]
+--------------------------------------------------
+
+ID: observe_partner_blind_spot_v2
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 4
+Prompt: From your perspective, what is the most significant misconception the general public has about your partner's anatomical state (intact, circumcised, or restoring)?
+Options: [
+  "A lot of people think circumcision is normal or even \"required\" especially his family who have no problem expressing it",
+  "N/a",
+  "People assume that circumcising a male improves his sexual function for himself and his partner and that women prefer it and get more out of sex with a cut man and won't touch any intact man. When in fact circing a man ruins sex for himself and all his partners. He is left with barely enough to even impregnate someone when he is young and healthy",
+  "That if you are in tact you are superior somehow",
+  "and also permanently resets the circ victim's brain in how they perceived intimacy",
+  "and can't even give the woman an orgasm in the process unless using other techniques which most are hopeless at. Circd men are severely sexually handicapped. They are sexual special needs. A woman in a relationship with a cut man will always have to make an exception for him and sacrifice herself for an unnatural act that is never what it was supposed to be. If he wants to please her he may not be able to ever do it. Not every man is good with his hands or tongue and not every woman responds to alternative acts. He shouldn't have to be",
+  "bdsm or rape",
+  "etc.",
+  "etc. It can skew their sexuality toward kinks like anal (their nerves there have not been damaged and they have no connotation or pain or rape there in their subconscious if no one ever attacked them in that way)",
+  "for example",
+  "hatred of women (because infants relate everything to the mother so when that happened to them it was because of the mother, and literally that's usually true also). Circumcision of males is not doing anyone any favors. It ruins sex for women so the parents who think their son needs it for dating",
+  "have just cursed their daughter in law and son to a lifetime of sexual trouble or divorce",
+  "he was given the equipment to do the job and it was taken away. Circumcising men ruins sex for women and men",
+  "incel status both male and female",
+  "or that if you have foreskin your hygiene can only be bad or mixed. Often the topics are around hygiene",
+  "others do not. Some people don't understand how hygiene impacts vaginal health",
+  "pain",
+  "so I am someone who has to be on alert for that.",
+  "stress",
+  "threats",
+  "too",
+  "what is considered the bare minimum vs what is considered healthy hygiene is often confusing between groups of people. Some people enjoy smegma"
+]
+--------------------------------------------------
+
+ID: observe_healthcare_role_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: What is your PRIMARY MEDICAL ROLE or specialty?
+Options: [
+  "Not currently but was a home health aide.  Helped many elerly/disabled men with personal care.",
+  "Nurse (e.g., L&D, NICU, Pediatric)"
+]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_colleagues
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 2
+Prompt: What is your general stance or approach when counseling parents about routine infant circumcision?
+Subtitle: [With medical COLLEAGUES]
+Options: [
+  "I avoid the topic / The topic does not come up.",
+  "I lean against it, but present it as the parents' choice."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_friends_family
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: What is your general stance or approach when counseling parents about routine infant circumcision?
+Subtitle: [With FRIENDS or FAMILY in a personal setting]
+Options: [
+  "I actively recommend AGAINST the procedure",
+  "I avoid the topic / The topic does not come up.",
+  "I lean against it",
+  "but present it as the parents' choice.",
+  "citing ethical/medical reasons."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_sensation_discussion_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: How often, in your experience, does the topic of foreskin function, gliding mechanics, or specific sensory structures come up during the informed consent process with parents?
+Options: [
+  "Never; it's not a part of the standard informed consent process I'm familiar with.",
+  "Not applicable to my role.",
+  "Rarely; the conversation usually focuses on other aspects like hygiene or disease prevention."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_consent_quality_v2
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: From your professional viewpoint, how adequate do you believe the typical informed consent process is for routine infant circumcision in your region?
+Options: [
+  "Deeply Inadequate: Parents are often pressured or given incomplete information",
+  "Excellent & Balanced: Parents are consistently given comprehensive",
+  "Minimal & Rushed: It's often treated as a routine checklist item with little substantive discussion.",
+  "and alternatives.",
+  "benefits",
+  "unbiased information about all risks",
+  "undermining true informed consent."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_complications_seen_v2
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 3
+Prompt: Have you personally seen or treated complications resulting from infant circumcision in your practice?
+Options: [
+  "Not applicable to my specialty.",
+  "Yes",
+  "but only very rarely.",
+  "frequently."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_complications_desc
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 2
+Prompt: If you're willing to share, what types of complications have you seen?
+--------------------------------------------------
+
+ID: observe_healthcare_blind_spot_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: From your unique standpoint within the healthcare system, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT regarding male circumcision?
+Options: [
+  "Being the child of a circumcised parent seems to be the strongest driving factor of the decision to circumcise an infant",
+  "Cut adult men wanting their child’s genitals to look like theirs (that has needed 2 corrections and viagra to make functional)",
+  "I think most people don't know much at all.  I've seen nurses who couldn't tell whether an elderly man was intact or circumcised while looking at his penis."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_facility_type
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: In what type of facility or practice setting do you primarily work?
+Options: [
+  "Large Public or University Hospital",
+  "Worked in people's homes.  Health aide."
+]
+--------------------------------------------------
+
+ID: observe_healthcare_self_status
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: If you are male/AMAB, what is your own circumcision state?
+Options: [
+  "I am Intact",
+  "Prefer not to answer / Not applicable (I am female/AFAB)"
+]
+--------------------------------------------------
+
+ID: observe_healthcare_prediction_future_ric
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 3
+Prompt: Looking ahead 10-20 years, where do you predict the practice of routine infant circumcision will be in your country?
+Options: [
+  "It will be significantly less common, but still regularly practiced.",
+  "It will remain at roughly the same level of prevalence as today."
+]
+--------------------------------------------------
+
+ID: observe_advocate_primary_role
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: How would you best describe your primary role or focus within the genital autonomy movement?
+Options: [
+  "A \"quiet\" ally",
+  "Academic / Independent Researcher",
+  "Grassroots Organizer / Protester",
+  "Legal or Legislative Advocate (working on law and policy)",
+  "Parental Support / Counselor (helping expectant parents navigate the decision)",
+  "Personal Storyteller / Testimonial Sharer",
+  "Public Educator / Awareness Raiser (e.g., social media, blogging, public speaking)",
+  "sharing information within my personal social circle"
+]
+--------------------------------------------------
+
+ID: observe_advocate_barrier_to_recognition_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: In your experience, what do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?
+Options: [
+  "All of the above. Deeply engrained trauma bond, societal norm.",
+  "Attempts to middle easternize the US / make those practices normal in the US to create a smokescreen for those who practice it",
+  "Deeply ingrained cultural and social norms (\"it's just normal\")",
+  "Organized Jewish resistance to citizens outlawing circumcision",
+  "The \"Hygiene\" and \"Health Benefits\" myths",
+  "The power and authority of the medical establishment (e.g., AAP recommendations)"
+]
+--------------------------------------------------
+
+ID: observe_advocate_effective_strategy_v2
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 9
+Prompt: What strategy, argument, or piece of information do you find most effective in engaging people in a thoughtful, productive conversation about this topic?
+Options: [
+  "All of the above",
+  "Child sexual abuse is a felony",
+  "Focusing on the ethics of consent and bodily autonomy for children",
+  "Highlighting that most of the world does not practice it",
+  "Not sure",
+  "Telling a personal story (your own or someone else's)"
+]
+--------------------------------------------------
+
+ID: observe_advocate_future_focus
+Section: Observer Pathway
+Pathway: observer
+Type: multi_select
+Tier: 2
+N: 9
+Prompt: Looking forward, where do you believe the genital autonomy movement should be focusing its energy and resources for the greatest impact over the next 5 years?
+Options: [
+  "Legal challenges and lawsuits (like the Equal Protection cases)",
+  "Legislative action (e.g., defunding Medicaid for RIC)",
+  "Direct outreach and education for expectant parents",
+  "Reforming medical school curricula and hospital protocols",
+  "High-visibility public protests and awareness campaigns",
+  "Creating high-quality media (documentaries, articles)",
+  "Supporting foreskin restoration and regeneration research",
+  "Building broader coalitions with other human rights groups"
+]
+--------------------------------------------------
+
+ID: observe_curious_initial_awareness
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 2
+Prompt: Before encountering this survey or similar discussions, what was your general understanding or awareness of the differences between an intact and a circumcised penis?
+Options: [
+  "Very aware; I was knowledgeable about the anatomical and functional differences."
+]
+--------------------------------------------------
+
+ID: observe_curious_partner_experience
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 2
+Prompt: Have you had direct, personal experience (e.g., through intimate partners) with both intact and circumcised male partners?
+Options: [
+  "Prefer not to say.",
+  "Yes, I have had significant experience with both."
+]
+--------------------------------------------------
+
+ID: observe_curious_partner_experience_desc
+Section: Observer Pathway
+Pathway: observer
+Type: single_select
+Tier: 2
+N: 1
+Prompt: If you have experience with both, have you observed any noticeable differences in terms of intimacy, function, or your partner's experience?
+Options: [
+  "My intact partner had a fuller sexuality."
+]
+--------------------------------------------------
+
+ID: observe_curious_blind_spot
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 2
+Prompt: From your unique standpoint, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding this entire issue?
+--------------------------------------------------
+
+ID: observe_student_field_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What is your primary field of study or research discipline?
+--------------------------------------------------
+
+ID: observe_student_status_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What is your current academic or professional status?
+--------------------------------------------------
+
+ID: observe_student_primary_interest_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What is your primary interest in the topic of genital cutting / circumcision?
+--------------------------------------------------
+
+ID: observe_student_dataset_utility_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: From your perspective as a researcher or student, how might a large, qualitative/quantitative dataset like the one we are building be useful for your own work or field of study?
+--------------------------------------------------
+
+ID: observe_student_method_challenge_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What do you see as the biggest methodological challenge or limitation in conducting research on this topic?
+--------------------------------------------------
+
+ID: observe_student_pro_circ_argument_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: If you hold a pro-circumcision or skeptical viewpoint regarding intactivist messaging, what is the strongest piece of evidence or a key logical argument that underpins your perspective?
+--------------------------------------------------
+
+ID: observe_student_literature_gap_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: From your unique standpoint, what do you believe is the most significant gap in the current academic literature regarding genital cutting /circumcision?
+--------------------------------------------------
+
+ID: observe_undecided_info_sources_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: As you navigate this decision, what are the primary sources of information you are relying on or have consulted so far?
+--------------------------------------------------
+
+ID: observe_undecided_pros_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What are the main arguments or reasons IN FAVOR of circumcision that you are currently weighing?
+--------------------------------------------------
+
+ID: observe_undecided_cons_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: And what are the main arguments or reasons AGAINST circumcision (i.e., for leaving your son intact) that you are weighing?
+--------------------------------------------------
+
+ID: observe_undecided_emotional_state_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: How would you describe the emotional state you and your partner (if applicable) are in regarding this decision?
+--------------------------------------------------
+
+ID: observe_undecided_key_question_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What is the single most important question you have that, if answered, would help you make your final decision with more confidence?
+--------------------------------------------------
+
+ID: observe_undecided_fear_circ_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Thinking about the possibility of choosing circumcision, what is your biggest FEAR or ANXIETY about that potential outcome?
+--------------------------------------------------
+
+ID: observe_undecided_fear_intact_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Now, thinking about the possibility of leaving your son intact, what is your biggest FEAR or ANXIETY about that potential outcome?
+--------------------------------------------------
+
+ID: observe_skeptic_primary_reason_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: In general, what is your primary reason for SKEPTICISM regarding the anti-circumcision or intactivist movement?
+--------------------------------------------------
+
+ID: observe_skeptic_strongest_pro_arg_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Which pro-circumcision argument do you find to be the most logically sound or compelling?
+--------------------------------------------------
+
+ID: observe_skeptic_weakest_anti_arg_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Conversely, which anti-circumcision (intactivist) argument do you find to be the weakest, least convincing, or most flawed?
+--------------------------------------------------
+
+ID: observe_skeptic_persuasion_factors_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: What would it take for you to find the intactivist perspective more credible or persuasive?
+--------------------------------------------------
+
+ID: observe_skeptic_final_thoughts_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Is there anything else you'd like to share about your perspective or the reasons for your skepticism?
+--------------------------------------------------
+
+ID: q352
+Section: Uncategorized
+Pathway: trans
+Type: open_text
+Tier: 3
+N: 0
+Prompt: During your surgical process, was a "circumcised" or "intact" (with a constructed foreskin) appearance a choice you considered or discussed with your surgical team?
+--------------------------------------------------
+
+ID: q357
+Section: Uncategorized
+Pathway: intersex
+Type: open_text
+Tier: 3
+N: 0
+Prompt: How has the topic of non-consensual or "normalizing" genital surgery intersected with your own life and body?
+--------------------------------------------------
+
+ID: observe_healthcare_stance_rec_against
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I actively recommend AGAINST the procedure, citing ethical/medical reasons.]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_lean_against
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I lean against it, but present it as the parents' choice.]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_neutral
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I present it as a completely neutral choice with pros and cons.]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_lean_for
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I lean towards it, but present it as the parents' choice.]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_rec_for
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I actively recommend IN FAVOR of the procedure.]
+--------------------------------------------------
+
+ID: observe_healthcare_stance_avoid
+Section: Observer Pathway
+Pathway: all
+Type: open_text
+Tier: 3
+N: 0
+Prompt: [I avoid the topic / The topic does not come up.]
+--------------------------------------------------
+
+ID: observe_parent_circ_decision_maker_v2
+Section: Observer Pathway
+Pathway: observer
+Type: open_text
+Tier: 3
+N: 0
+Prompt: Were you the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through adoption)?
+--------------------------------------------------
+

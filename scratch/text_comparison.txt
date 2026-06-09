@@ -1,0 +1,68 @@
+========================================================================
+MOCKUP VS REACT SCROLLY — TEXT SAMPLES & TONE ANALYSIS
+========================================================================
+
+1. STANDALONE CLAUDE MOCKUP NARRATIVE SAMPLES
+------------------------------------------------------------------------
+Sample 1: "A healthy newborn's body is, by default, intact. In the United States — and in a handful of other countries — a part of that body is routinely cut off within hours or days of birth. There is no disease to treat. There is no standardized procedure. There is no required training to perform it. There are no long-term outcome studies the way there are for any other surgery."
+
+Sample 2: "The practice survives because it is invisible to the people inside it. It is presented as cosmetic, hygienic, traditional, modern, or simply "what we do.""
+
+Sample 3: "We launched the Circumsurvey to ask the people who actually live in these bodies — and the people who love them — what is actually happening."
+
+Sample 4: "The Accidental Intactivist didn't set out to lead a movement. He stumbled into an absence — a giant hole in the conversation his culture had taught him to walk past."
+
+Sample 5: "The deeper he looked, the louder the silence became. Where were the men's testimonies? Where were the partners' observations? Where was the comparative data — the kind we'd demand for any other elective surgery performed on a newborn?"
+
+Sample 6: "So he built a survey. 368 questions. Six pathways. Open to anyone, anywhere. The first 500 responses arrived in three weeks. The signal in them is overwhelming."
+
+Sample 7: "Each dot is one respondent, placed near the country they answered from. The signal isn't concentrated in any one culture — it surfaces in every continent except Antarctica. But its center of gravity is not subtle."
+
+Sample 8: "The United States and Canada — the two industrialized nations where routine infant circumcision is still common — account for nearly half of every voice in this report. That isn't a sampling bias. It's the shape of who needs to talk about this."
+
+Sample 9: "Each dot below is one of them. They are not activists. Most found the survey through curiosity, through a partner, through a quiet question they had carried for years."
+
+Sample 10: "Three of those angles are the body itself. The other three are the people who orbit it: partners, parents, and the professionals who hand them the consent form."
+
+Sample 11: "Never circumcised. The default state of a male body. The baseline against which everything else is, definitionally, a deviation."
+
+Sample 12: "Cut, typically in infancy, without their knowledge or consent. Most never see the procedure, and most are never told what was taken."
+
+Sample 13: "Actively rebuilding the foreskin tissue removed in infancy. A years-long act of bodily reclamation. 93 respondents are doing it now."
+
+Sample 14: "Witnesses to the practice from the outside in."
+
+Sample 15: "Made the decision — or are in the middle of making it."
+
+
+
+2. REACT SCROLLY ENGINE NARRATIVE SAMPLES
+------------------------------------------------------------------------
+Sample 2: "We Americans are masters of the comforting narrative. We wrap ourselves in stories of Liberty, Freedom of Choice, and the inviolable sanctity of the individual body."
+
+Sample 3: "But if you resist the immense gravitational pull of the default narrative, you perceive a glitch in the matrix. A detail hidden in plain sight: the routine, unquestioned amputation of healthy infant anatomy."
+
+Sample 4: "Growing up intact in a culture where that makes you a statistical anomaly forces you to become an "accidental anthropologist." It forces you to finally look at the Transparent Monster we have all agreed not to see."
+
+Sample 5: "My name is Tone Pettit, and I am the "Accidental Intactivist." This project was                 born from a lifetime of observation and a single, persistent question."
+
+Sample 6: "By a conscious choice of my parents in the 1970s, I grew up intact — an outlier                 in a US culture where routine infant circumcision was the unquestioned norm. I                 became an accidental witness to a profound alteration that nearly all                 my friends, my partners, and men in the media had undergone — something my                 parents had simply dismissed as unnecessary."
+
+Sample 7: "Everyone seems to have an opinion about whether infant circumcision should or                 shouldn't be done — but I almost never hear adults talking honestly about their                 own lived experience with their own anatomy."
+
+Sample 8: "I had so many questions. How did men actually feel about being cut?                 Was it something they ever thought about? What was their sexual experience                 truly like? This survey is my way of finally asking those questions."
+
+Sample 9: "What follows is a data instrument, not an advocacy document. I am not here to                 tell you how to feel. I am here to share what five hundred people                 said when finally asked — and to bring these essential stories into                 the light."
+
+Sample 10: "Before we can dismantle the monster, we must establish the facts. We cannot rely on clinical abstractions or institutional cover-ups. We must look at the real-world evidence."
+
+Sample 11: "We asked 504 men—intact, circumcised, and those actively restoring—to anonymously share their lived realities. We asked parallel questions about their physical characteristics, their sensitivity, and their satisfaction. This is not an echo chamber. It is a rigorous, side-by-side reckoning."
+
+Sample 12: "They came from across the anatomical spectrum too: circumcised men,                    intact men, men actively restoring their foreskin, and observers — partners,                    parents, and healthcare professionals who've seen this issue from the other side."
+
+Sample 13: "As the survey continues, the experiences of Trans and Intersex                    respondents will further deepen our understanding. The data explorer                    updates in real time — this report captures the Phase 1 snapshot."
+
+Sample 14: "They span the entire spectrum. Moderates and conservatives make up nearly half the respondents, while liberals and independents make up the rest. And generationally, they span decades:"
+
+Sample 15: "But who showed up doesn't fully capture what they believe. The cultural conditioning around this topic is so intense that almost everyone absorbs a specific set of assumptions about what is "cleaner," "better," or "normal.""
+

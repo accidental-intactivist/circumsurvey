@@ -108,6 +108,12 @@ const ROUTE_META = {
     desc: "Full response distribution, cohort comparison, demographic breakdowns, and AI-powered analysis for a single survey question.",
     navTitle: "Question",
   },
+  numbers: {
+    kicker: "Exhibit 11",
+    title: "By The Numbers",
+    desc: "The core findings of the study summarized in key outcome metrics. Use cohort filters to examine specific subgroups.",
+    navTitle: "By The Numbers",
+  },
 };
 
 export const EXHIBIT_ROUTES = [
@@ -121,6 +127,7 @@ export const EXHIBIT_ROUTES = [
   { route: "observer-triad", num: "Exhibit 08", label: "The Observer Triad" },
   { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors" },
   { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey" },
+  { route: "numbers", num: "Exhibit 11", label: "By The Numbers" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta }) {

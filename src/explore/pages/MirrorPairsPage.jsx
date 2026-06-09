@@ -1024,16 +1024,19 @@ function MirrorPairBlock({ pair, questionsMap, cohort }) {
       )}
 
       {isNarrative ? (
-
-        <MirrorNarrativeBlock 
-          intactQ={intactQ}
-          circQ={circQ}
-          intactDist={intactDist}
-          circDist={circDist}
-          intactCohortDist={intactCohortDist}
-          circCohortDist={circCohortDist}
-          hasCohort={!!cohort}
-        />
+        (intactQ && !intactDist) || (circQ && !circDist) ? (
+          <div style={{ padding: "3rem", textAlign: "center", color: C.dim }}>Loading narratives...</div>
+        ) : (
+          <MirrorNarrativeBlock 
+            intactQ={intactQ}
+            circQ={circQ}
+            intactDist={intactDist}
+            circDist={circDist}
+            intactCohortDist={intactCohortDist}
+            circCohortDist={circCohortDist}
+            hasCohort={!!cohort}
+          />
+        )
       ) : (
         <>
           {aligned ? (

@@ -1,0 +1,84 @@
+﻿
+> function RotatingFact() {
+    const [idx, setIdx] = useState(0);
+    const [phase, setPhase] = useState("in"); // in | holding | out
+    useEffect(() => {
+      let t;
+      if (phase === "in")      t = setTimeout(() => setPhase("holding"), 1200);
+      else if (phase === "holding") t = setTimeout(() => setPhase("out"), 4500);
+      else if (phase === "out")     t = setTimeout(() => {
+        setIdx(i => (i + 1) % HERO_FACTS.length);
+        setPhase("in");
+      }, 700);
+      return () => clearTimeout(t);
+    }, [phase]);
+  
+    const fact = HERO_FACTS[idx];
+    const visible = phase !== "out";
+    const opacity = phase === "holding" ? 1 : phase === "in" ? 1 : 0;
+    const y = phase === "in" ? 0 : phase === "holding" ? 0 : -16;
+  
+    return (
+      <div style={{
+        textAlign: "center",
+        maxWidth: 820,
+        margin: "0 auto",
+        opacity,
+        transform: `translateY(${y}px)`,
+        transition: "opacity 0.6s ease-out, transform 0.7s ease-out",
+      }}>
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 800,
+          fontSize: TYPE.mastheadHero,
+          color: fact.color,
+          lineHeight: 1,
+          letterSpacing: "-0.02em",
+          marginBottom: "1.25rem",
+          textShadow: `0 0 48px ${fact.color}22`,
+          transition: "color 0.7s ease-out, text-shadow 0.7s ease-out",
+        }}>
+          <CountUp to={parseFloat(fact.big)} suffix={fact.big.replace(/[\d.]+/g, "")}
+            duration={1400} decimals={fact.big.includes(".") ? 1 : 0}
+            visible={phase === "in" || phase === "holding"} />
+        </div>
+  
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 600,
+          fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+          color: C.pageText,
+          lineHeight: 1.3,
+          marginBottom: "0.3rem",
+        }}>
+          {fact.line1}
+        </div>
+        <div style={{
+          fontFamily: "'Playfair Display', serif",
+          fontWeight: 600,
+          fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
+          color: C.pageText,
+          lineHeight: 1.3,
+          marginBottom: "1.25rem",
+        }}>
+          {fact.line2}
+        </div>
+        <div style={{
+          fontFamily: "'Barlow', sans-serif",
+          fontWeight: 400,
+          fontStyle: "italic",
+          fontSize: TYPE.body,
+          color: C.pageMuted,
+          lineHeight: 1.55,
+          maxWidth: 540,
+          margin: "0 auto",
+        }}>
+          {fact.context}
+        </div>
+      </div>
+    );
+  }
+  
+  // Ambient respondent-dot artwork in background ΓÇö "portrait of every respondent"
+
+

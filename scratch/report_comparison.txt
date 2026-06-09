@@ -1,0 +1,88 @@
+========================================================================
+CIRCUMSURVEY FINDINGS — NARRATIVE & CONTENT STRUCTURE COMPARISON
+========================================================================
+
+1. STANDALONE CLAUDE MOCKUP STRUCTURE (Acts 1-17)
+------------------------------------------------------------------------
+Mockup Sections (from comments):
+  - ACT 01 · COLD OPEN
+  - ACT 02 · THE QUESTION
+  - ACT 03 · THE INQUIRY
+  - ACT 04 · REACH · THE WORLD
+  - ACT 05 · REACH · NORTH AMERICA
+  - ACT 06 · WHO ANSWERED
+  - ACT 05 · THE PATHWAYS
+  - ACT 06 · THE PLEASURE GAP
+  - ACT 07 · BIG NUMBER · 4.45 vs 1.96
+  - ACT 08 · QUOTE INTERLUDE
+  - ACT 09 · ASSUMPTIONS
+  - ACT 10 · WHAT IS ACTUALLY TRUE
+  - ACT 11 · NEEDED LUBRICATION
+  - ACT 12 · NO STANDARD
+  - ACT 13 · COMMUNICATION GAP
+  - ACT 14 · SATISFACTION
+  - ACT 15 · TRANSPARENT MONSTER
+  - ACT 16 · AUTONOMY
+  - ACT 17 · CALL TO ACTION
+
+Mockup Key Headings (H2s):
+  - "Why isn't this weird to more of us?"
+  - "An ordinary American started asking questions.What he found was anything but ordinary."
+  - "A 368-question survey about a body part most people refuse to discuss.35 countries answered."
+  - "216 of the 452 live where the consent form is the default."
+  - "452 people said yes to a 368-question survey about a part of the body our culture has agreed not to discuss."
+  - "The inquiry asks the same question from six different angles."
+  - "The Pleasure Gap — six dimensions, three bodies."
+  - "Inside the culture, here is what "everyone knows.""
+  - "Now look at the same survey, asking what the data shows."
+  - "Lubrication isn't optional. It's compensation."
+  - "There is no standardized procedure.There is no required training."
+  - "It also rewires intimacy."
+  - "How proud or satisfied are you with your own body?"
+  - "We asked the 452: does the phrase 
+      "transparent monster" 
+      — a significant harm hiding in plain sight — describe what you've experienced?"
+  - "87%"
+  - "This is phase one.
+      Five hundred is just the start."
+
+
+2. REACT SCROLLY ENGINE STRUCTURE (src/components/Scrollytelling/ScrollyEngine.jsx)
+------------------------------------------------------------------------
+Scrolly Acts (eyebrow + title props):
+  - Act I: "The Glitch in the American Dream"
+  - Act II: "Setting the Baseline"
+  - Act III: "Sharpening the Differences"
+  - Act IV: "The Pleasure Gap"
+  - Act V: "Reclaiming Wholeness"
+
+Scrolly Narrative Titles (all title props):
+  - "The Glitch in the American Dream"
+  - "Setting the Baseline"
+  - "Generational Breakdown"
+  - "Responses span all age groups, primarily Millennials and Gen Z."
+  - "Sharpening the Differences"
+  - "Overall, how PROUD or satisfied are you with your penis?"
+  - "Considering all aspects (appearance, how it functions, and the pleasure it provides)?"
+  - "A Schism in Emotional Reality: Resentment vs Regret"
+  - "Comparing circumcised resentment against intact regret regarding parents' choices."
+  - "Do you generally need artificial lubrication?"
+  - "Intact men rarely or never need it. Circumcised men overwhelmingly do."
+  - "The Pleasure Gap"
+  - "The Systemic Default: Medicine vs Culture"
+  - "Comparing the medical handling of circumcision with the cultural expectations of intact respondents."
+  - "Direct Comparison of Sexual Experience by Status"
+  - "Please rate the following aspects of your own sexual experience on a scale of 1 to 5"
+  - "If you had a son today, what would your decision be?"
+  - "Based on everything you know and have experienced"
+  - "Reclaiming Wholeness"
+
+
+3. REACT LANDING PAGE STRUCTURE (src/pages/LandingPage.jsx)
+------------------------------------------------------------------------
+Landing Page Key Headings (H2s):
+  - "The 'Why' Behind This Inquiry"
+  - "{title}"
+  - "A courageous plaintiff could unlock a landmark case."
+
+Landing Page Bureau Cards (title props):

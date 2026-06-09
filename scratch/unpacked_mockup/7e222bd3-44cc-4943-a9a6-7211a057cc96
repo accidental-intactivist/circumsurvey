@@ -1,0 +1,138 @@
+// ========================================================================
+// CIRCUMSURVEY — art primitives (spirograph, moire, ASCII)
+// ========================================================================
+
+window.Art = (function() {
+
+  function spirographPath(R, r, d, steps = 1800, loops = 40) {
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * Math.PI * loops;
+      const x = (R - r) * Math.cos(t) + d * Math.cos((R - r) / r * t);
+      const y = (R - r) * Math.sin(t) - d * Math.sin((R - r) / r * t);
+      pts.push([x, y]);
+    }
+    return pts.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ");
+  }
+
+  function spirograph({ size = 320, R = 100, r = 33, d = 60, color = "stroke", width = 0.6, loops = 40 } = {}) {
+    const s = size / 2;
+    const path = spirographPath(R, r, d, 2400, loops);
+    return `<svg viewBox="${-s} ${-s} ${size} ${size}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet">
+      <g class="opart"><path d="${path}" class="${color}" stroke-width="${width}" /></g>
+    </svg>`;
+  }
+
+  // Concentric circles
+  function concentric({ size = 300, n = 18, color = "stroke", width = 0.5 } = {}) {
+    const s = size / 2;
+    let circles = "";
+    for (let i = 1; i <= n; i++) {
+      const r = (s - 4) * (i / n);
+      circles += `<circle cx="0" cy="0" r="${r.toFixed(2)}" class="${color}" stroke-width="${width}" fill="none"/>`;
+    }
+    return `<svg viewBox="${-s} ${-s} ${size} ${size}" width="${size}" height="${size}">${circles}</svg>`;
+  }
+
+  // Moiré: two overlapping line gratings
+  function moire({ w = 400, h = 200, gap = 6, color1 = "stroke", color2 = "stroke", rot = 4 } = {}) {
+    let lines1 = "";
+    for (let y = -h; y <= 2 * h; y += gap) {
+      lines1 += `<line x1="${-w}" y1="${y}" x2="${2 * w}" y2="${y}" class="${color1}" stroke-width="0.5"/>`;
+    }
+    let lines2 = "";
+    for (let y = -h; y <= 2 * h; y += gap) {
+      lines2 += `<line x1="${-w}" y1="${y}" x2="${2 * w}" y2="${y}" class="${color2}" stroke-width="0.5"/>`;
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">
+      <g>${lines1}</g>
+      <g transform="rotate(${rot} ${w / 2} ${h / 2})">${lines2}</g>
+    </svg>`;
+  }
+
+  // Radial fan
+  function radialFan({ size = 320, n = 60, color = "stroke", width = 0.4 } = {}) {
+    const s = size / 2;
+    let lines = "";
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const x = Math.cos(a) * s;
+      const y = Math.sin(a) * s;
+      lines += `<line x1="0" y1="0" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}" class="${color}" stroke-width="${width}"/>`;
+    }
+    return `<svg viewBox="${-s} ${-s} ${size} ${size}" width="${size}" height="${size}">${lines}</svg>`;
+  }
+
+  // Wave field — sine waves stacked vertically, shifted progressively
+  function waveField({ w = 600, h = 300, n = 28, amp = 14, freq = 0.02, phase = 0, color = "stroke", width = 0.5 } = {}) {
+    let paths = "";
+    for (let i = 0; i < n; i++) {
+      const y0 = (i / (n - 1)) * h;
+      const localPhase = phase + i * 0.18;
+      const localAmp = amp * (1 - Math.abs(i - n / 2) / (n / 2)) + 2;
+      let d = "M0," + y0;
+      for (let x = 0; x <= w; x += 4) {
+        const y = y0 + Math.sin(x * freq + localPhase) * localAmp;
+        d += " L" + x + "," + y.toFixed(2);
+      }
+      paths += `<path d="${d}" class="${color}" stroke-width="${width}" fill="none"/>`;
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" preserveAspectRatio="none">${paths}</svg>`;
+  }
+
+  // Lissajous curve
+  function lissajous({ size = 320, a = 3, b = 4, delta = Math.PI / 2, color = "stroke", width = 0.6, steps = 1400 } = {}) {
+    const s = size / 2 - 4;
+    let d = "";
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * Math.PI * 2;
+      const x = s * Math.sin(a * t + delta);
+      const y = s * Math.sin(b * t);
+      d += (i === 0 ? "M" : "L") + x.toFixed(2) + "," + y.toFixed(2);
+    }
+    return `<svg viewBox="${-size / 2} ${-size / 2} ${size} ${size}" width="${size}" height="${size}">
+      <path d="${d}" class="${color}" stroke-width="${width}" fill="none"/>
+    </svg>`;
+  }
+
+  // ASCII-style horizontal rule label
+  function asciiRule(label = "", len = 60) {
+    const pad = Math.max(0, len - label.length - 2);
+    const left = Math.floor(pad / 2);
+    const right = pad - left;
+    return "─".repeat(left) + " " + label + " " + "─".repeat(right);
+  }
+
+  // Big bracketed section header
+  function sectionHeader(num, name) {
+    return `<div class="mono dim" style="display:flex; align-items:baseline; gap: 1ch; font-size:18px; letter-spacing:0.12em; text-transform:uppercase;">
+      <span class="ink">[ACT ${String(num).padStart(2,"0")}]</span>
+      <span>${name}</span>
+      <span style="flex:1; border-top:1px dashed var(--rule); margin-left:1ch; transform: translateY(-4px);"></span>
+    </div>`;
+  }
+
+  // A rendered fully-formed pleasure-gap bar set
+  function gapBar({ label, units, intact, restoring, circumcised, max = 5 }) {
+    const w = v => (v / max * 100).toFixed(1) + "%";
+    return `<div class="gap-row" data-gap>
+      <div class="lbl">${label}<small>${units || ""}</small></div>
+      <div class="gap-bars">
+        <div class="gap-bar intact" data-w="${w(intact)}"><span class="val">${intact.toFixed(2)}</span></div>
+        <div class="gap-bar restor" data-w="${w(restoring)}"><span class="val">${restoring.toFixed(2)}</span></div>
+        <div class="gap-bar circ"   data-w="${w(circumcised)}"><span class="val">${circumcised.toFixed(2)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  // Decorative perimeter ticker
+  function tickerRow(text) {
+    const filler = (text + " · ").repeat(50);
+    return `<div style="overflow:hidden; white-space:nowrap;" class="mono dim">${filler}</div>`;
+  }
+
+  return {
+    spirograph, concentric, moire, radialFan, waveField, lissajous,
+    asciiRule, sectionHeader, gapBar, tickerRow, spirographPath
+  };
+})();

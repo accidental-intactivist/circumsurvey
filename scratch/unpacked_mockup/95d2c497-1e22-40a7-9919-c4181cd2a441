@@ -1,0 +1,131 @@
+// Circumsurvey Findings — extracted from n=452 dataset (Phase 1)
+// All values are real, computed directly from the raw responses.
+
+window.CS_DATA = {
+  meta: {
+    n_total: 452,
+    n_amab: 422,
+    n_countries: 35,
+    phase: 1,
+    asof: "June 2025 — first 500 responses"
+  },
+
+  state: { // primary AMAB respondent split
+    intact: 129,
+    circumcised: 185,
+    restoring: 93
+  },
+
+  country: [
+    ["United States", 175],
+    ["Canada", 41],
+    ["Australia", 24],
+    ["United Kingdom", 23],
+    ["Germany", 10],
+    ["Italy", 5],
+    ["France", 4],
+    ["Poland", 3], ["Spain", 3], ["Sweden", 3],
+    ["Switzerland", 2], ["India", 2], ["Ireland", 2],
+    ["South Africa", 2], ["Norway", 2], ["Netherlands", 2],
+    ["Paraguay", 2],
+    ["Other (18 countries)", 18]
+  ],
+
+  generation: [
+    ["Millennial", 181],
+    ["Gen Z", 123],
+    ["Gen X", 59],
+    ["Boomer", 42],
+    ["Xennial", 25],
+    ["Other / not sure", 12]
+  ],
+
+  // The Pleasure Gap (mean rating, 1=low, 5=high), AMAB only
+  pleasure_gap: [
+    { id: "mobile",   label: "Pleasure from mobile skin",      intact: 4.45, restoring: 2.92, circumcised: 1.96 },
+    { id: "variety",  label: "Variety of pleasurable sensations", intact: 4.37, restoring: 2.76, circumcised: 2.43 },
+    { id: "sense",    label: "Sensitivity to light touch",      intact: 4.24, restoring: 2.60, circumcised: 2.25 },
+    { id: "intensity",label: "Intensity of orgasm",             intact: 4.21, restoring: 3.10, circumcised: 2.89 },
+    { id: "ease",     label: "Ease of reaching orgasm",         intact: 4.02, restoring: 2.89, circumcised: 2.62 },
+    { id: "duration", label: "Duration of orgasm sensation",    intact: 3.98, restoring: 2.73, circumcised: 2.62 }
+  ],
+
+  lubrication_always_needed: { intact: 2, restoring: 33, circumcised: 37 },
+  lubrication_never_needed:  { intact: 54, restoring: 16, circumcised: 5 },
+
+  preejac_none_barely: { intact: 11, restoring: 19, circumcised: 24 },
+
+  communication_often_difficult: { intact: 6, restoring: 31, circumcised: 37 },
+  communication_understood:      { intact: 41, restoring: 16, circumcised: 24 },
+
+  satisfaction_very_proud:        { intact: 41, restoring: 8,  circumcised: 8 },
+  satisfaction_very_dissatisfied: { intact: 1,  restoring: 24, circumcised: 31 },
+
+  // Cultural perceptions — % who believe each state is more likely to be...
+  // (combining "Definitely" + "Likely" for each side)
+  perceptions: [
+    { attr: "Medically healthier",     intact_pct: 28, circ_pct: 45, equal_pct: 20, unsure: 7 },
+    { attr: "More hygienic / cleaner", intact_pct: 13, circ_pct: 58, equal_pct: 21, unsure: 8 },
+    { attr: "Easier to care for",      intact_pct: 15, circ_pct: 58, equal_pct: 19, unsure: 8 },
+    { attr: "More aesthetically pleasing", intact_pct: 35, circ_pct: 45, equal_pct: 11, unsure: 9 },
+    { attr: "More socially acceptable",intact_pct: 25, circ_pct: 47, equal_pct: 16, unsure: 12 },
+    { attr: "Preferred by partners",   intact_pct: 24, circ_pct: 42, equal_pct: 23, unsure: 11 },
+    { attr: "More 'natural' looking",  intact_pct: 64, circ_pct: 19, equal_pct: 9,  unsure: 8 },
+    { attr: "More sensitive / pleasurable", intact_pct: 67, circ_pct: 9, equal_pct: 14, unsure: 10 },
+    { attr: "More modern / progressive", intact_pct: 52, circ_pct: 17, equal_pct: 17, unsure: 14 },
+    { attr: "Associated w/ conservative values", intact_pct: 11, circ_pct: 49, equal_pct: 21, unsure: 19 },
+    { attr: "Associated w/ liberal values",      intact_pct: 51, circ_pct: 9,  equal_pct: 22, unsure: 18 }
+  ],
+
+  // Decisions & beliefs
+  if_child_today_autonomy: 87,    // % who prioritize bodily autonomy
+  if_child_today_medical:  9,
+  transparent_monster_resonates_strongly: 56,
+  transparent_monster_resonates_somewhat: 21,
+  transparent_monster_doesnt: 7,
+
+  // Verbatim quotes — preserved as written. Bracketed tag = circumcision state.
+  quotes: {
+    opening: [
+      { t: "It's not really hiding... it is actively promoted.", s: "Restoring, 30s" },
+      { t: "This abuse is horrific but because it has been normalized most people are unable to see it for what it is.", s: "Circumcised, 40s" },
+      { t: "People are blinded by societal norms.", s: "Restoring, 50s" }
+    ],
+    missing_info: [
+      { t: "The prepuce is a sexual organ, not a redundant piece of skin.", s: "Restoring" },
+      { t: "Foreskin isn't just a useless piece of skin to be cut.", s: "Circumcised" },
+      { t: "When given the choice, almost no men choose to be circumcised.", s: "Circumcised" },
+      { t: "Cleaning an intact penis on a baby isn't rocket science. Wipe it like a finger and he's good to go.", s: "Circumcised" },
+      { t: "Foreskin feels amazing — for you and for future sexual partners.", s: "Intact" },
+      { t: "Men suffer pain and anguish but sharing such feelings is frowned upon, especially when they relate to such a delicate topic.", s: "Restoring" }
+    ],
+    pleasure_gap: [
+      { t: "I cannot feel anything pleasurable until about an inch below my circumcision scar.", s: "Circumcised, 30s" },
+      { t: "Build-up is faster than I would like. Orgasm is intense but duration is brief and the focus is in the genitals — not full-body.", s: "Restoring, 60s" },
+      { t: "There is a very narrow window of sensation that must not be disturbed, or it's back to the starting point.", s: "Restoring, 60s" }
+    ],
+    communication: [
+      { t: "Girls assume things should work as is, but they don't. I often just move to something else.", s: "Restoring, 50s" },
+      { t: "My partners didn't know how to handle my penis or give me pleasure, because they don't know how to please a circumcised one.", s: "Circumcised, 20s" },
+      { t: "It was difficult to convey to my wife the variety of ways to touch the penis to elicit a variety of pleasurable sensations.", s: "Restoring, 60s" },
+      { t: "Disconnect in general sums up how I feel about relationships.", s: "Circumcised, 20s" }
+    ],
+    monster: [
+      { t: "Circumcision is a euphemism. It sounds easy — something everyone does. But 'partial genital amputation' sounds like something no one would do.", s: "Restoring" },
+      { t: "I see it as a thick blanket that we are forced to pretend is whatever.", s: "Restoring" },
+      { t: "Although I myself am unfortunately circumcised, it is seen as completely normal despite being horrific.", s: "Restoring" },
+      { t: "Male suffering is ignored and normalized.", s: "Restoring" },
+      { t: "Every one has the right to a whole body.", s: "Intact" }
+    ]
+  },
+
+  // The "Six pathways" framing the survey uses
+  pathways: [
+    { code: "INT", name: "Intact",         desc: "Never circumcised" },
+    { code: "CIR", name: "Circumcised",    desc: "Cut, typically in infancy" },
+    { code: "RES", name: "Restoring",      desc: "Actively rebuilding the foreskin" },
+    { code: "PAR", name: "Partners",       desc: "Witnesses to the practice" },
+    { code: "PRT", name: "Parents",        desc: "Decided, or deciding" },
+    { code: "PRO", name: "Professionals",  desc: "Clinicians, researchers, advocates" }
+  ]
+};

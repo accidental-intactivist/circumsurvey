@@ -1,0 +1,44 @@
+﻿
+> const HERO_FACTS = [
+    {
+      big:   "96%",
+      line1: "prioritize the child's right",
+      line2: "to bodily autonomy.",
+      context: "Across every pathway ΓÇö intact, circumcised, restoring, observer.",
+      color: C.blue,
+    },
+    {
+      big:   "80%",
+      line1: "of restoring respondents",
+      line2: "report strong, frequent resentment.",
+      context: "0% said they have never felt negative about their circumcision.",
+      color: C.red,
+    },
+    {
+      big:   "47.6%",
+      line1: "describe the decision as",
+      line2: "\"routine / automatic.\"",
+      context: "Only 2.7% were offered it as a neutral choice with pros and cons.",
+      color: C.orange,
+    },
+    {
+      big:   "52%",
+      line1: "of circumcised respondents",
+      line2: "prefer the intact appearance.",
+      context: "A quiet majority, in their own words.",
+      color: C.yellow,
+    },
+    {
+      big:   "88%",
+      line1: "of intact respondents would",
+      line2: "keep their son intact.",
+      context: "78% of circumcised respondents would make the same choice for their son.",
+      color: C.green,
+    },
+  ];
+  
+  function RotatingFact() {
+    const [idx, setIdx] = useState(0);
+    const [phase, setPhase] = useState("in"); // in | holding | out
+
+

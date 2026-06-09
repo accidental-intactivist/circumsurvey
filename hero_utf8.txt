@@ -1,0 +1,161 @@
+﻿
+> function CinematicHero() {
+    const [revealed, setRevealed] = useState(false);
+    useEffect(() => { setTimeout(() => setRevealed(true), 80); }, []);
+    return (
+      <div style={{
+        position: "relative",
+        minHeight: "82vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "3rem 1.5rem 4rem",
+        overflow: "hidden",
+        background: `radial-gradient(ellipse at center, ${C.bgSoft} 0%, ${C.bg} 50%, ${C.bgDeep} 100%)`,
+        borderBottom: `1px solid ${C.pageGhost}`,
+      }}>
+        {/* Both animations layered! */}
+        <HarmonicCanvas />
+  
+        {/* Settings Toggle */}
+        <div style={{ position: "absolute", top: "1.5rem", right: "1.5rem", zIndex: 50 }}>
+          <ThemeToggle />
+        </div>
+  
+        {/* Rainbow bar at very top */}
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0,
+          height: 4,
+          background: RAINBOW_GRAD,
+        }} />
+  
+        {/* Top eyebrow ΓÇö publication masthead */}
+        <div style={{
+          position: "absolute",
+          top: "1.5rem",
+          left: "50%",
+          transform: `translateX(-50%) translateY(${revealed ? 0 : -10}px)`,
+          opacity: revealed ? 1 : 0,
+          transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.75rem",
+          zIndex: 5,
+        }}>
+          <span style={{ color: C.red, fontSize: "1rem" }}>Γÿà</span>
+          <span style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 700,
+            fontSize: TYPE.cardLabel,
+            color: C.gold,
+            textTransform: "uppercase",
+            letterSpacing: "0.22em",
+          }}>Special Report</span>
+          <span style={{ color: C.red, fontSize: "1rem" }}>Γÿà</span>
+        </div>
+  
+        {/* Publication title ΓÇö "The Accidental Intactivist's Inquiry" in big */}
+        <Reveal delay={150}>
+          <div style={{
+            textAlign: "center",
+            marginBottom: "1.5rem",
+            position: "relative",
+            zIndex: 2,
+          }}>
+            <div style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(0.75rem, 1.2vw, 0.88rem)",
+              color: C.gold,
+              textTransform: "uppercase",
+              letterSpacing: "0.3em",
+              marginBottom: "0.5rem",
+            }}>An Anonymous Survey ┬╖ Findings Updated Live</div>
+            <h1 style={{
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 800,
+              fontSize: "clamp(2.2rem, 4.5vw, 3.6rem)",
+              color: C.pageTextBright,
+              lineHeight: 1.05,
+              letterSpacing: "-0.015em",
+              margin: 0,
+            }}>The Accidental Intactivist's Inquiry</h1>
+            <div style={{
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 400,
+              fontStyle: "italic",
+              fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
+              color: C.pageMuted,
+              marginTop: "0.4rem",
+            }}>{META.totalRespondents} Voices ┬╖ Six Pathways ┬╖ One Question, Asked Honestly</div>
+          </div>
+        </Reveal>
+  
+        {/* Rotating facts */}
+        <div style={{ position: "relative", zIndex: 2, width: "100%", minHeight: "22rem", display: "flex", alignItems: 
+"center", justifyContent: "center" }}>
+          <RotatingFact />
+        </div>
+  
+        {/* Scroll cue */}
+        <Reveal delay={1200}>
+          <div style={{
+            position: "relative",
+            marginTop: "3rem",
+            textAlign: "center",
+            zIndex: 2,
+          }}>
+            <div style={{
+              fontFamily: "'Barlow Condensed', sans-serif",
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              color: C.gold,
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+              marginBottom: "0.8rem",
+            }}>Scroll to Begin</div>
+            <div style={{
+              width: 1, height: 48,
+              margin: "0 auto",
+              background: `linear-gradient(180deg, ${C.gold}, transparent)`,
+            }} />
+          </div>
+        </Reveal>
+  
+        {/* Rainbow gradient accent at bottom edge of hero */}
+        <div style={{
+          position: "absolute",
+          bottom: 0, left: 0, right: 0,
+          height: 3,
+          background: RAINBOW_GRAD,
+          opacity: 0.5,
+        }} />
+      </div>
+    );
+  }
+  
+  
+  // ├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É
+  // EDITOR'S LETTER ΓÇö Tone's first-person introduction as card #1
+  // ├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├ó
+ΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É├óΓÇó┬É
+  
+  function EditorsLetter() {
+    return (
+      <BureauCard
+        title="A Note from the Lead Researcher"
+        refText="FROM THE DESK OF TONE PETTIT ┬╖ LEAD RESEARCHER"
+        stamp="Letter"
+        stampColor={C.gold}
+        gradient={PATH_GRADIENTS.intact}
+        cardLabel="INTRODUCTION"
+      >
+
+

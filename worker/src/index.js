@@ -706,6 +706,7 @@ User Query: "${query}"`;
 1. {"tool": "get_demographics", "args": {"pathway": string (optional), "country": string (optional)}} - Fetches counts for specific demographic populations.
 2. {"tool": "get_crosstab", "args": {"q1": string, "q2": string}} - Cross-tabulates two survey questions. Use valid survey question IDs.
 3. {"tool": "get_univariate", "args": {"questionId": string}} - Fetches the distribution for a single survey question.
+4. {"tool": "get_geo", "args": {"level": "country" | "us_state" | "canada_province", "when": "born" | "now" (optional), "pathway": string (optional)}} - Fetches geographic distribution of respondents.
 
 Available Questions for tools 2 & 3:
 ${qListStr}
@@ -803,6 +804,38 @@ Example: {"tool": "get_demographics", "args": {"pathway": "intact", "country": "
           const { results } = await env.DB.prepare(sql).bind(...bindings).all();
           aggResults = results;
           displaySql = `SELECT r.value_text AS value_text, COUNT(*) AS n \nFROM responses r \nWHERE r.question_id = '${q1}' \nGROUP BY r.value_text;`;
+        } else if (toolCall.tool === "get_geo") {
+          const level = toolCall.args.level || "country";
+          const when = toolCall.args.when || "born";
+          const pathway = toolCall.args.pathway;
+          
+          const colMap = {
+            country: when === "now" ? "country_now" : "country_born",
+            us_state: when === "now" ? "us_state_now" : "us_state_born",
+            canada_province: when === "now" ? "canada_province_now" : "canada_province_born"
+          };
+          const col = colMap[level];
+          if (!col) {
+            throw new Error(`Invalid geographic level: ${level}`);
+          }
+          
+          let sqlQuery = `
+            SELECT d.${col} AS location, COUNT(*) AS n
+            FROM demographics d
+            JOIN respondents resp ON resp.id = d.respondent_id
+            WHERE d.${col} IS NOT NULL AND d.${col} != ''
+          `;
+          bindings = [];
+          if (pathway) {
+            sqlQuery += ` AND resp.pathway = ?`;
+            bindings.push(pathway);
+          }
+          sqlQuery += ` GROUP BY d.${col} ORDER BY n DESC`;
+          
+          sql = sqlQuery;
+          const { results } = await env.DB.prepare(sql).bind(...bindings).all();
+          aggResults = results;
+          displaySql = `SELECT d.${col} AS location, COUNT(*) AS n \nFROM demographics d \nJOIN respondents resp ON resp.id = d.respondent_id \nWHERE d.${col} IS NOT NULL AND d.${col} != ''${pathway ? ` AND resp.pathway = '${pathway}'` : ""}\nGROUP BY d.${col} \nORDER BY n DESC;`;
         }
       } catch(e) {
         console.error("Tool execution failed", e);

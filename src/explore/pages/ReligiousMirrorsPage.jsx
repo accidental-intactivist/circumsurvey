@@ -57,10 +57,10 @@ const THEOLOGICAL_MIRRORS = [
 ];
 
 const TRADITIONS = [
-  { id: "Atheist / Agnostic / Secular", label: "Atheist / Secular", emoji: "⚛️", color: "#8bb8d9" },
-  { id: "Christian", label: "Christian", emoji: "✝️", color: "#5b93c7" },
-  { id: "Jewish", label: "Jewish", emoji: "✡️", color: "#d4a030" },
-  { id: "Islamic", label: "Islamic", emoji: "☪️", color: "#68b878" },
+  { id: "Atheist / Agnostic / Secular", label: "Atheist / Secular", emoji: "⚛️", color: "#8bb8d9", filter: "religion.primary_tradition=No significant religious/spiritual/cultural tradition influencing this topic." },
+  { id: "Christian", label: "Christian", emoji: "✝️", color: "#5b93c7", filter: "religion.primary_tradition=Christian" },
+  { id: "Jewish", label: "Jewish", emoji: "✡️", color: "#d4a030", filter: "religion.primary_tradition=Jewish" },
+  { id: "Islamic", label: "Islamic", emoji: "☪️", color: "#68b878", filter: "religion.primary_tradition=Islamic" },
 ];
 
 export default function ReligiousMirrorsPage({ navigate }) {
@@ -248,7 +248,7 @@ function UniversalRow({ qDef, questionsMap }) {
             </h4>
             
             {q ? (
-              <DataLoader question={q} filter={`religion.primary_tradition=${encodeURIComponent(tradition.id)}`} shortenLabels={true} />
+              <DataLoader question={q} filter={tradition.filter} shortenLabels={true} />
             ) : (
               <div style={{ color: C.dim, textAlign: "center", fontStyle: "italic", fontSize: "0.85rem" }}>Loading question...</div>
             )}

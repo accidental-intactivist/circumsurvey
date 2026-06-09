@@ -914,7 +914,7 @@ function GeographicOrigins({ cohort, tooltip }) {
   const [ref, inView] = useInView();
   const [geoData, setGeoData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mapLevel, setMapLevel] = useState("us_state");
+  const [mapLevel, setMapLevel] = useState("country");
   const [splitBy, setSplitBy] = useState("pathway");
   const [locationTime, setLocationTime] = useState("born");
   // Selected regions for the linked radar. Up to 3, each shape: { name, level }.
@@ -1001,6 +1001,22 @@ function GeographicOrigins({ cohort, tooltip }) {
         subtitle="Where do survey respondents come from? View mapped participation by region."
         icon="◈"
       />
+
+      <div style={{
+        background: `color-mix(in srgb, ${C.blue} 5%, ${C.bgCard})`,
+        border: `1px solid ${C.blue}30`,
+        borderRadius: 12,
+        padding: "1.5rem",
+        marginBottom: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.8rem"
+      }}>
+        <h3 style={{ fontFamily: FONT.display, color: C.textBright, fontSize: "1.1rem", margin: 0 }}>Who's Here?</h3>
+        <p style={{ fontFamily: FONT.body, color: C.text, fontSize: "0.9rem", margin: 0, lineHeight: 1.5 }}>
+          The Intactivist Inquiry captures voices from across the globe, with a heavy concentration in North America. By exploring the map below, you can discover not only where respondents live but also what led them to this movement.
+        </p>
+      </div>
 
       <div style={{
         background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,

@@ -1,263 +1,83 @@
 import { useMemo, useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker, useMapContext } from "react-simple-maps";
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
 import { scaleLinear } from "d3-scale";
-import { geoCentroid } from "d3-geo";
+import * as topojson from "topojson-client";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
-import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
+import { PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
+import L from 'leaflet';
 
 const WORLD_TOPO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
-// Custom manual coordinate overrides for better visual placement on the maps
+// Leaflet custom tile layers: CartoDB Positron
+const TILE_URL = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
 const CENTROID_OVERRIDES = {
-  // Countries
-  "unitedstates": [-98.5795, 38.8283],
-  "usa": [-98.5795, 38.8283],
-  "canada": [-102.3468, 56.1304],
-  "unitedkingdom": [-2.4359, 53.5],
-  "australia": [133.7751, -25.2744],
-  "germany": [10.4515, 51.1657],
-  "southafrica": [22.9375, -30.5595],
-  "ireland": [-8.2439, 53.4129],
-  "newzealand": [174.8860, -40.9006],
-  
-  // States / Provinces
-  "michigan": [-84.5, 43.5], // shift away from lake water body
-  "florida": [-81.5, 27.8],
-  "california": [-119.5, 37.0],
-  "ontario": [-85.3232, 48.5],
-  "quebec": [-71.2080, 50.0],
-  "britishcolumbia": [-125.0, 52.0],
-  "alberta": [-115.0, 52.0]
+  "unitedstates": [38.8283, -98.5795],
+  "usa": [38.8283, -98.5795],
+  "canada": [56.1304, -102.3468],
+  "unitedkingdom": [53.5, -2.4359],
+  "australia": [-25.2744, 133.7751],
+  "germany": [51.1657, 10.4515],
+  "southafrica": [-30.5595, 22.9375],
+  "ireland": [53.4129, -8.2439],
+  "newzealand": [-40.9006, 174.8860],
+  "michigan": [43.5, -84.5], 
+  "florida": [27.8, -81.5],
+  "california": [37.0, -119.5],
+  "ontario": [48.5, -85.3232],
+  "quebec": [50.0, -71.2080],
+  "alberta": [52.0, -115.0],
+  "britishcolumbia": [52.0, -125.0]
 };
 
-const getCoordinates = (geo) => {
-  const name = geo.properties.name;
-  if (!name) return null;
-  const norm = normalizeName(name);
-  
+// Calculate visual centroid (lat, lng) for Leaflet
+function getCentroid(feature) {
+  const norm = normalizeName(feature.properties.name);
   if (CENTROID_OVERRIDES[norm]) return CENTROID_OVERRIDES[norm];
   
-  // Dynamic fallback using d3-geo centroid calculation
-  try {
-    const coords = geoCentroid(geo);
-    if (coords && !isNaN(coords[0]) && !isNaN(coords[1])) {
-      return coords;
-    }
-  } catch (e) {
-    console.error("Error calculating centroid for", name, e);
+  if (feature.geometry.type === "Polygon") {
+    const coords = feature.geometry.coordinates[0];
+    let lng = 0, lat = 0;
+    coords.forEach(c => { lng += c[0]; lat += c[1]; });
+    return [lat / coords.length, lng / coords.length];
+  } else if (feature.geometry.type === "MultiPolygon") {
+    const coords = feature.geometry.coordinates[0][0];
+    let lng = 0, lat = 0;
+    coords.forEach(c => { lng += c[0]; lat += c[1]; });
+    return [lat / coords.length, lng / coords.length];
   }
-  return null;
-};
-
-// SafeMarker wrapper to handle D3 projection boundaries (e.g. US territories on geoAlbersUsa)
-function SafeMarker({ coordinates, children, ...markerProps }) {
-  const { projection } = useMapContext();
-  if (!projection) return null;
-  
-  try {
-    const projected = projection(coordinates);
-    if (!projected || isNaN(projected[0]) || isNaN(projected[1])) {
-      return null;
-    }
-  } catch (e) {
-    return null;
-  }
-  
-  return (
-    <Marker coordinates={coordinates} {...markerProps}>
-      {children}
-    </Marker>
-  );
+  return [0, 0];
 }
 
-// Subcomponent to safely handle side-effects and report loaded geographies back to parent
-function GeographiesReporter({ geographies, onGeographiesLoaded }) {
+function FitBounds({ geojson }) {
+  const map = useMap();
   useEffect(() => {
-    if (geographies && geographies.length > 0) {
-      onGeographiesLoaded(geographies);
+    if (geojson && geojson.features && geojson.features.length > 0) {
+      const layer = L.geoJSON(geojson);
+      map.fitBounds(layer.getBounds(), { padding: [20, 20], maxZoom: 4 });
     }
-  }, [geographies, onGeographiesLoaded]);
+  }, [geojson, map]);
   return null;
-}
-
-// Subcomponent to safely handle Geographies rendering
-function MapGeographies({ geoUrl, visType, onGeographiesLoaded, dataMap, cohortMap, tabKeys, activeTab, getCohortColor, setTooltip, colorScale, balanceColorScale, onRegionClick, selectedRegionNorms, regionLevel }) {
-  return (
-    <Geographies geography={geoUrl}>
-      {({ geographies }) => {
-        const geographyElements = geographies.map((geo) => {
-          const geoName = geo.properties.name;
-          const geoNorm = normalizeName(geoName);
-          const isSelected = !!selectedRegionNorms && selectedRegionNorms.has(geoNorm);
-          const isClickable = !!onRegionClick;
-
-          let val = 0;
-          for (const label of Object.keys(dataMap.map)) {
-            if (normalizeName(label) === normalizeName(geoName)) {
-              val = dataMap.map[label];
-              break;
-            }
-          }
-
-          let defaultFill = `color-mix(in srgb, ${C.ghost} 15%, transparent)`;
-          let hoverFill = `color-mix(in srgb, ${C.ghost} 25%, transparent)`;
-
-          if (visType === "balance") {
-            const norm = normalizeName(geoName);
-            let intactCount = 0;
-            let circCount = 0;
-            if (cohortMap[norm]) {
-              intactCount = cohortMap[norm]["intact"] || 0;
-              circCount = cohortMap[norm]["circumcised"] || 0;
-            }
-            const totalCount = intactCount + circCount;
-            if (totalCount > 0) {
-              const ratio = intactCount / totalCount;
-              defaultFill = balanceColorScale(ratio);
-              hoverFill = `color-mix(in srgb, ${defaultFill} 20%, #fff)`;
-            }
-          } else {
-            defaultFill = visType === "bullseye"
-              ? (val > 0 ? "color-mix(in srgb, var(--c-text) 5%, transparent)" : "color-mix(in srgb, var(--c-text) 1.5%, transparent)")
-              : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 15%, transparent)`);
-
-            hoverFill = visType === "bullseye"
-              ? (val > 0 ? "color-mix(in srgb, var(--c-text) 12%, transparent)" : "color-mix(in srgb, var(--c-text) 4%, transparent)")
-              : (val > 0 ? colorScale(val) : `color-mix(in srgb, ${C.ghost} 25%, transparent)`);
-          }
-          
-          return (
-            <Geography
-              key={geo.rsmKey}
-              geography={geo}
-              onMouseEnter={() => {
-                const norm = normalizeName(geoName);
-                let content = `${geoName}: ${val}`;
-                
-                if (visType === "balance") {
-                  let intactCount = 0;
-                  let circCount = 0;
-                  if (cohortMap[norm]) {
-                    intactCount = cohortMap[norm]["intact"] || 0;
-                    circCount = cohortMap[norm]["circumcised"] || 0;
-                  }
-                  const totalCount = intactCount + circCount;
-                  if (totalCount > 0) {
-                    const ratio = Math.round((intactCount / totalCount) * 100);
-                    content = (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.25rem", marginBottom: "0.1rem", color: C.textBright }}>
-                          <strong>{geoName}</strong>
-                        </div>
-                        <div><span style={{ color: resolveCssColor(C.blue) }}>●</span> Intact: {intactCount} ({ratio}%)</div>
-                        <div><span style={{ color: resolveCssColor(C.red) }}>●</span> Circumcised: {circCount} ({100 - ratio}%)</div>
-                      </div>
-                    );
-                  }
-                } else if (val > 0 && cohortMap[norm]) {
-                  const pData = cohortMap[norm];
-                  const breakdown = [];
-                  for (const cid of tabKeys) {
-                    if (cid !== "all" && pData[cid] > 0) {
-                      breakdown.push({ id: cid, n: pData[cid] });
-                    }
-                  }
-                  
-                  if (breakdown.length > 0) {
-                    content = (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        <div style={{ 
-                          borderBottom: `1px solid ${C.ghost}`, 
-                          paddingBottom: "0.25rem", 
-                          marginBottom: "0.1rem",
-                          color: C.textBright
-                        }}>
-                          <strong>{geoName}</strong>: {val}
-                        </div>
-                        {breakdown.map((b) => {
-                          let bColor = getCohortColor(b.id);
-                          let bLabel = b.id;
-                          const mappedKey = b.id === "unclassified" ? "observer" : b.id;
-                          if (PATHWAYS[mappedKey]) {
-                            bLabel = PATHWAYS[mappedKey].label;
-                          }
-                          
-                          return (
-                            <div key={b.id}>
-                              <span style={{ color: bColor }}>●</span> {bLabel}: {b.n}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  }
-                }
-                setTooltip(content);
-              }}
-              onMouseLeave={() => {
-                setTooltip("");
-              }}
-              onClick={isClickable ? () => onRegionClick(geoName, regionLevel) : undefined}
-              tabIndex={isClickable ? 0 : -1}
-              style={{
-                default: {
-                  fill: isSelected ? `color-mix(in srgb, var(--c-gold) 22%, transparent)` : defaultFill,
-                  stroke: isSelected ? "var(--c-goldBright)" : (visType === "bullseye" ? "color-mix(in srgb, var(--c-text) 45%, transparent)" : "color-mix(in srgb, var(--c-text) 20%, transparent)"),
-                  strokeWidth: isSelected ? 2.2 : (visType === "bullseye" ? 1.0 : 0.6),
-                  outline: "none",
-                  cursor: isClickable ? "pointer" : "default"
-                },
-                hover: {
-                  fill: isSelected ? `color-mix(in srgb, var(--c-gold) 32%, transparent)` : hoverFill,
-                  stroke: isSelected ? "var(--c-goldBright)" : "var(--c-textBright)",
-                  strokeWidth: isSelected ? 2.4 : 1.5,
-                  outline: "none",
-                  cursor: isClickable ? "pointer" : "default"
-                },
-                pressed: {
-                  fill: hoverFill,
-                  outline: "none"
-                }
-              }}
-            />
-          );
-        });
-
-        return (
-          <>
-            <GeographiesReporter geographies={geographies} onGeographiesLoaded={onGeographiesLoaded} />
-            {geographyElements}
-          </>
-        );
-      }}
-    </Geographies>
-  );
 }
 
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions }) {
-  // Pre-compute the set of normalized selected region names for O(1) lookup in <Geography>
   const selectedRegionNorms = useMemo(() => {
     if (!selectedRegions || selectedRegions.length === 0) return new Set();
     return new Set(selectedRegions.map((r) => normalizeName(r.name)));
   }, [selectedRegions]);
-  const [geoLevel, setGeoLevel] = useState("us_state"); // Options: "country", "us_state", "ca_province"
+
   const [activeTab, setActiveTab] = useState("all");
-  const [visType, setVisType] = useState("bullseye"); // Options: "bullseye", "heatmap"
-  const [tooltip, setTooltip] = useState("");
-  const [geographies, setGeographies] = useState([]);
-  const [geographiesCA, setGeographiesCA] = useState([]);
-  
+  const [visType, setVisType] = useState("bullseye");
+  const [usGeo, setUsGeo] = useState(null);
+  const [caGeo, setCaGeo] = useState(null);
+  const [worldGeo, setWorldGeo] = useState(null);
+
   const isUS = questionId.includes("us_state");
-  const isCanada = questionId.includes("can_province");
   
-  let geoUrl = WORLD_TOPO_URL;
-  if (isUS) geoUrl = US_TOPO_URL;
-  else if (isCanada) geoUrl = CANADA_GEO_URL;
-  
-  // Choose which distribution to visualize
   const baseDist = (cohortDistribution?.distribution?.length > 0) 
     ? cohortDistribution.distribution 
     : (distribution?.distribution || []);
@@ -270,99 +90,43 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     if (!byCohort || !byCohort.results) return ["all"];
     return ["all", ...Object.keys(byCohort.results)];
   }, [byCohort]);
-  
-  // Reset active tab if the dimension changes and the old tab is no longer valid
-  // Also default visType to "bullseye" if cohort split data is active, else fallback to "heatmap"
-  useEffect(() => {
-    if (!tabKeys.includes(activeTab)) {
-      setActiveTab("all");
-    }
-  }, [tabKeys, activeTab]);
 
+  useEffect(() => { if (!tabKeys.includes(activeTab)) setActiveTab("all"); }, [tabKeys, activeTab]);
+  useEffect(() => { setVisType(tabKeys.length > 1 ? "bullseye" : "heatmap"); }, [tabKeys]);
+
+  // Load TopoJSON/GeoJSON
   useEffect(() => {
-    if (tabKeys.length > 1) {
-      setVisType("bullseye");
+    setUsGeo(null); setCaGeo(null); setWorldGeo(null);
+    if (isUS) {
+      fetch(US_TOPO_URL).then(r => r.json()).then(topo => setUsGeo(topojson.feature(topo, topo.objects.states)));
+      fetch(CANADA_GEO_URL).then(r => r.json()).then(geo => setCaGeo(geo));
     } else {
-      setVisType("heatmap");
+      fetch(WORLD_TOPO_URL).then(r => r.json()).then(topo => setWorldGeo(topojson.feature(topo, topo.objects.countries)));
     }
-  }, [tabKeys]);
+  }, [isUS]);
 
-  // Clear loaded geographies when geoUrl changes to prevent rendering stale bullseyes
-  useEffect(() => {
-    setGeographies([]);
-    setGeographiesCA([]);
-  }, [geoUrl]);
-    
   const dataMap = useMemo(() => {
     const map = {};
-    let max = 0;
-    let total = 0;
+    let max = 0, total = 0;
     for (const d of activeDist) {
-      map[d.label] = d.n;
+      map[normalizeName(d.label)] = d.n;
       if (d.n > max) max = d.n;
       total += d.n;
     }
     return { map, max, total };
   }, [activeDist]);
-  
-  const getScaleRange = (tab, idx) => {
-    if (tab === "all") return ["#1f1135", "#be123c", resolveCssColor(C.goldBright)];
-    
-    const mappedTab = tab === "unclassified" ? "observer" : tab;
-    
-    if (PATHWAYS[mappedTab]) {
-      switch (mappedTab) {
-        case "intact": return ["#062417", "#059669", resolveCssColor(PATH_COLORS.intact)];
-        case "circumcised": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.circumcised)];
-        case "restoring": return ["#2e1f06", "#d97706", resolveCssColor(PATH_COLORS.restoring)];
-        case "observer": return ["#2a1005", "#c2410c", resolveCssColor(PATH_COLORS.observer)];
-        case "trans_vaginoplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_vaginoplasty)];
-        case "trans_phalloplasty": return ["#2e0c10", "#be123c", resolveCssColor(PATH_COLORS.trans_phalloplasty)];
-        case "intersex": return ["#1f1f1f", "#525252", resolveCssColor(PATH_COLORS.intersex)];
-      }
-    }
-    
-    const fallbacks = [
-      ["#0a192f", "#2563eb", resolveCssColor(C.blue)],
-      ["#2e0c10", "#e11d48", resolveCssColor(C.red)],
-      ["#0f2e1a", "#16a34a", resolveCssColor(C.green)],
-      ["#3a2003", "#eab308", resolveCssColor(C.yellow)],
-      ["#1f102b", "#9333ea", resolveCssColor(C.purple)],
-    ];
-    
-    const fallbackIdx = Math.max(0, tabKeys.indexOf(tab) - 1);
-    return fallbacks[fallbackIdx % fallbacks.length];
-  };
-
-  const colorScale = useMemo(() => {
-    const idx = tabKeys.indexOf(activeTab);
-    const range = getScaleRange(activeTab, idx);
-    const max = dataMap.max || 1;
-    return scaleLinear()
-      .domain([1, max / 2, max])
-      .range(range);
-  }, [dataMap.max, activeTab, tabKeys]);
-
-  const balanceColorScale = useMemo(() => {
-    return scaleLinear()
-      .domain([0, 0.5, 1])
-      .range([resolveCssColor(C.red), resolveCssColor(C.purple), resolveCssColor(C.blue)]);
-  }, []);
 
   const aggregatedDist = useMemo(() => rollUpDistribution(activeDist), [activeDist]);
 
   const cohortMap = useMemo(() => {
     const map = {};
-    if (!byCohort || !byCohort.results) return map;
-    
+    if (!byCohort?.results) return map;
     for (const [cohortId, data] of Object.entries(byCohort.results)) {
       if (!data.distribution) continue;
       for (const d of data.distribution) {
-        if (!d.label) continue;
         const norm = normalizeName(d.label);
         if (!map[norm]) map[norm] = {};
-        if (!map[norm][cohortId]) map[norm][cohortId] = 0;
-        map[norm][cohortId] += d.n;
+        map[norm][cohortId] = (map[norm][cohortId] || 0) + d.n;
       }
     }
     return map;
@@ -377,152 +141,173 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     return max;
   }, [cohortMap]);
 
+  const getScaleRange = (tab) => {
+    if (tab === "all") return ["#f8f5f0", resolveCssColor(C.goldBright)];
+    const mappedTab = tab === "unclassified" ? "observer" : tab;
+    if (PATHWAYS[mappedTab]) return ["#f8f5f0", resolveCssColor(PATHWAYS[mappedTab].color)];
+    return ["#f8f5f0", resolveCssColor(C.blue)];
+  };
+
+  const colorScale = useMemo(() => {
+    const range = getScaleRange(activeTab);
+    return scaleLinear().domain([0, dataMap.max || 1]).range(range);
+  }, [dataMap.max, activeTab]);
+
+  const balanceColorScale = useMemo(() => {
+    return scaleLinear().domain([0, 0.5, 1]).range([resolveCssColor(C.red), resolveCssColor(C.purple), resolveCssColor(C.blue)]);
+  }, []);
+
   const getCohortColor = (cohortId) => {
     if (cohortId === "all") return resolveCssColor(C.goldBright);
     const mappedKey = cohortId === "unclassified" ? "observer" : cohortId;
-    if (PATHWAYS[mappedKey]) {
-      return resolveCssColor(PATHWAYS[mappedKey].color);
-    }
-    const cList = [C.blue, C.red, C.green, C.yellow, C.orange, C.ltBlue, C.grey];
-    const nonAllKeys = tabKeys.filter(k => k !== "all");
-    const idx = nonAllKeys.indexOf(cohortId);
-    if (idx === -1) return resolveCssColor(C.muted);
-    return resolveCssColor(cList[idx % cList.length]);
+    if (PATHWAYS[mappedKey]) return resolveCssColor(PATHWAYS[mappedKey].color);
+    return resolveCssColor(C.muted);
   };
 
-  const renderBullseyes = (geos) => {
-    if (!geos || geos.length === 0) return null;
-    return geos.map((geo) => {
-      const geoName = geo.properties.name;
-      const norm = normalizeName(geoName);
+  const renderTooltipContent = (feature) => {
+    const geoName = feature.properties.name;
+    const norm = normalizeName(geoName);
+    const val = dataMap.map[norm] || 0;
+    
+    if (visType === "balance") {
+      let intactCount = cohortMap[norm]?.["intact"] || 0;
+      let circCount = cohortMap[norm]?.["circumcised"] || 0;
+      const totalCount = intactCount + circCount;
+      if (totalCount > 0) {
+        const ratio = Math.round((intactCount / totalCount) * 100);
+        return (
+          <div style={{ padding: "8px", fontFamily: FONT.body }}>
+            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold", fontSize: "1.1em" }}>{geoName}</div>
+            <div><span style={{color: resolveCssColor(C.blue)}}>●</span> Intact: {intactCount} ({ratio}%)</div>
+            <div><span style={{color: resolveCssColor(C.red)}}>●</span> Circumcised: {circCount} ({100 - ratio}%)</div>
+          </div>
+        );
+      }
+    }
+    
+    if (val > 0 && cohortMap[norm]) {
+      const breakdown = tabKeys.filter(k => k !== "all" && cohortMap[norm][k] > 0).map(k => ({ id: k, n: cohortMap[norm][k] }));
+      if (breakdown.length > 0) {
+        return (
+          <div style={{ padding: "8px", fontFamily: FONT.body }}>
+            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold", fontSize: "1.1em" }}>{geoName}: {val}</div>
+            {breakdown.map(b => {
+               const label = b.id === "unclassified" ? "Observer" : (PATHWAYS[b.id]?.label || b.id);
+               return <div key={b.id}><span style={{color: getCohortColor(b.id)}}>●</span> {label}: {b.n}</div>;
+            })}
+          </div>
+        );
+      }
+    }
+    
+    return <div style={{ fontWeight: "bold", padding: "8px", fontFamily: FONT.body }}>{geoName}: {val}</div>;
+  };
+
+  const getStyle = (feature) => {
+    const geoName = feature.properties.name;
+    const norm = normalizeName(geoName);
+    const val = dataMap.map[norm] || 0;
+    const isSelected = selectedRegionNorms.has(norm);
+    
+    let fillColor = "transparent";
+    if (visType === "balance") {
+      let intactCount = cohortMap[norm]?.["intact"] || 0;
+      let circCount = cohortMap[norm]?.["circumcised"] || 0;
+      const totalCount = intactCount + circCount;
+      if (totalCount > 0) fillColor = balanceColorScale(intactCount / totalCount);
+    } else if (visType === "heatmap" && val > 0) {
+      fillColor = colorScale(val);
+    }
+
+    return {
+      fillColor,
+      weight: isSelected ? 2 : 1,
+      opacity: 1,
+      color: isSelected ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
+      fillOpacity: (visType === "bullseye" && !isSelected) ? 0.05 : 0.8
+    };
+  };
+
+  const onEachFeature = (feature, layer) => {
+    layer.on({
+      click: () => {
+        if (onRegionClick) onRegionClick(feature.properties.name, isUS ? "us_state" : "country");
+      }
+    });
+  };
+
+  const renderBullseyes = (geojson) => {
+    if (!geojson) return null;
+    return geojson.features.map(feature => {
+      const norm = normalizeName(feature.properties.name);
       const regionData = cohortMap[norm];
-      
       if (!regionData) return null;
       
       const T = Object.values(regionData).reduce((sum, n) => sum + n, 0);
       if (T === 0) return null;
       
-      const coords = getCoordinates(geo);
-      if (!coords) return null;
+      const coords = getCentroid(feature);
+      if (coords[0] === 0) return null;
       
-      // Map and sort active cohorts descending by count
       const activeCohorts = tabKeys
         .filter(key => key !== "all")
-        .map(key => {
-          const count = regionData[key] || 0;
-          return {
-            id: key,
-            n: count,
-            color: getCohortColor(key)
-          };
-        })
+        .map(key => ({ id: key, n: regionData[key] || 0, color: getCohortColor(key) }))
         .filter(c => c.n > 0)
         .sort((a, b) => b.n - a.n);
         
       if (activeCohorts.length === 0) return null;
       
-      // Sizing calculation (Area proportional to total count in region)
-      const minRadius = 4;
-      const maxRadiusLimit = isUS ? 24 : 14;
-      const R_max = minRadius + (maxRadiusLimit - minRadius) * Math.sqrt(T / maxT);
-      
-      // Calculate concentric rings
+      const R_max = 6 + 18 * Math.sqrt(T / maxT);
       let cumulativeSum = T;
-      const circles = activeCohorts.map((cohort) => {
-        const r = R_max * Math.sqrt(cumulativeSum / T);
-        cumulativeSum -= cohort.n;
-        return { ...cohort, r };
-      });
       
       return (
-        <SafeMarker key={`bullseye-${geo.rsmKey || geoName}`} coordinates={coords}>
-          <g style={{ pointerEvents: "none" }}>
-            {circles.map((circle, idx) => {
-              const isSelectedCohort = activeTab === circle.id;
-              const isAllTab = activeTab === "all";
-              const opacity = (isAllTab || isSelectedCohort) ? 0.95 : 0.22;
-              
-              return (
-                <circle
-                  key={idx}
-                  r={circle.r}
-                  fill={circle.color}
-                  opacity={opacity}
-                  stroke="rgba(0, 0, 0, 0.45)"
-                  strokeWidth={0.6}
-                  style={{ transition: "all 0.25s ease" }}
-                />
-              );
-            })}
-          </g>
-        </SafeMarker>
+        <div key={`bullseye-${norm}`}>
+          {activeCohorts.map((cohort, idx) => {
+            const r = R_max * Math.sqrt(cumulativeSum / T);
+            cumulativeSum -= cohort.n;
+            const isSelected = activeTab === cohort.id || activeTab === "all";
+            return (
+              <CircleMarker
+                key={`${norm}-${cohort.id}`}
+                center={coords}
+                radius={r}
+                pathOptions={{
+                  fillColor: cohort.color,
+                  fillOpacity: isSelected ? 0.9 : 0.2,
+                  color: "#000",
+                  weight: 0.5,
+                  interactive: false
+                }}
+              />
+            );
+          })}
+        </div>
       );
     });
   };
 
+  const isLoading = isUS ? (!usGeo || !caGeo) : (!worldGeo);
+
   return (
-    <div style={{
-      background: C.bgSoft,
-      border: `1px solid ${C.ghost}`,
-      borderRadius: 8,
-      padding: "1.2rem",
-      marginBottom: "1.2rem",
-      position: "relative"
-    }}>
-      <h2 style={{
-        fontFamily: FONT.display,
-        fontWeight: 700,
-        fontSize: "1.15rem",
-        color: C.textBright,
-        letterSpacing: "-0.01em",
-        marginBottom: "0.8rem"
-      }}>{title}</h2>
+    <div style={{ background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, padding: "1.5rem", position: "relative" }}>
+      <h2 style={{ fontFamily: FONT.display, fontSize: "1.2rem", marginBottom: "1rem", color: C.textBright }}>{title}</h2>
       
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "1.2rem",
-        flexWrap: "wrap",
-        gap: "0.8rem"
-      }}>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
         {/* Cohort Filters */}
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
           {tabKeys.map(tabKey => {
-            if (tabKey !== "all" && (!byCohort?.results || !byCohort.results[tabKey] || byCohort.results[tabKey].n === 0)) return null;
-            
+            if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
             const isActive = activeTab === tabKey;
-            const isAll = tabKey === "all";
-            const mappedKey = tabKey === "unclassified" ? "observer" : tabKey;
-            
-            let label = mappedKey;
-            if (isAll) {
-              label = "All Participants";
-            } else if (PATHWAYS[mappedKey]) {
-              label = PATHWAYS[mappedKey].label;
-            }
-            
+            const label = tabKey === "all" ? "All Participants" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
             const color = getCohortColor(tabKey);
-            
             return (
-              <button
-                key={tabKey}
-                onClick={() => setActiveTab(tabKey)}
-                style={{
-                  background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent",
-                  border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
-                  color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`,
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  padding: "0.25rem 0.6rem",
-                  borderRadius: 999,
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
+              <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
+                background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent", 
+                border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
+                color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`, 
+                padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
+                fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
+              }}>
                 {label}
               </button>
             );
@@ -532,184 +317,80 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         {/* Vis Type Toggle */}
         {tabKeys.length > 1 && (
           <div style={{
-            display: "flex",
-            background: "rgba(255, 255, 255, 0.03)",
-            border: `1px solid ${C.ghost}`,
-            borderRadius: 999,
-            padding: "0.15rem"
+            marginLeft: "auto", display: "flex", background: "rgba(255, 255, 255, 0.03)",
+            border: `1px solid ${C.ghost}`, borderRadius: 999, padding: "0.15rem"
           }}>
-            <button
-              onClick={() => setVisType("bullseye")}
-              style={{
-                background: visType === "bullseye" ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                border: "none",
-                color: visType === "bullseye" ? C.textBright : C.muted,
-                fontFamily: FONT.condensed,
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                padding: "0.25rem 0.6rem",
-                borderRadius: 999,
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
+            <button onClick={() => setVisType("bullseye")} style={{ 
+              background: visType === "bullseye" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
+              color: visType === "bullseye" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
+              cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
+            }}>
               Bullseye Map
             </button>
-            <button
-              onClick={() => setVisType("heatmap")}
-              style={{
-                background: visType === "heatmap" ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                border: "none",
-                color: visType === "heatmap" ? C.textBright : C.muted,
-                fontFamily: FONT.condensed,
-                fontSize: "0.65rem",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                padding: "0.25rem 0.6rem",
-                borderRadius: 999,
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
-            >
-              Heatmap
+            <button onClick={() => setVisType("heatmap")} style={{ 
+              background: visType === "heatmap" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
+              color: visType === "heatmap" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
+              cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
+            }}>
+              Choropleth Density
             </button>
             {splitBy === "pathway" && (
-              <button
-                onClick={() => setVisType("balance")}
-                style={{
-                  background: visType === "balance" ? "rgba(255, 255, 255, 0.08)" : "transparent",
-                  border: "none",
-                  color: visType === "balance" ? C.textBright : C.muted,
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  padding: "0.25rem 0.6rem",
-                  borderRadius: 999,
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                Representation Balance
+              <button onClick={() => setVisType("balance")} style={{ 
+                background: visType === "balance" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
+                color: visType === "balance" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
+                cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
+              }}>
+                Representation Balance ⚡
               </button>
             )}
           </div>
         )}
       </div>
-      
-      {tooltip && (
-        <div style={{
-          position: "absolute",
-          top: "1.2rem",
-          right: "1.2rem",
-          background: C.bgCard,
-          border: `1px solid ${C.ghost}`,
-          padding: "0.5rem 0.8rem",
-          borderRadius: 6,
-          fontFamily: FONT.mono,
-          fontSize: "0.8rem",
-          color: C.goldBright,
-          zIndex: 10
-        }}>
-          {tooltip}
-        </div>
-      )}
 
-      <div style={{ width: "100%", aspectRatio: "16/9", background: `linear-gradient(to bottom right, color-mix(in srgb, ${C.blue} 5%, ${C.bgCard}), color-mix(in srgb, ${C.purple} 2%, ${C.bgSoft}))`, borderRadius: 12, overflow: "hidden", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
-        <ComposableMap 
-          projection={isUS ? "geoAlbers" : (isCanada ? "geoAzimuthalEqualArea" : "geoMercator")}
-          width={950}
-          height={600}
-          projectionConfig={
-            isUS ? { center: [0, 48], rotate: [96, 0, 0], scale: 650 } : 
-            isCanada ? { rotate: [95, -60, 0], scale: 800 } : 
-            { scale: 140 }
-          }
-        >
-          {isUS && (
-            <MapGeographies
-              geoUrl={US_TOPO_URL}
-              visType={visType}
-              onGeographiesLoaded={setGeographies}
-              dataMap={dataMap}
-              cohortMap={cohortMap}
-              tabKeys={tabKeys}
-              activeTab={activeTab}
-              getCohortColor={getCohortColor}
-              setTooltip={setTooltip}
-              colorScale={colorScale}
-              balanceColorScale={balanceColorScale}
-              onRegionClick={onRegionClick}
-              selectedRegionNorms={selectedRegionNorms}
-              regionLevel="us_state"
-            />
-          )}
-          {isUS && (
-            <MapGeographies
-              geoUrl={CANADA_GEO_URL}
-              visType={visType}
-              onGeographiesLoaded={setGeographiesCA}
-              dataMap={dataMap}
-              cohortMap={cohortMap}
-              tabKeys={tabKeys}
-              activeTab={activeTab}
-              getCohortColor={getCohortColor}
-              setTooltip={setTooltip}
-              colorScale={colorScale}
-              balanceColorScale={balanceColorScale}
-              onRegionClick={onRegionClick}
-              selectedRegionNorms={selectedRegionNorms}
-              regionLevel="can_province"
-            />
-          )}
-          {isUS && visType === "bullseye" && renderBullseyes([...geographies, ...geographiesCA])}
+      <div style={{ height: 500, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f5f5f5", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
+        {isLoading ? (
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: C.muted }}>
+            <div style={{ animation: "pulse 1.5s infinite" }}>Rendering map...</div>
+          </div>
+        ) : (
+          <MapContainer style={{ height: "100%", width: "100%" }} zoomControl={true} scrollWheelZoom={false}>
+            <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
+            
+            {isUS && usGeo && (
+              <GeoJSON data={usGeo} style={getStyle} onEachFeature={onEachFeature}>
+                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
+              </GeoJSON>
+            )}
+            {isUS && caGeo && (
+              <GeoJSON data={caGeo} style={getStyle} onEachFeature={onEachFeature}>
+                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
+              </GeoJSON>
+            )}
+            {!isUS && worldGeo && (
+              <GeoJSON data={worldGeo} style={getStyle} onEachFeature={onEachFeature}>
+                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
+              </GeoJSON>
+            )}
 
-          {!isUS && (
-            <ZoomableGroup center={[0, 20]} zoom={1} maxZoom={4} translateExtent={[[ -200, -100 ], [ 1150, 700 ]]}>
-              <MapGeographies
-                geoUrl={geoUrl}
-                visType={visType}
-                onGeographiesLoaded={setGeographies}
-                dataMap={dataMap}
-                cohortMap={cohortMap}
-                tabKeys={tabKeys}
-                activeTab={activeTab}
-                getCohortColor={getCohortColor}
-                setTooltip={setTooltip}
-                colorScale={colorScale}
-                balanceColorScale={balanceColorScale}
-                onRegionClick={onRegionClick}
-                selectedRegionNorms={selectedRegionNorms}
-                regionLevel="country"
-              />
-              {visType === "bullseye" && renderBullseyes(geographies)}
-            </ZoomableGroup>
-          )}
-        </ComposableMap>
+            {(isUS && usGeo && caGeo) && <FitBounds geojson={{ type: "FeatureCollection", features: [...usGeo.features, ...caGeo.features] }} />}
+            {(!isUS && worldGeo) && <FitBounds geojson={worldGeo} />}
+
+            {visType === "bullseye" && isUS && usGeo && renderBullseyes(usGeo)}
+            {visType === "bullseye" && isUS && caGeo && renderBullseyes(caGeo)}
+            {visType === "bullseye" && !isUS && worldGeo && renderBullseyes(worldGeo)}
+          </MapContainer>
+        )}
       </div>
-      
+
       <div style={{
-        marginTop: "1rem",
-        fontFamily: FONT.body,
-        fontSize: "0.8rem",
-        color: C.muted,
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        flexWrap: "wrap"
+        marginTop: "1rem", fontFamily: FONT.body, fontSize: "0.8rem", color: C.muted,
+        display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap"
       }}>
         {visType === "heatmap" ? (
           <>
             <span>0</span>
             <div style={{
-              height: 8,
-              width: 100,
-              background: `linear-gradient(to right, ${getScaleRange(activeTab)[0]}, ${getScaleRange(activeTab)[1]})`,
-              borderRadius: 4
+              height: 8, width: 100, background: `linear-gradient(to right, ${getScaleRange(activeTab)[0]}, ${getScaleRange(activeTab)[1]})`, borderRadius: 4
             }} />
             <span>{dataMap.max} (max per region)</span>
           </>
@@ -717,10 +398,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           <>
             <span style={{ color: resolveCssColor(C.red) }}>Mostly Circumcised</span>
             <div style={{
-              height: 8,
-              width: 100,
-              background: `linear-gradient(to right, ${resolveCssColor(C.red)}, ${resolveCssColor(C.purple)}, ${resolveCssColor(C.blue)})`,
-              borderRadius: 4
+              height: 8, width: 100, background: `linear-gradient(to right, ${resolveCssColor(C.red)}, ${resolveCssColor(C.purple)}, ${resolveCssColor(C.blue)})`, borderRadius: 4
             }} />
             <span style={{ color: resolveCssColor(C.blue) }}>Mostly Intact</span>
           </>
@@ -738,36 +416,23 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         </span>
       </div>
 
-      {/* Data Table */}
       {aggregatedDist.length > 0 && (
         <div style={{ marginTop: "2rem" }}>
           <h3 style={{
-            fontFamily: FONT.condensed,
-            fontWeight: 700,
-            fontSize: "0.85rem",
-            color: C.muted,
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
-            marginBottom: "0.8rem",
-            borderBottom: `1px solid ${C.ghost}`,
-            paddingBottom: "0.4rem"
+            fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.muted,
+            textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.8rem",
+            borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.4rem"
           }}>
             Complete Data Table ({activeTab === "all" ? "All Pathways" : (PATHWAYS[activeTab === "unclassified" ? "observer" : activeTab]?.label || activeTab)})
           </h3>
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "0.4rem 1rem"
+            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.4rem 1rem"
           }}>
             {aggregatedDist.map((d, i) => (
               <div key={i} style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "0.3rem 0.5rem",
+                display: "flex", justifyContent: "space-between", padding: "0.3rem 0.5rem",
                 background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                borderRadius: 4,
-                fontFamily: FONT.body,
-                fontSize: "0.85rem"
+                borderRadius: 4, fontFamily: FONT.body, fontSize: "0.85rem"
               }}>
                 <span style={{ color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: "1rem" }} title={d.label}>
                   {d.label}

@@ -89,6 +89,41 @@ export default function ObserverTriadPage({ navigate }) {
             Not all respondents were writing about their own bodies. The Observer pathway captures testimonies from partners, parents, and healthcare professionals—those who witness the physical, emotional, and systemic consequences of circumcision from the outside. Their perspectives form a critical triangulation of the practice.
           </p>
         </div>
+
+        <div style={{
+          background: "rgba(212,160,48,0.06)",
+          border: `1px solid ${C.gold}`,
+          borderRadius: 8,
+          padding: "1.2rem 1.8rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "1rem",
+          flexWrap: "wrap",
+          marginBottom: "3rem"
+        }}>
+          <div>
+            <h4 style={{ fontFamily: FONT.condensed, color: C.goldBright, fontSize: "1rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 0.3rem 0" }}>
+              Underrepresented Voices
+            </h4>
+            <p style={{ fontFamily: FONT.body, color: C.textBright, fontSize: "0.9rem", margin: 0, lineHeight: 1.4, maxWidth: 600 }}>
+              Are you a partner, parent, or healthcare professional? Your perspective is crucial to understanding the full picture, but we have limited data.
+            </p>
+          </div>
+          <a href="https://circumsurvey.online" target="_blank" rel="noopener noreferrer" style={{
+            background: C.goldBright,
+            color: C.bgDeep,
+            fontFamily: FONT.condensed,
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            padding: "0.7rem 1.4rem",
+            borderRadius: 4,
+            textDecoration: "none",
+            whiteSpace: "nowrap"
+          }}>Take the Survey →</a>
+        </div>
       </div>
 
       <div style={{ padding: "2rem", maxWidth: 1600, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "3rem" }}>
@@ -150,6 +185,11 @@ function QuestionWidget({ question }) {
         <div style={{ color: C.dim, fontStyle: "italic" }}>No responses available yet.</div>
       </div>
     );
+  }
+
+  const quantTotal = question.type !== "open_text" && data.distribution?.distribution ? data.distribution.distribution.reduce((acc, curr) => acc + curr.n, 0) : 0;
+  if (question.type !== "open_text" && quantTotal < 5) {
+    return null;
   }
 
   return (

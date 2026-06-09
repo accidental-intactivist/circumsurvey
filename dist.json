@@ -1,0 +1,858 @@
+{
+  "question": "circ_parents_influences",
+  "pathway": "all",
+  "filters": [],
+  "n": 281,
+  "distribution": [
+    {
+      "label": "I have absolutely no idea what influenced them.",
+      "n": 18,
+      "pct": 6.405693950177936
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 9,
+      "pct": 3.202846975088968
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 8,
+      "pct": 2.8469750889679712
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 8,
+      "pct": 2.8469750889679712
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 7,
+      "pct": 2.491103202846975
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 6,
+      "pct": 2.135231316725979
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 5,
+      "pct": 1.7793594306049825
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 5,
+      "pct": 1.7793594306049825
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 5,
+      "pct": 1.7793594306049825
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 4,
+      "pct": 1.4234875444839856
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 4,
+      "pct": 1.4234875444839856
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 3,
+      "pct": 1.0676156583629894
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., I have absolutely no idea what influenced them.",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 2,
+      "pct": 0.7117437722419928
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., I have absolutely no idea what influenced them., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., I have absolutely no idea what influenced them.",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., I have absolutely no idea what influenced them., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., I have absolutely no idea what influenced them., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "I have absolutely no idea what influenced them., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage)., I have absolutely no idea what influenced them., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):, Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth')., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Moral Beliefs about Sexuality (e.g., concern over masturbation):",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., Prevailing Health & Hygiene Beliefs: General societal \"knowledge\" at the time—gleaned from various sources—that presented circumcision as being fundamentally cleaner, healthier, or preventive of future diseases. (The power of a cultural 'truth').",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system)., I have absolutely no idea what influenced them.",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional)., Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Religious Mandate/Tradition: A direct requirement or strong cultural expectation stemming from their religious beliefs and community. (The power of faith)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Popular Media & Parenting \"Experts\": Information or attitudes transmitted through widely-read parenting books (like Dr. Spock in earlier eras), magazines, or other mainstream media. (The power of mass media)., Direct Medical Authority: Specific advice from their obstetrician, pediatrician, or the hospital staff where you were born. (The voice of a trusted professional).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Peer & Social Pressure (The \"Fitting In\" Factor): The widespread belief that \"everyone else is doing it,\" and a desire for you to avoid being seen as different in locker rooms or later in life. (The power of broad social conformity).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit)., Family Tradition/Pressure: The expectation from grandparents or other influential relatives; the idea that \"it's what the men in our family have always done.\" (The power of heritage).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Paternal Influence (The \"Like Father\" Factor): A specific desire for you to genitally match your father or other male family members. (The power of conformity within the family unit).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    },
+    {
+      "label": "Aesthetic Preference: A belief, possibly influenced by media or pornography, that the circumcised penis is visually \"neater,\" \"more attractive,\" or the \"correct\" look. (The power of aesthetics)., Lack of Counter-Information: Crucially, the simple absence of any strong, readily available information presenting the benefits of intactness or the risks of circumcision, making it an easy default choice. (The power of silence)., Institutional Medical Norm: The general belief that \"this is just the standard procedure\" at hospitals, making it a routine, unquestioned part of postpartum care. (The power of the system).",
+      "n": 1,
+      "pct": 0.3558718861209964
+    }
+  ]
+}

@@ -369,9 +369,8 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
                             textTransform: "uppercase",
                             color: C.muted,
                             fontWeight: 700,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap"
+                            lineHeight: 1.25,
+                            wordWrap: "break-word"
                           }}>
                             {m.title}
                           </span>

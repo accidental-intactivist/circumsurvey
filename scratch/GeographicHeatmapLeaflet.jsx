@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from 
 import { scaleLinear } from "d3-scale";
 import * as topojson from "topojson-client";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
-import { PATHWAYS } from "../lib/pathways";
+import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
 import L from 'leaflet';
 
@@ -45,6 +45,7 @@ function getCentroid(feature) {
     coords.forEach(c => { lng += c[0]; lat += c[1]; });
     return [lat / coords.length, lng / coords.length];
   } else if (feature.geometry.type === "MultiPolygon") {
+    // Just pick the first polygon for a rough centroid
     const coords = feature.geometry.coordinates[0][0];
     let lng = 0, lat = 0;
     coords.forEach(c => { lng += c[0]; lat += c[1]; });
@@ -53,12 +54,13 @@ function getCentroid(feature) {
   return [0, 0];
 }
 
+// Subcomponent to fit map bounds to the loaded GeoJSON
 function FitBounds({ geojson }) {
   const map = useMap();
   useEffect(() => {
     if (geojson && geojson.features && geojson.features.length > 0) {
       const layer = L.geoJSON(geojson);
-      map.fitBounds(layer.getBounds(), { padding: [20, 20], maxZoom: 4 });
+      map.fitBounds(layer.getBounds(), { padding: [20, 20] });
     }
   }, [geojson, map]);
   return null;
@@ -96,7 +98,6 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
 
   // Load TopoJSON/GeoJSON
   useEffect(() => {
-    setUsGeo(null); setCaGeo(null); setWorldGeo(null);
     if (isUS) {
       fetch(US_TOPO_URL).then(r => r.json()).then(topo => setUsGeo(topojson.feature(topo, topo.objects.states)));
       fetch(CANADA_GEO_URL).then(r => r.json()).then(geo => setCaGeo(geo));
@@ -115,8 +116,6 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     }
     return { map, max, total };
   }, [activeDist]);
-
-  const aggregatedDist = useMemo(() => rollUpDistribution(activeDist), [activeDist]);
 
   const cohortMap = useMemo(() => {
     const map = {};
@@ -176,8 +175,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       if (totalCount > 0) {
         const ratio = Math.round((intactCount / totalCount) * 100);
         return (
-          <div style={{ padding: "8px", fontFamily: FONT.body }}>
-            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold", fontSize: "1.1em" }}>{geoName}</div>
+          <div style={{ padding: "4px" }}>
+            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold" }}>{geoName}</div>
             <div><span style={{color: resolveCssColor(C.blue)}}>●</span> Intact: {intactCount} ({ratio}%)</div>
             <div><span style={{color: resolveCssColor(C.red)}}>●</span> Circumcised: {circCount} ({100 - ratio}%)</div>
           </div>
@@ -189,18 +188,17 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       const breakdown = tabKeys.filter(k => k !== "all" && cohortMap[norm][k] > 0).map(k => ({ id: k, n: cohortMap[norm][k] }));
       if (breakdown.length > 0) {
         return (
-          <div style={{ padding: "8px", fontFamily: FONT.body }}>
-            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold", fontSize: "1.1em" }}>{geoName}: {val}</div>
-            {breakdown.map(b => {
-               const label = b.id === "unclassified" ? "Observer" : (PATHWAYS[b.id]?.label || b.id);
-               return <div key={b.id}><span style={{color: getCohortColor(b.id)}}>●</span> {label}: {b.n}</div>;
-            })}
+          <div style={{ padding: "4px" }}>
+            <div style={{ borderBottom: `1px solid ${C.ghost}`, paddingBottom: "4px", marginBottom: "4px", fontWeight: "bold" }}>{geoName}: {val}</div>
+            {breakdown.map(b => (
+              <div key={b.id}><span style={{color: getCohortColor(b.id)}}>●</span> {b.id}: {b.n}</div>
+            ))}
           </div>
         );
       }
     }
     
-    return <div style={{ fontWeight: "bold", padding: "8px", fontFamily: FONT.body }}>{geoName}: {val}</div>;
+    return <div style={{ fontWeight: "bold", padding: "4px" }}>{geoName}: {val}</div>;
   };
 
   const getStyle = (feature) => {
@@ -209,7 +207,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     const val = dataMap.map[norm] || 0;
     const isSelected = selectedRegionNorms.has(norm);
     
-    let fillColor = "transparent";
+    let fillColor = "rgba(0,0,0,0.03)";
     if (visType === "balance") {
       let intactCount = cohortMap[norm]?.["intact"] || 0;
       let circCount = cohortMap[norm]?.["circumcised"] || 0;
@@ -224,7 +222,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       weight: isSelected ? 2 : 1,
       opacity: 1,
       color: isSelected ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
-      fillOpacity: (visType === "bullseye" && !isSelected) ? 0.05 : 0.8
+      fillOpacity: visType === "bullseye" ? 0.3 : 0.8
     };
   };
 
@@ -286,165 +284,64 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     });
   };
 
-  const isLoading = isUS ? (!usGeo || !caGeo) : (!worldGeo);
+  if (isUS && (!usGeo || !caGeo)) return <div style={{ padding: "4rem", textAlign: "center" }}>Loading Map Data...</div>;
+  if (!isUS && !worldGeo) return <div style={{ padding: "4rem", textAlign: "center" }}>Loading World Map...</div>;
 
   return (
-    <div style={{ background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, padding: "1.5rem", position: "relative" }}>
+    <div style={{ background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, padding: "1.5rem" }}>
       <h2 style={{ fontFamily: FONT.display, fontSize: "1.2rem", marginBottom: "1rem", color: C.textBright }}>{title}</h2>
       
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-        {/* Cohort Filters */}
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          {tabKeys.map(tabKey => {
-            if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
-            const isActive = activeTab === tabKey;
-            const label = tabKey === "all" ? "All Participants" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
-            const color = getCohortColor(tabKey);
-            return (
-              <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
-                background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent", 
-                border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
-                color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`, 
-                padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
-                fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
-              }}>
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Vis Type Toggle */}
-        {tabKeys.length > 1 && (
-          <div style={{
-            marginLeft: "auto", display: "flex", background: "rgba(255, 255, 255, 0.03)",
-            border: `1px solid ${C.ghost}`, borderRadius: 999, padding: "0.15rem"
-          }}>
-            <button onClick={() => setVisType("bullseye")} style={{ 
-              background: visType === "bullseye" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
-              color: visType === "bullseye" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
-              cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+        {tabKeys.map(tabKey => {
+          if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
+          const isActive = activeTab === tabKey;
+          const label = tabKey === "all" ? "All" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
+          const color = getCohortColor(tabKey);
+          return (
+            <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
+              background: isActive ? `${color}30` : "transparent", border: `1px solid ${isActive ? color : C.ghost}`,
+              color: isActive ? color : C.muted, padding: "0.2rem 0.6rem", borderRadius: 999, fontSize: "0.75rem",
+              fontFamily: FONT.condensed, textTransform: "uppercase", cursor: "pointer"
             }}>
-              Bullseye Map
+              {label}
             </button>
-            <button onClick={() => setVisType("heatmap")} style={{ 
-              background: visType === "heatmap" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
-              color: visType === "heatmap" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
-              cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
-            }}>
-              Choropleth Density
-            </button>
-            {splitBy === "pathway" && (
-              <button onClick={() => setVisType("balance")} style={{ 
-                background: visType === "balance" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
-                color: visType === "balance" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
-                cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
-              }}>
-                Representation Balance ⚡
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+          );
+        })}
 
-      <div style={{ height: 500, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f5f5f5", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
-        {isLoading ? (
-          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: C.muted }}>
-            <div style={{ animation: "pulse 1.5s infinite" }}>Rendering map...</div>
-          </div>
-        ) : (
-          <MapContainer style={{ height: "100%", width: "100%" }} zoomControl={true} scrollWheelZoom={false}>
-            <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
-            
-            {isUS && usGeo && (
-              <GeoJSON data={usGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
-            {isUS && caGeo && (
-              <GeoJSON data={caGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
-            {!isUS && worldGeo && (
-              <GeoJSON data={worldGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
-
-            {(isUS && usGeo && caGeo) && <FitBounds geojson={{ type: "FeatureCollection", features: [...usGeo.features, ...caGeo.features] }} />}
-            {(!isUS && worldGeo) && <FitBounds geojson={worldGeo} />}
-
-            {visType === "bullseye" && isUS && usGeo && renderBullseyes(usGeo)}
-            {visType === "bullseye" && isUS && caGeo && renderBullseyes(caGeo)}
-            {visType === "bullseye" && !isUS && worldGeo && renderBullseyes(worldGeo)}
-          </MapContainer>
-        )}
-      </div>
-
-      <div style={{
-        marginTop: "1rem", fontFamily: FONT.body, fontSize: "0.8rem", color: C.muted,
-        display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap"
-      }}>
-        {visType === "heatmap" ? (
-          <>
-            <span>0</span>
-            <div style={{
-              height: 8, width: 100, background: `linear-gradient(to right, ${getScaleRange(activeTab)[0]}, ${getScaleRange(activeTab)[1]})`, borderRadius: 4
-            }} />
-            <span>{dataMap.max} (max per region)</span>
-          </>
-        ) : visType === "balance" ? (
-          <>
-            <span style={{ color: resolveCssColor(C.red) }}>Mostly Circumcised</span>
-            <div style={{
-              height: 8, width: 100, background: `linear-gradient(to right, ${resolveCssColor(C.red)}, ${resolveCssColor(C.purple)}, ${resolveCssColor(C.blue)})`, borderRadius: 4
-            }} />
-            <span style={{ color: resolveCssColor(C.blue) }}>Mostly Intact</span>
-          </>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", flexWrap: "wrap" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-              <span style={{ fontSize: "0.95rem" }}>🎯</span> Concentric rings show cohort splits (area proportional to count)
-            </span>
-            <span style={{ color: C.ghost }}>•</span>
-            <span>Circle size represents total respondents (n) in region</span>
-          </div>
-        )}
-        <span style={{ marginLeft: "auto", fontFamily: FONT.mono, fontSize: "0.75rem" }}>
-          Total mapped: n={dataMap.total} &middot; {cohortDistribution?.distribution?.length > 0 ? "Showing cohort distribution" : "Showing overall distribution"}
-        </span>
-      </div>
-
-      {aggregatedDist.length > 0 && (
-        <div style={{ marginTop: "2rem" }}>
-          <h3 style={{
-            fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.muted,
-            textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.8rem",
-            borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.4rem"
-          }}>
-            Complete Data Table ({activeTab === "all" ? "All Pathways" : (PATHWAYS[activeTab === "unclassified" ? "observer" : activeTab]?.label || activeTab)})
-          </h3>
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.4rem 1rem"
-          }}>
-            {aggregatedDist.map((d, i) => (
-              <div key={i} style={{
-                display: "flex", justifyContent: "space-between", padding: "0.3rem 0.5rem",
-                background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                borderRadius: 4, fontFamily: FONT.body, fontSize: "0.85rem"
-              }}>
-                <span style={{ color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: "1rem" }} title={d.label}>
-                  {d.label}
-                </span>
-                <span style={{ color: C.goldBright, fontFamily: FONT.mono, fontWeight: 500 }}>
-                  n={d.n}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+          <button onClick={() => setVisType("bullseye")} style={{ background: visType === "bullseye" ? "rgba(255,255,255,0.1)" : "transparent", border: "1px solid " + C.ghost, color: C.textBright, padding: "0.2rem 0.6rem", borderRadius: 4, cursor: "pointer", fontSize: "0.75rem" }}>Bullseye</button>
+          <button onClick={() => setVisType("heatmap")} style={{ background: visType === "heatmap" ? "rgba(255,255,255,0.1)" : "transparent", border: "1px solid " + C.ghost, color: C.textBright, padding: "0.2rem 0.6rem", borderRadius: 4, cursor: "pointer", fontSize: "0.75rem" }}>Heatmap</button>
         </div>
-      )}
+      </div>
+
+      <div style={{ height: 500, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f9f7f1" }}>
+        <MapContainer style={{ height: "100%", width: "100%" }} zoomControl={true} scrollWheelZoom={false}>
+          <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
+          
+          {isUS && usGeo && (
+            <GeoJSON data={usGeo} style={getStyle} onEachFeature={onEachFeature}>
+              {feature => <Tooltip sticky>{renderTooltipContent(feature)}</Tooltip>}
+            </GeoJSON>
+          )}
+          {isUS && caGeo && (
+            <GeoJSON data={caGeo} style={getStyle} onEachFeature={onEachFeature}>
+              {feature => <Tooltip sticky>{renderTooltipContent(feature)}</Tooltip>}
+            </GeoJSON>
+          )}
+          {!isUS && worldGeo && (
+            <GeoJSON data={worldGeo} style={getStyle} onEachFeature={onEachFeature}>
+              {feature => <Tooltip sticky>{renderTooltipContent(feature)}</Tooltip>}
+            </GeoJSON>
+          )}
+
+          {(isUS && usGeo && caGeo) && <FitBounds geojson={{ type: "FeatureCollection", features: [...usGeo.features, ...caGeo.features] }} />}
+          {(!isUS && worldGeo) && <FitBounds geojson={worldGeo} />}
+
+          {visType === "bullseye" && isUS && usGeo && renderBullseyes(usGeo)}
+          {visType === "bullseye" && isUS && caGeo && renderBullseyes(caGeo)}
+          {visType === "bullseye" && !isUS && worldGeo && renderBullseyes(worldGeo)}
+        </MapContainer>
+      </div>
     </div>
   );
 }

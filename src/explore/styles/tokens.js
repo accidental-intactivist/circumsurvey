@@ -119,6 +119,11 @@ export const GLOBAL_CSS = `
 
     --scanline-opacity: 0;
     --vignette-opacity: 0;
+    --sankey-text-shadow: 0px 2px 4px rgba(0,0,0,0.8), 0px 0px 2px rgba(0,0,0,1);
+  }
+
+  [data-mode="light"] {
+    --sankey-text-shadow: 0px 1px 2px rgba(255,255,255,0.9), 0px 0px 3px rgba(255,255,255,1), 0px 0px 5px rgba(255,255,255,1);
   }
 
   /* ── STANDARD THEME ── */

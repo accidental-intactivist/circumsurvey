@@ -49,6 +49,7 @@ export default {
     }
     try {
       const path = url.pathname.replace(/^\/api/, "") || "/";
+      console.log("ROUTING PATH:", path);
       
       if (request.method === "POST" && path === "/ai/query") {
         return await handleCopilotQuery(env, request, url);
@@ -87,6 +88,7 @@ export default {
       } else if (path === "/health") {
         response = json({ ok: true, ts: new Date().toISOString() });
       } else {
+        console.log("NOT MATCHED PATH:", path);
         response = errorJson(`Unknown endpoint: ${path}`, 404);
       }
       if (response.status === 200) {
@@ -421,6 +423,7 @@ async function handleGeo(env, url) {
 
   const allowedDemographics = ["country_born", "country_now", "us_state_born", "us_state_now", "race_ethnicity", "age_bracket", "generation", "education", "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
   const allowedReligion = ["upbringing_significance", "primary_tradition", "cultural_background", "christian_denomination", "jewish_denomination", "islamic_madhhab"];
+  console.log("handleGeo CALLED! level:", level, "by:", by, "isDemographics:", allowedDemographics.includes(by), "isReligion:", allowedReligion.includes(by));
 
   const filters = url.searchParams.getAll("filter");
   const filterData = buildFilterWhere(filters);
@@ -498,7 +501,7 @@ async function handleGeo(env, url) {
       locations: Object.values(byLoc).sort((a, b) => b.n - a.n)
     });
   }
-  return json({ level, when: usingBorn ? "born" : "now", locations: results });
+  return json({ level, when: usingBorn ? "born" : "now", by, locations: results });
 }
 
 function tryParseJson(s) {

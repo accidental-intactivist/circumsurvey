@@ -104,7 +104,17 @@ export default function NarrativeList({
     return getProcessedGrouped(distribution || []);
   }, [distribution, getProcessedGrouped]);
 
-  const visible = grouped.slice(0, limit);
+  // Stable shuffle for the main visual list
+  const shuffledGrouped = useMemo(() => {
+    const arr = [...grouped];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [grouped]);
+
+  const visible = shuffledGrouped.slice(0, limit);
   
   const chartData = useMemo(() => {
     const hasGrouped = grouped.some(g => g.count > 1);
@@ -115,18 +125,34 @@ export default function NarrativeList({
     };
   }, [grouped]);
 
+  // Pre-process and shuffle pathway-specific lists for side-by-side mode
+  const pathwaysGrouped = useMemo(() => {
+    const result = {};
+    if (!distribution) return result;
+    activePathwaysOrdered.forEach(pId => {
+      const pItems = distribution.filter(item => item.pathway?.toLowerCase() === pId);
+      const pGrouped = getProcessedGrouped(pItems);
+      const arr = [...pGrouped];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      result[pId] = { grouped: pGrouped, shuffled: arr };
+    });
+    return result;
+  }, [distribution, activePathwaysOrdered, getProcessedGrouped]);
+
   const anyRemaining = useMemo(() => {
     if (!distribution) return false;
     if (viewMode === "single") {
       return limit < grouped.length;
     } else {
       return activePathwaysOrdered.some(pId => {
-        const pItems = distribution.filter(item => item.pathway?.toLowerCase() === pId);
-        const pGrouped = getProcessedGrouped(pItems);
-        return limit < pGrouped.length;
+        const pathData = pathwaysGrouped[pId];
+        return pathData && limit < pathData.grouped.length;
       });
     }
-  }, [viewMode, limit, grouped.length, activePathwaysOrdered, distribution, getProcessedGrouped]);
+  }, [viewMode, limit, grouped.length, activePathwaysOrdered, distribution, pathwaysGrouped]);
 
   if (!distribution || distribution.length === 0) {
     return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
@@ -313,9 +339,9 @@ export default function NarrativeList({
         }}>
           {activePathwaysOrdered.map(pId => {
             const pathInfo = PATHWAYS[pId] || { label: pId, emoji: "💬", color: C.gold };
-            const pItems = distribution.filter(item => item.pathway?.toLowerCase() === pId);
-            const pGrouped = getProcessedGrouped(pItems);
-            const pVisible = pGrouped.slice(0, limit);
+            const pathData = pathwaysGrouped[pId] || { grouped: [], shuffled: [] };
+            const pGrouped = pathData.grouped;
+            const pVisible = pathData.shuffled.slice(0, limit);
 
             return (
               <div key={pId} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

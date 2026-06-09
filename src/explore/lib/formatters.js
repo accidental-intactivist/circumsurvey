@@ -589,6 +589,20 @@ export const sortDistribution = (distArray, question) => {
   if (!distArray || !Array.isArray(distArray)) return [];
   const qId = question?.id || "";
 
+  if (qId.includes("restore_impact_rating_")) {
+    const getOutcomeIndex = (label) => {
+      const l = String(label || "").toLowerCase();
+      if (l.includes("significantly improved")) return 0;
+      if (l.includes("somewhat improved")) return 1;
+      if (l.includes("no noticeable change")) return 2;
+      if (l.includes("somewhat diminished")) return 3;
+      if (l.includes("significantly diminished")) return 4;
+      if (l.includes("not a primary goal")) return 5;
+      return 6;
+    };
+    return [...distArray].sort((a, b) => getOutcomeIndex(a.label) - getOutcomeIndex(b.label));
+  }
+
   const isScale = question?.type === "scale_1_5" || qId.includes("importance") || qId.includes("rating_");
   if (isScale) {
     const getScaleValue = (label) => {

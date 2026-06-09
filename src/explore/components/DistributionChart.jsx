@@ -4,7 +4,7 @@ import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { sortDistribution, applyLikert } from "../lib/formatters";
 
-export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels }) {
+export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
@@ -234,118 +234,122 @@ export default function DistributionChart({ title, distribution, cohortDistribut
         </div>
       )}
 
-      {/* Legend / per-option rows */}
-      <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-        {(isExpanded ? parsedDist : parsedDist.slice(0, 10)).map((d, i) => {
-          const isHidden = hiddenItems.has(d.label);
-          // Percentages for the legend text
-          const pct = total > 0 && !isHidden ? (d.n / total) * 100 : 0;
-          const cohortN = cohortMap[d.label] || 0;
-          const cohortPct = cohortTotal > 0 && !isHidden ? (cohortN / cohortTotal) * 100 : 0;
-          const hasCohort = !!cohortDistribution;
-          
-          return (
-            <div 
-              key={i} 
-              onClick={() => toggleItem(d.label)}
-              style={{ 
-                display: "flex", 
-                alignItems: "flex-start", 
-                gap: "0.6rem",
-                padding: "0.4rem 0.5rem",
-                margin: "0 -0.5rem",
-                borderRadius: 4,
+      {!hideLegend && (
+        <>
+          {/* Legend / per-option rows */}
+          <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+            {(isExpanded ? parsedDist : parsedDist.slice(0, 10)).map((d, i) => {
+              const isHidden = hiddenItems.has(d.label);
+              // Percentages for the legend text
+              const pct = total > 0 && !isHidden ? (d.n / total) * 100 : 0;
+              const cohortN = cohortMap[d.label] || 0;
+              const cohortPct = cohortTotal > 0 && !isHidden ? (cohortN / cohortTotal) * 100 : 0;
+              const hasCohort = !!cohortDistribution;
+              
+              return (
+                <div 
+                  key={i} 
+                  onClick={() => toggleItem(d.label)}
+                  style={{ 
+                    display: "flex", 
+                    alignItems: "flex-start", 
+                    gap: "0.6rem",
+                    padding: "0.4rem 0.5rem",
+                    margin: "0 -0.5rem",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    opacity: isHidden ? 0.4 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                    if (shortenLabels) {
+                      showTooltip(e, d.label);
+                    }
+                  }}
+                  onMouseMove={(e) => {
+                    if (shortenLabels) {
+                      moveTooltip(e);
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    if (shortenLabels) {
+                      hideTooltip();
+                    }
+                  }}
+                >
+                  <div style={{
+                    width: 10, height: 10, borderRadius: 2,
+                    background: isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i)),
+                    flexShrink: 0,
+                    marginTop: "0.2rem",
+                  }} />
+                  <div style={{
+                    flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
+                    color: isHidden ? C.muted : C.text, minWidth: 0,
+                    textDecoration: isHidden ? "line-through" : "none",
+                    lineHeight: 1.35,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: shortenLabels ? "nowrap" : "normal"
+                  }}>
+                    {shortenLabels && d.label.includes(":") ? d.label.split(":")[0].trim() : d.label}
+                  </div>
+                  <div style={{
+                    fontFamily: FONT.mono, fontSize: "0.74rem",
+                    color: C.muted, minWidth: 70, textAlign: "right",
+                    marginTop: "0.1rem",
+                  }}>
+                    {isHidden ? "Hidden" : `${d.n} · ${pct.toFixed(1)}%`}
+                  </div>
+                  {hasCohort && (
+                    <div style={{
+                      fontFamily: FONT.mono, fontSize: "0.72rem",
+                      color: isHidden ? C.muted : (cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted),
+                      minWidth: 90, textAlign: "right",
+                      fontWeight: 600,
+                      marginTop: "0.1rem",
+                    }}>
+                      {isHidden ? "—" : (cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —")}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {parsedDist.length > 10 && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              style={{
+                background: "transparent",
+                border: `1px solid ${C.ghost}`,
+                color: C.muted,
+                fontFamily: FONT.condensed,
+                fontSize: "0.75rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                padding: "0.5rem",
+                borderRadius: 6,
+                marginTop: "0.8rem",
                 cursor: "pointer",
+                width: "100%",
                 transition: "all 0.15s",
-                opacity: isHidden ? 0.4 : 1
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-                if (shortenLabels) {
-                  showTooltip(e, d.label);
-                }
-              }}
-              onMouseMove={(e) => {
-                if (shortenLabels) {
-                  moveTooltip(e);
-                }
+                e.currentTarget.style.color = C.goldBright;
+                e.currentTarget.style.borderColor = C.gold;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                if (shortenLabels) {
-                  hideTooltip();
-                }
+                e.currentTarget.style.color = C.muted;
+                e.currentTarget.style.borderColor = C.ghost;
               }}
             >
-              <div style={{
-                width: 10, height: 10, borderRadius: 2,
-                background: isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i)),
-                flexShrink: 0,
-                marginTop: "0.2rem",
-              }} />
-              <div style={{
-                flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
-                color: isHidden ? C.muted : C.text, minWidth: 0,
-                textDecoration: isHidden ? "line-through" : "none",
-                lineHeight: 1.35,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: shortenLabels ? "nowrap" : "normal"
-              }}>
-                {shortenLabels && d.label.includes(":") ? d.label.split(":")[0].trim() : d.label}
-              </div>
-              <div style={{
-                fontFamily: FONT.mono, fontSize: "0.74rem",
-                color: C.muted, minWidth: 70, textAlign: "right",
-                marginTop: "0.1rem",
-              }}>
-                {isHidden ? "Hidden" : `${d.n} · ${pct.toFixed(1)}%`}
-              </div>
-              {hasCohort && (
-                <div style={{
-                  fontFamily: FONT.mono, fontSize: "0.72rem",
-                  color: isHidden ? C.muted : (cohortPct > pct + 3 ? "#68b878" : cohortPct < pct - 3 ? C.red : C.muted),
-                  minWidth: 90, textAlign: "right",
-                  fontWeight: 600,
-                  marginTop: "0.1rem",
-                }}>
-                  {isHidden ? "—" : (cohortTotal > 0 ? `cohort ${cohortPct.toFixed(1)}%` : "cohort —")}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {parsedDist.length > 10 && (
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          style={{
-            background: "transparent",
-            border: `1px solid ${C.ghost}`,
-            color: C.muted,
-            fontFamily: FONT.condensed,
-            fontSize: "0.75rem",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            padding: "0.5rem",
-            borderRadius: 6,
-            marginTop: "0.8rem",
-            cursor: "pointer",
-            width: "100%",
-            transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = C.goldBright;
-            e.currentTarget.style.borderColor = C.gold;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = C.muted;
-            e.currentTarget.style.borderColor = C.ghost;
-          }}
-        >
-          {isExpanded ? "Show Fewer" : `Show All Options (${parsedDist.length - 10} more)`}
-        </button>
+              {isExpanded ? "Show Fewer" : `Show All Options (${parsedDist.length - 10} more)`}
+            </button>
+          )}
+        </>
       )}
 
       {/* Cohort caption */}

@@ -4,6 +4,7 @@ import DistributionChart from "../components/DistributionChart";
 import NarrativeList from "../components/NarrativeList";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
+import HarmonicCanvas from "../../components/HarmonicCanvas";
 import { flattenMultiSelect } from "../lib/formatters";
 
 const SECTION_A_QUESTIONS = [
@@ -57,15 +58,31 @@ export default function RestorationJourneyPage({ navigate }) {
       });
   }, []);
 
+  const glassStyle = {
+    background: "rgba(24, 24, 28, 0.7)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    border: `1px solid ${C.ghost}`,
+    borderRadius: 12,
+    padding: "1.5rem"
+  };
+
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem", position: "relative" }}>
+      {/* Immersive Harmonic Canvas Background (Reserved for future use)
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, opacity: 0.6, pointerEvents: "none" }}>
+        <HarmonicCanvas themeKey="restoration" opacity={0.8} position="absolute" />
+      </div>
+      */}
+
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem", position: "relative", zIndex: 10 }}>
         <InlineBreadcrumb currentRoute="restoration-journey" navigate={navigate} />
 
         {/* Header Callout */}
         <div style={{
-          background: `linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(168,85,247,0.01) 100%)`,
-          border: `1px solid rgba(168,85,247,0.22)`,
+          background: `linear-gradient(135deg, rgba(168,85,247,0.12) 0%, rgba(212,160,48,0.05) 100%)`,
+          backdropFilter: "blur(16px)",
+          border: `1px solid rgba(168,85,247,0.3)`,
           borderRadius: 12,
           padding: "2rem",
           marginBottom: "4rem",
@@ -73,7 +90,7 @@ export default function RestorationJourneyPage({ navigate }) {
           overflow: "hidden",
           boxShadow: `0 8px 32px rgba(0,0,0,0.3)`
         }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, purple, #a855f7)` }} />
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, #d4a030, #a855f7)` }} />
           <div style={{
             fontFamily: FONT.condensed,
             fontSize: "0.75rem",
@@ -83,7 +100,7 @@ export default function RestorationJourneyPage({ navigate }) {
             color: "#a855f7",
             marginBottom: "0.6rem"
           }}>
-            ★ Interactive Exhibit 10 ★
+            <IconifyEmoji symbol="sparkles" /> Interactive Exhibit 10 <IconifyEmoji symbol="sparkles" />
           </div>
           <h1 style={{
             fontFamily: FONT.display,
@@ -106,24 +123,29 @@ export default function RestorationJourneyPage({ navigate }) {
           }}>
             Foreskin restoration represents an active, self-directed physical process undertaken by circumcised individuals to reclaim gliding mechanics and protective coverage.
             <br /><br />
-            This exhibit details the experiences of <strong>{109} restoring respondents</strong>. Explore starting motivations and Real Coverage Index (RCI) changes, track methods and timelines, read firsthand reports of sensitivity gains, and review final outcome ratings across physical and psychological domains.
+            This exhibit details the experiences of <strong>109 restoring respondents</strong>. Explore starting motivations and Real Coverage Index (RCI) changes, track methods and timelines, read firsthand reports of sensitivity gains, and review final outcome ratings. <strong style={{ color: C.gold }}>The data speaks for itself: restoration is achievable to those who are willing to put in the time.</strong>
           </p>
         </div>
 
         {/* SECTION A: MOTIVATIONS & RCI */}
         <div style={{ marginBottom: "5rem" }}>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "2rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span>🟣</span> Section A: Starting Points &amp; Motivations
+          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <IconifyEmoji symbol="purple-circle" /> Section A: Starting Points &amp; Motivations
           </h2>
+          <p style={{ color: C.muted, fontSize: "1rem", maxWidth: 800, marginBottom: "2rem", lineHeight: 1.6 }}>
+            Restoration is rarely a casual decision. It often begins from a place of profound physical or emotional deficit. Yet, it culminates in taking proactive control of one's body.
+          </p>
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
             {SECTION_A_QUESTIONS.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem" }}>
+                <div key={qDef.id} style={glassStyle}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                 </div>
               );
@@ -133,12 +155,13 @@ export default function RestorationJourneyPage({ navigate }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem" }}>
             {RCI_QUESTIONS.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem" }}>
+                <div key={qDef.id} style={glassStyle}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                 </div>
               );
@@ -146,22 +169,27 @@ export default function RestorationJourneyPage({ navigate }) {
           </div>
         </div>
 
-        <div style={{ height: 1, background: C.ghost, margin: "0 0 5rem" }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.1)", margin: "0 0 5rem" }} />
 
         {/* SECTION B: METHODS & TIMELINE */}
         <div style={{ marginBottom: "5rem" }}>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "2rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span>⏱️</span> Section B: Timelines &amp; Methods
+          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <IconifyEmoji symbol="stopwatch" /> Section B: Timelines &amp; Methods
           </h2>
+          <p style={{ color: C.muted, fontSize: "1rem", maxWidth: 800, marginBottom: "2rem", lineHeight: 1.6 }}>
+            The process demands immense dedication. It is an investment measured in years, utilizing a combination of devices, manual stretching, and deeply ingrained routines.
+          </p>
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", marginBottom: "1.5rem" }}>
             {TIMELINE_QUESTIONS.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem" }}>
+                <div key={qDef.id} style={glassStyle}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                 </div>
               );
@@ -171,12 +199,13 @@ export default function RestorationJourneyPage({ navigate }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "1.5rem" }}>
             {TIMELINE_QUAL.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+                <div key={qDef.id} style={{ ...glassStyle, display: "flex", flexDirection: "column" }}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   <div style={{ flex: 1 }}>
                     {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                   </div>
@@ -186,22 +215,27 @@ export default function RestorationJourneyPage({ navigate }) {
           </div>
         </div>
 
-        <div style={{ height: 1, background: C.ghost, margin: "0 0 5rem" }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.1)", margin: "0 0 5rem" }} />
 
         {/* SECTION C: SENSATION & SENSITIVITY */}
         <div style={{ marginBottom: "5rem" }}>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "2rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span>⚡</span> Section C: Sensation &amp; Sensitivity Shifts
+          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <IconifyEmoji symbol="zap" /> Section C: Sensation &amp; Sensitivity Shifts
           </h2>
+          <p style={{ color: C.muted, fontSize: "1rem", maxWidth: 800, marginBottom: "2rem", lineHeight: 1.6 }}>
+            Reclaiming gliding mechanics and mucosal glans protection fundamentally alters the experience of intimacy. The data clearly demonstrates the tangible, physical rewards of this commitment.
+          </p>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem", marginBottom: "1.5rem" }}>
             {SENSATION_QUESTIONS.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem" }}>
+                <div key={qDef.id} style={glassStyle}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                 </div>
               );
@@ -211,12 +245,13 @@ export default function RestorationJourneyPage({ navigate }) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "1.5rem" }}>
             {SENSATION_QUAL.map(qDef => {
               const q = questionsMap[qDef.id];
+              const promptText = q?.prompt?.trim();
               return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+                <div key={qDef.id} style={{ ...glassStyle, display: "flex", flexDirection: "column" }}>
                   <h3 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
                     {qDef.label}
                   </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt}"</p>}
+                  {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
                   <div style={{ flex: 1 }}>
                     {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
                   </div>
@@ -226,26 +261,65 @@ export default function RestorationJourneyPage({ navigate }) {
           </div>
         </div>
 
-        <div style={{ height: 1, background: C.ghost, margin: "0 0 5rem" }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.1)", margin: "0 0 5rem" }} />
 
         {/* SECTION D: OUTCOME RATINGS */}
         <div>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "2rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <span>🌟</span> Section D: Physical &amp; Psychological Outcome Ratings
+          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: "#a855f7", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <IconifyEmoji symbol="glowing-star" /> Section D: Physical &amp; Psychological Outcome Ratings
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "1.5rem" }}>
-            {RATING_QUESTIONS.map(qDef => {
-              const q = questionsMap[qDef.id];
-              return (
-                <div key={qDef.id} style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem" }}>
-                  <h3 style={{ fontFamily: FONT.display, fontSize: "1.15rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
-                    {qDef.label}
-                  </h3>
-                  {q && <p style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{q.prompt.replace("Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?", "").trim()}"</p>}
-                  {q ? <DataLoader question={q} /> : <div style={{ color: C.dim }}>Loading...</div>}
+          <p style={{ color: C.muted, fontSize: "1rem", maxWidth: 800, marginBottom: "2rem", lineHeight: 1.6 }}>
+            The ultimate question: is it worth it? These final ratings summarize the holistic impact on both body and mind, offering a beacon of hope for those considering the journey.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: "2rem", alignItems: "start" }}>
+            {/* Unified Outcomes Legend as a Sidebar Column */}
+            <div style={{
+              position: "sticky",
+              top: "2rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1.2rem",
+              padding: "2rem 1.5rem",
+              background: "rgba(24, 24, 28, 0.4)",
+              backdropFilter: "blur(16px)",
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 12,
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)"
+            }}>
+              <h4 style={{ fontFamily: FONT.condensed, color: C.textBright, margin: "0 0 0.5rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>Rating Key</h4>
+              {[
+                { color: "#3cb44b", label: "Significantly Improved" },
+                { color: "#4363d8", label: "Somewhat Improved" },
+                { color: "#ffe119", label: "No Noticeable Change" },
+                { color: "#f58231", label: "Somewhat Diminished" },
+                { color: "#e6194b", label: "Significantly Diminished" },
+                { color: "#808080", label: "Not a primary goal / N/A" }
+              ].map((item, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: "0.9rem", color: C.text, fontFamily: FONT.body, fontWeight: 500, lineHeight: 1.2 }}>
+                    {item.label}
+                  </span>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem" }}>
+              {RATING_QUESTIONS.map(qDef => {
+                const q = questionsMap[qDef.id];
+                const promptText = q?.prompt?.replace("Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?", "").trim();
+                return (
+                  <div key={qDef.id} style={glassStyle}>
+                    <h3 style={{ fontFamily: FONT.display, fontSize: "1.15rem", color: C.textBright, marginBottom: "0.4rem", fontWeight: 700 }}>
+                      {qDef.label}
+                    </h3>
+                    {promptText && <p style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: C.dim, fontStyle: "italic", marginBottom: "1.2rem", lineHeight: 1.35 }}>"{promptText}"</p>}
+                    {q ? <DataLoader question={q} hideLegend={true} /> : <div style={{ color: C.dim }}>Loading...</div>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -255,7 +329,7 @@ export default function RestorationJourneyPage({ navigate }) {
 }
 
 // ── DATA LOADER HELPER ─────────────────────────────────────────────────────
-function DataLoader({ question, filter, shortenLabels }) {
+function DataLoader({ question, filter, shortenLabels, hideLegend }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -300,6 +374,7 @@ function DataLoader({ question, filter, shortenLabels }) {
       cohortDistribution={null} 
       question={question}
       hideHeader 
+      hideLegend={hideLegend}
       shortenLabels={shortenLabels}
     />
   );

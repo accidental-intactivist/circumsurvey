@@ -95,7 +95,15 @@ function colorForLabel(label, index = 0) {
   if (/boomer|1946-1964/i.test(l)) return resolveCssColor("var(--c-blue)");
   if (/silent|1928-1945/i.test(l)) return resolveCssColor("var(--c-purple)");
   
-  if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$/.test(l)) return adjustColor(C.grey, index);
+  // Flat, consistent vibrant colors for restoration outcome ratings
+  if (/^significantly improved$/i.test(l)) return "#3cb44b"; // Green
+  if (/^somewhat improved$/i.test(l)) return "#4363d8"; // Blue
+  if (/^no noticeable change$/i.test(l)) return "#ffe119"; // Yellow
+  if (/^somewhat diminished$/i.test(l)) return "#f58231"; // Orange
+  if (/^significantly diminished$/i.test(l)) return "#e6194b"; // Red
+  if (/^not a primary goal \/ not applicable to me$|^not a primary goal/i.test(l)) return "#808080"; // Grey
+
+  if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$/i.test(l)) return adjustColor(C.grey, index);
   if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$/i.test(l)) return adjustColor(C.blue, index);
   if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$/i.test(l)) return adjustColor(C.ltBlue, index);
   if (/^neutral$|^no difference$|^no preference$|^mix$|^50\/50$|^undecided$|^ambivalent$|^somewhat$/i.test(l)) return adjustColor(C.yellow, index);

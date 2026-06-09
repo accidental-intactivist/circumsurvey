@@ -10,16 +10,73 @@ const UNIVERSAL_Q = "final_social_norm_perception";
 // Helper to shorten labels for the graph
 function shortLabel(label) {
   if (!label) return "";
-  let s = label.replace(/\s*\([^)]*\)\s*$/, "");
-  s = s.replace("Millennial/Gen Y", "Millennial");
-  s = s.replace("Xennial/Oregon Trail", "Xennial");
-  s = s.replace("Secular / Atheist / Agnostic", "Secular");
-  s = s.replace("Atheist / Agnostic / Secular", "Secular");
-  s = s.replace("No significant religious/spiritual/cultural tradition influencing this topic.", "Secular");
-  s = s.replace("Spiritual but not religious", "Spiritual");
-  s = s.replace("Pagan / Indigenous / Earth-based", "Pagan");
-  s = s.replace("Catholicism", "Catholic");
-  return s.length > 18 ? s.slice(0, 16) + "…" : s;
+  
+  // Clean up any training parentheses (e.g. " (born 1981-1996)")
+  let s = label.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  
+  // Clean up punctuation at the end of sentence options
+  s = s.replace(/\.$/, "");
+  
+  // Map specific long strings to succinct, highly readable versions
+  const mappings = {
+    // Country
+    "United States of America": "United States",
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+    
+    // Sexuality
+    "Straight/Heterosexual": "Straight",
+    
+    // Family Upbringing
+    "I was raised by one or both of my birth/biological parents": "Biological Parents",
+    "I was adopted as an infant": "Infant Adoption",
+    "I was adopted as a child or teenager": "Child/Teen Adoption",
+    "I was raised primarily in a different family structure": "Other Family Structure",
+    
+    // Politics
+    "Very Liberal / Progressive / Left-Leaning": "Very Liberal",
+    "Liberal / Progressive": "Liberal",
+    "Moderate / Centrist": "Moderate",
+    "Very Conservative / Right-Leaning": "Very Conservative",
+    "Apolitical / Not focused on politics": "Apolitical",
+    "Prefer not to say / Unsure": "Unsure",
+    
+    // Religion
+    "Secular / Atheist / Agnostic": "Secular",
+    "Atheist / Agnostic / Secular": "Secular",
+    "No significant religious/spiritual/cultural tradition influencing this topic": "Secular",
+    "Spiritual but not religious": "Spiritual",
+    "Pagan / Indigenous / Earth-based": "Pagan",
+    "Catholicism": "Catholic",
+    
+    // Education
+    "Less than high school diploma or equivalent": "Less than High School",
+    "High school diploma or GED": "High School / GED",
+    "High school diploma or GED (or equivalent)": "High School / GED",
+    "Trade School Certificate / Pre-Apprenticeship Program": "Trade School",
+    "Journeyman Certification / Licensed Tradesperson": "Licensed Trades",
+    "Some college / Associate's degree": "Some College",
+    "Bachelor's degree": "Bachelor's",
+    "Master's degree": "Master's",
+    "Professional degree": "Professional Degree",
+    "Doctoral degree": "Doctorate",
+    
+    // Socioeconomic
+    "Upper income / Wealthy": "Upper Income",
+    "Upper-middle income": "Upper-Middle",
+    "Middle income": "Middle Income",
+    "Working class / Lower-middle income": "Working Class",
+    "Lower income": "Lower Income"
+  };
+
+  // Check exact or prefix matching
+  for (const [key, val] of Object.entries(mappings)) {
+    if (s.toLowerCase().startsWith(key.toLowerCase())) {
+      return val;
+    }
+  }
+
+  // Fallback truncation limit slightly increased to 24 for better readability
+  return s.length > 24 ? s.slice(0, 22) + "…" : s;
 }
 
 // Generate unique node ID
@@ -210,7 +267,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
     const sankeyGenerator = sankey()
       .nodeWidth(20)
       .nodePadding(30)
-      .extent([[20, 40], [780, 480]])
+      .extent([[20, 60], [780, 480]])
       .nodeAlign(sankeyCenter);
 
     return sankeyGenerator({
@@ -338,7 +395,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
                       fontSize: "13px", 
                       fontWeight: 600, 
                       pointerEvents: "none",
-                      textShadow: `0px 2px 4px rgba(0,0,0,0.8), 0px 0px 2px rgba(0,0,0,1)`
+                      textShadow: `var(--sankey-text-shadow)`
                     }}
                   >
                     {node.name}

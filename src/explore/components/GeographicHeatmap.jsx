@@ -7,7 +7,7 @@ import { PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
 import L from 'leaflet';
 
-const WORLD_TOPO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const WORLD_GEO_URL = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
@@ -101,7 +101,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       fetch(US_TOPO_URL).then(r => r.json()).then(topo => setUsGeo(topojson.feature(topo, topo.objects.states)));
       fetch(CANADA_GEO_URL).then(r => r.json()).then(geo => setCaGeo(geo));
     } else {
-      fetch(WORLD_TOPO_URL).then(r => r.json()).then(topo => setWorldGeo(topojson.feature(topo, topo.objects.countries)));
+      fetch(WORLD_GEO_URL).then(r => r.json()).then(geo => setWorldGeo(geo));
     }
   }, [isUS]);
 
@@ -347,7 +347,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         )}
       </div>
 
-      <div style={{ height: 500, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f5f5f5", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
+      <div style={{ height: 700, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f5f5f5", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
         {isLoading ? (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: C.muted }}>
             <div style={{ animation: "pulse 1.5s infinite" }}>Rendering map...</div>

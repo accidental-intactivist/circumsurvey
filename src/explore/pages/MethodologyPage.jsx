@@ -1,7 +1,15 @@
 import { C, FONT } from "../styles/tokens";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
-export default function MethodologyPage({ navigate }) {
+export default function MethodologyPage({ navigate, setExhibitContext }) {
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Methodology & Demographics",
+        exhibitDescription: "Methodology of the study, data collection methods, and general demographic overview."
+      });
+    }
+  }, [setExhibitContext]);
   return (
     <div style={{
       minHeight: "100vh",

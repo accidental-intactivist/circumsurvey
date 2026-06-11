@@ -589,6 +589,21 @@ export const sortDistribution = (distArray, question) => {
   if (!distArray || !Array.isArray(distArray)) return [];
   const qId = question?.id || "";
 
+  if (qId === "culture_body_intervention_view" || qId === "final_core_principle_choice") {
+    const getOptIndex = (label) => {
+      if (!question || !question.opts) return 999;
+      const l = String(label || "").toLowerCase().trim();
+      const idx = question.opts.findIndex(opt => opt.toLowerCase().includes(l) || l.includes(opt.split(":")[0].toLowerCase().trim()));
+      return idx !== -1 ? idx : 999;
+    };
+    return [...distArray].sort((a, b) => {
+      const idxA = getOptIndex(a.label);
+      const idxB = getOptIndex(b.label);
+      if (idxA === 999 && idxB === 999) return (b.n || 0) - (a.n || 0);
+      return idxA - idxB;
+    });
+  }
+
   if (qId.includes("restore_impact_rating_")) {
     const getOutcomeIndex = (label) => {
       const l = String(label || "").toLowerCase();
@@ -661,20 +676,25 @@ export const sortDistribution = (distArray, question) => {
     });
   }
 
-  if (qId === "religion_jewish_brit_milah_view") {
-    const getJewishMilahIndex = (label) => {
+  const UPBRINGING_QUESTIONS = [
+    "religion_jewish_brit_milah_view", 
+    "religion_christian_circ_view", 
+    "religion_islamic_khitan_view"
+  ];
+  if (UPBRINGING_QUESTIONS.includes(qId)) {
+    const getUpbringingIndex = (label) => {
       const l = String(label || "").toLowerCase();
-      if (l.includes("non-negotiable religious commandment")) return 0;
-      if (l.includes("important tradition and cultural marker")) return 1;
-      if (l.includes("practice open to discussion")) return 2;
-      if (l.includes("questioned or chose alternatives")) return 3;
-      if (l.includes("not a significant topic")) return 4;
+      if (/non-negotiable|highly recommended|recommended practice/i.test(l)) return 0;
+      if (/important tradition|strong cultural practice|cultural norm/i.test(l)) return 1;
+      if (/open to discussion|left to parents/i.test(l)) return 2;
+      if (/not a significant topic|not a major topic|non-issue/i.test(l)) return 3;
+      if (/questioned or chose|discouraged or seen as/i.test(l)) return 4;
       return 5;
     };
 
     return [...distArray].sort((a, b) => {
-      const idxA = getJewishMilahIndex(a.label);
-      const idxB = getJewishMilahIndex(b.label);
+      const idxA = getUpbringingIndex(a.label);
+      const idxB = getUpbringingIndex(b.label);
       if (idxA === 5 && idxB === 5) {
         return (b.n || 0) - (a.n || 0);
       }

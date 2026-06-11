@@ -166,7 +166,7 @@ function useInView(options = {}) {
 // MAIN PAGE COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function DemographicsDashboardPage({ routerState, navigate, updateState }) {
+export default function DemographicsDashboardPage({ routerState, navigate, updateState, setExhibitContext }) {
   const cohort = routerState?.cohort;
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
@@ -183,6 +183,17 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
     DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "generation"),
     DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "pathway")
   ]);
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        cohort,
+        sankeySource: sankeyDims[0]?.id,
+        sankeyMiddle: sankeyDims[1]?.id,
+        sankeyTarget: sankeyDims[2]?.id
+      });
+    }
+  }, [cohort, sankeyDims, setExhibitContext]);
 
   const container = useRef(null);
 

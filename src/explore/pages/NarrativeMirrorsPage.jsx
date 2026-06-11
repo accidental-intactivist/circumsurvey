@@ -56,16 +56,27 @@ const NARRATIVE_CONCEPTS = [
     id: "partner_preference_reasons",
     label: "Shaping Partner Preferences (Universal)",
     desc: "A universal question: What do you believe has most shaped partner preferences regarding penile circumcision state?",
+    desc: "A universal question: What do you believe has most shaped partner preferences regarding penile circumcision state.",
     intact: { qid: "final_partner_preference_reason", pathway: "intact", label: "Intact Perception", emoji: "🟢" },
     circ: { qid: "final_partner_preference_reason", pathway: "circumcised", label: "Circumcised Perception", emoji: "🔵" },
     restoring: { qid: "final_partner_preference_reason", pathway: "restoring", label: "Restoring Perception", emoji: "🟣" }
   }
 ];
 
-export default function NarrativeMirrorsPage({ navigate }) {
+export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedConceptId, setSelectedConceptId] = useState(NARRATIVE_CONCEPTS[0].id);
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Narrative Mirrors",
+        exhibitDescription: "Compare qualitative open-text narratives between intact and circumcised pathways.",
+        activeMirrorTopic: NARRATIVE_CONCEPTS.find(c => c.id === selectedConceptId)?.label
+      });
+    }
+  }, [selectedConceptId, setExhibitContext]);
 
   const [selectedWord, setSelectedWord] = useState(null);
 

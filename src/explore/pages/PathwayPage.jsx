@@ -4,11 +4,23 @@
 // Replaced the old two-panel sidebar layout with SurveyFlowchart.
 // ═══════════════════════════════════════════════════════════════════════════
 
+import { useEffect } from "react";
 import { C, FONT } from "../styles/tokens";
 import SurveyFlowchart from "../components/SurveyFlowchart";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
-export default function PathwayPage({ routerState, navigate, updateState }) {
+export default function PathwayPage({ routerState, navigate, updateState, setExhibitContext }) {
+  const pathwayId = routerState.params.id;
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Pathway Hub",
+        pathway: pathwayId
+      });
+    }
+  }, [pathwayId, setExhibitContext]);
+
   return (
     <div style={{
       minHeight: "100vh",

@@ -374,10 +374,20 @@ const alignAndSortPair = (intactDist, circDist, intactCohortDist, circCohortDist
   };
 };
 
-export default function MirrorPairsPage({ routerState, navigate }) {
+export default function MirrorPairsPage({ routerState, navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [activePairId, setActivePairId] = useState(MIRROR_PAIRS[0].id);
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Mirror Pairs",
+        exhibitDescription: "Compare similarly themed questions asked specifically to the Intact versus Circumcised pathways to isolate the subjective gap.",
+        pairs: MIRROR_PAIRS.map(p => p.concept).join(", ")
+      });
+    }
+  }, [setExhibitContext]);
 
   useEffect(() => {
     async function load() {

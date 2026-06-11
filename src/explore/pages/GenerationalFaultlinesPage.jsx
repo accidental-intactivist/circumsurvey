@@ -32,7 +32,7 @@ const ASSOC_QUESTIONS = [
   { id: 'culture_assoc_conservative_values', label: 'Conservative / Traditional Values' }
 ];
 
-export default function GenerationalFaultlinesPage({ navigate }) {
+export default function GenerationalFaultlinesPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [activeAssoc, setActiveAssoc] = useState(ASSOC_QUESTIONS[0].id);
 
@@ -44,6 +44,14 @@ export default function GenerationalFaultlinesPage({ navigate }) {
         setQuestionsMap(map);
       });
   }, []);
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        activeAssoc
+      });
+    }
+  }, [activeAssoc, setExhibitContext]);
 
   const activeAssocPrompt = ASSOC_QUESTIONS.find(q => q.id === activeAssoc)?.label || "";
 

@@ -78,16 +78,27 @@ function calculateAverage(pathwayData) {
   };
 }
 
-export default function PleasureGapPage({ routerState, navigate, updateState }) {
+export default function PleasureGapPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { cohort } = routerState;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groupBy, setGroupBy] = useState("cohort"); // "cohort" or "factor"
   const [viewMode, setViewMode] = useState("dumbbell");
+  const [activeQuestionId, setActiveQuestionId] = useState(QUESTIONS[0].id);
   const [showGap, setShowGap] = useState(false);
   const [activeCohorts, setActiveCohorts] = useState({ intact: true, circumcised: true, restoring: true });
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "The Pleasure Gap",
+        exhibitDescription: "Analyze discrepancies in subjective sexual pleasure ratings between intact, circumcised, and restoring pathways.",
+        activeMetric: QUESTIONS.find(q => q.id === activeQuestionId)?.label || activeQuestionId
+      });
+    }
+  }, [activeQuestionId, setExhibitContext]);
 
   // Fetch averages whenever the cohort filter changes
   useEffect(() => {

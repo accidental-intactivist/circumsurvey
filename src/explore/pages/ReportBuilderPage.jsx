@@ -8,7 +8,19 @@ import GeographicHeatmap from "../components/GeographicHeatmap";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
 
-export default function ReportBuilderPage({ navigate }) {
+export default function ReportBuilderPage({ routerState, navigate, updateState, setExhibitContext }) {
+  const { cohort } = routerState;
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Custom Report Builder",
+        exhibitDescription: "User's customized report containing saved charts and narratives.",
+        cohort
+      });
+    }
+  }, [cohort, setExhibitContext]);
+
   const { reportItems, removeFromReport, reorderReport, clearReport } = useReport();
   const [questions, setQuestions] = useState([]);
   const [distributions, setDistributions] = useState({});

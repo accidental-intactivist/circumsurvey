@@ -66,11 +66,19 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   // Build a canonical color map from the overall distribution
   const colorMap = useMemo(() => {
     const map = {};
-    parsedDist.forEach((item, index) => {
-      map[item.label] = colorForLabel(item.label, index);
+    parsedDist.forEach((item, loopIndex) => {
+      let colorIndex = loopIndex;
+      if (question?.opts && Array.isArray(question.opts)) {
+        const l = String(item.label || "").toLowerCase().trim();
+        const match = question.opts.findIndex(opt => 
+          opt.toLowerCase().includes(l) || l.includes(opt.split(":")[0].toLowerCase().trim())
+        );
+        if (match !== -1) colorIndex = match;
+      }
+      map[item.label] = colorForLabel(item.label, colorIndex);
     });
     return map;
-  }, [parsedDist]);
+  }, [parsedDist, question]);
 
   if (!distribution) {
     return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;

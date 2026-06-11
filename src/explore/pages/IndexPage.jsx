@@ -32,7 +32,7 @@ const EXHIBITS = [
   { id: "numbers", num: "11", title: "By The Numbers", icon: "BarChart2", desc: "Interactive dashboard summarizing key outcome statistics and percentages.", link: "#/numbers", colorVar: "var(--c-yellow)" }
 ];
 
-export default function IndexPage({ routerState, navigate, updateState }) {
+export default function IndexPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { pathway, view, search, section, cohort, observerRole, format } = routerState;
   const hasPathway = pathway && (Array.isArray(pathway) ? pathway.length > 0 : true);
 
@@ -40,6 +40,12 @@ export default function IndexPage({ routerState, navigate, updateState }) {
   const [questions, setQuestions] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({ cohort, searchMode, searchKeyword });
+    }
+  }, [cohort, searchMode, searchKeyword, setExhibitContext]);
 
   useEffect(() => {
     let cancelled = false;

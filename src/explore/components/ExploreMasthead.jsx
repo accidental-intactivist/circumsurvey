@@ -14,6 +14,7 @@ import { C, FONT, RAINBOW } from "../styles/tokens";
 import { useTheme } from "../contexts/ThemeContext";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 import ThemeToggle from "./ThemeToggle";
+import { Sparkles } from "./Icons";
 
 // ── Easy-to-adjust height constants ─────────────────────────────────────
 const HERO_HEIGHT = 240;   // px – hero / expanded state (adjust to taste)
@@ -130,7 +131,7 @@ export const EXHIBIT_ROUTES = [
   { route: "numbers", num: "Exhibit 11", label: "By The Numbers" },
 ];
 
-export default function ExploreMasthead({ route, navigate, customMeta }) {
+export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {
   const { theme, mode, colorblind, typeface } = useTheme();
   const [scrollY, setScrollY] = useState(0);
   const headerRef = useRef(null);
@@ -445,6 +446,43 @@ export default function ExploreMasthead({ route, navigate, customMeta }) {
             >
               ← Findings
             </a>
+            
+            <button
+              onClick={() => setDocentOpen(!isDocentOpen)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                fontFamily: FONT.condensed,
+                fontWeight: 700,
+                fontSize: "0.7rem",
+                color: isDocentOpen ? "var(--c-bg)" : "var(--c-goldBright)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                padding: "0.25rem 0.65rem",
+                border: "1px solid rgba(212,160,48,0.35)",
+                borderRadius: 100,
+                background: isDocentOpen ? "var(--c-goldBright)" : "rgba(212,160,48,0.08)",
+                whiteSpace: "nowrap",
+                transition: "all 0.2s",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                if (!isDocentOpen) {
+                  e.currentTarget.style.background = "rgba(212,160,48,0.18)";
+                  e.currentTarget.style.borderColor = "rgba(212,160,48,0.6)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isDocentOpen) {
+                  e.currentTarget.style.background = "rgba(212,160,48,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(212,160,48,0.35)";
+                }
+              }}
+            >
+              <Sparkles size={12} color="currentColor" />
+              Ask A Docent
+            </button>
           </div>
         </div>
 

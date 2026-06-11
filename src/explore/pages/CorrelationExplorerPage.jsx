@@ -197,7 +197,7 @@ const SHORT_LABELS = {
   "exp_sex_rating_pleasure_mobile_skin": "Pleasure from Mobile Skin (1–5)"
 };
 
-export default function CorrelationExplorerPage({ routerState, navigate, updateState }) {
+export default function CorrelationExplorerPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { cohort } = routerState;
 
   const [questions, setQuestions] = useState([]);
@@ -225,6 +225,18 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   // "flow" renders a 3-stage Sankey using activeX → activeY → activeZ.
   const [mode, setMode] = useState("pairwise");
   const sankeyTooltip = useTooltip();
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        cohort,
+        mode,
+        activeX: activeX?.id,
+        activeY: activeY?.id,
+        activeZ: mode === "flow" ? activeZ?.id : undefined
+      });
+    }
+  }, [cohort, mode, activeX, activeY, activeZ, setExhibitContext]);
 
   // Guard: in Flow mode, Source and Middle MUST be demographic columns
   // (the Sankey chains filters between stages and the cohort serializer can't

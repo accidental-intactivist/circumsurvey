@@ -45,8 +45,19 @@ const RATING_QUESTIONS = [
   { id: "restore_impact_rating_psychology", label: "Psychological & Emotional Well-being" },
 ];
 
-export default function RestorationJourneyPage({ navigate }) {
+export default function RestorationJourneyPage({ routerState, navigate, updateState, setExhibitContext }) {
+  const { cohort } = routerState;
   const [questionsMap, setQuestionsMap] = useState({});
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "The Restoration Journey",
+        exhibitDescription: "Analysis of the motivations, experiences, and outcomes of men undergoing foreskin restoration.",
+        cohort
+      });
+    }
+  }, [cohort, setExhibitContext]);
 
   useEffect(() => {
     fetch(`${API_BASE}/questions`)

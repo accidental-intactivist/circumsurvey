@@ -109,8 +109,19 @@ const KPI_METRICS = [
   }
 ];
 
-export default function ByTheNumbersPage({ routerState, navigate, updateState, setCustomMeta }) {
+export default function ByTheNumbersPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
   const { cohort } = routerState;
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "By The Numbers",
+        exhibitDescription: "High-level statistical overview and demographic breakdown of the entire dataset.",
+        cohort
+      });
+    }
+  }, [cohort, setExhibitContext]);
+
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   
   const [activeMetricId, setActiveMetricId] = useState("resentment");

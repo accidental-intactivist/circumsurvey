@@ -2862,12 +2862,8 @@
     "opts": [
       "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
       "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",
-      "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon",
-      "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear",
-      "even in the absence of disease.\"",
-      "manage",
-      "or optimize the body's natural state",
-      "present medical problem.\""
+      "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon, manage, or optimize the body's natural state, even in the absence of disease.\"",
+      "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear, present medical problem.\""
     ],
     "tier": 2,
     "col_idx": 149,
@@ -3384,8 +3380,11 @@
     "pathway": "all",
     "prompt": "When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant (meaning there is no existing disease to treat), which principle do you believe should be given more weight?",
     "subtitle": "",
-    "type": "open_text",
-    "opts": null,
+    "type": "single_select",
+    "opts": [
+      "The Child's Right to Bodily Autonomy: Prioritizing the principle that a person's body should not be permanently and non-consensually altered without a clear and present medical need.",
+      "The Parents' Right to Religious/Cultural Expression: Prioritizing the principle that parents have the authority to make permanent bodily modifications to their children to align them with familial traditions or beliefs."
+    ],
     "tier": 3,
     "col_idx": 178,
     "n_responses": 482

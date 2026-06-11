@@ -17,26 +17,22 @@ function stringHash(str) {
 }
 
 // 20 maximally distinct colors (Sasha Trubetskoy's palette)
-const DISTINCT_COLORS = [
-  "#e6194b", // Red
-  "#3cb44b", // Green
-  "#ffe119", // Yellow
+export const DISTINCT_COLORS = [
   "#4363d8", // Blue
   "#f58231", // Orange
+  "#3cb44b", // Green
+  "#e6194b", // Red
   "#911eb4", // Purple
+  "#ffe119", // Yellow
   "#46f0f0", // Cyan
   "#f032e6", // Magenta
   "#bcf60c", // Lime
   "#fabebe", // Pink
   "#008080", // Teal
   "#e6beff", // Lavender
-  "#9a6324", // Brown
   "#fffac8", // Beige
-  "#800000", // Maroon
   "#aaffc3", // Mint
-  "#808000", // Olive
   "#ffd8b1", // Apricot
-  "#000075", // Navy
   "#808080"  // Grey
 ];
 
@@ -103,12 +99,12 @@ function colorForLabel(label, index = 0) {
   if (/^significantly diminished$/i.test(l)) return "#e6194b"; // Red
   if (/^not a primary goal \/ not applicable to me$|^not a primary goal/i.test(l)) return "#808080"; // Grey
 
-  if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$/i.test(l)) return adjustColor(C.grey, index);
-  if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$/i.test(l)) return adjustColor(C.blue, index);
-  if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$/i.test(l)) return adjustColor(C.ltBlue, index);
-  if (/^neutral$|^no difference$|^no preference$|^mix$|^50\/50$|^undecided$|^ambivalent$|^somewhat$/i.test(l)) return adjustColor(C.yellow, index);
-  if (/^negative$|^somewhat dissatisfied$|^often$|^orange$|^depends$|^brief$/i.test(l)) return adjustColor(C.orange, index);
-  if (/^very negative$|^dissatisfied$|^always$|^almost always$|^0.{0,2}5 sec$|^something is missing$|^routine$|^unquestioned$|^strongly prefer circ$|^circ significantly$|^circumcise$|^never considered$|^medical authorities$/i.test(l)) return adjustColor(C.red, index);
+  if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$|not a significant topic|not a major topic|non-issue/i.test(l)) return resolveCssColor(C.grey);
+  if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$|questioned or chose|discouraged or seen as/i.test(l)) return resolveCssColor(C.blue);
+  if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$/i.test(l)) return resolveCssColor(C.ltBlue);
+  if (/^neutral$|^no difference$|^no preference$|^mix$|^50\/50$|^undecided$|^ambivalent$|^somewhat$|open to discussion|left to parents/i.test(l)) return resolveCssColor(C.yellow);
+  if (/^negative$|^somewhat dissatisfied$|^often$|^orange$|^depends$|^brief$|important tradition|strong cultural practice|cultural norm/i.test(l)) return resolveCssColor(C.orange);
+  if (/^very negative$|^dissatisfied$|^always$|^almost always$|^0.{0,2}5 sec$|^something is missing$|^routine$|^unquestioned$|^strongly prefer circ$|^circ significantly$|^circumcise$|^never considered$|^medical authorities$|non-negotiable|highly recommended|recommended practice/i.test(l)) return resolveCssColor(C.red);
   
   // Use programmatic distinct colors to guarantee no clashes.
   return getCategoricalColor(index);

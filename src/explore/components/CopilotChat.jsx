@@ -3,8 +3,9 @@ import { C, FONT } from "../styles/tokens";
 import { queryCopilot } from "../lib/api";
 import BivariateHeatmap from "./BivariateHeatmap";
 import { useTheme } from "../contexts/ThemeContext";
+import { Sparkles } from "./Icons";
 
-export default function CopilotChat({ routerState, updateState, question }) {
+export default function CopilotChat({ routerState, updateState, question, exhibitContext }) {
   const { unlockTheme, setTheme } = useTheme();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,8 @@ export default function CopilotChat({ routerState, updateState, question }) {
       cohort: routerState?.cohort,
       questionPrompt: question?.prompt,
       questionOptions: question?.opts ? JSON.stringify(question.opts) : undefined,
-      questionPathway: question?.pathway
+      questionPathway: question?.pathway,
+      ...exhibitContext
     };
 
     try {
@@ -86,7 +88,8 @@ export default function CopilotChat({ routerState, updateState, question }) {
         alignItems: "center",
         gap: "0.5rem"
       }}>
-        <span>✨ AI Research Assistant</span>
+        <Sparkles size={16} color="currentColor" style={{ marginTop: -2 }} />
+        <span>Ask A Docent</span>
         <span style={{
           background: C.gold,
           color: "#000",

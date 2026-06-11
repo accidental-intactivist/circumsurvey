@@ -41,8 +41,18 @@ const TRIAD_COLUMNS = [
   }
 ];
 
-export default function ObserverTriadPage({ navigate }) {
+export default function ObserverTriadPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "The Observer Triad",
+        exhibitDescription: "Comparative analysis of Partner, Parental, and Medical Observer perspectives on bodily modifications and circumcision.",
+        perspectives: ["Partner", "Parental", "Medical"]
+      });
+    }
+  }, [setExhibitContext]);
 
   useEffect(() => {
     fetch(`${API_BASE}/questions`)

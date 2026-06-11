@@ -5,6 +5,7 @@ import NarrativeList from "../components/NarrativeList";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
 import { flattenMultiSelect } from "../lib/formatters";
+import { colorForLabel } from "../components/MiniSparkline";
 
 const UNIVERSAL_QUESTIONS = [
   { id: "culture_body_intervention_view", concept: "Body & Interventions" },
@@ -63,16 +64,38 @@ const TRADITIONS = [
   { id: "Islamic", label: "Islamic", emoji: "☪️", color: "#68b878", filter: "religion.primary_tradition=Islamic" },
 ];
 
-export default function ReligiousMirrorsPage({ navigate }) {
+export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
 
   useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({
+        exhibitName: "Religious Mirrors & Theology",
+        exhibitDescription: "How religious traditions shape perspectives on bodily modification",
+        traditionsCompared: ["Atheist/Secular", "Christian", "Jewish", "Islamic"],
+        sectionA: "Universal Cross-Tradition Views (Body & Interventions, Core Ethical Principle)",
+        sectionB: "Abrahamic Theological Mirrors (Upbringing View, Importance to Identity, Theological Awareness, Theological Basis, Alternative Interpretations, Room for Diversity)"
+      });
+    }
+  }, [setExhibitContext]);
+
+  useEffect(() => {
     fetch(`${API_BASE}/questions`)
-      .then(r => r.json())
-      .then(d => {
-        const map = {};
-        d.questions.forEach(q => map[q.id] = q);
-        setQuestionsMap(map);
+      .then(res => res.json())
+      .then(data => {
+        const qMap = {};
+        data.questions.forEach(q => {
+          // Force final_core_principle_choice to render as a pie chart instead of narratives
+          if (q.id === "final_core_principle_choice") {
+            q.type = "single_select";
+            q.opts = [
+              "The Child's Right to Bodily Autonomy: Prioritizing the principle that a person's body should not be permanently and non-consensually altered without a clear and present medical necessity, preserving their right to make that decision for themselves as an adult.",
+              "The recommendation of Medical Authorities and Parental Discretion: Prioritizing the professional guidance given to parents and the right of parents to make preventative health and cultural choices they believe are in their child's best interest."
+            ];
+          }
+          qMap[q.id] = q;
+        });
+        setQuestionsMap(qMap);
       });
   }, []);
 
@@ -184,11 +207,38 @@ function UniversalRow({ qDef, questionsMap }) {
         )}
       </div>
 
-      {/* Shared Key definition for long options */}
-      {q && q.opts && q.opts.some(opt => opt.includes(":")) && (
+      <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
+        {TRADITIONS.map(tradition => (
+          <div key={tradition.id} style={{ 
+            flex: "1 1 250px", 
+            minWidth: 250, 
+            background: C.bgCard, 
+            border: `1px solid ${C.ghost}`, 
+            borderRadius: 12, 
+            padding: "1.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem"
+          }}>
+            <h4 style={{ fontFamily: FONT.condensed, color: tradition.color, fontSize: "1rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0, textAlign: "center", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center" }}>
+              <IconifyEmoji emoji={tradition.emoji} />
+              <span>{tradition.label}</span>
+            </h4>
+            
+            {q ? (
+              <DataLoader question={q} filter={tradition.filter} shortenLabels={true} hideLegend={true} />
+            ) : (
+              <div style={{ color: C.dim, textAlign: "center", fontStyle: "italic", fontSize: "0.85rem" }}>Loading question...</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Shared Key definition for long options (moved below charts) */}
+      {q && q.opts && (
         <div style={{
           maxWidth: 900,
-          margin: "0 auto 2.5rem",
+          margin: "2.5rem auto 0",
           padding: "1.2rem 1.6rem",
           background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)",
           border: `1px solid ${C.ghost}`,
@@ -214,47 +264,42 @@ function UniversalRow({ qDef, questionsMap }) {
             gap: "0.3rem",
             marginBottom: "0.2rem"
           }}>
-            <span>★</span> Shared Response Legend / Key
+            <span>★</span> Shared Legend
           </div>
-          {q.opts.map((opt, idx) => {
-            if (!opt.includes(":")) return null;
-            const [title, desc] = opt.split(":");
-            return (
-              <div key={idx} style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                <span style={{ fontWeight: 700, color: C.textBright }}>{title}:</span>
-                <span style={{ color: C.muted }}>{desc.trim()}</span>
-              </div>
-            );
-          })}
+          {(() => {
+            const opts = q.id === "culture_body_intervention_view" ? [
+              "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
+              "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",
+              "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon, manage, or optimize the body's natural state, even in the absence of disease.\"",
+              "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear, present medical problem.\""
+            ] : q.opts;
+
+            return opts.map((opt, idx) => {
+              const hasColon = opt.includes(":");
+              if (!hasColon && q.id !== "culture_body_intervention_view") return null;
+              
+              const title = hasColon ? opt.split(":")[0] : opt;
+              const desc = hasColon ? opt.slice(title.length + 1) : "";
+              const color = colorForLabel(title, idx);
+
+              return (
+                <div key={idx} style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start" }}>
+                  <div style={{
+                    width: 12, height: 12, borderRadius: 2,
+                    background: color,
+                    flexShrink: 0,
+                    marginTop: "0.3rem"
+                  }} />
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontWeight: 700, color: C.textBright }}>{title}{hasColon ? ":" : ""} </span>
+                    {hasColon && <span style={{ color: C.muted }}>{desc.trim()}</span>}
+                  </div>
+                </div>
+              );
+            });
+          })()}
         </div>
       )}
-
-      <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-        {TRADITIONS.map(tradition => (
-          <div key={tradition.id} style={{ 
-            flex: "1 1 250px", 
-            minWidth: 250, 
-            background: C.bgCard, 
-            border: `1px solid ${C.ghost}`, 
-            borderRadius: 12, 
-            padding: "1.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem"
-          }}>
-            <h4 style={{ fontFamily: FONT.condensed, color: tradition.color, fontSize: "1rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0, textAlign: "center", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center" }}>
-              <IconifyEmoji emoji={tradition.emoji} />
-              <span>{tradition.label}</span>
-            </h4>
-            
-            {q ? (
-              <DataLoader question={q} filter={tradition.filter} shortenLabels={true} />
-            ) : (
-              <div style={{ color: C.dim, textAlign: "center", fontStyle: "italic", fontSize: "0.85rem" }}>Loading question...</div>
-            )}
-          </div>
-        ))}
-      </div>
     </section>
   );
 }
@@ -365,7 +410,7 @@ function TheologicalRow({ pair, questionsMap }) {
 }
 
 // ── DATA LOADER HELPER ─────────────────────────────────────────────────────
-function DataLoader({ question, filter, shortenLabels }) {
+function DataLoader({ question, filter, shortenLabels, hideLegend }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -411,6 +456,7 @@ function DataLoader({ question, filter, shortenLabels }) {
       question={question}
       hideHeader 
       shortenLabels={shortenLabels}
+      hideLegend={hideLegend}
     />
   );
 }

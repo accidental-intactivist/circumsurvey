@@ -24,9 +24,15 @@ import SharePopover from "../components/SharePopover";
 import AddToReportButton from "../components/AddToReportButton";
 import WordCloud from "../components/WordCloud";
 
-export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta }) {
+export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
   const { params, cohort } = routerState;
   const questionId = params.id;
+
+  useEffect(() => {
+    if (setExhibitContext) {
+      setExhibitContext({ cohort, questionId });
+    }
+  }, [cohort, questionId, setExhibitContext]);
 
   // ── Data fetch ──────────────────────────────────────────────────────────
   const [question, setQuestion] = useState(null);

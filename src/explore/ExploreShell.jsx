@@ -11,6 +11,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "./lib/router";
 import ExploreMasthead from "./components/ExploreMasthead";
+import GlobalDocentDrawer from "./components/GlobalDocentDrawer";
 import IndexPage from "./pages/IndexPage";
 import PathwayPage from "./pages/PathwayPage";
 import QuestionPage from "./pages/QuestionPage";
@@ -36,49 +37,65 @@ export default function ExploreShell() {
   const routerState = { ...state, params };
 
   const [customMeta, setCustomMeta] = useState(null);
+  const [exhibitContext, setExhibitContext] = useState(null);
+  const [isDocentOpen, setDocentOpen] = useState(false);
 
-  // Reset custom page metadata whenever the route or active question ID changes
+  // Reset custom page metadata and context whenever the route or active question ID changes
   useEffect(() => {
     setCustomMeta(null);
+    setExhibitContext(null);
   }, [route, params.id]);
 
   let page;
   if (route === "pathways") {
-    page = <PathwayPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <PathwayPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "question") {
-    page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <QuestionPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "correlations") {
-    page = <CorrelationExplorerPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <CorrelationExplorerPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "pairs") {
-    page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <MirrorPairsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "demographics") {
-    page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <DemographicsDashboardPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "pleasure-gap") {
-    page = <PleasureGapPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <PleasureGapPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "religious-mirrors") {
-    page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <ReligiousMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "narrative-mirrors") {
-    page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "generational-faultlines") {
-    page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <GenerationalFaultlinesPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "observer-triad") {
-    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "methodology") {
-    page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "report") {
-    page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <ReportBuilderPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "numbers") {
-    page = <ByTheNumbersPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <ByTheNumbersPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "restoration-journey") {
-    page = <RestorationJourneyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <RestorationJourneyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else {
-    page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} />;
+    page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   }
 
   return (
     <>
-      <ExploreMasthead route={route || "index"} navigate={navigate} customMeta={customMeta} />
+      <ExploreMasthead 
+        route={route || "index"} 
+        navigate={navigate} 
+        customMeta={customMeta} 
+        isDocentOpen={isDocentOpen}
+        setDocentOpen={setDocentOpen}
+      />
       {page}
+      <GlobalDocentDrawer 
+        isOpen={isDocentOpen} 
+        onClose={() => setDocentOpen(false)}
+        routerState={routerState}
+        updateState={updateState}
+        exhibitContext={exhibitContext}
+      />
     </>
   );
 }

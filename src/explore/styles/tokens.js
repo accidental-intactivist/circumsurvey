@@ -29,6 +29,11 @@ export const C = {
   ltBlue: "var(--c-ltBlue)",
   blue: "var(--c-blue)",
   grey: "var(--c-grey)",
+
+  // Map cartography
+  mapOcean: "var(--map-ocean)",
+  mapLand: "var(--map-land)",
+  mapBorder: "var(--map-border)",
 };
 
 // Pathway-specific colors (semantic anchors for charts + navigation)
@@ -83,6 +88,11 @@ export const GLOBAL_CSS = `
     --c-blue: #5b93c7;
     --c-grey: #a0a0a0;
     --c-purple: #7868b8;
+
+    /* Map cartography tokens — Cerulean & Gold (default dark) */
+    --map-ocean: #003049;
+    --map-land: #D4AF37;
+    --map-border: rgba(255, 215, 0, 0.2);
 
     /* Universal CIRO pathway colors (Evergreen-derived) */
     --path-intact: #34d399;
@@ -139,6 +149,10 @@ export const GLOBAL_CSS = `
     --c-ghost: #d4cfc4;
     --c-gold: #a87e18;
     --c-goldBright: #d4a030;
+    /* Map: Pearl White & Gold */
+    --map-ocean: #E8E2D8;
+    --map-land: #FFFFFF;
+    --map-border: rgba(168, 126, 24, 0.25);
   }
 
   /* ── VAPORWAVE THEME ── */
@@ -162,6 +176,10 @@ export const GLOBAL_CSS = `
     --c-blue: #1a53ff;
     --c-grey: #5a3982;
     --c-purple: #9d00ff;
+    /* Map: Neon Purple & Hot Pink */
+    --map-ocean: #0d0221;
+    --map-land: #ff2d95;
+    --map-border: rgba(0, 240, 255, 0.3);
     /* Categorical: Hot Pink → Purple → Cyan */
     --chart-0: #ff2d95; --chart-1: #b026ff; --chart-2: #00f0ff; --chart-3: #ff6ec7; --chart-4: #7b68ee;
     --chart-5: #01cdfe; --chart-6: #ff3860; --chart-7: #9d4edd; --chart-8: #39e5a7; --chart-9: #fcee09;
@@ -187,6 +205,10 @@ export const GLOBAL_CSS = `
     --c-blue: #00e5ff;
     --c-grey: #b39ddb;
     --c-purple: #d500f9;
+    /* Map: Lavender & Violet */
+    --map-ocean: #E9D9FF;
+    --map-land: #FFFFFF;
+    --map-border: rgba(206, 147, 216, 0.4);
     /* Categorical: Deep Pink → Violet → Teal */
     --chart-0: #d81b60; --chart-1: #8e24aa; --chart-2: #00838f; --chart-3: #c2185b; --chart-4: #5e35b1;
     --chart-5: #00695c; --chart-6: #ad1457; --chart-7: #7b1fa2; --chart-8: #00897b; --chart-9: #f9a825;
@@ -213,6 +235,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0ea5e9;
     --c-grey: #1e3b2d;
     --c-purple: #8b5cf6;
+    /* Map: Emerald & Gold */
+    --map-ocean: #043927;
+    --map-land: #D4AF37;
+    --map-border: rgba(251, 191, 36, 0.2);
 
     /* Categorical: Nature */
     --chart-0: #10b981;
@@ -247,6 +273,10 @@ export const GLOBAL_CSS = `
     --c-blue: #8fb39f;
     --c-grey: #d4e3d9;
     --c-purple: #8e50b8;
+    /* Map: Sage & Pearl */
+    --map-ocean: #D4E3D9;
+    --map-land: #FFFFFF;
+    --map-border: rgba(92, 122, 106, 0.25);
 
     /* Categorical: Nature (light) */
     --chart-0: #047857;
@@ -282,6 +312,10 @@ export const GLOBAL_CSS = `
     --c-blue: #476f84;
     --c-grey: #453947;
     --c-purple: #9b72aa;
+    /* Map: Deep Cerulean & Pearl */
+    --map-ocean: #004B73;
+    --map-land: #E2F1FF;
+    --map-border: rgba(254, 215, 137, 0.2);
 
     /* Categorical: Coastal */
     --chart-0: #0ea5e9;
@@ -316,6 +350,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0284c7;
     --c-grey: #e0f2fe;
     --c-purple: #7c3aed;
+    /* Map: Sky Blue & White */
+    --map-ocean: #BAE6FD;
+    --map-land: #FFFFFF;
+    --map-border: rgba(3, 105, 161, 0.2);
 
     /* Categorical: Coastal (light) */
     --chart-0: #0369a1;
@@ -351,6 +389,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0a9f9d;
     --c-grey: #8d7a64;
     --c-purple: #9c6c84;
+    /* Map: Antiqued Bronze & Gold */
+    --map-ocean: #2B1202;
+    --map-land: #CEB175;
+    --map-border: rgba(229, 204, 152, 0.2);
 
     /* Categorical: Warm Earth */
     --chart-0: #ceb175; --chart-1: #e54e21; --chart-2: #0a9f9d; --chart-3: #6c8645; --chart-4: #c18748;
@@ -376,6 +418,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0a9f9d;
     --c-grey: #e8dcc4;
     --c-purple: #9c6c84;
+    /* Map: Antique Parchment & Amber */
+    --map-ocean: #E8DCC4;
+    --map-land: #FFFFFF;
+    --map-border: rgba(193, 135, 72, 0.25);
 
     /* Categorical: Warm Earth (light) */
     --chart-0: #0a9f9d; --chart-1: #e54e21; --chart-2: #6c8645; --chart-3: #c18748; --chart-4: #9c6c84;
@@ -403,6 +449,10 @@ export const GLOBAL_CSS = `
     --c-blue: #007d82;
     --c-grey: #4a3b32;
     --c-purple: #004042;
+    /* Map: Sepia & Parchment */
+    --map-ocean: #1E1B18;
+    --map-land: #DCCBC1;
+    --map-border: rgba(195, 137, 97, 0.2);
 
     /* Categorical: Earthy Muted */
     --chart-0: #00c1c8; --chart-1: #e04b28; --chart-2: #c38961; --chart-3: #388f30; --chart-4: #950404;
@@ -428,6 +478,10 @@ export const GLOBAL_CSS = `
     --c-blue: #007d82;
     --c-grey: #79716c;
     --c-purple: #004042;
+    /* Map: Warm Cream & Ivory */
+    --map-ocean: #E5DFD5;
+    --map-land: #FFFFFF;
+    --map-border: rgba(195, 137, 97, 0.2);
 
     /* Categorical: Earthy Muted (light) */
     --chart-0: #007d82; --chart-1: #950404; --chart-2: #e04b28; --chart-3: #388f30; --chart-4: #9f5630;
@@ -455,6 +509,10 @@ export const GLOBAL_CSS = `
     --c-blue: #00695c;
     --c-grey: #8d6e63;
     --c-purple: #6d4c41;
+    /* Map: Terracotta & Turquoise */
+    --map-ocean: #3D1A04;
+    --map-land: #4DB6AC;
+    --map-border: rgba(255, 179, 71, 0.2);
 
     /* Categorical: Desert */
     --chart-0: #4db6ac; --chart-1: #e64a19; --chart-2: #ff8c00; --chart-3: #00897b; --chart-4: #8d6e63;
@@ -480,6 +538,10 @@ export const GLOBAL_CSS = `
     --c-blue: #00695c;
     --c-grey: #8d6e63;
     --c-purple: #6d4c41;
+    /* Map: Sandy & Coral */
+    --map-ocean: #FFB380;
+    --map-land: #FFFFFF;
+    --map-border: rgba(230, 74, 25, 0.2);
 
     /* Categorical: Desert (light) */
     --chart-0: #00695c; --chart-1: #e64a19; --chart-2: #ff5722; --chart-3: #00897b; --chart-4: #6d4c41;
@@ -507,6 +569,10 @@ export const GLOBAL_CSS = `
     --c-blue: #263238;
     --c-grey: #546e7a;
     --c-purple: #880e4f;
+    /* Map: Obsidian & Silver */
+    --map-ocean: #0A0A0A;
+    --map-land: #C0C0C0;
+    --map-border: rgba(120, 144, 156, 0.25);
 
     /* Categorical: Industrial */
     --chart-0: #78909c; --chart-1: #b71c1c; --chart-2: #d32f2f; --chart-3: #455a64; --chart-4: #e53935;
@@ -532,6 +598,10 @@ export const GLOBAL_CSS = `
     --c-blue: #263238;
     --c-grey: #546e7a;
     --c-purple: #880e4f;
+    /* Map: Rose & Slate */
+    --map-ocean: #FF9999;
+    --map-land: #FFFFFF;
+    --map-border: rgba(183, 28, 28, 0.2);
 
     /* Categorical: Industrial (light) */
     --chart-0: #263238; --chart-1: #b71c1c; --chart-2: #e53935; --chart-3: #455a64; --chart-4: #880e4f;
@@ -559,6 +629,10 @@ export const GLOBAL_CSS = `
     --c-blue: #ffffff;
     --c-grey: #8a8a8a;
     --c-purple: #8a8a8a;
+    /* Map: Jet Black & Silver */
+    --map-ocean: #000000;
+    --map-land: #E0E0E0;
+    --map-border: rgba(255, 255, 255, 0.1);
     --path-intact: #ffffff;
     --path-circumcised: #ffffff;
     --path-restoring: #ffffff;
@@ -586,6 +660,10 @@ export const GLOBAL_CSS = `
     --c-blue: #111111;
     --c-grey: #666666;
     --c-purple: #111111;
+    /* Map: Pearl White & Graphite */
+    --map-ocean: #D4D4D4;
+    --map-land: #FFFFFF;
+    --map-border: rgba(17, 17, 17, 0.15);
     --path-intact: #111111;
     --path-circumcised: #111111;
     --path-restoring: #111111;
@@ -647,6 +725,10 @@ export const GLOBAL_CSS = `
     --c-ghost: #6C5EB5;
     --c-gold: #B8C76F;
     --c-goldBright: #B8C76F;
+    /* Map: C64 Purple & PETSCII Green */
+    --map-ocean: #352879;
+    --map-land: #6C5EB5;
+    --map-border: rgba(184, 199, 111, 0.3);
     
     --c-red: #9A6759;
     --c-orange: #6F4F25;
@@ -884,7 +966,10 @@ const staticFallbacks = {
   "--path-observer": "#f97316",
   "--path-trans-vag": "#e85d50",
   "--path-trans-phal": "#c64639",
-  "--path-intersex": "#b0a888"
+  "--path-intersex": "#b0a888",
+  "--map-ocean": "#003049",
+  "--map-land": "#D4AF37",
+  "--map-border": "rgba(255, 215, 0, 0.2)"
 };
 
 const lightModeFallbacks = {
@@ -913,7 +998,10 @@ const lightModeFallbacks = {
   "--path-observer": "#f97316",
   "--path-trans-vag": "#e85d50",
   "--path-trans-phal": "#c64639",
-  "--path-intersex": "#b0a888"
+  "--path-intersex": "#b0a888",
+  "--map-ocean": "#E8E2D8",
+  "--map-land": "#FFFFFF",
+  "--map-border": "rgba(168, 126, 24, 0.25)"
 };
 
 export function resolveCssColor(varStr) {

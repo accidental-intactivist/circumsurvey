@@ -1,25 +1,26 @@
 import { useMemo, useState, useEffect } from "react";
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
 import { scaleLinear } from "d3-scale";
 import * as topojson from "topojson-client";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
+import { useTheme } from "../contexts/ThemeContext";
 import L from 'leaflet';
 
 const WORLD_GEO_URL = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
 
-// Leaflet custom tile layers: CartoDB Positron
-const TILE_URL = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
 
 const CENTROID_OVERRIDES = {
+  "unitedstatesofamerica": [38.8283, -98.5795],
   "unitedstates": [38.8283, -98.5795],
   "usa": [38.8283, -98.5795],
   "canada": [56.1304, -102.3468],
   "unitedkingdom": [53.5, -2.4359],
+  "unitedkingdomofgreatbritainandnorthernireland": [53.5, -2.4359],
   "australia": [-25.2744, 133.7751],
   "germany": [51.1657, 10.4515],
   "southafrica": [-30.5595, 22.9375],
@@ -36,7 +37,7 @@ const CENTROID_OVERRIDES = {
 
 // Calculate visual centroid (lat, lng) for Leaflet
 function getCentroid(feature) {
-  const norm = normalizeName(feature.properties.name);
+  const norm = normalizeName(feature.properties.name).toLowerCase().replace(/\s+/g, "");
   if (CENTROID_OVERRIDES[norm]) return CENTROID_OVERRIDES[norm];
   
   if (feature.geometry.type === "Polygon") {
@@ -53,18 +54,31 @@ function getCentroid(feature) {
   return [0, 0];
 }
 
-function FitBounds({ geojson }) {
+function FitBounds({ geojson, mapLevel }) {
   const map = useMap();
   useEffect(() => {
-    if (geojson && geojson.features && geojson.features.length > 0) {
-      const layer = L.geoJSON(geojson);
-      map.fitBounds(layer.getBounds(), { padding: [20, 20], maxZoom: 4 });
-    }
-  }, [geojson, map]);
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+      if (mapLevel === "us_state") {
+        // Fit to all of North America (including Alaska & Canada)
+        map.fitBounds([[24.5, -170.0], [72.0, -55.0]], { padding: [10, 10] });
+      } else {
+        // Fit to the entire inhabited world bounds (from Alaska to New Zealand) without antimeridian wrapping issues
+        map.fitBounds([[-55, -170], [75, 175]], { padding: [10, 10] });
+      }
+      
+      // Restrict map panning to exclude Antarctica
+      map.setMaxBounds([[-60, -180], [90, 180]]);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [geojson, mapLevel, map]);
   return null;
 }
 
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions }) {
+  const themeContext = useTheme();
+  const { theme, mode } = themeContext || { theme: "standard", mode: "dark" };
+  
   const selectedRegionNorms = useMemo(() => {
     if (!selectedRegions || selectedRegions.length === 0) return new Set();
     return new Set(selectedRegions.map((r) => normalizeName(r.name)));
@@ -75,6 +89,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const [usGeo, setUsGeo] = useState(null);
   const [caGeo, setCaGeo] = useState(null);
   const [worldGeo, setWorldGeo] = useState(null);
+
+  const activeTileUrl = mode === "dark" ? TILE_URL_DARK : TILE_URL_LIGHT;
 
   const isUS = questionId.includes("us_state");
   
@@ -94,16 +110,66 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   useEffect(() => { if (!tabKeys.includes(activeTab)) setActiveTab("all"); }, [tabKeys, activeTab]);
   useEffect(() => { setVisType(tabKeys.length > 1 ? "bullseye" : "heatmap"); }, [tabKeys]);
 
-  // Load TopoJSON/GeoJSON
+  // Load TopoJSON/GeoJSON (all assets on mount)
   useEffect(() => {
-    setUsGeo(null); setCaGeo(null); setWorldGeo(null);
-    if (isUS) {
-      fetch(US_TOPO_URL).then(r => r.json()).then(topo => setUsGeo(topojson.feature(topo, topo.objects.states)));
-      fetch(CANADA_GEO_URL).then(r => r.json()).then(geo => setCaGeo(geo));
-    } else {
-      fetch(WORLD_GEO_URL).then(r => r.json()).then(geo => setWorldGeo(geo));
-    }
-  }, [isUS]);
+    Promise.all([
+      fetch(WORLD_GEO_URL).then(r => r.json()),
+      fetch(US_TOPO_URL).then(r => r.json()),
+      fetch(CANADA_GEO_URL).then(r => r.json())
+    ]).then(([world, us, ca]) => {
+      setWorldGeo(world);
+      setUsGeo(topojson.feature(us, us.objects.states));
+      setCaGeo(ca);
+    }).catch(err => console.error("Error loading map assets:", err));
+  }, []);
+
+  const mergedGeo = useMemo(() => {
+    if (!worldGeo || !usGeo || !caGeo) return null;
+    
+    // Filter out US & Canada country outline shapes, and enrich each region with its level
+    const filteredWorld = worldGeo.features.map(f => ({
+      ...f,
+      properties: { ...f.properties, level: "country" }
+    })).filter(feature => {
+      const norm = normalizeName(feature.properties.name).toLowerCase().replace(/\s+/g, "");
+      return norm !== "unitedstates" && norm !== "unitedstatesofamerica" && norm !== "canada" && norm !== "antarctica";
+    });
+    
+    const usStates = usGeo.features.map(f => {
+      let geom = f.geometry;
+      if (geom) {
+        // Fix antimeridian crossing for US territories/Aleutian islands to prevent huge map blobs
+        geom = JSON.parse(JSON.stringify(geom)); // deep copy
+        const fixCoords = (coords) => {
+          if (coords.length >= 2 && typeof coords[0] === "number") {
+            if (coords[0] > 0) coords[0] -= 360; // Shift positive longitudes west
+          } else {
+            coords.forEach(fixCoords);
+          }
+        };
+        fixCoords(geom.coordinates);
+      }
+      return {
+        ...f,
+        geometry: geom,
+        properties: { ...f.properties, level: "us_state" }
+      };
+    });
+    
+    const caProvinces = caGeo.features.map(f => ({
+      ...f,
+      properties: { ...f.properties, level: "can_province" }
+    }));
+    
+    return {
+      type: "FeatureCollection",
+      features: [
+        ...filteredWorld,
+        ...usStates,
+        ...caProvinces
+      ]
+    };
+  }, [worldGeo, usGeo, caGeo]);
 
   const dataMap = useMemo(() => {
     const map = {};
@@ -142,20 +208,21 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   }, [cohortMap]);
 
   const getScaleRange = (tab) => {
-    if (tab === "all") return ["#f8f5f0", resolveCssColor(C.goldBright)];
+    const base = resolveCssColor(C.mapLand);
+    if (tab === "all") return [base, resolveCssColor(C.goldBright)];
     const mappedTab = tab === "unclassified" ? "observer" : tab;
-    if (PATHWAYS[mappedTab]) return ["#f8f5f0", resolveCssColor(PATHWAYS[mappedTab].color)];
-    return ["#f8f5f0", resolveCssColor(C.blue)];
+    if (PATHWAYS[mappedTab]) return [base, resolveCssColor(PATHWAYS[mappedTab].color)];
+    return [base, resolveCssColor(C.blue)];
   };
 
   const colorScale = useMemo(() => {
     const range = getScaleRange(activeTab);
     return scaleLinear().domain([0, dataMap.max || 1]).range(range);
-  }, [dataMap.max, activeTab]);
+  }, [dataMap.max, activeTab, theme, mode]);
 
   const balanceColorScale = useMemo(() => {
     return scaleLinear().domain([0, 0.5, 1]).range([resolveCssColor(C.red), resolveCssColor(C.purple), resolveCssColor(C.blue)]);
-  }, []);
+  }, [theme, mode]);
 
   const getCohortColor = (cohortId) => {
     if (cohortId === "all") return resolveCssColor(C.goldBright);
@@ -209,7 +276,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     const val = dataMap.map[norm] || 0;
     const isSelected = selectedRegionNorms.has(norm);
     
-    let fillColor = "transparent";
+    let fillColor = resolveCssColor(C.mapLand); // Jeweltone landmass color from theme
     if (visType === "balance") {
       let intactCount = cohortMap[norm]?.["intact"] || 0;
       let circCount = cohortMap[norm]?.["circumcised"] || 0;
@@ -223,8 +290,9 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       fillColor,
       weight: isSelected ? 2 : 1,
       opacity: 1,
-      color: isSelected ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
-      fillOpacity: (visType === "bullseye" && !isSelected) ? 0.05 : 0.8
+      color: isSelected ? resolveCssColor(C.goldBright) : resolveCssColor(C.mapBorder),
+      fillOpacity: 1, // Solid landmass
+      className: "landmass-path"
     };
   };
 
@@ -232,6 +300,18 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     layer.on({
       click: () => {
         if (onRegionClick) onRegionClick(feature.properties.name, isUS ? "us_state" : "country");
+      },
+      mouseover: (e) => {
+        const isSelected = selectedRegionNorms.has(normalizeName(feature.properties.name));
+        e.target.setStyle({
+          weight: isSelected ? 3 : 2,
+          color: isSelected ? resolveCssColor(C.goldBright) : resolveCssColor(C.gold),
+          fillOpacity: 1 // Keep solid — never fade
+        });
+      },
+      mouseout: (e) => {
+        // Reset to original style perfectly
+        e.target.setStyle(getStyle(feature));
       }
     });
   };
@@ -286,10 +366,74 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
     });
   };
 
-  const isLoading = isUS ? (!usGeo || !caGeo) : (!worldGeo);
+  const isLoading = !worldGeo || !usGeo || !caGeo;
 
   return (
     <div style={{ background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, padding: "1.5rem", position: "relative" }}>
+      <style>{`
+        .leaflet-container {
+          background: transparent !important;
+        }
+        .leaflet-bar {
+          border: 1px solid ${resolveCssColor(C.ghost)} !important;
+          box-shadow: none !important;
+        }
+        .leaflet-bar a, .leaflet-bar a:hover {
+          background-color: ${resolveCssColor(C.bgCard)} !important;
+          color: ${resolveCssColor(C.textBright)} !important;
+          border-bottom: 1px solid ${resolveCssColor(C.ghost)} !important;
+          transition: all 0.2s ease;
+        }
+        .leaflet-bar a:hover {
+          background-color: ${resolveCssColor(C.bgDeep)} !important;
+          color: ${resolveCssColor(C.goldBright)} !important;
+        }
+        .leaflet-bar a.leaflet-disabled {
+          background-color: ${resolveCssColor(C.bgDeep)} !important;
+          color: ${resolveCssColor(C.dim)} !important;
+          opacity: 0.5;
+        }
+        .leaflet-tooltip {
+          background-color: ${resolveCssColor(C.bgCard)} !important;
+          color: ${resolveCssColor(C.textBright)} !important;
+          border: 1px solid ${resolveCssColor(C.ghost)} !important;
+          border-radius: 8px !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+          padding: 8px !important;
+          font-family: ${FONT.body} !important;
+        }
+        .leaflet-tooltip-top:before {
+          border-top-color: ${resolveCssColor(C.bgCard)} !important;
+        }
+        .leaflet-tooltip-bottom:before {
+          border-bottom-color: ${resolveCssColor(C.bgCard)} !important;
+        }
+        /* Jeweltone cartography transitions for smooth theme switching */
+        path.landmass-path {
+          filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.15));
+          transition: fill 0.6s ease, stroke 0.6s ease, fill-opacity 0.3s ease, filter 0.3s ease;
+        }
+        /* Theme-aware Leaflet controls */
+        .leaflet-control-zoom a {
+          font-family: ${FONT.condensed} !important;
+        }
+        .leaflet-control-attribution {
+          font-family: ${FONT.condensed} !important;
+          font-size: 0.6rem !important;
+          letter-spacing: 0.04em !important;
+          text-transform: uppercase !important;
+          background: ${resolveCssColor(C.bgDeep)} !important;
+          color: ${resolveCssColor(C.dim)} !important;
+          opacity: 0.7;
+        }
+        .leaflet-control-attribution a {
+          color: ${resolveCssColor(C.gold)} !important;
+        }
+        /* Make selected regions glow */
+        .leaflet-interactive:focus {
+          outline: none;
+        }
+      `}</style>
       <h2 style={{ fontFamily: FONT.display, fontSize: "1.2rem", marginBottom: "1rem", color: C.textBright }}>{title}</h2>
       
       <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
@@ -347,37 +491,56 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
         )}
       </div>
 
-      <div style={{ height: 700, borderRadius: 8, overflow: "hidden", position: "relative", zIndex: 1, background: "#f5f5f5", border: `1px solid color-mix(in srgb, ${C.blue} 15%, transparent)`, boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
+      <div style={{ 
+        aspectRatio: "16 / 9",
+        minHeight: 450,
+        borderRadius: 8, 
+        overflow: "hidden", 
+        position: "relative", 
+        zIndex: 1, 
+        background: resolveCssColor(C.mapOcean), 
+        border: `1px solid color-mix(in srgb, ${resolveCssColor(C.blue)} 15%, transparent)`, 
+        boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)",
+        transition: "background 0.6s ease, border-color 0.6s ease"
+      }}>
         {isLoading ? (
-          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: C.muted }}>
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: resolveCssColor(C.muted) }}>
             <div style={{ animation: "pulse 1.5s infinite" }}>Rendering map...</div>
           </div>
         ) : (
-          <MapContainer style={{ height: "100%", width: "100%" }} zoomControl={true} scrollWheelZoom={false}>
-            <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
-            
-            {isUS && usGeo && (
-              <GeoJSON data={usGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
-            {isUS && caGeo && (
-              <GeoJSON data={caGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
-            {!isUS && worldGeo && (
-              <GeoJSON data={worldGeo} style={getStyle} onEachFeature={onEachFeature}>
-                {feature => <Tooltip sticky direction="top">{renderTooltipContent(feature)}</Tooltip>}
-              </GeoJSON>
-            )}
+          <MapContainer 
+            style={{ height: "100%", width: "100%", background: "transparent" }} 
+            zoomControl={true} 
+            scrollWheelZoom={false}
+            center={isUS ? [38.8283, -98.5795] : [20, 0]}
+            zoom={isUS ? 4 : 2}
+            minZoom={1}
+            zoomSnap={0.1}
+          >
+            {mergedGeo && mergedGeo.features.map(feature => {
+              const norm = normalizeName(feature.properties.name);
+              const isSelected = selectedRegionNorms.has(norm);
+              
+              // Leaflet layers require style updates when states change, so we incorporate state variables in the key to force re-render when style properties update.
+              const featureKey = `${norm}-${visType}-${activeTab}-${isSelected}`;
+              
+              return (
+                <GeoJSON
+                  key={featureKey}
+                  data={feature}
+                  style={getStyle(feature)}
+                  onEachFeature={onEachFeature}
+                >
+                  <Tooltip sticky direction="top">
+                    {renderTooltipContent(feature)}
+                  </Tooltip>
+                </GeoJSON>
+              );
+            })}
 
-            {(isUS && usGeo && caGeo) && <FitBounds geojson={{ type: "FeatureCollection", features: [...usGeo.features, ...caGeo.features] }} />}
-            {(!isUS && worldGeo) && <FitBounds geojson={worldGeo} />}
+            {mergedGeo && <FitBounds geojson={mergedGeo} mapLevel={isUS ? "us_state" : "country"} />}
 
-            {visType === "bullseye" && isUS && usGeo && renderBullseyes(usGeo)}
-            {visType === "bullseye" && isUS && caGeo && renderBullseyes(caGeo)}
-            {visType === "bullseye" && !isUS && worldGeo && renderBullseyes(worldGeo)}
+            {visType === "bullseye" && mergedGeo && renderBullseyes(mergedGeo)}
           </MapContainer>
         )}
       </div>

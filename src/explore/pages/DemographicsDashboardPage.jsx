@@ -23,6 +23,7 @@ import { C, FONT, PATH_COLORS, API_BASE, resolveCssColor } from "../styles/token
 
 gsap.registerPlugin(ScrollTrigger);
 import { getResponseDistribution, getAggregate, getCount, getGeo } from "../lib/api";
+import { normalizeName } from "../lib/formatters";
 import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
 import AddToReportButton from "../components/AddToReportButton";
 import SharePopover from "../components/SharePopover";
@@ -948,32 +949,31 @@ function GeographicOrigins({ cohort, tooltip }) {
     if (!inView) return;
     setLoading(true);
 
-    if (mapLevel === "us_state") {
-      Promise.all([
-        getGeo("us_state", { by: splitBy, when: locationTime, cohort }),
-        getGeo("canada_province", { by: splitBy, when: locationTime, cohort })
-      ])
-        .then(([usRes, caRes]) => {
-          const mergedLocations = [
-            ...(usRes.locations || []),
-            ...(caRes.locations || [])
-          ];
-          setGeoData({
-            ...usRes,
-            locations: mergedLocations
-          });
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    } else {
-      getGeo(mapLevel, { by: splitBy, when: locationTime, cohort })
-        .then(data => {
-          setGeoData(data);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    }
-  }, [inView, mapLevel, splitBy, locationTime, JSON.stringify(cohort)]);
+    Promise.all([
+      getGeo("country", { by: splitBy, when: locationTime, cohort }),
+      getGeo("us_state", { by: splitBy, when: locationTime, cohort }),
+      getGeo("canada_province", { by: splitBy, when: locationTime, cohort })
+    ])
+      .then(([countryRes, usRes, caRes]) => {
+        const filteredCountries = (countryRes.locations || []).filter(loc => {
+          const norm = normalizeName(loc.location);
+          return norm !== "unitedstates" && norm !== "unitedstatesofamerica" && norm !== "canada";
+        });
+        
+        const mergedLocations = [
+          ...filteredCountries,
+          ...(usRes.locations || []),
+          ...(caRes.locations || [])
+        ];
+        
+        setGeoData({
+          ...countryRes,
+          locations: mergedLocations
+        });
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [inView, splitBy, locationTime, JSON.stringify(cohort)]);
 
   const cohortData = useMemo(() => {
     if (!geoData || !geoData.locations) return { results: {} };

@@ -40,6 +40,66 @@ function errorJson(message, status = 500) {
   return json({ error: message }, status);
 }
 
+// ─── SYNTHESIS PROVIDER ─────────────────────────────────────────────────────
+// The visitor-facing answer is generated here. Everything is switchable via env
+// vars so swapping models/providers is a config change, never a code change:
+//   SYNTH_PROVIDER = "gemini" | "cloudflare"  (defaults to gemini when a key is set)
+//   GEMINI_MODEL   = e.g. "gemini-2.5-flash"  (the one-line model swap)
+//   GEMINI_API_KEY = secret  (wrangler secret put GEMINI_API_KEY)
+//   CF_SYNTH_MODEL = a Workers AI model id    (used for fallback + provider=cloudflare)
+// If Gemini errors or exhausts its daily free quota, we fall back to the
+// Cloudflare model so the Copilot never goes dark.
+
+async function synthesize(env, { system, user, maxTokens = 800 }) {
+  const provider = (env.SYNTH_PROVIDER || (env.GEMINI_API_KEY ? "gemini" : "cloudflare")).toLowerCase();
+  if (provider === "gemini" && env.GEMINI_API_KEY) {
+    try {
+      return await callGemini(env, { system, user, maxTokens });
+    } catch (e) {
+      console.error("Gemini synthesis failed, falling back to Cloudflare:", e.message || e);
+    }
+  }
+  return await callCloudflareChat(env, { system, user, maxTokens });
+}
+
+async function callGemini(env, { system, user, maxTokens }) {
+  const model = env.GEMINI_MODEL || "gemini-2.5-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const body = {
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: "user", parts: [{ text: user }] }],
+    generationConfig: { maxOutputTokens: maxTokens, temperature: 0.4 }
+  };
+  const r = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) {
+    const t = await r.text().catch(() => "");
+    throw new Error(`Gemini ${r.status}: ${t.slice(0, 200)}`);
+  }
+  const data = await r.json();
+  const text = (data?.candidates?.[0]?.content?.parts || [])
+    .map((p) => p.text || "")
+    .join("")
+    .trim();
+  if (!text) throw new Error("Gemini returned empty content");
+  return text;
+}
+
+async function callCloudflareChat(env, { system, user, maxTokens }) {
+  const model = env.CF_SYNTH_MODEL || "@cf/meta/llama-3.1-8b-instruct-fp8-fast";
+  const res = await env.AI.run(model, {
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user }
+    ],
+    max_tokens: maxTokens
+  });
+  return res.response;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -52,6 +112,15 @@ export default {
       console.log("ROUTING PATH:", path);
       
       if (request.method === "POST" && path === "/ai/query") {
+        // Per-visitor throttle. Keyed by client IP (no logins on this site).
+        // Binding is optional so local/dev without it still works.
+        if (env.AI_RATE_LIMITER) {
+          const ip = request.headers.get("CF-Connecting-IP") || "anon";
+          const { success } = await env.AI_RATE_LIMITER.limit({ key: `ai:${ip}` });
+          if (!success) {
+            return errorJson("You're asking questions a little too quickly — give it a few seconds and try again.", 429);
+          }
+        }
         return await handleCopilotQuery(env, request, url);
       }
       
@@ -117,7 +186,7 @@ async function handleCount(env) {
       by_pathway[row.pathway] = row.n;
       if (row.pathway !== "observer") classified += row.n;
     } else {
-      by_pathway.unclassified = row.n;
+      by_pathway.observer = (by_pathway.observer || 0) + row.n;
     }
   }
   return json({ total, classified, by_pathway, updated_at: new Date().toISOString() });
@@ -211,7 +280,7 @@ async function handleAggregate(env, url) {
 
   const bindings = [];
   
-  let groupCol = "resp.pathway";
+  let groupCol = "COALESCE(resp.pathway, 'observer')";
   let groupJoin = "JOIN respondents resp ON resp.id = r.respondent_id";
   
   const allowedDemographics = ["country_born", "country_now", "us_state_born", "us_state_now", "race_ethnicity", "age_bracket", "generation", "education", "family_upbringing", "socioeconomic", "politics", "sexuality", "gender", "sex_assigned"];
@@ -277,7 +346,7 @@ async function handleAggregate(env, url) {
   const { results } = await env.DB.prepare(sql).bind(...bindings).all();
   const byBucket = {};
   for (const row of results) {
-    const key = row.bucket ?? "unknown";
+    const key = row.bucket ?? "observer";
     if (!byBucket[key]) byBucket[key] = { n: 0, sum_num: 0, count_num: 0, distribution: [] };
     byBucket[key].n += row.n;
     if (row.avg_num !== null) {
@@ -492,7 +561,7 @@ async function handleGeo(env, url) {
       byLoc[row.location].n += row.n;
       let val = row.bucket;
       if (!val) {
-          val = by === "pathway" ? "unclassified" : "Unknown";
+          val = by === "pathway" ? "observer" : "Unknown";
       }
       byLoc[row.location][splitKey][val] = row.n;
     }
@@ -680,14 +749,15 @@ Is the user asking for qualitative stories/feelings/quotes, or quantitative data
 Reply with ONLY valid JSON in this format: {"intent": "qualitative" | "quantitative"}
 User Query: "${query}"`;
 
-    const rawIntentResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-      messages: [{ role: "user", content: intentPrompt }],
-      max_tokens: 100
+    const rawIntentText = await synthesize(env, {
+      system: "You are a query intent classifier. Reply ONLY with valid JSON.",
+      user: intentPrompt,
+      maxTokens: 100
     });
 
     let intent = "qualitative";
     try {
-      const jsonMatch = rawIntentResponse.response.match(/\{[\s\S]*\}/);
+      const jsonMatch = rawIntentText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
         if (parsed.intent === "quantitative") intent = "quantitative";
@@ -729,14 +799,15 @@ Based on the user's query and the current context, decide which tool to call.
 Reply ONLY with a valid JSON tool call. Do not add any text before or after the JSON.
 Example: {"tool": "get_demographics", "args": {"pathway": "intact", "country": "United States"}}`;
 
-      const rawToolResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-        messages: [{ role: "user", content: toolPrompt }],
-        max_tokens: 200
+      const rawToolText = await synthesize(env, {
+        system: "You are a tool-calling assistant. Reply ONLY with valid JSON.",
+        user: toolPrompt,
+        maxTokens: 200
       });
 
       let toolCall = null;
       try {
-        const jsonMatch = rawToolResponse.response.match(/\{[\s\S]*\}/);
+        const jsonMatch = rawToolText.match(/\{[\s\S]*\}/);
         if (jsonMatch) toolCall = JSON.parse(jsonMatch[0]);
       } catch (e) {
         console.error("Failed to parse tool call:", e);
@@ -876,15 +947,11 @@ ${dataStr}
 Interpret the data with specific percentages or counts. If the database returned no data, politely inform the user that this specific metric or intersection is unavailable and use your reasoning to explain why or pivot the conversation. If data is present, draw 1-2 conclusions. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise.
 IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
 
-      const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-        messages: [
-          { role: "system", content: "You are a concise, analytical data scientist." },
-          { role: "user", content: synthPrompt }
-        ],
-        max_tokens: 800
+      let rawAnswer = await synthesize(env, {
+        system: "You are a concise, analytical data scientist.",
+        user: synthPrompt,
+        maxTokens: 800
       });
-
-      let rawAnswer = chatResponse.response;
       const suggestions = [];
       const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
       let match;
@@ -1045,15 +1112,11 @@ Question: ${query}
 Quotes/Context:
 ${contextStr}`;
 
-    const chatResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
-      messages: [
-        { role: "system", content: "You are a concise qualitative research assistant." },
-        { role: "user", content: prompt }
-      ],
-      max_tokens: 800
+    let rawAnswer = await synthesize(env, {
+      system: "You are a concise qualitative research assistant.",
+      user: prompt,
+      maxTokens: 800
     });
-
-    let rawAnswer = chatResponse.response;
     const suggestions = [];
     const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
     let match;

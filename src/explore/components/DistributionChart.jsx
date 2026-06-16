@@ -70,9 +70,10 @@ export default function DistributionChart({ title, distribution, cohortDistribut
       let colorIndex = loopIndex;
       if (question?.opts && Array.isArray(question.opts)) {
         const l = String(item.label || "").toLowerCase().trim();
-        const match = question.opts.findIndex(opt => 
-          opt.toLowerCase().includes(l) || l.includes(opt.split(":")[0].toLowerCase().trim())
-        );
+        const match = question.opts.findIndex(opt => {
+          const optLower = opt.toLowerCase().trim();
+          return optLower === l || l === optLower.split(":")[0].trim();
+        });
         if (match !== -1) colorIndex = match;
       }
       map[item.label] = colorForLabel(item.label, colorIndex);

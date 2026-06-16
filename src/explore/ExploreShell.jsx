@@ -27,6 +27,7 @@ import MethodologyPage from "./pages/MethodologyPage";
 import ReportBuilderPage from "./pages/ReportBuilderPage";
 import ByTheNumbersPage from "./pages/ByTheNumbersPage";
 import RestorationJourneyPage from "./pages/RestorationJourneyPage";
+import CultureAttitudesPage from "./pages/CultureAttitudesPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -75,6 +76,8 @@ export default function ExploreShell() {
     page = <ByTheNumbersPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "restoration-journey") {
     page = <RestorationJourneyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "culture") {
+    page = <CultureAttitudesPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   }

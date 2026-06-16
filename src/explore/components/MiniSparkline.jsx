@@ -100,10 +100,10 @@ function colorForLabel(label, index = 0) {
   if (/^not a primary goal \/ not applicable to me$|^not a primary goal/i.test(l)) return "#808080"; // Grey
 
   if (!l || /^n\/a$|^not applicable$|^don'?t know$|^unsure$|^not sure$|^prefer not|^no idea$|^don'?t think$|^don'?t really frame$|not a significant topic|not a major topic|non-issue/i.test(l)) return resolveCssColor(C.grey);
-  if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$|questioned or chose|discouraged or seen as/i.test(l)) return resolveCssColor(C.blue);
-  if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$/i.test(l)) return resolveCssColor(C.ltBlue);
+  if (/^very positive$|^confident$|^proud$|^never$|\b1\+ min|^strongly prefer intact$|^intact significantly$|^keep intact$|^child'?s right$|^neutral pros$|^uncommon$|^actively researching$|^no[,.]?$|questioned or chose|discouraged or seen as|^yes, extensively$/i.test(l)) return resolveCssColor(C.blue);
+  if (/^positive$|^proud and satisfied$|^generally$|^light blue$|^moderately$|^yes, somewhat$/i.test(l)) return resolveCssColor(C.ltBlue);
   if (/^neutral$|^no difference$|^no preference$|^mix$|^50\/50$|^undecided$|^ambivalent$|^somewhat$|open to discussion|left to parents/i.test(l)) return resolveCssColor(C.yellow);
-  if (/^negative$|^somewhat dissatisfied$|^often$|^orange$|^depends$|^brief$|important tradition|strong cultural practice|cultural norm/i.test(l)) return resolveCssColor(C.orange);
+  if (/^negative$|^somewhat dissatisfied$|^often$|^orange$|^depends$|^brief$|important tradition|strong cultural practice|cultural norm|^yes[,.]?$|^no, not really$/i.test(l)) return resolveCssColor(C.orange);
   if (/^very negative$|^dissatisfied$|^always$|^almost always$|^0.{0,2}5 sec$|^something is missing$|^routine$|^unquestioned$|^strongly prefer circ$|^circ significantly$|^circumcise$|^never considered$|^medical authorities$|non-negotiable|highly recommended|recommended practice/i.test(l)) return resolveCssColor(C.red);
   
   // Use programmatic distinct colors to guarantee no clashes.

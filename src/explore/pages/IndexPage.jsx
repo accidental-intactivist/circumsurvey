@@ -43,9 +43,9 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
 
   useEffect(() => {
     if (setExhibitContext) {
-      setExhibitContext({ cohort, searchMode, searchKeyword });
+      setExhibitContext({ cohort, search });
     }
-  }, [cohort, searchMode, searchKeyword, setExhibitContext]);
+  }, [cohort, search, setExhibitContext]);
 
   useEffect(() => {
     let cancelled = false;
@@ -678,7 +678,7 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
                 </div>
                 <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexWrap: "wrap" }}>
                   <FormatToggle mode={format} onChange={(m) => updateState({ format: m })} />
-                  <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} />
+                  <RelevanceToggle mode={view} onChange={(m) => updateState({ view: m })} totalQuestions={questions ? questions.length : null} />
                 </div>
               </div>
             </div>

@@ -56,7 +56,6 @@ const NARRATIVE_CONCEPTS = [
     id: "partner_preference_reasons",
     label: "Shaping Partner Preferences (Universal)",
     desc: "A universal question: What do you believe has most shaped partner preferences regarding penile circumcision state?",
-    desc: "A universal question: What do you believe has most shaped partner preferences regarding penile circumcision state.",
     intact: { qid: "final_partner_preference_reason", pathway: "intact", label: "Intact Perception", emoji: "🟢" },
     circ: { qid: "final_partner_preference_reason", pathway: "circumcised", label: "Circumcised Perception", emoji: "🔵" },
     restoring: { qid: "final_partner_preference_reason", pathway: "restoring", label: "Restoring Perception", emoji: "🟣" }

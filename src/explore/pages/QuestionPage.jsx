@@ -23,6 +23,9 @@ import IconifyEmoji from "../components/IconifyEmoji";
 import SharePopover from "../components/SharePopover";
 import AddToReportButton from "../components/AddToReportButton";
 import WordCloud from "../components/WordCloud";
+import SmallSampleBadge, { shouldSuppress } from "../components/SmallSampleBadge";
+import MeanComparisonStrip from "../components/MeanComparisonStrip";
+import CompareBySelector from "../components/CompareBySelector";
 
 export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
   const { params, cohort } = routerState;
@@ -48,6 +51,10 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
   const [questions, setQuestions] = useState([]);
   const [notFound, setNotFound] = useState(false);
   const [notFoundSearch, setNotFoundSearch] = useState("");
+  const [compareBy, setCompareBy] = useState("pathway");
+  const [showCohortB, setShowCohortB] = useState(false);
+  const [cohortB, setCohortB] = useState(null);
+  const [cohortBDistribution, setCohortBDistribution] = useState(null);
 
   // Update dynamic header metadata when the question is loaded or not found
   useEffect(() => {
@@ -116,15 +123,15 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
           if (!cancelled) setAllDistribution(dist);
         }).catch((e) => setError(e.message));
 
-        // Pathway breakdown
-        getAggregate(questionId, { by: "pathway" }).then((agg) => {
+        // Dimension breakdown (default: pathway, but user can pivot via CompareBySelector)
+        getAggregate(questionId, { by: compareBy }).then((agg) => {
           if (!cancelled) setByPathway(agg);
         }).catch(() => {});  // aggregate can fail on pathway-specific questions — that's ok
       }
     }).catch((e) => setError(e.message));
 
     return () => { cancelled = true; };
-  }, [questionId]);
+  }, [questionId, compareBy]);
 
   // ── Cohort distribution (separate fetch, re-runs when cohort changes) ──
   useEffect(() => {
@@ -138,6 +145,19 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
       .catch(() => { if (!cancelled) setCohortDistribution(null); });
     return () => { cancelled = true; };
   }, [questionId, JSON.stringify(cohort), notFound]);
+
+  // ── Cohort B distribution (separate fetch for A vs B comparison) ──
+  useEffect(() => {
+    if (!cohortB || !showCohortB || notFound) {
+      setCohortBDistribution(null);
+      return;
+    }
+    let cancelled = false;
+    getResponseDistribution(questionId, { cohort: cohortB })
+      .then((d) => { if (!cancelled) setCohortBDistribution(d); })
+      .catch(() => { if (!cancelled) setCohortBDistribution(null); });
+    return () => { cancelled = true; };
+  }, [questionId, JSON.stringify(cohortB), showCohortB, notFound]);
 
   const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(question?.id);
 
@@ -375,7 +395,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                 lineHeight: 1.5,
                 marginBottom: "1.2rem",
               }}>
-                The question ID <code style={{ fontFamily: FONT.mono, color: C.goldBright, background: "rgba(255,255,255,0.05)", padding: "0.1rem 0.35rem", borderRadius: 4 }}>{questionId}</code> is not in our database of 355 survey questions. This can happen if the link has a typo or the question was renamed.
+                The question ID <code style={{ fontFamily: FONT.mono, color: C.goldBright, background: "rgba(255,255,255,0.05)", padding: "0.1rem 0.35rem", borderRadius: 4 }}>{questionId}</code> is not in our database of {questions.length || "…"} survey questions. This can happen if the link has a typo or the question was renamed.
               </p>
 
               {/* Inline Interactive Search */}
@@ -388,7 +408,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   color: C.gold,
                   marginBottom: "0.4rem"
                 }}>
-                  Search All 355 Questions
+                  Search All {questions.length || "…"} Questions
                 </div>
                 <div style={{
                   display: "flex",
@@ -614,6 +634,83 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   </div>
                 </div>
               )}
+
+              {/* Cohort B: Compare With toggle */}
+              <div style={{ marginTop: "1rem" }}>
+                <button
+                  onClick={() => {
+                    setShowCohortB(!showCohortB);
+                    if (showCohortB) {
+                      setCohortB(null);
+                      setCohortBDistribution(null);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "0.4rem 0.6rem",
+                    background: showCohortB ? "rgba(118,183,178,0.12)" : "transparent",
+                    border: `1px dashed ${showCohortB ? "rgba(118,183,178,0.5)" : C.ghost}`,
+                    borderRadius: 6,
+                    color: showCohortB ? "#76b7b2" : C.muted,
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.68rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.3rem",
+                  }}
+                >
+                  {showCohortB ? "✕ Remove Cohort B" : "⊞ Compare With…"}
+                </button>
+
+                {showCohortB && (
+                  <div style={{ marginTop: "0.6rem" }}>
+                    <div style={{
+                      fontFamily: FONT.condensed,
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "#76b7b2",
+                      marginBottom: "0.4rem",
+                      fontWeight: 700,
+                    }}>Cohort B Filter</div>
+                    <DemographicFilterBar
+                      cohort={cohortB}
+                      onChange={(c) => setCohortB(c)}
+                      accentColor="#76b7b2"
+                    />
+                    {cohortB && cohortBDistribution && (
+                      <div style={{
+                        marginTop: "0.6rem",
+                        padding: "0.5rem 0.7rem",
+                        background: "rgba(118,183,178,0.06)",
+                        border: `1px solid rgba(118,183,178,0.2)`,
+                        borderRadius: 6,
+                      }}>
+                        <div style={{
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.6rem",
+                          letterSpacing: "0.14em",
+                          textTransform: "uppercase",
+                          color: C.muted,
+                          marginBottom: "0.2rem",
+                        }}>Cohort B size</div>
+                        <div style={{
+                          fontFamily: FONT.mono,
+                          fontSize: "1.1rem",
+                          fontWeight: 700,
+                          color: "#76b7b2",
+                        }}>{cohortBDistribution.n || 0}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </aside>
 
             {/* CENTER: content */}
@@ -847,12 +944,61 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   </>
                 ) : (
                   <>
-                    <DistributionChart 
-                      question={question}
-                      distribution={displayDist} 
-                      cohortDistribution={displayCohortDist}
-                      title="Overall vs. Filtered distribution" 
-                    />
+                    {/* Small-sample guardrail for cohort distributions */}
+                    <SmallSampleBadge n={cohortDistribution?.n} label="filtered cohort">
+                      <DistributionChart 
+                        question={question}
+                        distribution={displayDist} 
+                        cohortDistribution={shouldSuppress(cohortDistribution?.n) ? null : displayCohortDist}
+                        title="Overall vs. Filtered distribution" 
+                      />
+                    </SmallSampleBadge>
+
+                    {/* Cohort B distribution (A vs B comparison) */}
+                    {showCohortB && cohortBDistribution && !shouldSuppress(cohortBDistribution?.n) && (
+                      <SmallSampleBadge n={cohortBDistribution?.n} label="Cohort B">
+                        <div style={{
+                          background: C.bgSoft,
+                          border: `1px solid rgba(118,183,178,0.3)`,
+                          borderRadius: 8,
+                          padding: "1.2rem",
+                          marginBottom: "1rem",
+                          borderLeft: "3px solid #76b7b2",
+                        }}>
+                          <div style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "baseline",
+                            marginBottom: "0.6rem",
+                          }}>
+                            <h3 style={{
+                              fontFamily: FONT.display,
+                              fontWeight: 700,
+                              fontSize: "1rem",
+                              color: "#76b7b2",
+                              letterSpacing: "-0.01em",
+                              margin: 0,
+                            }}>Cohort B Distribution</h3>
+                            <span style={{
+                              fontFamily: FONT.mono,
+                              fontSize: "0.72rem",
+                              color: C.muted,
+                            }}>n = {cohortBDistribution.n}</span>
+                          </div>
+                          <DistributionChart
+                            question={question}
+                            distribution={cohortBDistribution}
+                            hideHeader
+                            hideLegend
+                          />
+                        </div>
+                      </SmallSampleBadge>
+                    )}
+
+                    {/* Likert mean comparison strip */}
+                    {(question.type === "scale_1_5" || question.id?.includes("rating_") || question.id?.includes("importance")) && displayByPathway && (
+                      <MeanComparisonStrip byPathway={displayByPathway} />
+                    )}
 
                     {(cohortDistribution?.distribution || allDistribution?.distribution)?.length > 15 && (
                       <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: `1px dashed var(--c-ghost)` }}>
@@ -875,8 +1021,18 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       </div>
                     )}
 
+                    {/* Compare-by pivot + dimension breakdown */}
                     {displayByPathway && Object.keys(displayByPathway.results || {}).length > 1 && (
-                      <PathwayBreakdown byPathway={displayByPathway} overallDist={displayDist?.distribution || []} />
+                      <>
+                        <div style={{ marginTop: "1.2rem", marginBottom: "0.6rem" }}>
+                          <CompareBySelector selected={compareBy} onChange={setCompareBy} />
+                        </div>
+                        <DimensionBreakdown
+                          byDimension={displayByPathway}
+                          dimensionKey={compareBy}
+                          overallDist={displayDist?.distribution || []}
+                        />
+                      </>
                     )}
                     
                     <GenerationalTrendChart questionId={question.id} overallDist={displayDist?.distribution} />
@@ -936,12 +1092,23 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
 
 // ── Sub-components ───────────────────────────────────────────────────────
 
-function PathwayBreakdown({ byPathway, overallDist = [] }) {
+function DimensionBreakdown({ byDimension, dimensionKey, overallDist = [] }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
-  const results = byPathway.results || {};
-  const pathwaysWithData = PATHWAY_IDS
-    .filter((id) => results[id] && results[id].n > 0)
-    .map((id) => ({ id, ...results[id] }));
+  const results = byDimension.results || {};
+  const isPathway = dimensionKey === "pathway";
+
+  // Build buckets: for pathway mode use PATHWAY_IDS order; for other dimensions sort by n desc
+  const bucketsWithData = useMemo(() => {
+    if (isPathway) {
+      return PATHWAY_IDS
+        .filter((id) => results[id] && results[id].n > 0)
+        .map((id) => ({ id, label: PATHWAYS[id]?.label || id, color: PATHWAYS[id]?.color, emoji: PATHWAYS[id]?.emoji, ...results[id] }));
+    }
+    return Object.entries(results)
+      .filter(([, v]) => v.n > 0)
+      .sort((a, b) => b[1].n - a[1].n)
+      .map(([key, val]) => ({ id: key, label: key, ...val }));
+  }, [results, isPathway]);
 
   const colorMap = useMemo(() => {
     const map = {};
@@ -953,23 +1120,31 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
     return map;
   }, [overallDist]);
 
-  if (pathwaysWithData.length === 0) return null;
+  if (bucketsWithData.length === 0) return null;
 
-  // Compute missing major pathways for the "quick string"
-  const missing = [];
-  if (!results["observer"] || results["observer"].n === 0) missing.push("Observer");
-  
-  const transMissing = (!results["trans_vaginoplasty"] || results["trans_vaginoplasty"].n === 0) && (!results["trans_phalloplasty"] || results["trans_phalloplasty"].n === 0);
-  if (transMissing) missing.push("Transgender");
-  
-  if (!results["intersex"] || results["intersex"].n === 0) missing.push("Intersex");
-
+  // For pathway mode: compute missing pathways for the info string
   let noDataMsg = null;
-  if (missing.length > 0) {
-    const last = missing.pop();
-    const joined = missing.length > 0 ? `${missing.join(", ")} or ${last}` : last;
-    noDataMsg = `No responses from ${joined} pathways for this question.`;
+  if (isPathway) {
+    const missing = [];
+    if (!results["observer"] || results["observer"].n === 0) missing.push("Observer");
+    const transMissing = (!results["trans_vaginoplasty"] || results["trans_vaginoplasty"].n === 0) && (!results["trans_phalloplasty"] || results["trans_phalloplasty"].n === 0);
+    if (transMissing) missing.push("Transgender");
+    if (!results["intersex"] || results["intersex"].n === 0) missing.push("Intersex");
+    if (missing.length > 0) {
+      const last = missing.pop();
+      const joined = missing.length > 0 ? `${missing.join(", ")} or ${last}` : last;
+      noDataMsg = `No responses from ${joined} pathways for this question.`;
+    }
   }
+
+  // Categorical color palette for non-pathway dimensions
+  const dimColors = [
+    "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
+    "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac",
+    "#86bcb6", "#8cd17d", "#b6992d", "#499894", "#d37295",
+  ];
+
+  const dimensionLabel = isPathway ? "By pathway" : `By ${dimensionKey.replace(/_/g, " ")}`;
 
   return (
     <div style={{
@@ -985,63 +1160,71 @@ function PathwayBreakdown({ byPathway, overallDist = [] }) {
         color: C.textBright,
         marginBottom: "0.9rem",
         letterSpacing: "-0.01em",
-      }}>By pathway</h2>
+      }}>{dimensionLabel}</h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
-        {pathwaysWithData.map((p) => {
-          const path = PATHWAYS[p.id];
-          const total = p.distribution.reduce((s, d) => s + d.n, 0);
+        {bucketsWithData.map((bucket, bucketIdx) => {
+          const total = bucket.distribution.reduce((s, d) => s + d.n, 0);
+          const bucketColor = isPathway ? (bucket.color || C.muted) : dimColors[bucketIdx % dimColors.length];
 
-          const sortedDist = overallDist ? [...p.distribution].sort((a, b) => {
+          const sortedDist = overallDist ? [...bucket.distribution].sort((a, b) => {
             const labelOrder = overallDist.map(item => item.label);
             let idxA = labelOrder.indexOf(a.label);
             let idxB = labelOrder.indexOf(b.label);
             if (idxA === -1) idxA = 999;
             if (idxB === -1) idxB = 999;
             return idxA - idxB;
-          }) : p.distribution;
+          }) : bucket.distribution;
 
           let xCursor = 0;
           return (
-            <div key={p.id}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
-                <IconifyEmoji emoji={path.emoji} size="0.85rem" style={{ color: path.color }} />
-                <span style={{
-                  fontFamily: FONT.condensed,
-                  fontWeight: 700,
-                  fontSize: "0.74rem",
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  color: path.color,
-                }}>{path.label}</span>
-                <span style={{
-                  fontFamily: FONT.mono,
-                  fontSize: "0.66rem",
-                  color: C.muted,
-                }}>n = {total}</span>
+            <SmallSampleBadge key={bucket.id} n={total} label={bucket.label}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
+                  {isPathway && bucket.emoji && (
+                    <IconifyEmoji emoji={bucket.emoji} size="0.85rem" style={{ color: bucketColor }} />
+                  )}
+                  {!isPathway && (
+                    <div style={{ width: 8, height: 8, borderRadius: 2, background: bucketColor, flexShrink: 0 }} />
+                  )}
+                  <span style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.74rem",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: bucketColor,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "70%",
+                  }}>{bucket.label}</span>
+                  <span style={{
+                    fontFamily: FONT.mono,
+                    fontSize: "0.66rem",
+                    color: C.muted,
+                  }}>n = {total}</span>
+                </div>
+                <svg width="100%" height={12} style={{ display: "block", borderRadius: 2, overflow: "hidden" }}>
+                  <rect x={0} y={0} width="100%" height={12} fill={C.ghost} />
+                  {sortedDist.map((d, i) => {
+                    const pct = (d.n / total) * 100;
+                    const x = xCursor;
+                    xCursor += pct;
+                    let canonicalIndex = overallDist.findIndex(od => od.label === d.label);
+                    if (canonicalIndex === -1) canonicalIndex = i;
+                    return (
+                      <rect 
+                        key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorMap[d.label] || colorForLabel(d.label, canonicalIndex)}
+                        onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
+                        onMouseMove={moveTooltip}
+                        onMouseLeave={hideTooltip}
+                      />
+                    );
+                  })}
+                </svg>
               </div>
-              <svg width="100%" height={12} style={{ display: "block", borderRadius: 2, overflow: "hidden" }}>
-                <rect x={0} y={0} width="100%" height={12} fill={C.ghost} />
-                {sortedDist.map((d, i) => {
-                  const pct = (d.n / total) * 100;
-                  const x = xCursor;
-                  xCursor += pct;
-                  
-                  // Use canonical index from the overall distribution for consistent coloring across charts
-                  let canonicalIndex = overallDist.findIndex(od => od.label === d.label);
-                  if (canonicalIndex === -1) canonicalIndex = i; // Fallback
-
-                  return (
-                    <rect 
-                      key={i} x={`${x}%`} y={0} width={`${pct}%`} height={12} fill={colorMap[d.label] || colorForLabel(d.label, canonicalIndex)}
-                      onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
-                      onMouseMove={moveTooltip}
-                      onMouseLeave={hideTooltip}
-                    />
-                  );
-                })}
-              </svg>
-            </div>
+            </SmallSampleBadge>
           );
         })}
       </div>

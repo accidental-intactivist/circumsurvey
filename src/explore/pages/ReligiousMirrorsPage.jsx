@@ -4,88 +4,105 @@ import DistributionChart from "../components/DistributionChart";
 import NarrativeList from "../components/NarrativeList";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
+import SmallSampleBadge from "../components/SmallSampleBadge";
 import { flattenMultiSelect } from "../lib/formatters";
 import { colorForLabel } from "../components/MiniSparkline";
 
+// ── TRADITIONS (filter syntax for cross-tabbing) ───────────────────────────
+const TRADITIONS = [
+  { id: "Christian",  label: "Christian",  emoji: "✝️",  color: "#5b93c7", filter: "religion.primary_tradition=Christian" },
+  { id: "Jewish",     label: "Jewish",     emoji: "✡️",  color: "#d4a030", filter: "religion.primary_tradition=Jewish" },
+  { id: "Islamic",    label: "Islamic",    emoji: "☪️",  color: "#68b878", filter: "religion.primary_tradition=Islamic" },
+];
+
+const ALL_TRADITIONS = [
+  { id: "Secular",    label: "Secular / No Tradition", emoji: "⚛️", color: "#8bb8d9", filter: "religion.primary_tradition=No significant religious/spiritual/cultural tradition influencing this topic." },
+  ...TRADITIONS,
+];
+
+// ── SECTION A: Universal questions cross-tabbed by ALL traditions ──────────
 const UNIVERSAL_QUESTIONS = [
   { id: "culture_body_intervention_view", concept: "Body & Interventions" },
   { id: "final_core_principle_choice", concept: "Core Ethical Principle" },
 ];
 
-const THEOLOGICAL_MIRRORS = [
-  { 
-    id: "upbringing_view", 
-    concept: "Upbringing View", 
-    jewish: "religion_jewish_brit_milah_view", 
-    islamic: "religion_islamic_khitan_view", 
-    christian: "religion_christian_circ_view" 
+// ── SECTION B: Departure stories — only render where data exists ──────────
+// Each tradition gets its own story arc: view → awareness → depth → alternatives
+const TRADITION_STORIES = {
+  Jewish: {
+    primary: { id: "religion_jewish_brit_milah_view", label: "View of Brit Milah" },
+    depth: [
+      { id: "religion_jewish_theology_awareness", label: "Theological Awareness" },
+      { id: "religion_jewish_identity_importance", label: "Importance to Identity" },
+    ],
+    narratives: [
+      { id: "religion_jewish_alternatives_awareness", label: "Alternative Awareness" },
+      { id: "religion_jewish_alternatives_thoughts", label: "Thoughts on Alternatives" },
+      { id: "religion_jewish_diversity_view", label: "Room for Diversity" },
+      { id: "religion_jewish_brit_shalom_awareness", label: "Brit Shalom Awareness" },
+    ],
+    denomination: "religion_jewish_denomination",
   },
-  { 
-    id: "identity_importance", 
-    concept: "Importance to Identity", 
-    jewish: "religion_jewish_identity_importance", 
-    islamic: "religion_islamic_identity_importance", 
-    christian: null
+  Islamic: {
+    primary: { id: "religion_islamic_khitan_view", label: "View of Khitan" },
+    depth: [
+      { id: "religion_islamic_theology_awareness", label: "Religious Awareness" },
+      { id: "religion_islamic_fard_vs_sunnah", label: "Fard vs. Sunnah" },
+      { id: "religion_islamic_identity_importance", label: "Importance to Identity" },
+      { id: "religion_islamic_theology_reasons", label: "Theological Reasons", fullWidth: true },
+    ],
+    narratives: [
+      { id: "religion_islamic_alternatives_awareness", label: "Alternative Awareness" },
+      { id: "religion_islamic_alternatives_thoughts", label: "Thoughts on Alternatives" },
+      { id: "religion_islamic_intact_reconciliation", label: "Reconciling Intactness" },
+    ],
+    denomination: "religion_islamic_school",
   },
-  { 
-    id: "theology_awareness", 
-    concept: "Theological Awareness", 
-    jewish: "religion_jewish_theology_awareness", 
-    islamic: "religion_islamic_religious_awareness", 
-    christian: null 
+  Christian: {
+    primary: { id: "religion_christian_circ_view", label: "View of Circumcision" },
+    depth: [],
+    narratives: [
+      { id: "religion_christian_theology_basis", label: "Theological Basis" },
+      { id: "religion_christian_comments", label: "Additional Thoughts" },
+    ],
+    denomination: "religion_christian_denomination",
   },
-  { 
-    id: "theology_reasons", 
-    concept: "Theological Basis", 
-    jewish: "religion_jewish_theology_reasons",
-    islamic: "religion_islamic_religious_reasons",
-    christian: "religion_christian_theology_basis" 
-  },
-  { 
-    id: "alt_interpretations", 
-    concept: "Alternative Interpretations", 
-    jewish: "religion_jewish_alt_thoughts",
-    islamic: "religion_islamic_alt_thoughts",
-    christian: "religion_christian_comments" 
-  },
-  { 
-    id: "diversity_room", 
-    concept: "Room for Diversity", 
-    jewish: "religion_jewish_diversity_room",
-    islamic: "religion_islamic_diversity_room",
-    christian: null 
-  },
+};
+
+// ── SECTION C: Cultural Mechanics cross-tabbed by religion ────────────────
+const CULTURAL_QUESTIONS = [
+  { id: "final_ethical_consideration_belief", concept: "Media & The 'Default' Penis" },
+  { id: "culture_social_pressure_role", concept: "Social Pressure & 'Looking Different'" },
+  { id: "final_ethics_cosmetic_alteration_minor", concept: "Non-Consensual Cosmetic Alteration of Minors" },
+  { id: "final_prediction_future_of_ric", concept: "20-30 Year Prediction for RIC" },
 ];
 
-const TRADITIONS = [
-  { id: "Atheist / Agnostic / Secular", label: "Atheist / Secular", emoji: "⚛️", color: "#8bb8d9", filter: "religion.primary_tradition=No significant religious/spiritual/cultural tradition influencing this topic." },
-  { id: "Christian", label: "Christian", emoji: "✝️", color: "#5b93c7", filter: "religion.primary_tradition=Christian" },
-  { id: "Jewish", label: "Jewish", emoji: "✡️", color: "#d4a030", filter: "religion.primary_tradition=Jewish" },
-  { id: "Islamic", label: "Islamic", emoji: "☪️", color: "#68b878", filter: "religion.primary_tradition=Islamic" },
-];
 
 export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
+  const [traditionCounts, setTraditionCounts] = useState(null);
+  const [totalRespondents, setTotalRespondents] = useState(501);
 
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
-        exhibitName: "Religious Mirrors & Theology",
-        exhibitDescription: "How religious traditions shape perspectives on bodily modification",
-        traditionsCompared: ["Atheist/Secular", "Christian", "Jewish", "Islamic"],
-        sectionA: "Universal Cross-Tradition Views (Body & Interventions, Core Ethical Principle)",
-        sectionB: "Abrahamic Theological Mirrors (Upbringing View, Importance to Identity, Theological Awareness, Theological Basis, Alternative Interpretations, Room for Diversity)"
+        exhibitName: "The Missing Congregation",
+        exhibitDescription: "Who speaks about religion and circumcision — and who stays silent?",
+        traditionsCompared: ["Secular", "Christian", "Jewish", "Islamic"],
+        sectionA: "Universal Cross-Tradition Views",
+        sectionB: "Departure Stories — Tradition-Specific Deep Dives",
+        sectionC: "Cultural Mechanics — Cross-Tabbed by Religion",
       });
     }
   }, [setExhibitContext]);
 
+  // Fetch questions metadata
   useEffect(() => {
     fetch(`${API_BASE}/questions`)
       .then(res => res.json())
       .then(data => {
         const qMap = {};
         data.questions.forEach(q => {
-          // Force final_core_principle_choice to render as a pie chart instead of narratives
           if (q.id === "final_core_principle_choice") {
             q.type = "single_select";
             q.opts = [
@@ -99,19 +116,32 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
       });
   }, []);
 
+  // Fetch tradition counts for "The Missing Congregation"
+  useEffect(() => {
+    fetch(`${API_BASE}/response-distribution?q=religion_primary_tradition`)
+      .then(res => res.json())
+      .then(data => {
+        const counts = {};
+        (data.distribution || []).forEach(d => {
+          counts[d.label] = d.n;
+        });
+        setTraditionCounts(counts);
+      })
+      .catch(() => setTraditionCounts({}));
+  }, []);
+
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
-
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem" }}>
         <InlineBreadcrumb currentRoute="religious-mirrors" navigate={navigate} />
-        
-        {/* Header Callout */}
+
+        {/* ── HEADER ──────────────────────────────────────────────── */}
         <div style={{
           background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.01) 100%)`,
           border: `1px solid rgba(212,160,48,0.22)`,
           borderRadius: 12,
           padding: "2rem",
-          marginBottom: "4rem",
+          marginBottom: "2rem",
           position: "relative",
           overflow: "hidden",
           boxShadow: `0 8px 32px rgba(0,0,0,0.3)`
@@ -137,7 +167,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
             letterSpacing: "-0.025em",
             marginBottom: "1rem"
           }}>
-            Religious Mirrors &amp; Theology
+            The Missing Congregation
           </h1>
           <p style={{
             fontFamily: FONT.body,
@@ -147,44 +177,223 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
             maxWidth: 900,
             margin: 0
           }}>
-            How do religious traditions shape perspectives on bodily modification? This exhibit cross-tabulates survey outcomes across four primary groups: <strong>Secular/Atheist</strong>, <strong>Christian</strong>, <strong>Jewish</strong>, and <strong>Islamic</strong>.
-            <br /><br />
-            Explore general cultural attitudes (Section A) and compare matched theological narratives side-by-side (Section B) to observe how scriptural interpretation and family covenant traditions drive the dataset.
+            Religion is the oldest driver of ritual circumcision — yet in a survey promoted through bodily autonomy communities,
+            who actually shows up to talk about it? This exhibit examines the religious landscape of our respondents,
+            surfaces tradition-specific theological questions, and cross-tabulates universal cultural attitudes by religious background.
           </p>
         </div>
 
-        {/* SECTION A: UNIVERSAL (4-COLUMN) */}
-        <div style={{ marginBottom: "6rem" }}>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: C.gold, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "3rem", textAlign: "center" }}>
-            Section A: Universal Cross-Tradition Views
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "5rem" }}>
-            {UNIVERSAL_QUESTIONS.map(qDef => (
-              <UniversalRow key={qDef.id} qDef={qDef} questionsMap={questionsMap} />
-            ))}
-          </div>
+        {/* ── THE MISSING CONGREGATION CALLOUT ────────────────────── */}
+        <MissingCongregation
+          traditionCounts={traditionCounts}
+          totalRespondents={totalRespondents}
+          questionsMap={questionsMap}
+        />
+
+        {/* ── SECTION A: Universal Cross-Tradition Views ──────────── */}
+        <SectionHeader title="Section A" subtitle="Universal Cross-Tradition Views" />
+        <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
+          These questions were asked of all respondents. Here we cross-tabulate by the four largest religious groupings
+          to reveal where worldview diverges.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5rem", marginBottom: "6rem" }}>
+          {UNIVERSAL_QUESTIONS.map(qDef => (
+            <UniversalRow key={qDef.id} qDef={qDef} questionsMap={questionsMap} />
+          ))}
         </div>
 
         <div style={{ height: 1, background: C.ghost, margin: "0 0 6rem" }} />
 
-        {/* SECTION B: THEOLOGICAL (3-COLUMN) */}
-        <div>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: C.gold, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "3rem", textAlign: "center" }}>
-            Section B: Abrahamic Theological Mirrors
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "5rem" }}>
-            {THEOLOGICAL_MIRRORS.map(pair => (
-              <TheologicalRow key={pair.id} pair={pair} questionsMap={questionsMap} />
-            ))}
-          </div>
+        {/* ── SECTION B: Departure Stories ─────────────────────────── */}
+        <SectionHeader title="Section B" subtitle="Departure Stories" />
+        <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
+          Each tradition has its own set of questions exploring theological awareness, identity importance,
+          and openness to alternatives. Rather than a sparse comparison grid, we present each tradition's
+          full story — showing only the data that exists.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4rem", marginBottom: "6rem" }}>
+          {TRADITIONS.map(tradition => (
+            <DepartureStory
+              key={tradition.id}
+              tradition={tradition}
+              story={TRADITION_STORIES[tradition.id]}
+              questionsMap={questionsMap}
+              traditionCounts={traditionCounts}
+            />
+          ))}
         </div>
 
+        <div style={{ height: 1, background: C.ghost, margin: "0 0 6rem" }} />
+
+        {/* ── SECTION C: Cultural Mechanics ────────────────────────── */}
+        <SectionHeader title="Section C" subtitle="Cultural Mechanics" />
+        <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
+          Universal questions about the cultural forces that perpetuate circumcision — media, social pressure,
+          consent ethics, and future predictions — cross-tabulated by religious background.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "5rem" }}>
+          {CULTURAL_QUESTIONS.map(qDef => (
+            <UniversalRow key={qDef.id} qDef={qDef} questionsMap={questionsMap} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-// ── UNIVERSAL ROW (4 Columns) ──────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE MISSING CONGREGATION — data callout
+// ═══════════════════════════════════════════════════════════════════════════
+function MissingCongregation({ traditionCounts, totalRespondents, questionsMap }) {
+  if (!traditionCounts) {
+    return <div style={{ color: C.dim, fontStyle: "italic", padding: "2rem", textAlign: "center" }}>Loading tradition data...</div>;
+  }
+
+  const answeredTotal = Object.values(traditionCounts).reduce((a, b) => a + b, 0);
+  const didNotAnswer = totalRespondents - answeredTotal;
+
+  const rows = [
+    { label: "Christian", n: traditionCounts["Christian"] || 0, emoji: "✝️", color: "#5b93c7" },
+    { label: "Jewish", n: traditionCounts["Jewish"] || 0, emoji: "✡️", color: "#d4a030" },
+    { label: "Islamic", n: traditionCounts["Islamic"] || 0, emoji: "☪️", color: "#68b878" },
+    { label: "Other Traditions", n: (traditionCounts["Hinduism"] || 0) + (traditionCounts["Buddhism"] || 0) + (traditionCounts["New Age / Spiritual but not religious"] || 0), emoji: "🕉️", color: "#a07cc5" },
+    { label: "No Tradition / Skipped", n: didNotAnswer + (traditionCounts["No significant religious/spiritual/cultural tradition influencing this topic."] || 0), emoji: "—", color: C.muted },
+  ];
+
+  const maxN = Math.max(...rows.map(r => r.n));
+
+  return (
+    <div style={{
+      background: "linear-gradient(135deg, rgba(255,180,60,0.04) 0%, rgba(255,180,60,0.01) 100%)",
+      border: `1px solid rgba(212,160,48,0.18)`,
+      borderRadius: 16,
+      padding: "2.5rem",
+      marginBottom: "4rem",
+      position: "relative",
+    }}>
+      {/* Accent stripe */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, #d4a030, #68b878, #5b93c7)`, borderRadius: "16px 16px 0 0" }} />
+
+      <h2 style={{
+        fontFamily: FONT.display,
+        fontSize: "1.6rem",
+        fontWeight: 700,
+        color: C.textBright,
+        marginBottom: "0.6rem",
+        letterSpacing: "-0.015em",
+      }}>
+        <IconifyEmoji emoji="🕯️" /> The Missing Congregation
+      </h2>
+      <p style={{
+        fontFamily: FONT.body,
+        fontSize: "0.95rem",
+        color: C.text,
+        lineHeight: 1.6,
+        maxWidth: 800,
+        marginBottom: "2rem",
+      }}>
+        Of <strong style={{ color: C.textBright }}>{totalRespondents}</strong> respondents, only <strong style={{ color: C.textBright }}>{answeredTotal}</strong> identified
+        a religious tradition as significant to their perspective on this topic.
+        The overwhelming majority of religiously-identified respondents are <strong style={{ color: "#5b93c7" }}>Christian ({traditionCounts["Christian"] || 0})</strong>.
+        <br /><br />
+        The traditions with the deepest historical investment in ritual circumcision — Judaism and Islam —
+        are represented by just <strong style={{ color: "#d4a030" }}>{traditionCounts["Jewish"] || 0}</strong> and <strong style={{ color: "#68b878" }}>{traditionCounts["Islamic"] || 0}</strong> respondents
+        respectively. These small samples are genuine and valuable, but they represent people who chose to engage
+        with a survey promoted through bodily autonomy communities — a self-selection pattern worth noting.
+      </p>
+
+      {/* Bar chart visualization */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        {rows.map(row => (
+          <div key={row.label} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{
+              width: 140,
+              fontFamily: FONT.condensed,
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              color: row.color,
+              textAlign: "right",
+              flexShrink: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "0.3rem",
+            }}>
+              {row.emoji !== "—" && <IconifyEmoji emoji={row.emoji} />}
+              <span>{row.label}</span>
+            </div>
+            <div style={{ flex: 1, height: 24, background: "rgba(255,255,255,0.03)", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+              <div style={{
+                width: `${Math.max((row.n / maxN) * 100, 1)}%`,
+                height: "100%",
+                background: `linear-gradient(90deg, ${row.color}44, ${row.color}88)`,
+                borderRadius: 4,
+                transition: "width 0.8s ease-out",
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: "0.5rem",
+              }}>
+                <span style={{
+                  fontFamily: FONT.mono,
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  color: C.textBright,
+                  whiteSpace: "nowrap",
+                }}>
+                  n={row.n}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Methodological note */}
+      <div style={{
+        marginTop: "1.5rem",
+        padding: "0.8rem 1rem",
+        background: "rgba(255,255,255,0.02)",
+        border: `1px solid ${C.ghost}`,
+        borderRadius: 8,
+        fontSize: "0.8rem",
+        color: C.muted,
+        lineHeight: 1.5,
+        fontStyle: "italic",
+      }}>
+        <strong style={{ color: C.dim, fontStyle: "normal" }}>Note:</strong> Small samples (n&lt;20) are flagged
+        throughout this exhibit. They represent real voices but should not be treated as statistically representative
+        of their broader religious communities.
+      </div>
+    </div>
+  );
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION HEADER
+// ═══════════════════════════════════════════════════════════════════════════
+function SectionHeader({ title, subtitle }) {
+  return (
+    <h2 style={{
+      fontFamily: FONT.condensed,
+      fontSize: "1.5rem",
+      color: C.gold,
+      textTransform: "uppercase",
+      letterSpacing: "0.15em",
+      textAlign: "center",
+      marginBottom: "0.5rem",
+    }}>
+      <span style={{ fontSize: "0.7em", color: C.muted, display: "block", marginBottom: "0.2rem" }}>{title}</span>
+      {subtitle}
+    </h2>
+  );
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UNIVERSAL ROW — 4 columns (Secular, Christian, Jewish, Islamic)
+// ═══════════════════════════════════════════════════════════════════════════
 function UniversalRow({ qDef, questionsMap }) {
   const q = questionsMap[qDef.id];
 
@@ -208,13 +417,13 @@ function UniversalRow({ qDef, questionsMap }) {
       </div>
 
       <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-        {TRADITIONS.map(tradition => (
-          <div key={tradition.id} style={{ 
-            flex: "1 1 250px", 
-            minWidth: 250, 
-            background: C.bgCard, 
-            border: `1px solid ${C.ghost}`, 
-            borderRadius: 12, 
+        {ALL_TRADITIONS.map(tradition => (
+          <div key={tradition.id} style={{
+            flex: "1 1 250px",
+            minWidth: 250,
+            background: C.bgCard,
+            border: `1px solid ${C.ghost}`,
+            borderRadius: 12,
             padding: "1.5rem",
             display: "flex",
             flexDirection: "column",
@@ -224,7 +433,7 @@ function UniversalRow({ qDef, questionsMap }) {
               <IconifyEmoji emoji={tradition.emoji} />
               <span>{tradition.label}</span>
             </h4>
-            
+
             {q ? (
               <DataLoader question={q} filter={tradition.filter} shortenLabels={true} hideLegend={true} />
             ) : (
@@ -234,190 +443,272 @@ function UniversalRow({ qDef, questionsMap }) {
         ))}
       </div>
 
-      {/* Shared Key definition for long options (moved below charts) */}
+      {/* Shared legend for long option labels */}
       {q && q.opts && (
-        <div style={{
-          maxWidth: 900,
-          margin: "2.5rem auto 0",
-          padding: "1.2rem 1.6rem",
-          background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)",
-          border: `1px solid ${C.ghost}`,
-          borderRadius: 12,
-          fontSize: "0.84rem",
-          color: C.text,
-          lineHeight: 1.5,
-          textAlign: "left",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.6rem",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.15)"
+        <SharedLegend q={q} />
+      )}
+    </section>
+  );
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DEPARTURE STORY — one per Abrahamic tradition, vertical layout
+// ═══════════════════════════════════════════════════════════════════════════
+function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
+  if (!story) return null;
+  const n = traditionCounts?.[tradition.id] || 0;
+
+  return (
+    <section style={{
+      background: `linear-gradient(135deg, ${tradition.color}08 0%, ${tradition.color}02 100%)`,
+      border: `1px solid ${tradition.color}33`,
+      borderRadius: 16,
+      padding: "2.5rem",
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* Accent bar */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: tradition.color }} />
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
+        <IconifyEmoji emoji={tradition.emoji} />
+        <h3 style={{
+          fontFamily: FONT.display,
+          fontSize: "1.8rem",
+          fontWeight: 700,
+          color: C.textBright,
+          margin: 0,
+          letterSpacing: "-0.015em",
         }}>
-          <div style={{
-            fontFamily: FONT.condensed,
-            color: C.gold,
-            fontSize: "0.72rem",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            gap: "0.3rem",
-            marginBottom: "0.2rem"
+          {tradition.label} Perspectives
+        </h3>
+        <SmallSampleBadge n={n} label={`${tradition.label} respondents`}>
+          <span style={{
+            fontFamily: FONT.mono,
+            fontSize: "0.75rem",
+            color: tradition.color,
+            background: `${tradition.color}15`,
+            padding: "0.15rem 0.5rem",
+            borderRadius: 999,
+            border: `1px solid ${tradition.color}30`,
           }}>
-            <span>★</span> Shared Legend
+            n={n}
+          </span>
+        </SmallSampleBadge>
+      </div>
+
+      {/* Denomination breakdown (if available) */}
+      {story.denomination && questionsMap[story.denomination] && (
+        <div style={{ marginBottom: "2rem" }}>
+          <div style={{ fontFamily: FONT.condensed, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.dim, marginBottom: "0.6rem" }}>
+            Denomination Breakdown
           </div>
-          {(() => {
-            const opts = q.id === "culture_body_intervention_view" ? [
-              "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
-              "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",
-              "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon, manage, or optimize the body's natural state, even in the absence of disease.\"",
-              "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear, present medical problem.\""
-            ] : q.opts;
+          <DataLoader question={questionsMap[story.denomination]} shortenLabels={true} />
+        </div>
+      )}
 
-            return opts.map((opt, idx) => {
-              const hasColon = opt.includes(":");
-              if (!hasColon && q.id !== "culture_body_intervention_view") return null;
-              
-              const title = hasColon ? opt.split(":")[0] : opt;
-              const desc = hasColon ? opt.slice(title.length + 1) : "";
-              const color = colorForLabel(title, idx);
+      {/* Primary view question */}
+      {story.primary && questionsMap[story.primary.id] && (
+        <div style={{ marginBottom: "2.5rem" }}>
+          <QuestionCard
+            question={questionsMap[story.primary.id]}
+            label={story.primary.label}
+            color={tradition.color}
+          />
+        </div>
+      )}
 
+      {/* Depth questions (quantitative) */}
+      {story.depth.length > 0 && (
+        <div style={{ marginBottom: "2.5rem" }}>
+          <div style={{ fontFamily: FONT.condensed, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold, marginBottom: "1rem" }}>
+            Theological Depth
+          </div>
+          <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+            {story.depth.map(dq => {
+              const q = questionsMap[dq.id];
+              if (!q) return null;
               return (
-                <div key={idx} style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start" }}>
-                  <div style={{
-                    width: 12, height: 12, borderRadius: 2,
-                    background: color,
-                    flexShrink: 0,
-                    marginTop: "0.3rem"
-                  }} />
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontWeight: 700, color: C.textBright }}>{title}{hasColon ? ":" : ""} </span>
-                    {hasColon && <span style={{ color: C.muted }}>{desc.trim()}</span>}
-                  </div>
+                <div key={dq.id} style={{ flex: dq.fullWidth ? "1 1 100%" : "1 1 280px", minWidth: 250 }}>
+                  <QuestionCard question={q} label={dq.label} color={tradition.color} compact={!dq.fullWidth} />
                 </div>
               );
-            });
-          })()}
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Narrative questions (qualitative) */}
+      {story.narratives.length > 0 && (
+        <div>
+          <div style={{ fontFamily: FONT.condensed, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold, marginBottom: "1rem" }}>
+            In Their Own Words
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            {story.narratives.map(nq => {
+              const q = questionsMap[nq.id];
+              if (!q) return null;
+              return (
+                <QuestionCard key={nq.id} question={q} label={nq.label} color={tradition.color} />
+              );
+            })}
+          </div>
         </div>
       )}
     </section>
   );
 }
 
-// ── THEOLOGICAL ROW (3 Columns) ────────────────────────────────────────────
-function TheologicalRow({ pair, questionsMap }) {
-  // Filter TRADITIONS to exclude Atheist/Secular for the theological mirrors (which are Abrahamic/3-column)
-  const abrahamicTraditions = TRADITIONS.filter(t => t.id !== "Atheist / Agnostic / Secular");
 
+// ═══════════════════════════════════════════════════════════════════════════
+// QUESTION CARD — renders a single question with its data
+// ═══════════════════════════════════════════════════════════════════════════
+function QuestionCard({ question, label, color, compact }) {
   return (
-    <section style={{
-      background: "rgba(255, 255, 255, 0.01)",
+    <div style={{
+      background: C.bgCard,
       border: `1px solid ${C.ghost}`,
-      borderRadius: 16,
-      padding: "2rem",
-      boxShadow: "0 4px 24px rgba(0,0,0,0.1)",
+      borderRadius: 12,
+      padding: compact ? "1rem" : "1.5rem",
+      borderLeft: `3px solid ${color}`,
     }}>
-      <div style={{ marginBottom: "2rem", textAlign: "center" }}>
-        <h3 style={{ fontFamily: FONT.display, fontSize: "1.8rem", color: C.textBright, marginBottom: "0.5rem", fontWeight: 700, letterSpacing: "-0.015em" }}>
-          {pair.concept}
-        </h3>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
+        <h4 style={{
+          fontFamily: FONT.condensed,
+          fontSize: compact ? "0.85rem" : "1rem",
+          fontWeight: 700,
+          color: C.textBright,
+          margin: 0,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}>
+          {label}
+        </h4>
+        <span style={{
+          fontFamily: FONT.condensed,
+          fontSize: "0.58rem",
+          fontWeight: 700,
+          letterSpacing: "0.05em",
+          color: question.type === "open_text" ? "#a8b5c4" : C.dim,
+          background: question.type === "open_text" ? "rgba(168,181,196,0.1)" : "rgba(255,255,255,0.02)",
+          border: `1px solid ${question.type === "open_text" ? "rgba(168,181,196,0.2)" : C.ghost}`,
+          borderRadius: 999,
+          padding: "0.1rem 0.4rem",
+        }}>
+          {question.type === "open_text" ? "QUAL" : "QUANT"}
+        </span>
       </div>
 
-      <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
-        {abrahamicTraditions.map(tradition => {
-          let qKey = tradition.id.toLowerCase();
-          
-          const qId = pair[qKey];
-          const q = qId ? questionsMap[qId] : null;
+      <p style={{
+        fontFamily: FONT.body,
+        fontSize: "0.85rem",
+        color: C.muted,
+        fontStyle: "italic",
+        lineHeight: 1.4,
+        margin: "0 0 0.8rem",
+      }}>
+        "{question.prompt}"
+      </p>
 
-          return (
-            <div key={tradition.id} style={{ 
-              flex: "1 1 300px", 
-              minWidth: 250, 
-              background: C.bgCard, 
-              border: `1px solid ${C.ghost}`, 
-              borderRadius: 12, 
-              padding: "1.5rem",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem"
-            }}>
-              <h4 style={{ fontFamily: FONT.condensed, color: tradition.color, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0, display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <IconifyEmoji emoji={tradition.emoji} />
-                <span>{tradition.label}</span>
-              </h4>
-
-              {q ? (
-                <>
-                  <div style={{ 
-                    fontFamily: FONT.body, 
-                    fontSize: "0.88rem", 
-                    color: C.textBright, 
-                    fontStyle: "italic", 
-                    lineHeight: 1.45,
-                    borderLeft: `2px solid ${tradition.color}`,
-                    paddingLeft: "0.75rem",
-                    minHeight: 45,
-                    display: "flex",
-                    alignItems: "center"
-                  }}>
-                    "{q.prompt}"
-                  </div>
-                  
-                  {/* Badges for Question Meta */}
-                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-                    <span style={{
-                      fontFamily: FONT.condensed, fontSize: "0.58rem", fontWeight: 700,
-                      letterSpacing: "0.05em", color: q.type === "open_text" ? "#a8b5c4" : C.dim,
-                      background: q.type === "open_text" ? "rgba(168,181,196,0.1)" : "rgba(255,255,255,0.02)",
-                      border: `1px solid ${q.type === "open_text" ? "rgba(168,181,196,0.2)" : C.ghost}`,
-                      borderRadius: 999, padding: "0.1rem 0.4rem",
-                    }}>
-                      {q.type === "open_text" ? "QUAL" : "QUANT"}
-                    </span>
-                    <span style={{ fontFamily: FONT.mono, fontSize: "0.58rem", color: C.dim }}>
-                      {q.id}
-                    </span>
-                  </div>
-
-                  <DataLoader question={q} />
-                </>
-              ) : (
-                <div style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: `1px dashed ${C.ghost}`,
-                  borderRadius: 8,
-                  padding: "2rem 1rem",
-                  color: C.dim,
-                  fontStyle: "italic",
-                  fontSize: "0.85rem",
-                  textAlign: "center",
-                  background: "rgba(255,255,255,0.005)",
-                  minHeight: 180
-                }}>
-                  This topic was not asked of {tradition.label} respondents.
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </section>
+      <DataLoader question={question} shortenLabels={!compact} />
+    </div>
   );
 }
 
-// ── DATA LOADER HELPER ─────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SHARED LEGEND (for long option labels)
+// ═══════════════════════════════════════════════════════════════════════════
+function SharedLegend({ q }) {
+  const opts = q.id === "culture_body_intervention_view" ? [
+    "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
+    "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",
+    "Lean Towards Medical Optimization: \"I believe medical science can and often should be used to improve upon, manage, or optimize the body's natural state, even in the absence of disease.\"",
+    "Lean Towards Natural State: \"I believe the body's natural design should be trusted and preserved unless there is a clear, present medical problem.\""
+  ] : q.opts;
+
+  return (
+    <div style={{
+      maxWidth: 900,
+      margin: "2.5rem auto 0",
+      padding: "1.2rem 1.6rem",
+      background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)",
+      border: `1px solid ${C.ghost}`,
+      borderRadius: 12,
+      fontSize: "0.84rem",
+      color: C.text,
+      lineHeight: 1.5,
+      textAlign: "left",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.6rem",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.15)"
+    }}>
+      <div style={{
+        fontFamily: FONT.condensed,
+        color: C.gold,
+        fontSize: "0.72rem",
+        textTransform: "uppercase",
+        letterSpacing: "0.1em",
+        fontWeight: 700,
+        display: "flex",
+        alignItems: "center",
+        gap: "0.3rem",
+        marginBottom: "0.2rem"
+      }}>
+        <span>★</span> Shared Legend
+      </div>
+      {opts.map((opt, idx) => {
+        const hasColon = opt.includes(":");
+        if (!hasColon && q.id !== "culture_body_intervention_view") return null;
+
+        const title = hasColon ? opt.split(":")[0] : opt;
+        const desc = hasColon ? opt.slice(title.length + 1) : "";
+        const color = colorForLabel(title, idx);
+
+        return (
+          <div key={idx} style={{ display: "flex", gap: "0.6rem", alignItems: "flex-start" }}>
+            <div style={{
+              width: 12, height: 12, borderRadius: 2,
+              background: color,
+              flexShrink: 0,
+              marginTop: "0.3rem"
+            }} />
+            <div style={{ flex: 1 }}>
+              <span style={{ fontWeight: 700, color: C.textBright }}>{title}{hasColon ? ":" : ""} </span>
+              {hasColon && <span style={{ color: C.muted }}>{desc.trim()}</span>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+
+// Questions tagged as multi_select in the DB but whose responses are actually
+// free-text narratives. They should NOT be comma-split by flattenMultiSelect.
+const NARRATIVE_MULTI_SELECT = new Set([
+  "religion_jewish_alternatives_thoughts",
+  "religion_jewish_diversity_view",
+  "religion_jewish_brit_shalom_awareness",
+  "religion_islamic_alternatives_thoughts",
+  "religion_islamic_intact_reconciliation",
+]);
+
 function DataLoader({ question, filter, shortenLabels, hideLegend }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Treat narrative multi-selects as open_text for API endpoint selection
+  const effectiveType = NARRATIVE_MULTI_SELECT.has(question?.id) ? "open_text" : question?.type;
+
   useEffect(() => {
     if (!question) return;
     setLoading(true);
-    const endpoint = question.type === "open_text" ? "narratives" : "response-distribution";
+    const endpoint = effectiveType === "open_text" ? "narratives" : "response-distribution";
     let url = `${API_BASE}/${endpoint}?q=${question.id}`;
     if (filter) url += `&filter=${filter}`;
 
@@ -428,36 +719,37 @@ function DataLoader({ question, filter, shortenLabels, hideLegend }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [question, filter]);
+  }, [question, filter, effectiveType]);
 
   if (loading) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>Loading data...</div>;
   if (!data) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>No data.</div>;
 
-  const dist = question.type === "open_text" ? data.narratives : data.distribution;
+  const dist = effectiveType === "open_text" ? data.narratives : data.distribution;
   if (!dist || dist.length === 0) {
     return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem", padding: "0.5rem" }}>No responses.</div>;
   }
 
   const isMulti = question.type === "multi_select" || ["demo_ethnicity", "demo_race_ethnicity", "demo_gender_identity", "demo_sexuality"].includes(question.id);
-  const chartData = isMulti && question.type !== "open_text" ? {
+  const chartData = isMulti && effectiveType !== "open_text" ? {
     ...data,
     distribution: flattenMultiSelect(data.distribution, question)
   } : data;
 
-  return question.type === "open_text" ? (
-    <div style={{ maxHeight: "350px", overflowY: "auto", paddingRight: "0.25rem", marginTop: "-0.5rem" }}>
-      <NarrativeList distribution={dist} hideChart={true} />
+  return effectiveType === "open_text" ? (
+    <div style={{ marginTop: "-0.5rem" }}>
+      <NarrativeList distribution={dist} hideChart={true} viewMode="side-by-side" />
     </div>
   ) : (
-    <DistributionChart 
-      title="" 
-      distribution={chartData} 
-      cohortDistribution={null} 
-      question={question}
-      hideHeader 
-      shortenLabels={shortenLabels}
-      hideLegend={hideLegend}
-    />
+    <SmallSampleBadge n={chartData?.n} label="this group" inline>
+      <DistributionChart
+        title=""
+        distribution={chartData}
+        cohortDistribution={null}
+        question={question}
+        hideHeader
+        shortenLabels={shortenLabels}
+        hideLegend={hideLegend}
+      />
+    </SmallSampleBadge>
   );
 }
-

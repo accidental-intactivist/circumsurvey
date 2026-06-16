@@ -28,7 +28,7 @@ const ROUTE_META = {
   index: {
     kicker: "★ The Accidental Intactivist's Inquiry ★",
     title: "Explore the Data",
-    desc: "501 voices across 8 pathways and 355 questions. Filter by cohort, search, compare, and let the AI Research Assistant guide your exploration.",
+    desc: "501 voices across every pathway and 355 questions. Filter by cohort, search, compare, and let the AI Research Assistant guide your exploration.",
     navTitle: "Master Index",
   },
   pathways: {
@@ -115,6 +115,12 @@ const ROUTE_META = {
     desc: "The core findings of the study summarized in key outcome metrics. Use cohort filters to examine specific subgroups.",
     navTitle: "By The Numbers",
   },
+  culture: {
+    kicker: "Exhibit 12",
+    title: "Culture & Attitudes",
+    desc: "Explore cultural norms, stereotypes, associations, and attitudes regarding circumcision across cohorts.",
+    navTitle: "Culture",
+  },
 };
 
 export const EXHIBIT_ROUTES = [
@@ -129,6 +135,7 @@ export const EXHIBIT_ROUTES = [
   { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors" },
   { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey" },
   { route: "numbers", num: "Exhibit 11", label: "By The Numbers" },
+  { route: "culture", num: "Exhibit 12", label: "Culture & Attitudes" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {

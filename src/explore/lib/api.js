@@ -37,9 +37,8 @@ async function fetchJson(url, retries = 3) {
 
 // ── Cohort filter serialization ────────────────────────────────────────────
 // Cohort is an object like: { generation: "Millennial/Gen Y (born 1981-1996)", country_born: "USA" }
-// We convert to the Worker's `filter=table.column=value` format, picking the FIRST
-// non-null filter (Worker currently supports one filter at a time — multi-filter
-// requires a Worker upgrade, scheduled for v8.2).
+// We convert to the Worker's `filter=table.column=value` format.
+// Multiple filters are supported and chained as AND conditions.
 
 export function cohortToFilterParams(cohort) {
   if (!cohort) return [];

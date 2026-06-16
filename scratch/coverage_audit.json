@@ -1,0 +1,2272 @@
+{
+  "total": 347,
+  "surfaced_count": 182,
+  "unsurfaced_count": 165,
+  "pathway_breakdown": {
+    "all": {
+      "total": 119,
+      "surfaced": 97,
+      "unsurfaced": 22
+    },
+    "intact": {
+      "total": 31,
+      "surfaced": 22,
+      "unsurfaced": 9
+    },
+    "circumcised": {
+      "total": 52,
+      "surfaced": 22,
+      "unsurfaced": 30
+    },
+    "restoring": {
+      "total": 27,
+      "surfaced": 19,
+      "unsurfaced": 8
+    },
+    "observer": {
+      "total": 106,
+      "surfaced": 22,
+      "unsurfaced": 84
+    },
+    "trans": {
+      "total": 9,
+      "surfaced": 0,
+      "unsurfaced": 9
+    },
+    "intersex": {
+      "total": 3,
+      "surfaced": 0,
+      "unsurfaced": 3
+    }
+  },
+  "unsurfaced_questions": [
+    {
+      "id": "circ_presentation_by_medical",
+      "pathway": "circumcised",
+      "type": "multi_select",
+      "prompt": "Based on your understanding of healthcare at the time, how do you believe the topic of circumcision was likely PRESENTED"
+    },
+    {
+      "id": "circ_restoration_awareness",
+      "pathway": "circumcised",
+      "type": "multi_select",
+      "prompt": "Have you ever considered or researched options like foreskin RESTORATION (using methods to gradually regrow skin for gla"
+    },
+    {
+      "id": "circ_adult_consent_status",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "Was this procedure something you actively consented to and chose for yourself?"
+    },
+    {
+      "id": "meta_consent",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "Consent"
+    },
+    {
+      "id": "demo_age",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "What is your approximate age?"
+    },
+    {
+      "id": "exp_orgasm_confidence_rating",
+      "pathway": "all",
+      "type": "multi_select",
+      "prompt": "And, if you're comfortable sharing, how would you rate your general confidence that your orgasms are as intense or fulfi"
+    },
+    {
+      "id": "exp_pleasure_comm_difficulty",
+      "pathway": "all",
+      "type": "multi_select",
+      "prompt": "When it comes to partnered sex and intimacy, have you ever felt it was difficult to communicate what types of touch prov"
+    },
+    {
+      "id": "exp_needs_comm_ability",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "How would you describe your ability to communicate your sexual needs and what provides you pleasure to a partner?"
+    },
+    {
+      "id": "pathway_state",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "What is your circumcision state?"
+    },
+    {
+      "id": "intact_parents_handling_of_topic",
+      "pathway": "intact",
+      "type": "single_select",
+      "prompt": "Based on what you know, how was the topic of circumcision likely handled around the time of your birth? (If applicable)"
+    },
+    {
+      "id": "circ_scar_perception",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "How do you personally perceive your circumcision scar?"
+    },
+    {
+      "id": "circ_physical_symptoms",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Separate from any formal interventions, have you personally experienced any ongoing physical SYMPTOMS or challenges you "
+    },
+    {
+      "id": "family_sibling_count",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "Do you have any male (AMAB) SIBLINGS (brothers, including half-brothers or step-brothers raised with you) and if so, how"
+    },
+    {
+      "id": "restore_regen_tech_feelings",
+      "pathway": "restoring",
+      "type": "single_select",
+      "prompt": "Knowing this possibility exists:"
+    },
+    {
+      "id": "observe_partner_experience",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "As a PARTNER, what have you observed or experienced regarding your partner's genital anatomy (intact, circumcised, or re"
+    },
+    {
+      "id": "observe_partner_cultural_diff",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "If you are the PARTNER of someone whose circumcision status is different from what is most common in your culture, have "
+    },
+    {
+      "id": "observe_parent_info_quality",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "As a PARENT or GUARDIAN, how adequate or biased did you find the information available to you from medical professionals"
+    },
+    {
+      "id": "observe_professional_counseling_stance",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "What is your general stance or approach when counseling parents about routine infant circumcision?"
+    },
+    {
+      "id": "observe_healthcare_parent_questions",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "In your practice, what are the most common questions or concerns you hear from parents regarding this procedure?"
+    },
+    {
+      "id": "observe_barrier_to_recognition",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What was your personal \"tipping point\" that moved you from a passive observer to an active advocate?"
+    },
+    {
+      "id": "observe_effective_strategy",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Conversely, what strategy or argument have you found to be the least effective or most likely to backfire and shut down "
+    },
+    {
+      "id": "observe_woman_blind_spot",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "From your unique standpoint, what is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding mal"
+    },
+    {
+      "id": "observe_woman_final_thoughts",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Is there anything else you'd like to share based on your observations, experiences, or your reasons for being interested"
+    },
+    {
+      "id": "final_transparent_monster_resonance",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "The \"Accidental Intactivist\" (that's me, the survey author!) argues that routine infant circumcision is a \"transparent m"
+    },
+    {
+      "id": "intact_notice_significance",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "When you DO notice someone's circumcision state (whether same or different from yours), how significant or prominent is "
+    },
+    {
+      "id": "demo_birth_location",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "In what type of location were you born?"
+    },
+    {
+      "id": "demo_birth_attendant",
+      "pathway": "all",
+      "type": "single_select",
+      "prompt": "Who was the primary medical attendant at your birth, to the best of your knowledge?"
+    },
+    {
+      "id": "circ_parents_social_norm",
+      "pathway": "intact",
+      "type": "single_select",
+      "prompt": "To the best of your knowledge, what was the circumcision norm within your parents' immediate social circle (close friend"
+    },
+    {
+      "id": "intact_parents_resistance_faced",
+      "pathway": "intact",
+      "type": "single_select",
+      "prompt": "Based on what you've been told, did your parents encounter any pushback or questioning from medical staff, family, or fr"
+    },
+    {
+      "id": "circ_parents_emotional_state",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "When you think about your parents making this decision, which of these statements best captures the emotional or psychol"
+    },
+    {
+      "id": "circ_parents_regret",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Have you ever sensed or discussed whether your parents, in retrospect, had any second thoughts or regrets about their de"
+    },
+    {
+      "id": "observe_all_perceived_significance",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "When you think about the decision to circumcise a newborn, how significant or impactful do you perceive that choice to b"
+    },
+    {
+      "id": "observe_all_comfort_discussing",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Imagine a close friend or family member was expecting a boy and asked for your thoughts on circumcision. How comfortable"
+    },
+    {
+      "id": "circ_adult_context",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "What was the primary nature of your circumcision?"
+    },
+    {
+      "id": "circ_adult_info_quality",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Reflecting on the information you received before the procedure, how well-informed did you feel about the potential chan"
+    },
+    {
+      "id": "circ_adult_decision_role",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "How would you describe your role in the decision-making process?"
+    },
+    {
+      "id": "circ_adult_before_rating_appearance",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_before_rating_function",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_before_rating_orgasm_intensity",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_before_rating_ease_of_orgasm",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_before_rating_sensitivity",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_before_rating_hygiene",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+    },
+    {
+      "id": "circ_adult_after_change_appearance",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_after_change_function",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_after_change_orgasm_intensity",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_after_change_ease_of_orgasm",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_after_change_sensitivity",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_after_change_hygiene",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've ex"
+    },
+    {
+      "id": "circ_adult_new_normal_desc",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "In your own words, what has the transition to your \"new normal\" been like?"
+    },
+    {
+      "id": "circ_adult_retrospective_feeling",
+      "pathway": "circumcised",
+      "type": "single_select",
+      "prompt": "Overall, looking back, how do you feel about your choice to be circumcised (or the decision that was made for you)?"
+    },
+    {
+      "id": "observe_parent_multi_hat_selection",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Which of the following best describes your family's situation regarding the circumcision of your son(s) or AMAB children"
+    },
+    {
+      "id": "observe_parent_birth_location",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Thinking about the birth of your child or children, what was the primary type of location where they were/will be born?"
+    },
+    {
+      "id": "observe_parent_intact_exposure",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Before you gave birth to your child, had you ever had any direct, personal experience with an intact (uncircumcised) pen"
+    },
+    {
+      "id": "observe_parent_circ_social_norm",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "In your immediate social circle (close friends, peers, family) at the time, what was the general expectation or norm for"
+    },
+    {
+      "id": "observe_parent_son_youngest_yob",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "To help us understand the time frame of you as a parent in what year was your youngest son/AMAB child born?"
+    },
+    {
+      "id": "observe_parent_primary_role",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "To begin, which of the following best describes your primary parenting or guardianship role for the AMAB (Assigned Male "
+    },
+    {
+      "id": "observe_parent_circ_social_norm_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "To the best of your knowledge, what was the circumcision norm within your immediate social circle (close friends, family"
+    },
+    {
+      "id": "observe_parent_intact_resistance_faced",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Did you encounter any pushback, questioning, or pressure from medical staff, family, or friends regarding your decision "
+    },
+    {
+      "id": "observe_parent_intact_tipping_point",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Beyond the general factors you just selected, can you pinpoint any specific resources, events, or key pieces of informat"
+    },
+    {
+      "id": "observe_parent_intact_decision_timeline",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Thinking about the timeline, when did you finalize your decision to keep your son intact?"
+    },
+    {
+      "id": "observe_parent_intact_exposure_to_pro",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Before making your decision, were you ever exposed to information or perspectives that were strongly in favor of routine"
+    },
+    {
+      "id": "observe_parent_intact_son_feedback",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Have any of your son(s)/AMAB children ever given you any feedback or expressed feelings (positive, negative, or neutral)"
+    },
+    {
+      "id": "observe_partner_blind_spot_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "From your perspective, what is the most significant misconception the general public has about your partner's anatomical"
+    },
+    {
+      "id": "observe_healthcare_role_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "What is your PRIMARY MEDICAL ROLE or specialty?"
+    },
+    {
+      "id": "observe_healthcare_stance_colleagues",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "What is your general stance or approach when counseling parents about routine infant circumcision?"
+    },
+    {
+      "id": "observe_healthcare_stance_friends_family",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "What is your general stance or approach when counseling parents about routine infant circumcision?"
+    },
+    {
+      "id": "observe_healthcare_sensation_discussion_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "How often, in your experience, does the topic of foreskin function, gliding mechanics, or specific sensory structures co"
+    },
+    {
+      "id": "observe_healthcare_consent_quality_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "From your professional viewpoint, how adequate do you believe the typical informed consent process is for routine infant"
+    },
+    {
+      "id": "observe_healthcare_facility_type",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "In what type of facility or practice setting do you primarily work?"
+    },
+    {
+      "id": "observe_healthcare_self_status",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "If you are male/AMAB, what is your own circumcision state?"
+    },
+    {
+      "id": "observe_advocate_primary_role",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "How would you best describe your primary role or focus within the genital autonomy movement?"
+    },
+    {
+      "id": "observe_advocate_barrier_to_recognition_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "In your experience, what do you believe is the most critical barrier to widespread recognition of non-therapeutic infant"
+    },
+    {
+      "id": "observe_advocate_effective_strategy_v2",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "What strategy, argument, or piece of information do you find most effective in engaging people in a thoughtful, producti"
+    },
+    {
+      "id": "observe_curious_initial_awareness",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Before encountering this survey or similar discussions, what was your general understanding or awareness of the differen"
+    },
+    {
+      "id": "observe_curious_partner_experience",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "Have you had direct, personal experience (e.g., through intimate partners) with both intact and circumcised male partner"
+    },
+    {
+      "id": "observe_curious_partner_experience_desc",
+      "pathway": "observer",
+      "type": "single_select",
+      "prompt": "If you have experience with both, have you observed any noticeable differences in terms of intimacy, function, or your p"
+    },
+    {
+      "id": "meta_timestamp",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Timestamp"
+    },
+    {
+      "id": "exp_orgasm_desc",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "How would you describe your typical ORGASM experience in terms of its INTENSITY, BUILD-UP, and overall QUALITY of pleasu"
+    },
+    {
+      "id": "exp_lubrication_comments",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Any additional comments on your experience with lubrication (or lack of need for it)?"
+    },
+    {
+      "id": "exp_pleasure_comm_elaboration",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "If you have experienced this disconnect, could you briefly elaborate on what that's like or in what situations it occurs"
+    },
+    {
+      "id": "circ_medical_intervention_desc",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "If yes, please briefly describe the intervention(s), your age at the time, who initiated it (e.g., parent, doctor, self)"
+    },
+    {
+      "id": "intact_growing_up_experience",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "Would you like to share anything about what it was like for you growing up intact?"
+    },
+    {
+      "id": "intact_foreskin_role_sex",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "How would you describe your complete FORESKIN (the moveable sheath of skin) play in your sexual experiences (masturbatio"
+    },
+    {
+      "id": "intact_frenulum_role_sex",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "And what about the FRENULUM (the V-shaped band of tissue on the underside, connecting the foreskin to the glans)?"
+    },
+    {
+      "id": "intact_partner_comparison_desc",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "If yes, can you briefly describe the types of differences you've noted?"
+    },
+    {
+      "id": "intact_preferred_terminology",
+      "pathway": "intact",
+      "type": "open_text",
+      "prompt": "How do you feel about terms like \"uncircumcised\" or \"uncut\" to describe your natural state?"
+    },
+    {
+      "id": "circ_physical_characteristics_desc",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "When you look at your penis, how would you describe the specific characteristics of your circumcision?"
+    },
+    {
+      "id": "circ_physical_symptoms_desc",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "If yes, please briefly describe the issue(s)"
+    },
+    {
+      "id": "restore_openness",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "Have you been open with partners, friends, or family about your restoration journey?"
+    },
+    {
+      "id": "restore_terminology_view",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "From your perspective, what does the term \"uncircumcised\" or \"uncut\" mean to you as someone who has restored?"
+    },
+    {
+      "id": "restore_regen_tech_comments",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "Anything else you'd like to say about biological Regenerative Technologies"
+    },
+    {
+      "id": "observe_parent_regret",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Have you ever experienced feelings of REGRET or reconsidered that decision based on information learned later or changes"
+    },
+    {
+      "id": "observe_professional_training_protocol",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What training, guidelines, or protocols have most influenced how you present circumcision to parents?"
+    },
+    {
+      "id": "observe_professional_attitudes_change",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What, if any, changes have you observed in medical consensus or parental attitudes towards routine infant circumcision ("
+    },
+    {
+      "id": "observe_advocate_fgm_mgm_parallel",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting ve"
+    },
+    {
+      "id": "culture_stereotype_intact",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Thinking back to your upbringing or just general societal messages (from peers, media, family, health class), what was a"
+    },
+    {
+      "id": "culture_stereotype_circ",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Similarly, what was a common STEREOTYPE, assumption, or \"fact\" that 'everyone seemed to know' about CIRCUMCISED penises?"
+    },
+    {
+      "id": "final_missing_info_opinion",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "What do you think is the single most important piece of information that people (especially expectant parents or young m"
+    },
+    {
+      "id": "final_transparent_monster_reason",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Please feel free to briefly explain your answer. Why does (or doesn't) this metaphor feel accurate to you?"
+    },
+    {
+      "id": "final_anything_else",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Is there anything else you'd like to share about your experiences, observations, feelings about this topic, or anything "
+    },
+    {
+      "id": "demo_country_born_specify",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Please specify the country or territory in which you were born"
+    },
+    {
+      "id": "demo_country_current_specify",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "Please specify the COUNTRY/REGION/TERRITORY where you primarily live now"
+    },
+    {
+      "id": "meta_survey_source",
+      "pathway": "all",
+      "type": "open_text",
+      "prompt": "One last question to help us improve our outreach: Where did you first hear about this survey?"
+    },
+    {
+      "id": "restore_tipping_point",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "Was there a single piece of information, a specific experience, or a particular realization that acted as the \"final str"
+    },
+    {
+      "id": "restore_disclosure_reaction",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "When you have chosen to disclose your restoration journey to others (partners, friends, family, medical professionals), "
+    },
+    {
+      "id": "restore_body_image_shift",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "How has the act of restoring changed your relationship with your own genitals and your overall body image?"
+    },
+    {
+      "id": "restore_success_definition",
+      "pathway": "restoring",
+      "type": "open_text",
+      "prompt": "What does \"success\" or \"completion\" look like for you in your restoration journey?"
+    },
+    {
+      "id": "circ_adult_advice_to_others",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "What advice would you give to another intact adult who is considering circumcision today?"
+    },
+    {
+      "id": "circ_adult_final_thoughts",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "Is there anything else you'd like to share about your experience being circumcised as a teen or adult?"
+    },
+    {
+      "id": "observe_parent_circ_regret_reasons",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What are the primary reasons you now feel regret or have second thoughts about your decision?"
+    },
+    {
+      "id": "observe_healthcare_training_protocol",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What training or protocols influenced how you present circumcision to parents?"
+    },
+    {
+      "id": "observe_healthcare_attitudes_change",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What, if any, changes have you observed in medical consensus or parental attitudes towards RIC over your career?"
+    },
+    {
+      "id": "observe_advocate_barrier_to_recognition",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an "
+    },
+    {
+      "id": "observe_advocate_effective_strategy",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What strategy or piece of information do you find most effective in engaging people in thoughtful conversation about thi"
+    },
+    {
+      "id": "observe_parent_circ_complications_exist",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Did your child require any follow-up medical interventions due to complications from being circumcised?"
+    },
+    {
+      "id": "observe_parent_circ_lawsuit_cta_openness",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Knowing this, would you be open to confidentially learning more about what becoming a plaintiff in such a case might ent"
+    },
+    {
+      "id": "observe_parent_circ_complications_desc",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "If yes, is there anything you're willing to share about any complications or medical treatments your child required foll"
+    },
+    {
+      "id": "observe_parent_son_oldest_yob",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "In what year was your OLDEST son/AMAB child born?"
+    },
+    {
+      "id": "observe_parent_youngest_son_decision",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Thinking about your YOUNGEST son/AMAB child, what was the decision you made regarding his circumcision?"
+    },
+    {
+      "id": "observe_parent_circ_decision_maker",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Were you (and your spouse/partner if applicable,) the primary decision-maker for your child's circumcision, or had the p"
+    },
+    {
+      "id": "observe_parent_mixed_shift_factors",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Between these children, something shifted in your decision-making process. What were the key factors that led you to mak"
+    },
+    {
+      "id": "observe_parent_mixed_shift_story",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "If you're willing to share, could you tell us the story of that evolution in your own words?"
+    },
+    {
+      "id": "observe_parent_mixed_family_experience",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What was the experience of making a different choice like for your family?"
+    },
+    {
+      "id": "observe_parent_mixed_retrospective_feeling",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Looking back now, how do you feel about having children with different statuses?"
+    },
+    {
+      "id": "observe_parent_oldest_son_decision",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Thinking about your OLDEST son/AMAB child, what was the decision you made regarding his circumcision?"
+    },
+    {
+      "id": "observe_parent_circ_factors",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What were the most significant factors influencing your decision to have your child or children circumcised?"
+    },
+    {
+      "id": "observe_parent_circ_decision_timeline",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Thinking about the timeline, when did you finalize your decision to have your (first) son circumcised?"
+    },
+    {
+      "id": "observe_parent_circ_exposure_to_critique",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Before making your decision, were you ever exposed to information or perspectives that were critical of or advised again"
+    },
+    {
+      "id": "observe_parent_circ_son_feedback",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Has your son ever given you any feedback or expressed feelings (positive, negative, or neutral) about his circumcision?"
+    },
+    {
+      "id": "observe_parent_intact_son_feedback_emotion",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "If your son did express feelings about it, what was your emotional experience as a parent during that conversation?"
+    },
+    {
+      "id": "observe_healthcare_complications_desc",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "If you're willing to share, what types of complications have you seen?"
+    },
+    {
+      "id": "observe_curious_blind_spot",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "From your unique standpoint, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT you observ"
+    },
+    {
+      "id": "observe_student_field_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What is your primary field of study or research discipline?"
+    },
+    {
+      "id": "observe_student_status_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What is your current academic or professional status?"
+    },
+    {
+      "id": "observe_student_primary_interest_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What is your primary interest in the topic of genital cutting / circumcision?"
+    },
+    {
+      "id": "observe_student_dataset_utility_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "From your perspective as a researcher or student, how might a large, qualitative/quantitative dataset like the one we ar"
+    },
+    {
+      "id": "observe_student_method_challenge_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What do you see as the biggest methodological challenge or limitation in conducting research on this topic?"
+    },
+    {
+      "id": "observe_student_pro_circ_argument_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "If you hold a pro-circumcision or skeptical viewpoint regarding intactivist messaging, what is the strongest piece of ev"
+    },
+    {
+      "id": "observe_student_literature_gap_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "From your unique standpoint, what do you believe is the most significant gap in the current academic literature regardin"
+    },
+    {
+      "id": "observe_undecided_info_sources_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "As you navigate this decision, what are the primary sources of information you are relying on or have consulted so far?"
+    },
+    {
+      "id": "observe_undecided_pros_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What are the main arguments or reasons IN FAVOR of circumcision that you are currently weighing?"
+    },
+    {
+      "id": "observe_undecided_cons_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "And what are the main arguments or reasons AGAINST circumcision (i.e., for leaving your son intact) that you are weighin"
+    },
+    {
+      "id": "observe_undecided_emotional_state_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "How would you describe the emotional state you and your partner (if applicable) are in regarding this decision?"
+    },
+    {
+      "id": "observe_undecided_key_question_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What is the single most important question you have that, if answered, would help you make your final decision with more"
+    },
+    {
+      "id": "observe_undecided_fear_circ_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Thinking about the possibility of choosing circumcision, what is your biggest FEAR or ANXIETY about that potential outco"
+    },
+    {
+      "id": "observe_undecided_fear_intact_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Now, thinking about the possibility of leaving your son intact, what is your biggest FEAR or ANXIETY about that potentia"
+    },
+    {
+      "id": "observe_skeptic_primary_reason_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "In general, what is your primary reason for SKEPTICISM regarding the anti-circumcision or intactivist movement?"
+    },
+    {
+      "id": "observe_skeptic_strongest_pro_arg_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Which pro-circumcision argument do you find to be the most logically sound or compelling?"
+    },
+    {
+      "id": "observe_skeptic_weakest_anti_arg_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Conversely, which anti-circumcision (intactivist) argument do you find to be the weakest, least convincing, or most flaw"
+    },
+    {
+      "id": "observe_skeptic_persuasion_factors_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "What would it take for you to find the intactivist perspective more credible or persuasive?"
+    },
+    {
+      "id": "observe_skeptic_final_thoughts_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Is there anything else you'd like to share about your perspective or the reasons for your skepticism?"
+    },
+    {
+      "id": "q346",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "Before your gender-affirming surgery, what was the circumcision state of your penis?"
+    },
+    {
+      "id": "q348",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "Did your pre-surgery circumcision state have any notable impact on your gender-affirming surgery?"
+    },
+    {
+      "id": "q350",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "Would you be willing to reflect on your experience before your GRS?"
+    },
+    {
+      "id": "q351",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "Which type of masculinizing gender-affirming bottom surgery have you undergone?"
+    },
+    {
+      "id": "q352",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "During your surgical process, was a \"circumcised\" or \"intact\" (with a constructed foreskin) appearance a choice you cons"
+    },
+    {
+      "id": "q353",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?"
+    },
+    {
+      "id": "q354",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?"
+    },
+    {
+      "id": "q355",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?"
+    },
+    {
+      "id": "q356",
+      "pathway": "trans",
+      "type": "open_text",
+      "prompt": "From your unique perspective of having actively constructed an affirming body, what are your thoughts on performing non-"
+    },
+    {
+      "id": "q357",
+      "pathway": "intersex",
+      "type": "open_text",
+      "prompt": "How has the topic of non-consensual or \"normalizing\" genital surgery intersected with your own life and body?"
+    },
+    {
+      "id": "q358",
+      "pathway": "intersex",
+      "type": "open_text",
+      "prompt": "From your unique perspective, how do you see the common practice of routine infant circumcision in relation to the broad"
+    },
+    {
+      "id": "q359",
+      "pathway": "intersex",
+      "type": "open_text",
+      "prompt": "In addition to your experience as an intersex person, do you also have experiences that align with the Intact or Circumc"
+    },
+    {
+      "id": "observe_parent_circ_decision_maker_v2",
+      "pathway": "observer",
+      "type": "open_text",
+      "prompt": "Were you the primary decision-maker for your child's circumcision, or had the procedure already been performed before th"
+    },
+    {
+      "id": "circ_adult_after_change_v2",
+      "pathway": "circumcised",
+      "type": "open_text",
+      "prompt": "Now, thinking about your experience *after* you were fully healed from your circumcision, please rate the change you've "
+    }
+  ],
+  "surfaced_questions": [
+    {
+      "id": "circ_adult_motivation_details",
+      "files": [
+        "formatters.js",
+        "pathways.test.js"
+      ]
+    },
+    {
+      "id": "circ_advantages_desc",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_age",
+      "files": [
+        "formatters.js",
+        "formatters.test.js",
+        "pathways.test.js"
+      ]
+    },
+    {
+      "id": "circ_awareness_age",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "circ_curiosity_about_intact",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "circ_curiosity_about_intact_aspects",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_drawbacks_desc",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_medical_intervention",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_message_to_parents",
+      "files": [
+        "NarrativeMirrorsPage.jsx",
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_notice_same_status",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "circ_parents_convo",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "circ_parents_convo_why_not",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_parents_driver",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_parents_influences",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "circ_parents_info_quality",
+      "files": [
+        "pathways.test.js"
+      ]
+    },
+    {
+      "id": "circ_parents_reason",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_ppp_awareness",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "QuestionPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "circ_ppp_impact",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_prior_thought_level",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "circ_regret_feeling",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "GenerationalFaultlinesPage.jsx",
+        "GenerationalTrendChart.jsx",
+        "MirrorPairsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "circ_regret_triggers",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_additional_comments",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "culture_assoc_conservative_values",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_easier_care",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_higher_education",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_higher_ses",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_liberal_values",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_medically_healthier",
+      "files": [
+        "GenerationalFaultlinesPage.jsx",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_aesthetic",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_hygienic",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_masculine",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_modern",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_natural",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_sensitive",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_socially_acceptable",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_more_traditional",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_assoc_partner_preference",
+      "files": [
+        "GenerationalFaultlinesPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_body_intervention_view",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "culture_community_expectation",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_primary_view_of_circ",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "culture_social_pressure_role",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx",
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_can_province_born",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_can_province_current",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_country_born",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "demo_country_current",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_education_self",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_ethnicity",
+      "files": [
+        "QuestionPage.jsx",
+        "ReligiousMirrorsPage.jsx",
+        "RestorationJourneyPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "demo_gender_identity",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "QuestionPage.jsx",
+        "ReligiousMirrorsPage.jsx",
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_generation",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "demo_sex_assigned_at_birth",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_sexuality",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "QuestionPage.jsx",
+        "ReligiousMirrorsPage.jsx",
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_us_state_born",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx"
+      ]
+    },
+    {
+      "id": "demo_us_state_current",
+      "files": [
+        "QuestionPage.jsx",
+        "ReportBuilderPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_appearance_feeling",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_lubrication_need",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_orgasm_duration_desc",
+      "files": [
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "exp_pre_ejaculate_awareness",
+      "files": [
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "exp_pride_satisfaction_rating",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "DemographicsDashboardPage.jsx",
+        "GenerationalFaultlinesPage.jsx",
+        "GenerationalTrendChart.jsx"
+      ]
+    },
+    {
+      "id": "exp_sensitivity_desc",
+      "files": [
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_ease_of_orgasm",
+      "files": [
+        "DemographicsDashboardPage.jsx",
+        "PleasureGapPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_orgasm_duration",
+      "files": [
+        "PleasureGapPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_orgasm_intensity",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "DemographicsDashboardPage.jsx",
+        "MirrorPairsPage.jsx",
+        "PleasureGapPage.jsx",
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_pleasure_mobile_skin",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "DemographicsDashboardPage.jsx",
+        "MirrorPairsPage.jsx",
+        "PleasureGapPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_sensitivity_light_touch",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "DemographicsDashboardPage.jsx",
+        "MirrorPairsPage.jsx",
+        "PleasureGapPage.jsx"
+      ]
+    },
+    {
+      "id": "exp_sex_rating_variety_of_sensation",
+      "files": [
+        "DemographicsDashboardPage.jsx",
+        "MirrorPairsPage.jsx",
+        "PleasureGapPage.jsx"
+      ]
+    },
+    {
+      "id": "family_cultural_background",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "family_father_education",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "family_father_profession",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "family_father_status",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "family_mother_education",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "family_mother_profession",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "family_politics",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "family_ses",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "MiniSparkline.test.jsx"
+      ]
+    },
+    {
+      "id": "family_sibling_status",
+      "files": [
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "family_sibling_status_mixed_reason",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "family_upbringing_status",
+      "files": [
+        "CorrelationExplorerPage.jsx"
+      ]
+    },
+    {
+      "id": "final_aesthetic_preference",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_avg_pleasure_belief",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_child_decision_reason",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_core_principle_choice",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "final_ethical_consideration_belief",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_ethics_cosmetic_alteration_minor",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_healthier_hygienic_belief",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_partner_preference_belief",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_partner_preference_reason",
+      "files": [
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_pleasure_potential_belief",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_prediction_future_of_ric",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "final_social_norm_perception",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "DemographicSankey.jsx",
+        "DemographicsDashboardPage.jsx",
+        "GenerationalFaultlinesPage.jsx",
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_advantages_desc",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_circ_awareness_age",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_curiosity_about_circ",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_curiosity_about_circ_aspects",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_drawbacks_desc",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_medical_intervention",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_message_to_others",
+      "files": [
+        "NarrativeMirrorsPage.jsx",
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_notice_diff_status",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_notice_same_status",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_parents_convo",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "intact_parents_convo_why_not",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_parents_driver",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_parents_info_sources",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_parents_neg_catalyst",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_parents_reason",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_parents_traits_values",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_partner_comparison_observation",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "intact_ppp_awareness",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "QuestionPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "intact_ppp_impact",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "QuestionPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_pressure_to_circ",
+      "files": [
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "intact_prior_thought_level",
+      "files": [
+        "MirrorPairsPage.jsx"
+      ]
+    },
+    {
+      "id": "intact_regret_feeling",
+      "files": [
+        "ByTheNumbersPage.jsx",
+        "CorrelationExplorerPage.jsx",
+        "GenerationalFaultlinesPage.jsx",
+        "MirrorPairsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "intact_regret_triggers",
+      "files": [
+        "MirrorPairsPage.jsx",
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_advocate_future_focus",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "observe_all_social_climate_discussion",
+      "files": [
+        "GenerationalFaultlinesPage.jsx",
+        "GenerationalTrendChart.jsx"
+      ]
+    },
+    {
+      "id": "observe_curious_shaping_factors",
+      "files": [
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "observe_healthcare_blind_spot_v2",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_complications_seen_v2",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_counseling_stance",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_prediction_future_ric",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_avoid",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_lean_against",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_lean_for",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_neutral",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_rec_against",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_healthcare_stance_rec_for",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_motivation",
+      "files": [
+        "formatters.js",
+        "formatters.test.js",
+        "pathways.js"
+      ]
+    },
+    {
+      "id": "observe_parent_circ_advice",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_parent_decision_factors",
+      "files": [
+        "pathways.test.js"
+      ]
+    },
+    {
+      "id": "observe_parent_emotional_state",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_parent_intact_factors",
+      "files": [
+        "ObserverTriadPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "observe_parent_intact_regret_reconsider",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_partner_advice",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_partner_comm_challenges",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_partner_emotional_state",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "observe_partner_observations",
+      "files": [
+        "ObserverTriadPage.jsx"
+      ]
+    },
+    {
+      "id": "q255",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "q262",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "q269",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "q272",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "q302",
+      "files": [
+        "api.js"
+      ]
+    },
+    {
+      "id": "q347",
+      "files": [
+        "IndexPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_christian_circ_view",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "religion_christian_comments",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_christian_denomination",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_christian_theology_basis",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_is_significant",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_islamic_alternatives_awareness",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_islamic_alternatives_thoughts",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_islamic_fard_vs_sunnah",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_islamic_identity_importance",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_islamic_intact_reconciliation",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_islamic_khitan_view",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "religion_islamic_school",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_islamic_theology_awareness",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_islamic_theology_reasons",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_jewish_alternatives_awareness",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_jewish_alternatives_thoughts",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_jewish_brit_milah_view",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_jewish_brit_shalom_awareness",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_jewish_denomination",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_jewish_diversity_view",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_jewish_identity_importance",
+      "files": [
+        "ReligiousMirrorsPage.jsx",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "religion_jewish_theology_awareness",
+      "files": [
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "religion_primary_tradition",
+      "files": [
+        "CorrelationExplorerPage.jsx",
+        "ReligiousMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_advice_to_others",
+      "files": [
+        "NarrativeMirrorsPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_age_started",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_challenge_reward",
+      "files": [
+        "NarrativeMirrorsPage.jsx",
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_duration",
+      "files": [
+        "RestorationJourneyPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "restore_feelings_before",
+      "files": [
+        "RestorationJourneyPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_aesthetics",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_comfort",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_function",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_orgasm",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_psychology",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_impact_rating_sensation",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_lubrication_change",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_methods",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_motivations",
+      "files": [
+        "NarrativeMirrorsPage.jsx",
+        "RestorationJourneyPage.jsx",
+        "formatters.js"
+      ]
+    },
+    {
+      "id": "restore_orgasm_change_desc",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    },
+    {
+      "id": "restore_rci_current",
+      "files": [
+        "RestorationJourneyPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "restore_rci_start",
+      "files": [
+        "RestorationJourneyPage.jsx",
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "restore_regen_tech_awareness",
+      "files": [
+        "formatters.js",
+        "formatters.test.js"
+      ]
+    },
+    {
+      "id": "restore_sensitivity_change_desc",
+      "files": [
+        "RestorationJourneyPage.jsx"
+      ]
+    }
+  ]
+}

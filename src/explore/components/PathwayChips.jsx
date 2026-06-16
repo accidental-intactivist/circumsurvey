@@ -7,6 +7,7 @@ import { C, FONT } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 
 export default function PathwayChips({ selected, onSelect, compact = false }) {
+  const totalN = PATHWAY_IDS.reduce((sum, id) => sum + (PATHWAYS[id]?.n || 0), 0);
   const size = compact ? {
     padding: "0.28rem 0.6rem",
     fontSize: "0.68rem",
@@ -37,7 +38,7 @@ export default function PathwayChips({ selected, onSelect, compact = false }) {
           transition: "all 0.15s",
         }}
       >
-        All · 501
+        All · {totalN}
       </button>
 
       {PATHWAY_IDS.map((id) => {

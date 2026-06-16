@@ -22,5 +22,23 @@ binding = "AI"
 binding = "VECTORIZE"
 index_name = "circumsurvey-narratives"
 
-# [assets]
-# directory = "./empty_assets"
+# ── Synthesis provider config (swap models without touching code) ──
+# GEMINI_API_KEY is a SECRET — do NOT put it here.
+# Set it with:  wrangler secret put GEMINI_API_KEY
+[vars]
+SYNTH_PROVIDER = "gemini"            # "gemini" | "cloudflare"
+GEMINI_MODEL = "gemini-2.5-flash"    # one-line model swap
+CF_SYNTH_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8-fast"  # fallback model
+CF_ROUTER_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8-fast" # cheap routing model
+
+# ── Per-visitor rate limit for the AI Copilot ──
+# 6 requests / 60s per IP, per Cloudflare location. Adjust `limit` to taste.
+[[ratelimits]]
+name = "AI_RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 6
+  period = 60
+
+# No [assets] — this is a pure API worker, not a static site.

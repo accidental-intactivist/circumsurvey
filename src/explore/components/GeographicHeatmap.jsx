@@ -90,8 +90,6 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const [caGeo, setCaGeo] = useState(null);
   const [worldGeo, setWorldGeo] = useState(null);
 
-  const activeTileUrl = mode === "dark" ? TILE_URL_DARK : TILE_URL_LIGHT;
-
   const isUS = questionId.includes("us_state");
   
   const baseDist = (cohortDistribution?.distribution?.length > 0) 

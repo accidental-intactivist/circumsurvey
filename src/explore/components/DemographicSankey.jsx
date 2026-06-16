@@ -5,8 +5,6 @@ import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
 
-const UNIVERSAL_Q = "final_social_norm_perception";
-
 // Helper to shorten labels for the graph
 function shortLabel(label) {
   if (!label) return "";
@@ -82,7 +80,7 @@ function shortLabel(label) {
 // Generate unique node ID
 const makeId = (type, label) => `${type}_${label}`;
 
-export default function DemographicSankey({ cohort, dimensions, tooltip }) {
+export default function DemographicSankey({ cohort, dimensions, tooltip, targetQuestion = "final_social_norm_perception" }) {
   const [data, setData] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(true);
   const [hoverNode, setHoverNode] = useState(null);
@@ -133,7 +131,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
         const dim2 = dimensions[2].id;
 
         // 1. Get Top for Dim 0
-        const res0 = await getAggregate(UNIVERSAL_Q, { by: dim0, cohort });
+        const res0 = await getAggregate(targetQuestion, { by: dim0, cohort });
         if (cancelled) return;
         
         let counts0 = [];
@@ -153,7 +151,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
 
         // 2. For each top0, get Dim 1 breakdown
         const dim1Promises = top0.map(async (v0) => {
-          const res = await getAggregate(UNIVERSAL_Q, { by: dim1, cohort: { ...cohort, [dim0]: v0 } });
+          const res = await getAggregate(targetQuestion, { by: dim1, cohort: { ...cohort, [dim0]: v0 } });
           return { v0, results: res.results || {} };
         });
         
@@ -190,7 +188,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
 
             // Fire off dim2 queries
             dim2Promises.push((async () => {
-              const pRes = await getAggregate(UNIVERSAL_Q, { 
+              const pRes = await getAggregate(targetQuestion, { 
                 by: dim2, 
                 cohort: { ...cohort, [dim0]: rd.v0, [dim1]: v1 } 
               });
@@ -255,7 +253,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip }) {
 
     buildGraph();
     return () => { cancelled = true; };
-  }, [JSON.stringify(cohort), JSON.stringify(dimensions)]);
+  }, [JSON.stringify(cohort), JSON.stringify(dimensions), targetQuestion]);
 
   // Layout sankey
   const { nodes: graphNodes, links: graphLinks } = useMemo(() => {

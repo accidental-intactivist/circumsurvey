@@ -59,7 +59,7 @@ export const FONT = {
   mono: "'JetBrains Mono', monospace",             // IDs, counts, data
 };
 
-export const API_BASE = "https://findings.circumsurvey.online/api";
+export const API_BASE = "https://circumsurvey-api.c4charkey.workers.dev/api";
 
 // To develop the worker locally, comment the line above:
 // export const API_BASE = (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD) ? "https://findings.circumsurvey.online/api" : "http://localhost:8787/api";

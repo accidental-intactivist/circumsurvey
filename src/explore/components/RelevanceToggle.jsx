@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // RelevanceToggle — the three-state view selector
-// "My Pathway Only" / "Relevant to Me" / "All 355 Questions"
+// "My Pathway Only" / "Relevant to Me" / "All Questions"
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { C, FONT } from "../styles/tokens";
@@ -8,10 +8,11 @@ import { C, FONT } from "../styles/tokens";
 const MODES = [
   { id: "mine", label: "My Pathway Only", tooltip: "Only questions in the selected pathway" },
   { id: "relevant", label: "Relevant", tooltip: "Universal + selected pathway + synthesis" },
-  { id: "all", label: "All 355", tooltip: "Every question, including other pathways" },
+  { id: "all", label: null, tooltip: "Every question, including other pathways" },
 ];
 
-export default function RelevanceToggle({ mode, onChange, disabled = false }) {
+export default function RelevanceToggle({ mode, onChange, disabled = false, totalQuestions = null }) {
+  const allLabel = totalQuestions ? `All ${totalQuestions}` : "All";
   return (
     <div style={{
       display: "inline-flex",
@@ -45,7 +46,7 @@ export default function RelevanceToggle({ mode, onChange, disabled = false }) {
               boxShadow: isActive ? `inset 0 -2px 0 ${C.gold}` : "none",
             }}
           >
-            {m.label}
+            {m.label || allLabel}
           </button>
         );
       })}

@@ -687,8 +687,8 @@ export const sortDistribution = (distArray, question) => {
       if (/non-negotiable|highly recommended|recommended practice/i.test(l)) return 0;
       if (/important tradition|strong cultural practice|cultural norm/i.test(l)) return 1;
       if (/open to discussion|left to parents/i.test(l)) return 2;
-      if (/not a significant topic|not a major topic|non-issue/i.test(l)) return 3;
-      if (/questioned or chose|discouraged or seen as/i.test(l)) return 4;
+      if (/questioned or chose|discouraged or seen as/i.test(l)) return 3;
+      if (/not a significant topic|not a major topic|non-issue/i.test(l)) return 4;
       return 5;
     };
 

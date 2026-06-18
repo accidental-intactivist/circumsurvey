@@ -1,0 +1,758 @@
+[
+  {
+    "id": "meta_timestamp",
+    "col_idx": 0,
+    "section": "Meta",
+    "prompt": "Timestamp"
+  },
+  {
+    "id": "meta_consent",
+    "col_idx": 1,
+    "section": "Meta",
+    "prompt": "Consent"
+  },
+  {
+    "id": "demo_country_born",
+    "col_idx": 2,
+    "section": "Demographics",
+    "prompt": "In which COUNTRY were you BORN?"
+  },
+  {
+    "id": "demo_country_current",
+    "col_idx": 3,
+    "section": "Demographics",
+    "prompt": "In which country are you primarily located now?"
+  },
+  {
+    "id": "demo_us_state_born",
+    "col_idx": 4,
+    "section": "Demographics",
+    "prompt": "Please select the US State or Territory in which you were BORN"
+  },
+  {
+    "id": "demo_us_state_current",
+    "col_idx": 5,
+    "section": "Demographics",
+    "prompt": "In which US STATE or TERRITORY do you live or primarily reside in NOW?"
+  },
+  {
+    "id": "demo_ethnicity",
+    "col_idx": 6,
+    "section": "Demographics",
+    "prompt": "How would you describe your race or ethnicity? (Please select all that apply, or specify if your identity is not listed)"
+  },
+  {
+    "id": "demo_age",
+    "col_idx": 7,
+    "section": "Demographics",
+    "prompt": "What is your approximate age?"
+  },
+  {
+    "id": "demo_generation",
+    "col_idx": 8,
+    "section": "Demographics",
+    "prompt": "Which generation do you most identify with?"
+  },
+  {
+    "id": "demo_education_self",
+    "col_idx": 9,
+    "section": "Demographics",
+    "prompt": "What is the highest level of education you have completed?"
+  },
+  {
+    "id": "family_upbringing_status",
+    "col_idx": 10,
+    "section": "Family",
+    "prompt": "Family Upbringing & Adoption Status"
+  },
+  {
+    "id": "family_mother_education",
+    "col_idx": 11,
+    "section": "Family",
+    "prompt": "Thinking about your MOTHER (or primary female/maternal guardian) during your upbringing, what was her highest level of education, to the best of your knowledge?"
+  },
+  {
+    "id": "family_mother_profession",
+    "col_idx": 12,
+    "section": "Family",
+    "prompt": "What was the primary profession or field of work for your MOTHER (or primary female/maternal guardian) during your upbringing?"
+  },
+  {
+    "id": "family_father_education",
+    "col_idx": 13,
+    "section": "Family",
+    "prompt": "Thinking about your FATHER (or primary male/paternal guardian) during your upbringing, what was his highest level of education, to the best of your knowledge?"
+  },
+  {
+    "id": "family_father_profession",
+    "col_idx": 14,
+    "section": "Family",
+    "prompt": "What was the primary profession or field of work for your FATHER (or primary male/paternal guardian) during your upbringing?"
+  },
+  {
+    "id": "family_ses",
+    "col_idx": 15,
+    "section": "Family",
+    "prompt": "How would you generally describe your family's socioeconomic status during your childhood?"
+  },
+  {
+    "id": "family_politics",
+    "col_idx": 16,
+    "section": "Family",
+    "prompt": "Politically, how would you generally describe your views or your family's views during your upbringing?"
+  },
+  {
+    "id": "demo_sexuality",
+    "col_idx": 17,
+    "section": "Demographics",
+    "prompt": "How do you identify your SEXUALITY?"
+  },
+  {
+    "id": "demo_gender_identity",
+    "col_idx": 18,
+    "section": "Demographics",
+    "prompt": "How do you currently describe your GENDER identity?"
+  },
+  {
+    "id": "demo_sex_assigned_at_birth",
+    "col_idx": 19,
+    "section": "Demographics",
+    "prompt": "What sex were you assigned at birth?"
+  },
+  {
+    "id": "demo_can_province_born",
+    "col_idx": 20,
+    "section": "Demographics",
+    "prompt": "In which CANADIAN PROVINCE were you BORN?"
+  },
+  {
+    "id": "demo_can_province_current",
+    "col_idx": 21,
+    "section": "Demographics",
+    "prompt": "In which CANADIAN PROVINCE do you live NOW?"
+  },
+  {
+    "id": "religion_is_significant",
+    "col_idx": 22,
+    "section": "Religion",
+    "prompt": "Was religion a significant part of your upbringing?"
+  },
+  {
+    "id": "religion_primary_tradition",
+    "col_idx": 23,
+    "section": "Religion",
+    "prompt": "PRIMARY TRADITION(S):"
+  },
+  {
+    "id": "religion_christian_denomination",
+    "col_idx": 24,
+    "section": "Religion",
+    "prompt": "Christian Denominations/Traditions"
+  },
+  {
+    "id": "religion_christian_circ_view",
+    "col_idx": 25,
+    "section": "Religion",
+    "prompt": "Within your specific Christian tradition/upbringing, was infant circumcision generally viewed as"
+  },
+  {
+    "id": "religion_christian_theology_basis",
+    "col_idx": 26,
+    "section": "Religion",
+    "prompt": "Were you taught or did you understand there to be any specific theological basis for or against penile circumcision within your Christian context"
+  },
+  {
+    "id": "religion_christian_comments",
+    "col_idx": 27,
+    "section": "Religion",
+    "prompt": "Anything else you'd like to share about your perspective as a Christian?"
+  },
+  {
+    "id": "religion_jewish_denomination",
+    "col_idx": 28,
+    "section": "Religion",
+    "prompt": "Which Jewish denomination or movement do you (or your family during your upbringing) most closely identify with?"
+  },
+  {
+    "id": "religion_jewish_brit_milah_view",
+    "col_idx": 29,
+    "section": "Religion",
+    "prompt": "In your upbringing or current understanding within your Jewish context, how was/is Brit Milah (ritual circumcision) generally viewed?"
+  },
+  {
+    "id": "religion_jewish_theology_awareness",
+    "col_idx": 30,
+    "section": "Religion",
+    "prompt": "Were you aware of or taught about specific theological or historical reasons for Brit Milah?"
+  },
+  {
+    "id": "religion_jewish_theology_reasons",
+    "col_idx": 31,
+    "section": "Religion",
+    "prompt": "If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?"
+  },
+  {
+    "id": "religion_jewish_identity_importance",
+    "col_idx": 32,
+    "section": "Religion",
+    "prompt": "How important is the act of Brit Milah to your personal sense of Jewish identity or connection to the Jewish people?"
+  },
+  {
+    "id": "religion_jewish_alt_interpretations",
+    "col_idx": 33,
+    "section": "Religion",
+    "prompt": "Have you ever encountered or explored interpretations within Judaism that question the necessity of physical circumcision or offer alternative ways to express covenant or Jewish identity?"
+  },
+  {
+    "id": "religion_jewish_alt_thoughts",
+    "col_idx": 34,
+    "section": "Religion",
+    "prompt": "Any thoughts on these alternative interpretations?"
+  },
+  {
+    "id": "religion_jewish_diversity_room",
+    "col_idx": 35,
+    "section": "Religion",
+    "prompt": "From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Brit Milah within contemporary Jewish life?"
+  },
+  {
+    "id": "religion_jewish_brit_shalom",
+    "col_idx": 36,
+    "section": "Religion",
+    "prompt": "Have you/your family participated in or considered alternative welcoming ceremonies, like a Brit Shalom (Covenant of Peace) or similar non-cutting ritual?"
+  },
+  {
+    "id": "religion_islamic_madhhab",
+    "col_idx": 37,
+    "section": "Religion",
+    "prompt": "Which school of Islamic thought (madhhab), theological branch, or cultural expression of Islam do you (or your family during your upbringing) most closely identify with, if any?"
+  },
+  {
+    "id": "religion_islamic_khitan_view",
+    "col_idx": 38,
+    "section": "Religion",
+    "prompt": "In your upbringing or current understanding within your Islamic context, how was/is Khitan (penile circumcision, also sometimes known as Sunnet) generally viewed?"
+  },
+  {
+    "id": "religion_islamic_religious_awareness",
+    "col_idx": 39,
+    "section": "Religion",
+    "prompt": "Were you aware of or taught about specific religious reasons or justifications for Khitan?"
+  },
+  {
+    "id": "religion_islamic_religious_reasons",
+    "col_idx": 40,
+    "section": "Religion",
+    "prompt": "If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?"
+  },
+  {
+    "id": "religion_islamic_fard_or_sunnah",
+    "col_idx": 41,
+    "section": "Religion",
+    "prompt": "In your understanding, is Khitan considered a direct commandment (Fard) from the Quran, or more of an emphasized Sunnah (prophetic tradition) and cultural norm?"
+  },
+  {
+    "id": "religion_islamic_identity_importance",
+    "col_idx": 42,
+    "section": "Religion",
+    "prompt": "How important is the act of Khitan to your personal sense of Muslim identity, adherence to Sunnah, or feeling of ritual purity?"
+  },
+  {
+    "id": "religion_islamic_alt_interpretations",
+    "col_idx": 43,
+    "section": "Religion",
+    "prompt": "Have you ever encountered or explored interpretations within Islam that question the absolute necessity of Khitan, discuss potential harms, or emphasize the Quran's silence on the matter?"
+  },
+  {
+    "id": "religion_islamic_alt_thoughts",
+    "col_idx": 44,
+    "section": "Religion",
+    "prompt": "Any thoughts on these alternative interpretations or perspectives?"
+  },
+  {
+    "id": "religion_islamic_diversity_room",
+    "col_idx": 45,
+    "section": "Religion",
+    "prompt": "From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Khitan within contemporary Islamic life?"
+  },
+  {
+    "id": "religion_islamic_intactness_reconcile",
+    "col_idx": 46,
+    "section": "Religion",
+    "prompt": "How do you/your family reconcile the choice of intactness with the common practice of Khitan in many Muslim cultures?"
+  },
+  {
+    "id": "exp_appearance_feeling",
+    "col_idx": 47,
+    "section": "Appearance",
+    "prompt": "Thinking about your penis today, how do you generally FEEL about its physical appearance?"
+  },
+  {
+    "id": "exp_sex_rating_orgasm_intensity",
+    "col_idx": 48,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Intensity of Orgasm]"
+  },
+  {
+    "id": "exp_sex_rating_orgasm_duration",
+    "col_idx": 49,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Duration of Orgasm Sensation]"
+  },
+  {
+    "id": "exp_sex_rating_ease_of_orgasm",
+    "col_idx": 50,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Overall Ease of Reaching Orgasm]"
+  },
+  {
+    "id": "exp_sex_rating_sensitivity_light_touch",
+    "col_idx": 51,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Sensitivity to Light Touch]"
+  },
+  {
+    "id": "exp_sex_rating_pleasure_mobile_skin",
+    "col_idx": 52,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Pleasure from Mobile Skin]"
+  },
+  {
+    "id": "exp_sex_rating_variety_of_sensation",
+    "col_idx": 53,
+    "section": "Sexual Experience",
+    "prompt": "Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Variety of Pleasurable Sensations]"
+  },
+  {
+    "id": "exp_sensitivity_desc",
+    "col_idx": 54,
+    "section": "Sexual Experience",
+    "prompt": "How would you describe the general sensitivity of your penis to various types of touch and stimulation?"
+  },
+  {
+    "id": "exp_orgasm_desc",
+    "col_idx": 55,
+    "section": "Sexual Experience",
+    "prompt": "How would you describe your typical ORGASM experience in terms of its INTENSITY, BUILD-UP, and overall QUALITY of pleasure?"
+  },
+  {
+    "id": "exp_orgasm_duration_desc",
+    "col_idx": 56,
+    "section": "Sexual Experience",
+    "prompt": "DURATION: How long do the primary pleasurable sensations of your typical orgasm last?"
+  },
+  {
+    "id": "exp_orgasm_confidence_rating",
+    "col_idx": 57,
+    "section": "Sexual Experience",
+    "prompt": "And, if you're comfortable sharing, how would you rate your general confidence that your orgasms are as intense or fulfilling as possible?"
+  },
+  {
+    "id": "exp_lubrication_need",
+    "col_idx": 58,
+    "section": "Sexual Experience",
+    "prompt": "Do you generally need to use artificial LUBRICATION (e.g., store-bought lube, saliva, lotion) for comfortable and pleasurable masturbation or partnered sex?"
+  },
+  {
+    "id": "exp_lubrication_comments",
+    "col_idx": 59,
+    "section": "Sexual Experience",
+    "prompt": "Any additional comments on your experience with lubrication (or lack of need for it)?"
+  },
+  {
+    "id": "exp_pleasure_comm_difficulty",
+    "col_idx": 60,
+    "section": "Sexual Experience",
+    "prompt": "When it comes to partnered sex and intimacy, have you ever felt it was difficult to communicate what types of touch provide you with genuine pleasure?"
+  },
+  {
+    "id": "exp_pleasure_comm_elaboration",
+    "col_idx": 61,
+    "section": "Sexual Experience",
+    "prompt": "If you have experienced this disconnect, could you briefly elaborate on what that's like or in what situations it occurs?"
+  },
+  {
+    "id": "exp_pre_ejaculate_awareness",
+    "col_idx": 62,
+    "section": "Experience",
+    "prompt": "Thinking about your typical sexual arousal, do you notice the presence of pre-ejaculate fluid (sometimes called 'pre-cum' or Cowper's gland fluid – a clear fluid released from the penis before orgasm/ejaculation)?"
+  },
+  {
+    "id": "exp_needs_comm_ability",
+    "col_idx": 63,
+    "section": "Experience",
+    "prompt": "How would you describe your ability to communicate your sexual needs and what provides you pleasure to a partner?"
+  },
+  {
+    "id": "exp_pride_satisfaction_rating",
+    "col_idx": 64,
+    "section": "Pride & Regret",
+    "prompt": "Overall, how PROUD or satisfied are you with your penis, considering all aspects (appearance, how it functions, and the pleasure it provides)?"
+  },
+  {
+    "id": "pathway_state",
+    "col_idx": 65,
+    "section": "Pathway Routing",
+    "prompt": "What is your circumcision state?"
+  },
+  {
+    "id": "family_father_status",
+    "col_idx": 112,
+    "section": "Family",
+    "prompt": "What is your FATHER'S (or primary male guardian's) circumcision state, to the best of your knowledge?"
+  },
+  {
+    "id": "family_sibling_count",
+    "col_idx": 113,
+    "section": "Family",
+    "prompt": "Do you have any male (AMAB) SIBLINGS (brothers, including half-brothers or step-brothers raised with you) and if so, how many"
+  },
+  {
+    "id": "family_sibling_status",
+    "col_idx": 114,
+    "section": "Family",
+    "prompt": "What is your siblings' circumcision state?"
+  },
+  {
+    "id": "family_sibling_status_mixed_reason",
+    "col_idx": 115,
+    "section": "Family",
+    "prompt": "Since there is a mix of circumcision states among you and your siblings(s), do you know anything about why the decision was different for different children?"
+  },
+  {
+    "id": "culture_body_intervention_view",
+    "col_idx": 149,
+    "section": "Culture & Attitudes",
+    "prompt": "In general, how do you view the relationship between the human body's natural state and medical interventions?"
+  },
+  {
+    "id": "culture_community_expectation",
+    "col_idx": 150,
+    "section": "Culture & Attitudes",
+    "prompt": "In your family or the community you grew up in, what was the general EXPECTATION for newborn boys regarding circumcision?"
+  },
+  {
+    "id": "culture_primary_view_of_circ",
+    "col_idx": 151,
+    "section": "Culture & Attitudes",
+    "prompt": "In your view, or based on what you understood from your upbringing/community, penile circumcision is primarily seen as"
+  },
+  {
+    "id": "culture_additional_comments",
+    "col_idx": 152,
+    "section": "Culture & Attitudes",
+    "prompt": "Additional comments"
+  },
+  {
+    "id": "culture_stereotype_intact",
+    "col_idx": 153,
+    "section": "Culture & Attitudes",
+    "prompt": "Thinking back to your upbringing or just general societal messages (from peers, media, family, health class), what was a common STEREOTYPE, assumption, or \"fact\" that 'everyone seemed to know' about INTACT (uncircumcised) penises?"
+  },
+  {
+    "id": "culture_stereotype_circ",
+    "col_idx": 154,
+    "section": "Culture & Attitudes",
+    "prompt": "Similarly, what was a common STEREOTYPE, assumption, or \"fact\" that 'everyone seemed to know' about CIRCUMCISED penises?"
+  },
+  {
+    "id": "culture_assoc_medically_healthier",
+    "col_idx": 155,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Medically Healthier]"
+  },
+  {
+    "id": "culture_assoc_more_hygienic",
+    "col_idx": 156,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Hygienic / Cleaner]"
+  },
+  {
+    "id": "culture_assoc_more_natural",
+    "col_idx": 157,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Natural' Looking]"
+  },
+  {
+    "id": "culture_assoc_more_aesthetic",
+    "col_idx": 158,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Aesthetically Pleasing / \"Better\" Looking]"
+  },
+  {
+    "id": "culture_assoc_more_sensitive",
+    "col_idx": 159,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Sensitive / Greater Pleasure Potential]"
+  },
+  {
+    "id": "culture_assoc_easier_care",
+    "col_idx": 160,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Easier to Care For]"
+  },
+  {
+    "id": "culture_assoc_more_masculine",
+    "col_idx": 161,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Manly' or 'Masculine']"
+  },
+  {
+    "id": "culture_assoc_more_modern",
+    "col_idx": 162,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Modern / Progressive]"
+  },
+  {
+    "id": "culture_assoc_more_traditional",
+    "col_idx": 163,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Traditional / Old-Fashioned]"
+  },
+  {
+    "id": "culture_assoc_more_socially_acceptable",
+    "col_idx": 164,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Socially Acceptable (in your primary culture)]"
+  },
+  {
+    "id": "culture_assoc_partner_preference",
+    "col_idx": 165,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Preferred by Sexual Partners (in general)]"
+  },
+  {
+    "id": "culture_assoc_higher_education",
+    "col_idx": 166,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Intelligence/Education (of parents who choose it)]"
+  },
+  {
+    "id": "culture_assoc_higher_ses",
+    "col_idx": 167,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Socioeconomic Status (of parents who choose it)]"
+  },
+  {
+    "id": "culture_assoc_liberal_values",
+    "col_idx": 168,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Liberal/Progressive Values (of parents who choose it)]"
+  },
+  {
+    "id": "culture_assoc_conservative_values",
+    "col_idx": 169,
+    "section": "Culture & Attitudes",
+    "prompt": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Conservative/Traditional Values (of parents who choose it)]"
+  },
+  {
+    "id": "final_healthier_hygienic_belief",
+    "col_idx": 170,
+    "section": "Culture & Attitudes",
+    "prompt": "Putting aside your personal satisfaction or feelings, which state do you generally believe to be MEDICALLY HEALTHIER or more HYGIENIC overall?"
+  },
+  {
+    "id": "final_pleasure_potential_belief",
+    "col_idx": 171,
+    "section": "Culture & Attitudes",
+    "prompt": "Again, putting aside your own personal level of satisfaction, which state do you generally BELIEVE offers a greater POTENTIAL for physical sexual pleasure and sensation?"
+  },
+  {
+    "id": "final_partner_preference_belief",
+    "col_idx": 172,
+    "section": "Culture & Attitudes",
+    "prompt": "Based on your life experiences, conversations, and media consumption, what do you believe is the general preference of sexual partners (of any gender) regarding a partner's circumcision state (intact vs. circumcised) in your culture?"
+  },
+  {
+    "id": "final_partner_preference_reason",
+    "col_idx": 173,
+    "section": "Culture & Attitudes",
+    "prompt": "What do you believe has most shaped this perceived preference?"
+  },
+  {
+    "id": "final_aesthetic_preference",
+    "col_idx": 174,
+    "section": "Culture & Attitudes",
+    "prompt": "Purely in terms of AESTHETICS (visual appearance), which look do you personally find more appealing?"
+  },
+  {
+    "id": "final_avg_pleasure_belief",
+    "col_idx": 175,
+    "section": "Culture & Attitudes",
+    "prompt": "Based on your own experiences, observations, and everything you've heard or read, which group of men do you believe, on average, experiences more intense or fulfilling SEXUAL PLEASURE AND ORGASM?"
+  },
+  {
+    "id": "final_social_norm_perception",
+    "col_idx": 176,
+    "section": "Culture & Attitudes",
+    "prompt": "In your specific cultural context (e.g., in the US, in Europe, in your community), which state do you believe is perceived as more SOCIALLY NORMAL and ACCEPTABLE?"
+  },
+  {
+    "id": "final_child_decision_reason",
+    "col_idx": 177,
+    "section": "Culture & Attitudes",
+    "prompt": "Based on everything you know and have experienced, if you were to have a child assigned male at birth today, what would your decision regarding circumcision be, and what is the single most important reason for that choice?"
+  },
+  {
+    "id": "final_core_principle_choice",
+    "col_idx": 178,
+    "section": "Culture & Attitudes",
+    "prompt": "When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant (meaning there is no existing disease to treat), which principle do you believe should be given more weight?"
+  },
+  {
+    "id": "final_missing_info_opinion",
+    "col_idx": 179,
+    "section": "Culture & Attitudes",
+    "prompt": "What do you think is the single most important piece of information that people (especially expectant parents or young men) are MISSING when it comes to understanding male genital anatomy, intactness, and the lifelong impacts of circumcision?"
+  },
+  {
+    "id": "final_transparent_monster_resonance",
+    "col_idx": 180,
+    "section": "Culture & Attitudes",
+    "prompt": "The \"Accidental Intactivist\" (that's me, the survey author!) argues that routine infant circumcision is a \"transparent monster\" – a significant harm hiding in plain sight, normalized by culture. Does this metaphor resonate with your own observations or feelings?"
+  },
+  {
+    "id": "final_transparent_monster_reason",
+    "col_idx": 181,
+    "section": "Culture & Attitudes",
+    "prompt": "Please feel free to briefly explain your answer. Why does (or doesn't) this metaphor feel accurate to you?"
+  },
+  {
+    "id": "final_anything_else",
+    "col_idx": 182,
+    "section": "Culture & Attitudes",
+    "prompt": "Is there anything else you'd like to share about your experiences, observations, feelings about this topic, or anything this survey didn't cover that you feel is important?"
+  },
+  {
+    "id": "contact_followup_consent",
+    "col_idx": 183,
+    "section": "Follow-up",
+    "prompt": "Would you be willing to be contacted anonymously by the survey author and team (the 'Accidental Intactivist') for a potential follow-up interview to discuss your experiences in more detail for research purposes?"
+  },
+  {
+    "id": "contact_email",
+    "col_idx": 184,
+    "section": "Follow-up",
+    "prompt": "Preferred email address"
+  },
+  {
+    "id": "contact_other_method",
+    "col_idx": 185,
+    "section": "Follow-up",
+    "prompt": "Other Contact Method"
+  },
+  {
+    "id": "contact_contrib_interest",
+    "col_idx": 186,
+    "section": "Follow-up",
+    "prompt": "Beyond this anonymous survey, would you be open to potentially contributing your perspective in other ways to help further understanding of this topic?"
+  },
+  {
+    "id": "contact_contrib_format",
+    "col_idx": 187,
+    "section": "Follow-up",
+    "prompt": "Are there ways you might feel comfortable sharing your personal story or perspective beyond this survey, perhaps in a more direct (though still potentially anonymous or pseudonymous) format if opportunities arose?"
+  },
+  {
+    "id": "demo_country_born_specify",
+    "col_idx": 195,
+    "section": "Demographics",
+    "prompt": "Please specify the country or territory in which you were born"
+  },
+  {
+    "id": "demo_country_current_specify",
+    "col_idx": 196,
+    "section": "Demographics",
+    "prompt": "Please specify the COUNTRY/REGION/TERRITORY where you primarily live now"
+  },
+  {
+    "id": "family_cultural_background",
+    "col_idx": 197,
+    "section": "Family",
+    "prompt": "CULTURAL BACKGROUND:"
+  },
+  {
+    "id": "meta_survey_source",
+    "col_idx": 198,
+    "section": "Meta",
+    "prompt": "One last question to help us improve our outreach: Where did you first hear about this survey?"
+  },
+  {
+    "id": "demo_birth_location",
+    "col_idx": 203,
+    "section": "Demographics",
+    "prompt": "In what type of location were you born?"
+  },
+  {
+    "id": "demo_birth_attendant",
+    "col_idx": 204,
+    "section": "Demographics",
+    "prompt": "Who was the primary medical attendant at your birth, to the best of your knowledge?"
+  },
+  {
+    "id": "final_ethical_consideration_belief",
+    "col_idx": 222,
+    "section": "Culture & Attitudes",
+    "prompt": "Reflecting on media you've consumed throughout your life (e.g., movies, TV, pornography, health education), how do you believe it has shaped the cultural \"default\" or \"ideal\" for what a penis should look like?"
+  },
+  {
+    "id": "culture_social_pressure_role",
+    "col_idx": 223,
+    "section": "Culture & Attitudes",
+    "prompt": "How significant a role do you believe social pressures—like the fear of a child \"looking different\" in a locker room or to future partners—play in the continuation of routine infant circumcision in cultures where it's common?"
+  },
+  {
+    "id": "final_ethics_cosmetic_alteration_minor",
+    "col_idx": 224,
+    "section": "Culture & Attitudes",
+    "prompt": "Broadening the lens for a moment:"
+  },
+  {
+    "id": "final_prediction_future_of_ric",
+    "col_idx": 225,
+    "section": "Culture & Attitudes",
+    "prompt": "Looking forward 20-30 years, where do you predict the practice of routine infant circumcision will be in your primary country/culture?"
+  },
+  {
+    "id": "q347",
+    "col_idx": 347,
+    "section": "Uncategorized",
+    "prompt": "Which part of the survey is most relevant to you?"
+  },
+  {
+    "id": "observe_healthcare_stance_rec_against",
+    "col_idx": 360,
+    "section": "Observer Pathway",
+    "prompt": "[I actively recommend AGAINST the procedure, citing ethical/medical reasons.]"
+  },
+  {
+    "id": "observe_healthcare_stance_lean_against",
+    "col_idx": 361,
+    "section": "Observer Pathway",
+    "prompt": "[I lean against it, but present it as the parents' choice.]"
+  },
+  {
+    "id": "observe_healthcare_stance_neutral",
+    "col_idx": 362,
+    "section": "Observer Pathway",
+    "prompt": "[I present it as a completely neutral choice with pros and cons.]"
+  },
+  {
+    "id": "observe_healthcare_stance_lean_for",
+    "col_idx": 363,
+    "section": "Observer Pathway",
+    "prompt": "[I lean towards it, but present it as the parents' choice.]"
+  },
+  {
+    "id": "observe_healthcare_stance_rec_for",
+    "col_idx": 364,
+    "section": "Observer Pathway",
+    "prompt": "[I actively recommend IN FAVOR of the procedure.]"
+  },
+  {
+    "id": "observe_healthcare_stance_avoid",
+    "col_idx": 365,
+    "section": "Observer Pathway",
+    "prompt": "[I avoid the topic / The topic does not come up.]"
+  }
+]

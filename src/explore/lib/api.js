@@ -104,15 +104,15 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
       }
       if (q.pathway === "trans") {
         if (q.col_idx >= 346 && q.col_idx <= 350) {
-          q.pathway = "trans_vaginoplasty";
-          q.section = "Post-Vaginoplasty Pathway";
+          q.section = "Post-Vaginoplasty";
         } else if (q.col_idx >= 351 && q.col_idx <= 356) {
-          q.pathway = "trans_phalloplasty";
-          q.section = "Post-Phalloplasty Pathway";
+          q.section = "Post-Phalloplasty";
         }
+      } else if (["Appearance", "Sexual Experience", "Experience", "Pride & Regret", "Pathway Routing"].includes(q.section)) {
+        q.pathway = "amab_anatomy";
       } else if (q.pathway === "intersex") {
         q.section = "Intersex Pathway";
-      } else if (q.section === "Uncategorized" || !q.section) {
+      } else if (q.section === "Uncategorized" || !q.section || q.section === "Observer Pathway") {
         if (q.id.startsWith("observe_parent_") || q.id.startsWith("observe_undecided_")) {
           q.section = "Parents & Guardians";
         } else if (q.id.startsWith("observe_partner_") || ["q255", "q269", "q272", "q302"].includes(q.id)) {
@@ -125,6 +125,8 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
           q.section = "Medical Professionals";
         } else if (q.id.startsWith("observe_advocate_") || q.id === "q262") {
           q.section = "Advocates & Ethicists";
+        } else if (q.id.startsWith("observe_woman_")) {
+          q.section = "Women";
         } else if (q.pathway === "observer") {
           q.section = "Universal Observer";
         }

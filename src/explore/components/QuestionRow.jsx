@@ -8,6 +8,24 @@ import { PATHWAYS } from "../lib/pathways";
 import MiniSparkline from "./MiniSparkline";
 import { MessageSquareText, CheckCircle2, ListChecks } from "./Icons";
 import AddToReportButton from "./AddToReportButton";
+import IconifyEmoji from "./IconifyEmoji";
+import { QUESTION_EXHIBIT_MAP } from "../lib/coverage";
+
+const COMPONENT_TO_EXHIBIT = {
+  Pathway: "01",
+  MirrorPairs: "02",
+  PleasureGap: "03",
+  CorrelationExplorer: "04",
+  DemographicsDashboard: "05",
+  NarrativeMirrors: "06",
+  CultureGenerations: "07",
+  ObserverTriad: "08",
+  ReligiousMirrors: "09",
+  RestorationJourney: "10",
+  ByTheNumbers: "11",
+  AdultExperience: "11",
+  Question: "—",
+};
 
 export default function QuestionRow({ q, index, distribution, cohortDistribution, onClick, searchTerm = "" }) {
   // Pathway tag (for non-"all" questions)
@@ -59,76 +77,78 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
       }}>{String(index + 1).padStart(2, "0")}</span>
 
       {/* Main content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.45rem", flexWrap: "wrap" }}>
-          {/* Tier 1 badge */}
-          {q.tier === 1 && (
-            <span style={{
-              fontFamily: FONT.mono,
-              fontSize: "0.58rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              color: C.gold,
-              background: "rgba(212,160,48,0.12)",
-              border: "1px solid rgba(212,160,48,0.3)",
-              borderRadius: 999,
-              padding: "0.1rem 0.35rem",
-              flexShrink: 0,
-              marginTop: "0.15rem",
-            }}>T1</span>
-          )}
-
-          {/* Pathway tag */}
-          {pathwayObj && (
-            <span style={{
-              fontFamily: FONT.condensed,
-              fontSize: "0.58rem",
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: pathwayObj.color,
-              background: `${pathwayObj.color}18`,
-              border: `1px solid ${pathwayObj.color}40`,
-              borderRadius: 999,
-              padding: "0.1rem 0.4rem",
-              flexShrink: 0,
-              marginTop: "0.15rem",
-            }}>
-              {pathwayObj.emoji} {pathwayObj.label}
-            </span>
-          )}
-
-          {/* Format Badge */}
-          <span title={q.type === "open_text" ? "Qualitative Open Response" : q.type === "single_select" ? "Single Select Choice" : "Multiple Select Choices"} style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.58rem",
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            color: q.type === "open_text" ? "#a8b5c4" : C.dim,
-            background: q.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
-            border: `1px solid ${q.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
-            borderRadius: 999,
-            padding: "0.1rem 0.4rem",
-            flexShrink: 0,
-            marginTop: "0.15rem",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.25rem",
-          }}>
-            {q.type === "open_text" ? (
-              <><MessageSquareText size={10} strokeWidth={3} /> QUALITATIVE</>
-            ) : q.type === "multi_select" ? (
-              <><ListChecks size={10} strokeWidth={3} /> MULTI-SELECT</>
-            ) : (
-              <><CheckCircle2 size={10} strokeWidth={3} /> SINGLE-SELECT</>
+      <div style={{ flex: 1, minWidth: 0, display: "grid", gridTemplateColumns: "1fr auto", gap: "2rem", alignItems: "start" }}>
+        
+        {/* Left Column: Prompt and Badges */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", minWidth: 0 }}>
+          
+          {/* Badges Row */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap" }}>
+            {/* Tier 1 badge */}
+            {q.tier === 1 && (
+              <span style={{
+                fontFamily: FONT.mono,
+                fontSize: "0.58rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                color: C.gold,
+                background: "rgba(212,160,48,0.12)",
+                border: "1px solid rgba(212,160,48,0.3)",
+                borderRadius: 999,
+                padding: "0.1rem 0.35rem",
+                flexShrink: 0,
+              }}>T1</span>
             )}
-          </span>
+
+            {/* Pathway tag */}
+            {pathwayObj && (
+              <span style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.25rem",
+                fontFamily: FONT.condensed,
+                fontSize: "0.58rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: pathwayObj.color,
+                background: `${pathwayObj.color}18`,
+                border: `1px solid ${pathwayObj.color}40`,
+                borderRadius: 999,
+                padding: "0.1rem 0.4rem",
+                flexShrink: 0,
+              }}>
+                <IconifyEmoji emoji={pathwayObj.emoji} size="0.65rem" /> <span>{pathwayObj.label}</span>
+              </span>
+            )}
+
+            {/* Exhibit badges removed per user request */}
+
+            {/* Format Badge */}
+            <span title={q.type === "open_text" ? "Qualitative Open Response" : q.type === "single_select" ? "Single Select Choice" : "Multiple Select Choices"} style={{
+              color: q.type === "open_text" ? "#a8b5c4" : C.dim,
+              background: q.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
+              border: `1px solid ${q.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
+              borderRadius: 6,
+              padding: "0.15rem 0.25rem",
+              flexShrink: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "help",
+            }}>
+              {q.type === "open_text" ? (
+                <MessageSquareText size={12} strokeWidth={2.5} />
+              ) : q.type === "multi_select" ? (
+                <ListChecks size={12} strokeWidth={2.5} />
+              ) : (
+                <CheckCircle2 size={12} strokeWidth={2.5} />
+              )}
+            </span>
+          </div>
 
           {/* Prompt */}
-          <div style={{
-            flex: "1 1 60%",
-            minWidth: 0,
-          }}>
+          <div style={{ minWidth: 0 }}>
             <div style={{
               fontFamily: FONT.body,
               fontSize: "0.83rem",
@@ -152,40 +172,45 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
           </div>
         </div>
 
+        {/* Right Column: Metadata and Sparkline */}
         <div style={{
           display: "flex",
-          alignItems: "center",
-          gap: "0.6rem",
-          marginTop: "0.25rem",
-          flexWrap: "wrap",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: "0.5rem",
+          minWidth: 160
         }}>
-          <span style={{
-            fontFamily: FONT.mono,
-            fontSize: "0.6rem",
-            color: C.dim,
-          }}>{q.id}</span>
-
-          {/* n= badge */}
-          {q.n_responses !== undefined && q.n_responses > 0 && (
+          {/* id and n= badge */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span style={{
               fontFamily: FONT.mono,
-              fontSize: "0.62rem",
-              color: C.muted,
-              background: "rgba(255,255,255,0.04)",
-              padding: "0.08rem 0.32rem",
-              borderRadius: 999,
-              border: `1px solid ${C.ghost}`,
-            }}>n={q.n_responses}</span>
-          )}
+              fontSize: "0.6rem",
+              color: C.dim,
+            }}>{q.id}</span>
+
+            {q.n_responses !== undefined && q.n_responses > 0 && (
+              <span style={{
+                fontFamily: FONT.mono,
+                fontSize: "0.62rem",
+                color: C.muted,
+                background: "rgba(255,255,255,0.04)",
+                padding: "0.08rem 0.32rem",
+                borderRadius: 999,
+                border: `1px solid ${C.ghost}`,
+              }}>n={q.n_responses}</span>
+            )}
+          </div>
 
           {/* Mini sparkline */}
           {distribution && distribution.length > 0 && (
-            <MiniSparkline
-              distribution={distribution}
-              cohortDistribution={cohortDistribution}
-              width={110}
-              height={7}
-            />
+            <div style={{ width: "100%", maxWidth: 200, display: "flex", justifyContent: "flex-end" }}>
+              <MiniSparkline
+                distribution={distribution}
+                cohortDistribution={cohortDistribution}
+                width={160}
+                height={10}
+              />
+            </div>
           )}
         </div>
       </div>

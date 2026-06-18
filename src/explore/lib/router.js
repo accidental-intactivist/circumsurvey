@@ -47,6 +47,20 @@ function parseHash() {
     route = "report";
   } else if (segments[0] === "restoration-journey") {
     route = "restoration-journey";
+  } else if (segments[0] === "culture") {
+    route = "culture";
+  } else if (segments[0] === "generational-faultlines") {
+    route = "culture"; // redirect: merged into Culture & Generations
+  } else if (segments[0] === "the-decision") {
+    route = "the-decision";
+  } else if (segments[0] === "cognizant-alteration" || segments[0] === "adult-experience") {
+    route = "adult-experience";
+  } else if (segments[0] === "final-thoughts") {
+    route = "final-thoughts";
+  } else if (segments[0] === "trans-intersex") {
+    route = "trans-intersex";
+  } else if (segments[0] === "for-parents") {
+    route = "for-parents";
   }
 
   // Extract standardized query state
@@ -88,8 +102,14 @@ function serializeState(route, params, state) {
   else if (route === "restoration-journey") path = "/restoration-journey";
   else if (route === "religious-mirrors") path = "/religious-mirrors";
   else if (route === "narrative-mirrors") path = "/narrative-mirrors";
-  else if (route === "generational-faultlines") path = "/generational-faultlines";
+  else if (route === "generational-faultlines") path = "/culture"; // redirect
   else if (route === "observer-triad") path = "/observer-triad";
+  else if (route === "culture") path = "/culture";
+  else if (route === "the-decision") path = "/the-decision";
+  else if (route === "adult-experience") path = "/adult-experience";
+  else if (route === "final-thoughts") path = "/final-thoughts";
+  else if (route === "trans-intersex") path = "/trans-intersex";
+  else if (route === "for-parents") path = "/for-parents";
   else path = "/";
 
   const q = new URLSearchParams();

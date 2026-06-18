@@ -24,7 +24,7 @@ const SCROLL_THRESHOLD = 100; // px of scroll before collapse triggers
 // ── Route metadata ──────────────────────────────────────────────────────
 // These are the definitive page titles and descriptions. The individual
 // pages no longer render their own headers — this is the single source.
-const ROUTE_META = {
+export const ROUTE_META = {
   index: {
     kicker: "★ The Accidental Intactivist's Inquiry ★",
     title: "Explore the Data",
@@ -69,9 +69,9 @@ const ROUTE_META = {
   },
   "generational-faultlines": {
     kicker: "Exhibit 07",
-    title: "Generational Faultlines",
-    desc: "Track the chronological shift in attitudes from the Silent Generation down to Gen Z. This dashboard traces the most striking generational divides across our flagship questions.",
-    navTitle: "Generations",
+    title: "Culture & Generations",
+    desc: "Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z.",
+    navTitle: "Culture & Generations",
   },
   "observer-triad": {
     kicker: "Exhibit 08",
@@ -116,26 +116,62 @@ const ROUTE_META = {
     navTitle: "By The Numbers",
   },
   culture: {
-    kicker: "Exhibit 12",
-    title: "Culture & Attitudes",
-    desc: "Explore cultural norms, stereotypes, associations, and attitudes regarding circumcision across cohorts.",
-    navTitle: "Culture",
+    kicker: "Exhibit 07",
+    title: "Culture & Generations",
+    desc: "Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z.",
+    navTitle: "Culture & Generations",
+  },
+  "the-decision": {
+    kicker: "Exhibit 13",
+    title: "The Decision",
+    desc: "A deep dive into the Parent Observer subgroup, tracing the timeline, tipping points, and reflections of parents making the circumcision decision.",
+    navTitle: "The Decision",
+  },
+  "cognizant-alteration": {
+    kicker: "Exhibit 11",
+    title: "Before & After: The Adult Experience",
+    desc: "The unique perspective of those circumcised as adults — old enough to remember both states and articulate how the change affected sensation, function, and identity.",
+    navTitle: "Adult Experience",
+  },
+  "adult-experience": {
+    kicker: "Exhibit 11",
+    title: "Before & After: The Adult Experience",
+    desc: "The unique perspective of those circumcised as adults — old enough to remember both states and articulate how the change affected sensation, function, and identity.",
+    navTitle: "Adult Experience",
+  },
+  "final-thoughts": {
+    kicker: "Exhibit 15",
+    title: "Missing Info & Wrap-Up",
+    desc: "The final questions on missing public information, reasoning for future children, and what else respondents wanted to share.",
+    navTitle: "Final Thoughts",
+  },
+  "trans-intersex": {
+    kicker: "Phase 2",
+    title: "Trans & Intersex Experiences",
+    desc: "Placeholder for Phase 2 deep dive into transgender and intersex perspectives, which require distinct analytical lenses.",
+    navTitle: "Trans & Intersex",
+  },
+  "for-parents": {
+    kicker: "Resource",
+    title: "For New & Expectant Parents",
+    desc: "A curated, shareable resource presenting what grown children, other parents, medical professionals, and faith communities say — so you can make the most informed decision.",
+    navTitle: "For Parents",
   },
 };
 
 export const EXHIBIT_ROUTES = [
-  { route: "pathways", num: "Exhibit 01", label: "The Survey Map" },
-  { route: "pairs", num: "Exhibit 02", label: "Mirror Pairs" },
-  { route: "pleasure-gap", num: "Exhibit 03", label: "The Pleasure Gap" },
-  { route: "correlations", num: "Exhibit 04", label: "Correlations Explorer" },
-  { route: "demographics", num: "Exhibit 05", label: "Demographic Explorer" },
-  { route: "narrative-mirrors", num: "Exhibit 06", label: "Narrative Mirrors" },
-  { route: "generational-faultlines", num: "Exhibit 07", label: "Generational Faultlines" },
-  { route: "observer-triad", num: "Exhibit 08", label: "The Observer Triad" },
-  { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors" },
-  { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey" },
-  { route: "numbers", num: "Exhibit 11", label: "By The Numbers" },
-  { route: "culture", num: "Exhibit 12", label: "Culture & Attitudes" },
+  { route: "pathways", num: "Exhibit 01", label: "The Survey Map", tagline: "Interactive survey architecture flowchart", icon: "Compass", colorVar: "var(--c-cyan)" },
+  { route: "pairs", num: "Exhibit 02", label: "Mirror Pairs", tagline: "Side-by-side cohort question contrasts", icon: "Scale", colorVar: "var(--c-gold)" },
+  { route: "pleasure-gap", num: "Exhibit 03", label: "The Pleasure Gap", tagline: "Sensation, sensitivity & orgasm ratings", icon: "Heart", colorVar: "var(--c-red)" },
+  { route: "correlations", num: "Exhibit 04", label: "Correlations Explorer", tagline: "Cross-tabulate demographic predictors", icon: "Grid", colorVar: "var(--c-blue)" },
+  { route: "demographics", num: "Exhibit 05", label: "Demographic Explorer", tagline: "Age, generation, geography & more", icon: "Users", colorVar: "var(--c-ltBlue)" },
+  { route: "narrative-mirrors", num: "Exhibit 06", label: "The Voices", tagline: "Open-ended narratives & word clouds", icon: "MessageSquareText", colorVar: "var(--c-green)" },
+  { route: "culture", num: "Exhibit 07", label: "Culture & Generations", tagline: "Norms, stereotypes & generational shifts", icon: "Globe", colorVar: "var(--c-green)" },
+  { route: "observer-triad", num: "Exhibit 08", label: "The Observer Lens", tagline: "Partners, parents & professionals", icon: "Eye", colorVar: "var(--c-purple)" },
+  { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors", tagline: "Faith, tradition & personal experience", icon: "BookOpen", colorVar: "var(--c-gold)" },
+  { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey", tagline: "Methods, progress & sensitivity gains", icon: "RefreshCw", colorVar: "var(--c-purple)" },
+  { route: "adult-experience", num: "Exhibit 11", label: "Before & After: The Adult Experience", tagline: "Those who remember both states", icon: "Zap", colorVar: "var(--c-orange)" },
+  { route: "for-parents", num: "Resource", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-blue)" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {

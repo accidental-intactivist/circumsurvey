@@ -38,22 +38,13 @@ export const PATHWAYS = {
     n: 37,
     desc: "Partners, parents, providers, advocates",
   },
-  trans_vaginoplasty: {
-    id: "trans_vaginoplasty",
-    label: "Post-Vaginoplasty",
+  trans: {
+    id: "trans",
+    label: "Transgender",
     emoji: "🔴",
-    color: PATH_COLORS.trans_vaginoplasty,
+    color: PATH_COLORS.trans_vaginoplasty, // or a generic trans color if we have one
     n: 0,
-    desc: "Trans women who have undergone vaginoplasty",
-    waiting: true,
-  },
-  trans_phalloplasty: {
-    id: "trans_phalloplasty",
-    label: "Post-Phalloplasty",
-    emoji: "🔴",
-    color: PATH_COLORS.trans_phalloplasty,
-    n: 0,
-    desc: "Trans men who have undergone phalloplasty",
+    desc: "Transgender respondents",
     waiting: true,
   },
   intersex: {
@@ -65,9 +56,17 @@ export const PATHWAYS = {
     desc: "Intersex perspectives",
     waiting: true,
   },
+  amab_anatomy: {
+    id: "amab_anatomy",
+    label: "Anatomy & Appearance",
+    emoji: "🔍",
+    color: PATH_COLORS.all,
+    n: 0,
+    desc: "Appearance, sensation, and physical experience (AMAB only)",
+  },
 };
 
-export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans_vaginoplasty", "trans_phalloplasty", "intersex"];
+export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans", "intersex", "amab_anatomy"];
 
 // ── Survey phase ordering ──────────────────────────────────────────────────
 // The survey has three phases: Universal questions, then Pathway-specific,
@@ -118,7 +117,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "universal",
     label: "Universal (all observers)",
-    emoji: "👥",
+    icon: "Users",
     desc: "Questions every observer answered regardless of role",
     match: (q) => (q.id || "").startsWith("observe_all_") || q.id === "observe_motivation" || q.id === "observe_multi_hat_selection" || /^\[ALL\]|^What primarily motivated|Are You Wearing Any Other Hat/i.test(q.prompt || ""),
     n: 37,
@@ -126,7 +125,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "partner",
     label: "As a Partner",
-    emoji: "🤝",
+    icon: "Heart",
     desc: "Intimacy observations, cultural difference impact",
     match: (q) => (q.id || "").startsWith("observe_partner_") || /^\[PARTNER\]|as a PARTNER/i.test(q.prompt || ""),
     n: 5,
@@ -134,7 +133,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "parent",
     label: "As a Parent / Guardian",
-    emoji: "👶",
+    icon: "Smile",
     desc: "Decision factors, info quality, emotional state, regret",
     match: (q) => (q.id || "").startsWith("observe_parent_") || /^\[PARENT\]|as a PARENT|PARENT or GUARDIAN|PARENTS\/GUARDIANS/i.test(q.prompt || ""),
     n: 7,
@@ -142,7 +141,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "expectant",
     label: "As an Expectant Parent",
-    emoji: "🤰",
+    icon: "Clock",
     desc: "Decision in progress, information gaps, cultural pressure",
     match: (q) => (q.id || "").startsWith("observe_undecided_") || /currently pregnant|expectant parent/i.test(q.prompt || ""),
     n: 1,
@@ -151,7 +150,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "healthcare",
     label: "As a Healthcare Provider",
-    emoji: "🏥",
+    icon: "Activity",
     desc: "Counseling stance, training protocols, attitude changes",
     match: (q) => (q.id || "").startsWith("observe_healthcare_") || (q.id || "").startsWith("observe_professional_") || /^\[HEALTHCARE\]|HEALTHCARE PROVIDER|MEDICAL PROFESSIONAL|HEALTHCARE/i.test(q.prompt || ""),
     n: 2,
@@ -159,7 +158,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "advocate",
     label: "As an Advocate / Intactivist",
-    emoji: "📣",
+    icon: "AlertTriangle",
     desc: "Tipping point, strategies, FGM parallels",
     match: (q) => (q.id || "").startsWith("observe_advocate_") || /^\[ADVOCATE\]|advocate|intactivist|tipping point|FGM/i.test(q.prompt || ""),
     n: 7,
@@ -167,7 +166,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "woman",
     label: "As a Woman",
-    emoji: "♀",
+    icon: "Eye",
     desc: "Blind spots, societal misconceptions",
     match: (q) => (q.id || "").startsWith("observe_woman_") || /^\[WOMAN\]|As a WOMAN/i.test(q.prompt || ""),
     n: 3,
@@ -175,7 +174,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "curious",
     label: "Curious / Researcher",
-    emoji: "🎓",
+    icon: "BookOpen",
     desc: "Shaping factors, social climate, researcher perspective",
     match: (q) => (q.id || "").startsWith("observe_curious_") || (q.id || "").startsWith("observe_student_") || /^\[CURIOUS\]|student_|curious_/i.test(q.prompt || "") || /observe_(curious|student)_/i.test(q.id || ""),
     n: 5,
@@ -201,6 +200,26 @@ export function observerSubrolesForQuestion(q) {
   }
   return hits.length > 0 ? hits : ["universal"];
 }
+
+// ── Transgender sub-pathways ───────────────────────────────────────────────
+export const TRANS_SUBROLES = [
+  {
+    id: "vaginoplasty",
+    label: "Post-Vaginoplasty",
+    icon: "Users", // Using generic icon, or we can use specific ones
+    emoji: "♀",
+    desc: "Trans women who have undergone vaginoplasty",
+    n: 0,
+  },
+  {
+    id: "phalloplasty",
+    label: "Post-Phalloplasty",
+    icon: "Users",
+    emoji: "♂",
+    desc: "Trans men who have undergone phalloplasty",
+    n: 0,
+  },
+];
 
 export const CIRCUMCISED_SUBROLES = [
   {

@@ -173,3 +173,18 @@ export const Droplets = createThemedIcon(
   Lucide.Droplets,
   () => <path d="M 8,2 C 8,2 3,7 3,11 C 3,13 5,15 8,15 C 11,15 13,13 13,11 C 13,7 8,2 8,2 Z" />
 );
+
+export const Globe = createThemedIcon(
+  Lucide.Globe,
+  () => <path d="M 5,2 H 11 M 12,3 V 5 H 14 V 11 H 12 V 13 M 11,14 H 5 M 4,13 V 11 H 2 V 5 H 4 V 3 Z M 2,8 H 14 M 8,2 V 14" />
+);
+
+export const Zap = createThemedIcon(
+  Lucide.Zap,
+  () => <path d="M 9,1 L 4,8 H 8 L 7,15 L 12,8 H 8 Z" />
+);
+
+export const Info = createThemedIcon(
+  Lucide.Info,
+  () => <path d="M 5,2 H 11 M 12,3 V 5 H 14 V 11 H 12 V 13 M 11,14 H 5 M 4,13 V 11 H 2 V 5 H 4 V 3 Z M 8,5 H 8.01 M 8,8 V 12" />
+);

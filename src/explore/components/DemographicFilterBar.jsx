@@ -236,83 +236,167 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
         )}
       </div>
 
-      {/* Dimension buttons */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-        {DEMOGRAPHIC_DIMENSIONS.map((dim) => {
-          const activeValue = cohort?.[dim.column];
-          const isOpen = openDim === dim.id;
-          return (
-            <div key={dim.id} style={{ position: "relative" }}>
-              <button
-                onClick={() => setOpenDim(isOpen ? null : dim.id)}
-                style={{
-                  width: "100%",
-                  padding: "0.45rem 0.65rem",
-                  background: activeValue ? "rgba(212,160,48,0.1)" : C.bgCard,
-                  border: `1px solid ${activeValue ? "rgba(212,160,48,0.35)" : C.ghost}`,
-                  borderRadius: 6,
-                  color: activeValue ? C.goldBright : C.text,
-                  fontFamily: FONT.body,
-                  fontSize: "0.78rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "0.4rem",
-                  transition: "all 0.15s",
-                }}
-              >
-                <span style={{
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.68rem",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: C.muted,
-                  flexShrink: 0,
-                }}>
-                  {dim.label}
-                </span>
-                <span style={{
-                  flex: 1,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  textAlign: "right",
-                  fontSize: "0.75rem",
-                }}>
+      {/* Active Filter Pills */}
+      {activeDims.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.8rem" }}>
+          {activeDims.map(dimCol => {
+            const dim = DEMOGRAPHIC_DIMENSIONS.find(d => d.column === dimCol);
+            if (!dim) return null;
+            const activeValue = cohort[dimCol];
+            return (
+              <div key={dimCol} style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                padding: "0.25rem 0.5rem",
+                background: "rgba(212,160,48,0.15)",
+                border: `1px solid rgba(212,160,48,0.35)`,
+                borderRadius: 4,
+                fontFamily: FONT.body,
+                fontSize: "0.7rem",
+                color: C.goldBright,
+              }}>
+                <span style={{ fontWeight: 600, opacity: 0.8 }}>{dim.label}:</span>
+                <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {getButtonLabel(activeValue)}
                 </span>
-                <span style={{
-                  color: isOpen ? C.goldBright : C.dim,
-                  fontSize: "0.6rem",
-                  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                  transition: "transform 0.2s",
-                }}>▼</span>
-              </button>
+                <button
+                  onClick={() => clearFilter(dimCol)}
+                  style={{
+                    background: "none", border: "none", color: C.goldBright, cursor: "pointer",
+                    padding: 0, marginLeft: "0.2rem", fontSize: "0.8rem", opacity: 0.7
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = 0.7}
+                >×</button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-              {/* Dropdown */}
-              {isOpen && (
-                <>
-                  <div 
-                    style={{ position: "fixed", inset: 0, zIndex: 40 }} 
-                    onClick={() => setOpenDim(null)} 
-                  />
+      {/* Single Add Filter Button */}
+      <div style={{ position: "relative" }}>
+        <button
+          onClick={() => setOpenDim(openDim ? null : "menu")}
+          style={{
+            width: "100%",
+            padding: "0.45rem 0.65rem",
+            background: openDim ? "rgba(255,255,255,0.05)" : C.bgCard,
+            border: `1px dashed ${openDim ? C.goldBright : C.dim}`,
+            borderRadius: 6,
+            color: openDim ? C.goldBright : C.text,
+            fontFamily: FONT.condensed,
+            fontSize: "0.75rem",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.4rem",
+            transition: "all 0.15s",
+          }}
+        >
+          <span>+ Add Filter...</span>
+        </button>
+
+        {/* Dropdowns */}
+        {openDim && (
+          <>
+            <div 
+              style={{ position: "fixed", inset: 0, zIndex: 40 }} 
+              onClick={() => setOpenDim(null)} 
+            />
+            <div style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              marginTop: 4,
+              background: C.bgSoft,
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 6,
+              zIndex: 50,
+              maxHeight: 320,
+              overflowY: "auto",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+            }}>
+              
+              {/* Main Menu (List of Dimensions) */}
+              {openDim === "menu" && (
+                <div>
                   <div style={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    marginTop: 4,
-                    background: C.bgSoft,
-                    border: `1px solid ${C.ghost}`,
-                    borderRadius: 6,
-                    zIndex: 50,
-                    maxHeight: 260,
-                    overflowY: "auto",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+                    padding: "0.5rem 0.7rem",
+                    borderBottom: `1px solid ${C.ghost}`,
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.65rem",
+                    letterSpacing: "0.1em",
+                    color: C.muted,
+                    textTransform: "uppercase",
                   }}>
+                    Select Demographic Dimension
+                  </div>
+                  {DEMOGRAPHIC_DIMENSIONS.map((dim) => (
+                    <div
+                      key={dim.id}
+                      onClick={() => setOpenDim(dim.id)}
+                      style={{
+                        padding: "0.45rem 0.7rem",
+                        color: C.textBright,
+                        fontFamily: FONT.body,
+                        fontSize: "0.76rem",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <span>{dim.label}</span>
+                      <span style={{ color: C.dim, fontSize: "0.6rem" }}>▶</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Dimension Options Menu */}
+              {openDim !== "menu" && (() => {
+                const dim = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === openDim);
+                if (!dim) return null;
+                const activeValue = cohort?.[dim.column];
+                return (
+                  <div>
+                    <div style={{
+                      padding: "0.4rem 0.7rem",
+                      borderBottom: `1px solid ${C.ghost}`,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                    }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setOpenDim("menu"); }}
+                        style={{
+                          background: "none", border: "none", color: C.goldBright,
+                          cursor: "pointer", fontSize: "0.7rem", padding: "0.2rem",
+                        }}
+                      >
+                        ◀ Back
+                      </button>
+                      <span style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.65rem",
+                        letterSpacing: "0.1em",
+                        color: C.textBright,
+                        textTransform: "uppercase",
+                      }}>
+                        {dim.label}
+                      </span>
+                    </div>
+
                     <button
                       onClick={() => clearFilter(dim.column)}
                       style={{
@@ -336,7 +420,6 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
                     {dim.options.map((opt) => {
                       const optValue = typeof opt === "string" ? opt : opt.value;
                       const optLabel = typeof opt === "string" ? opt : opt.label;
-                      
                       const isSelected = Array.isArray(activeValue) ? activeValue.includes(optValue) : activeValue === optValue;
                       
                       return (
@@ -374,11 +457,11 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
                       );
                     })}
                   </div>
-                </>
-              )}
+                );
+              })()}
             </div>
-          );
-        })}
+          </>
+        )}
       </div>
 
       {/* Helper text */}

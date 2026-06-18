@@ -618,6 +618,32 @@ export const sortDistribution = (distArray, question) => {
     return [...distArray].sort((a, b) => getOutcomeIndex(a.label) - getOutcomeIndex(b.label));
   }
 
+  if (qId.includes("circ_adult_before_rating_")) {
+    const getBeforeIndex = (label) => {
+      const l = String(label || "").toLowerCase();
+      if (l.includes("poor") || l.includes("very dissatisfied")) return 0;
+      if (l.includes("below average") || l.includes("somewhat dissatisfied")) return 1;
+      if (l.includes("average") || l.includes("neutral")) return 2;
+      if (l.includes("above average") || l.includes("somewhat satisfied")) return 3;
+      if (l.includes("excellent") || l.includes("very satisfied")) return 4;
+      return 5;
+    };
+    return [...distArray].sort((a, b) => getBeforeIndex(a.label) - getBeforeIndex(b.label));
+  }
+
+  if (qId.includes("circ_adult_after_change_")) {
+    const getAfterIndex = (label) => {
+      const l = String(label || "").toLowerCase();
+      if (l.includes("significantly decreased")) return 0;
+      if (l.includes("somewhat decreased")) return 1;
+      if (l.includes("no change")) return 2;
+      if (l.includes("somewhat increased")) return 3;
+      if (l.includes("significantly increased")) return 4;
+      return 5;
+    };
+    return [...distArray].sort((a, b) => getAfterIndex(a.label) - getAfterIndex(b.label));
+  }
+
   const isScale = question?.type === "scale_1_5" || qId.includes("importance") || qId.includes("rating_");
   if (isScale) {
     const getScaleValue = (label) => {

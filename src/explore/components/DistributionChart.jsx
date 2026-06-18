@@ -4,7 +4,7 @@ import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { sortDistribution, applyLikert } from "../lib/formatters";
 
-export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend }) {
+export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
@@ -18,7 +18,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
       const dataUrl = await toPng(chartRef.current, {
         cacheBust: true,
         style: {
-          background: C.bgSoft,
+          background: bare ? "transparent" : C.bgSoft,
         }
       });
       const link = document.createElement('a');
@@ -65,6 +65,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
 
   // Build a canonical color map from the overall distribution
   const colorMap = useMemo(() => {
+    if (customColorMap) return customColorMap;
     const map = {};
     parsedDist.forEach((item, loopIndex) => {
       let colorIndex = loopIndex;
@@ -79,7 +80,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
       map[item.label] = colorForLabel(item.label, colorIndex);
     });
     return map;
-  }, [parsedDist, question]);
+  }, [parsedDist, question, customColorMap]);
 
   if (!distribution) {
     return <div style={{ padding: "2rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>Loading…</div>;
@@ -110,15 +111,15 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   const cohortMap = {};
   for (const d of parsedCohortDist) cohortMap[d.label] = d.n;
 
-  const activeChartType = chartType === "auto" ? (parsedDist.length < 8 ? "pie" : "bar") : chartType;
+  const activeChartType = forceChartType || (chartType === "auto" ? (parsedDist.length < 8 ? "pie" : "bar") : chartType);
 
   return (
     <div ref={chartRef} style={{
-      background: C.bgSoft,
-      border: `1px solid ${C.ghost}`,
+      background: bare ? "transparent" : C.bgSoft,
+      border: bare ? "none" : `1px solid ${C.ghost}`,
       borderRadius: 8,
-      padding: "1.2rem",
-      marginBottom: "1.2rem",
+      padding: bare ? 0 : "1.2rem",
+      marginBottom: bare ? 0 : "1.2rem",
       position: "relative" // for absolute tooltip positioning if needed
     }}>
       {!hideHeader && (

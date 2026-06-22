@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAggregate } from "../lib/api";
+import { Activity } from "lucide-react";
+import { getAggregate, getNarratives } from "../lib/api";
 import { C, FONT, RAINBOW, resolveCssColor } from "../styles/tokens";
 import DemographicFilterBar from "../components/DemographicFilterBar";
+import SmallSampleBadge from "../components/SmallSampleBadge";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import { PATHWAYS } from "../lib/pathways";
 import PleasureBarChart from "../components/PleasureBarChart";
 import PleasureDumbbellChart from "../components/PleasureDumbbellChart";
-import PleasureRadarChart from "../components/PleasureRadarChart";
+import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 const QUESTIONS = [
@@ -24,32 +26,40 @@ const COHORTS = [
   { id: "circumcised", label: "Circumcised", colorVar: "--path-circumcised" }
 ];
 
-const QUALITATIVE_QUOTES = {
-  "intact": {
-    "exp_sex_rating_ease_of_orgasm": "It’s not a struggle to reach orgasm. The head of my penis is sensitive and feels every thrust.",
-    "exp_sex_rating_sensitivity_light_touch": "It is very sensitive to all types of touch and I love that. The most sensitive areas for me are my glans and of course my frenulum.",
-    "exp_sex_rating_variety_of_sensation": "The most pleasurable parts are the tip of the foreskin and the inner foreskin. The glans is sensitive too.",
-    "exp_sex_rating_orgasm_duration": "The feeling kind of pulses out from the genitals. Lasts about 15-20 seconds... always satisfying.",
-    "exp_sex_rating_pleasure_mobile_skin": "The build-up is usually very gradual and long-lasting. The final release is intensely pleasurable, focused mainly on the foreskin opening and inner foreskin.",
-    "exp_sex_rating_orgasm_intensity": "When I reach orgasm it starts from the top of my foreskin and sends a wave of full body release that is incredibly intense."
-  },
-  "circumcised": {
-    "exp_sex_rating_ease_of_orgasm": "Currently my penis is less sensitive and requires effort to erect and orgasm.",
-    "exp_sex_rating_sensitivity_light_touch": "My penis roughly the same degree of sensitivity as my forearm, with it being the most sensitive at its base and getting less sensitive towards the tip.",
-    "exp_sex_rating_variety_of_sensation": "The most sensitive parts (inner skin and frenulum remnant) ends abruptly into the rest of the shaft skin.",
-    "exp_sex_rating_orgasm_duration": "I feel very little build up. It comes on suddenly... short and unsatisfying.",
-    "exp_sex_rating_pleasure_mobile_skin": "Lube for masturbation makes things messier and less easy. Female partners don't seem to realize they require lube.",
-    "exp_sex_rating_orgasm_intensity": "There is almost no sensation during buildup. Upon getting close to orgasm, the sensitivity increases and then quickly drops off. It feels like a release, like a sneeze."
-  },
-  "restoring": {
-    "exp_sex_rating_ease_of_orgasm": "Relatively quick build up then release is largely focused on genital areas but this is improving with restoration.",
-    "exp_sex_rating_sensitivity_light_touch": "Not very sensitive outside of the frenulum remnant and the area at the base of my glans that has started to dekeratinize from restoration.",
-    "exp_sex_rating_variety_of_sensation": "Specific sensitive areas before foreskin restoration: frenulum remnants. Specific sensitive areas after starting: glans, sulcus, frenulum remnants.",
-    "exp_sex_rating_orgasm_duration": "Quick, mild, underwhelming... but I've started noticing more reaction/sensation as I've been restoring.",
-    "exp_sex_rating_pleasure_mobile_skin": "Usually the slower build up leads to more intense orgasm. I almost exclusively stimulate myself by rolling the foreskin back and forth over my corona.",
-    "exp_sex_rating_orgasm_intensity": "Gradual, and in no hurry, ending with a breathtaking whole body orgasm... total release... feeling of completeness."
-  }
+const FACTOR_KEYWORDS = {
+  "exp_sex_rating_ease_of_orgasm": ["orgasm", "climax", "finish", "cum", "hard", "difficult", "effort", "easy", "reach"],
+  "exp_sex_rating_sensitivity_light_touch": ["touch", "sensitive", "light", "feeling", "frenulum", "glans", "numb", "friction", "rubbing"],
+  "exp_sex_rating_variety_of_sensation": ["variety", "different", "sensation", "kinds", "types", "nuance", "feeling", "parts"],
+  "exp_sex_rating_orgasm_duration": ["duration", "long", "short", "time", "quick", "seconds", "minutes", "build", "sudden"],
+  "exp_sex_rating_pleasure_mobile_skin": ["glide", "mobile", "skin", "movement", "rubbing", "lube", "friction", "roll", "sliding"],
+  "exp_sex_rating_orgasm_intensity": ["intense", "intensity", "powerful", "weak", "strong", "release", "full body", "sneezing", "sneeze"]
 };
+
+function getRandomQuote(quotesArray, keywords) {
+  if (!quotesArray || quotesArray.length === 0) return null;
+  let matches = quotesArray.filter(q => {
+    if (!q.text) return false;
+    const lower = q.text.toLowerCase();
+    return keywords.some(kw => lower.includes(kw));
+  });
+  
+  if (matches.length === 0) matches = quotesArray;
+  
+  const shortMatches = matches.filter(q => q.text.length > 20 && q.text.length < 400);
+  const finalPool = shortMatches.length > 0 ? shortMatches : matches;
+  
+  return finalPool[Math.floor(Math.random() * finalPool.length)];
+}
+
+function formatAttribution(item) {
+  // Generation only — geographic detail (state/province/country) is intentionally
+  // omitted to prevent re-identification of respondents on a sensitive topic.
+  let genStr = item.generation || "";
+  if (genStr.includes("(born")) genStr = genStr.split("(born")[0].trim();
+  if (genStr === "Boomer") genStr = "Baby Boomer";
+
+  return genStr || "Anonymous";
+}
 
 // Helper to extract rating value from option text
 function optionToValue(opt) {
@@ -84,10 +94,12 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groupBy, setGroupBy] = useState("cohort"); // "cohort" or "factor"
-  const [viewMode, setViewMode] = useState("dumbbell");
+  const [viewMode, setViewMode] = useState("columns");
   const [activeQuestionId, setActiveQuestionId] = useState(QUESTIONS[0].id);
   const [showGap, setShowGap] = useState(false);
   const [activeCohorts, setActiveCohorts] = useState({ intact: true, circumcised: true, restoring: true });
+  const [liveQuotes, setLiveQuotes] = useState({ intact: [], circumcised: [], restoring: [] });
+  const [quoteSeed, setQuoteSeed] = useState(0);
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   useEffect(() => {
@@ -130,6 +142,33 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
     };
   }, [JSON.stringify(cohort)]);
 
+  // Fetch live quotes for the 3 pathways once on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function loadQuotes() {
+      try {
+        const [intactData, circData, restData] = await Promise.all([
+          getNarratives("intact_foreskin_role_sex"),
+          getNarratives("circ_drawbacks_desc"),
+          getNarratives("restore_sensitivity_change_desc")
+        ]);
+        if (!cancelled) {
+          setLiveQuotes({
+            intact: intactData.narratives || [],
+            circumcised: circData.narratives || [],
+            restoring: restData.narratives || []
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load real quotes", e);
+      }
+    }
+    loadQuotes();
+    return () => { cancelled = true; };
+  }, []);
+
+  const activeCohortsList = useMemo(() => COHORTS.filter(c => activeCohorts[c.id]), [activeCohorts]);
+
   // Compute final statistics
   const stats = useMemo(() => {
     if (!data) return { matrix: {}, totalN: 0 };
@@ -156,8 +195,18 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
       return scoreA - scoreB;
     });
 
-    return { matrix, totalN, avgN, sortedQuestions };
-  }, [data]);
+    let minN = Infinity;
+    COHORTS.forEach(c => {
+      if (!activeCohortsList.find(ac => ac.id === c.id)) return;
+      QUESTIONS.forEach(q => {
+        const res = matrix[c.id][q.id];
+        if (res && res.n > 0 && res.n < minN) minN = res.n;
+      });
+    });
+    if (minN === Infinity) minN = 0;
+
+    return { matrix, totalN, avgN, minN, sortedQuestions };
+  }, [data, activeCohortsList]);
 
   // Cohort labels list for active description filter
   const cohortLabel = useMemo(() => {
@@ -171,6 +220,15 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
     }
     return parts.join(" · ");
   }, [cohort]);
+
+  const selectedQuotes = useMemo(() => {
+    const quotes = {};
+    const keywords = FACTOR_KEYWORDS[activeQuestionId] || [];
+    COHORTS.forEach(c => {
+      quotes[c.id] = getRandomQuote(liveQuotes[c.id], keywords);
+    });
+    return quotes;
+  }, [activeQuestionId, liveQuotes, quoteSeed]);
 
   return (
     <div style={{
@@ -239,173 +297,143 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
               <div className="corner br"></div>
 
               {/* Title Header */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
-                <div>
-                  <div style={{
-                    fontFamily: FONT.condensed,
-                    fontSize: "0.7rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.22em",
-                    textTransform: "uppercase",
-                    color: C.gold,
-                    marginBottom: "0.35rem",
-                  }}>★ Interactive Exhibit ★</div>
-                  <h2 style={{
-                    fontFamily: FONT.display,
-                    fontWeight: 700,
-                    fontSize: "1.8rem",
-                    color: C.textBright,
-                    lineHeight: 1.15,
-                    letterSpacing: "-0.01em",
-                    marginBottom: "0.4rem",
-                  }}>The Pleasure Gap</h2>
-                  <p style={{
-                    fontFamily: FONT.body,
-                    fontSize: "0.88rem",
-                    color: C.muted,
-                    lineHeight: 1.5,
-                  }}>
+              <ExhibitHero
+                title="The Pleasure Gap"
+                color={C.goldBright}
+                gradientColor={C.gold}
+                BackgroundIcon={Activity}
+                description={
+                  <>
                     Across six measures of sexual experience, circumcised respondents rated their experiences lower than intact respondents on every axis. The largest gap, pleasure from mobile skin, was 2.5 points on a 5-point scale.
                     {stats.avgN > 0 && ` (Mean sample size per factor: n≈${stats.avgN}.)`}
-                  </p>
-                </div>
+                  </>
+                }
+              />
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div></div>
 
                 {/* Control Panel */}
                 {!error && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "nowrap", gap: "0.5rem" }}>
                     
-                    {/* View Toggles */}
-                    <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${C.ghost}` }}>
-                      <button
-                        onClick={() => setViewMode("dumbbell")}
-                        style={{
-                          background: viewMode === "dumbbell" ? C.bgCard : "transparent",
-                          color: viewMode === "dumbbell" ? C.textBright : C.muted,
-                          border: "none",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: 6,
-                          fontFamily: FONT.condensed,
-                          fontSize: "0.8rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          cursor: "pointer",
-                          boxShadow: viewMode === "dumbbell" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        The Gap Plot
-                      </button>
-                      <button
-                        onClick={() => setViewMode("radar")}
-                        style={{
-                          background: viewMode === "radar" ? C.bgCard : "transparent",
-                          color: viewMode === "radar" ? C.textBright : C.muted,
-                          border: "none",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: 6,
-                          fontFamily: FONT.condensed,
-                          fontSize: "0.8rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          cursor: "pointer",
-                          boxShadow: viewMode === "radar" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        Radar View
-                      </button>
-                      <button
-                        onClick={() => setViewMode("columns")}
-                        style={{
-                          background: viewMode === "columns" ? C.bgCard : "transparent",
-                          color: viewMode === "columns" ? C.textBright : C.muted,
-                          border: "none",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: 6,
-                          fontFamily: FONT.condensed,
-                          fontSize: "0.8rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          cursor: "pointer",
-                          boxShadow: viewMode === "columns" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        Classic Columns
-                      </button>
-                    </div>
-
-                    {/* Show Deficit Toggle */}
-                    <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${showGap ? C.red : C.ghost}` }}>
-                      <button
-                        onClick={() => setShowGap(!showGap)}
-                        style={{
-                          background: showGap ? C.bgCard : "transparent",
-                          color: showGap ? C.red : C.muted,
-                          border: "none",
-                          padding: "0.4rem 0.8rem",
-                          borderRadius: 6,
-                          fontFamily: FONT.condensed,
-                          fontSize: "0.8rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em",
-                          cursor: "pointer",
-                          boxShadow: showGap ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
-                          transition: "all 0.2s",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                          fontWeight: showGap ? 700 : 500
-                        }}
-                      >
-                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: showGap ? C.red : "transparent", border: `1px solid ${showGap ? C.red : C.muted}` }} />
-                        Highlight Sensation Gap
-                      </button>
-                    </div>
-
-                    {/* Group By Pivot (Only for Columns) */}
-                    {viewMode === "columns" && (
-                      <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.3rem", border: `1px solid ${C.ghost}` }}>
+                    {/* LEFT CONTROLS */}
+                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "nowrap", justifyContent: "flex-end", flex: 1, alignItems: "center" }}>
+                      {/* View Toggles */}
+                      <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.2rem", border: `1px solid ${C.ghost}` }}>
                         <button
-                          onClick={() => setGroupBy("factor")}
+                          onClick={() => setViewMode("dumbbell")}
                           style={{
-                            background: groupBy === "factor" ? C.bgCard : "transparent",
-                            color: groupBy === "factor" ? C.textBright : C.muted,
+                            background: viewMode === "dumbbell" ? C.bgCard : "transparent",
+                            color: viewMode === "dumbbell" ? C.textBright : C.muted,
                             border: "none",
-                            padding: "0.4rem 0.8rem",
+                            padding: "0.3rem 0.6rem",
                             borderRadius: 6,
                             fontFamily: FONT.condensed,
                             fontSize: "0.8rem",
                             textTransform: "uppercase",
                             letterSpacing: "0.05em",
                             cursor: "pointer",
-                            boxShadow: groupBy === "factor" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                            boxShadow: viewMode === "dumbbell" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
                             transition: "all 0.2s"
                           }}
                         >
-                          By Parameter
+                          The Gap Plot
                         </button>
+
                         <button
-                          onClick={() => setGroupBy("cohort")}
+                          onClick={() => setViewMode("columns")}
                           style={{
-                            background: groupBy === "cohort" ? C.bgCard : "transparent",
-                            color: groupBy === "cohort" ? C.textBright : C.muted,
+                            background: viewMode === "columns" ? C.bgCard : "transparent",
+                            color: viewMode === "columns" ? C.textBright : C.muted,
                             border: "none",
-                            padding: "0.4rem 0.8rem",
+                            padding: "0.3rem 0.6rem",
                             borderRadius: 6,
                             fontFamily: FONT.condensed,
                             fontSize: "0.8rem",
                             textTransform: "uppercase",
                             letterSpacing: "0.05em",
                             cursor: "pointer",
-                            boxShadow: groupBy === "cohort" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                            boxShadow: viewMode === "columns" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
                             transition: "all 0.2s"
                           }}
                         >
-                          By Cohort
+                          Classic Columns
                         </button>
                       </div>
-                    )}
+
+                      {/* Group By Pivot (Only for Columns) */}
+                      {viewMode === "columns" && (
+                        <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.2rem", border: `1px solid ${C.ghost}` }}>
+                          <button
+                            onClick={() => setGroupBy("factor")}
+                            style={{
+                              background: groupBy === "factor" ? C.bgCard : "transparent",
+                              color: groupBy === "factor" ? C.textBright : C.muted,
+                              border: "none",
+                              padding: "0.3rem 0.6rem",
+                              borderRadius: 6,
+                              fontFamily: FONT.condensed,
+                              fontSize: "0.8rem",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.05em",
+                              cursor: "pointer",
+                              boxShadow: groupBy === "factor" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            By Parameter
+                          </button>
+                          <button
+                            onClick={() => setGroupBy("cohort")}
+                            style={{
+                              background: groupBy === "cohort" ? C.bgCard : "transparent",
+                              color: groupBy === "cohort" ? C.textBright : C.muted,
+                              border: "none",
+                              padding: "0.3rem 0.6rem",
+                              borderRadius: 6,
+                              fontFamily: FONT.condensed,
+                              fontSize: "0.8rem",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.05em",
+                              cursor: "pointer",
+                              boxShadow: groupBy === "cohort" ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            By Cohort
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Show Deficit Toggle */}
+                      <div style={{ display: "flex", background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: "0.2rem", border: `1px solid ${showGap ? C.red : C.ghost}` }}>
+                        <button
+                          onClick={() => setShowGap(!showGap)}
+                          style={{
+                            background: showGap ? C.bgCard : "transparent",
+                            color: showGap ? C.red : C.muted,
+                            border: "none",
+                            padding: "0.3rem 0.6rem",
+                            borderRadius: 6,
+                            fontFamily: FONT.condensed,
+                            fontSize: "0.8rem",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                            cursor: "pointer",
+                            boxShadow: showGap ? "0 2px 8px rgba(0,0,0,0.2)" : "none",
+                            transition: "all 0.2s",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            fontWeight: showGap ? 700 : 500
+                          }}
+                        >
+                          <div style={{ width: 10, height: 10, borderRadius: "50%", background: showGap ? C.red : "transparent", border: `1px solid ${showGap ? C.red : C.muted}` }} />
+                          Show Gap
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -423,9 +451,10 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
               )}
               {!error && data && (
                 <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s", pointerEvents: loading ? "none" : "auto" }}>
-                  {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
-                  {viewMode === "radar" && <PleasureRadarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
-                  {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={COHORTS.filter(c => activeCohorts[c.id])} groupBy={groupBy} showGap={showGap} quotes={QUALITATIVE_QUOTES} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  <SmallSampleBadge n={stats.minN} label="one or more of the selected pathways">
+                    {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={activeCohortsList} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                    {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={activeCohortsList} groupBy={groupBy} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                  </SmallSampleBadge>
                 </div>
               )}
             </div>
@@ -442,7 +471,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                       onClick={() => setActiveCohorts(prev => ({ ...prev, [c.id]: !prev[c.id] }))}
                       style={{
                         background: activeCohorts[c.id] ? `var(${c.colorVar})` : "transparent",
-                        color: activeCohorts[c.id] ? C.bg : `var(${c.colorVar})`,
+                        color: activeCohorts[c.id] ? "#050505" : `var(${c.colorVar})`,
                         border: `1px solid var(${c.colorVar})`,
                         padding: "0.3rem 0.8rem",
                         borderRadius: 20,
@@ -494,6 +523,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                       {COHORTS.map(c => (
                         <th key={c.id} style={{ textAlign: "right", padding: "0.5rem", color: C.textBright, fontWeight: 600, position: "sticky", top: 0 }}>{c.label}</th>
                       ))}
+                      <th style={{ textAlign: "right", padding: "0.5rem", color: C.red, fontWeight: 700, position: "sticky", top: 0 }}>The Gap<br/><span style={{fontSize:"0.65rem", color: C.muted}}>(Intact vs. Circ)</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -514,10 +544,126 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                             </td>
                           );
                         })}
+                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", borderLeft: `1px solid rgba(255,255,255,0.05)` }}>
+                          {(() => {
+                            const intactAvg = stats.matrix["intact"]?.[q.id]?.average || 0;
+                            const circAvg = stats.matrix["circumcised"]?.[q.id]?.average || 0;
+                            const diff = intactAvg - circAvg;
+                            return (
+                              <span style={{ fontFamily: FONT.mono, fontWeight: 800, color: diff > 0 ? C.red : C.green, fontSize: "0.95rem" }}>
+                                {diff > 0 ? "-" : "+"}{Math.abs(diff).toFixed(2)}
+                              </span>
+                            );
+                          })()}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {/* Voices Spotlight Panel */}
+            {!error && data && (
+              <div style={{ marginTop: "4rem" }}>
+                <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+                  <div style={{
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.85rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: C.goldBright,
+                    marginBottom: "0.5rem"
+                  }}>
+                    Lived Reality
+                  </div>
+                  <h3 style={{ fontFamily: FONT.display, fontSize: "1.8rem", color: C.textBright, margin: 0 }}>
+                    Voices from the Gap
+                  </h3>
+                  <p style={{ fontFamily: FONT.body, color: C.muted, maxWidth: 600, margin: "0.5rem auto 0" }}>
+                    Select a sensation factor to read representative quotes from each pathway, grounding the numerical ratings in physical experience.
+                  </p>
+                </div>
+                
+                {/* Selector */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                  {QUESTIONS.map(q => (
+                    <button
+                      key={q.id}
+                      onClick={() => {
+                        setActiveQuestionId(q.id);
+                        setQuoteSeed(s => s + 1);
+                      }}
+                      style={{
+                        background: activeQuestionId === q.id ? `var(${q.colorVar})` : "transparent",
+                        color: activeQuestionId === q.id ? "#111" : C.textBright,
+                        border: `1px solid ${activeQuestionId === q.id ? `var(${q.colorVar})` : C.ghost}`,
+                        padding: "0.5rem 1rem",
+                        borderRadius: 20,
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.8rem",
+                        fontWeight: activeQuestionId === q.id ? 800 : 500,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      {q.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Quotes Display */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem" }}>
+                  {COHORTS.filter(c => activeCohorts[c.id]).map(c => {
+                    const quoteItem = selectedQuotes[c.id];
+                    if (!quoteItem) return null;
+                    
+                    const attribution = formatAttribution(quoteItem);
+
+                    return (
+                      <div key={c.id} style={{
+                        background: C.bgCard,
+                        border: `1px solid ${C.ghost}`,
+                        borderTop: `4px solid var(${c.colorVar})`,
+                        borderRadius: "8px",
+                        padding: "1.5rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                      }}>
+                        <div style={{ 
+                          fontFamily: FONT.condensed, 
+                          fontSize: "0.95rem", 
+                          color: `var(${c.colorVar})`, 
+                          textTransform: "uppercase", 
+                          letterSpacing: "0.1em", 
+                          fontWeight: 800,
+                          textShadow: "1px 1px 0 rgba(0,0,0,0.8)"
+                        }}>
+                          {c.label} Voice
+                        </div>
+                        <div style={{ fontFamily: FONT.display, fontSize: "1.05rem", color: C.textBright, fontStyle: "italic", lineHeight: 1.6 }}>
+                          "{quoteItem.text}"
+                        </div>
+                        <div style={{ 
+                          fontFamily: FONT.mono, 
+                          fontSize: "0.65rem", 
+                          color: C.dim, 
+                          marginTop: "auto", 
+                          paddingTop: "1rem",
+                          borderTop: `1px solid ${C.ghost}`,
+                          textTransform: "uppercase"
+                        }}>
+                          {attribution}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </main>

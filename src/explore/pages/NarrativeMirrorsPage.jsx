@@ -1,20 +1,14 @@
 import { useState, useEffect } from "react";
+import { MessageCircle } from "lucide-react";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { getQuestions, getNarratives } from "../lib/api";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
+import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
 
 const NARRATIVE_CONCEPTS = [
-  {
-    id: "final_message",
-    label: "The Final Message / Advice",
-    desc: "What respondents wish they could convey to parents, others, or those beginning their journey.",
-    intact: { qid: "intact_message_to_others", label: "Intact Voice", emoji: "🟢" },
-    circ: { qid: "circ_message_to_parents", label: "Circumcised Voice", emoji: "🔵" },
-    restoring: { qid: "restore_advice_to_others", label: "Restoring Voice", emoji: "🟣" }
-  },
   {
     id: "advantages",
     label: "Perceived Advantages / Motivations",
@@ -59,6 +53,14 @@ const NARRATIVE_CONCEPTS = [
     intact: { qid: "final_partner_preference_reason", pathway: "intact", label: "Intact Perception", emoji: "🟢" },
     circ: { qid: "final_partner_preference_reason", pathway: "circumcised", label: "Circumcised Perception", emoji: "🔵" },
     restoring: { qid: "final_partner_preference_reason", pathway: "restoring", label: "Restoring Perception", emoji: "🟣" }
+  },
+  {
+    id: "final_message",
+    label: "The Final Message / Advice",
+    desc: "What respondents wish they could convey to parents, others, or those beginning their journey.",
+    intact: { qid: "intact_message_to_others", label: "Intact Voice", emoji: "🟢" },
+    circ: { qid: "circ_message_to_parents", label: "Circumcised Voice", emoji: "🔵" },
+    restoring: { qid: "restore_advice_to_others", label: "Restoring Voice", emoji: "🟣" }
   }
 ];
 
@@ -116,32 +118,56 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
 
       <div style={{ maxWidth: 1600, margin: "0 auto", padding: "1.5rem 1.5rem 0" }}>
         <InlineBreadcrumb currentRoute="narrative-mirrors" navigate={navigate} />
-        {/* Concept Selector */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.5rem" }}>
-          <select
-            value={selectedConceptId}
-            onChange={(e) => setSelectedConceptId(e.target.value)}
-            style={{
-              background: C.bgSoft,
-              border: `1px solid ${C.gold}`,
-              color: C.textBright,
-              fontFamily: FONT.condensed,
-              fontWeight: 700,
-              fontSize: "1rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              padding: "0.6rem 1.2rem",
-              borderRadius: 8,
-              outline: "none",
-              cursor: "pointer",
-            }}
-          >
-            {NARRATIVE_CONCEPTS.map(c => (
-              <option key={c.id} value={c.id}>{c.label}</option>
-            ))}
-          </select>
-        </div>
 
+        <ExhibitHero
+          title="Narrative Mirrors"
+          color={C.goldBright}
+          gradientColor={C.gold}
+          BackgroundIcon={MessageCircle}
+          description="Compare qualitative open-text narratives between intact and circumcised pathways."
+        />
+
+        {/* Concept Selector */}
+        <div style={{
+          display: "flex",
+          gap: "0.5rem",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          marginBottom: "1.5rem"
+        }}>
+          {NARRATIVE_CONCEPTS.map(c => {
+            const isActive = selectedConceptId === c.id;
+            return (
+              <button
+                key={c.id}
+                onClick={() => setSelectedConceptId(c.id)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  background: isActive ? C.bgCard : "transparent",
+                  color: isActive ? C.textBright : C.muted,
+                  border: `1px solid ${isActive ? C.ghost : "transparent"}`,
+                  borderRadius: 20,
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.85rem",
+                  fontWeight: isActive ? 700 : 400,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: isActive ? "0 2px 0 rgba(0,0,0,0.15)" : "none"
+                }}
+                onMouseOver={e => {
+                  if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                }}
+                onMouseOut={e => {
+                  if (!isActive) e.currentTarget.style.background = "transparent";
+                }}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Concept Metadata */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>

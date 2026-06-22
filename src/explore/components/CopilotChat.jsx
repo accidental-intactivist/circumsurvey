@@ -47,6 +47,14 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     }
   }, [routerState?.ai_query]);
 
+  const handleClear = () => {
+    setQuery("");
+    setResult(null);
+    setError(null);
+    initialRunDone.current = true; // don't auto-replay a stale ai_query
+    if (updateState) updateState({ ai_query: "" });
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -98,6 +106,29 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
           fontSize: "0.6rem",
           letterSpacing: "0.1em"
         }}>BETA</span>
+        {(result || query) && (
+          <button
+            onClick={handleClear}
+            style={{
+              marginLeft: "auto",
+              background: "transparent",
+              border: `1px solid ${C.ghost}`,
+              color: C.muted,
+              fontFamily: FONT.condensed,
+              fontSize: "0.62rem",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              padding: "0.15rem 0.55rem",
+              borderRadius: 4,
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = C.textBright; e.currentTarget.style.borderColor = C.muted; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; e.currentTarget.style.borderColor = C.ghost; }}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <form onSubmit={handleSearch} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
@@ -262,7 +293,6 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                     onClick={() => {
                       setQuery(sua);
                       executeSearch(sua);
-                      if (updateState) updateState({ ai_query: sua });
                     }}
                     style={{
                       background: "rgba(255,255,255,0.05)",
@@ -329,7 +359,6 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                             const sq = `Find a thematic match for this quote: "${q.text}". Search specifically for responses from DIFFERENT pathways to see how these experiences intersect.`;
                             setQuery(sq);
                             executeSearch(sq);
-                            if (updateState) updateState({ ai_query: sq });
                           }}
                           style={{
                             background: "transparent",

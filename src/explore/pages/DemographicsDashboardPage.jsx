@@ -295,7 +295,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
               <span style={{ fontSize: "1.1em" }}>{s.icon}</span> {s.label}
             </div>
           ))}
-          <div style={{ height: 1, background: C.ghost, margin: "1.5rem 0", opacity: 0.3 }} />
+          <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "1.5rem 0 1rem", opacity: 0.5 }} />
           <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
         </aside>
 
@@ -596,7 +596,7 @@ function DivergenceRadar({ cohort, tooltip }) {
   const [ref, inView] = useInView();
   // Default to pathway
   const [activeDimensionId, setActiveDimensionId] = useState("pathway");
-  const [activeCohorts, setActiveCohorts] = useState(["intact", "restoring"]);
+  const [activeCohorts, setActiveCohorts] = useState(["intact", "circumcised", "restoring"]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -649,9 +649,9 @@ function DivergenceRadar({ cohort, tooltip }) {
     const newDimId = e.target.value;
     setActiveDimensionId(newDimId);
     
-    // Pick the first 2 cohorts as the default active ones for the new dimension
+    // Pick the first 3 cohorts as the default active ones for the new dimension
     const newDim = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === newDimId);
-    const newCohorts = newDim?.options.slice(0, 2).map(opt => 
+    const newCohorts = newDim?.options.slice(0, 3).map(opt => 
       typeof opt === "string" ? opt : opt.value
     ) || [];
     setActiveCohorts(newCohorts);
@@ -755,15 +755,20 @@ function DivergenceRadar({ cohort, tooltip }) {
                 key={cohortOpt.value}
                 onClick={() => toggleCohort(cohortOpt.value)}
                 style={{
-                  background: isActive ? `${color}20` : "transparent",
-                  border: `1px solid ${isActive ? color : resolveCssColor(C.ghost)}`,
-                  color: isActive ? resolveCssColor(C.textBright) : resolveCssColor(C.dim),
-                  padding: "0.25rem 0.6rem", borderRadius: 16, cursor: "pointer",
-                  fontFamily: FONT.condensed, fontSize: "0.75rem", display: "flex", alignItems: "center", gap: "0.4rem",
-                  transition: "all 0.2s"
+                  background: isActive ? color : "transparent",
+                  color: isActive ? "#050505" : color,
+                  border: `1px solid ${color}`,
+                  padding: "0.3rem 0.8rem",
+                  borderRadius: 20,
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.75rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: isActive ? "0 2px 0 rgba(0,0,0,0.15)" : "none"
                 }}
               >
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: isActive ? color : resolveCssColor(C.ghost) }} />
                 {cohortOpt.label}
               </button>
             );

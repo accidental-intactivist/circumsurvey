@@ -2,8 +2,11 @@ import { useState, useMemo } from "react";
 import { C, FONT } from "../styles/tokens";
 import { PATHWAYS } from "../lib/pathways";
 import DistributionChart from "./DistributionChart";
+import AddToReportButton from "./AddToReportButton";
+import SharePopover from "./SharePopover";
 
 export default function NarrativeList({ 
+  question,
   distribution, 
   highlightWord = null, 
   hideChart = false,
@@ -157,19 +160,39 @@ export default function NarrativeList({
   if (!distribution || distribution.length === 0) {
     return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
   }
+
+  const MIN_NARRATIVE_COHORT = 20;
+  if (distribution.length < MIN_NARRATIVE_COHORT) {
+    return (
+      <div style={{ padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, textAlign: "center", marginTop: "1rem" }}>
+        <div style={{ color: C.red, marginBottom: "0.5rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <strong>Privacy Guardrail Active</strong>
+        </div>
+        <div style={{ color: C.muted, fontSize: "0.9rem", fontFamily: FONT.body }}>
+          Verbatim narratives are suppressed for sub-cohorts with fewer than {MIN_NARRATIVE_COHORT} responses to prevent potential re-identification. (Available: n={distribution.length})
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div style={{ marginTop: "1rem" }}>
-      {/* Layout Selector */}
-      {availablePathways.length >= 2 && (
-        <div style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          gap: "0.5rem",
-          marginBottom: "1.2rem",
-        }}>
-          <span style={{ fontFamily: FONT.condensed, fontSize: "0.74rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>View Mode:</span>
+      {/* Header controls */}
+      <div style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: "0.5rem",
+        marginBottom: "1.2rem",
+      }}>
+        {question && <AddToReportButton questionId={question.id} iconOnly />}
+        {question && <SharePopover url={window.location.origin + window.location.pathname + "#/question/" + question.id} questionId={question.id} questionPrompt={question.prompt} onExportImage={() => {}} />}
+        
+        {availablePathways.length >= 2 && (
+          <>
+            <div style={{ width: "1px", height: "16px", background: C.ghost, margin: "0 0.2rem" }} />
+            <span style={{ fontFamily: FONT.condensed, fontSize: "0.74rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>View Mode:</span>
+
           <div style={{
             display: "flex",
             background: "rgba(0,0,0,0.2)",
@@ -217,11 +240,12 @@ export default function NarrativeList({
               }}
             >
               <span>📊</span>
-              <span>Compare Cohorts</span>
+              <span>Compare Side by Side</span>
             </button>
           </div>
-        </div>
-      )}
+          </>
+        )}
+      </div>
 
       {chartData && !hideChart && viewMode === "single" && (
         <div style={{ marginBottom: "2rem" }}>
@@ -240,30 +264,17 @@ export default function NarrativeList({
             const count = group.count;
             const item = group.items[0];
             
-            // Only show metadata if this is a unique response
+            // Attribution is intentionally limited to generation (+ pathway, shown via
+            // color) and deliberately omits geographic detail (state/province/country)
+            // to prevent re-identification of respondents on a sensitive topic.
             let genStr = item.generation || "";
             if (genStr.includes("(born")) {
               genStr = genStr.split("(born")[0].trim();
             }
             if (genStr === "Boomer") genStr = "Baby Boomer";
-            
-            let locStr = "";
-            let region = item.us_state_now || item.canada_province_now || item.us_state_born || item.canada_province_born;
-            if (region && typeof region === 'string' && region.includes(" - ")) {
-              region = region.split(" - ").pop().trim();
-            }
-            let country = item.country_now || item.country_born;
-            if (country === "United States of America (USA)") country = "USA";
-            else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
 
-            if (region && country) locStr = `${region}, ${country}`;
-            else if (country) locStr = country;
+            let respondentMeta = genStr;
 
-            let respondentMeta = "";
-            if (genStr && locStr) respondentMeta = `${genStr} · ${locStr}`;
-            else if (genStr) respondentMeta = genStr;
-            else if (locStr) respondentMeta = locStr;
-            
             const pathwayColor = item.pathway && PATHWAYS[item.pathway.toLowerCase()] 
               ? PATHWAYS[item.pathway.toLowerCase()].color 
               : C.gold;
@@ -378,28 +389,14 @@ export default function NarrativeList({
                   const count = group.count;
                   const item = group.items[0];
                   
+                  // Generation only — geographic attribution omitted to protect privacy.
                   let genStr = item.generation || "";
                   if (genStr.includes("(born")) {
                     genStr = genStr.split("(born")[0].trim();
                   }
                   if (genStr === "Boomer") genStr = "Baby Boomer";
-                  
-                  let locStr = "";
-                  let region = item.us_state_now || item.canada_province_now;
-                  if (region && typeof region === 'string' && region.includes(" - ")) {
-                    region = region.split(" - ").pop().trim();
-                  }
-                  let country = item.country_now;
-                  if (country === "United States of America (USA)") country = "USA";
-                  else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
 
-                  if (region && country) locStr = `${region}, ${country}`;
-                  else if (country) locStr = country;
-
-                  let respondentMeta = "";
-                  if (genStr && locStr) respondentMeta = `${genStr} · ${locStr}`;
-                  else if (genStr) respondentMeta = genStr;
-                  else if (locStr) respondentMeta = locStr;
+                  let respondentMeta = genStr;
 
                   return (
                     <div key={idx} style={{

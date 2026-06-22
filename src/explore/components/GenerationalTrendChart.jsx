@@ -2,8 +2,10 @@ import { useEffect, useState, useMemo } from "react";
 import { area, line, curveCatmullRom } from "d3-shape";
 import { getAggregate } from "../lib/api";
 import { C, FONT } from "../styles/tokens";
-import { colorForLabel } from "./MiniSparkline";
+import { scaleOrdinal } from "d3-scale";
 import { useTooltip, Tooltip } from "./Tooltip";
+import { colorForLabel } from "./MiniSparkline";
+import { shortLabel } from "../lib/formatters";
 
 export default function GenerationalTrendChart({ questionId, overallDist }) {
   const [data, setData] = useState(null);
@@ -247,6 +249,20 @@ export default function GenerationalTrendChart({ questionId, overallDist }) {
         {/* Ribbons */}
         {layers.map((layer, lIdx) => {
           const rowColor = colorMap[layer.label] || colorForLabel(layer.label, lIdx);
+          
+          // Find the best point to place the label (where the ribbon is thickest, or simply largest pct)
+          let bestPt = null;
+          let maxPct = 0;
+          layer.points.forEach((pt, i) => {
+            // Avoid placing labels on the very first or very last generation if possible, unless it's the only thick part
+            const isEdge = i === 0 || i === layer.points.length - 1;
+            const weight = isEdge ? 0.8 : 1.2; // Prefer middle points
+            if (pt.pct * weight > maxPct) {
+              maxPct = pt.pct * weight;
+              bestPt = pt;
+            }
+          });
+
           return (
             <g key={`ribbon-${layer.label}`}>
               {/* Ribbon Fill */}
@@ -296,6 +312,57 @@ export default function GenerationalTrendChart({ questionId, overallDist }) {
                   />
                 );
               })}
+
+              {/* Inline Ribbon Label */}
+              {bestPt && bestPt.pct > 6 && (
+                <text
+                  x={bestPt.x}
+                  y={bestPt.y0 + (bestPt.y1 - bestPt.y0) / 2}
+                  textAnchor="middle"
+                  alignmentBaseline="middle"
+                  fill={C.textBright}
+                  stroke={C.bg}
+                  strokeWidth="3px"
+                  strokeLinejoin="round"
+                  style={{
+                    fontFamily: FONT.condensed,
+                    fontSize: bestPt.pct > 12 ? "11px" : "9px",
+                    fontWeight: 800,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    pointerEvents: "none",
+                    paintOrder: "stroke fill",
+                    opacity: 0.9,
+                  }}
+                >
+                  {(() => {
+                    const txt = shortLabel(layer.label);
+                    if (txt.length <= 12) return txt;
+                    
+                    // Find a space near the middle
+                    const mid = Math.floor(txt.length / 2);
+                    let splitIdx = txt.lastIndexOf(" ", mid);
+                    
+                    // If no space before mid, or the space is too far, look forward
+                    if (splitIdx === -1 || (mid - splitIdx) > 5) {
+                      const forwardIdx = txt.indexOf(" ", mid);
+                      if (forwardIdx !== -1) splitIdx = forwardIdx;
+                    }
+                    
+                    if (splitIdx === -1) return txt;
+                    
+                    const line1 = txt.slice(0, splitIdx);
+                    const line2 = txt.slice(splitIdx + 1);
+                    
+                    return (
+                      <>
+                        <tspan x={bestPt.x} dy="-0.5em">{line1}</tspan>
+                        <tspan x={bestPt.x} dy="1.1em">{line2}</tspan>
+                      </>
+                    );
+                  })()}
+                </text>
+              )}
             </g>
           );
         })}

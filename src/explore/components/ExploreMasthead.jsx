@@ -73,10 +73,10 @@ export const ROUTE_META = {
     desc: "Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z.",
     navTitle: "Culture & Generations",
   },
-  "observer-triad": {
+  "observer-lens": {
     kicker: "Exhibit 08",
-    title: "The Observer Triad",
-    desc: "Analyze the perspectives of partners, parents, and medical professionals — those who observe the consequences without having experienced them directly.",
+    title: "The Observer Lens",
+    desc: "Expanded analysis of all Observer pathways including partners, parents, healthcare, researchers and advocates.",
     navTitle: "Observer Triad",
   },
   "religious-mirrors": {
@@ -145,6 +145,12 @@ export const ROUTE_META = {
     desc: "The final questions on missing public information, reasoning for future children, and what else respondents wanted to share.",
     navTitle: "Final Thoughts",
   },
+  "the-forward-view": {
+    kicker: "Exhibit 16",
+    title: "The Forward View",
+    desc: "How lived experience informs the choices we make for the next generation.",
+    navTitle: "The Forward View",
+  },
   "trans-intersex": {
     kicker: "Phase 2",
     title: "Trans & Intersex Experiences",
@@ -160,18 +166,19 @@ export const ROUTE_META = {
 };
 
 export const EXHIBIT_ROUTES = [
-  { route: "pathways", num: "Exhibit 01", label: "The Survey Map", tagline: "Interactive survey architecture flowchart", icon: "Compass", colorVar: "var(--c-cyan)" },
+  { route: "pathways", num: "Exhibit 01", label: "The Survey Map", tagline: "Interactive survey architecture flowchart", icon: "Compass", colorVar: "var(--c-blue)" },
   { route: "pairs", num: "Exhibit 02", label: "Mirror Pairs", tagline: "Side-by-side cohort question contrasts", icon: "Scale", colorVar: "var(--c-gold)" },
-  { route: "pleasure-gap", num: "Exhibit 03", label: "The Pleasure Gap", tagline: "Sensation, sensitivity & orgasm ratings", icon: "Heart", colorVar: "var(--c-red)" },
-  { route: "correlations", num: "Exhibit 04", label: "Correlations Explorer", tagline: "Cross-tabulate demographic predictors", icon: "Grid", colorVar: "var(--c-blue)" },
-  { route: "demographics", num: "Exhibit 05", label: "Demographic Explorer", tagline: "Age, generation, geography & more", icon: "Users", colorVar: "var(--c-ltBlue)" },
-  { route: "narrative-mirrors", num: "Exhibit 06", label: "The Voices", tagline: "Open-ended narratives & word clouds", icon: "MessageSquareText", colorVar: "var(--c-green)" },
-  { route: "culture", num: "Exhibit 07", label: "Culture & Generations", tagline: "Norms, stereotypes & generational shifts", icon: "Globe", colorVar: "var(--c-green)" },
-  { route: "observer-triad", num: "Exhibit 08", label: "The Observer Lens", tagline: "Partners, parents & professionals", icon: "Eye", colorVar: "var(--c-purple)" },
-  { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors", tagline: "Faith, tradition & personal experience", icon: "BookOpen", colorVar: "var(--c-gold)" },
-  { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey", tagline: "Methods, progress & sensitivity gains", icon: "RefreshCw", colorVar: "var(--c-purple)" },
-  { route: "adult-experience", num: "Exhibit 11", label: "Before & After: The Adult Experience", tagline: "Those who remember both states", icon: "Zap", colorVar: "var(--c-orange)" },
-  { route: "for-parents", num: "Resource", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-blue)" },
+  { route: "pleasure-gap", num: "Exhibit 03", label: "The Pleasure Gap", tagline: "Sensation, sensitivity & orgasm ratings", icon: "Heart", colorVar: "var(--c-green)" },
+  { route: "correlations", num: "Exhibit 04", label: "Correlations Explorer", tagline: "Cross-tabulate demographic predictors", icon: "Grid", colorVar: "var(--c-red)" },
+  { route: "demographics", num: "Exhibit 05", label: "Demographic Explorer", tagline: "Age, generation, geography & more", icon: "Users", colorVar: "var(--c-purple)" },
+  { route: "narrative-mirrors", num: "Exhibit 06", label: "The Voices", tagline: "Open-ended narratives & word clouds", icon: "MessageSquareText", colorVar: "var(--c-orange)" },
+  { route: "culture", num: "Exhibit 07", label: "Culture & Generations", tagline: "Norms, stereotypes & generational shifts", icon: "Globe", colorVar: "var(--c-ltBlue)" },
+  { route: "observer-lens", num: "Exhibit 08", label: "The Observer Lens", tagline: "Partners, parents & professionals", icon: "Eye", colorVar: "var(--c-grey)" },
+  { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors", tagline: "Faith, tradition & personal experience", icon: "BookOpen", colorVar: "var(--c-blue)" },
+  { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey", tagline: "Methods, progress & sensitivity gains", icon: "RefreshCw", colorVar: "var(--c-gold)" },
+  { route: "adult-experience", num: "Exhibit 11", label: "Before & After: The Adult Experience", tagline: "Those who remember both states", icon: "Zap", colorVar: "var(--c-green)" },
+  { route: "for-parents", num: "Resource", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-red)" },
+  { route: "the-forward-view", num: "Conclusion", label: "The Forward View", tagline: "Decisions for the next generation", icon: "CheckCircle", colorVar: "var(--c-purple)" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {
@@ -222,7 +229,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
   // Completion point is when the header is fully collapsed (184px scroll)
   const progress = Math.min(1, Math.max(0, scrollY / (HERO_HEIGHT - NAV_HEIGHT)));
   const translateY = -108 * progress; // Moves center from 136px to 28px (vertical center of 56px navbar)
-  const scale = 1 - 0.42 * progress;
+  const scale = 1 - 0.6 * progress; // squishes down to 40% of its expanded size
 
   // Josefin Sans (Tomorrow font) has high ascenders, making uppercase text sit visually low.
   // We apply a vertical offset (-4.5px when expanded, -2.5px when collapsed) to center it.
@@ -420,7 +427,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                                     color: isCurrent ? "var(--c-goldBright)" : "var(--c-dim)",
                                     marginBottom: "0.1rem",
                                   }}>
-                                    {ex.num}
+                                    {ex.num.replace(/Exhibit/i, "Section")}
                                   </span>
                                   <span style={{
                                     fontFamily: FONT.body,
@@ -541,11 +548,12 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             fontFamily: FONT.display,
             fontWeight: 800,
             fontSize: isIndex
-              ? "clamp(1.7rem, 3.5vw, 2.4rem)"
-              : "clamp(1.5rem, 3.2vw, 2.2rem)",
+              ? "clamp(2.5rem, 4.5vw, 3.5rem)"
+              : "clamp(2.2rem, 4vw, 3.2rem)",
             color: "var(--c-textBright)",
             lineHeight: 1.1,
-            letterSpacing: "-0.015em",
+            letterSpacing: isIndex ? "0.02em" : "0.05em",
+            textTransform: "uppercase",
             margin: 0,
             whiteSpace: "nowrap",
             zIndex: 15,
@@ -597,7 +605,8 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               {meta.kicker}
             </div>
 
-            {/* Interpretive description */}
+            {/* Interpretive description (Hidden per user request) */}
+            {/*
             <p
               style={{
                 fontFamily: FONT.body,
@@ -610,6 +619,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             >
               {meta.desc}
             </p>
+            */}
           </div>
         </div>
       </header>

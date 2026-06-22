@@ -11,6 +11,7 @@ export const QUESTION_EXHIBIT_MAP = {
   "final_child_decision_reason": [
     "ByTheNumbers",
     "CorrelationExplorer",
+    "ForParents",
     "MirrorPairs"
   ],
   "intact_satisfaction": [
@@ -150,11 +151,13 @@ export const QUESTION_EXHIBIT_MAP = {
   "final_healthier_hygienic_belief": [
     "CorrelationExplorer",
     "CultureGenerations",
+    "ForParents",
     "MirrorPairs"
   ],
   "exp_sex_rating_orgasm_intensity": [
     "CorrelationExplorer",
     "DemographicsDashboard",
+    "ForParents",
     "MirrorPairs",
     "PleasureGap",
     "Question"
@@ -162,6 +165,7 @@ export const QUESTION_EXHIBIT_MAP = {
   "exp_sex_rating_sensitivity_light_touch": [
     "CorrelationExplorer",
     "DemographicsDashboard",
+    "ForParents",
     "MirrorPairs",
     "PleasureGap"
   ],
@@ -437,10 +441,12 @@ export const QUESTION_EXHIBIT_MAP = {
     "NarrativeMirrors"
   ],
   "intact_message_to_others": [
+    "ForParents",
     "NarrativeMirrors",
     "Question"
   ],
   "circ_message_to_parents": [
+    "ForParents",
     "NarrativeMirrors",
     "Question"
   ],
@@ -480,18 +486,22 @@ export const QUESTION_EXHIBIT_MAP = {
     "ObserverTriad"
   ],
   "observe_parent_emotional_state": [
+    "ForParents",
     "ObserverTriad"
   ],
   "observe_parent_circ_advice": [
     "ObserverTriad"
   ],
   "observe_parent_intact_factors": [
+    "ForParents",
     "ObserverTriad"
   ],
   "observe_parent_intact_regret_reconsider": [
+    "ForParents",
     "ObserverTriad"
   ],
   "observe_healthcare_counseling_stance": [
+    "ForParents",
     "ObserverTriad"
   ],
   "observe_healthcare_prediction_future_ric": [

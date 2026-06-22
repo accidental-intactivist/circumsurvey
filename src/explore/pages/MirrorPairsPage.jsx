@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { GitCompare } from "lucide-react";
 import { hashLink } from "../lib/router";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
 import DistributionChart from "../components/DistributionChart";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { useTooltip, Tooltip } from "../components/Tooltip";
+import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { colorForLabel } from "../components/MiniSparkline";
 import { sortDistribution, flattenMultiSelect } from "../lib/formatters";
@@ -432,6 +434,15 @@ export default function MirrorPairsPage({ routerState, navigate, setExhibitConte
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1.5rem" }}>
       <InlineBreadcrumb currentRoute="pairs" navigate={navigate} />
+      
+      <ExhibitHero
+        title="Mirror Pairs & Cohort Contrasts"
+        color={C.goldBright}
+        gradientColor={C.gold}
+        BackgroundIcon={GitCompare}
+        description="Compare similarly themed questions asked specifically to the Intact versus Circumcised pathways to isolate the subjective gap."
+      />
+
       <div style={{ display: "flex", gap: "3rem", alignItems: "flex-start" }}>
         
         {/* Sticky Sidebar Navigation */}
@@ -1229,18 +1240,6 @@ function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCoho
       genStr = genStr.split("(born")[0].trim();
     }
     if (genStr === "Boomer") genStr = "Baby Boomer";
-    
-    let locStr = "";
-    let region = item.us_state_now || item.canada_province_now;
-    if (region && typeof region === 'string' && region.includes(" - ")) {
-      region = region.split(" - ").pop().trim();
-    }
-    let country = item.country_now;
-    if (country === "United States of America (USA)") country = "USA";
-    else if (country === "United Kingdom of Great Britain and Northern Ireland (UK)") country = "UK";
-
-    if (region && country) locStr = `${region}, ${country}`;
-    else if (country) locStr = country;
 
     return (
       <div key={idx} style={{
@@ -1275,7 +1274,6 @@ function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCoho
           justifyContent: "space-between",
         }}>
           <span>{genStr || "Unknown Gen"}</span>
-          <span>{locStr}</span>
         </div>
         <p style={{
           margin: 0,

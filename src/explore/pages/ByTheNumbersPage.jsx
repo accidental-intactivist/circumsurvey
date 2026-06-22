@@ -12,6 +12,7 @@ import DistributionChart from "../components/DistributionChart";
 import GenerationalTrendChart from "../components/GenerationalTrendChart";
 import CopilotChat from "../components/CopilotChat";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
+import SmallSampleBadge from "../components/SmallSampleBadge";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import * as Icons from "../components/Icons";
 
@@ -434,7 +435,7 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
                 <div style={{ marginTop: "1rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.4rem" }}>
                   <h2 style={{
                     fontFamily: FONT.display,
-                    fontSize: "1.25rem",
+                    fontSize: "1.4rem",
                     fontWeight: 700,
                     color: C.textBright,
                     margin: 0,
@@ -494,52 +495,54 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
                     </div>
 
                     {/* Interactive Charts Panels */}
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr",
-                      gap: "1.25rem"
-                    }}>
-                      {/* Left: Overall vs Cohort Distribution Chart */}
-                      <DistributionChart
-                        title="Response Distribution"
-                        distribution={overallDists[activeMetric.id]}
-                        cohortDistribution={cohortDists[activeMetric.id]}
-                        question={activeQuestion}
-                        hideHeader={false}
-                      />
-
-                      {/* Right: Generational Trends Flow */}
+                    <SmallSampleBadge n={cohortDists[activeMetric.id]?.n || overallDists[activeMetric.id]?.n} label="this cohort">
                       <div style={{
-                        background: C.bgCard,
-                        border: `1px solid ${C.ghost}`,
-                        borderRadius: 8,
-                        padding: "1.2rem",
+                        display: "grid",
+                        gridTemplateColumns: "1fr",
+                        gap: "1.25rem"
                       }}>
-                        <h3 style={{
-                          fontFamily: FONT.display,
-                          fontWeight: 700,
-                          fontSize: "1.15rem",
-                          color: C.textBright,
-                          letterSpacing: "-0.01em",
-                          margin: "0 0 0.8rem 0",
-                        }}>
-                          Generational Shift
-                        </h3>
-                        <p style={{
-                          fontFamily: FONT.body,
-                          fontSize: "0.82rem",
-                          color: C.muted,
-                          lineHeight: 1.4,
-                          margin: "0 0 1.2rem 0"
-                        }}>
-                          How responses flow chronologically from the Silent Generation through to Gen Z.
-                        </p>
-                        <GenerationalTrendChart
-                          questionId={activeMetric.qid}
-                          overallDist={overallDists[activeMetric.id]?.distribution}
+                        {/* Left: Overall vs Cohort Distribution Chart */}
+                        <DistributionChart
+                          title="Response Distribution"
+                          distribution={overallDists[activeMetric.id]}
+                          cohortDistribution={cohortDists[activeMetric.id]}
+                          question={activeQuestion}
+                          hideHeader={false}
                         />
+
+                        {/* Right: Generational Trends Flow */}
+                        <div style={{
+                          background: C.bgCard,
+                          border: `1px solid ${C.ghost}`,
+                          borderRadius: 8,
+                          padding: "1.2rem",
+                        }}>
+                          <h3 style={{
+                            fontFamily: FONT.display,
+                            fontWeight: 700,
+                            fontSize: "1.15rem",
+                            color: C.textBright,
+                            letterSpacing: "-0.01em",
+                            margin: "0 0 0.8rem 0",
+                          }}>
+                            Generational Shift
+                          </h3>
+                          <p style={{
+                            fontFamily: FONT.body,
+                            fontSize: "0.82rem",
+                            color: C.muted,
+                            lineHeight: 1.4,
+                            margin: "0 0 1.2rem 0"
+                          }}>
+                            How responses flow chronologically from the Silent Generation through to Gen Z.
+                          </p>
+                          <GenerationalTrendChart
+                            questionId={activeMetric.qid}
+                            overallDist={overallDists[activeMetric.id]?.distribution}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    </SmallSampleBadge>
 
                     {/* Drill-down Quick Actions */}
                     <div style={{

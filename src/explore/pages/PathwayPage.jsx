@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { C, FONT } from "../styles/tokens";
 import SurveyFlowchart from "../components/SurveyFlowchart";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
+import ExhibitHero from "../components/ExhibitHero";
 
 export default function PathwayPage({ routerState, navigate, updateState, setExhibitContext }) {
   const pathwayId = routerState.params.id;
@@ -31,6 +32,8 @@ export default function PathwayPage({ routerState, navigate, updateState, setExh
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <InlineBreadcrumb currentRoute="pathways" navigate={navigate} />
+
+        <ExhibitHero title="The Survey Map" description="An interactive flowchart of the complete survey architecture, from the universal questions every respondent answered, through the pathway fork, into each cohort's unique question set, and back together at synthesis." />
 
         {/* Flowchart */}
         <SurveyFlowchart navigate={navigate} />

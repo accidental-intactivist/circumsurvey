@@ -21,7 +21,7 @@ import DemographicsDashboardPage from "./pages/DemographicsDashboardPage";
 import PleasureGapPage from "./pages/PleasureGapPage";
 import ReligiousMirrorsPage from "./pages/ReligiousMirrorsPage";
 import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
-import ObserverTriadPage from "./pages/ObserverTriadPage";
+import ObserverLensPage from "./pages/ObserverLensPage";
 import MethodologyPage from "./pages/MethodologyPage";
 import ReportBuilderPage from "./pages/ReportBuilderPage";
 import ByTheNumbersPage from "./pages/ByTheNumbersPage";
@@ -31,6 +31,8 @@ import TheDecisionPage from "./pages/TheDecisionPage";
 import AdultExperiencePage from "./pages/AdultExperiencePage"; // Trigger HMR
 import FinalThoughtsPage from "./pages/FinalThoughtsPage";
 import TransIntersexPage from "./pages/TransIntersexPage";
+import TheForwardViewPage from "./pages/TheForwardViewPage";
+import ForParentsPage from "./pages/ForParentsPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -69,8 +71,8 @@ export default function ExploreShell() {
     page = <NarrativeMirrorsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "generational-faultlines" || route === "culture") {
     page = <CultureGenerationsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
-  } else if (route === "observer-triad") {
-    page = <ObserverTriadPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "observer-triad" || route === "observer-lens") {
+    page = <ObserverLensPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "methodology") {
     page = <MethodologyPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "report") {
@@ -83,10 +85,14 @@ export default function ExploreShell() {
     page = <TheDecisionPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "adult-experience") {
     page = <AdultExperiencePage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "for-parents") {
+    page = <ForParentsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "final-thoughts") {
     page = <FinalThoughtsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "trans-intersex") {
     page = <TransIntersexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "the-forward-view") {
+    page = <TheForwardViewPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   }

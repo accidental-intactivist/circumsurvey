@@ -153,6 +153,10 @@ export const GLOBAL_CSS = `
     --map-ocean: #E8E2D8;
     --map-land: #FFFFFF;
     --map-border: rgba(168, 126, 24, 0.25);
+    /* Pathway: Match Tableau 10 Categorical for harmony */
+    --path-intact: var(--chart-4);
+    --path-circumcised: var(--chart-2);
+    --path-restoring: var(--chart-5);
   }
 
   /* ── VAPORWAVE THEME ── */

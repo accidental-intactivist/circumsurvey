@@ -46,6 +46,24 @@ const EMOJI_MAPPING = {
   // Fallbacks for others that might pop up
   "\u{1F549}\u{FE0F}": Lucide.Activity,
   "\u{1F56F}\u{FE0F}": Lucide.Flame || Lucide.Zap,
+  
+  // New Header Emojis
+  "\u{1F7E3}": SolidCircle, // purple circle
+  "🟣": SolidCircle,
+  "⏱️": Lucide.Timer,
+  "⚡": Lucide.Zap,
+  "🌟": Lucide.Star,
+  "📙": Lucide.Book,
+  "⚖️": Lucide.Scale,
+  "💬": Lucide.MessageSquare,
+  "〰": Lucide.Activity,
+  "≡": Lucide.Menu,
+  "◎": Lucide.CircleDot,
+  "◈": Lucide.Target,
+  "🔍": Lucide.Search,
+  "🙋‍♂️": Lucide.User,
+  "♂": Lucide.User,
+  "♀": Lucide.User,
 };
 
 const EMOJI_COLORS = {
@@ -53,6 +71,7 @@ const EMOJI_COLORS = {
   "\u{1F7E2}": PATH_COLORS.intact,
   "\u{1F535}": PATH_COLORS.circumcised,
   "\u{1F7E3}": PATH_COLORS.restoring,
+  "🟣": PATH_COLORS.restoring,
   "\u{1F7E0}": PATH_COLORS.observer,
   "\u{1F534}": PATH_COLORS.trans_vaginoplasty, // red
   "\u{26AA}": PATH_COLORS.intersex,
@@ -87,7 +106,7 @@ export function IconifyEmoji({ emoji, size = "1.2em", style, ...props }) {
   
   if (!IconComponent) {
     const hex = Array.from(emoji).map(c => c.charCodeAt(0).toString(16)).join("-");
-    console.warn("IconifyEmoji unmapped emoji:", { original: emoji, trimmed, firstGrapheme: g0, hex });
+    console.warn(`IconifyEmoji unmapped emoji: '${emoji}' (${hex})`);
     return <span style={{ fontSize: size, ...style }} {...props}>{trimmed}</span>;
   }
   

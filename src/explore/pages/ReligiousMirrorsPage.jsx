@@ -1,22 +1,25 @@
 import { useState, useEffect, useMemo } from "react";
+import { BookOpen } from "lucide-react";
 import { C, FONT, API_BASE } from "../styles/tokens";
 import DistributionChart from "../components/DistributionChart";
 import NarrativeList from "../components/NarrativeList";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
 import SmallSampleBadge from "../components/SmallSampleBadge";
+import ExhibitHero from "../components/ExhibitHero";
 import { flattenMultiSelect } from "../lib/formatters";
+import ExhibitDataLoader from "../components/ExhibitDataLoader";
 import { colorForLabel } from "../components/MiniSparkline";
 
 // ── TRADITIONS (filter syntax for cross-tabbing) ───────────────────────────
 const TRADITIONS = [
-  { id: "Christian",  label: "Christian",  emoji: "✝️",  color: "#5b93c7", filter: "religion.primary_tradition=Christian" },
-  { id: "Jewish",     label: "Jewish",     emoji: "✡️",  color: "#d4a030", filter: "religion.primary_tradition=Jewish" },
-  { id: "Islamic",    label: "Islamic",    emoji: "☪️",  color: "#68b878", filter: "religion.primary_tradition=Islamic" },
+  { id: "Christian",  label: "Christian",  emoji: "✝️",  color: "#5b93c7", cohort: { primary_tradition: "Christian" } },
+  { id: "Jewish",     label: "Jewish",     emoji: "✡️",  color: "#d4a030", cohort: { primary_tradition: "Jewish" } },
+  { id: "Islamic",    label: "Islamic",    emoji: "☪️",  color: "#68b878", cohort: { primary_tradition: "Islamic" } },
 ];
 
 const ALL_TRADITIONS = [
-  { id: "Secular",    label: "Secular / No Tradition", emoji: "⚛️", color: "#8bb8d9", filter: "religion.primary_tradition=No significant religious/spiritual/cultural tradition influencing this topic." },
+  { id: "Secular",    label: "Secular / No Tradition", emoji: "⚛️", color: "#8bb8d9", cohort: { primary_tradition: "No significant religious/spiritual/cultural tradition influencing this topic." } },
   ...TRADITIONS,
 ];
 
@@ -135,53 +138,13 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem" }}>
         <InlineBreadcrumb currentRoute="religious-mirrors" navigate={navigate} />
 
-        {/* ── HEADER ──────────────────────────────────────────────── */}
-        <div style={{
-          background: `linear-gradient(135deg, rgba(212,160,48,0.08) 0%, rgba(212,160,48,0.01) 100%)`,
-          border: `1px solid rgba(212,160,48,0.22)`,
-          borderRadius: 12,
-          padding: "2rem",
-          marginBottom: "2rem",
-          position: "relative",
-          overflow: "hidden",
-          boxShadow: `0 8px 32px rgba(0,0,0,0.3)`
-        }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${C.gold}, ${C.goldBright})` }} />
-          <div style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.75rem",
-            fontWeight: 700,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: C.gold,
-            marginBottom: "0.6rem"
-          }}>
-            ★ Interactive Exhibit 09 ★
-          </div>
-          <h1 style={{
-            fontFamily: FONT.display,
-            fontWeight: 800,
-            fontSize: "2.5rem",
-            color: C.textBright,
-            lineHeight: 1.15,
-            letterSpacing: "-0.025em",
-            marginBottom: "1rem"
-          }}>
-            The Missing Congregation
-          </h1>
-          <p style={{
-            fontFamily: FONT.body,
-            fontSize: "1.05rem",
-            color: C.text,
-            lineHeight: 1.6,
-            maxWidth: 900,
-            margin: 0
-          }}>
-            Religion is the oldest driver of ritual circumcision — yet in a survey promoted through bodily autonomy communities,
-            who actually shows up to talk about it? This exhibit examines the religious landscape of our respondents,
-            surfaces tradition-specific theological questions, and cross-tabulates universal cultural attitudes by religious background.
-          </p>
-        </div>
+        <ExhibitHero
+          title="Religious Mirrors"
+          color={C.goldBright}
+          gradientColor={C.gold}
+          BackgroundIcon={BookOpen}
+          description="Religion is the oldest driver of ritual circumcision — yet in a survey promoted through bodily autonomy communities, deeply religious respondents are starkly underrepresented. This exhibit explores how the remaining cohort reconciles faith, body image, and medical history."
+        />
 
         {/* ── THE MISSING CONGREGATION CALLOUT ────────────────────── */}
         <MissingCongregation
@@ -202,7 +165,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
           ))}
         </div>
 
-        <div style={{ height: 1, background: C.ghost, margin: "0 0 6rem" }} />
+        <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "5rem 0 1rem", opacity: 0.5 }} />
 
         {/* ── SECTION B: Departure Stories ─────────────────────────── */}
         <SectionHeader title="Section B" subtitle="Departure Stories" />
@@ -223,7 +186,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
           ))}
         </div>
 
-        <div style={{ height: 1, background: C.ghost, margin: "0 0 6rem" }} />
+        <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "5rem 0 1rem", opacity: 0.5 }} />
 
         {/* ── SECTION C: Cultural Mechanics ────────────────────────── */}
         <SectionHeader title="Section C" subtitle="Cultural Mechanics" />
@@ -435,7 +398,7 @@ function UniversalRow({ qDef, questionsMap }) {
             </h4>
 
             {q ? (
-              <DataLoader question={q} filter={tradition.filter} shortenLabels={true} hideLegend={true} />
+              <ExhibitDataLoader question={q} cohort={tradition.cohort} shortenLabels={true} hideLegend={true} />
             ) : (
               <div style={{ color: C.dim, textAlign: "center", fontStyle: "italic", fontSize: "0.85rem" }}>Loading question...</div>
             )}
@@ -505,7 +468,7 @@ function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
           <div style={{ fontFamily: FONT.condensed, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.dim, marginBottom: "0.6rem" }}>
             Denomination Breakdown
           </div>
-          <DataLoader question={questionsMap[story.denomination]} shortenLabels={true} />
+          <ExhibitDataLoader question={questionsMap[story.denomination]} shortenLabels={true} cohort={tradition.cohort} />
         </div>
       )}
 
@@ -516,6 +479,7 @@ function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
             question={questionsMap[story.primary.id]}
             label={story.primary.label}
             color={tradition.color}
+            cohort={tradition.cohort}
           />
         </div>
       )}
@@ -532,7 +496,7 @@ function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
               if (!q) return null;
               return (
                 <div key={dq.id} style={{ flex: dq.fullWidth ? "1 1 100%" : "1 1 280px", minWidth: 250 }}>
-                  <QuestionCard question={q} label={dq.label} color={tradition.color} compact={!dq.fullWidth} />
+                  <QuestionCard question={q} label={dq.label} color={tradition.color} compact={!dq.fullWidth} cohort={tradition.cohort} />
                 </div>
               );
             })}
@@ -551,7 +515,7 @@ function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
               const q = questionsMap[nq.id];
               if (!q) return null;
               return (
-                <QuestionCard key={nq.id} question={q} label={nq.label} color={tradition.color} />
+                <QuestionCard key={nq.id} question={q} label={nq.label} color={tradition.color} cohort={tradition.cohort} />
               );
             })}
           </div>
@@ -565,7 +529,7 @@ function DepartureStory({ tradition, story, questionsMap, traditionCounts }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // QUESTION CARD — renders a single question with its data
 // ═══════════════════════════════════════════════════════════════════════════
-function QuestionCard({ question, label, color, compact }) {
+function QuestionCard({ question, label, color, compact, cohort }) {
   return (
     <div style={{
       background: C.bgCard,
@@ -612,7 +576,7 @@ function QuestionCard({ question, label, color, compact }) {
         "{question.prompt}"
       </p>
 
-      <DataLoader question={question} shortenLabels={!compact} />
+      <ExhibitDataLoader question={question} shortenLabels={!compact} cohort={cohort} />
     </div>
   );
 }
@@ -688,68 +652,4 @@ function SharedLegend({ q }) {
 }
 
 
-// Questions tagged as multi_select in the DB but whose responses are actually
-// free-text narratives. They should NOT be comma-split by flattenMultiSelect.
-const NARRATIVE_MULTI_SELECT = new Set([
-  "religion_jewish_alternatives_thoughts",
-  "religion_jewish_diversity_view",
-  "religion_jewish_brit_shalom_awareness",
-  "religion_islamic_alternatives_thoughts",
-  "religion_islamic_intact_reconciliation",
-]);
 
-function DataLoader({ question, filter, shortenLabels, hideLegend }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // Treat narrative multi-selects as open_text for API endpoint selection
-  const effectiveType = NARRATIVE_MULTI_SELECT.has(question?.id) ? "open_text" : question?.type;
-
-  useEffect(() => {
-    if (!question) return;
-    setLoading(true);
-    const endpoint = effectiveType === "open_text" ? "narratives" : "response-distribution";
-    let url = `${API_BASE}/${endpoint}?q=${question.id}`;
-    if (filter) url += `&filter=${filter}`;
-
-    fetch(url)
-      .then(r => r.json())
-      .then(d => {
-        setData(d);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [question, filter, effectiveType]);
-
-  if (loading) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>Loading data...</div>;
-  if (!data) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>No data.</div>;
-
-  const dist = effectiveType === "open_text" ? data.narratives : data.distribution;
-  if (!dist || dist.length === 0) {
-    return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem", padding: "0.5rem" }}>No responses.</div>;
-  }
-
-  const isMulti = question.type === "multi_select" || ["demo_ethnicity", "demo_race_ethnicity", "demo_gender_identity", "demo_sexuality"].includes(question.id);
-  const chartData = isMulti && effectiveType !== "open_text" ? {
-    ...data,
-    distribution: flattenMultiSelect(data.distribution, question)
-  } : data;
-
-  return effectiveType === "open_text" ? (
-    <div style={{ marginTop: "-0.5rem" }}>
-      <NarrativeList distribution={dist} hideChart={true} viewMode="side-by-side" />
-    </div>
-  ) : (
-    <SmallSampleBadge n={chartData?.n} label="this group" inline>
-      <DistributionChart
-        title=""
-        distribution={chartData}
-        cohortDistribution={null}
-        question={question}
-        hideHeader
-        shortenLabels={shortenLabels}
-        hideLegend={hideLegend}
-      />
-    </SmallSampleBadge>
-  );
-}

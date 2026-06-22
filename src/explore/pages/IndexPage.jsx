@@ -492,12 +492,11 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
               <div style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
                 {filteredGrouped.map((group) => (
                   <SectionGroup
-                    key={`${group.phase}-${group.section}`}
+                    key={`${group.pathway}-${group.id}`}
                     group={group}
                     pathway={pathway}
                     distributions={distributions}
                     cohortDistributions={cohortDistributions}
-                    navigate={navigate}
                     navigate={navigate}
                     searchTerm={search || ""}
                   />

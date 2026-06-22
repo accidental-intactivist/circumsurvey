@@ -3,6 +3,7 @@ import { sankey, sankeyLinkHorizontal } from "d3-sankey";
 import { API_BASE, C, FONT } from "../styles/tokens";
 import { Activity } from "lucide-react";
 import { useTooltip, Tooltip } from "./Tooltip";
+import SmallSampleBadge from "./SmallSampleBadge";
 
 export default function SankeyChart({ title, beforeQuestion, afterQuestion, filter, customColorMap, height = 400 }) {
   const [data, setData] = useState(null);
@@ -10,7 +11,10 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   useEffect(() => {
-    let url = `${API_BASE}/aggregate?q=${afterQuestion.id}&by_question=${beforeQuestion.id}`;
+    let url = `${API_BASE}/aggregate?q=${afterQuestion.id}`;
+    if (beforeQuestion.id !== "pathway") {
+      url += `&by_question=${beforeQuestion.id}`;
+    }
     if (filter) {
       const parts = filter.split(".");
       url += `&filter=${encodeURIComponent(`${parts[0]}.${parts[1]}=${parts[2]}`)}`;
@@ -28,12 +32,67 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
     // Before rating sort logic
     const getBeforeIndex = (label) => {
       const l = String(label || "").toLowerCase();
-      if (l.includes("excellent") || l.includes("very satisfied")) return 0;
-      if (l.includes("above average") || l.includes("somewhat satisfied")) return 1;
-      if (l.includes("average") || l.includes("neutral")) return 2;
-      if (l.includes("below average") || l.includes("somewhat dissatisfied")) return 3;
-      if (l.includes("poor") || l.includes("very dissatisfied")) return 4;
-      return 5;
+      // Restoration RCI
+      if (l.includes("ci-9")) return -9;
+      if (l.includes("ci-8")) return -8;
+      if (l.includes("ci-7")) return -7;
+      if (l.includes("ci-6")) return -6;
+      if (l.includes("ci-5")) return -5;
+      if (l.includes("ci-4")) return -4;
+      if (l.includes("ci-3")) return -3;
+      if (l.includes("ci-2")) return -2;
+      if (l.includes("ci-1")) return -1;
+      if (l.includes("ci-0") || l.includes("ci- 0")) return 0;
+      if (l.includes("not familiar") || l.includes("can't estimate")) return 99;
+      
+      // Restoration Duration
+      if (l.includes("less than 6 months")) return 1;
+      if (l.includes("6 months - 1 year") || l.includes("6 months to 1 year")) return 2;
+      if (l.includes("1-2 years")) return 3;
+      if (l.includes("2-3 years")) return 4;
+      if (l.includes("3-5 years")) return 5;
+      if (l.includes("5-7 years")) return 6;
+      if (l.includes("7-10 years") || l.includes("5-10 years")) return 7;
+      if (l.includes("more than 10 years") || l.includes("10+ years")) return 8;
+      if (l.includes("complete") || l.includes("achieved my goals")) return 9;
+      if (l.includes("< 1 year") || l.includes("less than 1 year")) return 1.5;
+
+      // Adult Experience
+      if (l.includes("excellent") || l.includes("very satisfied")) return 10;
+      if (l.includes("above average") || l.includes("somewhat satisfied")) return 11;
+      if (l.includes("average") || l.includes("neutral")) return 12;
+      if (l.includes("below average") || l.includes("somewhat dissatisfied")) return 13;
+      if (l.includes("poor") || l.includes("very dissatisfied")) return 14;
+      
+      return 20;
+    };
+
+    const getDefinition = (originalName) => {
+      if (!originalName) return null;
+      const match = originalName.match(/\((.*?)\)/);
+      return match ? match[1] : null;
+    };
+
+    const simplifyLabel = (label, layer) => {
+      if (!label) return "";
+      let s = String(label);
+      if (s.startsWith("RCI-")) {
+        const base = s.split(" ")[0]; // "RCI-X"
+        s = layer === "before" ? base.replace("RCI-", "CI-") : base;
+      }
+      if (s.includes("not familiar") || s.includes("can't estimate")) return "Unknown";
+      if (s.includes("complete") || s.includes("achieved my goals")) return "Complete";
+      if (s.includes(" / ")) s = s.split(" / ")[0];
+      if (s.includes("Significantly ")) s = s.replace("Significantly ", "Signif. ");
+      if (s.includes("Somewhat ")) s = s.replace("Somewhat ", "Smwt. ");
+      
+      // Capitalize cohort names if they are pure lowercase
+      if (s === "intact") return "Intact";
+      if (s === "circumcised") return "Circumcised";
+      if (s === "restoring") return "Restoring";
+      if (s === "observer") return "Observer";
+
+      return s.trim();
     };
 
     const getAfterIndex = (label) => {
@@ -43,7 +102,8 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
       if (l.includes("no change") || l.includes("no noticeable change")) return 2;
       if (l.includes("somewhat decreased") || l.includes("somewhat diminished")) return 3;
       if (l.includes("significantly decreased") || l.includes("significantly diminished")) return 4;
-      return 5;
+      if (l.includes("not a primary goal")) return 5;
+      return 6;
     };
 
     const nodeMap = new Map();
@@ -51,7 +111,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
 
     // Keys are the "Before" answers. 
     Object.keys(data.results).forEach(beforeLabel => {
-      if (beforeLabel === "null" || beforeLabel === "Unknown" || beforeLabel === "observer") return;
+      if (beforeLabel === "null" || beforeLabel === "Unknown" || (beforeQuestion.id !== "pathway" && beforeLabel === "observer")) return;
       
       const dist = data.results[beforeLabel].distribution || [];
       if (dist.length === 0) return;
@@ -60,7 +120,8 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
       if (!nodeMap.has(sId)) {
         nodeMap.set(sId, { 
           id: sId, 
-          name: beforeLabel, 
+          name: simplifyLabel(beforeLabel, "before"), 
+          originalName: beforeLabel,
           layer: "before",
           sortIndex: getBeforeIndex(beforeLabel)
         });
@@ -74,7 +135,8 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
         if (!nodeMap.has(tId)) {
           nodeMap.set(tId, { 
             id: tId, 
-            name: afterLabel, 
+            name: simplifyLabel(afterLabel, "after"), 
+            originalName: afterLabel,
             layer: "after",
             sortIndex: getAfterIndex(afterLabel)
           });
@@ -119,7 +181,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
     });
     obs.observe(containerRef.current);
     return () => obs.disconnect();
-  }, [height]);
+  }, [height, loading]);
 
   const { sankeyNodes, sankeyLinks } = useMemo(() => {
     if (nodes.length === 0 || links.length === 0) return { sankeyNodes: [], sankeyLinks: [] };
@@ -148,15 +210,16 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
   }, [nodes, links, dimensions]);
 
   const getColor = (node) => {
-    if (customColorMap && customColorMap[node.name]) {
-      return customColorMap[node.name];
+    if (customColorMap) {
+      if (customColorMap[node.originalName]) return customColorMap[node.originalName];
+      if (customColorMap[node.name]) return customColorMap[node.name];
     }
-    return C.brand; // fallback
+    return "#a855f7"; // fallback
   };
 
   if (loading) {
     return (
-      <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(24,24,28,0.4)", borderRadius: 8 }}>
+      <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 8 }}>
         <Activity size={24} color={C.brand} className="pulse" />
       </div>
     );
@@ -164,22 +227,27 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
 
   if (sankeyNodes.length === 0) {
     return (
-      <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(24,24,28,0.4)", borderRadius: 8, color: C.textMuted }}>
+      <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 8, color: C.textMuted }}>
         No connection data available.
       </div>
     );
   }
 
+  const totalN = useMemo(() => {
+    return links.reduce((acc, l) => acc + l.value, 0);
+  }, [links]);
+
   return (
-    <div style={{ 
-      background: "rgba(24, 24, 28, 0.5)", 
-      border: `1px solid ${C.ghost}`, 
-      borderRadius: 12, 
-      padding: "1.5rem",
-      display: "flex",
-      flexDirection: "column",
-      position: "relative"
-    }}>
+    <SmallSampleBadge n={totalN}>
+      <div style={{ 
+        background: C.bgCard, 
+        border: `1px solid ${C.ghost}`, 
+        borderRadius: 12, 
+        padding: "1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative"
+      }}>
       {title && (
         <h3 style={{ fontSize: 18, fontWeight: 600, margin: "0 0 1rem 0", color: C.textBright, textAlign: "center" }}>
           {title}
@@ -205,10 +273,10 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                   stroke={color}
                   strokeWidth={Math.max(1, link.width)}
                   opacity={0.35}
-                  style={{ mixBlendMode: "screen", transition: "opacity 0.2s" }}
+                  style={{ transition: "stroke-opacity 0.2s" }}
                   onMouseEnter={(e) => {
-                    e.target.style.opacity = 0.8;
-                    showTooltip(e.clientX, e.clientY, (
+                    e.target.style.filter = "brightness(1.2)";
+                    showTooltip(e, (
                       <div>
                         <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>
                           {link.source.name} → {link.target.name}
@@ -219,7 +287,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                       </div>
                     ));
                   }}
-                  onMouseMove={(e) => moveTooltip(e.clientX, e.clientY)}
+                  onMouseMove={(e) => moveTooltip(e)}
                   onMouseLeave={(e) => {
                     e.target.style.opacity = 0.35;
                     hideTooltip();
@@ -244,7 +312,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                     fill={color}
                     rx={2}
                     onMouseEnter={(e) => {
-                      showTooltip(e.clientX, e.clientY, (
+                      showTooltip(e, (
                         <div>
                           <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>
                             {node.layer === "before" ? "Initial Rating" : "Change Outcome"}
@@ -252,13 +320,18 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                           <div style={{ fontSize: 14, fontWeight: "bold", color: C.textBright }}>
                             {node.name}
                           </div>
-                          <div style={{ fontSize: 12, color: color, marginTop: 4 }}>
+                          {getDefinition(node.originalName) && (
+                            <div style={{ fontSize: 11, color: C.textMuted, marginTop: 4, fontStyle: "italic", maxWidth: 220, whiteSpace: "normal", lineHeight: 1.3 }}>
+                              "{getDefinition(node.originalName)}"
+                            </div>
+                          )}
+                          <div style={{ fontSize: 12, color: color, marginTop: 6 }}>
                             Total: {node.value}
                           </div>
                         </div>
                       ));
                     }}
-                    onMouseMove={(e) => moveTooltip(e.clientX, e.clientY)}
+                    onMouseMove={(e) => moveTooltip(e)}
                     onMouseLeave={hideTooltip}
                   />
                   {/* Add labels */}
@@ -271,7 +344,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                       fill={C.textBright}
                       fontSize={11}
                       fontFamily={FONT.body}
-                      style={{ pointerEvents: "none", textShadow: "0px 1px 4px rgba(0,0,0,0.9)" }}
+                      style={{ pointerEvents: "none" }}
                     >
                       {node.name}
                     </text>
@@ -283,6 +356,7 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
         </svg>
       </div>
       <Tooltip {...tooltip} />
-    </div>
+      </div>
+    </SmallSampleBadge>
   );
 }

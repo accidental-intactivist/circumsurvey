@@ -4,12 +4,12 @@ import CopilotChat from "./CopilotChat";
 import { Sparkles, ArrowRight } from "./Icons";
 
 export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updateState, exhibitContext }) {
-  if (!isOpen) return null;
-
+  // Stay mounted even when closed (slide off-screen) so the conversation
+  // persists across open/close and page navigation instead of being wiped.
   return (
     <>
       {/* Slide-out Drawer */}
-      <div style={{
+      <div aria-hidden={!isOpen} style={{
         position: "fixed",
         top: 0,
         right: 0,
@@ -24,6 +24,7 @@ export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updat
         flexDirection: "column",
         transform: isOpen ? "translateX(0)" : "translateX(100%)",
         transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+        pointerEvents: isOpen ? "auto" : "none",
       }}>
         
         {/* Header */}

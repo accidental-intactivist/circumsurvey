@@ -1,4 +1,7 @@
-import { C, FONT } from "../styles/tokens";
+import { useEffect } from "react";
+import { FileText } from "lucide-react";
+import { C, FONT, PATH_COLORS } from "../styles/tokens";
+import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 
 export default function MethodologyPage({ navigate, setExhibitContext }) {
@@ -22,35 +25,13 @@ export default function MethodologyPage({ navigate, setExhibitContext }) {
         <InlineBreadcrumb currentRoute="methodology" navigate={navigate} />
 
         {/* Editorial introduction block */}
-        <div style={{ marginTop: "2.5rem", marginBottom: "2.5rem" }}>
-          <div style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.gold,
-            marginBottom: "0.4rem",
-          }}>★ Data & Rigor ★</div>
-          <h1 style={{
-            fontFamily: FONT.display,
-            fontSize: "2.2rem",
-            fontWeight: 800,
-            color: C.textBright,
-            margin: 0,
-            lineHeight: 1.2,
-          }}>Methodology & Dataset Context</h1>
-          <p style={{
-            fontFamily: FONT.body,
-            fontSize: "1.05rem",
-            color: C.muted,
-            lineHeight: 1.6,
-            marginTop: "0.6rem",
-            marginBottom: 0
-          }}>
-            Understanding the bounds, biases, and composition of our dataset is critical to interpreting the results. The circumsurvey instrument is designed to address a systemic gap in official health statistics by capturing the lived, physical reality of respondents directly.
-          </p>
-        </div>
+        <ExhibitHero
+          title="Methodology & Dataset Context"
+          color={C.goldBright}
+          gradientColor={C.gold}
+          BackgroundIcon={FileText}
+          description="Understanding the bounds, biases, and composition of our dataset is critical to interpreting the results. The circumsurvey instrument is designed to address a systemic gap in official health statistics by capturing the lived, physical reality of respondents directly."
+        />
 
         {/* Demographic summary card */}
         <div style={{
@@ -79,19 +60,19 @@ export default function MethodologyPage({ navigate, setExhibitContext }) {
             gap: "1.5rem",
           }}>
             <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: "#4ab588" }}>210</div>
+              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.circumcised }}>210</div>
               <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Circumcised Cohort</div>
             </div>
             <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: "#6e8be8" }}>140</div>
+              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.intact }}>140</div>
               <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Intact Cohort</div>
             </div>
             <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: "#a88beb" }}>109</div>
+              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.restoring }}>109</div>
               <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Restoring Cohort</div>
             </div>
             <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: "#e86e82" }}>37</div>
+              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.observer }}>37</div>
               <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Observers (Partners/Parents/Meds)</div>
             </div>
           </div>

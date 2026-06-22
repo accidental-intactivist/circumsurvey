@@ -43,7 +43,7 @@ export default function InlineBreadcrumb({ currentRoute, navigate }) {
         letterSpacing: "0.12em",
         textTransform: "uppercase",
         color: C.gold,
-      }}>Exhibits</span>
+      }}>Sections</span>
       <span style={{ color: C.dim }}>/</span>
       
       <div style={{ position: "relative" }} ref={dropdownRef}>
@@ -114,7 +114,7 @@ export default function InlineBreadcrumb({ currentRoute, navigate }) {
                     color: isCurrent ? C.goldBright : C.dim,
                     marginBottom: "0.1rem",
                   }}>
-                    {ex.num}
+                    {ex.num.replace(/Exhibit/i, "Section")}
                   </span>
                   <span style={{
                     fontFamily: FONT.body,

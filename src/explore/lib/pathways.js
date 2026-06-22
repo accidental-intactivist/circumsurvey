@@ -148,6 +148,14 @@ export const OBSERVER_SUBROLES = [
     rare: true,
   },
   {
+    id: "woman",
+    label: "Woman / AFAB",
+    icon: "Eye",
+    desc: "Blind spots, societal misconceptions",
+    match: (q) => (q.id || "").startsWith("observe_woman_") || /^\[WOMAN\]|As a WOMAN/i.test(q.prompt || ""),
+    n: 3,
+  },
+  {
     id: "healthcare",
     label: "As a Healthcare Provider",
     icon: "Activity",
@@ -156,20 +164,20 @@ export const OBSERVER_SUBROLES = [
     n: 2,
   },
   {
+    id: "skeptic",
+    label: "Skeptic / Critic",
+    icon: "HelpCircle",
+    desc: "Persuasion factors, weakest arguments, intactivist critique",
+    match: (q) => (q.id || "").startsWith("observe_skeptic_") || /^\[SKEPTIC\]|skeptic|critic/i.test(q.prompt || ""),
+    n: 4,
+  },
+  {
     id: "advocate",
     label: "As an Advocate / Intactivist",
     icon: "AlertTriangle",
     desc: "Tipping point, strategies, FGM parallels",
     match: (q) => (q.id || "").startsWith("observe_advocate_") || /^\[ADVOCATE\]|advocate|intactivist|tipping point|FGM/i.test(q.prompt || ""),
     n: 7,
-  },
-  {
-    id: "woman",
-    label: "As a Woman",
-    icon: "Eye",
-    desc: "Blind spots, societal misconceptions",
-    match: (q) => (q.id || "").startsWith("observe_woman_") || /^\[WOMAN\]|As a WOMAN/i.test(q.prompt || ""),
-    n: 3,
   },
   {
     id: "curious",

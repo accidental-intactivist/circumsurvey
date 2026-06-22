@@ -6,7 +6,7 @@
 
 import { C, resolveCssColor } from "../styles/tokens";
 import { useTooltip, Tooltip } from "./Tooltip";
-
+import { shortLabel } from "../lib/formatters";
 
 function stringHash(str) {
   let hash = 0;
@@ -163,7 +163,7 @@ export default function MiniSparkline({ distribution, width = 120, height = 8, c
                 width={pct}
                 height={height}
                 fill={colorMap[seg.label] || colorForLabel(seg.label, i)}
-                onMouseEnter={(e) => showTooltip(e, `${seg.label}: ${seg.n} (${Math.round(seg.n / total * 100)}%)`)}
+                onMouseEnter={(e) => showTooltip(e, `${shortLabel(seg.label)}: ${seg.n} (${Math.round(seg.n / total * 100)}%)`)}
                 onMouseMove={moveTooltip}
                 onMouseLeave={hideTooltip}
               />
@@ -193,7 +193,7 @@ function CohortBar({ distribution, width, height, showTooltip, moveTooltip, hide
         xCursor += pct;
         return <rect 
           key={i} x={x} y={0} width={pct} height={height} fill={colorMap[seg.label] || colorForLabel(seg.label, i)}
-          onMouseEnter={(e) => showTooltip(e, `cohort → ${seg.label}: ${seg.n}`)}
+          onMouseEnter={(e) => showTooltip(e, `cohort → ${shortLabel(seg.label)}: ${seg.n}`)}
           onMouseMove={moveTooltip}
           onMouseLeave={hideTooltip}
         />;

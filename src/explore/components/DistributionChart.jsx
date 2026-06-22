@@ -2,7 +2,9 @@ import { useState, useMemo, useRef } from "react";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
-import { sortDistribution, applyLikert } from "../lib/formatters";
+import AddToReportButton from "./AddToReportButton";
+import SharePopover from "./SharePopover";
+import { sortDistribution, applyLikert, shortLabel } from "../lib/formatters";
 
 export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -181,6 +183,8 @@ export default function DistributionChart({ title, distribution, cohortDistribut
               >Pie</button>
             </div>
             
+            {question && <AddToReportButton questionId={question.id} iconOnly />}
+            {question && <SharePopover url={window.location.origin + window.location.pathname + "#/question/" + question.id} questionId={question.id} questionPrompt={question.prompt} onExportImage={handleDownload} />}
             <button 
               onClick={handleDownload}
               title="Download as PNG"
@@ -304,7 +308,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                     textOverflow: "ellipsis",
                     whiteSpace: shortenLabels ? "nowrap" : "normal"
                   }}>
-                    {shortenLabels && d.label.includes(":") ? d.label.split(":")[0].trim() : d.label}
+                    {shortLabel(d.label)}
                   </div>
                   <div style={{
                     fontFamily: FONT.mono, fontSize: "0.74rem",
@@ -402,7 +406,7 @@ function StackedBar({ dist, total, showTooltip, moveTooltip, hideTooltip, colorM
             width={`${pct}%`}
             height={24}
             fill={colorMap[d.label] || colorForLabel(d.label, i)}
-            onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${pct.toFixed(1)}%)`)}
+            onMouseEnter={(e) => showTooltip(e, `${shortLabel(d.label)}: ${d.n} (${pct.toFixed(1)}%)`)}
             onMouseMove={moveTooltip}
             onMouseLeave={hideTooltip}
           />
@@ -435,7 +439,7 @@ function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip, colorMap
                key={i}
                cx={0} cy={0} r={1} 
                fill={colorMap[d.label] || colorForLabel(d.label, i)} 
-               onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
+               onMouseEnter={(e) => showTooltip(e, `${shortLabel(d.label)}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
                onMouseMove={moveTooltip}
                onMouseLeave={hideTooltip}
                style={{ transition: "all 0.2s", cursor: "pointer" }}
@@ -462,7 +466,7 @@ function PieChart({ dist, total, showTooltip, moveTooltip, hideTooltip, colorMap
             fill={colorMap[d.label] || colorForLabel(d.label, i)} 
             stroke={C.bgSoft}
             strokeWidth="0.02"
-            onMouseEnter={(e) => showTooltip(e, `${d.label}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
+            onMouseEnter={(e) => showTooltip(e, `${shortLabel(d.label)}: ${d.n} (${(percent*100).toFixed(1)}%)`)}
             onMouseMove={moveTooltip}
             onMouseLeave={hideTooltip}
             style={{ transition: "all 0.2s", cursor: "pointer" }}

@@ -6,6 +6,8 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import { getQuestions, getAggregate, cohortToFilterParams } from "../lib/api";
 import { C, FONT, API_BASE } from "../styles/tokens";
+import ExhibitHero from "../components/ExhibitHero";
+import { Grid } from "lucide-react";
 
 // ── Mirror-pair aggregates ─────────────────────────────────────────────────
 // When two pathway-specific questions cover the same concept on parallel
@@ -520,6 +522,13 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <InlineBreadcrumb currentRoute="correlations" navigate={navigate} />
         
+        <ExhibitHero
+          title="Correlations Explorer"
+          description="Cross-tabulate any two predictor variables or survey outcomes to identify statistical correlations, demographic trends, and overlapping factors across the dataset."
+          color={C.red}
+          gradientColor={C.orange}
+          BackgroundIcon={Grid}
+        />
         
         {/* Layout Grid */}
         <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1.5rem", alignItems: "start" }}>

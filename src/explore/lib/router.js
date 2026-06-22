@@ -35,8 +35,8 @@ function parseHash() {
     route = "narrative-mirrors";
   } else if (segments[0] === "generational-faultlines") {
     route = "generational-faultlines";
-  } else if (segments[0] === "observer-triad") {
-    route = "observer-triad";
+  } else if (segments[0] === "observer-triad" || segments[0] === "observer-lens") {
+    route = "observer-lens";
   } else if (segments[0] === "numbers") {
     route = "numbers";
   } else if (segments[0] === "pleasure-gap") {
@@ -103,7 +103,7 @@ function serializeState(route, params, state) {
   else if (route === "religious-mirrors") path = "/religious-mirrors";
   else if (route === "narrative-mirrors") path = "/narrative-mirrors";
   else if (route === "generational-faultlines") path = "/culture"; // redirect
-  else if (route === "observer-triad") path = "/observer-triad";
+  else if (route === "observer-lens") path = "/observer-lens";
   else if (route === "culture") path = "/culture";
   else if (route === "the-decision") path = "/the-decision";
   else if (route === "adult-experience") path = "/adult-experience";

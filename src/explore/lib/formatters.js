@@ -1,6 +1,121 @@
 // Helper functions for formatting and normalizing survey data
 
 /**
+ * Helper to shorten labels for graphs and charts across the application.
+ */
+export function shortLabel(label) {
+  if (!label) return "";
+  
+  // Clean up any training parentheses (e.g. " (born 1981-1996)")
+  let s = String(label).replace(/\s*\([^)]*\)\s*$/, "").trim();
+  
+  // Clean up punctuation at the end of sentence options
+  s = s.replace(/\.$/, "");
+  
+  // Map specific long strings to succinct, highly readable versions
+  const mappings = {
+    // Country
+    "United States of America": "United States",
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+    
+    // Sexuality
+    "Straight/Heterosexual": "Straight",
+    
+    // Family Upbringing
+    "I was raised by one or both of my birth/biological parents": "Biological Parents",
+    "I was adopted as an infant": "Infant Adoption",
+    "I was adopted as a child or teenager": "Child/Teen Adoption",
+    "I was raised primarily in a different family structure": "Other Family Structure",
+    
+    // Politics
+    "Very Liberal / Progressive / Left-Leaning": "Very Liberal",
+    "Liberal / Progressive": "Liberal",
+    "Moderate / Centrist": "Moderate",
+    "Very Conservative / Right-Leaning": "Very Conservative",
+    "Apolitical / Not focused on politics": "Apolitical",
+    "Prefer not to say / Unsure": "Unsure",
+    
+    // Religion
+    "Secular / Atheist / Agnostic": "Secular",
+    "Atheist / Agnostic / Secular": "Secular",
+    "No significant religious/spiritual/cultural tradition influencing this topic": "Secular",
+    "Spiritual but not religious": "Spiritual",
+    "Pagan / Indigenous / Earth-based": "Pagan",
+    "Catholicism": "Catholic",
+    
+    // Education
+    "Less than high school diploma or equivalent": "Less than High School",
+    "High school diploma or GED": "High School / GED",
+    "High school diploma or GED (or equivalent)": "High School / GED",
+    "Trade School Certificate / Pre-Apprenticeship Program": "Trade School",
+    "Journeyman Certification / Licensed Tradesperson": "Licensed Trades",
+    "Some college / Associate's degree": "Some College",
+    "Bachelor's degree": "Bachelor's",
+    "Master's degree": "Master's",
+    "Professional degree": "Professional Degree",
+    "Doctoral degree": "Doctorate",
+    
+    // Socioeconomic
+    "Upper income / Wealthy": "Upper Income",
+    "Upper-middle income": "Upper-Middle",
+    "Middle income": "Middle Income",
+    "Working class / Lower-middle income": "Working Class",
+    "Lower income": "Lower Income",
+
+    // Regret (Circumcised & Intact)
+    "No, never; I have always been glad to be intact": "No Regret",
+    "No, never": "No Regret",
+    "Yes, I experience some of these feelings sometimes": "Some Regret",
+    "Yes, these feelings are or have been strong and frequent": "Significant Regret",
+    "Yes, but rarely": "Rarely",
+    
+    // Pride
+    "Very dissatisfied": "Very Dissatisfied",
+    "Somewhat dissatisfied": "Dissatisfied",
+    "Somewhat satisfied": "Satisfied",
+    "Very satisfied": "Very Satisfied",
+
+    // Cultural Associations
+    "More aesthetically pleasing": "More Aesthetically Pleasing",
+    "More hygienic": "More Hygienic / Cleaner",
+    "More sexually attractive": "More Sexually Attractive",
+    "More sexually sensitive": "More Sexually Sensitive",
+    "More natural": "More Natural",
+    "More likely to be an active/attentive": "More Attentive Partner",
+    "No significant difference": "No Significant Difference",
+
+    // Social Norms
+    "The intact state is overwhelmingly": "Intact Overwhelmingly Normal",
+    "The intact state is generally": "Intact Generally Normal",
+    "Both are seen as equally": "Both Equally Normal",
+    "The circumcised state is generally": "Circumcised Generally Normal",
+    "The circumcised state is overwhelmingly": "Circumcised Overwhelmingly Normal",
+
+    // Social Climate for Discussion
+    "It's generally viewed n": "Generally Normal/Neutral",
+    "It's becoming a topic o": "Becoming a Topic",
+    "It is rarely discussed": "Rarely Discussed",
+    "It's considered a priv": "Private Matter",
+    "It's a complete non-is": "Complete Non-Issue",
+
+    // General
+    "Neutral": "Neutral",
+    "Neutral / Neither": "Neutral",
+    "Open and Supportive": "Open/Supportive",
+    "Hostile and Dismissive": "Hostile/Dismissive",
+    "Taboo/Unspoken": "Taboo",
+  };
+
+  for (const [key, val] of Object.entries(mappings)) {
+    if (s.toLowerCase().startsWith(key.toLowerCase())) {
+      return val;
+    }
+  }
+
+  return s.length > 25 ? s.slice(0, 23) + "…" : s;
+}
+
+/**
  * Flattens and re-aggregates multi-select distributions that were grouped as single comma-separated strings.
  */
 export const flattenMultiSelect = (distArray, q) => {
@@ -616,6 +731,51 @@ export const sortDistribution = (distArray, question) => {
       return 6;
     };
     return [...distArray].sort((a, b) => getOutcomeIndex(a.label) - getOutcomeIndex(b.label));
+  }
+
+  if (qId.includes("restore_rci_")) {
+    return [...distArray].sort((a, b) => {
+      const getScore = (label) => {
+        const l = String(label || "").toLowerCase();
+        if (l.includes("not familiar") || l.includes("can't estimate")) return 99;
+        const num = parseInt(l.replace(/\D/g, ""), 10);
+        return isNaN(num) ? 99 : num;
+      };
+      return getScore(a.label) - getScore(b.label);
+    });
+  }
+
+  if (qId.includes("restore_duration")) {
+    const getDurationIndex = (label) => {
+      const l = String(label || "").toLowerCase();
+      if (l.includes("less than 6 months")) return 0;
+      if (l.includes("6 months - 1 year") || l.includes("6 months to 1 year")) return 1;
+      if (l.includes("1-2 years")) return 2;
+      if (l.includes("2-3 years")) return 3;
+      if (l.includes("3-5 years")) return 4;
+      if (l.includes("5-7 years")) return 5;
+      if (l.includes("7-10 years") || l.includes("5-10 years")) return 6;
+      if (l.includes("more than 10 years") || l.includes("10+ years")) return 7;
+      if (l.includes("complete") || l.includes("achieved my goals")) return 8;
+      if (l.includes("< 1 year") || l.includes("less than 1 year")) return 0.5; // fallback
+      return 10;
+    };
+    return [...distArray].sort((a, b) => getDurationIndex(a.label) - getDurationIndex(b.label));
+  }
+
+  if (qId.includes("restore_age_started")) {
+    const getAgeIndex = (label) => {
+      const l = String(label || "").toLowerCase();
+      if (l.includes("teens")) return 1;
+      if (l.includes("20s")) return 2;
+      if (l.includes("30s")) return 3;
+      if (l.includes("40s")) return 4;
+      if (l.includes("50s")) return 5;
+      if (l.includes("60s")) return 6;
+      if (l.includes("70+")) return 7;
+      return 8;
+    };
+    return [...distArray].sort((a, b) => getAgeIndex(a.label) - getAgeIndex(b.label));
   }
 
   if (qId.includes("circ_adult_before_rating_")) {

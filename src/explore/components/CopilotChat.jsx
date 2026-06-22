@@ -332,28 +332,49 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               }}>Sources Cited</h5>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {result.quotes.map((q, i) => (
+                {result.quotes.map((q, i) => {
+                  const isDoc = q.source_type ? q.source_type === "documentation" : q.type === "static_context";
+                  const accent = isDoc ? C.ltBlue : C.goldBright;
+                  const typeLabel = isDoc ? "About the Survey" : "Survey Response";
+                  const heading = q.source_label || (isDoc ? (q.title || "About the Survey") : "Respondent voice");
+                  const detail = q.source_detail || (isDoc ? "Project documentation" : [q.pathway, q.generation].filter(Boolean).join(" · "));
+                  return (
                   <div key={i} style={{
-                    borderLeft: `2px solid ${C.ghost}`,
+                    borderLeft: `2px solid ${accent}`,
                     paddingLeft: "1rem",
                     fontSize: "0.85rem",
                     color: C.muted
                   }}>
-                    <span style={{ color: C.goldBright, fontWeight: "bold", marginRight: "0.5rem" }}>
-                      [Quote {i+1}]
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.4rem", flexWrap: "wrap" }}>
+                      <span style={{ color: accent, fontWeight: "bold", fontFamily: FONT.mono, fontSize: "0.72rem" }}>[{i + 1}]</span>
+                      <span style={{
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.56rem",
+                        fontWeight: 700,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: accent,
+                        background: `${accent}1a`,
+                        border: `1px solid ${accent}40`,
+                        borderRadius: 999,
+                        padding: "0.1rem 0.45rem",
+                      }}>{typeLabel}</span>
+                      <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.04em", textTransform: "uppercase", color: C.muted }}>{heading}</span>
+                    </div>
                     <span style={{ fontStyle: "italic" }}>"{q.text}"</span>
                     <div style={{
                       marginTop: "0.6rem",
-                      fontSize: "0.75rem",
+                      fontSize: "0.72rem",
                       fontFamily: FONT.mono,
                       color: C.dim,
                       display: "flex",
                       justifyContent: "space-between",
-                      alignItems: "center"
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      flexWrap: "wrap"
                     }}>
-                      <span>— Pathway: {q.pathway} | Gen: {q.generation}</span>
-                      {q.type !== 'static_context' && (
+                      <span>{detail}</span>
+                      {!isDoc && (
                         <button
                           onClick={() => {
                             const sq = `Find a thematic match for this quote: "${q.text}". Search specifically for responses from DIFFERENT pathways to see how these experiences intersect.`;
@@ -381,7 +402,8 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

@@ -110,7 +110,7 @@ export const ROUTE_META = {
     navTitle: "Question",
   },
   numbers: {
-    kicker: "Exhibit 11",
+    kicker: "Exhibit 12",
     title: "By The Numbers",
     desc: "The core findings of the study summarized in key outcome metrics. Use cohort filters to examine specific subgroups.",
     navTitle: "By The Numbers",
@@ -177,6 +177,7 @@ export const EXHIBIT_ROUTES = [
   { route: "religious-mirrors", num: "Exhibit 09", label: "Religious Mirrors", tagline: "Faith, tradition & personal experience", icon: "BookOpen", colorVar: "var(--c-blue)" },
   { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey", tagline: "Methods, progress & sensitivity gains", icon: "RefreshCw", colorVar: "var(--c-gold)" },
   { route: "adult-experience", num: "Exhibit 11", label: "Before & After: The Adult Experience", tagline: "Those who remember both states", icon: "Zap", colorVar: "var(--c-green)" },
+  { route: "numbers", num: "Exhibit 12", label: "By the Numbers", tagline: "Key statistical stories & functional shifts", icon: "BarChart2", colorVar: "var(--c-gold)" },
   { route: "for-parents", num: "Resource", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-red)" },
   { route: "the-forward-view", num: "Conclusion", label: "The Forward View", tagline: "Decisions for the next generation", icon: "CheckCircle", colorVar: "var(--c-purple)" },
 ];

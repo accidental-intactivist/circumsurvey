@@ -6,6 +6,15 @@
 //   • Everything else preserved as-is
 // ═══════════════════════════════════════════════════════════════════════════
 
+import {
+  parseIntent,
+  parseToolCall,
+  validateToolCall,
+  extractSuggestions,
+  stripSuggestions,
+  decorateSources,
+} from "./copilotLib.js";
+
 const CACHE_TTL_SECONDS = 60;
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -910,16 +919,7 @@ User Query: "${query}"`;
       maxTokens: 100
     });
 
-    let intent = "qualitative";
-    try {
-      const jsonMatch = rawIntentText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        if (parsed.intent === "quantitative") intent = "quantitative";
-      }
-    } catch (e) {
-      console.log("Intent parsing failed, defaulting to qualitative", e);
-    }
+    const intent = parseIntent(rawIntentText);
 
     env.DB.prepare("INSERT INTO ai_queries (query, intent) VALUES (?, ?)").bind(query, intent).run().catch(e => console.error("Logging error", e));
 
@@ -960,30 +960,19 @@ Example: {"tool": "get_demographics", "args": {"pathway": "intact", "country": "
         maxTokens: 200
       });
 
-      let toolCall = null;
-      try {
-        const jsonMatch = rawToolText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) toolCall = JSON.parse(jsonMatch[0]);
-      } catch (e) {
-        console.error("Failed to parse tool call:", e);
-      }
-
-      if (!toolCall || !toolCall.tool) {
-        return json({ answer: "I couldn't identify the right quantitative metrics for that question. Try rephrasing?", quotes: [] });
-      }
-
-      if (
-        (toolCall.args?.questionId && EXCLUDED_IDS.includes(toolCall.args.questionId)) ||
-        (toolCall.args?.q1 && EXCLUDED_IDS.includes(toolCall.args.q1)) ||
-        (toolCall.args?.q2 && EXCLUDED_IDS.includes(toolCall.args.q2))
-      ) {
-        return json({ answer: "Access to the requested question is restricted for privacy reasons.", quotes: [] });
-      }
-
-      // Allowlist: any question ID the model references must be one we offered it.
-      const validQ = new Set(questions.map((q) => q.id));
-      const referencedIds = [toolCall.args?.questionId, toolCall.args?.q1, toolCall.args?.q2].filter(Boolean);
-      if (referencedIds.some((id) => !validQ.has(id))) {
+      const toolCall = parseToolCall(rawToolText);
+      // Validate against the privacy blocklist + the allowlist of ids we offered.
+      const validation = validateToolCall(toolCall, {
+        validIds: new Set(questions.map((q) => q.id)),
+        excludedIds: EXCLUDED_IDS,
+      });
+      if (!validation.ok) {
+        if (validation.reason === "excluded") {
+          return json({ answer: "Access to the requested question is restricted for privacy reasons.", quotes: [], suggestions: SAFE_REDIRECT_SUGGESTIONS });
+        }
+        if (validation.reason === "no_tool") {
+          return json({ answer: "I couldn't identify the right quantitative metric for that question — try rephrasing?", quotes: [], suggestions: SAFE_REDIRECT_SUGGESTIONS });
+        }
         return json({ answer: "I couldn't match that to a known survey question — try rephrasing?", quotes: [], suggestions: SAFE_REDIRECT_SUGGESTIONS });
       }
 
@@ -1119,13 +1108,8 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
       if (!(await isOutputSafe(env, query, rawAnswer))) {
         return json({ answer: "Let's keep exploring the survey findings — here are a few directions:", suggestions: SAFE_REDIRECT_SUGGESTIONS, quotes: [], metadata: { intent, blocked: true } });
       }
-      const suggestions = [];
-      const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
-      let match;
-      while ((match = suaRegex.exec(rawAnswer)) !== null) {
-        if (match[1].trim()) suggestions.push(match[1].trim());
-      }
-      const answer = rawAnswer.replace(/<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi, "").trim();
+      const suggestions = extractSuggestions(rawAnswer);
+      const answer = stripSuggestions(rawAnswer);
 
       return json({
         answer,
@@ -1289,18 +1273,13 @@ ${contextStr}
     if (!(await isOutputSafe(env, query, rawAnswer))) {
       return json({ answer: "Let's keep exploring the survey findings — here are a few directions:", suggestions: SAFE_REDIRECT_SUGGESTIONS, quotes: [], metadata: { intent, blocked: true } });
     }
-    const suggestions = [];
-    const suaRegex = /<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi;
-    let match;
-    while ((match = suaRegex.exec(rawAnswer)) !== null) {
-      if (match[1].trim()) suggestions.push(match[1].trim());
-    }
-    const answer = rawAnswer.replace(/<S?UA>\s*(.*?)\s*(?:<\/?S?UA>|$)/gi, "").replace(/Suggested User Actions?:?/i, "").trim();
+    const suggestions = extractSuggestions(rawAnswer);
+    const answer = stripSuggestions(rawAnswer);
 
     return json({
       answer,
       suggestions,
-      quotes: quotes,
+      quotes: decorateSources(quotes),
       metadata: { intent }
     });
   } catch (err) {

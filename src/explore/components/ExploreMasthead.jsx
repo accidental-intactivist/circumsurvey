@@ -428,7 +428,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                                     color: isCurrent ? "var(--c-goldBright)" : "var(--c-dim)",
                                     marginBottom: "0.1rem",
                                   }}>
-                                    {ex.num.replace(/Exhibit/i, "Section")}
+                                    {ex.num}
                                   </span>
                                   <span style={{
                                     fontFamily: FONT.body,

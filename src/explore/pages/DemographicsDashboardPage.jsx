@@ -254,7 +254,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           zIndex: 100,
         }}>
           <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.goldBright, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-            Exhibits
+            Topics
           </h3>
           {[
             { id: "geo", label: "Geographic Origins", icon: "◈" },
@@ -299,7 +299,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
         </aside>
 
-        {/* Right Column: Exhibits */}
+        {/* Right Column: Topics */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
           {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
           <SectionAnchor id="geo">

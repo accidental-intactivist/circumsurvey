@@ -10,6 +10,7 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
 import SmallSampleBadge from "../components/SmallSampleBadge";
 import ExhibitDataLoader from "../components/ExhibitDataLoader";
+import HarveyBall from "../components/HarveyBall";
 import { flattenMultiSelect } from "../lib/formatters";
 
 const CONTEXT_QUESTIONS = [
@@ -219,7 +220,7 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
                 { color: C.blue, label: "Excellent / Significantly Increased or Improved" }
               ].map((item, idx) => (
                 <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                  <HarveyBall score={idx + 1} color={item.color} size={16} />
                   <span style={{ fontSize: "0.9rem", color: C.text, fontFamily: FONT.body, fontWeight: 500 }}>
                     {item.label}
                   </span>

@@ -1,19 +1,32 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { getCount } from '../../explore/lib/api';
+import { PATH_COLORS } from '../../explore/styles/tokens';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const TOTAL_PARTICLES = 504;
 
 export default function ParticleSwarm() {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const particles = useRef([]);
   const animState = useRef({ progress: 0 });
+  const [counts, setCounts] = useState(null);
+
+  useEffect(() => {
+    getCount().then(data => setCounts(data.by_pathway || { intact: 150, circumcised: 300, restoring: 54, observer: 0 }));
+  }, []);
 
   useGSAP(() => {
+    if (!counts) return;
+
+    const intactCount = counts.intact || 0;
+    const circCount = counts.circumcised || 0;
+    const restoringCount = counts.restoring || 0;
+    const observerCount = counts.observer || 0;
+    const totalParticles = intactCount + circCount + restoringCount + observerCount;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -31,7 +44,12 @@ export default function ParticleSwarm() {
     window.addEventListener('resize', updateSize);
 
     // Initialize Particles
-    particles.current = Array.from({ length: TOTAL_PARTICLES }).map((_, i) => {
+    particles.current = Array.from({ length: totalParticles }).map((_, i) => {
+      let c = PATH_COLORS.observer;
+      if (i < intactCount) c = PATH_COLORS.intact;
+      else if (i < intactCount + circCount) c = PATH_COLORS.circumcised;
+      else if (i < intactCount + circCount + restoringCount) c = PATH_COLORS.restoring;
+
       return {
         id: i,
         x: Math.random() * width,
@@ -40,7 +58,7 @@ export default function ParticleSwarm() {
         originY: Math.random() * height,
         targetX: Math.random() * width,
         targetY: Math.random() * height,
-        color: i < 150 ? '#d4a030' : (i < 450 ? '#ffffff' : '#e06666'), // Mock groups
+        color: c,
         size: Math.random() * 1.5 + 1
       };
     });
@@ -56,7 +74,7 @@ export default function ParticleSwarm() {
       }
       // Act 1: Gentle Swirl (Lens)
       if (actIndex >= 1 && actIndex < 2) {
-        const angle = (particle.id / TOTAL_PARTICLES) * Math.PI * 2;
+        const angle = (particle.id / totalParticles) * Math.PI * 2;
         const radius = 100 + (particle.id % 50);
         return {
           x: width / 2 + Math.cos(angle) * radius,
@@ -66,8 +84,8 @@ export default function ParticleSwarm() {
       // Act 2: The Baseline (3 Columns)
       if (actIndex >= 2 && actIndex < 3) {
         let col = 0;
-        if (particle.color === '#ffffff') col = 1;
-        if (particle.color === '#e06666') col = 2;
+        if (particle.color === PATH_COLORS.circumcised) col = 1;
+        if (particle.color === PATH_COLORS.restoring) col = 2;
         
         const colWidth = width / 3;
         const xCenter = col * colWidth + (colWidth / 2);
@@ -88,7 +106,7 @@ export default function ParticleSwarm() {
       }
       // Act 3 & 4 & 5: Tight Clusters / Pleasure Gap
       if (actIndex >= 3) {
-        const targetX = particle.color === '#ffffff' ? width * 0.35 : width * 0.65;
+        const targetX = particle.color === PATH_COLORS.circumcised ? width * 0.35 : width * 0.65;
         const targetY = height * 0.5 + (Math.sin(particle.id) * 150);
         return {
           x: targetX + (Math.cos(particle.id * 1.3) * 80) + (Math.sin(particle.id * 2.1) * 20),
@@ -142,7 +160,7 @@ export default function ParticleSwarm() {
       window.removeEventListener('resize', updateSize);
       gsap.ticker.remove(render);
     };
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [counts] });
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full">

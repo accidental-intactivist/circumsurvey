@@ -50,13 +50,18 @@ export default function TheForwardViewPage({ routerState, navigate, setExhibitCo
 
   useEffect(() => {
     getCount().then(data => {
-      // Ideally we'd get the cohort-specific count, but using overall for now as Sankey handles its own cohort filtering inside.
-      // Wait, getAggregate of the final decision question is what the Sankey uses. 
-      // We'll let Sankey load, but we can pass a dummy N=100 for now to avoid blocking, 
-      // since this page is a full-population exhibit mostly. 
-      setTotalN(data.total || 0); 
+      let pathwayFilter = null;
+      if (typeof cohort === "string") pathwayFilter = cohort;
+      else if (cohort && cohort.pathway) pathwayFilter = cohort.pathway;
+      
+      if (pathwayFilter && pathwayFilter !== "all" && data.by_pathway) {
+        const pFilter = Array.isArray(pathwayFilter) ? pathwayFilter[0] : pathwayFilter;
+        setTotalN(data.by_pathway[pFilter] || data.total || 0);
+      } else {
+        setTotalN(data.total || 0); 
+      }
     });
-  }, []);
+  }, [cohort]);
 
   const glassStyle = {
     background: C.bgCard,

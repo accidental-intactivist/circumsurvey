@@ -217,6 +217,10 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
     return "#a855f7"; // fallback
   };
 
+  const totalN = useMemo(() => {
+    return links.reduce((acc, l) => acc + l.value, 0);
+  }, [links]);
+
   if (loading) {
     return (
       <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 8 }}>
@@ -232,10 +236,6 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
       </div>
     );
   }
-
-  const totalN = useMemo(() => {
-    return links.reduce((acc, l) => acc + l.value, 0);
-  }, [links]);
 
   return (
     <SmallSampleBadge n={totalN}>

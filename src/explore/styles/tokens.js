@@ -554,10 +554,10 @@ export const GLOBAL_CSS = `
 
   /* ── BRICK THEME ── */
   [data-theme="brick"][data-mode="dark"] {
-    --c-bg: #1f0505;
-    --c-bgSoft: #3b0b0b;
-    --c-bgCard: #2e0808;
-    --c-bgDeep: #120202;
+    --c-bg: #290808;
+    --c-bgSoft: #4a1010;
+    --c-bgCard: #380a0a;
+    --c-bgDeep: #1f0303;
     --c-text: #ff9999;
     --c-textBright: #ffc2c2;
     --c-muted: #b71c1c;
@@ -675,6 +675,16 @@ export const GLOBAL_CSS = `
     --chart-0: #111111; --chart-1: #999999; --chart-2: #555555; --chart-3: #c0c0c0; --chart-4: #e0e0e0;
     --chart-5: #666666; --chart-6: #222222; --chart-7: #8a8a8a; --chart-8: #444444; --chart-9: #f4f4f4;
   }
+  
+  [data-theme="mono"][data-mode="dark"] body {
+    background-image: radial-gradient(var(--c-ghost) 1.5px, transparent 1.5px);
+    background-size: 10px 10px;
+  }
+  
+  [data-theme="mono"][data-mode="light"] body {
+    background-image: radial-gradient(var(--c-ghost) 1.5px, transparent 1.5px);
+    background-size: 10px 10px;
+  }
   /* ── TOMORROW TYPEFACE ── */
   [data-typeface="tomorrow"] {
     --f-display: 'Josefin Sans', sans-serif;
@@ -771,6 +781,64 @@ export const GLOBAL_CSS = `
   
   [data-theme="frodo"] * {
     border-radius: 0 !important;
+  }
+
+  /* ── AGNES THEME (Amiga Workbench Easter Egg) ── */
+  [data-theme="agnes"] {
+    --c-bg: #0055aa;
+    --c-bgSoft: #0055aa;
+    --c-bgCard: #0055aa;
+    --c-bgDeep: #000000;
+    --c-text: #ffffff;
+    --c-textBright: #ffffff;
+    --c-muted: #aaaaaa;
+    --c-dim: #bbbbbb;
+    --c-ghost: #ffffff;
+    --c-gold: #fa9600;
+    --c-goldBright: #fa9600;
+    
+    --map-ocean: #0055aa;
+    --map-land: #ffffff;
+    --map-border: rgba(250, 150, 0, 0.5);
+    
+    --c-red: #ff0000;
+    --c-orange: #fa9600;
+    --c-yellow: #ffff00;
+    --c-green: #00ff00;
+    --c-ltBlue: #00ffff;
+    --c-blue: #0055aa;
+    --c-grey: #aaaaaa;
+    --c-purple: #ff00ff;
+
+    --path-intact: #ffffff;
+    --path-circumcised: #fa9600;
+    --path-restoring: #aaaaaa;
+    --path-observer: #000000;
+    
+    --chart-0: #ffffff;
+    --chart-1: #fa9600;
+    --chart-2: #000000;
+    --chart-3: #aaaaaa;
+    --chart-4: #0055aa;
+    --chart-5: #ff0000;
+    --chart-6: #00ff00;
+    --chart-7: #00ffff;
+    --chart-8: #ff00ff;
+    --chart-9: #ffff00;
+    
+    --f-display: 'VT323', monospace !important;
+    --f-body: 'VT323', monospace !important;
+    --f-condensed: 'VT323', monospace !important;
+  }
+
+  [data-theme="agnes"] body {
+    border: 4px solid #ffffff;
+    padding: 2px;
+  }
+  
+  [data-theme="agnes"] * {
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   html, body { 

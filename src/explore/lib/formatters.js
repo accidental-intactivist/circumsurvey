@@ -112,7 +112,61 @@ export function shortLabel(label) {
     }
   }
 
-  return s.length > 25 ? s.slice(0, 23) + "…" : s;
+  return s;
+}
+
+/**
+ * Returns a 1-5 score for a label if it matches known 5-point ordinal scales.
+ * Returns null if it doesn't match a known ordinal scale.
+ */
+export function getHarveyBallScore(label) {
+  const l = String(label || "").toLowerCase();
+  
+  if (
+    l.includes("excellent") || 
+    l.includes("very satisfied") || 
+    l.includes("significantly increased") || 
+    l.includes("significantly improved") || 
+    l.includes("best decisions") ||
+    l.includes("always been glad")
+  ) return 5;
+  
+  if (
+    l.includes("above average") || 
+    l.includes("somewhat satisfied") || 
+    l.includes("somewhat increased") || 
+    l.includes("somewhat improved") || 
+    l.includes("generally happy")
+  ) return 4;
+  
+  if (
+    (l.includes("average") && !l.includes("above") && !l.includes("below")) || 
+    l.includes("neutral") || 
+    l.includes("no change") || 
+    l.includes("no noticeable change") || 
+    l.includes("mixed feelings") ||
+    l.includes("rarely")
+  ) return 3;
+  
+  if (
+    l.includes("below average") || 
+    l.includes("somewhat dissatisfied") || 
+    l.includes("somewhat decreased") || 
+    l.includes("somewhat diminished") || 
+    (l.includes("experience some of these feelings sometimes") && !l.includes("rarely"))
+  ) return 2;
+  
+  if (
+    l.includes("poor") || 
+    l.includes("very dissatisfied") || 
+    l.includes("significantly decreased") || 
+    l.includes("significantly diminished") || 
+    l.includes("generally regret") ||
+    l.includes("strong and frequent") ||
+    l.includes("unhappy to be")
+  ) return 1;
+  
+  return null;
 }
 
 /**

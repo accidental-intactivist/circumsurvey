@@ -14,6 +14,7 @@ import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/Demo
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import ExhibitHero from "../components/ExhibitHero";
 import { useTooltip, Tooltip } from "../components/Tooltip";
+import IconifyEmoji from "../components/IconifyEmoji";
 import * as Icons from "../components/Icons";
 
 // ── Dimensions & Outcomes ──────────────────────────────────────────────────
@@ -127,7 +128,7 @@ function SectionHeader({ number, title, subtitle, icon }) {
           fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.18em",
           textTransform: "uppercase", color: C.goldBright, fontWeight: 700,
         }}>
-          {icon} {number}
+          <IconifyEmoji emoji={icon} size="0.9rem" style={{marginRight: "0.2rem", transform: "translateY(-1px)"}} /> {number}
         </span>
       </div>
       <h2 style={{
@@ -873,7 +874,9 @@ function PersonaBuilder() {
                     justifyContent: "space-between", gap: "1rem",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flex: 1, minWidth: 0 }}>
-                      <span style={{ fontSize: "1.1rem" }}>{outcome.icon}</span>
+                      <span style={{ fontSize: "0.85rem", display: "flex", alignItems: "center" }}>
+                        <IconifyEmoji emoji={outcome.icon} />
+                      </span>
                       <span style={{
                         fontFamily: FONT.body, fontSize: "0.8rem", color: C.textBright,
                         fontWeight: 500,
@@ -1618,7 +1621,9 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
                   }
                 }}
               >
-                <span style={{ fontSize: "1.1em" }}>{s.icon}</span> {s.label}
+                <span style={{ display: "flex", alignItems: "center" }}>
+                  <IconifyEmoji emoji={s.icon} size="1.1em" />
+                </span> {s.label}
               </div>
             ))}
           </aside>

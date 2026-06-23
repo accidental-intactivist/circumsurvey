@@ -72,6 +72,18 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       return;
     }
 
+    if (upperQ === 'LOADWB' || upperQ === 'AGNES' || upperQ === 'AMIGA') {
+      unlockTheme('agnes');
+      setTheme('agnes');
+      setResult({
+         answer: "1> LOADWB\n\nAmigaOS Workbench Loaded.\nGuru Meditation avoided.\n\nMODULE [AGNES_THEME] UNLOCKED IN SETTINGS.",
+         suggestions: [],
+         quotes: [],
+         metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
     if (updateState) {
       updateState({ ai_query: query.trim() });
     }

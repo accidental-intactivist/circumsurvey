@@ -1,0 +1,377 @@
+ExploreShell.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+ExploreShell.jsx:9: // ═══════════════════════════════════════════════════════════════════════════
+AddToReportButton.jsx:42: {isInReport ? "✓" : "+"}
+AddToReportButton.jsx:81: {isInReport ? "✓ IN REPORT" : "+ ADD TO REPORT"}
+BivariateHeatmap.jsx:113: {q2 ? "▼ Y \\ X ▶" : ""}
+CompareBySelector.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+CompareBySelector.jsx:9: // ═══════════════════════════════════════════════════════════════════════════
+CompareBySelector.jsx:15: { id: "generation",         label: "Generation", icon: "◷", group: "demographics" },
+CompareBySelector.jsx:16: { id: "primary_tradition",  label: "Religion",   icon: "✦", group: "demographics" },
+CompareBySelector.jsx:19: { id: "sexuality",          label: "Sexuality",  icon: "◈", group: "demographics" },
+CompareBySelector.jsx:20: { id: "education",          label: "Education",  icon: "▣", group: "demographics" },
+CompareBySelector.jsx:21: { id: "politics",           label: "Politics",   icon: "◇", group: "demographics" },
+CopilotChat.jsx:200: ❌ Error: {error}
+CopilotChat.jsx:239: e.target.innerText = "✓ COPIED";
+CopilotChat.jsx:258: 🔗 Share Link
+CopilotChat.jsx:285: <div style={{ color: C.dim, marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>🔍 Query Executed By AI</div>
+DemographicFilterBar.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+DemographicFilterBar.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+DemographicFilterBar.jsx:194: <span>★</span> Cohort Filter
+DemographicFilterBar.jsx:360: <span style={{ color: C.dim, fontSize: "0.6rem" }}>▶</span>
+DemographicFilterBar.jsx:387: ◀ Back
+DemographicFilterBar.jsx:451: {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
+ExhibitHero.jsx:7: // ═══════════════════════════════════════════════════════════════════════════
+ExhibitHero.jsx:20: // ═══════════════════════════════════════════════════════════════════════════
+ExhibitsDashboard.jsx:6: // ── Compact Exhibit Card (Gemstone Aesthetic) ────────────────────────────────
+ExhibitsDashboard.jsx:184: // ── Main Dashboard ──────────────────────────────────────────────────────────
+ExploreMasthead.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+ExploreMasthead.jsx:10: // ═══════════════════════════════════════════════════════════════════════════
+ExploreMasthead.jsx:19: // ── Easy-to-adjust height constants ─────────────────────────────────────
+ExploreMasthead.jsx:24: // ── Route metadata ──────────────────────────────────────────────────────
+ExploreMasthead.jsx:29: kicker: "★ The Accidental Intactivist's Inquiry ★",
+ExploreMasthead.jsx:206: // ── Scroll listener & Custom Property ──────────────────────────────────
+ExploreMasthead.jsx:269: {/* ── Clipped background container ───────────────────────────────── */}
+ExploreMasthead.jsx:298: {/* ── Rainbow accent line ────────────────────────────────────────── */}
+ExploreMasthead.jsx:312: {/* ── Header nav bar (always visible and interactive at top) ─────── */}
+ExploreMasthead.jsx:382: <span style={{ fontSize: "0.55rem", color: "var(--c-dim)", transform: `rotate(${dropdownOpen ? 180 : 0}deg)`, transition: "transform 0.2s" }}>▼</span>
+ExploreMasthead.jsx:540: {/* ── Collapsing Exhibit Title ────────────────────────────────────── */}
+ExploreMasthead.jsx:567: {/* ── Clipped description container ──────────────────────────────── */}
+GeographicHeatmap.jsx:246: <div><span style={{color: resolveCssColor(C.blue)}}>●</span> Intact: {intactCount} ({ratio}%)</div>
+GeographicHeatmap.jsx:247: <div><span style={{color: resolveCssColor(C.red)}}>●</span> Circumcised: {circCount} ({100 - ratio}%)</div>
+GeographicHeatmap.jsx:261: return <div key={b.id}><span style={{color: getCohortColor(b.id)}}>●</span> {label}: {b.n}</div>;
+GeographicHeatmap.jsx:485: Representation Balance ⚡
+GeographicHeatmap.jsx:569: <span style={{ fontSize: "0.95rem" }}>🎯</span> Concentric rings show cohort splits (area proportional to count)
+IconifyEmoji.jsx:51: "⏱️": Lucide.Timer,
+IconifyEmoji.jsx:52: "⚡": Lucide.Zap,
+IconifyEmoji.jsx:53: "🌟": Lucide.Star,
+IconifyEmoji.jsx:54: "📙": Lucide.Book,
+IconifyEmoji.jsx:55: "〰": Lucide.Activity,
+IconifyEmoji.jsx:57: "◎": Lucide.CircleDot,
+IconifyEmoji.jsx:58: "◈": Lucide.Target,
+IconifyEmoji.jsx:59: "🔍": Lucide.Search,
+IconifyEmoji.jsx:60: "🙋‍♂️": Lucide.User,
+IconifyEmoji.jsx:61: "♂": Lucide.User,
+InlineBreadcrumb.jsx:68: <span style={{ fontSize: "0.55rem", color: C.dim, transform: `rotate(${dropdownOpen ? 180 : 0}deg)`, transition: "transform 0.2s" }}>▼</span>
+MeanComparisonStrip.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+MeanComparisonStrip.jsx:11: // ═══════════════════════════════════════════════════════════════════════════
+MiniSparkline.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+MiniSparkline.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+NarrativeList.jsx:221: <span>☰</span>
+NarrativeList.jsx:242: <span>📊</span>
+NarrativeList.jsx:319: <span style={{ color: pathwayColor, fontSize: "0.9rem" }}>★</span>
+NarrativeList.jsx:352: const pathInfo = PATHWAYS[pId] || { label: pId, emoji: "💬", color: C.gold };
+PathwayChips.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+PathwayChips.jsx:4: // ═══════════════════════════════════════════════════════════════════════════
+PathwayChips.jsx:81: {p.waiting ? "✦" : p.n}
+PleasureGapWidget.jsx:108: {/* ── Main Chart ── */}
+PleasureGapWidget.jsx:121: {/* ── Legend ── */}
+PleasureGapWidget.jsx:140: {/* ── Detailed Matrix ── */}
+QuestionRow.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+QuestionRow.jsx:4: // ═══════════════════════════════════════════════════════════════════════════
+RelevanceToggle.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+RelevanceToggle.jsx:4: // ═══════════════════════════════════════════════════════════════════════════
+ReportBadge.jsx:43: <span>📋 Report</span>
+SharePopover.jsx:74: 📤 Share
+SharePopover.jsx:96: 🔗 {copied ? "Copied!" : "Copy Link"}
+SharePopover.jsx:108: 📸 Save as Image
+SharePopover.jsx:114: <span style={{opacity: 0.8}}>𝕏</span> Share on X
+SmallSampleBadge.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+SmallSampleBadge.jsx:7: // ═══════════════════════════════════════════════════════════════════════════
+SmallSampleBadge.jsx:79: <span>⚠</span>
+SmallSampleBadge.jsx:100: <span style={{ fontSize: "0.85rem" }}>⚠</span>
+SurveyFlowchart.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+SurveyFlowchart.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+SurveyFlowchart.jsx:15: // ── Constants ────────────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:18: { name: "Demographics", emoji: "📊", desc: "Country, age, generation, education, sexuality, gender" },
+SurveyFlowchart.jsx:19: { name: "Family", emoji: "👨‍👩‍👦", desc: "Parents, upbringing, politics, socioeconomic status" },
+SurveyFlowchart.jsx:20: { name: "Religion", emoji: "🕊️", desc: "Tradition, significance, denomination details" },
+SurveyFlowchart.jsx:21: { name: "Appearance", emoji: "👁️", desc: "Body image and self-perception" },
+SurveyFlowchart.jsx:22: { name: "Sexual Experience", emoji: "💡", desc: "Sensation, orgasm, lubrication, communication" },
+SurveyFlowchart.jsx:23: { name: "Experience", emoji: "📝", desc: "Pre-ejaculate, needs, partner communication" },
+SurveyFlowchart.jsx:24: { name: "Pride & Regret", emoji: "⚖️", desc: "Overall satisfaction and emotional impact" },
+SurveyFlowchart.jsx:25: { name: "Pathway Routing", emoji: "🔀", desc: "Circumcision state — determines branching" },
+SurveyFlowchart.jsx:29: { name: "Culture & Attitudes", emoji: "🌍", desc: "Norms, stereotypes, ethics, autonomy, media" },
+SurveyFlowchart.jsx:30: { name: "Follow-up", emoji: "📨", desc: "Contact consent, final reflections" },
+SurveyFlowchart.jsx:35: { id: "circumcised", label: "Circumcised", emoji: "🔵", color: PATH_COLORS.circumcised, desc: "Circumcised as infants or later in life", sections: ["Circumcised Pathway"], hasSubRoles: true },
+SurveyFlowchart.jsx:38: { id: "trans", label: "Trans", emoji: "🔴", color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
+SurveyFlowchart.jsx:39: { id: "intersex", label: "Intersex", emoji: "⚪", color: PATH_COLORS.intersex, desc: "Intersex perspectives", sections: ["Intersex Pathway"], waiting: true },
+SurveyFlowchart.jsx:42: // ── Main Component ───────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:270: {/* ═══ SEARCH BAR ═══ */}
+SurveyFlowchart.jsx:316: 🔍
+SurveyFlowchart.jsx:336: ✕
+SurveyFlowchart.jsx:342: {/* ═══ UNIVERSAL BLOCK ═══ */}
+SurveyFlowchart.jsx:346: emoji="📋"
+SurveyFlowchart.jsx:373: {/* ═══ VERTICAL CONNECTOR: Universal → Fork ═══ */}
+SurveyFlowchart.jsx:377: {/* ═══ FORK DIAMOND ═══ */}
+SurveyFlowchart.jsx:380: {/* ═══ COMPARE MODE TOGGLE ═══ */}
+SurveyFlowchart.jsx:429: {/* ═══ BRANCH CONNECTORS ═══ */}
+SurveyFlowchart.jsx:439: {/* ═══ PATHWAY BRANCHES ═══ */}
+SurveyFlowchart.jsx:590: Close ✕
+SurveyFlowchart.jsx:644: section={{ name: secName.toUpperCase(), emoji: "🔴", desc: "" }}
+SurveyFlowchart.jsx:684: {/* ═══ MERGE CONNECTORS ═══ */}
+SurveyFlowchart.jsx:694: {/* ═══ SYNTHESIS BLOCK ═══ */}
+SurveyFlowchart.jsx:698: emoji="🔀"
+SurveyFlowchart.jsx:734: // ═══════════════════════════════════════════════════════════════════════════════
+SurveyFlowchart.jsx:736: // ═══════════════════════════════════════════════════════════════════════════════
+SurveyFlowchart.jsx:738: // ── FlowNode ────────────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:812: }}>{waiting ? "n=0 ✦" : `n=${nCount}`}</span>
+SurveyFlowchart.jsx:844: }}>▼</div>
+SurveyFlowchart.jsx:873: // ── SectionBlock ─────────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:925: }}>▼</div>
+SurveyFlowchart.jsx:955: // ── QuestionRow ──────────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1126: // ── ForkDiamond ──────────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1187: }}>🔀</div>
+SurveyFlowchart.jsx:1202: // ── VerticalConnector ────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1251: // ── MobileConnector ──────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1270: // ── BranchConnectors ─────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1362: // ── MergeConnectors ──────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1455: // ── ObserverSubRoles ─────────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1517: <span style={{ fontSize: "1.4rem" }}>👥</span>
+SurveyFlowchart.jsx:1687: <span style={{ color: PATH_COLORS.observer, fontWeight: 600 }}>🎭 MULTIPLE HATS:</span>{" "}
+SurveyFlowchart.jsx:1772: <span style={{ fontSize: "1.2rem", filter: `drop-shadow(0 0 4px ${PATH_COLORS.observer}40)` }}>🔄</span>
+SurveyFlowchart.jsx:1793: <span style={{ fontSize: "1.2rem", filter: `drop-shadow(0 0 4px ${C.gold}40)` }}>🔀</span>
+SurveyFlowchart.jsx:1804: // ── CircumcisedSubRoles ───────────────────────────────────────────────────────
+SurveyFlowchart.jsx:1866: <span style={{ fontSize: "1.4rem" }}>👥</span>
+SurveyFlowchart.jsx:2076: <span style={{ fontSize: "1.2rem", filter: `drop-shadow(0 0 4px ${C.gold}40)` }}>🔀</span>
+SurveyMapNav.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+SurveyMapNav.jsx:4: // ═══════════════════════════════════════════════════════════════════════════
+SurveyMapNav.jsx:110: }}>{waiting ? "n=0 ✦" : `n=${count}`}</span>
+SurveyMapNav.jsx:196: <span>★</span> Map Navigation
+ThemeToggle.jsx:71: {/* ── GEAR ICON BUTTON ── */}
+ThemeToggle.jsx:79: <span style={{ fontSize: "1.1rem" }}>⚙️</span>
+ThemeToggle.jsx:82: {/* ── POPOVER MENU ── */}
+WordCloud.jsx:213: {isOpen ? "Hide Cloud ▲" : "Show Cloud ▼"}
+WordCloud.jsx:287: <span>🚫</span>
+api.js:1: // ═══════════════════════════════════════════════════════════════════════════
+api.js:4: // ═══════════════════════════════════════════════════════════════════════════
+api.js:8: // ── Simple in-memory cache with 5-minute TTL ──────────────────────────────
+api.js:38: // ── Cohort filter serialization ────────────────────────────────────────────
+api.js:69: // ── Public API methods ─────────────────────────────────────────────────────
+pathways.js:1: // ═══════════════════════════════════════════════════════════════════════════
+pathways.js:4: // ═══════════════════════════════════════════════════════════════════════════
+pathways.js:20: emoji: "🔵",
+pathways.js:44: emoji: "🔴",
+pathways.js:53: emoji: "⚪",
+pathways.js:62: emoji: "🔍",
+pathways.js:71: // ── Survey phase ordering ──────────────────────────────────────────────────
+pathways.js:79: emoji: "📋",
+pathways.js:95: emoji: "🌿",
+pathways.js:102: emoji: "🔀",
+pathways.js:111: // ── Observer sub-pathways ──────────────────────────────────────────────────
+pathways.js:193: emoji: "🎭",
+pathways.js:212: // ── Transgender sub-pathways ───────────────────────────────────────────────
+pathways.js:218: emoji: "♀",
+pathways.js:226: emoji: "♂",
+pathways.js:236: emoji: "👥",
+pathways.js:244: emoji: "👶",
+pathways.js:252: emoji: "🙋‍♂️",
+pathways.js:267: // ── Section → phase resolution ─────────────────────────────────────────────
+router.js:1: // ═══════════════════════════════════════════════════════════════════════════
+router.js:5: // ═══════════════════════════════════════════════════════════════════════════
+AdultExperiencePage.jsx:152: icon="📙"
+AdultExperiencePage.jsx:192: icon="⚖️"
+AdultExperiencePage.jsx:258: icon="💬"
+ByTheNumbersPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:8: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:19: // ── Dimensions & Outcomes ──────────────────────────────────────────────────
+ByTheNumbersPage.jsx:40: // ── Extractors: pull a single % from a distribution ────────────────────────
+ByTheNumbersPage.jsx:66: // ── Shorten labels ─────────────────────────────────────────────────────────
+ByTheNumbersPage.jsx:115: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:117: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:153: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:155: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:157: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:159: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:280: <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from 504 respondents — the numbers that define the conversation." icon="★" />
+ByTheNumbersPage.jsx:293: <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
+ByTheNumbersPage.jsx:375: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:377: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:492: icon="◉"
+ByTheNumbersPage.jsx:636: <span>◯ Size = n respondents</span>
+ByTheNumbersPage.jsx:654: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:656: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:659: { id: "keep_intact", label: "Would Keep Son Intact", qid: "final_child_decision_reason", extractor: "keep_intact", icon: "🛡" },
+ByTheNumbersPage.jsx:660: { id: "resentment", label: "Strong Resentment/Grief", qid: "circ_regret_feeling", extractor: "strong_resentment", icon: "💔" },
+ByTheNumbersPage.jsx:661: { id: "lube_always", label: "Lube Always Needed", qid: "exp_lubrication_need", extractor: "lube_always", icon: "💧" },
+ByTheNumbersPage.jsx:662: { id: "intact_aesthetic", label: "Prefers Intact Look", qid: "final_aesthetic_preference", extractor: "intact_aesthetic", icon: "👁" },
+ByTheNumbersPage.jsx:663: { id: "autonomy", label: "Prioritizes Autonomy", qid: "final_core_principle_choice", extractor: "autonomy", icon: "⚖" },
+ByTheNumbersPage.jsx:737: icon="◈"
+ByTheNumbersPage.jsx:852: ⚠ Too few respondents for meaningful percentages. Try removing a filter.
+ByTheNumbersPage.jsx:924: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:926: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:1034: icon="◇"
+ByTheNumbersPage.jsx:1148: {isCorrect ? "✓ Correct! " : "✗ Not quite. "}
+ByTheNumbersPage.jsx:1231: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:1233: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:1321: icon="▦"
+ByTheNumbersPage.jsx:1411: ★
+ByTheNumbersPage.jsx:1507: <span>★ = Most predictive dimension for that outcome</span>
+ByTheNumbersPage.jsx:1517: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:1519: // ═══════════════════════════════════════════════════════════════════════════
+ByTheNumbersPage.jsx:1546: { id: "snapshots", label: "At a Glance", icon: "★" },
+ByTheNumbersPage.jsx:1547: { id: "factor-finder", label: "Factor Finder", icon: "◉" },
+ByTheNumbersPage.jsx:1548: { id: "persona-builder", label: "Persona Builder", icon: "◈" },
+ByTheNumbersPage.jsx:1549: { id: "quiz", label: "Test Your Assumptions", icon: "◇" },
+ByTheNumbersPage.jsx:1550: { id: "factor-grid", label: "Factor Grid", icon: "▦" },
+CorrelationExplorerPage.jsx:12: // ── Mirror-pair aggregates ─────────────────────────────────────────────────
+CorrelationExplorerPage.jsx:369: // ── Aggregate fetch+merge ────────────────────────────────────────────────
+CorrelationExplorerPage.jsx:775: // ── ModeToggle — segmented control: Pairwise (matrix) | Flow (3-way Sankey) ─
+CorrelationExplorerPage.jsx:821: // ── FlowArrow — small "→" glyph used between the three Flow-mode axis pickers
+CorrelationExplorerPage.jsx:838: // ── Helper: render a label for an axis selection ───────────────────────────
+CorrelationExplorerPage.jsx:850: // ── AxisPicker — single dropdown offering demographics + curated outcomes ──
+CorrelationExplorerPage.jsx:934: // ── AggregateContextPanel — shows what an aggregate axis is built from.
+CorrelationExplorerPage.jsx:988: // ── QuestionContextPanel — shows the full question prompt for axes that
+CultureGenerationsPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+CultureGenerationsPage.jsx:7: // ═══════════════════════════════════════════════════════════════════════════
+CultureGenerationsPage.jsx:25: // ── Question lists ─────────────────────────────────────────────────────────
+CultureGenerationsPage.jsx:67: // ── Lens Switcher component ──────────────────────────────────────────────────
+CultureGenerationsPage.jsx:145: // ── Data loader for cohort-mode charts ──────────────────────────────────────
+CultureGenerationsPage.jsx:219: // ── Main page ──────────────────────────────────────────────────────────────
+CultureGenerationsPage.jsx:262: {/* ── HEADER ─────────────────────────────────────────────── */}
+CultureGenerationsPage.jsx:278: {/* ── LEFT: Topic Navigator ─────────────────────────────── */}
+CultureGenerationsPage.jsx:374: {/* ── RIGHT: Main content ────────────────────────────────── */}
+CultureGenerationsPage.jsx:377: {/* ── Section: Cultural Associations ──────────────────── */}
+CultureGenerationsPage.jsx:461: {/* ── Section: Belief Pathways (Sankey) */}
+CultureGenerationsPage.jsx:504: {/* ── Section: Flagship Questions ────────────────────── */}
+CultureGenerationsPage.jsx:572: {/* ── Section: Qualitative Narratives */}
+CultureGenerationsPage.jsx:624: // ── Cohort distribution card (used in "By Cohort" mode) ────────────────────
+CultureGenerationsPage.jsx:632: // ── Navigation link helper ─────────────────────────────────────────────────
+DemographicsDashboardPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:16: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:36: // ── Constants ──────────────────────────────────────────────────────────────
+DemographicsDashboardPage.jsx:83: // ── Color palette for non-pathway dimensions ───────────────────────────────
+DemographicsDashboardPage.jsx:94: // ── Helpers ────────────────────────────────────────────────────────────────
+DemographicsDashboardPage.jsx:146: // ── Intersection Observer hook for lazy-loading sections ───────────────────
+DemographicsDashboardPage.jsx:165: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:167: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:260: { id: "geo", label: "Geographic Origins", icon: "◈" },
+DemographicsDashboardPage.jsx:261: { id: "mosaic", label: "Geographic Flow", icon: "〰" },
+DemographicsDashboardPage.jsx:263: { id: "radar", label: "Divergence Radar", icon: "◎" },
+DemographicsDashboardPage.jsx:304: {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
+DemographicsDashboardPage.jsx:309: {/* ═══ SECTION 2: GEOGRAPHIC FLOW (SANKEY, GEO-ANCHORED) ═══ */}
+DemographicsDashboardPage.jsx:315: icon="〰"
+DemographicsDashboardPage.jsx:381: {/* ═══ SECTION 3: PATHWAY DNA STRIP ═══ */}
+DemographicsDashboardPage.jsx:386: {/* ═══ SECTION 4: DIVERGENCE RADAR ═══ */}
+DemographicsDashboardPage.jsx:417: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:419: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:591: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:593: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:717: icon="◎"
+DemographicsDashboardPage.jsx:926: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:928: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:1018: icon="◈"
+DemographicsDashboardPage.jsx:1120: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:1127: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:1506: // ═══════════════════════════════════════════════════════════════════════════
+DemographicsDashboardPage.jsx:1508: // ═══════════════════════════════════════════════════════════════════════════
+ForParentsPage.jsx:90: {/* ── SECTION 1: Messages to Parents ────────────────────────────── */}
+ForParentsPage.jsx:130: {/* ── SECTION 2: The Data Behind The Decision ────────────────────────────── */}
+ForParentsPage.jsx:153: {/* ── SECTION 3: Current Parents & Professionals ────────────────────────────── */}
+ForParentsPage.jsx:209: {/* ── SECTION 4: Regret & Resentment Sankey ────────────────────────────── */}
+IndexPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+IndexPage.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+IndexPage.jsx:27: // ── Data fetch ──────────────────────────────────────────────────────────
+IndexPage.jsx:56: // ── Distributions (lazy-loaded per visible question) ───────────────────
+IndexPage.jsx:86: // ── Filter + group questions ────────────────────────────────────────────
+IndexPage.jsx:224: // ── IntersectionObserver for lazy distribution loading ─────────────────
+IndexPage.jsx:245: // ── IntersectionObserver for Scroll Spy (SurveyMapNav) ─────────────────
+IndexPage.jsx:282: // ── Totals for masthead ─────────────────────────────────────────────────
+IndexPage.jsx:333: {/* ── Core Filter Controls ─────────────────────────────────────────── */}
+IndexPage.jsx:389: <span style={{ fontSize: "1rem", marginTop: "-0.05rem" }}>💡</span>
+IndexPage.jsx:529: // ── Sub-components ───────────────────────────────────────────────────────
+IndexPage.jsx:610: }}>▶</span>
+IndexPage.jsx:651: {sub === "Universal" ? "🌐 Universal Religion" :
+IndexPage.jsx:652: sub === "Jewish" ? "✡️ Jewish Perspectives" :
+IndexPage.jsx:653: sub === "Christian" ? "✝️ Christian Perspectives" : "☪️ Islamic Perspectives"}
+IndexPage.jsx:937: }}>▼</span>
+IndexPage.jsx:1005: {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
+IndexPage.jsx:1102: }}>▼</span>
+IndexPage.jsx:1183: {isSelected && <span style={{ color: C.bgCard, fontSize: "0.55rem", fontWeight: "bold" }}>✓</span>}
+MirrorPairsPage.jsx:566: Circumcised Pathway 🔵
+MirrorPairsPage.jsx:635: ✨
+NarrativeMirrorsPage.jsx:17: circ: { qid: "circ_advantages_desc", label: "Circumcised Advantages", emoji: "🔵" },
+NarrativeMirrorsPage.jsx:25: circ: { qid: "circ_drawbacks_desc", label: "Circumcised Drawbacks", emoji: "🔵" },
+NarrativeMirrorsPage.jsx:33: circ: { qid: "circ_parents_reason", label: "Reasons Circumcised", emoji: "🔵" }
+NarrativeMirrorsPage.jsx:40: circ: { qid: "circ_regret_triggers", label: "Circumcised Regrets", emoji: "🔵" }
+NarrativeMirrorsPage.jsx:47: circ: { qid: "circ_curiosity_about_intact_aspects", label: "Circumcised Curiosity", emoji: "🔵" }
+NarrativeMirrorsPage.jsx:54: circ: { qid: "final_partner_preference_reason", pathway: "circumcised", label: "Circumcised Perception", emoji: "🔵" },
+NarrativeMirrorsPage.jsx:62: circ: { qid: "circ_message_to_parents", label: "Circumcised Voice", emoji: "🔵" },
+NarrativeMirrorsPage.jsx:246: // ── COHORT NARRATIVE LOADER ────────────────────────────────────────────────
+ObserverLensPage.jsx:76: }}>★ Special Perspective ★</div>
+ObserverLensPage.jsx:207: // ── UNIVERSAL QUESTION WIDGET ──────────────────────────────────────────────
+PathwayPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+PathwayPage.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+PleasureGapPage.jsx:283: }}>★ The Pleasure Gap</div>
+QuestionPage.jsx:1: // ═══════════════════════════════════════════════════════════════════════════
+QuestionPage.jsx:5: // ═══════════════════════════════════════════════════════════════════════════
+QuestionPage.jsx:40: // ── Data fetch ──────────────────────────────────────────────────────────
+QuestionPage.jsx:136: // ── Cohort distribution (separate fetch, re-runs when cohort changes) ──
+QuestionPage.jsx:149: // ── Cohort B distribution (separate fetch for A vs B comparison) ──
+QuestionPage.jsx:168: // ── Narrative fetch (if open_text and not geographic and not multi-select) ──
+QuestionPage.jsx:189: // ── Render Formatted Data ───────────────────────────────────────────────
+QuestionPage.jsx:227: // ── Render ──────────────────────────────────────────────────────────────
+QuestionPage.jsx:376: <span>★</span> Question Not Found
+QuestionPage.jsx:513: { id: "circ_message_to_parents", text: "💬 Message to Parents (from Circumcised respondents)", emoji: "⚖️" },
+QuestionPage.jsx:514: { id: "intact_message_to_others", text: "💬 Message to Others / Future Parents (from Intact respondents)", emoji: "⚖️" },
+QuestionPage.jsx:515: { id: "exp_sex_rating_orgasm_intensity", text: "📊 Orgasm Intensity comparison across cohorts", emoji: "⚖️" },
+QuestionPage.jsx:516: { id: "demo_sexuality", text: "📊 Sexual Orientation demographic profile", emoji: "📊" },
+QuestionPage.jsx:517: { id: "exp_sensitivity_desc", text: "💬 Physical sensation in respondents' own words", emoji: "💬" },
+QuestionPage.jsx:668: {showCohortB ? "✕ Remove Cohort B" : "⊞ Compare With…"}
+QuestionPage.jsx:1093: // ── Sub-components ───────────────────────────────────────────────────────
+ReligiousMirrorsPage.jsx:14: // ── TRADITIONS (filter syntax for cross-tabbing) ───────────────────────────
+ReligiousMirrorsPage.jsx:16: { id: "Christian",  label: "Christian",  emoji: "✝️",  color: "#5b93c7", cohort: { primary_tradition: "Christian" } },
+ReligiousMirrorsPage.jsx:17: { id: "Jewish",     label: "Jewish",     emoji: "✡️",  color: "#d4a030", cohort: { primary_tradition: "Jewish" } },
+ReligiousMirrorsPage.jsx:18: { id: "Islamic",    label: "Islamic",    emoji: "☪️",  color: "#68b878", cohort: { primary_tradition: "Islamic" } },
+ReligiousMirrorsPage.jsx:22: { id: "Secular",    label: "Secular / No Tradition", emoji: "⚛️", color: "#8bb8d9", cohort: { primary_tradition: "No significant religious/spiritual/cultural tradition influencing this topic." } },
+ReligiousMirrorsPage.jsx:26: // ── SECTION A: Universal questions cross-tabbed by ALL traditions ──────────
+ReligiousMirrorsPage.jsx:32: // ── SECTION B: Departure stories — only render where data exists ──────────
+ReligiousMirrorsPage.jsx:75: // ── SECTION C: Cultural Mechanics cross-tabbed by religion ────────────────
+ReligiousMirrorsPage.jsx:149: {/* ── THE MISSING CONGREGATION CALLOUT ────────────────────── */}
+ReligiousMirrorsPage.jsx:156: {/* ── SECTION A: Universal Cross-Tradition Views ──────────── */}
+ReligiousMirrorsPage.jsx:170: {/* ── SECTION B: Departure Stories ─────────────────────────── */}
+ReligiousMirrorsPage.jsx:191: {/* ── SECTION C: Cultural Mechanics ────────────────────────── */}
+ReligiousMirrorsPage.jsx:208: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:210: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:220: { label: "Christian", n: traditionCounts["Christian"] || 0, emoji: "✝️", color: "#5b93c7" },
+ReligiousMirrorsPage.jsx:221: { label: "Jewish", n: traditionCounts["Jewish"] || 0, emoji: "✡️", color: "#d4a030" },
+ReligiousMirrorsPage.jsx:222: { label: "Islamic", n: traditionCounts["Islamic"] || 0, emoji: "☪️", color: "#68b878" },
+ReligiousMirrorsPage.jsx:223: { label: "Other Traditions", n: (traditionCounts["Hinduism"] || 0) + (traditionCounts["Buddhism"] || 0) + (traditionCounts["New Age / Spiritual but not religious"] || 0), emoji: "🕉️", color: "#a07cc5" },
+ReligiousMirrorsPage.jsx:249: <IconifyEmoji emoji="🕯️" /> The Missing Congregation
+ReligiousMirrorsPage.jsx:336: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:338: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:357: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:359: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:418: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:420: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:529: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:531: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:585: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:587: // ═══════════════════════════════════════════════════════════════════════════
+ReligiousMirrorsPage.jsx:625: <span>★</span> Shared Legend
+ReportBuilderPage.jsx:126: const bars = "█".repeat(Math.round(d.pct / 5));
+ReportBuilderPage.jsx:206: 📊 Export CSV
+ReportBuilderPage.jsx:211: 📝 Export Text
+ReportBuilderPage.jsx:216: 📸 Save as Image
+ReportBuilderPage.jsx:221: 🖨️ Print / PDF
+ReportBuilderPage.jsx:282: >▲</button>
+ReportBuilderPage.jsx:290: >▼</button>
+RestorationJourneyPage.jsx:251: icon="⏱️"
+RestorationJourneyPage.jsx:296: icon="⚡"
+RestorationJourneyPage.jsx:364: icon="🌟"
+tokens.js:1: // ═══════════════════════════════════════════════════════════════════════════
+tokens.js:4: // ═══════════════════════════════════════════════════════════════════════════
+tokens.js:139: /* ── STANDARD THEME ── */
+tokens.js:162: /* ── VAPORWAVE THEME ── */
+tokens.js:221: /* ── EVERGREEN THEME ── */
+tokens.js:298: /* ── OCEAN THEME (Acadia Inspired) ── */
+tokens.js:375: /* ── AMBER THEME ── */
+tokens.js:435: /* ── PAPER THEME ── */
+tokens.js:495: /* ── PUEBLO THEME ── */
+tokens.js:555: /* ── BRICK THEME ── */
+tokens.js:615: /* ── MONO THEME ── */
+tokens.js:678: /* ── TOMORROW TYPEFACE ── */
+tokens.js:685: /* ── COLORBLIND OVERRIDE ── */
+tokens.js:712: /* ── DYSLEXIC FONT OVERRIDE ── */
+tokens.js:719: /* ── FRODO THEME (Amiga/C64 Easter Egg) ── */
+tokens.js:776: /* ── AGNES THEME (Amiga Workbench Easter Egg) ── */
+tokens.js:887: /* ── MOCKUP TYPOGRAPHY & CHROME UTILITY CLASSES ── */

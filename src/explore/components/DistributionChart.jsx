@@ -4,7 +4,8 @@ import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
 import AddToReportButton from "./AddToReportButton";
 import SharePopover from "./SharePopover";
-import { sortDistribution, applyLikert, shortLabel } from "../lib/formatters";
+import { sortDistribution, applyLikert, shortLabel, getHarveyBallScore } from "../lib/formatters";
+import HarveyBall from "./HarveyBall";
 
 export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -293,20 +294,27 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                     }
                   }}
                 >
-                  <div style={{
-                    width: 10, height: 10, borderRadius: 2,
-                    background: isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i)),
-                    flexShrink: 0,
-                    marginTop: "0.2rem",
-                  }} />
+                  {getHarveyBallScore(d.label) !== null ? (
+                    <HarveyBall 
+                      score={getHarveyBallScore(d.label)} 
+                      color={isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i))} 
+                      size={14} 
+                      style={{ marginTop: "0.1rem" }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 10, height: 10, borderRadius: 2,
+                      background: isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i)),
+                      flexShrink: 0,
+                      marginTop: "0.2rem",
+                    }} />
+                  )}
                   <div style={{
                     flex: 1, fontFamily: FONT.body, fontSize: "0.82rem",
                     color: isHidden ? C.muted : C.text, minWidth: 0,
                     textDecoration: isHidden ? "line-through" : "none",
                     lineHeight: 1.35,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: shortenLabels ? "nowrap" : "normal"
+                    whiteSpace: "normal"
                   }}>
                     {shortLabel(d.label)}
                   </div>

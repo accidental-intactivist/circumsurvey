@@ -1,6 +1,7 @@
 import React from "react";
 import * as Lucide from "lucide-react";
 import { PATH_COLORS, C } from "../styles/tokens";
+import HarveyBall from "./HarveyBall";
 
 // For solid circles, we create a small wrapper around Lucide's Circle
 const SolidCircle = (props) => <Lucide.Circle fill="currentColor" strokeWidth={0} {...props} />;
@@ -59,6 +60,36 @@ const EMOJI_MAPPING = {
   "🔍": Lucide.Search,
   "🙋‍♂️": Lucide.User,
   "♂": Lucide.User,
+  
+  // Harvey Balls
+  "⦿": (props) => <HarveyBall score={5} {...props} />,
+  "●": (props) => <HarveyBall score={4} {...props} />,
+  "◐": (props) => <HarveyBall score={3} {...props} />,
+  "◒": (props) => <HarveyBall score={2} {...props} />,
+  "◯": (props) => <HarveyBall score={1} {...props} />,
+  "◷": Lucide.Clock,
+  "✦": Lucide.Sparkles,
+  "▣": Lucide.Square,
+  "◇": Lucide.Diamond,
+  "⑂": Lucide.GitMerge,
+  "⊕": Lucide.Globe,
+  "★": Lucide.Star,
+  "◉": Lucide.CircleDot,
+  "▦": Lucide.Grid,
+  "🛡": Lucide.Shield,
+  "💔": Lucide.HeartCrack,
+  "💧": Lucide.Droplet,
+  "👁": Lucide.Eye,
+  "⚖": Lucide.Scale,
+  "▶": Lucide.ChevronRight,
+  "◀": Lucide.ChevronLeft,
+  "▼": Lucide.ChevronDown,
+  "▲": Lucide.ChevronUp,
+  "✓": Lucide.Check,
+  "✗": Lucide.X,
+  "✕": Lucide.X,
+  "⚠": Lucide.AlertTriangle,
+  "☰": Lucide.Menu,
 };
 
 const EMOJI_COLORS = {
@@ -78,6 +109,7 @@ const EMOJI_COLORS = {
 
 export function IconifyEmoji({ emoji, size = "1.2em", style, ...props }) {
   if (!emoji) return null;
+  if (typeof emoji !== "string") return emoji; // If it's already a React component or element
   const trimmed = emoji.trim();
   const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
   const glyphs = Array.from(segmenter.segment(trimmed)).map(s => s.segment);

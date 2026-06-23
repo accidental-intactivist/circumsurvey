@@ -31,6 +31,7 @@ import { useTooltip, Tooltip } from "../components/Tooltip";
 import GeographicHeatmap from "../components/GeographicHeatmap";
 import DemographicSankey from "../components/DemographicSankey";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
+import IconifyEmoji from "../components/IconifyEmoji";
 
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -1517,7 +1518,7 @@ function SectionHeader({ title, subtitle, icon }) {
           fontFamily: FONT.mono, fontSize: "1.2rem", color: C.goldBright,
           opacity: 0.6,
         }}>
-          {icon}
+          <IconifyEmoji emoji={icon} size="1.2rem" />
         </span>
         <h2 style={{
           fontFamily: FONT.display, fontSize: "1.8rem", color: C.textBright,

@@ -9,6 +9,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { C, FONT } from "../styles/tokens";
+import IconifyEmoji from "./IconifyEmoji";
 
 const COMPARE_DIMENSIONS = [
   { id: "pathway",            label: "Pathway",    icon: "⑂", group: "core" },
@@ -65,7 +66,9 @@ export default function CompareBySelector({ selected, onChange }) {
               gap: "0.2rem",
             }}
           >
-            <span style={{ fontSize: "0.72rem", opacity: 0.7 }}>{dim.icon}</span>
+            <span style={{ fontSize: "0.72rem", opacity: 0.7, display: "flex", alignItems: "center" }}>
+              <IconifyEmoji emoji={dim.icon} size="0.8rem" />
+            </span>
             {dim.label}
           </button>
         );

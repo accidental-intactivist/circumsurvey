@@ -1272,6 +1272,7 @@ Current UI Context:
 - Active Question Pathway: ${context?.questionPathway || "All"}
 - Active Demographic Cohort: ${context?.cohort ? JSON.stringify(context.cohort) : "None"}${manifestDescription}
 ${exhibitDirectory}
+${context?.pageSnapshot ? `\n[USER SCREEN SNAPSHOT]\nThe user has requested analysis of the page they are currently looking at. Here is the raw text content of their active screen:\n<<<BEGIN_SCREEN_SNAPSHOT>>>\n${context.pageSnapshot}\n<<<END_SCREEN_SNAPSHOT>>>\nUse this snapshot to answer questions about the current data, numbers, or text they are viewing.` : ""}
 You will be provided with retrieved quotes from the survey database. You must critically evaluate these quotes against the user's prompt and current UI context. If a quote does not directly and logically answer the user's specific question or challenge, you MUST ignore it. Do not attempt to force irrelevant quotes into your synthesis.
 
 Based ONLY on the provided Context, answer the user's question. Use citations like [1], [3]. Don't invent info.

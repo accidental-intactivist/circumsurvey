@@ -1107,7 +1107,7 @@ function extractPersonaMetric(extractor, distribution) {
   }
 }
 
-function PersonaBuilder() {
+function PersonaBuilder({ showTooltip, moveTooltip, hideTooltip }) {
   const dims = DEMOGRAPHIC_DIMENSIONS.filter(d => d.id !== "pathway");
   const [selections, setSelections] = useState({});
   const [personaData, setPersonaData] = useState(null);
@@ -1375,10 +1375,26 @@ function PersonaBuilder() {
                 );
               })}
               <div style={{
-                fontFamily: FONT.mono, fontSize: "0.6rem", color: C.dim, textAlign: "right",
-                marginTop: "0.3rem",
+                fontFamily: FONT.mono, fontSize: "0.65rem", color: C.dim, textAlign: "right",
+                marginTop: "0.3rem", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.5rem"
               }}>
-                Deltas shown vs. overall population (pp = percentage points)
+                <span
+                  style={{ cursor: "help", borderBottom: `1px dotted ${C.dim}` }}
+                  onMouseEnter={(e) => showTooltip("Percentage points. The absolute numerical difference between two percentages (e.g., 50% vs 40% is a 10pp delta).", e)}
+                  onMouseMove={moveTooltip}
+                  onMouseLeave={hideTooltip}
+                >
+                  pp = percentage points
+                </span>
+                <span>|</span>
+                <span
+                  style={{ cursor: "help", borderBottom: `1px dotted ${C.dim}` }}
+                  onMouseEnter={(e) => showTooltip("The percentage point difference between your persona's outcome and the overall baseline population.", e)}
+                  onMouseMove={moveTooltip}
+                  onMouseLeave={hideTooltip}
+                >
+                  Δ = Deltas shown vs. overall population
+                </span>
               </div>
             </div>
           )}
@@ -1403,10 +1419,11 @@ const GRID_OUTCOMES = OUTCOME_METRICS.map(m => ({
   color: m.color,
 }));
 
-function FactorGrid() {
+function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
   const [gridData, setGridData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expandedCell, setExpandedCell] = useState(null);
+  const [showHowToRead, setShowHowToRead] = useState(false);
 
   useEffect(() => {
     const tasks = [];
@@ -1470,61 +1487,55 @@ function FactorGrid() {
   return (
     <section id="factor-grid" data-docent-context="factor-grid" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Part IV"
+        number="Section 4"
         title="The Factor Grid"
-        subtitle="Where does the data diverge most? Harvey Balls show strength of demographic divergence — fuller circles mean wider spread. The ★ marks the most predictive dimension for each outcome. Click any cell to expand."
+        subtitle="A birds-eye view of how specific demographic cohorts diverge from the survey baseline on key metrics. Darker squares indicate stronger divergence."
         icon="▦"
       />
 
       <div style={{
         background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "1.5rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-        overflowX: "auto",
+        padding: "1rem 2rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+        overflow: "hidden",
       }}>
-        {/* Reading Guide */}
-        {!loading && gridData && (
+        
+        {/* Toggle How To Read */}
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+          <button
+            onClick={() => setShowHowToRead(!showHowToRead)}
+            style={{
+              background: showHowToRead ? "rgba(212,160,48,0.15)" : "transparent",
+              border: `1px solid ${showHowToRead ? resolveCssColor(C.gold) : resolveCssColor(C.ghost)}`,
+              color: resolveCssColor(C.goldBright), padding: "0.3rem 0.8rem", borderRadius: 20,
+              fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase",
+              cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "0.4rem"
+            }}
+          >
+            <IconifyEmoji emoji="💡" size="1.1em" /> {showHowToRead ? "Hide Guide" : "How to Read This Grid"}
+          </button>
+        </div>
+
+        {/* How To Read Box */}
+        {showHowToRead && (
           <div style={{
-            background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8,
-            padding: "0.8rem 1.2rem", marginBottom: "1.2rem",
+            background: "rgba(255,255,255,0.03)", border: `1px solid ${C.ghost}`, borderRadius: 8,
+            padding: "1.2rem 1.5rem", marginBottom: "1.5rem",
+            display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem"
           }}>
-            <div style={{
-              fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
-              textTransform: "uppercase", color: C.text, marginBottom: "0.6rem", fontWeight: 700,
-            }}>
-              How to Read This Grid
+            <div>
+              <div style={{ fontFamily: FONT.condensed, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", fontWeight: 700 }}>What am I looking at?</div>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.5 }}>
+                This heatmap shows how heavily outcomes (columns) are influenced by different demographics (rows). We measure this by looking at the <strong>spread</strong> between the highest and lowest scoring groups within a demographic.
+              </div>
             </div>
-            <div style={{
-              display: "flex", flexWrap: "wrap", gap: "1.2rem", alignItems: "center",
-              fontFamily: FONT.body, fontSize: "0.72rem", color: C.dim,
-            }}>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <HarveyBall score={1} color={resolveCssColor(C.textBright)} size="1.3em" />
-                <span>Minimal divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>&lt;8pp spread</span></span>
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <HarveyBall score={2} color={resolveCssColor(C.textBright)} size="1.3em" />
-                <span>Slight divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>8–18pp</span></span>
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <HarveyBall score={3} color={resolveCssColor(C.textBright)} size="1.3em" />
-                <span>Moderate divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>18–28pp</span></span>
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <HarveyBall score={4} color={resolveCssColor(C.textBright)} size="1.3em" />
-                <span>Strong divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>28–40pp</span></span>
-              </span>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <HarveyBall score={5} color={resolveCssColor(C.textBright)} size="1.3em" />
-                <span>Extreme divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>40pp+</span></span>
-              </span>
-            </div>
-            <div style={{
-              fontFamily: FONT.body, fontSize: "0.65rem", color: C.dim,
-              marginTop: "0.5rem", lineHeight: 1.5,
-            }}>
-              <strong style={{ color: C.text }}>Δ</strong> = the percentage-point spread between the highest and lowest scoring groups.
-              <strong style={{ color: resolveCssColor(C.goldBright) }}> ★</strong> = the dimension with the widest spread for that outcome (most predictive).
-              Click any cell to see the full breakdown.
+            <div>
+              <div style={{ fontFamily: FONT.condensed, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", fontWeight: 700 }}>The Legend</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: FONT.body, fontSize: "0.8rem", color: C.muted }}>
+                <div><strong style={{ color: C.textBright }}>More filled circle</strong> = Wider gap between groups (more polarization).</div>
+                <div><strong style={{ color: C.textBright }}>Empty circle</strong> = Very little difference between groups.</div>
+                <div><strong style={{ color: resolveCssColor(C.goldBright) }}>★ Star</strong> = The demographic factor that creates the largest divide for that outcome.</div>
+                <div><strong style={{ color: C.textBright }}>+ / -</strong> = Indicates whether the highest scoring cohort in this cell is significantly above or below the survey average.</div>
+              </div>
             </div>
           </div>
         )}
@@ -1534,10 +1545,11 @@ function FactorGrid() {
             Computing factor grid across {ANALYSIS_DIMENSIONS.length * GRID_OUTCOMES.length} combinations…
           </div>
         ) : gridData && (
-          <table style={{
-            width: "100%", borderCollapse: "collapse",
-            fontFamily: FONT.body, fontSize: "0.78rem",
-          }}>
+          <div style={{ overflowX: "auto", paddingBottom: "1rem", position: "relative" }}>
+            <table style={{
+              width: "100%", borderCollapse: "collapse",
+              fontFamily: FONT.body, fontSize: "0.78rem", minWidth: "800px"
+            }}>
             <thead>
               <tr>
                 <th style={{
@@ -1585,6 +1597,9 @@ function FactorGrid() {
                         <td
                           key={out.id}
                           onClick={() => setExpandedCell(isExpanded ? null : `${dim.id}-${out.id}`)}
+                          onMouseEnter={(e) => cell && showTooltip(`${cell.min.toFixed(0)}–${cell.max.toFixed(0)}% range (Δ${cell.range.toFixed(0)}pp)`, e)}
+                          onMouseMove={moveTooltip}
+                          onMouseLeave={hideTooltip}
                           style={{
                             padding: "0.4rem 0.2rem",
                             textAlign: "center",
@@ -1595,32 +1610,49 @@ function FactorGrid() {
                             background: isExpanded ? "rgba(212,160,48,0.08)" : "transparent",
                             boxShadow: isMostPredictive ? `inset 0 0 0 2px ${resolveCssColor(C.goldBright)}` : "none",
                           }}
-                          title={cell ? `${cell.min.toFixed(0)}–${cell.max.toFixed(0)}% (Δ${cell.range.toFixed(0)}pp)` : "No data"}
                         >
-                          {cell && cell.categories.length > 0 ? (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1rem" }}>
-                              <HarveyBall
-                                score={ballScore}
-                                color={isMostPredictive ? resolveCssColor(C.goldBright) : ballColor}
-                                size="1.4em"
-                              />
-                              <div style={{
-                                fontFamily: FONT.mono, fontSize: "0.48rem", color: C.dim,
-                                lineHeight: 1,
-                              }}>
-                                Δ{cell.range.toFixed(0)}
-                              </div>
-                              {isMostPredictive && (
-                                <div style={{
-                                  position: "absolute", top: 1, right: 2,
-                                  fontFamily: FONT.mono, fontSize: "0.45rem",
-                                  color: resolveCssColor(C.goldBright),
-                                }}>
-                                  ★
+                          {cell && cell.categories.length > 0 ? (() => {
+                            const diffFromAvg = cell.max - cell.avg;
+                            const isHigh = diffFromAvg > 5;
+                            const isLow = diffFromAvg < -5;
+                            return (
+                              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1rem" }}>
+                                <div style={{ position: "relative", display: "inline-block" }}>
+                                  <HarveyBall
+                                    score={ballScore}
+                                    color={isMostPredictive ? resolveCssColor(C.goldBright) : ballColor}
+                                    size="1.4em"
+                                  />
+                                  {isMostPredictive && (
+                                    <div style={{
+                                      position: "absolute", top: -2, right: -4,
+                                      fontFamily: FONT.mono, fontSize: "0.55rem",
+                                      color: resolveCssColor(C.goldBright),
+                                      textShadow: "0 0 4px rgba(0,0,0,0.8)"
+                                    }}>
+                                      ★
+                                    </div>
+                                  )}
+                                  {(isHigh || isLow) && ballScore >= 3 && (
+                                    <div style={{
+                                      position: "absolute", bottom: -2, right: -4,
+                                      fontFamily: FONT.mono, fontSize: "0.55rem", fontWeight: 800,
+                                      color: isHigh ? resolveCssColor(C.green) : resolveCssColor(C.red),
+                                      textShadow: "0 0 4px rgba(0,0,0,0.8)"
+                                    }}>
+                                      {isHigh ? "+" : "-"}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          ) : (
+                                <div style={{
+                                  fontFamily: FONT.mono, fontSize: "0.48rem", color: C.dim,
+                                  lineHeight: 1, marginTop: "0.1rem"
+                                }}>
+                                  Δ{cell.range.toFixed(0)}
+                                </div>
+                              </div>
+                            );
+                          })() : (
                             <span style={{ color: C.dim, fontSize: "0.65rem" }}>—</span>
                           )}
                         </td>
@@ -1711,7 +1743,8 @@ function FactorGrid() {
                 </Fragment>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         )}
 
         {/* Compact footer reminder */}
@@ -1842,8 +1875,8 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
           <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
             <SnapshotWall navigate={navigate} />
             <QuizSection />
-            <PersonaBuilder />
-            <FactorGrid />
+            <PersonaBuilder showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+            <FactorGrid showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
           </div>
         </div>
       </div>

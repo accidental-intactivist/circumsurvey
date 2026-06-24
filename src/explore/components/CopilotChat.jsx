@@ -45,6 +45,17 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     setError(null);
     setResult(null);
 
+    const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
+    let pageSnapshot = undefined;
+    
+    if (isSnapshotRequested) {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        // Strip out excessive whitespace and limit to ~15,000 characters to avoid payload bloat
+        pageSnapshot = mainEl.innerText.replace(/\n{3,}/g, '\n\n').slice(0, 15000);
+      }
+    }
+
     const context = {
       route: routerState?.route,
       questionId: routerState?.params?.id,
@@ -52,6 +63,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       questionPrompt: question?.prompt,
       questionOptions: question?.opts ? JSON.stringify(question.opts) : undefined,
       questionPathway: question?.pathway,
+      pageSnapshot,
       ...exhibitContext
     };
 

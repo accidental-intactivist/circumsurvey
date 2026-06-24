@@ -509,7 +509,7 @@ function SnapshotWall({ navigate }) {
   if (loading) {
     return (
       <section id="snapshots" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
-        <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
+        <SectionHeader number="Section 1" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
         <div style={{ padding: "4rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
           Compiling snapshot statistics…
         </div>
@@ -566,7 +566,7 @@ function SnapshotWall({ navigate }) {
         .span-2 .snap-inner { width: calc(66.666cqw - 1.2rem); min-width: 440px; }
       `}</style>
       
-      <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
+      <SectionHeader number="Section 1" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
 
       {/* Hero stat: total respondents */}
       {totalSnap && (
@@ -836,7 +836,7 @@ function QuizSection() {
   return (
     <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Section 1"
+        number="Section 2"
         title="Challenge Your Assumptions"
         subtitle="Think you know how culture, politics, education, and geography shape attitudes about the body? Each question is designed to expose a blind spot. Guess first — then follow the thread."
         icon="◇"
@@ -1158,9 +1158,9 @@ function PersonaBuilder() {
   return (
     <section id="persona-builder" data-docent-context="persona-builder" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Section 2"
-        title="How Many Are Like Me?"
-        subtitle="Building demographic personas to see how many share your background. See how many respondents match — and what their outcomes look like compared to the overall population."
+        number="Section 3"
+        title="Persona Builder"
+        subtitle="How many respondents share your background? See how many match your profile — and what their outcomes look like compared to the overall population."
         icon="◈"
       />
 
@@ -1764,7 +1764,7 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
     { id: "snapshots", label: "At a Glance", icon: "★" },
     { id: "quiz", label: "Challenge Your Assumptions", icon: "◇" },
     { id: "persona-builder", label: "Persona Builder", icon: "◈" },
-    { id: "factor-grid", label: "Factor Grid", icon: "▦" },
+    { id: "factor-grid", label: "The Factor Grid", icon: "▦" },
   ];
 
   return (

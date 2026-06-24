@@ -1430,47 +1430,55 @@ function PersonaBuilder() {
 
 const CURATED_QUIZ = [
   {
-    dimId: "politics", metricId: "keep_intact",
-    question: "Which political group has the HIGHEST rate of saying they'd keep a future son intact?",
-    note: "All political groups show remarkably similar rates — this issue transcends party lines.",
+    dimId: "politics", metricId: "bodily_autonomy",
+    question: "Bodily autonomy is often framed as a progressive value. Which political group in this survey MOST strongly prioritizes it?",
+    note: "This result challenges the assumption that bodily autonomy is partisan. Across the political spectrum, this principle resonates when people confront the question directly.",
+  },
+  {
+    dimId: "generation", metricId: "social_norm",
+    question: "Cultural norms shift across generations. Which generation is MOST likely to perceive circumcision as 'the norm' in their society?",
+    note: "Generational norms are a window into how cultural practices persist — not through evidence, but through the assumption that 'everyone does it.'",
+  },
+  {
+    dimId: "education", metricId: "natural_state",
+    question: "Does higher education correlate with leaning toward the natural state? Which education level leans MOST toward leaving the body unaltered?",
+    note: "The relationship between education and medical skepticism is more complex than it appears. What you're seeing here is the intersection of access to information and cultural conditioning.",
+  },
+  {
+    dimId: "country_born", metricId: "keep_intact",
+    question: "Circumcision rates vary wildly by country. Respondents born in which country are MOST likely to say they'd keep a future son intact?",
+    note: "National culture shapes the 'default setting' more than individual preference. Notice how strongly geography predicts this choice — and ask yourself why.",
   },
   {
     dimId: "generation", metricId: "resentment",
-    question: "Which generation reports the STRONGEST feelings of resentment about their circumcision?",
-    note: "Younger generations, raised with greater access to information about bodily autonomy, consistently report stronger feelings.",
-  },
-  {
-    dimId: "primary_tradition", metricId: "intact_aesthetic",
-    question: "Which religious tradition's respondents are MOST likely to prefer the intact aesthetic?",
-    note: "Aesthetic preference follows personal experience more than theological doctrine.",
-  },
-  {
-    dimId: "education", metricId: "healthier_belief",
-    question: "Which education level is MOST likely to believe the intact state is healthier?",
-    note: "Health beliefs cut across education levels in surprising ways.",
-  },
-  {
-    dimId: "socioeconomic", metricId: "bodily_autonomy",
-    question: "Which socioeconomic background has the HIGHEST rate of prioritizing bodily autonomy?",
-    note: "The autonomy principle resonates across class lines, though the framing of the debate may differ by community.",
+    question: "Younger generations grew up with the internet and access to anatomical information older cohorts never had. Which generation reports the STRONGEST resentment about being circumcised?",
+    note: "This is the information asymmetry question. When people learn what was removed — and that it was their choice to make — the emotional response intensifies across younger cohorts.",
   },
 ];
 
 function generateRandomQuiz(exclude = []) {
   const excludeSet = new Set(exclude.map(e => `${e.dimId}-${e.metricId}`));
+  // Curated anthropological pairings that produce meaningful, robust results
+  const ANTHROPOLOGICAL_COMBOS = [
+    { dimId: "politics", metricId: "keep_intact", q: "Is the decision to keep a future son intact actually a left-vs-right issue? Which political group scores HIGHEST?" },
+    { dimId: "generation", metricId: "dissatisfaction", q: "Dissatisfaction with one's own circumcision — is this a modern phenomenon? Which generation reports the MOST dissatisfaction?" },
+    { dimId: "country_born", metricId: "social_norm", q: "The sense that circumcision is 'normal' is deeply geographic. Respondents from which country MOST strongly perceive it as the norm?" },
+    { dimId: "education", metricId: "bodily_autonomy", q: "Does formal education change how people weigh bodily autonomy? Which education level prioritizes it MOST?" },
+    { dimId: "politics", metricId: "circ_aesthetic", q: "Aesthetic preference for circumcision — is it political? Which political leaning MOST prefers the circumcised look?" },
+    { dimId: "generation", metricId: "considered_restoration", q: "Foreskin restoration is a growing movement. Which generation has MOST seriously considered it?" },
+    { dimId: "country_born", metricId: "bodily_autonomy", q: "Different legal and cultural traditions produce different views on bodily autonomy. Which country of birth scores HIGHEST?" },
+    { dimId: "education", metricId: "healthier_belief", q: "The medical framing of circumcision varies by culture. Which education level is MOST convinced the intact state is healthier?" },
+    { dimId: "politics", metricId: "social_norm", q: "Who perceives circumcision as 'the norm'? Is that perception ideological? Which political group scores HIGHEST?" },
+    { dimId: "generation", metricId: "pride", q: "Pride and satisfaction with one's body — does this change across generations? Which generation reports the HIGHEST pride?" },
+  ];
+  const available = ANTHROPOLOGICAL_COMBOS.filter(c => !excludeSet.has(`${c.dimId}-${c.metricId}`));
+  if (available.length > 0) {
+    const pick = available[Math.floor(Math.random() * available.length)];
+    return { dimId: pick.dimId, metricId: pick.metricId, question: pick.q, note: null };
+  }
+  // Fallback: truly random
   const dim = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
   const metric = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
-  const key = `${dim.id}-${metric.id}`;
-  // Retry if we hit an excluded combo (simple retry, not infinite)
-  if (excludeSet.has(key)) {
-    const dim2 = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
-    const metric2 = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
-    return {
-      dimId: dim2.id, metricId: metric2.id,
-      question: `Which ${dim2.label.toLowerCase()} group scores HIGHEST for "${metric2.label}"?`,
-      note: null,
-    };
-  }
   return {
     dimId: dim.id, metricId: metric.id,
     question: `Which ${dim.label.toLowerCase()} group scores HIGHEST for "${metric.label}"?`,
@@ -1559,8 +1567,8 @@ function QuizSection() {
     <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
         number="Section 3"
-        title="Test Your Assumptions"
-        subtitle="Can you guess how different demographic groups answered key questions? Guess which group leads — then see if the data agrees."
+        title="Challenge Your Assumptions"
+        subtitle="Think you know how culture, politics, education, and geography shape attitudes about the body? Each question is designed to expose a blind spot. Guess first — then follow the thread."
         icon="◇"
       />
 
@@ -2120,7 +2128,7 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
     { id: "snapshots", label: "At a Glance", icon: "★" },
     { id: "factor-finder", label: "Interactive Explorer", icon: "◉" },
     { id: "persona-builder", label: "Persona Builder", icon: "◈" },
-    { id: "quiz", label: "Test Your Assumptions", icon: "◇" },
+    { id: "quiz", label: "Challenge Your Assumptions", icon: "◇" },
     { id: "factor-grid", label: "Factor Grid", icon: "▦" },
   ];
 

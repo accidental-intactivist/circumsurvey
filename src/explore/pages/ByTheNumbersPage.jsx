@@ -755,7 +755,7 @@ function AssumptionQuiz() {
           metric: metric,
         };
       })
-      .filter(b => b.n >= 5 && b.metric !== null) // Minimum N for validity
+      .filter(b => b.n >= 15 && b.metric !== null) // Minimum N for validity
       .sort((a, b) => b.n - a.n); // Sort by sample size
 
     // We take up to 6 cohorts by sample size to avoid overwhelming the screen,
@@ -1521,7 +1521,7 @@ function QuizSection() {
         const m = extractMetric(metric.extractor, val.distribution);
         return { id: key, label: shorten(key), fullLabel: key, n: val.n, metric: m };
       })
-      .filter(c => c.n >= 5 && c.metric !== null)
+      .filter(c => c.n >= 25 && c.metric !== null) // n≥25 minimum for quiz — small subgroups produce misleading percentages
       .sort((a, b) => b.metric - a.metric);
   }, [quizData, metric]);
 

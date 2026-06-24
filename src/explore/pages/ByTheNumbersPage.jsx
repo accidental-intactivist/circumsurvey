@@ -7,7 +7,7 @@
 //   4. Factor Grid — heatmap of which demographics predict which outcomes
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback, Fragment } from "react";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
 import { getAggregate, getResponseDistribution, getCount } from "../lib/api";
 import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
@@ -15,6 +15,7 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import ExhibitHero from "../components/ExhibitHero";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import IconifyEmoji from "../components/IconifyEmoji";
+import HarveyBall from "../components/HarveyBall";
 import * as Icons from "../components/Icons";
 
 // ── Dimensions & Outcomes ──────────────────────────────────────────────────
@@ -31,33 +32,100 @@ const ANALYSIS_DIMENSIONS = [
 ];
 
 const OUTCOME_METRICS = [
-  { id: "pathway_intact", label: "Intact Rate", qid: "final_social_norm_perception", extractor: "pathway_intact", color: PATH_COLORS.intact, unit: "%" },
-  { id: "resentment", label: "Strong Resentment", qid: "circ_regret_feeling", extractor: "strong_resentment", color: C.red, unit: "%" },
+  { id: "pride", label: "General Pride & Satisfaction", qid: "exp_pride_satisfaction_rating", extractor: "pride", color: C.goldBright, unit: "%" },
   { id: "keep_intact", label: "Would Keep Son Intact", qid: "final_child_decision_reason", extractor: "keep_intact", color: C.green, unit: "%" },
-  { id: "lube_always", label: "Always Needs Lube", qid: "exp_lubrication_need", extractor: "lube_always", color: C.blue, unit: "%" },
-  { id: "intact_aesthetic", label: "Prefers Intact Look", qid: "final_aesthetic_preference", extractor: "intact_aesthetic", color: C.ltBlue, unit: "%" },
+  { id: "bodily_autonomy", label: "Prioritizes Bodily Autonomy", qid: "final_core_principle_choice", extractor: "bodily_autonomy", color: C.purple, unit: "%" },
+  { id: "intact_aesthetic", label: "Prefers Intact Aesthetic", qid: "final_aesthetic_preference", extractor: "intact_aesthetic", color: C.ltBlue, unit: "%" },
+  { id: "resentment", label: "Strong Resentment", qid: "circ_regret_feeling", extractor: "strong_resentment", color: C.red, unit: "%" },
+  { id: "dissatisfaction", label: "Strong Dissatisfaction", qid: "exp_pride_satisfaction_rating", extractor: "dissatisfaction", color: C.orange, unit: "%" },
+  { id: "healthier_belief", label: "Believes Intact Is Healthier", qid: "final_healthier_hygienic_belief", extractor: "healthier_intact", color: C.teal, unit: "%" },
+  { id: "social_norm", label: "Believes Circumcision Is the Norm", qid: "final_social_norm_perception", extractor: "circ_norm", color: C.muted, unit: "%" },
+  { id: "positive_appearance", label: "Positive Appearance Feeling", qid: "exp_appearance_feeling", extractor: "positive_appearance", color: C.green, unit: "%" },
+  { id: "natural_state", label: "Leans Towards Natural State", qid: "culture_body_intervention_view", extractor: "natural_state", color: C.teal, unit: "%" },
+  { id: "considered_restoration", label: "Considered Restoration", qid: "circ_restoration_awareness", extractor: "considered_restoration", color: C.blue, unit: "%" },
+  { id: "circ_aesthetic", label: "Prefers Circumcised Aesthetic", qid: "culture_assoc_more_aesthetic", extractor: "circ_aesthetic", color: C.orange, unit: "%" },
 ];
 
 // ── Extractors: pull a single % from a distribution ────────────────────────
 
-function extractMetric(extractor, distribution, n) {
-  if (!distribution || !n || n === 0) return null;
+function extractMetric(extractor, distribution) {
+  if (!distribution || distribution.length === 0) return null;
   const find = (substr) => distribution.find(d => d.label && d.label.toLowerCase().includes(substr.toLowerCase()))?.n || 0;
+
+  // Surgically filter out non-answers to ensure accurate representation
+  const ignoredLabels = ["not sure", "prefer not to answer", "n/a", "no answer", "i don't know"];
+  let validN = 0;
+  for (const d of distribution) {
+    if (d.label && !ignoredLabels.some(ig => d.label.toLowerCase().includes(ig))) {
+      validN += (d.n || 0);
+    }
+  }
+  
+  if (validN === 0) return null;
 
   switch (extractor) {
     case "pathway_intact":
-      // This is special — we use the aggregate by pathway to get intact count
-      return null; // Handled differently via pathway counts
+      return null;
     case "strong_resentment":
-      return (find("strong and frequent") / n) * 100;
+      return (find("strong and frequent") / validN) * 100;
     case "keep_intact":
-      return (find("remains intact") / n) * 100;
+      return (find("remains intact") / validN) * 100;
     case "lube_always":
-      return (find("always or almost always necessary") / n) * 100;
+      return (find("always or almost always necessary") / validN) * 100;
     case "intact_aesthetic": {
       const strong = find("strongly prefer the appearance of the intact");
       const slight = find("slightly prefer the appearance of the intact");
-      return ((strong + slight) / n) * 100;
+      return ((strong + slight) / validN) * 100;
+    }
+    case "pride": {
+      const vp = find("very proud");
+      const gp = find("generally proud");
+      return ((vp + gp) / validN) * 100;
+    }
+    case "dissatisfaction": {
+      const sd = find("somewhat dissatisfied");
+      const vd = find("very dissatisfied");
+      return ((sd + vd) / validN) * 100;
+    }
+    case "gliding": {
+      const sg = find("seamless, frictionless glide");
+      return (sg / validN) * 100;
+    }
+    case "bodily_autonomy": {
+      const ba = find("bodily autonomy");
+      return (ba / validN) * 100;
+    }
+    case "trust_medicine_decreased": {
+      const sd = find("significantly decreased");
+      return (sd / validN) * 100;
+    }
+    case "healthier_intact": {
+      const sig = find("intact state (with normal hygiene) is significantly healthier");
+      const slight = find("intact state (with normal hygiene) is slightly healthier");
+      return ((sig + slight) / validN) * 100;
+    }
+    case "circ_norm": {
+      const gen = find("circumcised state is generally seen as more normal");
+      const over = find("circumcised state is overwhelmingly seen as the normal");
+      return ((gen + over) / validN) * 100;
+    }
+    case "positive_appearance": {
+      const pos = find("Positive");
+      const vpos = find("Very Positive");
+      return ((pos + vpos) / validN) * 100;
+    }
+    case "natural_state": {
+      return (find("lean towards natural state") / validN) * 100;
+    }
+    case "considered_restoration": {
+      const active = find("actively researching");
+      const serious = find("seriously considered");
+      return ((active + serious) / validN) * 100;
+    }
+    case "circ_aesthetic": {
+      const def = find("definitely circumcised");
+      const likely = find("likely circumcised");
+      return ((def + likely) / validN) * 100;
     }
     default:
       return null;
@@ -113,6 +181,26 @@ function shorten(label) {
   return s;
 }
 
+// ── Harvey Ball scale: map percentage to 1–5 ──────────────────────────────
+function percentToHarveyScore(pct) {
+  if (pct == null) return 1;
+  if (pct <= 20) return 1;
+  if (pct <= 40) return 2;
+  if (pct <= 60) return 3;
+  if (pct <= 80) return 4;
+  return 5;
+}
+
+// Map a delta/range value (0–50pp) to Harvey Ball 1–5
+function rangeToHarveyScore(range) {
+  if (range == null) return 1;
+  if (range <= 8) return 1;
+  if (range <= 18) return 2;
+  if (range <= 28) return 3;
+  if (range <= 40) return 4;
+  return 5;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION HEADER COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
@@ -161,53 +249,53 @@ function SectionHeader({ number, title, subtitle, icon }) {
 
 const SNAPSHOT_DEFINITIONS = [
   {
-    id: "respondents", label: "Total Respondents", big: true,
-    fetch: () => getCount().then(d => ({ value: d.total, note: `${d.by_pathway?.circumcised || 0} circumcised · ${d.by_pathway?.intact || 0} intact · ${d.by_pathway?.restoring || 0} restoring · ${d.by_pathway?.observer || 0} observers` })),
+    id: "respondents", label: "Total Respondents", big: true, span: 2, color: C.goldBright,
+    fetch: () => getCount().then(d => ({ value: d.total, note: `${d.by_pathway?.circumcised || 0} circumcised · ${d.by_pathway?.intact || 0} intact · ${d.by_pathway?.restoring || 0} restoring · ${d.by_pathway?.observer || 0} observing` })),
   },
   {
-    id: "resentment_circ", label: "of circumcised men report strong, frequent resentment or grief",
+    id: "resentment_circ", qid: "circ_regret_feeling", label: "of circumcised men report strong, frequent resentment or grief about their circumcision", span: 2, color: C.red, attribution: "Q: Feelings of Regret/Resentment",
     fetch: () => getResponseDistribution("circ_regret_feeling", { pathway: "circumcised" }).then(d => {
       const strong = d.distribution?.find(x => x.label?.includes("strong and frequent"));
       return { value: strong ? `${strong.pct.toFixed(0)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "resentment_restoring", label: "of restoring men report strong, frequent resentment — the highest of any group",
+    id: "resentment_restoring", qid: "circ_regret_feeling", label: "of restoring men report strong, frequent resentment — the highest of any group", span: 2, color: C.red, attribution: "Q: Feelings of Regret/Resentment",
     fetch: () => getResponseDistribution("circ_regret_feeling", { pathway: "restoring" }).then(d => {
       const strong = d.distribution?.find(x => x.label?.includes("strong and frequent"));
       return { value: strong ? `${strong.pct.toFixed(0)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "keep_intact_restoring", label: "of restoring men say they would keep a future son intact — near-unanimous",
+    id: "keep_intact_restoring", qid: "final_child_decision_reason", label: "of restoring men say they would keep a future son intact — a near-unanimous consensus", span: 1, color: C.green, attribution: "Q: Hypothetical Decision for a Son",
     fetch: () => getResponseDistribution("final_child_decision_reason", { pathway: "restoring" }).then(d => {
       const intact = d.distribution?.find(x => x.label?.includes("remains intact"));
       return { value: intact ? `${intact.pct.toFixed(1)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "keep_intact_circ", label: "of circumcised men would keep a future son intact",
+    id: "keep_intact_circ", qid: "final_child_decision_reason", label: "of circumcised men would keep a future son intact", span: 1, color: C.green, attribution: "Q: Hypothetical Decision for a Son",
     fetch: () => getResponseDistribution("final_child_decision_reason", { pathway: "circumcised" }).then(d => {
       const intact = d.distribution?.find(x => x.label?.includes("remains intact"));
       return { value: intact ? `${intact.pct.toFixed(1)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "lube_circ", label: "of circumcised men say lube is always or almost always needed",
+    id: "lube_circ", qid: "exp_lubrication_need", label: "of circumcised men say artificial lube is always or almost always needed", span: 1, color: C.blue, attribution: "Q: Artificial Lubrication Need",
     fetch: () => getResponseDistribution("exp_lubrication_need", { pathway: "circumcised" }).then(d => {
       const always = d.distribution?.find(x => x.label?.includes("always or almost always"));
       return { value: always ? `${always.pct.toFixed(0)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "lube_intact", label: "of intact men never find artificial lubrication necessary",
+    id: "lube_intact", qid: "exp_lubrication_need", label: "of intact men never find artificial lubrication necessary", span: 1, color: C.blue, attribution: "Q: Artificial Lubrication Need",
     fetch: () => getResponseDistribution("exp_lubrication_need", { pathway: "intact" }).then(d => {
       const never = d.distribution?.find(x => x.label?.includes("Never find it necessary"));
       return { value: never ? `${never.pct.toFixed(0)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "sensitivity_gap", label: "avg. light-touch sensitivity: Intact 4.2/5 vs Circumcised 2.3/5",
+    id: "sensitivity_gap", qid: "exp_sex_rating_sensitivity_light_touch", label: "avg. light-touch sensitivity: Intact vs Circumcised", span: 1, color: PATH_COLORS.intact, attribution: "Q: Light Touch Sensitivity Rating (1-5)",
     fetch: () => Promise.all([
       getResponseDistribution("exp_sex_rating_sensitivity_light_touch", { pathway: "intact" }),
       getResponseDistribution("exp_sex_rating_sensitivity_light_touch", { pathway: "circumcised" }),
@@ -218,12 +306,11 @@ const SNAPSHOT_DEFINITIONS = [
         d.distribution.forEach(x => { const v = parseFloat(x.label); if (!isNaN(v)) { sum += v * x.n; total += x.n; } });
         return total > 0 ? sum / total : 0;
       };
-      const gap = avg(intact) - avg(circ);
-      return { value: `${gap.toFixed(1)}`, suffix: "/5 gap", n: intact.n + circ.n };
+      return { value: `${avg(intact).toFixed(1)} vs ${avg(circ).toFixed(1)}`, suffix: "/5", n: intact.n + circ.n };
     }),
   },
   {
-    id: "aesthetic_circ", label: "of circumcised men prefer the intact aesthetic over their own",
+    id: "aesthetic_circ", qid: "final_aesthetic_preference", label: "of circumcised men actually prefer the intact aesthetic over their own", span: 2, color: C.ltBlue, attribution: "Q: Final Aesthetic Preference",
     fetch: () => getResponseDistribution("final_aesthetic_preference", { pathway: "circumcised" }).then(d => {
       const strong = d.distribution?.find(x => x.label?.includes("strongly prefer the appearance of the intact"))?.n || 0;
       const slight = d.distribution?.find(x => x.label?.includes("slightly prefer the appearance of the intact"))?.n || 0;
@@ -232,14 +319,14 @@ const SNAPSHOT_DEFINITIONS = [
     }),
   },
   {
-    id: "autonomy", label: "of all respondents prioritize the child's right to bodily autonomy over parental/medical discretion",
+    id: "autonomy", qid: "final_core_principle_choice", label: "prioritize the child's right to bodily autonomy over parental/medical discretion", span: 1, color: C.purple, attribution: "Q: Final Core Principle Choice",
     fetch: () => getResponseDistribution("final_core_principle_choice").then(d => {
       const auto = d.distribution?.find(x => x.label?.includes("Bodily Autonomy"));
       return { value: auto ? `${auto.pct.toFixed(0)}%` : "—", n: d.n };
     }),
   },
   {
-    id: "pride_intact", label: "of intact men feel very proud or satisfied with their status",
+    id: "pride_intact", qid: "exp_pride_satisfaction_rating", label: "of intact men feel very proud or satisfied with their status", span: 1, color: PATH_COLORS.intact, attribution: "Q: Pride and Satisfaction",
     fetch: () => getResponseDistribution("exp_pride_satisfaction_rating", { pathway: "intact" }).then(d => {
       const vp = d.distribution?.find(x => x.label?.includes("Very proud"))?.n || 0;
       const gp = d.distribution?.find(x => x.label?.includes("Generally proud"))?.n || 0;
@@ -248,7 +335,7 @@ const SNAPSHOT_DEFINITIONS = [
     }),
   },
   {
-    id: "dissatisfied_circ", label: "of circumcised men feel somewhat or very dissatisfied with their status",
+    id: "dissatisfied_circ", qid: "exp_pride_satisfaction_rating", label: "of circumcised men feel somewhat or very dissatisfied with their status", span: 1, color: PATH_COLORS.circumcised, attribution: "Q: Pride and Satisfaction",
     fetch: () => getResponseDistribution("exp_pride_satisfaction_rating", { pathway: "circumcised" }).then(d => {
       const sd = d.distribution?.find(x => x.label?.includes("Somewhat dissatisfied"))?.n || 0;
       const vd = d.distribution?.find(x => x.label?.includes("Very dissatisfied"))?.n || 0;
@@ -256,12 +343,67 @@ const SNAPSHOT_DEFINITIONS = [
       return { value: `${pct.toFixed(0)}%`, n: d.n };
     }),
   },
+  {
+    id: "pleasure_mobile", qid: "exp_sex_rating_pleasure_mobile_skin", label: "avg. pleasure from mobile skin: Intact vs Circumcised", span: 1, color: PATH_COLORS.intact, attribution: "Q: Pleasure from Mobile Skin (1-5)",
+    fetch: () => Promise.all([
+      getResponseDistribution("exp_sex_rating_pleasure_mobile_skin", { pathway: "intact" }),
+      getResponseDistribution("exp_sex_rating_pleasure_mobile_skin", { pathway: "circumcised" }),
+    ]).then(([intact, circ]) => {
+      const avg = (d) => {
+        if (!d.distribution || d.n === 0) return 0;
+        let sum = 0, total = 0;
+        d.distribution.forEach(x => { const v = parseFloat(x.label); if (!isNaN(v)) { sum += v * x.n; total += x.n; } });
+        return total > 0 ? sum / total : 0;
+      };
+      return { value: `${avg(intact).toFixed(1)} vs ${avg(circ).toFixed(1)}`, suffix: "/5", n: intact.n + circ.n };
+    }),
+  },
+  {
+    id: "ease_orgasm", label: "avg. ease of orgasm: Intact vs Circumcised", span: 1, color: C.teal, attribution: "Q: Ease of Reaching Orgasm (1-5)",
+    fetch: () => Promise.all([
+      getResponseDistribution("exp_sex_rating_ease_of_orgasm", { pathway: "intact" }),
+      getResponseDistribution("exp_sex_rating_ease_of_orgasm", { pathway: "circumcised" }),
+    ]).then(([intact, circ]) => {
+      const avg = (d) => {
+        if (!d.distribution || d.n === 0) return 0;
+        let sum = 0, total = 0;
+        d.distribution.forEach(x => { const v = parseFloat(x.label); if (!isNaN(v)) { sum += v * x.n; total += x.n; } });
+        return total > 0 ? sum / total : 0;
+      };
+      return { value: `${avg(intact).toFixed(1)} vs ${avg(circ).toFixed(1)}`, suffix: "/5", n: intact.n + circ.n };
+    }),
+  },
+  {
+    id: "variety_sensation", label: "avg. variety of sensation: Intact vs Circumcised", span: 1, color: C.purple, attribution: "Q: Variety of Sensation (1-5)",
+    fetch: () => Promise.all([
+      getResponseDistribution("exp_sex_rating_variety_of_sensation", { pathway: "intact" }),
+      getResponseDistribution("exp_sex_rating_variety_of_sensation", { pathway: "circumcised" }),
+    ]).then(([intact, circ]) => {
+      const avg = (d) => {
+        if (!d.distribution || d.n === 0) return 0;
+        let sum = 0, total = 0;
+        d.distribution.forEach(x => { const v = parseFloat(x.label); if (!isNaN(v)) { sum += v * x.n; total += x.n; } });
+        return total > 0 ? sum / total : 0;
+      };
+      return { value: `${avg(intact).toFixed(1)} vs ${avg(circ).toFixed(1)}`, suffix: "/5", n: intact.n + circ.n };
+    }),
+  },
+  {
+    id: "never_regret_circ", label: "of circumcised men say they 'never' feel regret or resentment", span: 1, color: C.muted, attribution: "Q: Feelings of Regret/Resentment",
+    fetch: () => getResponseDistribution("circ_regret_feeling", { pathway: "circumcised" }).then(d => {
+      const never = d.distribution?.find(x => x.label?.includes("No, never"));
+      return { value: never ? `${never.pct.toFixed(0)}%` : "—", n: d.n };
+    }),
+  },
 ];
 
-function SnapshotWall() {
+function SnapshotWall({ navigate }) {
   const [snapshots, setSnapshots] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rowSlots, setRowSlots] = useState([[], [], []]); // Array of 3 rows, each containing { id, uniqueKey, state }
+  const [isHovered, setIsHovered] = useState(false);
 
+  // Initial fetch
   useEffect(() => {
     Promise.all(
       SNAPSHOT_DEFINITIONS.map(def =>
@@ -272,13 +414,101 @@ function SnapshotWall() {
     ).then(results => {
       setSnapshots(results);
       setLoading(false);
+      // Pick initial visible set strictly by spans:
+      // Row 0: [2, 1]
+      // Row 1: [1, 1, 1]
+      // Row 2: [1, 2]
+      const stats = results.filter(s => s.id !== "respondents");
+      const span1 = stats.filter(s => s.span === 1).sort(() => 0.5 - Math.random());
+      const span2 = stats.filter(s => s.span === 2).sort(() => 0.5 - Math.random());
+      
+      setRowSlots([
+        [
+          { id: span2.pop().id, state: "idle", uniqueKey: Math.random() },
+          { id: span1.pop().id, state: "idle", uniqueKey: Math.random() }
+        ],
+        [
+          { id: span1.pop().id, state: "idle", uniqueKey: Math.random() },
+          { id: span1.pop().id, state: "idle", uniqueKey: Math.random() },
+          { id: span1.pop().id, state: "idle", uniqueKey: Math.random() }
+        ],
+        [
+          { id: span1.pop().id, state: "idle", uniqueKey: Math.random() },
+          { id: span2.pop().id, state: "idle", uniqueKey: Math.random() }
+        ]
+      ]);
     });
   }, []);
+
+  // Cycle interval with sliding queue transitions per row
+  useEffect(() => {
+    if (loading || isHovered || snapshots.length === 0 || rowSlots[0].length === 0) return;
+    
+    // Check if ANY slot in ANY row is currently transitioning
+    if (rowSlots.some(row => row.some(s => s.state !== "idle"))) return;
+
+    const timer = setInterval(() => {
+      // Pick a random row to update
+      const targetRowIdx = Math.floor(Math.random() * 3);
+      
+      setRowSlots(prevRows => {
+        const stats = snapshots.filter(s => s.id !== "respondents");
+        // Collect all currently visible IDs across all rows
+        const currentIds = prevRows.flatMap(row => row.map(s => s.id));
+        const hidden = stats.filter(s => !currentIds.includes(s.id));
+        if (hidden.length === 0) return prevRows; // nothing to swap
+        
+        const nextRows = [...prevRows];
+        const targetRow = [...nextRows[targetRowIdx]];
+        
+        // Pick the OLDEST item in this row to leave (the last item in the array)
+        const idleItems = targetRow.filter(s => s.state === "idle");
+        if (idleItems.length === 0) return prevRows;
+        const leavingSlot = idleItems[idleItems.length - 1];
+        const leavingDef = snapshots.find(s => s.id === leavingSlot.id);
+        
+        // Find a hidden item with the SAME span to replace it
+        const hiddenMatches = hidden.filter(s => s.span === leavingDef.span);
+        if (hiddenMatches.length === 0) return prevRows; // no replacement available
+        
+        const inDef = hiddenMatches[Math.floor(Math.random() * hiddenMatches.length)];
+        
+        // Mark the leaving item as leaving
+        const leaveIdx = targetRow.findIndex(s => s.uniqueKey === leavingSlot.uniqueKey);
+        targetRow[leaveIdx] = { ...targetRow[leaveIdx], state: "leaving" };
+        
+        // Add entering item
+        nextRows[targetRowIdx] = [{ id: inDef.id, state: "entering", uniqueKey: Math.random() }, ...targetRow];
+        return nextRows;
+      });
+
+      // 1. Trigger the idle state for the new item so it animates in
+      setTimeout(() => {
+        setRowSlots(prevRows => {
+          const nextRows = [...prevRows];
+          nextRows[targetRowIdx] = nextRows[targetRowIdx].map((s, i) => i === 0 ? { ...s, state: "idle" } : s);
+          return nextRows;
+        });
+      }, 50);
+
+      // 2. Wait for the transition to finish, then remove leaving items
+      setTimeout(() => {
+        setRowSlots(prevRows => {
+          const nextRows = [...prevRows];
+          nextRows[targetRowIdx] = nextRows[targetRowIdx].filter(s => s.state !== "leaving");
+          return nextRows;
+        });
+      }, 650);
+
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [loading, isHovered, snapshots, rowSlots]);
 
   if (loading) {
     return (
       <section id="snapshots" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
-        <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from 504 respondents — the numbers that define the conversation." icon="★" />
+        <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
         <div style={{ padding: "4rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
           Compiling snapshot statistics…
         </div>
@@ -287,23 +517,67 @@ function SnapshotWall() {
   }
 
   const totalSnap = snapshots.find(s => s.id === "respondents");
-  const statSnaps = snapshots.filter(s => s.id !== "respondents");
 
   return (
     <section id="snapshots" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+      <style>{`
+        .snap-row-container {
+          display: flex;
+          flex-wrap: nowrap;
+          margin: -0.6rem -0.6rem 0.6rem -0.6rem;
+          overflow: hidden;
+          container-type: inline-size;
+        }
+        @media (min-width: 768px) {
+          .snap-row-container.reverse {
+            flex-direction: row-reverse;
+          }
+        }
+        
+        .snap-outer {
+          transition: margin 600ms ease-in-out, border-color 600ms ease-in-out;
+          overflow: hidden;
+          box-sizing: border-box;
+          border-radius: 10px;
+          background: ${C.bgCard};
+          flex-shrink: 0;
+          cursor: pointer;
+        }
+        
+        .snap-outer.span-1 { width: calc(33.333cqw - 1.2rem); margin: 0.6rem; border: 1px solid ${C.ghost}; }
+        .snap-outer.span-2 { width: calc(66.666cqw - 1.2rem); margin: 0.6rem; border: 1px solid ${C.ghost}; }
+        
+        /* Entering state pushes it off-screen to start */
+        .snap-row-container:not(.reverse) .snap-outer.entering.span-1 { margin-left: calc(-33.333cqw + 0.6rem); }
+        .snap-row-container:not(.reverse) .snap-outer.entering.span-2 { margin-left: calc(-66.666cqw + 0.6rem); }
+        
+        .snap-row-container.reverse .snap-outer.entering.span-1 { margin-right: calc(-33.333cqw + 0.6rem); }
+        .snap-row-container.reverse .snap-outer.entering.span-2 { margin-right: calc(-66.666cqw + 0.6rem); }
+
+        .snap-inner {
+          padding: 1.4rem;
+          display: flex;
+          flex-direction: column;
+          min-height: 140px;
+          box-sizing: border-box;
+        }
+        .span-1 .snap-inner { width: calc(33.333cqw - 1.2rem); min-width: 220px; }
+        .span-2 .snap-inner { width: calc(66.666cqw - 1.2rem); min-width: 440px; }
+      `}</style>
+      
       <SectionHeader number="The Data" title="At a Glance" subtitle="Key statistics from the dataset — the numbers that define the conversation." icon="★" />
 
       {/* Hero stat: total respondents */}
       {totalSnap && (
         <div style={{
-          background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
+          background: C.bgCard, border: `1px solid ${resolveCssColor(totalSnap.color || C.ghost)}`, borderRadius: 12,
           padding: "2rem 2.5rem", marginBottom: "1.5rem", textAlign: "center",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+          boxShadow: `0 4px 20px ${resolveCssColor(totalSnap.color || C.gold).replace(')', ', 0.15)').replace('rgb', 'rgba')}`,
         }}>
           <div style={{
             fontFamily: FONT.mono, fontSize: "4.5rem", fontWeight: 800,
-            color: resolveCssColor(C.goldBright), lineHeight: 1,
-            textShadow: "0 0 30px rgba(212,160,48,0.25)",
+            color: resolveCssColor(totalSnap.color || C.goldBright), lineHeight: 1,
+            textShadow: `0 0 30px ${resolveCssColor(totalSnap.color || C.gold).replace(')', ', 0.25)').replace('rgb', 'rgba')}`,
           }}>
             {totalSnap.value}
           </div>
@@ -323,50 +597,91 @@ function SnapshotWall() {
         </div>
       )}
 
-      {/* Stat tiles */}
-      <div style={{
-        display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-        gap: "1rem",
-      }}>
-        {statSnaps.map(snap => (
-          <div key={snap.id} style={{
-            background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 10,
-            padding: "1.2rem 1.4rem", display: "flex", flexDirection: "column",
-            justifyContent: "space-between", minHeight: 110,
-            transition: "border-color 0.2s, box-shadow 0.2s",
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = resolveCssColor(C.gold);
-            e.currentTarget.style.boxShadow = "0 4px 20px rgba(212,160,48,0.1)";
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
-            e.currentTarget.style.boxShadow = "none";
-          }}
-          >
-            <div style={{
-              fontFamily: FONT.mono, fontSize: "2.4rem", fontWeight: 800,
-              color: resolveCssColor(C.textBright), lineHeight: 1,
-            }}>
-              {snap.value}
-              {snap.suffix && <span style={{ fontSize: "0.9rem", color: resolveCssColor(C.muted), marginLeft: "0.3rem" }}>{snap.suffix}</span>}
-            </div>
-            <div style={{
-              fontFamily: FONT.body, fontSize: "0.78rem", color: C.muted,
-              lineHeight: 1.4, marginTop: "0.5rem", flex: 1,
-            }}>
-              {snap.label}
-            </div>
-            {snap.n && (
-              <div style={{
-                fontFamily: FONT.mono, fontSize: "0.55rem", color: C.dim,
-                marginTop: "0.4rem",
-              }}>
-                n={snap.n}
-              </div>
-            )}
+      {/* Dynamic Cycling Flexbox Queue Grid - 3 Rows */}
+      <div 
+        style={{ display: "flex", flexDirection: "column" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {rowSlots.map((row, rIdx) => (
+          <div key={rIdx} className={`snap-row-container ${rIdx === 1 ? 'reverse' : ''}`}>
+            {row.map((slot) => {
+              const snap = snapshots.find(s => s.id === slot.id);
+              if (!snap) return null;
+              
+              const themeColor = snap.color || C.gold;
+              
+              return (
+                <div key={slot.uniqueKey} className={`snap-outer ${slot.state} ${snap.span === 2 ? 'span-2' : 'span-1'}`}
+                  onClick={() => {
+                    if (snap.qid) navigate("question", { id: snap.qid });
+                  }}
+                  onMouseEnter={e => {
+                    if (slot.state !== "idle") return; // don't animate hover while transitioning
+                    e.currentTarget.style.borderColor = resolveCssColor(themeColor);
+                    e.currentTarget.style.boxShadow = `0 6px 24px ${resolveCssColor(themeColor).replace('hsl(', 'hsla(').replace('rgb(', 'rgba(').replace(')', ', 0.15)')}`;
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={e => {
+                    if (slot.state !== "idle") return;
+                    e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  }}
+                >
+                  <div className="snap-inner">
+                    <div style={{
+                      position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                      background: resolveCssColor(themeColor), opacity: 0.7
+                    }} />
+                    
+                    <div style={{
+                      fontFamily: FONT.mono, fontSize: "2.8rem", fontWeight: 800,
+                      color: resolveCssColor(themeColor), lineHeight: 1,
+                      letterSpacing: "-0.03em", whiteSpace: "nowrap"
+                    }}>
+                      {snap.value}
+                      {snap.suffix && <span style={{ fontSize: "1rem", color: resolveCssColor(C.muted), marginLeft: "0.3rem", fontWeight: 600 }}>{snap.suffix}</span>}
+                    </div>
+                    <div style={{
+                      fontFamily: FONT.body, fontSize: "0.85rem", color: C.text,
+                      lineHeight: 1.4, marginTop: "0.8rem", flex: 1, fontWeight: 500
+                    }}>
+                      {snap.label}
+                    </div>
+                    <div style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+                      marginTop: "1.2rem", paddingTop: "0.8rem", borderTop: `1px solid ${C.ghost}`
+                    }}>
+                      {snap.attribution && (
+                        <div style={{
+                          fontFamily: FONT.condensed, fontSize: "0.65rem", color: C.dim,
+                          textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap"
+                        }}>
+                          {snap.attribution}
+                        </div>
+                      )}
+                      {snap.n && (
+                        <div style={{
+                          fontFamily: FONT.mono, fontSize: "0.6rem", color: C.dim,
+                        }}>
+                          n={snap.n}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ))}
+      </div>
+      
+      <div style={{
+        textAlign: "right", marginTop: "1rem", fontFamily: FONT.condensed, 
+        fontSize: "0.65rem", color: C.dim, letterSpacing: "0.1em", textTransform: "uppercase"
+      }}>
+        {isHovered ? "⏸ Cycling paused" : "▶ Auto-cycling statistics..."}
       </div>
     </section>
   );
@@ -374,276 +689,364 @@ function SnapshotWall() {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 1: FACTOR FINDER — Bubble Cluster
+// SECTION 1: ASSUMPTION QUIZ — "Test Your Assumptions"
 // ═══════════════════════════════════════════════════════════════════════════
 
-function FactorFinder({ tooltip }) {
+const PATHWAY_TOGGLES = [
+  { id: "all", label: "All Pathways" },
+  { id: "circumcised", label: "Circumcised" },
+  { id: "intact", label: "Intact" },
+  { id: "restoring", label: "Restoring" },
+];
+
+const getRandomMetric = () => OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
+
+function AssumptionQuiz() {
+  const [selectedPathway, setSelectedPathway] = useState(PATHWAY_TOGGLES[0]);
   const [selectedDim, setSelectedDim] = useState(ANALYSIS_DIMENSIONS[0]);
-  const [selectedMetric, setSelectedMetric] = useState(OUTCOME_METRICS[2]); // "keep intact"
+  const [selectedMetric, setSelectedMetric] = useState(() => getRandomMetric());
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const svgRef = useRef(null);
-  const [hoveredBubble, setHoveredBubble] = useState(null);
+  
+  // Quiz state: 'guessing' | 'revealed'
+  const [quizState, setQuizState] = useState("guessing");
+  const [guessId, setGuessId] = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    getAggregate(selectedMetric.qid, { by: selectedDim.column })
+    setQuizState("guessing");
+    setGuessId(null);
+    
+    const params = { by: selectedDim.column };
+    if (selectedPathway.id !== "all") {
+      params.cohort = { pathway: selectedPathway.id };
+    }
+    
+    getAggregate(selectedMetric.qid, params)
       .then(res => {
         setData(res.results || {});
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [selectedDim.column, selectedMetric.qid]);
+  }, [selectedDim.column, selectedMetric.qid, selectedPathway.id]);
 
-  // Process data into bubble items
-  const bubbles = useMemo(() => {
+  // Process data into two cohorts to compare
+  const cohorts = useMemo(() => {
     if (!data) return [];
-    return Object.entries(data)
-      .filter(([key]) => key && key !== "null" && key !== "unknown" && key !== "" && key !== "observer")
+    
+    const processed = Object.entries(data)
+      .filter(([key]) => {
+        if (!key || key === "null" || key === "unknown" || key === "" || key === "observer") return false;
+        const lowerKey = key.toLowerCase();
+        if (lowerKey.includes("not sure") || lowerKey.includes("prefer not to say") || lowerKey.includes("prefer not to answer")) return false;
+        return true;
+      })
       .map(([key, val]) => {
-        const metric = extractMetric(selectedMetric.extractor, val.distribution, val.n);
+        const metric = extractMetric(selectedMetric.extractor, val.distribution);
         return {
           id: key,
           label: shorten(key),
           fullLabel: key,
           n: val.n || 0,
           metric: metric,
-          distribution: val.distribution,
         };
       })
-      .filter(b => b.n >= 3)
-      .sort((a, b) => b.n - a.n);
+      .filter(b => b.n >= 5 && b.metric !== null) // Minimum N for validity
+      .sort((a, b) => b.n - a.n); // Sort by sample size
+
+    // We take up to 6 cohorts by sample size to avoid overwhelming the screen,
+    // but shuffle them so the order isn't predictably by size.
+    const top = processed.slice(0, 6);
+    // Simple deterministic shuffle based on labels so it doesn't jump on re-renders unless data changes
+    return top.sort((a, b) => a.label.localeCompare(b.label));
   }, [data, selectedMetric.extractor]);
 
-  // Layout bubbles in a packed circle arrangement
-  const layoutBubbles = useMemo(() => {
-    if (bubbles.length === 0) return [];
-    const maxN = Math.max(...bubbles.map(b => b.n));
-    const minR = 28, maxR = 72;
+  // Handle guess interaction
+  const handleGuess = (id) => {
+    if (quizState === "revealed") return;
+    setGuessId(id);
+    setQuizState("revealed");
+  };
 
-    const sized = bubbles.map(b => ({
-      ...b,
-      r: minR + (Math.sqrt(b.n / maxN)) * (maxR - minR),
-    }));
+  const hasData = cohorts.length >= 2;
+  const highestId = hasData ? cohorts.reduce((prev, curr) => (curr.metric > prev.metric ? curr : prev), cohorts[0]).id : null;
+  const isCorrect = guessId === highestId;
 
-    // Simple spiral packing
-    const placed = [];
-    const cx = 340, cy = 200;
-    for (let i = 0; i < sized.length; i++) {
-      const b = sized[i];
-      if (i === 0) {
-        placed.push({ ...b, x: cx, y: cy });
-        continue;
-      }
-      // Spiral outward to find a non-overlapping position
-      let angle = 0, radius = 0;
-      let bestX = cx, bestY = cy;
-      let found = false;
-      for (let step = 0; step < 2000 && !found; step++) {
-        angle = step * 0.3;
-        radius = 4 + step * 1.2;
-        const tx = cx + radius * Math.cos(angle);
-        const ty = cy + radius * Math.sin(angle);
-        let overlap = false;
-        for (const p of placed) {
-          const dist = Math.sqrt((tx - p.x) ** 2 + (ty - p.y) ** 2);
-          if (dist < b.r + p.r + 3) { overlap = true; break; }
-        }
-        if (!overlap) { bestX = tx; bestY = ty; found = true; }
-      }
-      placed.push({ ...b, x: bestX, y: bestY });
-    }
-    return placed;
-  }, [bubbles]);
-
-  // Compute SVG viewbox from placed bubbles
-  const viewBox = useMemo(() => {
-    if (layoutBubbles.length === 0) return "0 0 680 400";
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const b of layoutBubbles) {
-      minX = Math.min(minX, b.x - b.r);
-      minY = Math.min(minY, b.y - b.r);
-      maxX = Math.max(maxX, b.x + b.r);
-      maxY = Math.max(maxY, b.y + b.r);
-    }
-    const pad = 20;
-    return `${minX - pad} ${minY - pad} ${maxX - minX + pad * 2} ${maxY - minY + pad * 2}`;
-  }, [layoutBubbles]);
-
-  // Color scale: map metric value to a gradient
-  const getColor = useCallback((metric) => {
-    if (metric === null) return resolveCssColor(C.dim);
-    // Scale from 0→100%: deep blue (low) → gold (mid) → bright green (high)
-    const t = Math.max(0, Math.min(1, metric / 100));
-    if (t < 0.5) {
-      const s = t * 2;
-      return `hsl(${210 + s * 30}, ${50 + s * 20}%, ${25 + s * 20}%)`;
-    } else {
-      const s = (t - 0.5) * 2;
-      return `hsl(${140 - s * 20}, ${55 + s * 20}%, ${35 + s * 20}%)`;
-    }
-  }, []);
+  // Thematic CSS variables
+  const themeColor = selectedMetric.color || C.gold;
+  const neonShadow = `0 4px 20px ${resolveCssColor(themeColor).replace('hsl(', 'hsla(').replace('rgb(', 'rgba(').replace(')', ', 0.15)')}`;
 
   return (
-    <section id="factor-finder" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+    <section id="factor-finder" data-docent-context="interactive-explorer" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Part I"
-        title="The Factor Finder"
-        subtitle="Each bubble is a demographic group. Size = number of respondents. Color intensity = how strongly that group scores on the selected outcome. Which clusters light up?"
+        number="Section 1"
+        title="Interactive Explorer"
+        subtitle="How well do you know the data? Select a pathway, demographic, and an outcome, then guess which cohort scores higher. Averages exclude 'Not sure' or 'N/A' responses to ensure accuracy."
         icon="◉"
       />
 
-      {/* Controls */}
+      {/* Controls Container (Glassmorphic) */}
       <div style={{
-        display: "flex", gap: "1.5rem", marginBottom: "2rem",
-        flexWrap: "wrap", alignItems: "flex-end",
+        background: resolveCssColor(C.bgSoft),
+        backdropFilter: "blur(12px)",
+        border: `1px solid ${C.ghost}`,
+        borderRadius: 12,
+        padding: "1.5rem",
+        marginBottom: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
       }}>
+        
+        {/* Pathway Row */}
         <div>
           <label style={{
-            fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
-            textTransform: "uppercase", color: C.muted, display: "block", marginBottom: "0.3rem",
+            fontFamily: FONT.condensed, fontSize: "0.75rem", letterSpacing: "0.12em",
+            textTransform: "uppercase", color: C.text, display: "block", marginBottom: "0.6rem", fontWeight: 600
           }}>
-            Demographic Dimension
+            1. Select Pathway Filter
           </label>
-          <select
-            value={selectedDim.id}
-            onChange={e => setSelectedDim(ANALYSIS_DIMENSIONS.find(d => d.id === e.target.value))}
-            style={{
-              background: resolveCssColor(C.bgDeep), color: resolveCssColor(C.textBright),
-              border: `1px solid ${resolveCssColor(C.ghost)}`, borderRadius: 6,
-              padding: "0.45rem 0.8rem", fontFamily: FONT.condensed, fontSize: "0.85rem",
-              textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
-            }}
-          >
-            {ANALYSIS_DIMENSIONS.map(d => (
-              <option key={d.id} value={d.id}>{d.label}</option>
-            ))}
-          </select>
+          <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
+            {PATHWAY_TOGGLES.map(p => {
+              const active = selectedPathway.id === p.id;
+              const pColor = p.id === "all" ? C.gold : PATH_COLORS[p.id];
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setSelectedPathway(p)}
+                  style={{
+                    background: active ? resolveCssColor(pColor) : resolveCssColor(C.bgCard),
+                    color: active ? "#111" : resolveCssColor(C.text),
+                    border: `1px solid ${active ? resolveCssColor(pColor) : resolveCssColor(C.ghost)}`,
+                    borderRadius: 20, padding: "0.4rem 1rem", fontFamily: FONT.condensed, fontSize: "0.85rem",
+                    textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
+                    fontWeight: active ? 700 : 500,
+                    transition: "all 0.2s ease"
+                  }}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div>
-          <label style={{
-            fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
-            textTransform: "uppercase", color: C.muted, display: "block", marginBottom: "0.3rem",
-          }}>
-            Color by Outcome
-          </label>
-          <select
-            value={selectedMetric.id}
-            onChange={e => setSelectedMetric(OUTCOME_METRICS.find(m => m.id === e.target.value))}
-            style={{
-              background: resolveCssColor(C.bgDeep), color: resolveCssColor(C.textBright),
-              border: `1px solid ${resolveCssColor(C.ghost)}`, borderRadius: 6,
-              padding: "0.45rem 0.8rem", fontFamily: FONT.condensed, fontSize: "0.85rem",
-              textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
-            }}
-          >
-            {OUTCOME_METRICS.filter(m => m.id !== "pathway_intact").map(m => (
-              <option key={m.id} value={m.id}>{m.label}</option>
-            ))}
-          </select>
+        {/* Dimension Row */}
+        <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 250px" }}>
+            <label style={{
+              fontFamily: FONT.condensed, fontSize: "0.75rem", letterSpacing: "0.12em",
+              textTransform: "uppercase", color: C.text, display: "block", marginBottom: "0.6rem", fontWeight: 600
+            }}>
+              2. Select Demographic
+            </label>
+            <select
+              value={selectedDim.id}
+              onChange={e => setSelectedDim(ANALYSIS_DIMENSIONS.find(d => d.id === e.target.value))}
+              style={{
+                width: "100%", background: resolveCssColor(C.bgDeep), color: resolveCssColor(C.textBright),
+                border: `1px solid ${resolveCssColor(C.ghost)}`, borderRadius: 6,
+                padding: "0.6rem 0.8rem", fontFamily: FONT.condensed, fontSize: "0.9rem",
+                textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
+              }}
+            >
+              {ANALYSIS_DIMENSIONS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Bubble Chart */}
+      {/* Quiz Interactive Arena */}
       <div style={{
         background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "1.5rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)", position: "relative",
-        minHeight: 400,
+        padding: "3rem 1.5rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+        minHeight: 400, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
       }}>
         {loading ? (
-          <div style={{ textAlign: "center", padding: "6rem", color: C.muted, fontStyle: "italic" }}>
-            Clustering demographic factors…
+          <div style={{ color: C.muted, fontStyle: "italic", fontFamily: FONT.body }}>Querying database...</div>
+        ) : !hasData ? (
+          <div style={{ color: C.muted, fontStyle: "italic", fontFamily: FONT.body, maxWidth: 400, textAlign: "center" }}>
+            Not enough data for this specific cross-section. Try a different pathway or demographic.
           </div>
         ) : (
           <>
-            <svg ref={svgRef} viewBox={viewBox} style={{ width: "100%", maxHeight: 450 }}>
-              <defs>
-                {layoutBubbles.map(b => (
-                  <radialGradient key={`grad-${b.id}`} id={`grad-${b.id}`}>
-                    <stop offset="0%" stopColor={getColor(b.metric)} stopOpacity="0.9" />
-                    <stop offset="80%" stopColor={getColor(b.metric)} stopOpacity="0.6" />
-                    <stop offset="100%" stopColor={getColor(b.metric)} stopOpacity="0.3" />
-                  </radialGradient>
-                ))}
-              </defs>
+            <div style={{
+              fontFamily: FONT.condensed, fontSize: "1.4rem", color: C.textBright, textAlign: "center",
+              marginBottom: "3rem", textTransform: "uppercase", letterSpacing: "0.05em"
+            }}>
+              Which group scores {cohorts.length > 2 ? "highest" : "higher"} for <span style={{ color: resolveCssColor(themeColor) }}>{selectedMetric.label}</span>?
+            </div>
 
-              {layoutBubbles.map((b, i) => {
-                const isHovered = hoveredBubble === b.id;
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(${cohorts.length > 4 ? '140px' : '180px'}, 1fr))`, gap: "1rem", width: "100%", maxWidth: 800, margin: "0 auto" }}>
+              {cohorts.map((cohort) => {
+                const isGuessed = guessId === cohort.id;
+                const isHighest = highestId === cohort.id;
+                const revealed = quizState === "revealed";
+
+                let cardBg = `linear-gradient(135deg, ${C.bgDeep}, ${C.bgCard})`;
+                let borderColor = C.ghost;
+                let cardTransform = "scale(1)";
+                let cardOpacity = 1;
+                let cardShadow = "none";
+                let cardZIndex = 1;
+
+                if (revealed) {
+                  if (isHighest) {
+                    borderColor = resolveCssColor(themeColor);
+                    cardShadow = neonShadow;
+                    cardTransform = "scale(1.05)";
+                    cardZIndex = 10;
+                  } else {
+                    cardOpacity = 0.45;
+                    cardTransform = "scale(0.97)";
+                  }
+                }
+
                 return (
-                  <g key={b.id}
+                  <div
+                    key={cohort.id}
+                    onClick={() => handleGuess(cohort.id)}
                     style={{
-                      cursor: "pointer",
-                      transition: "transform 0.2s ease",
-                      transform: isHovered ? `scale(1.08)` : "scale(1)",
-                      transformOrigin: `${b.x}px ${b.y}px`,
+                      background: cardBg,
+                      border: `2px solid ${typeof borderColor === "string" && borderColor.startsWith("var(") ? resolveCssColor(borderColor) : borderColor}`,
+                      borderRadius: 10,
+                      padding: "1.2rem 1rem",
+                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                      textAlign: "center",
+                      cursor: revealed ? "default" : "pointer",
+                      transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      transform: cardTransform,
+                      opacity: cardOpacity,
+                      boxShadow: cardShadow,
+                      zIndex: cardZIndex,
+                      position: "relative",
+                      minHeight: 100,
                     }}
-                    onMouseEnter={(e) => {
-                      setHoveredBubble(b.id);
-                      tooltip.showTooltip(e, `${b.fullLabel}\nn = ${b.n}\n${selectedMetric.label}: ${b.metric !== null ? b.metric.toFixed(1) + "%" : "N/A"}`);
+                    onMouseEnter={e => {
+                      if (!revealed) {
+                        e.currentTarget.style.borderColor = resolveCssColor(themeColor);
+                        e.currentTarget.style.transform = "scale(1.04)";
+                        e.currentTarget.style.boxShadow = `0 4px 16px rgba(0,0,0,0.3)`;
+                      }
                     }}
-                    onMouseMove={tooltip.moveTooltip}
-                    onMouseLeave={() => { setHoveredBubble(null); tooltip.hideTooltip(); }}
+                    onMouseLeave={e => {
+                      if (!revealed) {
+                        e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }
+                    }}
                   >
-                    <circle
-                      cx={b.x} cy={b.y} r={b.r}
-                      fill={`url(#grad-${b.id})`}
-                      stroke={isHovered ? resolveCssColor(C.goldBright) : getColor(b.metric)}
-                      strokeWidth={isHovered ? 2.5 : 1}
-                      strokeOpacity={isHovered ? 1 : 0.4}
-                    />
-                    {b.r > 30 && (
-                      <>
-                        <text
-                          x={b.x} y={b.y - 5}
-                          textAnchor="middle"
-                          style={{
-                            fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
-                            fontSize: Math.min(b.r * 0.32, 12),
-                            fill: "#fff",
-                            fontWeight: 600,
-                            textShadow: "0 1px 3px rgba(0,0,0,0.8)",
-                            pointerEvents: "none",
-                          }}
-                        >
-                          {b.label}
-                        </text>
-                        <text
-                          x={b.x} y={b.y + Math.min(b.r * 0.32, 12) + 2}
-                          textAnchor="middle"
-                          style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: Math.min(b.r * 0.35, 14),
-                            fill: "#fff",
-                            fontWeight: 700,
-                            textShadow: "0 1px 3px rgba(0,0,0,0.8)",
-                            pointerEvents: "none",
-                          }}
-                        >
-                          {b.metric !== null ? `${b.metric.toFixed(0)}%` : "—"}
-                        </text>
-                      </>
+                    <div style={{
+                      fontFamily: FONT.condensed, fontSize: "0.95rem", fontWeight: 600,
+                      color: C.textBright, letterSpacing: "0.04em", lineHeight: 1.3,
+                    }}>
+                      {cohort.label}
+                    </div>
+                    
+                    {/* Revealed metric — slides open */}
+                    <div style={{
+                      maxHeight: revealed ? 80 : 0, opacity: revealed ? 1 : 0, overflow: "hidden",
+                      transition: "all 0.5s ease", marginTop: revealed ? "0.6rem" : 0,
+                    }}>
+                      <div style={{
+                        fontFamily: FONT.mono, fontSize: "2rem", fontWeight: 800,
+                        color: resolveCssColor(themeColor), lineHeight: 1,
+                      }}>
+                        {cohort.metric.toFixed(0)}%
+                      </div>
+                      <div style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.dim, marginTop: "0.25rem" }}>
+                        n={cohort.n}
+                      </div>
+                    </div>
+
+                    {/* Winner badge */}
+                    {revealed && isHighest && (
+                      <div style={{
+                        position: "absolute", top: -8, right: -8,
+                        background: resolveCssColor(themeColor), color: "#0a0a0c",
+                        borderRadius: "50%", width: 24, height: 24,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontWeight: 800, fontSize: "0.7rem",
+                        boxShadow: `0 2px 8px ${resolveCssColor(themeColor).replace(')', ', 0.4)').replace('rgb(', 'rgba(').replace('hsl(', 'hsla(')}`,
+                      }}>
+                        ★
+                      </div>
                     )}
-                  </g>
+                  </div>
                 );
               })}
-            </svg>
-
-            {/* Legend */}
-            <div style={{
-              display: "flex", justifyContent: "center", gap: "2rem", marginTop: "1rem",
-              fontFamily: FONT.mono, fontSize: "0.65rem", color: C.muted,
-            }}>
-              <span>◯ Size = n respondents</span>
-              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: getColor(20) }} />
-                Low
-                <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: getColor(50) }} />
-                Mid
-                <span style={{ display: "inline-block", width: 12, height: 12, borderRadius: "50%", background: getColor(85) }} />
-                High
-              </span>
             </div>
+
+            {/* Quiz Feedback */}
+            <div style={{
+              height: "auto", minHeight: 40, marginTop: "3rem", display: "flex", alignItems: "center", justifyContent: "center",
+              opacity: quizState === "revealed" ? 1 : 0, transform: quizState === "revealed" ? "translateY(0)" : "translateY(10px)",
+              transition: "all 0.5s ease", textAlign: "center", padding: "0 1rem",
+            }}>
+              {quizState === "revealed" && (() => {
+                const winner = cohorts.find(c => c.id === highestId);
+                const guessed = cohorts.find(c => c.id === guessId);
+                const sorted = [...cohorts].sort((a, b) => b.metric - a.metric);
+                const runnerUp = sorted[1];
+                const spread = winner && runnerUp ? (winner.metric - runnerUp.metric).toFixed(1) : "0";
+                const isClose = parseFloat(spread) < 5;
+                const isDominant = parseFloat(spread) > 20;
+                const guessedRank = sorted.findIndex(c => c.id === guessId) + 1;
+
+                let commentary;
+                if (isCorrect) {
+                  if (isClose) {
+                    commentary = `Sharp eye! ${winner?.label} edges out ${runnerUp?.label} by just ${spread} percentage points — this was a genuinely close call.`;
+                  } else if (isDominant) {
+                    commentary = `Well spotted. ${winner?.label} leads by a commanding ${spread}pp — a clear standout in this demographic split.`;
+                  } else {
+                    commentary = `Nailed it. ${winner?.label} leads at ${winner?.metric.toFixed(0)}%, with a ${spread}pp gap over ${runnerUp?.label}.`;
+                  }
+                } else {
+                  if (isClose) {
+                    commentary = `Close — ${guessed?.label} (${guessed?.metric.toFixed(0)}%) was a reasonable guess, but ${winner?.label} edges ahead at ${winner?.metric.toFixed(0)}%. The spread is only ${spread}pp; this one could flip with more data.`;
+                  } else if (guessedRank === 2) {
+                    commentary = `Not far off. ${guessed?.label} comes in second at ${guessed?.metric.toFixed(0)}%, but ${winner?.label} takes the lead at ${winner?.metric.toFixed(0)}% — a ${spread}pp gap that might challenge expectations.`;
+                  } else if (isDominant) {
+                    commentary = `${winner?.label} stands out at ${winner?.metric.toFixed(0)}% — a ${spread}pp lead that signals a strong demographic pattern here. ${guessed?.label} came in at ${guessed?.metric.toFixed(0)}%.`;
+                  } else {
+                    commentary = `${winner?.label} leads this one at ${winner?.metric.toFixed(0)}%, with ${guessed?.label} at ${guessed?.metric.toFixed(0)}%. The ${spread}pp gap shows how ${selectedDim?.label?.toLowerCase() || "demographics"} can shape outcomes in unexpected ways.`;
+                  }
+                }
+
+                return (
+                  <div style={{
+                    fontFamily: FONT.body, fontSize: "0.95rem",
+                    color: isCorrect ? resolveCssColor(C.goldBright) : resolveCssColor(C.text),
+                    fontWeight: isCorrect ? 600 : 400,
+                    lineHeight: 1.5, maxWidth: 600,
+                  }}>
+                    {commentary}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Reset Button */}
+            {quizState === "revealed" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQuizState("guessing");
+                  setGuessId(null);
+                  setSelectedMetric(getRandomMetric());
+                }}
+                style={{
+                  marginTop: "1rem", background: "transparent", border: "none", color: resolveCssColor(C.blue),
+                  fontFamily: FONT.condensed, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em",
+                  cursor: "pointer", textDecoration: "underline"
+                }}
+              >
+                Try Another
+              </button>
+            )}
           </>
         )}
       </div>
@@ -659,24 +1062,79 @@ function FactorFinder({ tooltip }) {
 const PERSONA_OUTCOMES = [
   { id: "keep_intact", label: "Would Keep Son Intact", qid: "final_child_decision_reason", extractor: "keep_intact", icon: "🛡" },
   { id: "resentment", label: "Strong Resentment/Grief", qid: "circ_regret_feeling", extractor: "strong_resentment", icon: "💔" },
-  { id: "lube_always", label: "Lube Always Needed", qid: "exp_lubrication_need", extractor: "lube_always", icon: "💧" },
   { id: "intact_aesthetic", label: "Prefers Intact Look", qid: "final_aesthetic_preference", extractor: "intact_aesthetic", icon: "👁" },
   { id: "autonomy", label: "Prioritizes Autonomy", qid: "final_core_principle_choice", extractor: "autonomy", icon: "⚖" },
+  { id: "pride", label: "Pride & Satisfaction", qid: "exp_pride_satisfaction_rating", extractor: "pride", icon: "🌟" },
+  { id: "dissatisfaction", label: "Strong Dissatisfaction", qid: "exp_pride_satisfaction_rating", extractor: "dissatisfaction", icon: "📉" },
+  { id: "healthier_belief", label: "Believes Intact Is Healthier", qid: "final_healthier_hygienic_belief", extractor: "healthier_intact", icon: "🩺" },
+  { id: "circ_norm", label: "Believes Circ Is the Norm", qid: "final_social_norm_perception", extractor: "circ_norm", icon: "📊" },
+  { id: "positive_appearance", label: "Positive Appearance Feeling", qid: "exp_appearance_feeling", extractor: "positive_appearance", icon: "😊" },
+  { id: "natural_state", label: "Leans Towards Natural State", qid: "culture_body_intervention_view", extractor: "natural_state", icon: "🌿" },
+  { id: "considered_restoration", label: "Considered Restoration", qid: "circ_restoration_awareness", extractor: "considered_restoration", icon: "🔄" },
+  { id: "circ_aesthetic", label: "Prefers Circumcised Aesthetic", qid: "culture_assoc_more_aesthetic", extractor: "circ_aesthetic", icon: "✂" },
 ];
 
-function extractPersonaMetric(extractor, distribution, n) {
-  if (!distribution || !n || n === 0) return null;
+function extractPersonaMetric(extractor, distribution) {
+  if (!distribution || distribution.length === 0) return null;
   const find = (substr) => distribution.find(d => d.label && d.label.toLowerCase().includes(substr.toLowerCase()))?.n || 0;
+  
+  const ignoredLabels = ["not sure", "prefer not to answer", "n/a", "no answer", "i don't know", "genuinely unsure"];
+  let validN = 0;
+  for (const d of distribution) {
+    if (d.label && !ignoredLabels.some(ig => d.label.toLowerCase().includes(ig))) {
+      validN += (d.n || 0);
+    }
+  }
+  
+  if (validN === 0) return null;
+
   switch (extractor) {
-    case "keep_intact": return (find("remains intact") / n) * 100;
-    case "strong_resentment": return (find("strong and frequent") / n) * 100;
-    case "lube_always": return (find("always or almost always necessary") / n) * 100;
+    case "keep_intact": return (find("remains intact") / validN) * 100;
+    case "strong_resentment": return (find("strong and frequent") / validN) * 100;
     case "intact_aesthetic": {
       const s = find("strongly prefer the appearance of the intact");
       const sl = find("slightly prefer the appearance of the intact");
-      return ((s + sl) / n) * 100;
+      return ((s + sl) / validN) * 100;
     }
-    case "autonomy": return (find("Bodily Autonomy") / n) * 100;
+    case "autonomy": return (find("Bodily Autonomy") / validN) * 100;
+    case "pride": {
+      const vp = find("very proud");
+      const gp = find("generally proud");
+      return ((vp + gp) / validN) * 100;
+    }
+    case "dissatisfaction": {
+      const sd = find("somewhat dissatisfied");
+      const vd = find("very dissatisfied");
+      return ((sd + vd) / validN) * 100;
+    }
+    case "healthier_intact": {
+      const sig = find("intact state (with normal hygiene) is significantly healthier");
+      const slight = find("intact state (with normal hygiene) is slightly healthier");
+      return ((sig + slight) / validN) * 100;
+    }
+    case "circ_norm": {
+      const gen = find("circumcised state is generally seen as more normal");
+      const over = find("circumcised state is overwhelmingly seen as the normal");
+      return ((gen + over) / validN) * 100;
+    }
+    case "positive_appearance": {
+      const pos = find("Positive");
+      const vpos = find("Very Positive");
+      return ((pos + vpos) / validN) * 100;
+    }
+    case "natural_state": {
+      return (find("lean towards natural state") / validN) * 100;
+    }
+    case "considered_restoration": {
+      const active = find("actively researching");
+      const serious = find("seriously considered");
+      return ((active + serious) / validN) * 100;
+    }
+    case "circ_aesthetic": {
+      const def = find("definitely circumcised");
+      const likely = find("likely circumcised");
+      return ((def + likely) / validN) * 100;
+    }
     default: return null;
   }
 }
@@ -730,11 +1188,11 @@ function PersonaBuilder() {
   const personaN = personaData ? Object.values(personaData).find(d => d && d.n)?.n || 0 : 0;
 
   return (
-    <section id="persona-builder" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+    <section id="persona-builder" data-docent-context="persona-builder" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Part II"
+        number="Section 2"
         title="How Many Are Like Me?"
-        subtitle="Build a demographic profile and see how many respondents match — and what their outcomes look like compared to the overall population."
+        subtitle="Building demographic personas to see how many share your background. See how many respondents match — and what their outcomes look like compared to the overall population."
         icon="◈"
       />
 
@@ -753,6 +1211,45 @@ function PersonaBuilder() {
             marginBottom: "1.2rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem",
           }}>
             Build Your Profile
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginBottom: "1.2rem" }}>
+            <label style={{
+              fontFamily: FONT.condensed, fontSize: "0.62rem", letterSpacing: "0.1em",
+              textTransform: "uppercase", color: C.dim, display: "block", marginBottom: "-0.2rem",
+            }}>
+              Pathway
+            </label>
+            <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+              {[{ id: "", label: "Any" }, { id: "circumcised", label: "Circumcised" }, { id: "intact", label: "Intact" }, { id: "restoring", label: "Restoring" }, { id: "observer", label: "Observer" }].map(p => {
+                const active = (selections["pathway"] || "") === p.id;
+                const pColor = p.id ? PATH_COLORS[p.id] : C.gold;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      setSelections(prev => {
+                        const next = { ...prev };
+                        if (p.id) next["pathway"] = p.id;
+                        else delete next["pathway"];
+                        return next;
+                      });
+                    }}
+                    style={{
+                      background: active ? resolveCssColor(pColor) : "transparent",
+                      color: active ? "#111" : resolveCssColor(C.muted),
+                      border: `1px solid ${active ? resolveCssColor(pColor) : resolveCssColor(C.ghost)}`,
+                      borderRadius: 20, padding: "0.3rem 0.8rem", fontFamily: FONT.condensed, fontSize: "0.75rem",
+                      textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
+                      fontWeight: active ? 700 : 500,
+                      transition: "all 0.2s ease", flex: 1, minWidth: "fit-content"
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
@@ -863,8 +1360,8 @@ function PersonaBuilder() {
               {PERSONA_OUTCOMES.map(outcome => {
                 const pDist = personaData[outcome.id];
                 const bDist = baselineData[outcome.id];
-                const pVal = pDist ? extractPersonaMetric(outcome.extractor, pDist.distribution, pDist.n) : null;
-                const bVal = bDist ? extractPersonaMetric(outcome.extractor, bDist.distribution, bDist.n) : null;
+                const pVal = pDist ? extractPersonaMetric(outcome.extractor, pDist.distribution) : null;
+                const bVal = bDist ? extractPersonaMetric(outcome.extractor, bDist.distribution) : null;
                 const delta = pVal !== null && bVal !== null ? pVal - bVal : null;
 
                 return (
@@ -925,54 +1422,62 @@ function PersonaBuilder() {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 3: TEST YOUR ASSUMPTIONS — Dynamic Quiz
+// SECTION 3: TEST YOUR ASSUMPTIONS — Auto-generated Quiz with Harvey Balls
 // ═══════════════════════════════════════════════════════════════════════════
 
-const QUIZ_QUESTIONS = [
+const CURATED_QUIZ = [
   {
-    id: "q1",
+    dimId: "politics", metricId: "keep_intact",
     question: "Which political group has the HIGHEST rate of saying they'd keep a future son intact?",
-    dimension: "politics",
-    qid: "final_child_decision_reason",
-    extractor: "keep_intact",
-    answerNote: "All political groups show remarkably similar rates — this issue transcends party lines.",
+    note: "All political groups show remarkably similar rates — this issue transcends party lines.",
   },
   {
-    id: "q2",
-    question: "Which education level reports the HIGHEST rate of needing lubrication during sex?",
-    dimension: "education",
-    qid: "exp_lubrication_need",
-    extractor: "lube_always",
-    answerNote: "The relationship between education and functional outcomes challenges assumptions about who experiences these effects.",
-  },
-  {
-    id: "q3",
+    dimId: "generation", metricId: "resentment",
     question: "Which generation reports the STRONGEST feelings of resentment about their circumcision?",
-    dimension: "generation",
-    qid: "circ_regret_feeling",
-    extractor: "strong_resentment",
-    answerNote: "Younger generations, raised with greater access to information about bodily autonomy, consistently report stronger feelings.",
+    note: "Younger generations, raised with greater access to information about bodily autonomy, consistently report stronger feelings.",
   },
   {
-    id: "q4",
+    dimId: "primary_tradition", metricId: "intact_aesthetic",
     question: "Which religious tradition's respondents are MOST likely to prefer the intact aesthetic?",
-    dimension: "primary_tradition",
-    qid: "final_aesthetic_preference",
-    extractor: "intact_aesthetic",
-    answerNote: "Aesthetic preference follows personal experience more than theological doctrine.",
+    note: "Aesthetic preference follows personal experience more than theological doctrine.",
   },
   {
-    id: "q5",
+    dimId: "education", metricId: "healthier_belief",
+    question: "Which education level is MOST likely to believe the intact state is healthier?",
+    note: "Health beliefs cut across education levels in surprising ways.",
+  },
+  {
+    dimId: "socioeconomic", metricId: "bodily_autonomy",
     question: "Which socioeconomic background has the HIGHEST rate of prioritizing bodily autonomy?",
-    dimension: "socioeconomic",
-    qid: "final_core_principle_choice",
-    extractor: "autonomy",
-    answerNote: "The autonomy principle resonates across class lines, though the framing of the debate may differ by community.",
+    note: "The autonomy principle resonates across class lines, though the framing of the debate may differ by community.",
   },
 ];
 
+function generateRandomQuiz(exclude = []) {
+  const excludeSet = new Set(exclude.map(e => `${e.dimId}-${e.metricId}`));
+  const dim = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
+  const metric = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
+  const key = `${dim.id}-${metric.id}`;
+  // Retry if we hit an excluded combo (simple retry, not infinite)
+  if (excludeSet.has(key)) {
+    const dim2 = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
+    const metric2 = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
+    return {
+      dimId: dim2.id, metricId: metric2.id,
+      question: `Which ${dim2.label.toLowerCase()} group scores HIGHEST for "${metric2.label}"?`,
+      note: null,
+    };
+  }
+  return {
+    dimId: dim.id, metricId: metric.id,
+    question: `Which ${dim.label.toLowerCase()} group scores HIGHEST for "${metric.label}"?`,
+    note: null,
+  };
+}
+
 function QuizSection() {
   const [currentQ, setCurrentQ] = useState(0);
+  const [questions, setQuestions] = useState(() => [...CURATED_QUIZ]);
   const [guess, setGuess] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [quizData, setQuizData] = useState(null);
@@ -980,60 +1485,79 @@ function QuizSection() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(0);
 
-  const q = QUIZ_QUESTIONS[currentQ];
+  const q = questions[currentQ];
+  const dim = ANALYSIS_DIMENSIONS.find(d => d.id === q.dimId);
+  const metric = OUTCOME_METRICS.find(m => m.id === q.metricId);
 
   useEffect(() => {
+    if (!dim || !metric) return;
     setLoading(true);
     setGuess(null);
     setRevealed(false);
-    getAggregate(q.qid, { by: q.dimension })
+    getAggregate(metric.qid, { by: dim.column })
       .then(res => {
         setQuizData(res.results || {});
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [currentQ, q.qid, q.dimension]);
+  }, [currentQ, questions.length, dim?.column, metric?.qid]);
 
-  // Process quiz data into ranked choices
   const choices = useMemo(() => {
-    if (!quizData) return [];
+    if (!quizData || !metric) return [];
     return Object.entries(quizData)
-      .filter(([key]) => key && key !== "null" && key !== "unknown" && key !== "" && key !== "observer" && key !== "Prefer not to say" && key !== "Prefer not to say / Unsure" && key !== "Prefer not to say.")
+      .filter(([key]) => key && key !== "null" && key !== "unknown" && key !== "" && key !== "observer" && !key.toLowerCase().includes("prefer not to say") && !key.toLowerCase().includes("not sure"))
       .map(([key, val]) => {
-        const metric = extractPersonaMetric(q.extractor, val.distribution, val.n);
-        return { id: key, label: shorten(key), fullLabel: key, n: val.n, metric };
+        const m = extractMetric(metric.extractor, val.distribution);
+        return { id: key, label: shorten(key), fullLabel: key, n: val.n, metric: m };
       })
       .filter(c => c.n >= 5 && c.metric !== null)
       .sort((a, b) => b.metric - a.metric);
-  }, [quizData, q.extractor]);
+  }, [quizData, metric]);
+
+  // Shuffle choices for button display so the answer isn't always first
+  const shuffledChoices = useMemo(() => {
+    if (choices.length === 0) return [];
+    const arr = [...choices];
+    // Simple Fisher-Yates shuffle seeded by question index for stability
+    let seed = currentQ * 7 + choices.length * 13;
+    for (let i = arr.length - 1; i > 0; i--) {
+      seed = (seed * 9301 + 49297) % 233280;
+      const j = Math.floor((seed / 233280) * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [choices, currentQ]);
 
   const correctAnswer = choices[0]?.id;
   const isCorrect = guess === correctAnswer;
+  const hasData = choices.length >= 2;
 
   const handleGuess = (choiceId) => {
     if (revealed) return;
     setGuess(choiceId);
-  };
-
-  const handleReveal = () => {
-    if (!guess) return;
     setRevealed(true);
     setAnswered(a => a + 1);
-    if (isCorrect) setScore(s => s + 1);
+    if (choiceId === choices[0]?.id) setScore(s => s + 1);
   };
-
   const handleNext = () => {
-    if (currentQ < QUIZ_QUESTIONS.length - 1) {
+    if (currentQ < questions.length - 1) {
       setCurrentQ(c => c + 1);
+    } else {
+      // Generate a random new question
+      const newQ = generateRandomQuiz(questions);
+      setQuestions(prev => [...prev, newQ]);
+      setCurrentQ(prev => prev + 1);
     }
   };
 
+  const themeColor = metric?.color || C.goldBright;
+
   return (
-    <section id="quiz" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+    <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
-        number="Part III"
+        number="Section 3"
         title="Test Your Assumptions"
-        subtitle="Think you know which demographics predict which outcomes? Guess which group leads — then see if the data agrees."
+        subtitle="Can you guess how different demographic groups answered key questions? Guess which group leads — then see if the data agrees."
         icon="◇"
       />
 
@@ -1050,7 +1574,7 @@ function QuizSection() {
             fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em",
             textTransform: "uppercase", color: C.dim,
           }}>
-            Question {currentQ + 1} of {QUIZ_QUESTIONS.length}
+            {currentQ < CURATED_QUIZ.length ? `Question ${currentQ + 1} of ${CURATED_QUIZ.length}` : "Bonus Question"}
           </div>
           <div style={{
             fontFamily: FONT.mono, fontSize: "0.72rem", color: C.goldBright,
@@ -1072,14 +1596,18 @@ function QuizSection() {
           <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
             Loading data…
           </div>
+        ) : !hasData ? (
+          <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
+            Not enough data for this combination. <button onClick={handleNext} style={{ background: "none", border: "none", color: resolveCssColor(C.blue), cursor: "pointer", textDecoration: "underline", fontFamily: FONT.body }}>Try another →</button>
+          </div>
         ) : (
           <>
-            {/* Answer options */}
+            {/* Answer options as cards */}
             <div style={{
-              display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+              display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
               gap: "0.6rem", marginBottom: "1.5rem",
             }}>
-              {choices.map(choice => {
+              {shuffledChoices.map(choice => {
                 const isGuessed = guess === choice.id;
                 const isAnswer = revealed && choice.id === correctAnswer;
                 const isWrong = revealed && isGuessed && !isCorrect;
@@ -1113,8 +1641,9 @@ function QuizSection() {
                     {revealed && (
                       <div style={{
                         fontFamily: FONT.mono, fontSize: "0.68rem", marginTop: "0.3rem",
-                        opacity: 0.8,
+                        opacity: 0.8, display: "flex", alignItems: "center", gap: "0.3rem",
                       }}>
+                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={isAnswer ? resolveCssColor(C.green) : resolveCssColor(C.dim)} size="0.9em" />
                         {choice.metric.toFixed(1)}% (n={choice.n})
                       </div>
                     )}
@@ -1123,53 +1652,33 @@ function QuizSection() {
               })}
             </div>
 
-            {/* Reveal / Next buttons */}
-            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              {!revealed ? (
+            {/* Post-reveal controls */}
+            {revealed && (
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{
+                  flex: 1, fontFamily: FONT.body, fontSize: "0.85rem",
+                  color: isCorrect ? resolveCssColor(C.green) : resolveCssColor(C.muted),
+                  fontStyle: "italic", lineHeight: 1.4,
+                }}>
+                  {isCorrect ? "✓ Correct! " : "✗ Not quite. "}
+                  {q.note || "The data often challenges our assumptions."}
+                </div>
                 <button
-                  onClick={handleReveal}
-                  disabled={!guess}
+                  onClick={handleNext}
                   style={{
-                    background: guess ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
-                    color: guess ? "#0a0a0c" : resolveCssColor(C.dim),
+                    background: resolveCssColor(C.goldBright), color: "#0a0a0c",
                     border: "none", borderRadius: 8, padding: "0.6rem 1.5rem",
                     fontFamily: FONT.condensed, fontSize: "0.85rem", fontWeight: 700,
                     letterSpacing: "0.08em", textTransform: "uppercase",
-                    cursor: guess ? "pointer" : "not-allowed",
-                    transition: "all 0.15s",
+                    cursor: "pointer", flexShrink: 0,
                   }}
                 >
-                  Reveal Answer
+                  {currentQ < CURATED_QUIZ.length - 1 ? "Next →" : "Try Another →"}
                 </button>
-              ) : (
-                <>
-                  <div style={{
-                    flex: 1, fontFamily: FONT.body, fontSize: "0.85rem",
-                    color: isCorrect ? resolveCssColor(C.green) : resolveCssColor(C.muted),
-                    fontStyle: "italic", lineHeight: 1.4,
-                  }}>
-                    {isCorrect ? "✓ Correct! " : "✗ Not quite. "}
-                    {q.answerNote}
-                  </div>
-                  {currentQ < QUIZ_QUESTIONS.length - 1 && (
-                    <button
-                      onClick={handleNext}
-                      style={{
-                        background: resolveCssColor(C.goldBright), color: "#0a0a0c",
-                        border: "none", borderRadius: 8, padding: "0.6rem 1.5rem",
-                        fontFamily: FONT.condensed, fontSize: "0.85rem", fontWeight: 700,
-                        letterSpacing: "0.08em", textTransform: "uppercase",
-                        cursor: "pointer", flexShrink: 0,
-                      }}
-                    >
-                      Next →
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* Ranked bar chart (revealed) */}
+            {/* Harvey Ball ranked reveal */}
             {revealed && (
               <div style={{ marginTop: "2rem", borderTop: `1px solid ${C.ghost}`, paddingTop: "1.5rem" }}>
                 <div style={{
@@ -1178,13 +1687,15 @@ function QuizSection() {
                 }}>
                   Full Ranking
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                   {choices.map((choice, i) => {
                     const maxMetric = choices[0]?.metric || 100;
                     const barWidth = (choice.metric / maxMetric) * 100;
                     const isTop = i === 0;
+                    const ballColor = isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim);
                     return (
                       <div key={choice.id} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={ballColor} size="1.2em" />
                         <span style={{
                           fontFamily: FONT.body, fontSize: "0.72rem", color: C.text,
                           minWidth: 100, textAlign: "right",
@@ -1197,7 +1708,7 @@ function QuizSection() {
                         }}>
                           <div style={{
                             width: `${barWidth}%`, height: "100%",
-                            background: isTop ? resolveCssColor(C.goldBright) : resolveCssColor(C.dim),
+                            background: isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim),
                             borderRadius: 4, transition: "width 0.4s ease",
                             display: "flex", alignItems: "center", justifyContent: "flex-end",
                             paddingRight: "0.4rem",
@@ -1232,15 +1743,18 @@ function QuizSection() {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 4: FACTOR GRID — Heatmap
+// SECTION 4: FACTOR GRID — Harvey Ball Dot Matrix
 // ═══════════════════════════════════════════════════════════════════════════
 
-const GRID_OUTCOMES = [
-  { id: "keep_intact", label: "Keep Son Intact", short: "Intact", qid: "final_child_decision_reason", extractor: "keep_intact" },
-  { id: "resentment", label: "Strong Resentment", short: "Resentment", qid: "circ_regret_feeling", extractor: "strong_resentment" },
-  { id: "lube", label: "Always Needs Lube", short: "Lube", qid: "exp_lubrication_need", extractor: "lube_always" },
-  { id: "aesthetic", label: "Prefers Intact Look", short: "Aesthetic", qid: "final_aesthetic_preference", extractor: "intact_aesthetic" },
-];
+// Use all 12 outcomes from the main OUTCOME_METRICS
+const GRID_OUTCOMES = OUTCOME_METRICS.map(m => ({
+  id: m.id,
+  label: m.label,
+  short: m.label.replace(/^(Believes |General |Prefers |Strong |Positive |Leans |Considered )/i, "").slice(0, 12),
+  qid: m.qid,
+  extractor: m.extractor,
+  color: m.color,
+}));
 
 function FactorGrid() {
   const [gridData, setGridData] = useState(null);
@@ -1248,7 +1762,6 @@ function FactorGrid() {
   const [expandedCell, setExpandedCell] = useState(null);
 
   useEffect(() => {
-    // Fetch all dim × outcome combinations
     const tasks = [];
     for (const dim of ANALYSIS_DIMENSIONS) {
       for (const out of GRID_OUTCOMES) {
@@ -1266,14 +1779,13 @@ function FactorGrid() {
         if (!grid[r.dimId]) grid[r.dimId] = {};
         const outcome = GRID_OUTCOMES.find(o => o.id === r.outId);
 
-        // Calculate metric for each category
         const categories = Object.entries(r.results)
-          .filter(([k]) => k && k !== "null" && k !== "unknown" && k !== "" && k !== "observer" && k !== "Prefer not to say" && k !== "Prefer not to say / Unsure" && k !== "Prefer not to say.")
+          .filter(([k]) => k && k !== "null" && k !== "unknown" && k !== "" && k !== "observer" && !k.toLowerCase().includes("prefer not to say") && !k.toLowerCase().includes("not sure"))
           .map(([k, v]) => ({
             label: shorten(k),
             fullLabel: k,
             n: v.n,
-            metric: extractPersonaMetric(outcome.extractor, v.distribution, v.n),
+            metric: extractMetric(outcome.extractor, v.distribution),
           }))
           .filter(c => c.n >= 5 && c.metric !== null)
           .sort((a, b) => b.metric - a.metric);
@@ -1294,7 +1806,6 @@ function FactorGrid() {
     });
   }, []);
 
-  // Find the most predictive dimension per outcome
   const mostPredictive = useMemo(() => {
     if (!gridData) return {};
     const mp = {};
@@ -1309,18 +1820,12 @@ function FactorGrid() {
     return mp;
   }, [gridData]);
 
-  // Color for heatmap cell based on range
-  const getCellColor = (range) => {
-    const t = Math.min(1, range / 40); // 40pp spread = max intensity
-    return `rgba(212, 160, 48, ${0.05 + t * 0.35})`;
-  };
-
   return (
-    <section id="factor-grid" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+    <section id="factor-grid" data-docent-context="factor-grid" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
         number="Part IV"
         title="The Factor Grid"
-        subtitle="Where does the data diverge most? Cells with the widest spread glow gold — these are the demographic dimensions that most strongly predict each outcome. Click any cell to expand the full ranking."
+        subtitle="Where does the data diverge most? Harvey Balls show strength of demographic divergence — fuller circles mean wider spread. The ★ marks the most predictive dimension for each outcome. Click any cell to expand."
         icon="▦"
       />
 
@@ -1329,6 +1834,54 @@ function FactorGrid() {
         padding: "1.5rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
         overflowX: "auto",
       }}>
+        {/* Reading Guide */}
+        {!loading && gridData && (
+          <div style={{
+            background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8,
+            padding: "0.8rem 1.2rem", marginBottom: "1.2rem",
+          }}>
+            <div style={{
+              fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
+              textTransform: "uppercase", color: C.text, marginBottom: "0.6rem", fontWeight: 700,
+            }}>
+              How to Read This Grid
+            </div>
+            <div style={{
+              display: "flex", flexWrap: "wrap", gap: "1.2rem", alignItems: "center",
+              fontFamily: FONT.body, fontSize: "0.72rem", color: C.dim,
+            }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <HarveyBall score={1} color={resolveCssColor(C.textBright)} size="1.3em" />
+                <span>Minimal divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>&lt;8pp spread</span></span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <HarveyBall score={2} color={resolveCssColor(C.textBright)} size="1.3em" />
+                <span>Slight divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>8–18pp</span></span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <HarveyBall score={3} color={resolveCssColor(C.textBright)} size="1.3em" />
+                <span>Moderate divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>18–28pp</span></span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <HarveyBall score={4} color={resolveCssColor(C.textBright)} size="1.3em" />
+                <span>Strong divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>28–40pp</span></span>
+              </span>
+              <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <HarveyBall score={5} color={resolveCssColor(C.textBright)} size="1.3em" />
+                <span>Extreme divergence<br/><span style={{ fontFamily: FONT.mono, fontSize: "0.58rem" }}>40pp+</span></span>
+              </span>
+            </div>
+            <div style={{
+              fontFamily: FONT.body, fontSize: "0.65rem", color: C.dim,
+              marginTop: "0.5rem", lineHeight: 1.5,
+            }}>
+              <strong style={{ color: C.text }}>Δ</strong> = the percentage-point spread between the highest and lowest scoring groups.
+              <strong style={{ color: resolveCssColor(C.goldBright) }}> ★</strong> = the dimension with the widest spread for that outcome (most predictive).
+              Click any cell to see the full breakdown.
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div style={{ padding: "4rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
             Computing factor grid across {ANALYSIS_DIMENSIONS.length * GRID_OUTCOMES.length} combinations…
@@ -1342,18 +1895,20 @@ function FactorGrid() {
               <tr>
                 <th style={{
                   textAlign: "left", padding: "0.6rem 0.8rem",
-                  fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.1em",
+                  fontFamily: FONT.condensed, fontSize: "0.6rem", letterSpacing: "0.1em",
                   textTransform: "uppercase", color: C.dim, fontWeight: 700,
                   borderBottom: `2px solid ${C.ghost}`,
+                  position: "sticky", left: 0, background: resolveCssColor(C.bgCard), zIndex: 2,
                 }}>
                   Dimension
                 </th>
                 {GRID_OUTCOMES.map(out => (
                   <th key={out.id} style={{
-                    textAlign: "center", padding: "0.6rem 0.5rem",
-                    fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.1em",
+                    textAlign: "center", padding: "0.4rem 0.3rem",
+                    fontFamily: FONT.condensed, fontSize: "0.55rem", letterSpacing: "0.06em",
                     textTransform: "uppercase", color: C.dim, fontWeight: 700,
-                    borderBottom: `2px solid ${C.ghost}`, minWidth: 100,
+                    borderBottom: `2px solid ${C.ghost}`, minWidth: 60, maxWidth: 80,
+                    lineHeight: 1.2,
                   }}>
                     {out.short}
                   </th>
@@ -1362,11 +1917,13 @@ function FactorGrid() {
             </thead>
             <tbody>
               {ANALYSIS_DIMENSIONS.map(dim => (
-                <>
-                  <tr key={dim.id}>
+                <Fragment key={dim.id}>
+                  <tr>
                     <td style={{
-                      padding: "0.6rem 0.8rem", fontWeight: 600, color: C.textBright,
-                      borderBottom: `1px solid ${C.ghost}`,
+                      padding: "0.5rem 0.8rem", fontWeight: 600, color: C.textBright,
+                      borderBottom: `1px solid ${C.ghost}`, whiteSpace: "nowrap",
+                      fontSize: "0.75rem",
+                      position: "sticky", left: 0, background: resolveCssColor(C.bgCard), zIndex: 1,
                     }}>
                       {dim.label}
                     </td>
@@ -1374,47 +1931,48 @@ function FactorGrid() {
                       const cell = gridData[dim.id]?.[out.id];
                       const isMostPredictive = mostPredictive[out.id] === dim.id;
                       const isExpanded = expandedCell === `${dim.id}-${out.id}`;
+                      const ballScore = cell ? rangeToHarveyScore(cell.range) : 1;
+                      const ballColor = out.color ? resolveCssColor(out.color) : resolveCssColor(C.goldBright);
 
                       return (
                         <td
                           key={out.id}
                           onClick={() => setExpandedCell(isExpanded ? null : `${dim.id}-${out.id}`)}
                           style={{
-                            padding: "0.5rem",
+                            padding: "0.4rem 0.2rem",
                             textAlign: "center",
                             borderBottom: `1px solid ${C.ghost}`,
-                            background: cell ? getCellColor(cell.range) : "transparent",
                             cursor: "pointer",
                             transition: "all 0.15s",
                             position: "relative",
+                            background: isExpanded ? "rgba(212,160,48,0.08)" : "transparent",
                             boxShadow: isMostPredictive ? `inset 0 0 0 2px ${resolveCssColor(C.goldBright)}` : "none",
                           }}
+                          title={cell ? `${cell.min.toFixed(0)}–${cell.max.toFixed(0)}% (Δ${cell.range.toFixed(0)}pp)` : "No data"}
                         >
                           {cell && cell.categories.length > 0 ? (
-                            <>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.1rem" }}>
+                              <HarveyBall
+                                score={ballScore}
+                                color={isMostPredictive ? resolveCssColor(C.goldBright) : ballColor}
+                                size="1.4em"
+                              />
                               <div style={{
-                                fontFamily: FONT.mono, fontSize: "0.72rem",
-                                color: isMostPredictive ? resolveCssColor(C.goldBright) : C.textBright,
-                                fontWeight: isMostPredictive ? 700 : 400,
+                                fontFamily: FONT.mono, fontSize: "0.48rem", color: C.dim,
+                                lineHeight: 1,
                               }}>
-                                {cell.min.toFixed(0)}–{cell.max.toFixed(0)}%
-                              </div>
-                              <div style={{
-                                fontFamily: FONT.mono, fontSize: "0.52rem", color: C.dim,
-                                marginTop: "0.1rem",
-                              }}>
-                                Δ{cell.range.toFixed(0)}pp
+                                Δ{cell.range.toFixed(0)}
                               </div>
                               {isMostPredictive && (
                                 <div style={{
-                                  position: "absolute", top: 2, right: 4,
-                                  fontFamily: FONT.mono, fontSize: "0.5rem",
+                                  position: "absolute", top: 1, right: 2,
+                                  fontFamily: FONT.mono, fontSize: "0.45rem",
                                   color: resolveCssColor(C.goldBright),
                                 }}>
                                   ★
                                 </div>
                               )}
-                            </>
+                            </div>
                           ) : (
                             <span style={{ color: C.dim, fontSize: "0.65rem" }}>—</span>
                           )}
@@ -1428,6 +1986,7 @@ function FactorGrid() {
                     if (expandedCell !== `${dim.id}-${out.id}`) return null;
                     const cell = gridData[dim.id]?.[out.id];
                     if (!cell || cell.categories.length === 0) return null;
+                    const outColor = out.color ? resolveCssColor(out.color) : resolveCssColor(C.goldBright);
 
                     return (
                       <tr key={`${dim.id}-${out.id}-detail`}>
@@ -1446,11 +2005,17 @@ function FactorGrid() {
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                             {cell.categories.map((cat, i) => {
                               const barWidth = cell.max > 0 ? (cat.metric / cell.max) * 100 : 0;
+                              const isTop = i === 0;
                               return (
-                                <div key={cat.fullLabel} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                                <div key={cat.fullLabel} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                  <HarveyBall
+                                    score={percentToHarveyScore(cat.metric)}
+                                    color={isTop ? outColor : resolveCssColor(C.dim)}
+                                    size="1em"
+                                  />
                                   <span style={{
                                     fontFamily: FONT.body, fontSize: "0.7rem", color: C.text,
-                                    minWidth: 110, textAlign: "right",
+                                    minWidth: 100, textAlign: "right",
                                   }}>
                                     {cat.label}
                                   </span>
@@ -1460,7 +2025,7 @@ function FactorGrid() {
                                   }}>
                                     <div style={{
                                       width: `${barWidth}%`, height: "100%",
-                                      background: i === 0 ? resolveCssColor(C.goldBright) : resolveCssColor(C.dim),
+                                      background: isTop ? outColor : resolveCssColor(C.dim),
                                       borderRadius: 3,
                                       display: "flex", alignItems: "center", justifyContent: "flex-end",
                                       paddingRight: "0.3rem",
@@ -1468,7 +2033,7 @@ function FactorGrid() {
                                       {barWidth > 15 && (
                                         <span style={{
                                           fontFamily: FONT.mono, fontSize: "0.55rem",
-                                          color: i === 0 ? "#0a0a0c" : "#fff", fontWeight: 600,
+                                          color: isTop ? "#0a0a0c" : "#fff", fontWeight: 600,
                                         }}>
                                           {cat.metric.toFixed(1)}%
                                         </span>
@@ -1496,25 +2061,28 @@ function FactorGrid() {
                       </tr>
                     );
                   })}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>
         )}
 
-        {/* Legend */}
-        <div style={{
-          display: "flex", justifyContent: "center", gap: "2rem", marginTop: "1.2rem",
-          fontFamily: FONT.mono, fontSize: "0.6rem", color: C.dim,
-        }}>
-          <span>★ = Most predictive dimension for that outcome</span>
-          <span>Δpp = range in percentage points across categories</span>
-          <span>Click any cell to expand</span>
-        </div>
+        {/* Compact footer reminder */}
+        {!loading && gridData && (
+          <div style={{
+            display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem",
+            fontFamily: FONT.mono, fontSize: "0.55rem", color: C.dim, alignItems: "center",
+          }}>
+            <span>Δ = percentage-point spread</span>
+            <span style={{ color: resolveCssColor(C.goldBright) }}>★ = most predictive</span>
+            <span>Click any cell to expand</span>
+          </div>
+        )}
       </div>
     </section>
   );
 }
+
 
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1547,7 +2115,7 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
 
   const sections = [
     { id: "snapshots", label: "At a Glance", icon: "★" },
-    { id: "factor-finder", label: "Factor Finder", icon: "◉" },
+    { id: "factor-finder", label: "Interactive Explorer", icon: "◉" },
     { id: "persona-builder", label: "Persona Builder", icon: "◈" },
     { id: "quiz", label: "Test Your Assumptions", icon: "◇" },
     { id: "factor-grid", label: "Factor Grid", icon: "▦" },
@@ -1584,13 +2152,9 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
             display: "flex", flexDirection: "column", gap: "0.5rem",
             zIndex: 100,
           }}>
-            <h3 style={{
-              fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem",
-              color: C.goldBright, letterSpacing: "0.1em", textTransform: "uppercase",
-              marginBottom: "0.5rem",
-            }}>
-              Topics
-            </h3>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.8rem", color: C.text, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
+              Sections
+            </div>
 
             {sections.map(s => (
               <div
@@ -1630,8 +2194,8 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
 
           {/* RIGHT: Content */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
-            <SnapshotWall />
-            <FactorFinder tooltip={{ showTooltip, moveTooltip, hideTooltip }} />
+            <SnapshotWall navigate={navigate} />
+            <AssumptionQuiz />
             <PersonaBuilder />
             <QuizSection />
             <FactorGrid />

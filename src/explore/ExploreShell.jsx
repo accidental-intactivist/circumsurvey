@@ -45,12 +45,61 @@ export default function ExploreShell() {
   const [customMeta, setCustomMeta] = useState(null);
   const [exhibitContext, setExhibitContext] = useState(null);
   const [isDocentOpen, setDocentOpen] = useState(false);
+  const [visibleSection, setVisibleSection] = useState(null);
 
   // Reset custom page metadata and context whenever the route or active question ID changes
   useEffect(() => {
     setCustomMeta(null);
     setExhibitContext(null);
+    setVisibleSection(null);
   }, [route, params.id]);
+
+  // Set up scroll-spy for AI Docent context tracking
+  useEffect(() => {
+    let timeout;
+    const observer = new IntersectionObserver((entries) => {
+      // Find the element with the highest intersection ratio
+      let maxRatio = 0;
+      let mostVisible = null;
+      
+      entries.forEach(entry => {
+        if (entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio;
+          mostVisible = entry.target.getAttribute("data-docent-context");
+        }
+      });
+      
+      if (mostVisible && maxRatio > 0) {
+        // Debounce slightly to avoid jitter during fast scrolling
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          setVisibleSection(mostVisible);
+        }, 300);
+      }
+    }, {
+      root: null,
+      rootMargin: "-20% 0px -40% 0px", // Bias towards the upper-middle of the screen
+      threshold: [0, 0.25, 0.5, 0.75, 1.0]
+    });
+
+    // We use a MutationObserver to re-bind the IntersectionObserver when the DOM changes (e.g., page loads)
+    const domObserver = new MutationObserver(() => {
+      const sections = document.querySelectorAll("[data-docent-context]");
+      sections.forEach(s => observer.observe(s));
+    });
+    
+    domObserver.observe(document.body, { childList: true, subtree: true });
+    
+    // Initial bind
+    const sections = document.querySelectorAll("[data-docent-context]");
+    sections.forEach(s => observer.observe(s));
+
+    return () => {
+      clearTimeout(timeout);
+      observer.disconnect();
+      domObserver.disconnect();
+    };
+  }, []);
 
   let page;
   if (route === "pathways") {
@@ -112,7 +161,7 @@ export default function ExploreShell() {
         onClose={() => setDocentOpen(false)}
         routerState={routerState}
         updateState={updateState}
-        exhibitContext={exhibitContext}
+        exhibitContext={{ ...exhibitContext, visibleSection }}
       />
     </>
   );

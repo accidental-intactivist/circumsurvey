@@ -799,23 +799,7 @@ export const sortDistribution = (distArray, question) => {
     });
   }
 
-  if (qId.includes("restore_duration")) {
-    const getDurationIndex = (label) => {
-      const l = String(label || "").toLowerCase();
-      if (l.includes("less than 6 months")) return 0;
-      if (l.includes("6 months - 1 year") || l.includes("6 months to 1 year")) return 1;
-      if (l.includes("1-2 years")) return 2;
-      if (l.includes("2-3 years")) return 3;
-      if (l.includes("3-5 years")) return 4;
-      if (l.includes("5-7 years")) return 5;
-      if (l.includes("7-10 years") || l.includes("5-10 years")) return 6;
-      if (l.includes("more than 10 years") || l.includes("10+ years")) return 7;
-      if (l.includes("complete") || l.includes("achieved my goals")) return 8;
-      if (l.includes("< 1 year") || l.includes("less than 1 year")) return 0.5; // fallback
-      return 10;
-    };
-    return [...distArray].sort((a, b) => getDurationIndex(a.label) - getDurationIndex(b.label));
-  }
+
 
   if (qId.includes("restore_age_started")) {
     const getAgeIndex = (label) => {

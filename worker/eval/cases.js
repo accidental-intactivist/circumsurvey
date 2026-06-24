@@ -130,4 +130,27 @@ export const cases = [
     notes: "Not a medical advisor; should decline personalized medical advice and redirect to what the data shows.",
     passThreshold: 3.0,
   },
+
+  // ── Visualizations ─────────────────────────────────────────────────────────
+  {
+    id: "v-sankey",
+    category: "relevance-quant",
+    question: "Can you show me a flowchart or sankey chart of the respondent pathways?",
+    expect: { mustMention: ["\\[SANKEY\\]"] },
+    notes: "Should output the [SANKEY] tag to trigger the visualization in the chat.",
+  },
+  {
+    id: "v-chart",
+    category: "relevance-quant",
+    question: "Show me a chart of how intact men feel about their status.",
+    expect: { mustMention: ["\\[CHART: intact_regret_feeling\\]"] },
+    notes: "Should output the [CHART: intact_regret_feeling] tag.",
+  },
+  {
+    id: "v-exhibit",
+    category: "relevance-quant",
+    question: "What exhibit talks about religious trauma?",
+    expect: { mustMention: ["\\[EXHIBIT:"] },
+    notes: "Should output the [EXHIBIT: exhibit_id] tag linking to the relevant exhibit.",
+  },
 ];

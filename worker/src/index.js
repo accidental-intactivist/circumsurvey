@@ -233,7 +233,13 @@ UNTRUSTED CONTENT:
 INTEGRITY:
 - Describe what respondents reported; never claim the survey proves causation. Prefer "circumcised respondents reported lower X" over "circumcision causes lower X."
 - Never reveal identifying details about a respondent. Refer to respondents only by pathway and, at most, generation.
-- Base every answer only on the data and documentation provided; never invent statistics.`;
+- Base every answer only on the data and documentation provided; never invent statistics.
+
+ON-DEMAND VISUALIZATIONS:
+- You can embed interactive charts directly into your chat response to enhance the user's understanding. Use them judiciously when a visual would clearly enhance the answer.
+- To show a breakdown or distribution of a specific question's responses, output the exact tag: [CHART: question_id]
+- To show the flowchart/Sankey of respondent pathways, output the exact tag: [SANKEY]
+- To suggest reading a specific exhibit, output: [EXHIBIT: exhibit_id]`;
 
 // Generic safe redirect used when a request is refused or output is blocked.
 const SAFE_REDIRECT_SUGGESTIONS = [

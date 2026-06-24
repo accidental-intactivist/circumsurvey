@@ -1,9 +1,36 @@
 import { useState, useEffect, useRef } from "react";
 import { C, FONT } from "../styles/tokens";
-import { queryCopilot } from "../lib/api";
+import { queryCopilot, getQuestions, getResponseDistribution } from "../lib/api";
 import BivariateHeatmap from "./BivariateHeatmap";
 import { useTheme } from "../contexts/ThemeContext";
 import { Sparkles } from "./Icons";
+import DistributionChart from "./DistributionChart";
+import SurveyFlowchart from "./SurveyFlowchart";
+import { Link } from "react-router-dom";
+
+function DocentChart({ questionId }) {
+  const [question, setQuestion] = useState(null);
+  const [dist, setDist] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getQuestions().then(qs => {
+      if (!cancelled) setQuestion(qs.find(q => q.id === questionId));
+    });
+    getResponseDistribution(questionId).then(d => {
+      if (!cancelled) setDist(d);
+    });
+    return () => { cancelled = true; };
+  }, [questionId]);
+
+  if (!question || !dist) return <div style={{ color: C.dim, fontSize: "0.8rem", padding: "1rem" }}>Loading chart for {questionId}...</div>;
+  return (
+    <div style={{ marginTop: "1rem", marginBottom: "1rem", border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1rem", background: C.bgCard }}>
+      <h5 style={{ fontFamily: FONT.display, fontSize: "1rem", marginBottom: "1rem", color: C.textBright }}>{question.prompt}</h5>
+      <DistributionChart question={question} distribution={dist.distribution} />
+    </div>
+  );
+}
 
 export default function CopilotChat({ routerState, updateState, question, exhibitContext }) {
   const { unlockTheme, setTheme } = useTheme();
@@ -267,7 +294,30 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
             whiteSpace: "pre-wrap",
             marginBottom: result.suggestions && result.suggestions.length > 0 ? "1.5rem" : "0"
           }}>
-            {result.answer}
+            {(result.answer || "").split(/(\[CHART:[^\]]+\]|\[SANKEY\]|\[EXHIBIT:[^\]]+\])/g).map((part, i) => {
+              if (part.startsWith("[CHART:")) {
+                const qid = part.replace("[CHART:", "").replace("]", "").trim();
+                return <DocentChart key={i} questionId={qid} />;
+              }
+              if (part === "[SANKEY]") {
+                return (
+                  <div key={i} style={{ marginTop: "1rem", marginBottom: "1rem", height: "400px", border: `1px solid ${C.ghost}`, borderRadius: 8, overflow: "auto", position: "relative", background: C.bgCard }}>
+                    <div style={{ position: "absolute", top: 0, left: 0, width: "800px", height: "800px", transform: "scale(0.8)", transformOrigin: "top left" }}>
+                      <SurveyFlowchart />
+                    </div>
+                  </div>
+                );
+              }
+              if (part.startsWith("[EXHIBIT:")) {
+                const exid = part.replace("[EXHIBIT:", "").replace("]", "").trim();
+                return (
+                  <Link key={i} to={`/exhibits/${exid}`} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0" }}>
+                    Explore Exhibit: {exid}
+                  </Link>
+                );
+              }
+              return <span key={i}>{part}</span>;
+            })}
           </div>
 
           {result.metadata?.sql && (

@@ -21,6 +21,7 @@ export default defineConfig({
       deps: {
         inline: [/@asamuzakjp\/css-color/, /@csstools\/css-calc/]
       }
-    }
+    },
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'worker/**']
   }
 })

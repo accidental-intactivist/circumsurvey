@@ -1,10 +1,13 @@
 import { useEffect } from "react";
-import { FileText } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
+import { useLiveCounts } from "../lib/useLiveCounts";
 
 export default function MethodologyPage({ navigate, setExhibitContext }) {
+  const { total, byPathway, loading } = useLiveCounts();
+
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
@@ -52,30 +55,37 @@ export default function MethodologyPage({ navigate, setExhibitContext }) {
             borderBottom: `1px solid ${C.ghost}`,
             paddingBottom: "0.5rem"
           }}>
-            Survey Sample Demographics (n=501)
+            Survey Sample Demographics (n={loading ? "..." : total})
           </h3>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-            gap: "1.5rem",
-          }}>
-            <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.circumcised }}>210</div>
-              <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Circumcised Cohort</div>
+          {loading ? (
+             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: C.muted }}>
+               <Loader2 size={16} className="lucide-spin" />
+               <span style={{ fontFamily: FONT.condensed, fontSize: "0.85rem", letterSpacing: "0.05em", textTransform: "uppercase" }}>Loading dataset totals...</span>
+             </div>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+              gap: "1.5rem",
+            }}>
+              <div>
+                <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.circumcised }}>{byPathway.circumcised || 0}</div>
+                <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Circumcised Cohort</div>
+              </div>
+              <div>
+                <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.intact }}>{byPathway.intact || 0}</div>
+                <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Intact Cohort</div>
+              </div>
+              <div>
+                <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.restoring }}>{byPathway.restoring || 0}</div>
+                <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Restoring Cohort</div>
+              </div>
+              <div>
+                <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.observer }}>{byPathway.observer || 0}</div>
+                <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Observers (Partners/Parents/Meds)</div>
+              </div>
             </div>
-            <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.intact }}>140</div>
-              <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Intact Cohort</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.restoring }}>109</div>
-              <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Restoring Cohort</div>
-            </div>
-            <div>
-              <div style={{ fontSize: "1.8rem", fontFamily: FONT.display, fontWeight: 800, color: PATH_COLORS.observer }}>37</div>
-              <div style={{ fontSize: "0.78rem", fontFamily: FONT.condensed, textTransform: "uppercase", color: C.muted, letterSpacing: "0.05em" }}>Observers (Partners/Parents/Meds)</div>
-            </div>
-          </div>
+          )}
         </div>
         
         <div style={{ 

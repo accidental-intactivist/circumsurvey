@@ -17,6 +17,7 @@ import { useTooltip, Tooltip } from "../components/Tooltip";
 import IconifyEmoji from "../components/IconifyEmoji";
 import HarveyBall from "../components/HarveyBall";
 import * as Icons from "../components/Icons";
+import SmallSampleBadge from "../components/SmallSampleBadge";
 
 // ── Dimensions & Outcomes ──────────────────────────────────────────────────
 
@@ -569,6 +570,7 @@ function SnapshotWall({ navigate }) {
 
       {/* Hero stat: total respondents */}
       {totalSnap && (
+        <SmallSampleBadge n={parseInt(String(totalSnap.value).replace(/,/g, '')) || 0} label="the current cohort">
         <div style={{
           background: C.bgCard, border: `1px solid ${resolveCssColor(totalSnap.color || C.ghost)}`, borderRadius: 12,
           padding: "2rem 2.5rem", marginBottom: "1.5rem", textAlign: "center",
@@ -595,6 +597,7 @@ function SnapshotWall({ navigate }) {
             </div>
           )}
         </div>
+        </SmallSampleBadge>
       )}
 
       {/* Dynamic Cycling Flexbox Queue Grid - 3 Rows */}

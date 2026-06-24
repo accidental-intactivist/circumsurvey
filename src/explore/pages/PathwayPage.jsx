@@ -36,7 +36,7 @@ export default function PathwayPage({ routerState, navigate, updateState, setExh
         <ExhibitHero title="The Survey Map" description="An interactive flowchart of the complete survey architecture, from the universal questions every respondent answered, through the pathway fork, into each cohort's unique question set, and back together at synthesis." />
 
         {/* Flowchart */}
-        <SurveyFlowchart navigate={navigate} />
+        <SurveyFlowchart navigate={navigate} pathwayId={pathwayId} />
 
       </div>
     </div>

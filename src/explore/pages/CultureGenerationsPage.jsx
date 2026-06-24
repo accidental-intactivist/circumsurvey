@@ -292,17 +292,17 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
               <DemographicFilterBar cohort={cohortFilter} onChange={setCohortFilter} />
             </div>
 
-            <h3 style={{
+            <div style={{
               fontFamily: FONT.condensed,
               fontWeight: 700,
-              fontSize: "0.85rem",
-              color: C.goldBright,
+              fontSize: "0.8rem",
+              color: C.text,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              marginBottom: "0.5rem",
+              marginBottom: "1rem",
             }}>
-              Topics
-            </h3>
+              Sections
+            </div>
 
             {/* Cultural Associations nav link */}
             <NavLink label="Cultural Associations" target="cultural_associations" />

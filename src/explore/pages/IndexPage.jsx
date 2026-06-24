@@ -14,7 +14,7 @@ import ExhibitsDashboard from "../components/ExhibitsDashboard";
 import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
-import CopilotChat from "../components/CopilotChat";
+
 import * as Icons from "../components/Icons";
 import IconifyEmoji from "../components/IconifyEmoji";
 import { QUESTION_EXHIBIT_MAP } from "../lib/coverage";
@@ -508,16 +508,6 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
           {/* Filter Tool: Unsurfaced Toggle (Moved to left sidebar) */}
           {/* Wait, the left sidebar is at the top of the grid. Let's fix the syntax first. */}
           {/* Actually, the previous main was closing before the RIGHT aside. I will just close main properly. */}
-          <aside style={{
-            position: "sticky",
-            top: "calc(var(--header-height, 56px) + 1.5rem)",
-            maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
-            overflowY: "auto",
-            paddingRight: "0.4rem",
-            zIndex: 100,
-          }}>
-            <CopilotChat routerState={routerState} updateState={updateState} />
-          </aside>
         </div>
       </div>
 

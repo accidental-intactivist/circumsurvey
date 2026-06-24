@@ -192,7 +192,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
         {/* Header Callout */}
         <ExhibitHero
           title="Restoration Journey & Outcomes"
-          color="#a855f7"
+          color={PATH_COLORS.restoring}
           gradientColor="#d4a030"
           BackgroundIcon={Hourglass}
           description={

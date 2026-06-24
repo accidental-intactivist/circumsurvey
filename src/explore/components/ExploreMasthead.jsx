@@ -101,7 +101,7 @@ export const ROUTE_META = {
     kicker: "Tools",
     title: "Report Builder",
     desc: "Assemble your own curated selection of exhibits, charts, and findings into a shareable report.",
-    navTitle: "Report",
+    navTitle: "Report Builder",
   },
   question: {
     kicker: "Deep Dive",

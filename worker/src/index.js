@@ -474,11 +474,11 @@ async function handleAggregate(env, url) {
   let pathwayWhere = "";
   if (pathways.length > 0) {
     if (pathways.length === 1) {
-      pathwayWhere = " AND resp.pathway = ?";
+      pathwayWhere = " AND COALESCE(resp.pathway, 'observer') = ?";
       bindings.push(pathways[0]);
     } else {
       const placeholders = pathways.map(() => "?").join(",");
-      pathwayWhere = ` AND resp.pathway IN (${placeholders})`;
+      pathwayWhere = ` AND COALESCE(resp.pathway, 'observer') IN (${placeholders})`;
       bindings.push(...pathways);
     }
   }
@@ -548,11 +548,11 @@ async function handleResponseDistribution(env, url) {
   let pathwayWhere = "";
   if (pathways.length > 0) {
     if (pathways.length === 1) {
-      pathwayWhere = " AND resp.pathway = ?";
+      pathwayWhere = " AND COALESCE(resp.pathway, 'observer') = ?";
       bindings.push(pathways[0]);
     } else {
       const placeholders = pathways.map(() => "?").join(",");
-      pathwayWhere = ` AND resp.pathway IN (${placeholders})`;
+      pathwayWhere = ` AND COALESCE(resp.pathway, 'observer') IN (${placeholders})`;
       bindings.push(...pathways);
     }
   }

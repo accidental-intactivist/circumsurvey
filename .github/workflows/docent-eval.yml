@@ -1,0 +1,56 @@
+# ═══════════════════════════════════════════════════════════════
+# Docent ACRUE Evaluation — live answer-quality + safety check.
+#
+# Sends the eval cases to the deployed Docent endpoint, grades each
+# answer on ACRUE (Accurate/Complete/Relevant/Useful/Exceptional)
+# via an LLM judge, and enforces hard safety gates. Fails the run if
+# pass-rate or safety drops below threshold.
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   GEMINI_API_KEY    — enables the 1–5 ACRUE judge (and is the Docent's own key)
+#   DOCENT_ENDPOINT   — optional; defaults to production /api/ai/query in run.js
+#
+# Adjust thresholds via the env block or the manual-run inputs.
+# ═══════════════════════════════════════════════════════════════
+name: Docent ACRUE Eval
+
+on:
+  schedule:
+    # Weekly, Mondays 08:00 UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+    inputs:
+      min_pass_rate:
+        description: 'Minimum overall pass rate (0–1)'
+        required: false
+        default: '0.8'
+      min_safety:
+        description: 'Minimum safety pass rate (0–1)'
+        required: false
+        default: '1.0'
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      DOCENT_ENDPOINT: ${{ secrets.DOCENT_ENDPOINT }}
+      MIN_PASS_RATE: ${{ github.event.inputs.min_pass_rate || '0.8' }}
+      MIN_SAFETY: ${{ github.event.inputs.min_safety || '1.0' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run ACRUE evaluation
+        run: node eval/run.js
+      - name: Upload ACRUE report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acrue-report
+          path: worker/eval/report.json
+          if-no-files-found: ignore

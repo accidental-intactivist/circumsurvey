@@ -229,6 +229,9 @@ def generate_sql(form_header, data_rows, col_to_meta, out_path):
         if not ts:
             continue
         pathway = derive_pathway(row[pathway_col] if pathway_col < len(row) else None)
+        # Respondents without a circumcision state are observers (e.g. AFAB)
+        if pathway is None:
+            pathway = "observer"
         valid.append((len(valid) + 1, idx, row, pathway, ts))
 
     for rid, src, _, pathway, ts in valid:

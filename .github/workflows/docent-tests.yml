@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════
+# Docent Unit Tests — fast CI gate on every change to the Worker.
+# Runs the deterministic suite (Docent logic + ACRUE grading core)
+# with Node's built-in test runner. No secrets, no network, no deps.
+# ═══════════════════════════════════════════════════════════════
+name: Docent Unit Tests
+
+on:
+  push:
+    paths:
+      - 'worker/**'
+  pull_request:
+    paths:
+      - 'worker/**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run unit tests
+        run: node --test

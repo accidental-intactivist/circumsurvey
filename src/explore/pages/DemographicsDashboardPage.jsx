@@ -32,7 +32,7 @@ import GeographicHeatmap from "../components/GeographicHeatmap";
 import DemographicSankey from "../components/DemographicSankey";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
-
+import SmallSampleBadge from "../components/SmallSampleBadge";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -254,8 +254,8 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           gap: "0.5rem",
           zIndex: 100,
         }}>
-          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.goldBright, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-            Topics
+          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.text, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
+            Sections
           </h3>
           {[
             { id: "geo", label: "Geographic Origins", icon: "◈" },
@@ -300,7 +300,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
           <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
         </aside>
 
-        {/* Right Column: Topics */}
+        {/* Right Column: Sections */}
         <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
           {/* ═══ SECTION 1: GEOGRAPHIC ORIGINS ═══ */}
           <SectionAnchor id="geo">
@@ -506,13 +506,14 @@ function DNADimensionRow({ dimension, aggregateData, tooltip }) {
   if (totalN === 0) return null;
 
   return (
-    <div style={{
-      background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-      padding: "1.5rem 2rem", 
-    }}>
+    <SmallSampleBadge n={totalN} label="the current cohort">
       <div style={{
-        fontFamily: FONT.condensed, fontSize: "0.78rem", letterSpacing: "0.08em",
-        textTransform: "uppercase", color: C.goldBright, fontWeight: 700,
+        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
+        padding: "1.5rem 2rem", 
+      }}>
+        <div style={{
+          fontFamily: FONT.condensed, fontSize: "0.78rem", letterSpacing: "0.08em",
+          textTransform: "uppercase", color: C.goldBright, fontWeight: 700,
         marginBottom: "1rem",
         display: "flex", justifyContent: "space-between", alignItems: "baseline",
       }}>
@@ -586,6 +587,7 @@ function DNADimensionRow({ dimension, aggregateData, tooltip }) {
         })}
       </div>
     </div>
+    </SmallSampleBadge>
   );
 }
 

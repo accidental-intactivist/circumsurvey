@@ -95,10 +95,10 @@ export const GLOBAL_CSS = `
     --map-border: rgba(255, 215, 0, 0.2);
 
     /* Universal CIRO pathway colors (Evergreen-derived) */
-    --path-intact: #34d399;
-    --path-circumcised: #ef4444;
-    --path-restoring: #fcd34d;
-    --path-observer: #f97316;
+    --path-intact: #2a9d8f;
+    --path-circumcised: #e76f51;
+    --path-restoring: #e9c46a;
+    --path-observer: #a0a0a0;
     --path-trans-vag: #e85d50;
     --path-trans-phal: #c64639;
     --path-intersex: #b0a888;

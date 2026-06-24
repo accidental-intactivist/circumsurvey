@@ -41,7 +41,7 @@ const BRANCH_CONFIGS = [
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
-export default function SurveyFlowchart({ navigate }) {
+export default function SurveyFlowchart({ navigate, pathwayId }) {
   const [questions, setQuestions] = useState(null);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,6 +52,10 @@ export default function SurveyFlowchart({ navigate }) {
       const res = {};
       exp.split(",").forEach(k => res[k] = true);
       return res;
+    }
+    if (pathwayId) {
+      if (pathwayId === "synthesis-view") return { synthesis: true };
+      return { [pathwayId]: true };
     }
     return { universal: true };
   });

@@ -11,6 +11,7 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { colorForLabel } from "../components/MiniSparkline";
 import { sortDistribution, flattenMultiSelect } from "../lib/formatters";
 import IconifyEmoji from "../components/IconifyEmoji";
+import SmallSampleBadge from "../components/SmallSampleBadge";
 
 const MIRROR_PAIRS = [
   { id: "advantages", concept: "Perceived Advantages", intact: "intact_advantages_desc", circ: "circ_advantages_desc" },
@@ -544,6 +545,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
   }, [mergedList, sortBy]);
 
   return (
+    <SmallSampleBadge n={Math.min(intactTotal, circTotal)} label="the compared cohorts">
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem" }}>
       {/* Pathway Headers */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
@@ -717,6 +719,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
         </div>
       )}
     </div>
+    </SmallSampleBadge>
   );
 }
 

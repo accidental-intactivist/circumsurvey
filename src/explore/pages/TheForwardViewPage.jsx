@@ -86,7 +86,7 @@ export default function TheForwardViewPage({ routerState, navigate, setExhibitCo
 
         {/* SECTION A: THE SANKEY */}
         <div style={{ marginBottom: "5rem" }}>
-          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: C.blue, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem", textShadow: "1px 1px 0 rgba(0,0,0,0.8)" }}>
+          <h2 style={{ fontFamily: FONT.condensed, fontSize: "1.5rem", color: PATH_COLORS.intact, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "left", display: "flex", alignItems: "center", gap: "0.5rem", textShadow: "1px 1px 0 rgba(0,0,0,0.8)" }}>
             The Verdict
           </h2>
           <p style={{ color: C.muted, fontSize: "1rem", maxWidth: 800, marginBottom: "2rem", lineHeight: 1.6 }}>

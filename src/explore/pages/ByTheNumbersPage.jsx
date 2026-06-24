@@ -1539,17 +1539,19 @@ function QuizSection() {
     return arr;
   }, [choices, currentQ]);
 
-  const correctAnswer = choices[0]?.id;
-  const isCorrect = guess === correctAnswer;
+  const topMetric = choices[0]?.metric || 0;
+  const margin = 2.0; // Treat results within 2% as a statistical tie for first place
+  const correctChoices = choices.filter(c => topMetric - c.metric <= margin).map(c => c.id);
+  const isCorrect = correctChoices.includes(guess);
   const hasData = choices.length >= 2;
 
   const handleGuess = (choiceId) => {
     if (revealed) return;
     setGuess(choiceId);
     setRevealed(true);
-    setAnswered(a => a + 1);
-    if (choiceId === choices[0]?.id) setScore(s => s + 1);
+    if (correctChoices.includes(choiceId)) setScore(s => s + 1);
   };
+  
   const handleNext = () => {
     if (currentQ < questions.length - 1) {
       setCurrentQ(c => c + 1);
@@ -1562,6 +1564,7 @@ function QuizSection() {
   };
 
   const themeColor = metric?.color || C.goldBright;
+  const questionsAttempted = revealed ? currentQ + 1 : currentQ;
 
   return (
     <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
@@ -1585,12 +1588,12 @@ function QuizSection() {
             fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em",
             textTransform: "uppercase", color: C.dim,
           }}>
-            {currentQ < CURATED_QUIZ.length ? `Question ${currentQ + 1} of ${CURATED_QUIZ.length}` : "Bonus Question"}
+            {currentQ < CURATED_QUIZ.length ? `Question ${currentQ + 1} of ${CURATED_QUIZ.length}` : `Question ${currentQ + 1}`}
           </div>
           <div style={{
             fontFamily: FONT.mono, fontSize: "0.72rem", color: C.goldBright,
           }}>
-            Score: {score}/{answered}
+            Score: {score}/{questionsAttempted}
           </div>
         </div>
 
@@ -1620,7 +1623,7 @@ function QuizSection() {
             }}>
               {shuffledChoices.map(choice => {
                 const isGuessed = guess === choice.id;
-                const isAnswer = revealed && choice.id === correctAnswer;
+                const isAnswer = revealed && correctChoices.includes(choice.id);
                 const isWrong = revealed && isGuessed && !isCorrect;
 
                 let bg = "rgba(255,255,255,0.03)";
@@ -1671,8 +1674,8 @@ function QuizSection() {
                   color: isCorrect ? resolveCssColor(C.green) : resolveCssColor(C.muted),
                   fontStyle: "italic", lineHeight: 1.4,
                 }}>
-                  {isCorrect ? "✓ Correct! " : "✗ Not quite. "}
-                  {q.note || "The data often challenges our assumptions."}
+                  {isCorrect ? (correctChoices.length > 1 ? "✓ Correct! It's a statistical tie." : "✓ Correct!") : "✗ Not quite. "}
+                  {q.note && ` ${q.note}`}
                 </div>
                 <button
                   onClick={handleNext}

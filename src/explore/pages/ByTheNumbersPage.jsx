@@ -692,363 +692,328 @@ function SnapshotWall({ navigate }) {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 1: ASSUMPTION QUIZ — "Test Your Assumptions"
+// SECTION 1: TEST YOUR ASSUMPTIONS — Auto-generated Quiz with Harvey Balls
 // ═══════════════════════════════════════════════════════════════════════════
 
-const PATHWAY_TOGGLES = [
-  { id: "all", label: "All Pathways" },
-  { id: "circumcised", label: "Circumcised" },
-  { id: "intact", label: "Intact" },
-  { id: "restoring", label: "Restoring" },
+const CURATED_QUIZ = [
+  {
+    dimId: "politics", metricId: "bodily_autonomy",
+    question: "Bodily autonomy is often framed as a progressive value. Which political group in this survey MOST strongly prioritizes it?",
+    note: "This result challenges the assumption that bodily autonomy is partisan. Across the political spectrum, this principle resonates when people confront the question directly.",
+  },
+  {
+    dimId: "generation", metricId: "social_norm",
+    question: "Cultural norms shift across generations. Which generation is MOST likely to perceive circumcision as 'the norm' in their society?",
+    note: "Generational norms are a window into how cultural practices persist — not through evidence, but through the assumption that 'everyone does it.'",
+  },
+  {
+    dimId: "education", metricId: "natural_state",
+    question: "Does higher education correlate with leaning toward the natural state? Which education level leans MOST toward leaving the body unaltered?",
+    note: "The relationship between education and medical skepticism is more complex than it appears. What you're seeing here is the intersection of access to information and cultural conditioning.",
+  },
+  {
+    dimId: "country_born", metricId: "keep_intact",
+    question: "Circumcision rates vary wildly by country. Respondents born in which country are MOST likely to say they'd keep a future son intact?",
+    note: "National culture shapes the 'default setting' more than individual preference. Notice how strongly geography predicts this choice — and ask yourself why.",
+  },
+  {
+    dimId: "generation", metricId: "resentment",
+    question: "Younger generations grew up with the internet and access to anatomical information older cohorts never had. Which generation reports the STRONGEST resentment about being circumcised?",
+    note: "This is the information asymmetry question. When people learn what was removed — and that it was their choice to make — the emotional response intensifies across younger cohorts.",
+  },
 ];
 
-const getRandomMetric = () => OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
+function generateRandomQuiz(exclude = []) {
+  const excludeSet = new Set(exclude.map(e => `${e.dimId}-${e.metricId}`));
+  // Curated anthropological pairings that produce meaningful, robust results
+  const ANTHROPOLOGICAL_COMBOS = [
+    { dimId: "politics", metricId: "keep_intact", q: "Is the decision to keep a future son intact actually a left-vs-right issue? Which political group scores HIGHEST?" },
+    { dimId: "generation", metricId: "dissatisfaction", q: "Dissatisfaction with one's own circumcision — is this a modern phenomenon? Which generation reports the MOST dissatisfaction?" },
+    { dimId: "country_born", metricId: "social_norm", q: "The sense that circumcision is 'normal' is deeply geographic. Respondents from which country MOST strongly perceive it as the norm?" },
+    { dimId: "education", metricId: "bodily_autonomy", q: "Does formal education change how people weigh bodily autonomy? Which education level prioritizes it MOST?" },
+    { dimId: "politics", metricId: "circ_aesthetic", q: "Aesthetic preference for circumcision — is it political? Which political leaning MOST prefers the circumcised look?" },
+    { dimId: "generation", metricId: "considered_restoration", q: "Foreskin restoration is a growing movement. Which generation has MOST seriously considered it?" },
+    { dimId: "country_born", metricId: "bodily_autonomy", q: "Different legal and cultural traditions produce different views on bodily autonomy. Which country of birth scores HIGHEST?" },
+    { dimId: "education", metricId: "healthier_belief", q: "The medical framing of circumcision varies by culture. Which education level is MOST convinced the intact state is healthier?" },
+    { dimId: "politics", metricId: "social_norm", q: "Who perceives circumcision as 'the norm'? Is that perception ideological? Which political group scores HIGHEST?" },
+    { dimId: "generation", metricId: "pride", q: "Pride and satisfaction with one's body — does this change across generations? Which generation reports the HIGHEST pride?" },
+  ];
+  const available = ANTHROPOLOGICAL_COMBOS.filter(c => !excludeSet.has(`${c.dimId}-${c.metricId}`));
+  if (available.length > 0) {
+    const pick = available[Math.floor(Math.random() * available.length)];
+    return { dimId: pick.dimId, metricId: pick.metricId, question: pick.q, note: null };
+  }
+  // Fallback: truly random
+  const dim = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
+  const metric = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
+  return {
+    dimId: dim.id, metricId: metric.id,
+    question: `Which ${dim.label.toLowerCase()} group scores HIGHEST for "${metric.label}"?`,
+    note: null,
+  };
+}
 
-function AssumptionQuiz() {
-  const [selectedPathway, setSelectedPathway] = useState(PATHWAY_TOGGLES[0]);
-  const [selectedDim, setSelectedDim] = useState(ANALYSIS_DIMENSIONS[0]);
-  const [selectedMetric, setSelectedMetric] = useState(() => getRandomMetric());
-
-  const [data, setData] = useState(null);
+function QuizSection() {
+  const [currentQ, setCurrentQ] = useState(0);
+  const [questions, setQuestions] = useState(() => [...CURATED_QUIZ]);
+  const [guess, setGuess] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+  const [quizData, setQuizData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  // Quiz state: 'guessing' | 'revealed'
-  const [quizState, setQuizState] = useState("guessing");
-  const [guessId, setGuessId] = useState(null);
+  const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(0);
+
+  const q = questions[currentQ];
+  const dim = ANALYSIS_DIMENSIONS.find(d => d.id === q.dimId);
+  const metric = OUTCOME_METRICS.find(m => m.id === q.metricId);
 
   useEffect(() => {
+    if (!dim || !metric) return;
     setLoading(true);
-    setQuizState("guessing");
-    setGuessId(null);
-    
-    const params = { by: selectedDim.column };
-    if (selectedPathway.id !== "all") {
-      params.cohort = { pathway: selectedPathway.id };
-    }
-    
-    getAggregate(selectedMetric.qid, params)
+    setGuess(null);
+    setRevealed(false);
+    getAggregate(metric.qid, { by: dim.column })
       .then(res => {
-        setData(res.results || {});
+        setQuizData(res.results || {});
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [selectedDim.column, selectedMetric.qid, selectedPathway.id]);
+  }, [currentQ, questions.length, dim?.column, metric?.qid]);
 
-  // Process data into two cohorts to compare
-  const cohorts = useMemo(() => {
-    if (!data) return [];
-    
-    const processed = Object.entries(data)
-      .filter(([key]) => {
-        if (!key || key === "null" || key === "unknown" || key === "" || key === "observer") return false;
-        const lowerKey = key.toLowerCase();
-        if (lowerKey.includes("not sure") || lowerKey.includes("prefer not to say") || lowerKey.includes("prefer not to answer")) return false;
-        return true;
-      })
+  const choices = useMemo(() => {
+    if (!quizData || !metric) return [];
+    return Object.entries(quizData)
+      .filter(([key]) => key && key !== "null" && key !== "unknown" && key !== "" && key !== "observer" && !key.toLowerCase().includes("prefer not to say") && !key.toLowerCase().includes("not sure"))
       .map(([key, val]) => {
-        const metric = extractMetric(selectedMetric.extractor, val.distribution);
-        return {
-          id: key,
-          label: shorten(key),
-          fullLabel: key,
-          n: val.n || 0,
-          metric: metric,
-        };
+        const m = extractMetric(metric.extractor, val.distribution);
+        return { id: key, label: shorten(key), fullLabel: key, n: val.n, metric: m };
       })
-      .filter(b => b.n >= 15 && b.metric !== null) // Minimum N for validity
-      .sort((a, b) => b.n - a.n); // Sort by sample size
+      .filter(c => c.n >= 25 && c.metric !== null) // n≥25 minimum for quiz — small subgroups produce misleading percentages
+      .sort((a, b) => b.metric - a.metric);
+  }, [quizData, metric]);
 
-    // We take up to 6 cohorts by sample size to avoid overwhelming the screen,
-    // but shuffle them so the order isn't predictably by size.
-    const top = processed.slice(0, 6);
-    // Simple deterministic shuffle based on labels so it doesn't jump on re-renders unless data changes
-    return top.sort((a, b) => a.label.localeCompare(b.label));
-  }, [data, selectedMetric.extractor]);
+  // Shuffle choices for button display so the answer isn't always first
+  const shuffledChoices = useMemo(() => {
+    if (choices.length === 0) return [];
+    const arr = [...choices];
+    // Simple Fisher-Yates shuffle seeded by question index for stability
+    let seed = currentQ * 7 + choices.length * 13;
+    for (let i = arr.length - 1; i > 0; i--) {
+      seed = (seed * 9301 + 49297) % 233280;
+      const j = Math.floor((seed / 233280) * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }, [choices, currentQ]);
 
-  // Handle guess interaction
-  const handleGuess = (id) => {
-    if (quizState === "revealed") return;
-    setGuessId(id);
-    setQuizState("revealed");
+  const topMetric = choices[0]?.metric || 0;
+  const margin = 2.0; // Treat results within 2% as a statistical tie for first place
+  const correctChoices = choices.filter(c => topMetric - c.metric <= margin).map(c => c.id);
+  const isCorrect = correctChoices.includes(guess);
+  const hasData = choices.length >= 2;
+
+  const handleGuess = (choiceId) => {
+    if (revealed) return;
+    setGuess(choiceId);
+    setRevealed(true);
+    if (correctChoices.includes(choiceId)) setScore(s => s + 1);
+  };
+  
+  const handleNext = () => {
+    if (currentQ < questions.length - 1) {
+      setCurrentQ(c => c + 1);
+    } else {
+      // Generate a random new question
+      const newQ = generateRandomQuiz(questions);
+      setQuestions(prev => [...prev, newQ]);
+      setCurrentQ(prev => prev + 1);
+    }
   };
 
-  const hasData = cohorts.length >= 2;
-  const highestId = hasData ? cohorts.reduce((prev, curr) => (curr.metric > prev.metric ? curr : prev), cohorts[0]).id : null;
-  const isCorrect = guessId === highestId;
-
-  // Thematic CSS variables
-  const themeColor = selectedMetric.color || C.gold;
-  const neonShadow = `0 4px 20px ${resolveCssColor(themeColor).replace('hsl(', 'hsla(').replace('rgb(', 'rgba(').replace(')', ', 0.15)')}`;
+  const themeColor = metric?.color || C.goldBright;
+  const questionsAttempted = revealed ? currentQ + 1 : currentQ;
 
   return (
-    <section id="factor-finder" data-docent-context="interactive-explorer" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
+    <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
       <SectionHeader
         number="Section 1"
-        title="Interactive Explorer"
-        subtitle="How well do you know the data? Select a pathway, demographic, and an outcome, then guess which cohort scores higher. Averages exclude 'Not sure' or 'N/A' responses to ensure accuracy."
-        icon="◉"
+        title="Challenge Your Assumptions"
+        subtitle="Think you know how culture, politics, education, and geography shape attitudes about the body? Each question is designed to expose a blind spot. Guess first — then follow the thread."
+        icon="◇"
       />
 
-      {/* Controls Container (Glassmorphic) */}
-      <div style={{
-        background: resolveCssColor(C.bgSoft),
-        backdropFilter: "blur(12px)",
-        border: `1px solid ${C.ghost}`,
-        borderRadius: 12,
-        padding: "1.5rem",
-        marginBottom: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-      }}>
-        
-        {/* Pathway Row */}
-        <div>
-          <label style={{
-            fontFamily: FONT.condensed, fontSize: "0.75rem", letterSpacing: "0.12em",
-            textTransform: "uppercase", color: C.text, display: "block", marginBottom: "0.6rem", fontWeight: 600
-          }}>
-            1. Select Pathway Filter
-          </label>
-          <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
-            {PATHWAY_TOGGLES.map(p => {
-              const active = selectedPathway.id === p.id;
-              const pColor = p.id === "all" ? C.gold : PATH_COLORS[p.id];
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => setSelectedPathway(p)}
-                  style={{
-                    background: active ? resolveCssColor(pColor) : resolveCssColor(C.bgCard),
-                    color: active ? "#111" : resolveCssColor(C.text),
-                    border: `1px solid ${active ? resolveCssColor(pColor) : resolveCssColor(C.ghost)}`,
-                    borderRadius: 20, padding: "0.4rem 1rem", fontFamily: FONT.condensed, fontSize: "0.85rem",
-                    textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
-                    fontWeight: active ? 700 : 500,
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Dimension Row */}
-        <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
-          <div style={{ flex: "1 1 250px" }}>
-            <label style={{
-              fontFamily: FONT.condensed, fontSize: "0.75rem", letterSpacing: "0.12em",
-              textTransform: "uppercase", color: C.text, display: "block", marginBottom: "0.6rem", fontWeight: 600
-            }}>
-              2. Select Demographic
-            </label>
-            <select
-              value={selectedDim.id}
-              onChange={e => setSelectedDim(ANALYSIS_DIMENSIONS.find(d => d.id === e.target.value))}
-              style={{
-                width: "100%", background: resolveCssColor(C.bgDeep), color: resolveCssColor(C.textBright),
-                border: `1px solid ${resolveCssColor(C.ghost)}`, borderRadius: 6,
-                padding: "0.6rem 0.8rem", fontFamily: FONT.condensed, fontSize: "0.9rem",
-                textTransform: "uppercase", letterSpacing: "0.05em", cursor: "pointer", outline: "none",
-              }}
-            >
-              {ANALYSIS_DIMENSIONS.map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Quiz Interactive Arena */}
       <div style={{
         background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "3rem 1.5rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-        minHeight: 400, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
+        padding: "2rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
       }}>
+        {/* Progress */}
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          marginBottom: "1.5rem",
+        }}>
+          <div style={{
+            fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em",
+            textTransform: "uppercase", color: C.dim,
+          }}>
+            {currentQ < CURATED_QUIZ.length ? `Question ${currentQ + 1} of ${CURATED_QUIZ.length}` : `Question ${currentQ + 1}`}
+          </div>
+          <div style={{
+            fontFamily: FONT.mono, fontSize: "0.72rem", color: C.goldBright,
+          }}>
+            Score: {score}/{questionsAttempted}
+          </div>
+        </div>
+
+        {/* Question */}
+        <h3 style={{
+          fontFamily: FONT.display, fontSize: "1.35rem", fontWeight: 700,
+          color: C.textBright, lineHeight: 1.35, marginBottom: "1.5rem",
+          letterSpacing: "-0.01em",
+        }}>
+          {q.question}
+        </h3>
+
         {loading ? (
-          <div style={{ color: C.muted, fontStyle: "italic", fontFamily: FONT.body }}>Querying database...</div>
+          <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
+            Loading data…
+          </div>
         ) : !hasData ? (
-          <div style={{ color: C.muted, fontStyle: "italic", fontFamily: FONT.body, maxWidth: 400, textAlign: "center" }}>
-            Not enough data for this specific cross-section. Try a different pathway or demographic.
+          <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
+            Not enough data for this combination. <button onClick={handleNext} style={{ background: "none", border: "none", color: resolveCssColor(C.blue), cursor: "pointer", textDecoration: "underline", fontFamily: FONT.body }}>Try another →</button>
           </div>
         ) : (
           <>
+            {/* Answer options as cards */}
             <div style={{
-              fontFamily: FONT.condensed, fontSize: "1.4rem", color: C.textBright, textAlign: "center",
-              marginBottom: "3rem", textTransform: "uppercase", letterSpacing: "0.05em"
+              display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+              gap: "0.6rem", marginBottom: "1.5rem",
             }}>
-              Which group scores {cohorts.length > 2 ? "highest" : "higher"} for <span style={{ color: resolveCssColor(themeColor) }}>{selectedMetric.label}</span>?
-            </div>
+              {shuffledChoices.map(choice => {
+                const isGuessed = guess === choice.id;
+                const isAnswer = revealed && correctChoices.includes(choice.id);
+                const isWrong = revealed && isGuessed && !isCorrect;
 
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(${cohorts.length > 4 ? '140px' : '180px'}, 1fr))`, gap: "1rem", width: "100%", maxWidth: 800, margin: "0 auto" }}>
-              {cohorts.map((cohort) => {
-                const isGuessed = guessId === cohort.id;
-                const isHighest = highestId === cohort.id;
-                const revealed = quizState === "revealed";
+                let bg = "rgba(255,255,255,0.03)";
+                let border = C.ghost;
+                let textColor = C.textBright;
 
-                let cardBg = `linear-gradient(135deg, ${C.bgDeep}, ${C.bgCard})`;
-                let borderColor = C.ghost;
-                let cardTransform = "scale(1)";
-                let cardOpacity = 1;
-                let cardShadow = "none";
-                let cardZIndex = 1;
-
-                if (revealed) {
-                  if (isHighest) {
-                    borderColor = resolveCssColor(themeColor);
-                    cardShadow = neonShadow;
-                    cardTransform = "scale(1.05)";
-                    cardZIndex = 10;
-                  } else {
-                    cardOpacity = 0.45;
-                    cardTransform = "scale(0.97)";
-                  }
-                }
+                if (isGuessed && !revealed) { bg = "rgba(212,160,48,0.12)"; border = C.goldBright; }
+                if (isAnswer) { bg = "rgba(104,184,120,0.12)"; border = "rgba(104,184,120,0.6)"; textColor = C.green; }
+                if (isWrong) { bg = "rgba(217,79,79,0.12)"; border = "rgba(217,79,79,0.6)"; textColor = C.red; }
 
                 return (
-                  <div
-                    key={cohort.id}
-                    onClick={() => handleGuess(cohort.id)}
+                  <button
+                    key={choice.id}
+                    onClick={() => handleGuess(choice.id)}
+                    disabled={revealed}
                     style={{
-                      background: cardBg,
-                      border: `2px solid ${typeof borderColor === "string" && borderColor.startsWith("var(") ? resolveCssColor(borderColor) : borderColor}`,
-                      borderRadius: 10,
-                      padding: "1.2rem 1rem",
-                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                      textAlign: "center",
+                      background: bg,
+                      border: `1px solid ${typeof border === "string" && border.startsWith("var(") ? resolveCssColor(border) : border}`,
+                      borderRadius: 8, padding: "0.7rem 0.9rem",
+                      color: typeof textColor === "string" && textColor.startsWith("var(") ? resolveCssColor(textColor) : textColor,
+                      fontFamily: FONT.body, fontSize: "0.82rem", fontWeight: 500,
                       cursor: revealed ? "default" : "pointer",
-                      transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                      transform: cardTransform,
-                      opacity: cardOpacity,
-                      boxShadow: cardShadow,
-                      zIndex: cardZIndex,
-                      position: "relative",
-                      minHeight: 100,
-                    }}
-                    onMouseEnter={e => {
-                      if (!revealed) {
-                        e.currentTarget.style.borderColor = resolveCssColor(themeColor);
-                        e.currentTarget.style.transform = "scale(1.04)";
-                        e.currentTarget.style.boxShadow = `0 4px 16px rgba(0,0,0,0.3)`;
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!revealed) {
-                        e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
-                        e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }
+                      transition: "all 0.15s",
+                      textAlign: "left",
+                      opacity: revealed && !isAnswer && !isWrong ? 0.5 : 1,
                     }}
                   >
-                    <div style={{
-                      fontFamily: FONT.condensed, fontSize: "0.95rem", fontWeight: 600,
-                      color: C.textBright, letterSpacing: "0.04em", lineHeight: 1.3,
-                    }}>
-                      {cohort.label}
-                    </div>
-                    
-                    {/* Revealed metric — slides open */}
-                    <div style={{
-                      maxHeight: revealed ? 80 : 0, opacity: revealed ? 1 : 0, overflow: "hidden",
-                      transition: "all 0.5s ease", marginTop: revealed ? "0.6rem" : 0,
-                    }}>
+                    <div>{choice.label}</div>
+                    {revealed && (
                       <div style={{
-                        fontFamily: FONT.mono, fontSize: "2rem", fontWeight: 800,
-                        color: resolveCssColor(themeColor), lineHeight: 1,
+                        fontFamily: FONT.mono, fontSize: "0.68rem", marginTop: "0.3rem",
+                        opacity: 0.8, display: "flex", alignItems: "center", gap: "0.3rem",
                       }}>
-                        {cohort.metric.toFixed(0)}%
-                      </div>
-                      <div style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.dim, marginTop: "0.25rem" }}>
-                        n={cohort.n}
-                      </div>
-                    </div>
-
-                    {/* Winner badge */}
-                    {revealed && isHighest && (
-                      <div style={{
-                        position: "absolute", top: -8, right: -8,
-                        background: resolveCssColor(themeColor), color: "#0a0a0c",
-                        borderRadius: "50%", width: 24, height: 24,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontWeight: 800, fontSize: "0.7rem",
-                        boxShadow: `0 2px 8px ${resolveCssColor(themeColor).replace(')', ', 0.4)').replace('rgb(', 'rgba(').replace('hsl(', 'hsla(')}`,
-                      }}>
-                        ★
+                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={isAnswer ? resolveCssColor(C.green) : resolveCssColor(C.dim)} size="0.9em" />
+                        {choice.metric.toFixed(1)}% (n={choice.n})
                       </div>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
 
-            {/* Quiz Feedback */}
-            <div style={{
-              height: "auto", minHeight: 40, marginTop: "3rem", display: "flex", alignItems: "center", justifyContent: "center",
-              opacity: quizState === "revealed" ? 1 : 0, transform: quizState === "revealed" ? "translateY(0)" : "translateY(10px)",
-              transition: "all 0.5s ease", textAlign: "center", padding: "0 1rem",
-            }}>
-              {quizState === "revealed" && (() => {
-                const winner = cohorts.find(c => c.id === highestId);
-                const guessed = cohorts.find(c => c.id === guessId);
-                const sorted = [...cohorts].sort((a, b) => b.metric - a.metric);
-                const runnerUp = sorted[1];
-                const spread = winner && runnerUp ? (winner.metric - runnerUp.metric).toFixed(1) : "0";
-                const isClose = parseFloat(spread) < 5;
-                const isDominant = parseFloat(spread) > 20;
-                const guessedRank = sorted.findIndex(c => c.id === guessId) + 1;
+            {/* Post-reveal controls */}
+            {revealed && (
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{
+                  flex: 1, fontFamily: FONT.body, fontSize: "0.85rem",
+                  color: isCorrect ? resolveCssColor(C.green) : resolveCssColor(C.muted),
+                  fontStyle: "italic", lineHeight: 1.4,
+                }}>
+                  {isCorrect ? (correctChoices.length > 1 ? "✓ Correct! It's a statistical tie." : "✓ Correct!") : "✗ Not quite. "}
+                  {q.note && ` ${q.note}`}
+                </div>
+                <button
+                  onClick={handleNext}
+                  style={{
+                    background: resolveCssColor(C.goldBright), color: "#0a0a0c",
+                    border: "none", borderRadius: 8, padding: "0.6rem 1.5rem",
+                    fontFamily: FONT.condensed, fontSize: "0.85rem", fontWeight: 700,
+                    letterSpacing: "0.08em", textTransform: "uppercase",
+                    cursor: "pointer", flexShrink: 0,
+                  }}
+                >
+                  {currentQ < CURATED_QUIZ.length - 1 ? "Next →" : "Try Another →"}
+                </button>
+              </div>
+            )}
 
-                let commentary;
-                if (isCorrect) {
-                  if (isClose) {
-                    commentary = `Sharp eye! ${winner?.label} edges out ${runnerUp?.label} by just ${spread} percentage points — this was a genuinely close call.`;
-                  } else if (isDominant) {
-                    commentary = `Well spotted. ${winner?.label} leads by a commanding ${spread}pp — a clear standout in this demographic split.`;
-                  } else {
-                    commentary = `Nailed it. ${winner?.label} leads at ${winner?.metric.toFixed(0)}%, with a ${spread}pp gap over ${runnerUp?.label}.`;
-                  }
-                } else {
-                  if (isClose) {
-                    commentary = `Close — ${guessed?.label} (${guessed?.metric.toFixed(0)}%) was a reasonable guess, but ${winner?.label} edges ahead at ${winner?.metric.toFixed(0)}%. The spread is only ${spread}pp; this one could flip with more data.`;
-                  } else if (guessedRank === 2) {
-                    commentary = `Not far off. ${guessed?.label} comes in second at ${guessed?.metric.toFixed(0)}%, but ${winner?.label} takes the lead at ${winner?.metric.toFixed(0)}% — a ${spread}pp gap that might challenge expectations.`;
-                  } else if (isDominant) {
-                    commentary = `${winner?.label} stands out at ${winner?.metric.toFixed(0)}% — a ${spread}pp lead that signals a strong demographic pattern here. ${guessed?.label} came in at ${guessed?.metric.toFixed(0)}%.`;
-                  } else {
-                    commentary = `${winner?.label} leads this one at ${winner?.metric.toFixed(0)}%, with ${guessed?.label} at ${guessed?.metric.toFixed(0)}%. The ${spread}pp gap shows how ${selectedDim?.label?.toLowerCase() || "demographics"} can shape outcomes in unexpected ways.`;
-                  }
-                }
-
-                return (
-                  <div style={{
-                    fontFamily: FONT.body, fontSize: "0.95rem",
-                    color: isCorrect ? resolveCssColor(C.goldBright) : resolveCssColor(C.text),
-                    fontWeight: isCorrect ? 600 : 400,
-                    lineHeight: 1.5, maxWidth: 600,
-                  }}>
-                    {commentary}
-                  </div>
-                );
-              })()}
-            </div>
-
-            {/* Reset Button */}
-            {quizState === "revealed" && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setQuizState("guessing");
-                  setGuessId(null);
-                  setSelectedMetric(getRandomMetric());
-                }}
-                style={{
-                  marginTop: "1rem", background: "transparent", border: "none", color: resolveCssColor(C.blue),
-                  fontFamily: FONT.condensed, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em",
-                  cursor: "pointer", textDecoration: "underline"
-                }}
-              >
-                Try Another
-              </button>
+            {/* Harvey Ball ranked reveal */}
+            {revealed && (
+              <div style={{ marginTop: "2rem", borderTop: `1px solid ${C.ghost}`, paddingTop: "1.5rem" }}>
+                <div style={{
+                  fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
+                  textTransform: "uppercase", color: C.dim, marginBottom: "0.8rem",
+                }}>
+                  Full Ranking
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                  {choices.map((choice, i) => {
+                    const maxMetric = choices[0]?.metric || 100;
+                    const barWidth = (choice.metric / maxMetric) * 100;
+                    const isTop = i === 0;
+                    const ballColor = isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim);
+                    return (
+                      <div key={choice.id} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={ballColor} size="1.2em" />
+                        <span style={{
+                          fontFamily: FONT.body, fontSize: "0.72rem", color: C.text,
+                          minWidth: 100, textAlign: "right",
+                        }}>
+                          {choice.label}
+                        </span>
+                        <div style={{
+                          flex: 1, height: 18, background: "rgba(255,255,255,0.04)",
+                          borderRadius: 4, overflow: "hidden",
+                        }}>
+                          <div style={{
+                            width: `${barWidth}%`, height: "100%",
+                            background: isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim),
+                            borderRadius: 4, transition: "width 0.4s ease",
+                            display: "flex", alignItems: "center", justifyContent: "flex-end",
+                            paddingRight: "0.4rem",
+                          }}>
+                            <span style={{
+                              fontFamily: FONT.mono, fontSize: "0.58rem",
+                              color: isTop ? "#0a0a0c" : "#fff",
+                              fontWeight: 600, whiteSpace: "nowrap",
+                            }}>
+                              {choice.metric.toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
+                        <span style={{
+                          fontFamily: FONT.mono, fontSize: "0.58rem", color: C.dim,
+                          minWidth: 35, textAlign: "right",
+                        }}>
+                          n={choice.n}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </>
         )}
@@ -1425,339 +1390,7 @@ function PersonaBuilder() {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 3: TEST YOUR ASSUMPTIONS — Auto-generated Quiz with Harvey Balls
-// ═══════════════════════════════════════════════════════════════════════════
-
-const CURATED_QUIZ = [
-  {
-    dimId: "politics", metricId: "bodily_autonomy",
-    question: "Bodily autonomy is often framed as a progressive value. Which political group in this survey MOST strongly prioritizes it?",
-    note: "This result challenges the assumption that bodily autonomy is partisan. Across the political spectrum, this principle resonates when people confront the question directly.",
-  },
-  {
-    dimId: "generation", metricId: "social_norm",
-    question: "Cultural norms shift across generations. Which generation is MOST likely to perceive circumcision as 'the norm' in their society?",
-    note: "Generational norms are a window into how cultural practices persist — not through evidence, but through the assumption that 'everyone does it.'",
-  },
-  {
-    dimId: "education", metricId: "natural_state",
-    question: "Does higher education correlate with leaning toward the natural state? Which education level leans MOST toward leaving the body unaltered?",
-    note: "The relationship between education and medical skepticism is more complex than it appears. What you're seeing here is the intersection of access to information and cultural conditioning.",
-  },
-  {
-    dimId: "country_born", metricId: "keep_intact",
-    question: "Circumcision rates vary wildly by country. Respondents born in which country are MOST likely to say they'd keep a future son intact?",
-    note: "National culture shapes the 'default setting' more than individual preference. Notice how strongly geography predicts this choice — and ask yourself why.",
-  },
-  {
-    dimId: "generation", metricId: "resentment",
-    question: "Younger generations grew up with the internet and access to anatomical information older cohorts never had. Which generation reports the STRONGEST resentment about being circumcised?",
-    note: "This is the information asymmetry question. When people learn what was removed — and that it was their choice to make — the emotional response intensifies across younger cohorts.",
-  },
-];
-
-function generateRandomQuiz(exclude = []) {
-  const excludeSet = new Set(exclude.map(e => `${e.dimId}-${e.metricId}`));
-  // Curated anthropological pairings that produce meaningful, robust results
-  const ANTHROPOLOGICAL_COMBOS = [
-    { dimId: "politics", metricId: "keep_intact", q: "Is the decision to keep a future son intact actually a left-vs-right issue? Which political group scores HIGHEST?" },
-    { dimId: "generation", metricId: "dissatisfaction", q: "Dissatisfaction with one's own circumcision — is this a modern phenomenon? Which generation reports the MOST dissatisfaction?" },
-    { dimId: "country_born", metricId: "social_norm", q: "The sense that circumcision is 'normal' is deeply geographic. Respondents from which country MOST strongly perceive it as the norm?" },
-    { dimId: "education", metricId: "bodily_autonomy", q: "Does formal education change how people weigh bodily autonomy? Which education level prioritizes it MOST?" },
-    { dimId: "politics", metricId: "circ_aesthetic", q: "Aesthetic preference for circumcision — is it political? Which political leaning MOST prefers the circumcised look?" },
-    { dimId: "generation", metricId: "considered_restoration", q: "Foreskin restoration is a growing movement. Which generation has MOST seriously considered it?" },
-    { dimId: "country_born", metricId: "bodily_autonomy", q: "Different legal and cultural traditions produce different views on bodily autonomy. Which country of birth scores HIGHEST?" },
-    { dimId: "education", metricId: "healthier_belief", q: "The medical framing of circumcision varies by culture. Which education level is MOST convinced the intact state is healthier?" },
-    { dimId: "politics", metricId: "social_norm", q: "Who perceives circumcision as 'the norm'? Is that perception ideological? Which political group scores HIGHEST?" },
-    { dimId: "generation", metricId: "pride", q: "Pride and satisfaction with one's body — does this change across generations? Which generation reports the HIGHEST pride?" },
-  ];
-  const available = ANTHROPOLOGICAL_COMBOS.filter(c => !excludeSet.has(`${c.dimId}-${c.metricId}`));
-  if (available.length > 0) {
-    const pick = available[Math.floor(Math.random() * available.length)];
-    return { dimId: pick.dimId, metricId: pick.metricId, question: pick.q, note: null };
-  }
-  // Fallback: truly random
-  const dim = ANALYSIS_DIMENSIONS[Math.floor(Math.random() * ANALYSIS_DIMENSIONS.length)];
-  const metric = OUTCOME_METRICS[Math.floor(Math.random() * OUTCOME_METRICS.length)];
-  return {
-    dimId: dim.id, metricId: metric.id,
-    question: `Which ${dim.label.toLowerCase()} group scores HIGHEST for "${metric.label}"?`,
-    note: null,
-  };
-}
-
-function QuizSection() {
-  const [currentQ, setCurrentQ] = useState(0);
-  const [questions, setQuestions] = useState(() => [...CURATED_QUIZ]);
-  const [guess, setGuess] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-  const [quizData, setQuizData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [score, setScore] = useState(0);
-  const [answered, setAnswered] = useState(0);
-
-  const q = questions[currentQ];
-  const dim = ANALYSIS_DIMENSIONS.find(d => d.id === q.dimId);
-  const metric = OUTCOME_METRICS.find(m => m.id === q.metricId);
-
-  useEffect(() => {
-    if (!dim || !metric) return;
-    setLoading(true);
-    setGuess(null);
-    setRevealed(false);
-    getAggregate(metric.qid, { by: dim.column })
-      .then(res => {
-        setQuizData(res.results || {});
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [currentQ, questions.length, dim?.column, metric?.qid]);
-
-  const choices = useMemo(() => {
-    if (!quizData || !metric) return [];
-    return Object.entries(quizData)
-      .filter(([key]) => key && key !== "null" && key !== "unknown" && key !== "" && key !== "observer" && !key.toLowerCase().includes("prefer not to say") && !key.toLowerCase().includes("not sure"))
-      .map(([key, val]) => {
-        const m = extractMetric(metric.extractor, val.distribution);
-        return { id: key, label: shorten(key), fullLabel: key, n: val.n, metric: m };
-      })
-      .filter(c => c.n >= 25 && c.metric !== null) // n≥25 minimum for quiz — small subgroups produce misleading percentages
-      .sort((a, b) => b.metric - a.metric);
-  }, [quizData, metric]);
-
-  // Shuffle choices for button display so the answer isn't always first
-  const shuffledChoices = useMemo(() => {
-    if (choices.length === 0) return [];
-    const arr = [...choices];
-    // Simple Fisher-Yates shuffle seeded by question index for stability
-    let seed = currentQ * 7 + choices.length * 13;
-    for (let i = arr.length - 1; i > 0; i--) {
-      seed = (seed * 9301 + 49297) % 233280;
-      const j = Math.floor((seed / 233280) * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }, [choices, currentQ]);
-
-  const topMetric = choices[0]?.metric || 0;
-  const margin = 2.0; // Treat results within 2% as a statistical tie for first place
-  const correctChoices = choices.filter(c => topMetric - c.metric <= margin).map(c => c.id);
-  const isCorrect = correctChoices.includes(guess);
-  const hasData = choices.length >= 2;
-
-  const handleGuess = (choiceId) => {
-    if (revealed) return;
-    setGuess(choiceId);
-    setRevealed(true);
-    if (correctChoices.includes(choiceId)) setScore(s => s + 1);
-  };
-  
-  const handleNext = () => {
-    if (currentQ < questions.length - 1) {
-      setCurrentQ(c => c + 1);
-    } else {
-      // Generate a random new question
-      const newQ = generateRandomQuiz(questions);
-      setQuestions(prev => [...prev, newQ]);
-      setCurrentQ(prev => prev + 1);
-    }
-  };
-
-  const themeColor = metric?.color || C.goldBright;
-  const questionsAttempted = revealed ? currentQ + 1 : currentQ;
-
-  return (
-    <section id="quiz" data-docent-context="test-your-assumptions" style={{ scrollMarginTop: "2rem", marginBottom: "5rem" }}>
-      <SectionHeader
-        number="Section 3"
-        title="Challenge Your Assumptions"
-        subtitle="Think you know how culture, politics, education, and geography shape attitudes about the body? Each question is designed to expose a blind spot. Guess first — then follow the thread."
-        icon="◇"
-      />
-
-      <div style={{
-        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        padding: "2rem", boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-      }}>
-        {/* Progress */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          marginBottom: "1.5rem",
-        }}>
-          <div style={{
-            fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em",
-            textTransform: "uppercase", color: C.dim,
-          }}>
-            {currentQ < CURATED_QUIZ.length ? `Question ${currentQ + 1} of ${CURATED_QUIZ.length}` : `Question ${currentQ + 1}`}
-          </div>
-          <div style={{
-            fontFamily: FONT.mono, fontSize: "0.72rem", color: C.goldBright,
-          }}>
-            Score: {score}/{questionsAttempted}
-          </div>
-        </div>
-
-        {/* Question */}
-        <h3 style={{
-          fontFamily: FONT.display, fontSize: "1.35rem", fontWeight: 700,
-          color: C.textBright, lineHeight: 1.35, marginBottom: "1.5rem",
-          letterSpacing: "-0.01em",
-        }}>
-          {q.question}
-        </h3>
-
-        {loading ? (
-          <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
-            Loading data…
-          </div>
-        ) : !hasData ? (
-          <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
-            Not enough data for this combination. <button onClick={handleNext} style={{ background: "none", border: "none", color: resolveCssColor(C.blue), cursor: "pointer", textDecoration: "underline", fontFamily: FONT.body }}>Try another →</button>
-          </div>
-        ) : (
-          <>
-            {/* Answer options as cards */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-              gap: "0.6rem", marginBottom: "1.5rem",
-            }}>
-              {shuffledChoices.map(choice => {
-                const isGuessed = guess === choice.id;
-                const isAnswer = revealed && correctChoices.includes(choice.id);
-                const isWrong = revealed && isGuessed && !isCorrect;
-
-                let bg = "rgba(255,255,255,0.03)";
-                let border = C.ghost;
-                let textColor = C.textBright;
-
-                if (isGuessed && !revealed) { bg = "rgba(212,160,48,0.12)"; border = C.goldBright; }
-                if (isAnswer) { bg = "rgba(104,184,120,0.12)"; border = "rgba(104,184,120,0.6)"; textColor = C.green; }
-                if (isWrong) { bg = "rgba(217,79,79,0.12)"; border = "rgba(217,79,79,0.6)"; textColor = C.red; }
-
-                return (
-                  <button
-                    key={choice.id}
-                    onClick={() => handleGuess(choice.id)}
-                    disabled={revealed}
-                    style={{
-                      background: bg,
-                      border: `1px solid ${typeof border === "string" && border.startsWith("var(") ? resolveCssColor(border) : border}`,
-                      borderRadius: 8, padding: "0.7rem 0.9rem",
-                      color: typeof textColor === "string" && textColor.startsWith("var(") ? resolveCssColor(textColor) : textColor,
-                      fontFamily: FONT.body, fontSize: "0.82rem", fontWeight: 500,
-                      cursor: revealed ? "default" : "pointer",
-                      transition: "all 0.15s",
-                      textAlign: "left",
-                      opacity: revealed && !isAnswer && !isWrong ? 0.5 : 1,
-                    }}
-                  >
-                    <div>{choice.label}</div>
-                    {revealed && (
-                      <div style={{
-                        fontFamily: FONT.mono, fontSize: "0.68rem", marginTop: "0.3rem",
-                        opacity: 0.8, display: "flex", alignItems: "center", gap: "0.3rem",
-                      }}>
-                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={isAnswer ? resolveCssColor(C.green) : resolveCssColor(C.dim)} size="0.9em" />
-                        {choice.metric.toFixed(1)}% (n={choice.n})
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Post-reveal controls */}
-            {revealed && (
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{
-                  flex: 1, fontFamily: FONT.body, fontSize: "0.85rem",
-                  color: isCorrect ? resolveCssColor(C.green) : resolveCssColor(C.muted),
-                  fontStyle: "italic", lineHeight: 1.4,
-                }}>
-                  {isCorrect ? (correctChoices.length > 1 ? "✓ Correct! It's a statistical tie." : "✓ Correct!") : "✗ Not quite. "}
-                  {q.note && ` ${q.note}`}
-                </div>
-                <button
-                  onClick={handleNext}
-                  style={{
-                    background: resolveCssColor(C.goldBright), color: "#0a0a0c",
-                    border: "none", borderRadius: 8, padding: "0.6rem 1.5rem",
-                    fontFamily: FONT.condensed, fontSize: "0.85rem", fontWeight: 700,
-                    letterSpacing: "0.08em", textTransform: "uppercase",
-                    cursor: "pointer", flexShrink: 0,
-                  }}
-                >
-                  {currentQ < CURATED_QUIZ.length - 1 ? "Next →" : "Try Another →"}
-                </button>
-              </div>
-            )}
-
-            {/* Harvey Ball ranked reveal */}
-            {revealed && (
-              <div style={{ marginTop: "2rem", borderTop: `1px solid ${C.ghost}`, paddingTop: "1.5rem" }}>
-                <div style={{
-                  fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.12em",
-                  textTransform: "uppercase", color: C.dim, marginBottom: "0.8rem",
-                }}>
-                  Full Ranking
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                  {choices.map((choice, i) => {
-                    const maxMetric = choices[0]?.metric || 100;
-                    const barWidth = (choice.metric / maxMetric) * 100;
-                    const isTop = i === 0;
-                    const ballColor = isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim);
-                    return (
-                      <div key={choice.id} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                        <HarveyBall score={percentToHarveyScore(choice.metric)} color={ballColor} size="1.2em" />
-                        <span style={{
-                          fontFamily: FONT.body, fontSize: "0.72rem", color: C.text,
-                          minWidth: 100, textAlign: "right",
-                        }}>
-                          {choice.label}
-                        </span>
-                        <div style={{
-                          flex: 1, height: 18, background: "rgba(255,255,255,0.04)",
-                          borderRadius: 4, overflow: "hidden",
-                        }}>
-                          <div style={{
-                            width: `${barWidth}%`, height: "100%",
-                            background: isTop ? resolveCssColor(themeColor) : resolveCssColor(C.dim),
-                            borderRadius: 4, transition: "width 0.4s ease",
-                            display: "flex", alignItems: "center", justifyContent: "flex-end",
-                            paddingRight: "0.4rem",
-                          }}>
-                            <span style={{
-                              fontFamily: FONT.mono, fontSize: "0.58rem",
-                              color: isTop ? "#0a0a0c" : "#fff",
-                              fontWeight: 600, whiteSpace: "nowrap",
-                            }}>
-                              {choice.metric.toFixed(1)}%
-                            </span>
-                          </div>
-                        </div>
-                        <span style={{
-                          fontFamily: FONT.mono, fontSize: "0.58rem", color: C.dim,
-                          minWidth: 35, textAlign: "right",
-                        }}>
-                          n={choice.n}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </section>
-  );
-}
-
-
-// ═══════════════════════════════════════════════════════════════════════════
-// SECTION 4: FACTOR GRID — Harvey Ball Dot Matrix
+// SECTION 3: FACTOR GRID — The Heatmap Matrix
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Use all 12 outcomes from the main OUTCOME_METRICS
@@ -2129,9 +1762,8 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
 
   const sections = [
     { id: "snapshots", label: "At a Glance", icon: "★" },
-    { id: "factor-finder", label: "Interactive Explorer", icon: "◉" },
-    { id: "persona-builder", label: "Persona Builder", icon: "◈" },
     { id: "quiz", label: "Challenge Your Assumptions", icon: "◇" },
+    { id: "persona-builder", label: "Persona Builder", icon: "◈" },
     { id: "factor-grid", label: "Factor Grid", icon: "▦" },
   ];
 
@@ -2209,9 +1841,8 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
           {/* RIGHT: Content */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
             <SnapshotWall navigate={navigate} />
-            <AssumptionQuiz />
-            <PersonaBuilder />
             <QuizSection />
+            <PersonaBuilder />
             <FactorGrid />
           </div>
         </div>

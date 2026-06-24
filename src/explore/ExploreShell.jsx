@@ -148,6 +148,20 @@ export default function ExploreShell() {
 
   return (
     <>
+      <style>{`
+        .explore-page-container {
+          transition: padding-right 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+          padding-right: 0;
+        }
+        @media (min-width: 900px) {
+          .docent-open-masthead {
+            right: 480px !important;
+          }
+          .explore-page-container.docent-open {
+            padding-right: 480px;
+          }
+        }
+      `}</style>
       <ExploreMasthead 
         route={route || "index"} 
         navigate={navigate} 
@@ -155,7 +169,9 @@ export default function ExploreShell() {
         isDocentOpen={isDocentOpen}
         setDocentOpen={setDocentOpen}
       />
-      {page}
+      <main className={`explore-page-container ${isDocentOpen ? 'docent-open' : ''}`}>
+        {page}
+      </main>
       <GlobalDocentDrawer 
         isOpen={isDocentOpen} 
         onClose={() => setDocentOpen(false)}

@@ -125,26 +125,11 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       gap: "1rem",
     }}>
       <div style={{
-        fontFamily: FONT.condensed,
-        fontSize: "0.85rem",
-        letterSpacing: "0.15em",
-        textTransform: "uppercase",
-        color: C.goldBright,
-        fontWeight: 700,
         display: "flex",
+        justifyContent: "flex-end",
         alignItems: "center",
-        gap: "0.5rem"
+        marginBottom: "-1rem" // pulls the chat closer since header is gone
       }}>
-        <Sparkles size={16} color="currentColor" style={{ marginTop: -2 }} />
-        <span>Ask A Docent</span>
-        <span style={{
-          background: C.gold,
-          color: "#000",
-          padding: "0.1rem 0.4rem",
-          borderRadius: 4,
-          fontSize: "0.6rem",
-          letterSpacing: "0.1em"
-        }}>BETA</span>
         {(result || query) && (
           <button
             onClick={handleClear}

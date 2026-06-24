@@ -245,11 +245,12 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
       <header
         ref={headerRef}
         id="explore-masthead"
+        className={isDocentOpen ? "docent-open-masthead" : ""}
         style={{
           position: "fixed",
           top: 0,
           left: 0,
-          right: 0,
+          right: 0, // Fallback, will be overridden by CSS
           height: currentHeight,
           zIndex: 1000,
           overflow: "visible", // Allowed to be visible so dropdowns/popovers don't get truncated
@@ -263,7 +264,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           backdropFilter: scrolled ? "blur(14px)" : "none",
           borderBottom: `1px solid ${scrolled ? "var(--c-ghost)" : "transparent"}`,
           boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.3)" : "none",
-          transition: "background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease",
+          transition: "right 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease",
         }}
       >
         {/* ── Clipped background container ───────────────────────────────── */}

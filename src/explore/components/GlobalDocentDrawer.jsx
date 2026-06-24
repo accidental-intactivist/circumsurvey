@@ -48,6 +48,16 @@ export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updat
             }}>
               AI Docent
             </span>
+            <span style={{
+              background: C.gold,
+              color: "#000",
+              padding: "0.1rem 0.4rem",
+              borderRadius: 4,
+              fontSize: "0.6rem",
+              letterSpacing: "0.1em",
+              fontWeight: 700,
+              fontFamily: FONT.condensed
+            }}>BETA</span>
           </div>
           <button 
             onClick={onClose}

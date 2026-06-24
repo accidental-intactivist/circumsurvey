@@ -382,91 +382,91 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
 
           {result.quotes && result.quotes.length > 0 && (
             <div style={{ marginTop: "2rem" }}>
-              <h5 style={{
-                fontFamily: FONT.condensed,
-                fontSize: "0.75rem",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: C.dim,
-                marginBottom: "1rem",
-                borderBottom: `1px solid ${C.ghost}`,
-                paddingBottom: "0.5rem"
-              }}>Sources Cited</h5>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {result.quotes.map((q, i) => {
-                  const isDoc = q.source_type ? q.source_type === "documentation" : q.type === "static_context";
-                  const accent = isDoc ? C.ltBlue : C.goldBright;
-                  const typeLabel = isDoc ? "About the Survey" : "Survey Response";
-                  const heading = q.source_label || (isDoc ? (q.title || "About the Survey") : "Respondent voice");
-                  const detail = q.source_detail || (isDoc ? "Project documentation" : [q.pathway, q.generation].filter(Boolean).join(" · "));
-                  return (
-                  <div key={i} style={{
-                    borderLeft: `2px solid ${accent}`,
-                    paddingLeft: "1rem",
-                    fontSize: "0.85rem",
-                    color: C.muted
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.4rem", flexWrap: "wrap" }}>
-                      <span style={{ color: accent, fontWeight: "bold", fontFamily: FONT.mono, fontSize: "0.72rem" }}>[{i + 1}]</span>
-                      <span style={{
-                        fontFamily: FONT.condensed,
-                        fontSize: "0.56rem",
-                        fontWeight: 700,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: accent,
-                        background: `${accent}1a`,
-                        border: `1px solid ${accent}40`,
-                        borderRadius: 999,
-                        padding: "0.1rem 0.45rem",
-                      }}>{typeLabel}</span>
-                      <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.04em", textTransform: "uppercase", color: C.muted }}>{heading}</span>
-                    </div>
-                    <span style={{ fontStyle: "italic" }}>"{q.text}"</span>
-                    <div style={{
-                      marginTop: "0.6rem",
-                      fontSize: "0.72rem",
-                      fontFamily: FONT.mono,
-                      color: C.dim,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      flexWrap: "wrap"
+              <details>
+                <summary style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.75rem",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: C.dim,
+                  marginBottom: "1rem",
+                  borderBottom: `1px solid ${C.ghost}`,
+                  paddingBottom: "0.5rem",
+                  cursor: "pointer",
+                  listStyle: "none"
+                }}>Sources Cited ({result.quotes.length})</summary>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {result.quotes.map((q, i) => {
+                    const isDoc = q.source_type ? q.source_type === "documentation" : q.type === "static_context";
+                    const accent = isDoc ? C.ltBlue : C.goldBright;
+                    const typeLabel = isDoc ? "About the Survey" : "Survey Response";
+                    const heading = q.source_label || (isDoc ? (q.title || "About the Survey") : "Respondent voice");
+                    const detail = q.source_detail || (isDoc ? "Project documentation" : [q.pathway, q.generation].filter(Boolean).join(" · "));
+                    return (
+                    <div key={i} style={{
+                      borderLeft: `2px solid ${accent}`,
+                      paddingLeft: "1rem",
+                      fontSize: "0.85rem",
+                      color: C.muted
                     }}>
-                      <span>{detail}</span>
-                      {!isDoc && (
-                        <button
-                          onClick={() => {
-                            const sq = `Find a thematic match for this quote: "${q.text}". Search specifically for responses from DIFFERENT pathways to see how these experiences intersect.`;
-                            setQuery(sq);
-                            executeSearch(sq);
-                          }}
-                          style={{
-                            background: "transparent",
-                            border: `1px solid ${C.ghost}`,
-                            color: C.goldBright,
-                            fontFamily: FONT.condensed,
-                            fontSize: "0.64rem",
-                            letterSpacing: "0.08em",
-                            textTransform: "uppercase",
-                            padding: "0.3rem 0.6rem",
-                            borderRadius: 4,
-                            cursor: "pointer",
-                            transition: "all 0.15s",
-                          }}
-                          onMouseEnter={(e) => { e.target.style.background = "rgba(212,160,48,0.1)"; }}
-                          onMouseLeave={(e) => { e.target.style.background = "transparent"; }}
-                        >
-                          Find Cross-Pathway Match
-                        </button>
-                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", marginBottom: "0.4rem", flexWrap: "wrap" }}>
+                        <span style={{ color: accent, fontWeight: "bold", fontFamily: FONT.mono, fontSize: "0.72rem" }}>[{i + 1}]</span>
+                        <span style={{
+                          fontFamily: FONT.condensed,
+                          fontSize: "0.56rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: accent,
+                          background: `${accent}1a`,
+                          border: `1px solid ${accent}40`,
+                          borderRadius: 999,
+                          padding: "0.1rem 0.45rem",
+                        }}>{typeLabel}</span>
+                        <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.04em", textTransform: "uppercase", color: C.muted }}>{heading}</span>
+                      </div>
+                      <span style={{ fontStyle: "italic" }}>"{q.text}"</span>
+                      <div style={{
+                        marginTop: "0.6rem",
+                        fontSize: "0.72rem",
+                        fontFamily: FONT.mono,
+                        color: C.dim,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        flexWrap: "wrap"
+                      }}>
+                        <span>{detail}</span>
+                        {!isDoc && (
+                          <button
+                            onClick={() => {
+                              const sq = `Find a thematic match for this quote: "${q.text}". Search specifically for responses from DIFFERENT pathways to see how these experiences intersect.`;
+                              setQuery(sq);
+                              executeSearch(sq);
+                            }}
+                            style={{
+                              background: "transparent",
+                              border: `1px solid ${C.ghost}`,
+                              color: C.goldBright,
+                              fontFamily: FONT.condensed,
+                              fontSize: "0.65rem",
+                              textTransform: "uppercase",
+                              padding: "0.2rem 0.6rem",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Find Intersections
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              </details>
             </div>
           )}
         </div>

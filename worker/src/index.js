@@ -926,10 +926,11 @@ async function handleCopilotQuery(env, request, url) {
 
     let exhibitDirectory = "\nAvailable Exhibits you can recommend to the user if relevant to their question:\n";
     for (const [key, val] of Object.entries(EXHIBITION_MANIFEST)) {
-      if (typeof val === 'string') {
+      if (typeof val === 'string' && key.startsWith('/exhibits/')) {
+        const id = key.replace('/exhibits/', '');
+        exhibitDirectory += `- ${val.split('.')[0]} -> tag to use: [EXHIBIT: ${id}]\n`;
+      } else if (typeof val === 'string') {
         exhibitDirectory += `- ${val.split('.')[0]} (route: ${key})\n`;
-      } else {
-        exhibitDirectory += `- By The Numbers Dashboard (route: ${key})\n`;
       }
     }
 
@@ -1125,7 +1126,8 @@ ${dataStr}
 <<<END_UNTRUSTED_DATA>>>
 
 Interpret the data with specific percentages or counts. If the database returned no data, politely inform the user that this specific metric or intersection is unavailable and use your reasoning to explain why or pivot the conversation. If data is present, draw 1-2 conclusions. Provide 3 short, conversational follow-up questions the user could ask next to explore this topic further (Suggested User Actions). Be concise.
-IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.`;
+IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SUA>...</SUA> tags.
+${q1 ? `If a visual distribution chart would help explain this data, you can embed it by outputting the exact tag: [CHART: ${q1}]` : ""}`;
 
       let rawAnswer = await synthesize(env, {
         system: `${DOCENT_SYSTEM}\n\nFor this turn, act as a concise, analytical data scientist interpreting the tool results provided.`,
@@ -1253,7 +1255,7 @@ IMPORTANT: Output each follow-up question on its own line wrapped EXACTLY in <SU
         return `[${i+1}] (PROJECT DOCUMENTATION - ${q.title || 'FAQ'}): "${(q.text || '').slice(0, 500)}"`;
       }
       const qPrompt = promptsMap[q.question_id] || q.question_id || 'Survey Question';
-      return `[${i+1}] (RESPONDENT QUOTE - ${q.pathway || 'unknown'}, ${q.generation || 'unknown'}) Answering: "${qPrompt}"\nResponse: "${(q.text || '').slice(0, 500)}"`;
+      return `[${i+1}] (RESPONDENT QUOTE - ${q.pathway || 'unknown'}, ${q.generation || 'unknown'}) Answering: "${qPrompt}"\nResponse: "${(q.text || '').slice(0, 500)}"\n${q.question_id ? `Available Chart Tag: [CHART: ${q.question_id}]` : ""}`;
     }).join("\n\n");
 
     if (contextStr.length > 4000) {

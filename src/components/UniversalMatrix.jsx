@@ -29,166 +29,7 @@ function wrapText(text, maxChars = 22) {
   return lines;
 }
 
-// Consolidates messy write-ins and multi-select comma joins into clean buckets
-function consolidateLabel(rawLabel, questionId) {
-  if (!rawLabel) return "Unknown";
-  const l = rawLabel.toLowerCase();
-  
-  if (questionId && questionId.includes("profession")) {
-    if (l.includes("stay-at-home") || l.includes("homemaker")) return "Stay-at-Home Parent";
-    if (l.includes("education") || l.includes("teacher") || l.includes("professor") || l.includes("academia")) return "Education / Academia";
-    if (l.includes("healthcare") || l.includes("medicine") || l.includes("nurse") || l.includes("doctor") || l.includes("medical") || l.includes("therapist")) return "Healthcare / Medicine";
-    if (l.includes("business") || l.includes("finance") || l.includes("management") || l.includes("hr director")) return "Business / Finance";
-    if (l.includes("clerical") || l.includes("administrative") || l.includes("secretary") || l.includes("coordinator")) return "Clerical / Admin";
-    if (l.includes("retail") || l.includes("customer service") || l.includes("hospitality")) return "Retail / Hospitality";
-    if (l.includes("skilled trades") || l.includes("electrician") || l.includes("mechanic") || l.includes("hairstylist") || l.includes("seamstris")) return "Skilled Trades";
-    if (l.includes("factory") || l.includes("manufacturing") || l.includes("general labor") || l.includes("odd jobs")) return "Factory / General Labor";
-    if (l.includes("law") || l.includes("government") || l.includes("public service") || l.includes("military") || l.includes("civil servant")) return "Gov't / Law / Military";
-    if (l.includes("arts") || l.includes("humanities") || l.includes("entertainment") || l.includes("artist") || l.includes("writer") || l.includes("striper") || l.includes("journalism")) return "Arts / Entertainment";
-    if (l.includes("science") || l.includes("research")) return "Science / Research";
-    if (l.includes("tech") || l.includes("software") || l.includes("coder") || l.includes("engineering") || l.includes("architect")) return "Tech / Engineering";
-    if (l.includes("personal care") || l.includes("service")) return "Personal Care / Service";
-    if (l.includes("transportation") || l.includes("telecommunications")) return "Transport / Telecom";
-    return "Other / Mixed Profession";
-  }
-  
-  if (questionId === "demo_education_self" || questionId === "family_mother_education" || questionId === "family_father_education") {
-    if (l.includes("less than high school")) return "Less than High School";
-    if (l.includes("high school")) return "High School / GED";
-    if (l.includes("trade school") || l.includes("apprenticeship") || l.includes("journeyman")) return "Trade / Apprenticeship";
-    if (l.includes("some college") || l.includes("associate")) return "Some College / Associate's";
-    if (l.includes("bachelor")) return "Bachelor's Degree";
-    if (l.includes("master")) return "Master's Degree";
-    if (l.includes("professional") || l.includes("jd") || l.includes("md") || l.includes("pharmd") || l.includes("dds")) return "Professional Degree (MD, JD, etc)";
-    if (l.includes("doctoral") || l.includes("phd") || l.includes("edd")) return "Doctoral Degree (PhD, etc)";
-  }
-  
-  if (questionId === "demo_sexuality") {
-    const isStraight = l.includes("straight") || l.includes("hetero");
-    const isGayLesbian = l.includes("gay") || l.includes("lesbian") || l.includes("homosexual");
-    const isBiPan = l.includes("bi") || l.includes("pansexual") || l.includes("fluid") || l.includes("heteroflexible");
-    const isAsexual = l.includes("asexual") || l.includes("demisexual");
-    const isQueer = l.includes("queer") || l.includes("questioning") || l.includes("curious");
-    
-    if ((isStraight && isGayLesbian) || isBiPan) return "Bisexual / Pansexual / Fluid";
-    if (isGayLesbian) return "Gay / Lesbian";
-    if (isQueer) return "Queer / Questioning";
-    if (isStraight) return "Straight / Heterosexual";
-    if (isAsexual) return "Asexual / Demisexual";
-    
-    return "Other / Write-in";
-  }
-  
-  if (questionId === "demo_gender_identity") {
-    if (l.includes("trans")) return "Transgender";
-    if (l.includes("non-binary") || l.includes("nonbinary") || l.includes("queer") || l.includes("fluid") || l.includes("agender") || l.includes("enby")) return "Non-binary / Genderqueer";
-    if (l.includes("female") || l.includes("woman")) return "Female";
-    if (l.includes("male") || l.includes("man") || l.includes("masculine")) return "Male";
-    return "Other / Write-in";
-  }
-  
-  if (questionId === "demo_sex_assigned_at_birth") {
-    if (l.includes("intersex")) return "Intersex";
-    if (l.includes("female") || l.includes("afab")) return "Female (AFAB)";
-    if (l.includes("male") || l.includes("amab")) return "Male (AMAB)";
-  }
-  
-  if (questionId === "family_ses") {
-    if (l.includes("lower income") || l.includes("struggled to")) return "Lower Income";
-    if (l.includes("working class") || l.includes("lower-middle income")) return "Working Class / Lower-Middle";
-    if (l.includes("middle income") || l.includes("generally comfortable")) return "Middle Income";
-    if (l.includes("upper-middle income") || l.includes("financially secure")) return "Upper-Middle Income";
-    if (l.includes("upper income") || l.includes("wealthy")) return "Upper Income / Wealthy";
-  }
-  
-  // Specific Long-Form Survey Question overrides
-  if (questionId === "family_upbringing_status") {
-    if (l.includes("birth/biological")) return "Raised by Biological Parents";
-    if (l.includes("infant")) return "Adopted as Infant";
-    if (l.includes("child or teenager")) return "Adopted as Child/Teenager";
-    if (l.includes("different family structure")) return "Other Family Structure";
-  }
-  
-  if (questionId === "family_father_status") {
-    if (l.includes("intact")) return "Intact";
-    if (l.includes("circumcised")) return "Circumcised";
-    if (l.includes("restoring")) return "Restoring";
-    if (l.includes("unsure") || l.includes("don't know")) return "Unsure / Unknown";
-  }
-  
-  if (questionId === "religion_is_significant") {
-    if (l.includes("major role")) return "Major Role";
-    if (l.includes("minor")) return "Minor Role";
-    if (l.includes("not a significant part")) return "Not Significant";
-  }
-  
-  if (questionId === "religion_primary_tradition") {
-    if (l.includes("christianity")) return "Christianity";
-    if (l.includes("judaism")) return "Judaism";
-    if (l.includes("islam")) return "Islam";
-    if (l.includes("atheist") || l.includes("agnostic")) return "Atheist / Agnostic";
-  }
-  
-  if (questionId === "culture_primary_view_of_circ") {
-    if (l.includes("expected and considered")) return "Expected Standard";
-    if (l.includes("cosmetic preference")) return "Cosmetic Preference";
-    if (l.includes("medical necessity")) return "Medical Necessity";
-    if (l.includes("religious requirement")) return "Religious Requirement";
-    if (l.includes("private family choice")) return "Private Choice";
-    if (l.includes("questioned, but ultimately")) return "Questioned Standard";
-    if (l.includes("actively opposed")) return "Actively Opposed";
-  }
-  
-  if (questionId === "culture_social_pressure_role") {
-    if (l.includes("significant factor")) return "Significant Factor";
-    if (l.includes("minor factor")) return "Minor Factor";
-    if (l.includes("not a factor")) return "Not a Factor";
-    if (l.includes("don't know")) return "Unknown";
-  }
-  
-  if (questionId === "family_cultural_background") {
-    if (l.includes(",")) return "Mixed / Multi-Cultural";
-    if (l.includes("christian")) return "Christian";
-    if (l.includes("jewish") || l.includes("judaism")) return "Jewish";
-    if (l.includes("islam") || l.includes("muslim")) return "Islamic";
-    if (l.includes("buddhism") || l.includes("buddhist")) return "Buddhism";
-    if (l.includes("hinduism") || l.includes("hindu")) return "Hinduism";
-    if (l.includes("atheist") || l.includes("agnostic") || l.includes("secular")) return "Secular / Non-Religious";
-  }
-  
-  if (questionId === "final_social_norm_perception" || questionId === "culture_community_expectation") {
-    // String variants for different questions
-    if (l.includes("overwhelmingly seen as the normal and expected")) {
-      if (l.includes("intact state is overwhelmingly")) return "Intact Overwhelmingly Normal";
-      if (l.includes("circumcised state is overwhelmingly")) return "Circumcised Overwhelmingly Normal";
-    }
-    if (l.includes("generally seen as more normal")) {
-      if (l.includes("intact state is generally")) return "Intact Generally Normal";
-      if (l.includes("circumcised state is generally")) return "Circumcised Generally Normal";
-    }
-    
-    // Community Expectations variants
-    if (l.includes("uncommon; being left intact")) return "Intact was the Norm";
-    if (l.includes("50/50 choice")) return "50/50 Choice";
-    if (l.includes("very common")) return "Very Common";
-    if (l.includes("unquestioned norm; i believe nearly all boys")) return "Circumcised was the Norm";
-    if (l.includes("not sure what the expectation was")) return "Unsure / Unknown";
-    
-    if (l.includes("equally normal and acceptable")) return "Both Equally Normal";
-    if (l.includes("private, almost taboo")) return "Private / Taboo";
-    if (l.includes("active debate")) return "Active Debate";
-    if (l.includes("unquestioned default")) return "Unquestioned Default";
-  }
-  
-  // Clean up any remaining parentheticals for un-caught labels
-  let cleaned = rawLabel.replace(/\s*\([^)]*\)\s*$/, "").trim();
-  if (cleaned.length > 40) {
-    // If STILL too long, try to take just the first sentence or first clause before a comma
-    cleaned = cleaned.split(".")[0].split(",")[0].trim();
-  }
-  
-  return cleaned;
-}
+import { consolidateLabel } from "../explore/lib/formatters";
 
 // Heuristics to rank Likert/Ordinal labels logically instead of alphabetically
 export function getSortScore(label) {
@@ -268,7 +109,7 @@ export function getSortScore(label) {
 }
 
 // Helper to generate a color sequence
-const COLORS = [C.blue, C.red, C.gold, C.green, C.ltBlue, C.dim, C.muted];
+const COLORS = [C.blue, C.red, C.goldBright, C.green, C.orange, C.ltBlue, C.yellow];
 function getColor(index) {
   return COLORS[index % COLORS.length];
 }
@@ -389,6 +230,7 @@ export default function UniversalMatrix({
   const [fetched, setFetched] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [loading, setLoading] = useState(!!fetchUrl && !observedProp);
+  const [discoveredX, setDiscoveredX] = useState(null);
   const [discoveredY, setDiscoveredY] = useState(null);
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
@@ -407,9 +249,33 @@ export default function UniversalMatrix({
         
         // 1. Consolidate results to merge messy/write-in/multi-select answers
         const consolidatedResults = {};
+        
+        let qId = null;
+        let byId = null;
+        if (fetchUrl) {
+          const qMatch = fetchUrl.match(/[?&]q=([^&]+)/);
+          if (qMatch) qId = qMatch[1];
+          const byMatch = fetchUrl.match(/[?&]by(_question)?=([^&]+)/);
+          if (byMatch) byId = byMatch[2];
+        }
+
         for (const [pathwayKey, val] of Object.entries(data.results || {})) {
-          consolidatedResults[pathwayKey] = { ...val, distribution: [] };
+          const cleanPathwayKey = byId ? consolidateLabel(pathwayKey, byId) : pathwayKey;
+          
+          if (!consolidatedResults[cleanPathwayKey]) {
+            consolidatedResults[cleanPathwayKey] = { distribution: [] };
+            // Copy top-level props from val (like avg) if it's the first time we see this key
+            for (const k in val) {
+              if (k !== 'distribution') consolidatedResults[cleanPathwayKey][k] = val[k];
+            }
+          }
+          
           const distMap = new Map();
+          // Load existing distribution if we just merged into a shared bucket
+          for (const existing of consolidatedResults[cleanPathwayKey].distribution) {
+             distMap.set(existing.label, { label: existing.label, n: existing.n });
+          }
+
           for (const d of val.distribution || []) {
             const lower = d.label.toLowerCase();
             if (lower.includes("prefer not to say") || 
@@ -420,25 +286,25 @@ export default function UniversalMatrix({
                 lower === "n/a") {
               continue;
             }
-            const cleanLabel = consolidateLabel(d.label, activeXId);
+            
+            // Consolidate the distribution label using the question ID
+            const cleanLabel = qId ? consolidateLabel(d.label, qId) : d.label;
+            
             if (!distMap.has(cleanLabel)) distMap.set(cleanLabel, { label: cleanLabel, n: 0 });
             distMap.get(cleanLabel).n += d.n;
           }
-          consolidatedResults[pathwayKey].distribution = Array.from(distMap.values());
+          consolidatedResults[cleanPathwayKey].distribution = Array.from(distMap.values());
         }
 
         let finalYOptions = yOptions;
-        if (dynamicY) {
+        if (dynamicY || yOptions.length === 0) {
           const dynMap = new Map();
-          for (const val of Object.values(consolidatedResults)) {
-            for (const d of val.distribution) {
-              const l = d.label.toLowerCase();
-              if (l.includes("frame my feelings") || l.includes("i don't think of it this way")) continue;
-              
-              if (!dynMap.has(d.label)) {
-                dynMap.set(d.label, { key: d.label, match: d.label, label: d.label, short: d.label, color: C.gold });
-              }
-            }
+          let colorIdx = 0;
+          for (const key of Object.keys(consolidatedResults)) {
+            if (key === "null" || key === "unknown" || key === "") continue;
+            const l = key.toLowerCase();
+            if (l.includes("prefer not to say") || l.includes("unsure")) continue;
+            dynMap.set(key, { key, match: key, label: key, short: key, color: getColor(colorIdx++) });
           }
           finalYOptions = Array.from(dynMap.values());
           // Sort by Likert heuristics first, then alphabetically
@@ -448,10 +314,32 @@ export default function UniversalMatrix({
             if (scoreA !== scoreB) return scoreA - scoreB;
             return a.label.localeCompare(b.label);
           });
-          setDiscoveredY(finalYOptions);
         }
-        
-        setFetched(aggregateToObserved(consolidatedResults, xOptions, finalYOptions));
+
+        let finalXOptions = xOptions;
+        if (!finalXOptions || finalXOptions.length === 0) {
+          const dynMap = new Map();
+          let colorIdx = 0;
+          for (const val of Object.values(consolidatedResults)) {
+            for (const d of val.distribution) {
+              const cleanLabel = qId ? consolidateLabel(d.label, qId) : d.label;
+              if (!dynMap.has(cleanLabel)) {
+                dynMap.set(cleanLabel, { key: cleanLabel, match: cleanLabel, label: cleanLabel, short: cleanLabel, color: getColor(colorIdx++) });
+              }
+            }
+          }
+          finalXOptions = Array.from(dynMap.values());
+          finalXOptions.sort((a, b) => {
+            const scoreA = getSortScore(a.label);
+            const scoreB = getSortScore(b.label);
+            if (scoreA !== scoreB) return scoreA - scoreB;
+            return a.label.localeCompare(b.label);
+          });
+        }
+
+        setDiscoveredX(finalXOptions);
+        setDiscoveredY(finalYOptions);
+        setFetched(aggregateToObserved(consolidatedResults, finalXOptions, finalYOptions));
         setLoading(false);
       })
       .catch((e) => {
@@ -463,28 +351,28 @@ export default function UniversalMatrix({
   }, [fetchUrl, observedProp, xOptions, yOptions]);
 
   const observed = observedProp || fetched;
-
-  const activeYOptions = dynamicY && discoveredY ? discoveredY : yOptions;
+  const activeYOptions = discoveredY || yOptions;
+  const activeXOptions = discoveredX || xOptions;
 
   const residuals = useMemo(() => {
-    if (!observed || !xOptions || !activeYOptions) return null;
-    return computeResiduals(observed, xOptions, activeYOptions);
-  }, [observed, xOptions, activeYOptions]);
+    if (!observed || !activeXOptions || !activeYOptions) return null;
+    return computeResiduals(observed, activeXOptions, activeYOptions);
+  }, [observed, activeXOptions, activeYOptions]);
 
   const stories = useMemo(() => {
     if (storiesProp) return storiesProp;
-    if (autoStories && residuals) return generateStories(residuals, xOptions, activeYOptions);
+    if (autoStories && residuals) return generateStories(residuals, activeXOptions, activeYOptions);
     return [];
-  }, [autoStories, residuals, xOptions, activeYOptions, storiesProp]);
+  }, [autoStories, residuals, activeXOptions, activeYOptions, storiesProp]);
 
   // Compute Sankey Geometry
   const sankey = useMemo(() => {
-    if (!residuals) return null;
+    if (!residuals || !activeXOptions || !activeYOptions) return null;
     
     const chartWidth = 820;
     let chartHeight = 540;
     
-    const maxNodes = Math.max(xOptions.length, activeYOptions.length);
+    const maxNodes = Math.max(activeXOptions.length, activeYOptions.length);
     
     // Dynamically expand the chart height if there are dozens of nodes (like professions)
     // to prevent the labels from overlapping vertically.
@@ -507,7 +395,7 @@ export default function UniversalMatrix({
     // Left side is yOptions (Origin Predictor)
     const totalLeftPadding = (activeYOptions.length - 1) * nodePadding;
     // Right side is xOptions (Destination Pathway)
-    const totalRightPadding = (xOptions.length - 1) * nodePadding;
+    const totalRightPadding = (activeXOptions.length - 1) * nodePadding;
     
     const maxPadding = Math.max(totalLeftPadding, totalRightPadding);
     
@@ -529,14 +417,14 @@ export default function UniversalMatrix({
     
     const rightNodes = {};
     let cyR = rightStartY;
-    for (const c of xOptions) {
+    for (const c of activeXOptions) {
       const h = residuals.colTotals[c.key] * ky;
       rightNodes[c.key] = { ...c, y: cyR, h, offset: cyR };
       cyR += h + nodePadding;
     }
     
     const links = [];
-    for (const c of xOptions) {
+    for (const c of activeXOptions) {
       for (const p of activeYOptions) {
         const cell = residuals.cells[p.key][c.key];
         const obs = cell.obs;
@@ -554,9 +442,10 @@ export default function UniversalMatrix({
     }
     
     return { leftNodes: Object.values(leftNodes), rightNodes: Object.values(rightNodes), links, x0: 185, x1: chartWidth - 165, chartHeight, nodeWidth };
-  }, [residuals, xOptions, activeYOptions]);
+  }, [residuals, activeXOptions, activeYOptions]);
 
-  if (!xOptions || !activeYOptions) return null;
+  console.log('RERENDER MATRIX', { loading, fetchError, obs: !!observed, res: !!residuals, sank: !!sankey, xLen: activeXOptions.length, yLen: activeYOptions.length });
+  if (!activeXOptions || !activeYOptions) return null;
 
   return (
     <div style={{
@@ -711,12 +600,19 @@ export default function UniversalMatrix({
           </div>
 
           <svg viewBox={`0 0 820 ${sankey.chartHeight}`} style={{ width: "100%", height: "auto", overflow: "visible", paddingBottom: "1rem" }}>
+            <defs>
+              {sankey.links.map((link, i) => (
+                <linearGradient key={`grad-${i}`} id={`grad-${i}`} gradientUnits="userSpaceOnUse" x1={sankey.x0} x2={sankey.x1}>
+                  <stop offset="0%" stopColor={link.source.color || C.ghost} />
+                  <stop offset="100%" stopColor={link.target.color || C.ghost} />
+                </linearGradient>
+              ))}
+            </defs>
             {/* Links */}
             {sankey.links.map((link, i) => {
               const { x0, x1 } = sankey;
               const { y0, y1, h, cell, source, target } = link;
-              const ribbonColor = target.color;
-              const baseOpacity = 0.35;
+              const baseOpacity = 0.45;
               const cp = (x1 - x0) / 2;
               const d = `
                 M ${x0} ${y0}
@@ -728,7 +624,7 @@ export default function UniversalMatrix({
               
               return (
                 <path 
-                  key={i} d={d} fill={ribbonColor} opacity={baseOpacity}
+                  key={i} d={d} fill={`url(#grad-${i})`} opacity={baseOpacity}
                   style={{ cursor: "pointer", transition: "all 0.2s" }}
                   onMouseEnter={(e) => {
                     e.target.style.opacity = 0.85;
@@ -752,17 +648,17 @@ export default function UniversalMatrix({
               
               return (
               <g key={n.key} transform={`translate(${sankey.x0 - sankey.nodeWidth}, ${n.y})`}>
-                <rect width={sankey.nodeWidth} height={Math.max(2, n.h)} fill={C.ghost} rx={2} />
+                <rect width={sankey.nodeWidth} height={Math.max(2, n.h)} fill={n.color || C.ghost} rx={2} />
                 <text textAnchor="end">
                   {n.labelGroup && (
-                    <tspan x={-14} y={n.h / 2 - (displayLines.length * 7)} style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "9px", fill: C.dim, textTransform: "uppercase", letterSpacing: "0.15em" }}>
+                    <tspan x={-14} y={n.h / 2 - (displayLines.length * 7)} style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "9px", fill: C.dim, letterSpacing: "0.15em" }}>
                       {n.labelGroup}
                     </tspan>
                   )}
                   
                   {displayLines.map((line, idx) => (
-                    <tspan key={idx} x={-14} y={n.h / 2 + (idx * 14) - ((displayLines.length - 2) * 7)} style={{ fontFamily: FONT.condensed, fontWeight: idx === 0 ? 600 : 500, fontSize: idx === 0 ? "12px" : "11px", fill: idx === 0 ? C.textBright : C.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      {line.toUpperCase()}
+                    <tspan key={idx} x={-14} y={n.h / 2 + (idx * 14) - ((displayLines.length - 2) * 7)} style={{ fontFamily: FONT.condensed, fontWeight: idx === 0 ? 600 : 500, fontSize: idx === 0 ? "13px" : "12px", fill: idx === 0 ? C.textBright : C.muted, letterSpacing: "0.02em" }}>
+                      {line}
                     </tspan>
                   ))}
                 </text>
@@ -773,7 +669,7 @@ export default function UniversalMatrix({
             {sankey.rightNodes.map((n) => (
               <g key={n.key} transform={`translate(${sankey.x1}, ${n.y})`}>
                 <rect width={sankey.nodeWidth} height={Math.max(2, n.h)} fill={n.color} rx={2} />
-                <text x={sankey.nodeWidth + 14} y={(n.h / 2) - 4} textAnchor="start" alignmentBaseline="middle" style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "14px", fill: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                <text x={sankey.nodeWidth + 14} y={(n.h / 2) - 4} textAnchor="start" alignmentBaseline="middle" style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "14px", fill: C.textBright, letterSpacing: "0.02em" }}>
                   {n.label}
                 </text>
                 <text x={sankey.nodeWidth + 14} y={(n.h / 2) + 12} textAnchor="start" style={{ fontFamily: FONT.mono, fontSize: "10px", fill: C.dim }}>

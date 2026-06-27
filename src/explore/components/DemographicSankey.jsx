@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { sankey, sankeyLinkHorizontal, sankeyCenter } from "d3-sankey";
 import { getAggregate, getResponseDistribution } from "../lib/api";
-import { shortLabel } from "../lib/formatters";
+import { shortLabel, consolidateLabel } from "../lib/formatters";
 import { C, FONT, PATH_COLORS, resolveCssColor } from "../styles/tokens";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { PATHWAY_IDS, PATHWAYS } from "../lib/pathways";
@@ -55,6 +55,25 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
           return nodeIndexMap.get(id);
         }
 
+        function groupResultsByConsolidation(results, dimId) {
+          if (!results) return [];
+          const grouped = new Map();
+          for (const [k, v] of Object.entries(results)) {
+            if (k && k !== "null" && k !== "unknown" && k !== "unclassified") {
+              const cleanKey = consolidateLabel(k, dimId);
+              if (!grouped.has(cleanKey)) {
+                grouped.set(cleanKey, { label: cleanKey, rawKeys: [], n: 0 });
+              }
+              const g = grouped.get(cleanKey);
+              g.rawKeys.push(k);
+              g.n += v.n;
+            }
+          }
+          const arr = Array.from(grouped.values());
+          arr.sort((a, b) => b.n - a.n);
+          return arr;
+        }
+
         const dim0 = dimensions[0].id;
         const dim1 = dimensions[1].id;
         const dim2 = dimensions[2].id;
@@ -63,25 +82,36 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
         const res0 = await getAggregate(targetQuestion, { by: dim0, cohort });
         if (cancelled) return;
         
-        let counts0 = [];
-        if (res0.results) {
-          for (const [k, v] of Object.entries(res0.results)) {
-            if (k && k !== "null" && k !== "unknown" && k !== "unclassified") counts0.push({ label: k, n: v.n });
-          }
-        }
-        counts0.sort((a, b) => b.n - a.n);
-        const top0 = counts0.slice(0, 4).map(g => g.label);
+        const grouped0 = groupResultsByConsolidation(res0.results, dim0);
+        const top0 = grouped0.slice(0, 4);
         
         const colors0 = [C.goldBright, C.orange, C.yellow, C.red, "var(--chart-1)"];
         const colors1 = [C.blue, C.ltBlue, C.purple, "var(--chart-0)", "var(--chart-9)"];
         const colors2 = [C.green, C.grey, "var(--chart-3)", "var(--chart-4)", "var(--chart-7)"];
         
-        top0.forEach((val, i) => addNode(makeId(dim0, val), shortLabel(val), dim0, colors0[i % colors0.length]));
+        function getNodeLabelAndColor(dimId, rawLabel, defaultColor) {
+          const safeVal = String(rawLabel).toLowerCase();
+          if (dimId === 'pathway') {
+            return {
+              label: PATHWAYS[safeVal]?.label || rawLabel,
+              color: PATH_COLORS[safeVal] || defaultColor
+            };
+          }
+          return {
+            label: shortLabel(rawLabel),
+            color: defaultColor
+          };
+        }
+        
+        top0.forEach((g, i) => {
+          const { label, color } = getNodeLabelAndColor(dim0, g.label, colors0[i % colors0.length]);
+          addNode(makeId(dim0, g.label), label, dim0, color);
+        });
 
         // 2. For each top0, get Dim 1 breakdown
-        const dim1Promises = top0.map(async (v0) => {
-          const res = await getAggregate(targetQuestion, { by: dim1, cohort: { ...cohort, [dim0]: v0 } });
-          return { v0, results: res.results || {} };
+        const dim1Promises = top0.map(async (g0) => {
+          const res = await getAggregate(targetQuestion, { by: dim1, cohort: { ...cohort, [dim0]: g0.rawKeys } });
+          return { g0, results: res.results || {} };
         });
         
         const data1 = await Promise.all(dim1Promises);
@@ -91,25 +121,22 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
         const dim2Promises = [];
 
         for (const rd of data1) {
-          let counts1 = [];
-          for (const [r, v] of Object.entries(rd.results)) {
-            if (r && r !== "null" && r !== "unknown" && r !== "unclassified") counts1.push({ label: r, n: v.n });
-          }
-          counts1.sort((a, b) => b.n - a.n);
+          const grouped1 = groupResultsByConsolidation(rd.results, dim1);
           // Limit to top 3 sub-branches to prevent spiderweb explosion
-          const top1 = counts1.slice(0, 3).map(r => r.label);
+          const top1 = grouped1.slice(0, 3);
 
-          for (const v1 of top1) {
-            const node1Id = makeId(dim1, v1);
+          for (const g1 of top1) {
+            const node1Id = makeId(dim1, g1.label);
             if (!dim1NodesAdded.has(node1Id)) {
-              addNode(node1Id, shortLabel(v1), dim1, colors1[dim1NodesAdded.size % colors1.length]);
+              const { label, color } = getNodeLabelAndColor(dim1, g1.label, colors1[dim1NodesAdded.size % colors1.length]);
+              addNode(node1Id, label, dim1, color);
               dim1NodesAdded.add(node1Id);
             }
             
-            const n = rd.results[v1]?.n || 0;
+            const n = g1.n;
             if (n > 0) {
               links.push({
-                source: nodeIndexMap.get(makeId(dim0, rd.v0)),
+                source: nodeIndexMap.get(makeId(dim0, rd.g0.label)),
                 target: nodeIndexMap.get(node1Id),
                 value: n
               });
@@ -120,7 +147,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
               const dim2Obj = dimensions[2];
               if (dim2Obj?.type === "question") {
                 const res = await getResponseDistribution(dim2, {
-                  cohort: { ...cohort, [dim0]: rd.v0, [dim1]: v1 }
+                  cohort: { ...cohort, [dim0]: rd.g0.rawKeys, [dim1]: g1.rawKeys }
                 });
                 const formattedResults = {};
                 for (const d of res.distribution || []) {
@@ -128,13 +155,13 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
                     formattedResults[d.label] = { n: d.n };
                   }
                 }
-                return { v0: rd.v0, v1, results: formattedResults };
+                return { g0: rd.g0, g1, results: formattedResults };
               } else {
                 const pRes = await getAggregate(targetQuestion, { 
                   by: dim2, 
-                  cohort: { ...cohort, [dim0]: rd.v0, [dim1]: v1 } 
+                  cohort: { ...cohort, [dim0]: rd.g0.rawKeys, [dim1]: g1.rawKeys } 
                 });
-                return { v0: rd.v0, v1, results: pRes.results || {} };
+                return { g0: rd.g0, g1, results: pRes.results || {} };
               }
             })());
           }
@@ -148,25 +175,20 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
 
         for (const pd of data2) {
           // Sort results to only take top 4 of final column if it's not pathway
-          let counts2 = [];
-          for (const [k, v] of Object.entries(pd.results)) {
-            if (k && k !== "null" && k !== "unknown" && k !== "unclassified") counts2.push({ label: k, n: v.n });
-          }
-          counts2.sort((a, b) => b.n - a.n);
-          const top2 = dim2 === 'pathway' ? counts2.map(c => c.label) : counts2.slice(0, 4).map(c => c.label);
+          const grouped2 = groupResultsByConsolidation(pd.results, dim2);
+          const top2 = dim2 === 'pathway' ? grouped2 : grouped2.slice(0, 4);
 
-          for (const val2 of top2) {
-            const id2 = makeId(dim2, val2);
+          for (const g2 of top2) {
+            const id2 = makeId(dim2, g2.label);
             if (!dim2NodesAdded.has(id2)) {
-              const safeVal = val2.toLowerCase();
-              const color = dim2 === 'pathway' ? PATH_COLORS[safeVal] : colors2[dim2NodesAdded.size % colors2.length];
-              addNode(id2, dim2 === 'pathway' ? (PATHWAYS[safeVal]?.label || val2) : shortLabel(val2), dim2, color);
+              const { label, color } = getNodeLabelAndColor(dim2, g2.label, colors2[dim2NodesAdded.size % colors2.length]);
+              addNode(id2, label, dim2, color);
               dim2NodesAdded.add(id2);
             }
 
-            const val = pd.results[val2]?.n || 0;
+            const val = g2.n;
             if (val > 0) {
-              const sourceIdx = nodeIndexMap.get(makeId(dim1, pd.v1));
+              const sourceIdx = nodeIndexMap.get(makeId(dim1, pd.g1.label));
               const targetIdx = nodeIndexMap.get(id2);
               const linkKey = `${sourceIdx}-${targetIdx}`;
               
@@ -258,7 +280,7 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
                   d={sankeyLinkHorizontal()(link)}
                   fill="none"
                   stroke={`url(#grad-${i})`}
-                  strokeOpacity={isHovered ? 0.7 : 0.25}
+                  strokeOpacity={isHovered ? 0.85 : 0.55}
                   strokeWidth={Math.max(1, link.width)}
                   style={{ transition: "stroke-opacity 0.2s, stroke-width 0.2s", cursor: "pointer" }}
                   onMouseEnter={(e) => {

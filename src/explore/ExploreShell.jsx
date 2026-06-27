@@ -33,6 +33,7 @@ import FinalThoughtsPage from "./pages/FinalThoughtsPage";
 import TransIntersexPage from "./pages/TransIntersexPage";
 import TheForwardViewPage from "./pages/TheForwardViewPage";
 import ForParentsPage from "./pages/ForParentsPage";
+import GlobalFooter from "./components/GlobalFooter";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -171,6 +172,7 @@ export default function ExploreShell() {
       />
       <main className={`explore-page-container ${isDocentOpen ? 'docent-open' : ''}`}>
         {page}
+        <GlobalFooter route={route} navigate={navigate} />
       </main>
       <GlobalDocentDrawer 
         isOpen={isDocentOpen} 

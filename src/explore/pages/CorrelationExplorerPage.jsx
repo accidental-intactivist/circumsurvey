@@ -4,10 +4,11 @@ import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/Demo
 import DemographicSankey from "../components/DemographicSankey";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import { useTooltip, Tooltip } from "../components/Tooltip";
+import { useReport } from "../contexts/ReportContext";
 import { getQuestions, getAggregate, cohortToFilterParams } from "../lib/api";
 import { C, FONT, API_BASE } from "../styles/tokens";
 import ExhibitHero from "../components/ExhibitHero";
-import { Grid } from "lucide-react";
+import { Grid, HelpCircle } from "lucide-react";
 
 // ── Mirror-pair aggregates ─────────────────────────────────────────────────
 // When two pathway-specific questions cover the same concept on parallel
@@ -70,15 +71,18 @@ function describeCohort(cohort) {
   return parts.join(" · ");
 }
 
+const PALETTE = [C.blue, C.red, C.goldBright, C.green, C.orange, C.ltBlue, C.yellow];
+const getColor = (index) => PALETTE[index % PALETTE.length];
+
 // Convert a Demographic or Question object into standard xOptions/yOptions for UniversalMatrix
 function toMatrixOptions(axisConfig) {
   if (axisConfig.type === "demographic") {
     // Some demographic options are objects {label, value}, some are strings
-    return axisConfig.source.options.map((opt, i) => {
+    return (axisConfig.source.options || []).map((opt, i) => {
       const val = typeof opt === "string" ? opt : opt.value;
       const lbl = typeof opt === "string" ? opt : opt.label;
       
-      let color = C.blue;
+      let color = getColor(i);
       if (axisConfig.id === "pathway") {
         if (val === "intact") color = C.blue;
         else if (val === "circumcised") color = C.red;
@@ -102,7 +106,7 @@ function toMatrixOptions(axisConfig) {
       match: opt,
       label: opt,
       short: opt,
-      color: axisConfig.source.colors?.[i] || C.gold
+      color: axisConfig.source.colors?.[i] || getColor(i)
     }));
   }
   return [];
@@ -123,7 +127,7 @@ const CURATED_IDS = [
   // Demographics (Survey-based)
   "demo_generation",
   "demo_education_self",
-  "demo_sexuality",
+  "sexuality",
   "demo_gender_identity",
   "demo_sex_assigned_at_birth",
   
@@ -201,6 +205,7 @@ const SHORT_LABELS = {
 
 export default function CorrelationExplorerPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { cohort } = routerState;
+  const { addExhibitToReport, isExhibitInReport } = useReport();
 
   const [questions, setQuestions] = useState([]);
   // Both axes are now state. Row axis = the variable whose options become rows.
@@ -208,11 +213,15 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   // demographic dimension or a curated outcome question.
   // (We keep the historical activeX/activeY names internally — activeX feeds
   //  rows, activeY feeds columns — since UniversalMatrix still expects that.)
-  const [activeX, setActiveX] = useState(null);
-  const [activeY, setActiveY] = useState({
+  const [activeX, setActiveX] = useState({
     type: "demographic",
-    id: "pathway",
-    source: DEMOGRAPHIC_DIMENSIONS.find(d => d.column === "pathway"),
+    id: "generation",
+    source: DEMOGRAPHIC_DIMENSIONS.find(d => d.column === "generation") || DEMOGRAPHIC_DIMENSIONS[1],
+  });
+  const [activeY, setActiveY] = useState({
+    type: "aggregate",
+    id: "aggregate_regret",
+    source: MIRROR_AGGREGATES[0],
   });
   // Third dimension — only used in flow mode. Defaults to Religion so the
   // out-of-the-box flow view is something meaningfully different from the
@@ -226,11 +235,18 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   // View mode: "pairwise" renders the 2D matrix (existing behavior).
   // "flow" renders a 3-stage Sankey using activeX → activeY → activeZ.
   const [mode, setMode] = useState("pairwise");
+  const [showHowTo, setShowHowTo] = useState(false);
   const sankeyTooltip = useTooltip();
 
   useEffect(() => {
     if (setExhibitContext) {
+      const modeStr = mode === "pairwise" ? "Pairwise cross-tabulation matrix" : "3-Stage Sankey Flowchart";
+      const axesStr = mode === "pairwise" 
+        ? `X-Axis (Rows): ${activeX?.source?.label || "None"}, Y-Axis (Columns): ${activeY?.source?.label || "None"}`
+        : `Source: ${activeX?.source?.label || "None"}, Middle: ${activeY?.source?.label || "None"}, Destination: ${activeZ?.source?.label || "None"}`;
+
       setExhibitContext({
+        page_description: `The user is exploring statistical correlations. Current view mode: ${modeStr}. Active variables: ${axesStr}.`,
         cohort,
         mode,
         activeX: activeX?.id,
@@ -321,7 +337,25 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   // Serialize API endpoint
   const fetchUrl = useMemo(() => {
     if (!activeX || !activeY) return null;
-    let url = `${API_BASE}/aggregate?q=${activeX.id}&by=${activeY.id}`;
+    
+    let qAxis = activeX;
+    let byAxis = activeY;
+    
+    // The backend /aggregate endpoint requires `q` to be a survey question.
+    // If activeX is a demographic, swap them for the API call. UniversalMatrix's 
+    // aggregateToObserved automatically maps the results back to the correct display axes.
+    if (activeX.type === "demographic") {
+      if (activeY.type === "demographic") return null; // Two demographics cannot be cross-tabbed natively
+      qAxis = activeY;
+      byAxis = activeX;
+    }
+
+    let url = `${API_BASE}/aggregate?q=${qAxis.id}`;
+    if (byAxis.type === "question") {
+      url += `&by_question=${byAxis.id}`;
+    } else {
+      url += `&by=${byAxis.id}`;
+    }
 
     if (cohort) {
       const filters = cohortToFilterParams(cohort);
@@ -334,17 +368,14 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
 
   const cohortLabel = useMemo(() => describeCohort(cohort), [JSON.stringify(cohort)]);
 
-  // Helper for aggregate axes — turn the aggregate's buckets into the same
-  // {key, match, label, short, color} shape that toMatrixOptions produces for
-  // demographics and questions, so UniversalMatrix can consume either path.
   const aggregateAxisOptions = (axis) => {
     if (!axis || axis.type !== "aggregate") return [];
-    return axis.source.buckets.map((b) => ({
+    return axis.source.buckets.map((b, i) => ({
       key: b.label,
       match: b.label,
       label: b.label,
       short: b.label,
-      color: C.gold,
+      color: getColor(i),
     }));
   };
 
@@ -395,13 +426,19 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
     // Fire one aggregate query per source question, sharing the cohort filter
     // and the other-axis grouping. We catch individual failures so a single
     // bad query doesn't black-hole the merge.
-    const fetches = agg.sources.map((qid) =>
-      getAggregate(qid, { by: otherAxis.id, cohort })
+    const fetches = agg.sources.map((qid) => {
+      const opts = { cohort };
+      if (otherAxis.type === "question") {
+        opts.by_question = otherAxis.id;
+      } else {
+        opts.by = otherAxis.id;
+      }
+      return getAggregate(qid, opts)
         .catch((err) => {
           console.error(`Aggregate source failed: ${qid}`, err);
           return { results: {} };
-        })
-    );
+        });
+    });
 
     Promise.all(fetches).then((allRes) => {
       if (cancelled) return;
@@ -497,6 +534,19 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
     if (next) setActiveZ(next);
   };
 
+  const applyPreset = (preset) => {
+    if (preset.z) {
+      setMode("flow");
+      handleRowSelect(preset.x);
+      handleColSelect(preset.y);
+      handleThirdSelect(preset.z);
+    } else {
+      setMode("pairwise");
+      handleRowSelect(preset.x);
+      handleColSelect(preset.y);
+    }
+  };
+
   const swapAxes = () => {
     setActiveX(activeY);
     setActiveY(activeX);
@@ -524,7 +574,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
         
         <ExhibitHero
           title="Correlations Explorer"
-          description="Cross-tabulate any two predictor variables or survey outcomes to identify statistical correlations, demographic trends, and overlapping factors across the dataset."
+          description="Cross-tabulate two predictor variables, or map a three-variable flow, to identify statistical correlations, demographic trends, and overlapping factors across the dataset."
           color={C.red}
           gradientColor={C.orange}
           BackgroundIcon={Grid}
@@ -545,14 +595,83 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
             <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
             <div style={{ marginTop: "1.25rem", padding: "0.75rem 0.85rem", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 7, fontFamily: FONT.body, fontSize: "0.78rem", color: C.muted, lineHeight: 1.55 }}>
               <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.goldBright, marginBottom: "0.4rem", fontWeight: 700 }}>How this works</div>
-              Pick any two variables to cross-tabulate. Either dropdown can be a demographic dimension or a survey outcome. Cells brighten when the observed count exceeds what chance alone would predict.
+              {mode === "pairwise" 
+                ? "Pick two variables to cross-tabulate. Either dropdown can be a demographic dimension or a survey outcome. Cells brighten when the observed count exceeds chance alone. To compare three variables, choose Flow mode."
+                : "Pick three variables to map respondent pathways. Follow the flow from primary demographics through sub-groups to their final survey outcomes. To cross-tabulate two variables, choose Pairwise mode."}
+            </div>
+
+            <div style={{ marginTop: "2rem" }}>
+              <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700 }}>
+                Curated Insights
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {[
+                  { label: "Socioeconomics vs. Regret", x: "demo:socioeconomic", y: "agg:aggregate_regret" },
+                  { label: "Sexuality vs. Satisfaction", x: "demo:sexuality", y: "q:exp_pride_satisfaction_rating" },
+                  { label: "Family Upbringing vs. Social Norms", x: "demo:family_upbringing", y: "q:final_social_norm_perception" },
+                  { label: "Generational Shifts in Sexual Need", x: "demo:generation", y: "q:exp_lubrication_need" },
+                  { label: "Education to Pathway to Orgasm", x: "demo:education", y: "demo:pathway", z: "q:exp_sex_rating_orgasm_intensity" },
+                  { label: "Upbringing to Pathway to Pride", x: "demo:family_upbringing", y: "demo:pathway", z: "q:exp_pride_satisfaction_rating" },
+                  { label: "Generation to Pathway to Regret", x: "demo:generation", y: "demo:pathway", z: "agg:aggregate_regret" }
+                ].map(preset => (
+                  <button
+                    key={preset.label}
+                    onClick={() => applyPreset(preset)}
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: `1px solid ${C.ghost}`,
+                      borderRadius: 6,
+                      padding: "0.6rem 0.8rem",
+                      color: C.textBright,
+                      fontFamily: FONT.body,
+                      fontSize: "0.85rem",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = C.gold; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = C.ghost; }}
+                  >
+                    <span>{preset.label}</span>
+                    <span style={{ color: C.gold, opacity: 0.7, fontSize: "1.1em" }}>→</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </aside>
 
           {/* RIGHT: Main Matrix Engine */}
           <main>
-            {/* Mode Toggle */}
-            <ModeToggle mode={mode} setMode={setMode} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              {/* Mode Toggle */}
+              <ModeToggle mode={mode} setMode={setMode} />
+              
+              <button
+                onClick={() => addExhibitToReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort)}
+                disabled={isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort)}
+                style={{
+                  background: isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort) ? "rgba(255,255,255,0.05)" : `linear-gradient(to right, rgba(234, 186, 107, 0.15), rgba(234, 186, 107, 0.05))`,
+                  border: `1px solid ${isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort) ? C.ghost : C.gold}`,
+                  color: isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort) ? C.muted : C.goldBright,
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.75rem",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  padding: "0.5rem 1rem",
+                  borderRadius: 6,
+                  cursor: isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort) ? "default" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  transition: "all 0.2s"
+                }}
+              >
+                {isExhibitInReport('correlation_matrix', { mode, activeX, activeY, activeZ }, cohort) ? "✓ Added to Report" : "+ Add to Report"}
+              </button>
+            </div>
 
             {/* Control Panel — axes (2 in pairwise mode, 3 in flow mode) */}
             <div style={{
@@ -620,7 +739,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   alignItems: "end",
                 }}>
                   <AxisPicker
-                    label="Source"
+                    label="Primary Group"
                     value={axisToSelectionString(activeX)}
                     onChange={handleRowSelect}
                     questions={questions}
@@ -629,7 +748,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   />
                   <FlowArrow />
                   <AxisPicker
-                    label="Middle"
+                    label="Sub-Group"
                     value={axisToSelectionString(activeY)}
                     onChange={handleColSelect}
                     questions={questions}
@@ -638,7 +757,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   />
                   <FlowArrow />
                   <AxisPicker
-                    label="Target"
+                    label="Outcome"
                     value={axisToSelectionString(activeZ)}
                     onChange={handleThirdSelect}
                     questions={questions}
@@ -657,26 +776,93 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
               ) && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {activeX?.type === "question" && (
-                    <QuestionContextPanel role={mode === "pairwise" ? "Rows" : "Source"} axis={activeX} />
+                    <QuestionContextPanel role={mode === "pairwise" ? "Rows" : "Primary Group"} axis={activeX} />
                   )}
                   {activeX?.type === "aggregate" && (
-                    <AggregateContextPanel role={mode === "pairwise" ? "Rows" : "Source"} axis={activeX} questionsMap={questions} />
+                    <AggregateContextPanel role={mode === "pairwise" ? "Rows" : "Primary Group"} axis={activeX} questionsMap={questions} />
                   )}
                   {activeY?.type === "question" && (
-                    <QuestionContextPanel role={mode === "pairwise" ? "Columns" : "Middle"} axis={activeY} />
+                    <QuestionContextPanel role={mode === "pairwise" ? "Columns" : "Sub-Group"} axis={activeY} />
                   )}
                   {activeY?.type === "aggregate" && (
-                    <AggregateContextPanel role={mode === "pairwise" ? "Columns" : "Middle"} axis={activeY} questionsMap={questions} />
+                    <AggregateContextPanel role={mode === "pairwise" ? "Columns" : "Sub-Group"} axis={activeY} questionsMap={questions} />
                   )}
                   {mode === "flow" && activeZ?.type === "question" && (
-                    <QuestionContextPanel role="Target" axis={activeZ} />
+                    <QuestionContextPanel role="Outcome" axis={activeZ} />
                   )}
                 </div>
               )}
             </div>
 
+            {/* How to Read This Matrix Toggle */}
+            {mode === "pairwise" && (
+              <div style={{ marginBottom: "2rem" }}>
+                <button
+                  onClick={() => setShowHowTo(!showHowTo)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: C.muted,
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.8rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: 0,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; }}
+                >
+                  <HelpCircle size={15} style={{ opacity: 0.8, color: "inherit" }} /> How to Read This Matrix
+                </button>
+                
+                {showHowTo && (
+                  <div style={{
+                    marginTop: "1rem",
+                    background: C.bgSoft,
+                    border: `1px solid ${C.ghost}`,
+                    borderRadius: 8,
+                    padding: "1.5rem",
+                    color: C.textBright,
+                    fontFamily: FONT.body,
+                    fontSize: "0.95rem",
+                    lineHeight: 1.6,
+                    animation: "fadeIn 0.2s ease-out"
+                  }}>
+                    <p style={{ margin: "0 0 0.8rem 0" }}>
+                      <strong>Cross-Tabulation Matrix</strong> shows statistical overlap between the two axes.
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                      <li style={{ marginBottom: "0.5rem" }}>Each <strong>cell</strong> shows the intersection of a row and column (e.g., Millennials who are Intact).</li>
+                      <li style={{ marginBottom: "0.5rem" }}>The <strong>numbers</strong> indicate how many respondents fit in that intersection.</li>
+                      <li>The <strong>color brightness</strong> indicates observed significance: a cell lights up when the intersection occurs <em>more frequently</em> than statistically expected by chance alone.</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Visualization */}
-            <div style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem" }}>
+            <div className="mobile-scroll-hint" style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem", overflowX: "auto" }}>
+              {mode === "pairwise" && activeX && activeY && activeX.type === "demographic" && activeY.type === "demographic" && (
+                <div style={{
+                  padding: "2.5rem 1.5rem",
+                  textAlign: "center",
+                  color: C.muted,
+                  fontFamily: FONT.body,
+                  fontSize: "0.95rem",
+                  lineHeight: 1.5,
+                }}>
+                  Cross-tabulating two demographic dimensions is not currently supported.
+                  <br />
+                  <span style={{ color: C.dim, fontSize: "0.85rem" }}>
+                    Please ensure at least one axis is a survey question.
+                  </span>
+                </div>
+              )}
               {mode === "pairwise" && activeX && activeY && bothAggregates && (
                 <div style={{
                   padding: "2.5rem 1.5rem",
@@ -693,7 +879,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   </span>
                 </div>
               )}
-              {mode === "pairwise" && activeX && activeY && !bothAggregates && isAggregateMode && (
+              {mode === "pairwise" && activeX && activeY && !bothAggregates && !(activeX.type === "demographic" && activeY.type === "demographic") && isAggregateMode && (
                 aggregateError ? (
                   <div style={{ padding: "2rem", color: C.red, fontFamily: FONT.mono, fontSize: "0.85rem", textAlign: "center" }}>
                     Failed to build aggregate: {aggregateError}
@@ -702,7 +888,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
                     Unioning mirror-pair responses…
                   </div>
-                ) : xOptions.length > 0 && yOptions.length > 0 && (
+                ) : (
                   <UniversalMatrix
                     xOptions={xOptions}
                     yOptions={yOptions}
@@ -718,11 +904,11 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   />
                 )
               )}
-              {mode === "pairwise" && activeX && activeY && !isAggregateMode && xOptions.length > 0 && (
+              {mode === "pairwise" && activeX && activeY && !(activeX.type === "demographic" && activeY.type === "demographic") && !isAggregateMode && (
                 <UniversalMatrix
                   xOptions={xOptions}
                   yOptions={yOptions}
-                  dynamicY={true}
+                  dynamicY={activeX?.type === "question" || activeX?.type === "aggregate"}
                   activeXId={activeX?.id}
                   fetchUrl={fetchUrl}
                   cohortLabel={cohortLabel}

@@ -5,7 +5,7 @@ import DistributionChart from "./DistributionChart";
 import AddToReportButton from "./AddToReportButton";
 import SharePopover from "./SharePopover";
 
-export default function NarrativeList({ 
+export default function NarrativeList({ cohort,
   question,
   distribution, 
   highlightWord = null, 
@@ -188,7 +188,7 @@ export default function NarrativeList({
         gap: "0.5rem",
         marginBottom: "1.2rem",
       }}>
-        {question && <AddToReportButton questionId={question.id} iconOnly />}
+        {question && <AddToReportButton questionId={question.id} cohort={cohort} iconOnly />}
         {question && <SharePopover url={window.location.origin + window.location.pathname + "#/question/" + question.id} questionId={question.id} questionPrompt={question.prompt} onExportImage={() => {}} />}
         
         {availablePathways.length >= 2 && (

@@ -227,6 +227,11 @@ export default function MultiSankeyChart({ title, pathQuestions, headers = [], f
     return "#a855f7"; // fallback
   };
 
+  const totalN = useMemo(() => {
+    if (!data || !data.results) return 0;
+    return data.results.reduce((acc, row) => acc + (row.count || 0), 0);
+  }, [data]);
+
   if (loading) {
     return (
       <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 8 }}>
@@ -243,10 +248,6 @@ export default function MultiSankeyChart({ title, pathQuestions, headers = [], f
     );
   }
 
-  const totalN = useMemo(() => {
-    if (!data || !data.results) return 0;
-    return data.results.reduce((acc, row) => acc + (row.count || 0), 0);
-  }, [data]);
 
   return (
     <SmallSampleBadge n={totalN}>

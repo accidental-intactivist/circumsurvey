@@ -41,6 +41,7 @@ export default function TheForwardViewPage({ routerState, navigate, setExhibitCo
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing 'The Forward View' exhibit. This exhibit answers the ultimate question across all respondent pathways: 'If you were to have a male child today, what decision would you make regarding circumcision?'. It contains a single large Sankey diagram mapping the current respondent pathway to their future hypothetical child decision.",
         exhibitName: "The Forward View",
         exhibitDescription: "How lived experience informs decisions regarding the next generation.",
         cohort
@@ -94,14 +95,16 @@ export default function TheForwardViewPage({ routerState, navigate, setExhibitCo
           </p>
 
           <SmallSampleBadge n={totalN} label="the dataset">
-            <div style={glassStyle}>
-              <SankeyChart
-                beforeQuestion={COHORT_QUESTION}
-                afterQuestion={FINAL_DECISION_QUESTION}
-                filter={cohort}
-                customColorMap={VERDICT_COLOR_MAP}
-                height={500}
-              />
+            <div className="mobile-scroll-hint" style={{ overflowX: "auto", width: "100%" }}>
+              <div style={{ ...glassStyle, minWidth: 600 }}>
+                <SankeyChart
+                  beforeQuestion={COHORT_QUESTION}
+                  afterQuestion={FINAL_DECISION_QUESTION}
+                  filter={cohort}
+                  customColorMap={VERDICT_COLOR_MAP}
+                  height={500}
+                />
+              </div>
             </div>
           </SmallSampleBadge>
         </div>

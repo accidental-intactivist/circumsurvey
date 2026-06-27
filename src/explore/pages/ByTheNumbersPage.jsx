@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // ByTheNumbersPage.jsx — "By the Numbers: Which Factors Matter?"
 // An interactive factor-analysis explorer. Four sections:
-//   1. Factor Finder — animated bubble cluster sized by n, colored by outcome
-//   2. How Many Are Like Me? — persona builder with live delta comparisons
-//   3. Test Your Assumptions — dynamic quiz against the data
+//   1. At a Glance — key snapshot statistics
+//   2. Challenge Your Assumptions — dynamic quiz against the data
+//   3. Persona Builder — how many are like me? with live delta comparisons
 //   4. Factor Grid — heatmap of which demographics predict which outcomes
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -14,6 +14,7 @@ import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/Demo
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import ExhibitHero from "../components/ExhibitHero";
 import { useTooltip, Tooltip } from "../components/Tooltip";
+import { useReport } from "../contexts/ReportContext";
 import IconifyEmoji from "../components/IconifyEmoji";
 import HarveyBall from "../components/HarveyBall";
 import * as Icons from "../components/Icons";
@@ -1424,6 +1425,7 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
   const [loading, setLoading] = useState(true);
   const [expandedCell, setExpandedCell] = useState(null);
   const [showHowToRead, setShowHowToRead] = useState(false);
+  const { addExhibitToReport, isExhibitInReport } = useReport();
 
   useEffect(() => {
     const tasks = [];
@@ -1451,7 +1453,7 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
             n: v.n,
             metric: extractMetric(outcome.extractor, v.distribution),
           }))
-          .filter(c => c.n >= 5 && c.metric !== null)
+          .filter(c => c.n >= 15 && c.metric !== null)
           .sort((a, b) => b.metric - a.metric);
 
         const metrics = categories.map(c => c.metric);
@@ -1499,8 +1501,23 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
         overflow: "hidden",
       }}>
         
-        {/* Toggle How To Read */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+        {/* Toggle How To Read and Add to Report */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.8rem", marginBottom: "1rem" }}>
+          <button
+            onClick={() => addExhibitToReport('factor_grid', {}, null)}
+            disabled={isExhibitInReport('factor_grid', {}, null)}
+            style={{
+              background: isExhibitInReport('factor_grid', {}, null) ? "rgba(255,255,255,0.05)" : `linear-gradient(to right, rgba(234, 186, 107, 0.15), rgba(234, 186, 107, 0.05))`,
+              border: `1px solid ${isExhibitInReport('factor_grid', {}, null) ? C.ghost : resolveCssColor(C.gold)}`,
+              color: isExhibitInReport('factor_grid', {}, null) ? C.muted : resolveCssColor(C.goldBright), 
+              padding: "0.3rem 0.8rem", borderRadius: 20,
+              fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase",
+              cursor: isExhibitInReport('factor_grid', {}, null) ? "default" : "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "0.4rem"
+            }}
+          >
+            {isExhibitInReport('factor_grid', {}, null) ? "✓ Added to Report" : "+ Add to Report"}
+          </button>
+
           <button
             onClick={() => setShowHowToRead(!showHowToRead)}
             style={{
@@ -1545,7 +1562,7 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
             Computing factor grid across {ANALYSIS_DIMENSIONS.length * GRID_OUTCOMES.length} combinations…
           </div>
         ) : gridData && (
-          <div style={{ overflowX: "auto", paddingBottom: "1rem", position: "relative" }}>
+          <div className="mobile-scroll-hint" style={{ overflowX: "auto", paddingBottom: "1rem", position: "relative" }}>
             <table style={{
               width: "100%", borderCollapse: "collapse",
               fontFamily: FONT.body, fontSize: "0.78rem", minWidth: "800px"
@@ -1771,11 +1788,12 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
 
 export default function ByTheNumbersPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
-  const [activeSection, setActiveSection] = useState("factor-finder");
+  const [activeSection, setActiveSection] = useState("snapshots");
 
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'By The Numbers' exhibit. This page features interactive factor-analysis including: At a Glance (Standalone Stats), Challenge Your Assumptions (a quiz game), Persona Builder (dynamic subset exploration), Factor Finder (bubble clusters), and The Factor Grid (heatmap of which demographics predict which outcomes).",
         exhibitName: "By The Numbers",
         exhibitDescription: "Interactive factor analysis: which demographics predict which outcomes?",
       });
@@ -1818,12 +1836,12 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
           description="Which factors really matter? Explore how education, politics, religion, generation, and socioeconomic status predict real outcomes — from resentment to aesthetic preferences. Build your own demographic persona, test your assumptions against the data, and discover which dimensions create the widest divides."
         />
 
-        <div style={{
+        <div className="explore-grid" style={{
           display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem",
           alignItems: "start", marginTop: "3rem",
         }}>
           {/* LEFT: Nav sidebar */}
-          <aside style={{
+          <aside className="explore-nav" style={{
             position: "sticky",
             top: "calc(var(--header-height, 56px) + 1.5rem)",
             maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",

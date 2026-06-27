@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Hourglass } from "lucide-react";
-import { C, FONT, API_BASE } from "../styles/tokens";
+import { C, FONT, API_BASE, PATH_COLORS } from "../styles/tokens";
 import { getQuestions, getAggregate } from "../lib/api";
 import ExhibitHero from "../components/ExhibitHero";
 import ExhibitSectionHeading from "../components/ExhibitSectionHeading";
@@ -12,8 +12,16 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 import SmallSampleBadge from "../components/SmallSampleBadge";
-import ExhibitDataLoader from "../components/ExhibitDataLoader";
+import DataLoader from "../components/ExhibitDataLoader";
 import { flattenMultiSelect } from "../lib/formatters";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+
+const SECTIONS = [
+  { id: "section-a-motivations", label: "A: Starting Points" },
+  { id: "section-b-timelines", label: "B: Timelines & Methods" },
+  { id: "section-c-sensation", label: "C: Sensation & Sensitivity" },
+  { id: "section-d-pathway", label: "D: Holistic Pathway" },
+];
 
 const SECTION_A_QUESTIONS = [
   { id: "restore_feelings_before", label: "Feelings Before Restoring", width: "1fr" },
@@ -75,6 +83,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Restoration Journey & Outcomes' exhibit, which details the demographics, methods, RCI (Real Coverage Index) progress, and both qualitative and quantitative outcomes (sensation, psychology, function) of respondents who are actively restoring or have completed foreskin restoration.",
         exhibitName: "The Restoration Journey",
         exhibitDescription: "Analysis of the motivations, experiences, and outcomes of men undergoing foreskin restoration.",
         cohort
@@ -204,8 +213,18 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
           }
         />
 
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
+          
+          {/* LEFT: Nav sidebar */}
+          <ExhibitSidebarNav sections={SECTIONS} />
+
+          {/* RIGHT: Content */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
+
         {/* SECTION A: MOTIVATIONS & RCI */}
+
         <ExhibitSectionHeading
+          id="section-a-motivations"
           title="Section A: Starting Points & Motivations"
           icon="🟣"
           color="#a855f7"
@@ -247,6 +266,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
 
         {/* SECTION B: METHODS & TIMELINE */}
         <ExhibitSectionHeading
+          id="section-b-timelines"
           title="Section B: Timelines & Methods"
           icon="⏱️"
           color="#a855f7"
@@ -292,6 +312,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
 
         {/* SECTION C: SENSATION & SENSITIVITY */}
         <ExhibitSectionHeading
+          id="section-c-sensation"
           title="Section C: Sensation & Sensitivity Shifts"
           icon="⚡"
           color="#a855f7"
@@ -360,55 +381,58 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
 
         {/* SECTION D: OUTCOME RATINGS */}
         <ExhibitSectionHeading
+          id="section-d-pathway"
           title="Section D: The Holistic 4-Stage Pathway"
           icon="🌟"
           color="#a855f7"
           description="This 4-stage diagram tracks the chronological flow of each respondent's journey — from their starting coverage, through their reported timeframe, to their current coverage, ending at an outcome rating of your choice."
         >
 
-          <div style={{ width: "100%" }}>
-            {questionsMap["restore_rci_start"] && questionsMap["restore_duration"] && questionsMap["restore_rci_current"] && questionsMap[finalOutcomeId] && (
-              <MultiSankeyChart
-                title="Restoration Pathway"
-                pathQuestions={[
-                  questionsMap["restore_rci_start"],
-                  questionsMap["restore_rci_current"],
-                  questionsMap[finalOutcomeId],
-                  questionsMap["restore_duration"]
-                ]}
-                headers={[
-                  "Starting RCI", 
-                  "Current RCI", 
-                  <div key="dropdown" style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
-                    <span style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>Outcome:</span>
-                    <select
-                      value={finalOutcomeId}
-                      onChange={(e) => setFinalOutcomeId(e.target.value)}
-                      style={{
-                        padding: "0.3rem 0.6rem",
-                        borderRadius: 6,
-                        border: `1px solid #a855f7`,
-                        background: C.bgDeep,
-                        color: C.textBright,
-                        fontFamily: FONT.body,
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        cursor: "pointer",
-                        outline: "none"
-                      }}
-                    >
-                      {RATING_QUESTIONS.map(rq => (
-                        <option key={rq.id} value={rq.id}>{rq.label}</option>
-                      ))}
-                    </select>
-                  </div>,
-                  "Years Restoring"
-                ]}
-                filter={cohort}
-                customColorMap={RESTORATION_COLOR_MAP}
-                height={600}
-              />
-            )}
+          <div className="mobile-scroll-hint" style={{ width: "100%", overflowX: "auto" }}>
+            <div style={{ minWidth: 800 }}>
+              {questionsMap["restore_rci_start"] && questionsMap["restore_duration"] && questionsMap["restore_rci_current"] && questionsMap[finalOutcomeId] && (
+                <MultiSankeyChart
+                  title="Restoration Pathway"
+                  pathQuestions={[
+                    questionsMap["restore_rci_start"],
+                    questionsMap["restore_rci_current"],
+                    questionsMap[finalOutcomeId],
+                    questionsMap["restore_duration"]
+                  ]}
+                  headers={[
+                    "Starting RCI", 
+                    "Current RCI", 
+                    <div key="dropdown" style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+                      <span style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>Outcome:</span>
+                      <select
+                        value={finalOutcomeId}
+                        onChange={(e) => setFinalOutcomeId(e.target.value)}
+                        style={{
+                          padding: "0.3rem 0.6rem",
+                          borderRadius: 6,
+                          border: `1px solid #a855f7`,
+                          background: C.bgDeep,
+                          color: C.textBright,
+                          fontFamily: FONT.body,
+                          fontWeight: 600,
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          outline: "none"
+                        }}
+                      >
+                        {RATING_QUESTIONS.map(rq => (
+                          <option key={rq.id} value={rq.id}>{rq.label}</option>
+                        ))}
+                      </select>
+                    </div>,
+                    "Years Restoring"
+                  ]}
+                  filter={cohort}
+                  customColorMap={RESTORATION_COLOR_MAP}
+                  height={600}
+                />
+              )}
+            </div>
           </div>
           
           {/* RCI Legend */}
@@ -440,7 +464,8 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
           </div>
 
         </ExhibitSectionHeading>
-
+        </div> {/* End right content column */}
+      </div> {/* End explore-grid */}
       </div>
     </div>
   );

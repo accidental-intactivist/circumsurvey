@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { GitCompare } from "lucide-react";
+import { Sparkles, RefreshCw } from "../components/Icons";
 import { hashLink } from "../lib/router";
 import { C, FONT, PATH_COLORS } from "../styles/tokens";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
@@ -381,16 +382,20 @@ export default function MirrorPairsPage({ routerState, navigate, setExhibitConte
   const [questionsMap, setQuestionsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [activePairId, setActivePairId] = useState(MIRROR_PAIRS[0].id);
+  const [showHowTo, setShowHowTo] = useState(false);
 
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Mirror Pairs' exhibit, comparing responses to similar or identical questions between the Intact and Circumcised pathways. Data is shown in diverging 'Butterfly' charts for direct comparison.",
+        active_pair: MIRROR_PAIRS.find(p => p.id === activePairId)?.concept || activePairId,
         exhibitName: "Mirror Pairs",
         exhibitDescription: "Compare similarly themed questions asked specifically to the Intact versus Circumcised pathways to isolate the subjective gap.",
-        pairs: MIRROR_PAIRS.map(p => p.concept).join(", ")
+        pairs: MIRROR_PAIRS.map(p => p.concept).join(", "),
+        cohort: routerState?.cohort || {}
       });
     }
-  }, [setExhibitContext]);
+  }, [setExhibitContext, activePairId, routerState?.cohort]);
 
   useEffect(() => {
     async function load() {
@@ -444,10 +449,58 @@ export default function MirrorPairsPage({ routerState, navigate, setExhibitConte
         description="Compare similarly themed questions asked specifically to the Intact versus Circumcised pathways to isolate the subjective gap."
       />
 
-      <div style={{ display: "flex", gap: "3rem", alignItems: "flex-start" }}>
+      {/* How to Read This Exhibit Toggle */}
+      <div style={{ marginBottom: "2rem" }}>
+        <button
+          onClick={() => setShowHowTo(!showHowTo)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: C.muted,
+            fontFamily: FONT.condensed,
+            fontSize: "0.8rem",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            padding: 0,
+          }}
+        >
+          <span style={{ fontSize: "1rem" }}>{showHowTo ? "−" : "+"}</span> How to Read These Charts
+        </button>
+        
+        {showHowTo && (
+          <div style={{
+            marginTop: "1rem",
+            background: C.bgSoft,
+            border: `1px solid ${C.ghost}`,
+            borderRadius: 8,
+            padding: "1.5rem",
+            color: C.textBright,
+            fontFamily: FONT.body,
+            fontSize: "0.95rem",
+            lineHeight: 1.6,
+            animation: "fadeIn 0.2s ease-out"
+          }}>
+            <p style={{ margin: "0 0 0.8rem 0" }}>
+              <strong>The Butterfly Chart</strong> directly compares how the Intact and Circumcised cohorts answered structurally identical questions. 
+            </p>
+            <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+              <li style={{ marginBottom: "0.5rem" }}>The <strong>Green Bars (Left)</strong> represent responses from Intact respondents.</li>
+              <li style={{ marginBottom: "0.5rem" }}>The <strong>Blue Bars (Right)</strong> represent responses from Circumcised respondents.</li>
+              <li style={{ marginBottom: "0.5rem" }}>The length of each bar represents the <em>percentage</em> of the cohort that selected that option.</li>
+              <li>You can sort the responses by the largest absolute difference between the two groups.</li>
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "3rem", alignItems: "flex-start" }}>
         
         {/* Sticky Sidebar Navigation */}
-        <aside style={{
+        <aside className="explore-nav" style={{
           position: "sticky",
           top: "calc(var(--header-height, 56px) + 1.5rem)",
           flex: "0 0 260px",
@@ -546,13 +599,15 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
 
   return (
     <SmallSampleBadge n={Math.min(intactTotal, circTotal)} label="the compared cohorts">
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem" }}>
+    <div className="mobile-scroll-hint" style={{ overflowX: "auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem", minWidth: "600px" }}>
       {/* Pathway Headers */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
         {/* Intact Header */}
         <div style={{ flex: 1, minWidth: 200 }}>
-          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-            🟢 Intact Pathway
+          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+            <IconifyEmoji emoji="🟢" style={{ color: PATH_COLORS.intact }} />
+            <span>Intact Pathway</span>
           </h3>
           <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
             {intactQ ? intactQ.prompt : "No matching question."}
@@ -564,8 +619,9 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
 
         {/* Circ Header */}
         <div style={{ flex: 1, minWidth: 200, textAlign: "right" }}>
-          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-            Circumcised Pathway 🔵
+          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", justifyContent: "flex-end" }}>
+            <span>Circumcised Pathway</span>
+            <IconifyEmoji emoji="🔵" style={{ color: PATH_COLORS.circumcised }} />
           </h3>
           <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
             {circQ ? circQ.prompt : "No matching question."}
@@ -580,27 +636,36 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
       <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem", marginBottom: "0.5rem" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em" }}>Sort By</span>
-          <div style={{ display: "flex", background: "rgba(255,255,255,0.05)", borderRadius: 20, padding: "0.2rem" }}>
-            {["intact", "diff", "circ"].map(opt => (
-              <button
-                key={opt}
-                onClick={() => setSortBy(opt)}
-                style={{
-                  background: sortBy === opt ? C.goldBright : "transparent",
-                  color: sortBy === opt ? C.bgDeep : C.text,
-                  border: "none",
-                  borderRadius: 16,
-                  padding: "0.3rem 0.8rem",
-                  fontFamily: FONT.mono,
-                  fontSize: "0.7rem",
-                  fontWeight: sortBy === opt ? 700 : 400,
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                {opt === "diff" ? "Difference" : opt === "intact" ? "Intact" : "Circumcised"}
-              </button>
-            ))}
+          <div style={{ display: "flex", gap: "0.6rem" }}>
+            {["intact", "diff", "circ"].map(opt => {
+              const isActive = sortBy === opt;
+              // Green / Yellow / Red, matching the Pleasure Gap cohort toggles.
+              const color = opt === "intact" ? PATH_COLORS.intact
+                : opt === "circ" ? PATH_COLORS.circumcised
+                : PATH_COLORS.restoring;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => setSortBy(opt)}
+                  style={{
+                    background: isActive ? color : "transparent",
+                    color: isActive ? "#050505" : color,
+                    border: `1px solid ${color}`,
+                    padding: "0.4rem 1rem",
+                    borderRadius: 20,
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.8rem",
+                    fontWeight: isActive ? 800 : 500,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {opt === "diff" ? "Difference" : opt === "intact" ? "Intact" : "Circumcised"}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -633,8 +698,8 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                 {/* Center Label */}
                 <div style={{ width: 160, textAlign: "center", position: "relative", padding: "0 0.5rem" }}>
                   {isSignificant && (
-                    <div style={{ position: "absolute", left: -6, top: "50%", transform: "translateY(-50%)", fontSize: "0.85rem", textShadow: "0 0 10px rgba(212,160,48,0.8)", cursor: "help" }} title="Significant Divergence (>15%)">
-                      ✨
+                    <div style={{ position: "absolute", left: -6, top: "50%", transform: "translateY(-50%)", lineHeight: 0, filter: "drop-shadow(0 0 8px rgba(212,160,48,0.8))", cursor: "help" }} title="Significant Divergence (>15%)">
+                      <Sparkles size={13} color={C.goldBright} />
                     </div>
                   )}
                   <span style={{ fontFamily: FONT.body, fontSize: "0.78rem", color: isSignificant ? C.goldBright : C.text, fontWeight: isSignificant ? 700 : 400, textTransform: "uppercase", letterSpacing: "0.03em", wordWrap: "break-word", lineHeight: 1.2, display: "inline-block" }}>
@@ -718,6 +783,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
           </div>
         </div>
       )}
+    </div>
     </div>
     </SmallSampleBadge>
   );
@@ -1456,7 +1522,7 @@ function MirrorNarrativeBlock({ intactQ, circQ, intactDist, circDist, intactCoho
             }}
           >
             <span>Shuffle Responses</span>
-            <span>↺</span>
+            <RefreshCw size={13} />
           </button>
         </div>
       )}

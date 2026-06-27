@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Share2 } from "lucide-react";
 import { C, FONT } from "../styles/tokens";
 
 export default function SharePopover({ url, questionId, questionPrompt, onExportImage }) {
@@ -54,7 +55,7 @@ export default function SharePopover({ url, questionId, questionPrompt, onExport
       <button
         onClick={toggleOpen}
         style={{
-          background: isOpen ? "rgba(212,160,48,0.15)" : "transparent",
+          background: "transparent",
           border: `1px solid ${C.gold}`,
           color: C.goldBright,
           fontFamily: FONT.condensed,
@@ -62,16 +63,18 @@ export default function SharePopover({ url, questionId, questionPrompt, onExport
           fontWeight: 700,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
-          padding: "0.4rem 0.8rem",
-          borderRadius: 4,
+          padding: "0.4rem 1rem",
+          borderRadius: 999,
           cursor: "pointer",
           transition: "all 0.15s",
           display: "flex",
           alignItems: "center",
           gap: "0.4rem",
         }}
+        onMouseEnter={e => { e.currentTarget.style.background = "rgba(212,160,48,0.15)"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
       >
-        📤 Share
+        <Share2 size={14} strokeWidth={2.5} /> Share
       </button>
 
       {isOpen && (

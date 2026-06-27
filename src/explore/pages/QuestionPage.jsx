@@ -17,7 +17,6 @@ import { useTooltip, Tooltip } from "../components/Tooltip";
 import DistributionChart from "../components/DistributionChart";
 import { MessageSquareText, BarChart2 } from "../components/Icons";
 import { applyLikert, flattenMultiSelect, sortDistribution } from "../lib/formatters";
-import CopilotChat from "../components/CopilotChat";
 import IconifyEmoji from "../components/IconifyEmoji";
 
 import SharePopover from "../components/SharePopover";
@@ -26,6 +25,19 @@ import WordCloud from "../components/WordCloud";
 import SmallSampleBadge, { shouldSuppress } from "../components/SmallSampleBadge";
 import MeanComparisonStrip from "../components/MeanComparisonStrip";
 import CompareBySelector from "../components/CompareBySelector";
+import BreadcrumbDropdown from "../components/BreadcrumbDropdown";
+
+const SECTION_ITEMS = [
+  { id: "Demographics", label: "Demographics", href: "#/index?section=Demographics" },
+  { id: "Culture & Perspectives", label: "Culture & Perspectives", href: "#/index?section=Culture%20%26%20Perspectives" },
+  { id: "Anatomy & Appearance", label: "Anatomy & Appearance", href: "#/index?section=Anatomy%20%26%20Appearance" },
+  { id: "Sexual Experience", label: "Sexual Experience", href: "#/index?section=Sexual%20Experience" },
+  { id: "Experience", label: "Experience", href: "#/index?section=Experience" },
+  { id: "Pride & Regret", label: "Pride & Regret", href: "#/index?section=Pride%20%26%20Regret" },
+  { id: "Parents & Guardians", label: "Parents & Guardians", href: "#/index?section=Parents%20%26%20Guardians" },
+  { id: "Partners & Intimacy", label: "Partners & Intimacy", href: "#/index?section=Partners%20%26%20Intimacy" },
+  { id: "Medical Professionals", label: "Medical Professionals", href: "#/index?section=Medical%20Professionals" },
+];
 
 export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
   const { params, cohort } = routerState;
@@ -46,7 +58,6 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
   const [byPathway, setByPathway] = useState(null);
   const [error, setError] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
-  const [showCopilot, setShowCopilot] = useState(true);
   const [viewMode, setViewMode] = useState("single");
   const [questions, setQuestions] = useState([]);
   const [notFound, setNotFound] = useState(false);
@@ -60,9 +71,9 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
   useEffect(() => {
     if (question && setCustomMeta) {
       setCustomMeta({
-        kicker: "The Accidental Intactivist's Inquiry",
-        title: "Accidental Intactivists Inquiry Dataset",
-        desc: `Detailed cohort breakdown and response narrative analysis for question ${question.id}.`,
+        kicker: "Question Analysis",
+        title: question.section || "Detailed Breakdown",
+        desc: question.prompt,
         navTitle: question.section || "Question",
       });
     }
@@ -81,18 +92,13 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
-    if (mode === "side-by-side") {
-      setShowCopilot(false);
-    } else if (mode === "single") {
-      setShowCopilot(true);
-    }
   };
 
   useEffect(() => {
     let cancelled = false;
+    window.scrollTo(0, 0);
     setSelectedWord(null);
     setViewMode("single");
-    setShowCopilot(true);
     setNotFound(false);
     setQuestion(null);
     setAllDistribution(null);
@@ -262,7 +268,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
       fontFamily: FONT.body,
       padding: "1.5rem 1.1rem 3rem",
     }}>
-      <div style={{ maxWidth: showCopilot ? 1100 : 1400, margin: "0 auto", transition: "max-width 0.2s ease" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", transition: "max-width 0.2s ease" }}>
 
         {/* Actions bar at top */}
         <div className="no-print no-capture" style={{
@@ -285,30 +291,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
               <div style={{ width: "1px", height: "20px", background: C.ghost }} />
             </>
           )}
-          
-          <button
-            onClick={() => setShowCopilot(prev => !prev)}
-            title={showCopilot ? "Hide AI Assistant" : "Show AI Assistant"}
-            style={{
-              background: showCopilot ? "rgba(212,160,48,0.12)" : "transparent",
-              border: `1px solid ${showCopilot ? "rgba(212,160,48,0.3)" : C.ghost}`,
-              borderRadius: 6,
-              cursor: "pointer",
-              color: showCopilot ? C.goldBright : C.muted,
-              fontFamily: FONT.condensed,
-              fontSize: "0.68rem",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              padding: "0.25rem 0.5rem",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.25rem",
-              transition: "all 0.15s",
-            }}
-          >
-            <span>🤖</span>
-            <span>AI Copilot</span>
-          </button>
+          {/* AI Copilot button removed */}
         </div>
 
         {/* Loading and Error states (rendered outside/above the grid) */}
@@ -319,13 +302,12 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
         )}
         {error && <ErrorBlock msg={error} />}
 
-        {/* Two-panel: not found UI on left, AI copilot on right */}
+        {/* Not found UI */}
         {notFound && (
           <div
-            className="explore-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: showCopilot ? "1fr 340px" : "1fr",
+              gridTemplateColumns: "1fr",
               gap: "1.2rem",
               alignItems: "start",
             }}
@@ -543,36 +525,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                 </div>
               </div>
 
-              {/* AI Assistant guidance banner */}
-              <div style={{
-                padding: "0.5rem 0.8rem",
-                background: "rgba(212,160,48,0.06)",
-                border: `1px solid rgba(212,160,48,0.18)`,
-                borderRadius: 6,
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem"
-              }}>
-                <span style={{ fontSize: "1rem" }}>🤖</span>
-                <span style={{ fontFamily: FONT.body, fontSize: "0.74rem", color: C.muted, lineHeight: 1.45 }}>
-                  The <strong>AI Copilot</strong> on the right has been initialized to search for questions similar to <code style={{ color: C.goldBright }}>{questionId}</code>. See its recommendations or ask a follow-up.
-                </span>
-              </div>
             </main>
-
-            {/* RIGHT: AI Assistant */}
-            {showCopilot && (
-              <aside style={{
-                position: "sticky",
-                top: "calc(var(--header-height, 56px) + 1rem)",
-                maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
-                overflowY: "auto",
-                paddingRight: "0.4rem",
-                zIndex: 100,
-              }}>
-                <CopilotChat routerState={routerState} updateState={updateState} question={null} />
-              </aside>
-            )}
           </div>
         )}
 
@@ -582,7 +535,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
             className="explore-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: showCopilot ? "260px 1fr 340px" : "260px 1fr",
+              gridTemplateColumns: "260px 1fr",
               gap: "1.2rem",
               alignItems: "start",
             }}
@@ -747,11 +700,21 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     {(() => {
                       const sectionStr = question.section || "Question";
                       const isRedundant = pathwayObj && sectionStr.toUpperCase().includes(pathwayObj.label.toUpperCase());
+                      
+                      const dynamicSectionItems = [...SECTION_ITEMS];
+                      if (!dynamicSectionItems.some(item => item.id === sectionStr)) {
+                        dynamicSectionItems.push({ id: sectionStr, label: sectionStr, href: `#/index?section=${encodeURIComponent(sectionStr)}` });
+                      }
+
                       return (
                         <>
                           <span style={{ color: C.muted, display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
                             {isRedundant && <IconifyEmoji emoji={pathwayObj.emoji} style={{ color: pathwayObj.color }} />}
-                            <span>{sectionStr}</span>
+                            <BreadcrumbDropdown
+                              label={sectionStr}
+                              currentId={sectionStr}
+                              items={dynamicSectionItems}
+                            />
                           </span>
                           {pathwayObj && !isRedundant && (
                             <>
@@ -763,7 +726,17 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                                 gap: "0.25rem",
                               }}>
                                 <IconifyEmoji emoji={pathwayObj.emoji} style={{ color: pathwayObj.color }} />
-                                <span>{pathwayObj.label}</span>
+                                <BreadcrumbDropdown
+                                  label={pathwayObj.label}
+                                  currentId={pathwayObj.id}
+                                  items={Object.values(PATHWAYS).filter(p => !p.waiting).map(p => ({
+                                    id: p.id,
+                                    label: p.label,
+                                    emoji: p.emoji,
+                                    color: p.color,
+                                    href: `#/index?pathway=${p.id}`
+                                  }))}
+                                />
                               </span>
                             </>
                           )}
@@ -782,7 +755,6 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   lineHeight: 1.25,
                   letterSpacing: "-0.01em",
                   marginBottom: "0.8rem",
-                  textTransform: "uppercase",
                 }}>
                   {question.prompt}
                 </h1>
@@ -1040,20 +1012,6 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                 )}
               </div>
             </main>
-
-            {/* RIGHT: AI Assistant */}
-            {showCopilot && (
-              <aside style={{
-                position: "sticky",
-                top: "calc(var(--header-height, 56px) + 1rem)",
-                maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
-                overflowY: "auto",
-                paddingRight: "0.4rem",
-                zIndex: 100,
-              }}>
-                <CopilotChat routerState={routerState} updateState={updateState} question={question} />
-              </aside>
-            )}
           </div>
         )}
 

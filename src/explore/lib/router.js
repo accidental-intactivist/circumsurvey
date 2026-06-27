@@ -51,14 +51,17 @@ function parseHash() {
     route = "culture";
   } else if (segments[0] === "generational-faultlines") {
     route = "culture"; // redirect: merged into Culture & Generations
-  } else if (segments[0] === "the-decision") {
-    route = "the-decision";
+  } else if (
+    segments[0] === "the-decision" ||
+    segments[0] === "final-thoughts" ||
+    segments[0] === "trans-intersex"
+  ) {
+    // Phase 2 stubs: gated from the public until real content exists.
+    // Direct URLs redirect to the index. Re-enable by restoring the
+    // individual routes here + the EXHIBIT_ROUTES catalog entries.
+    route = "index";
   } else if (segments[0] === "cognizant-alteration" || segments[0] === "adult-experience") {
     route = "adult-experience";
-  } else if (segments[0] === "final-thoughts") {
-    route = "final-thoughts";
-  } else if (segments[0] === "trans-intersex") {
-    route = "trans-intersex";
   } else if (segments[0] === "for-parents") {
     route = "for-parents";
   }

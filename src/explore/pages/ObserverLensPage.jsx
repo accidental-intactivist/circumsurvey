@@ -28,6 +28,7 @@ export default function ObserverLensPage({ navigate, setExhibitContext }) {
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Observer Lens' exhibit, which explores observations and feedback from the various Observer pathways (partners, parents, healthcare providers, researchers, advocates) through tabbed views of their unique question streams.",
         exhibitName: "The Observer Lens",
         exhibitDescription: "An expanded analysis mapping out specific feedback and observations from various Observer pathways: Partners, Parents, Healthcare Providers, Researchers, and more.",
         perspectives: validRoles.map(r => r.label.replace("As a ", "").replace("As an ", ""))

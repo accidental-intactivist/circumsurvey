@@ -7,7 +7,7 @@ import SharePopover from "./SharePopover";
 import { sortDistribution, applyLikert, shortLabel, getHarveyBallScore } from "../lib/formatters";
 import HarveyBall from "./HarveyBall";
 
-export default function DistributionChart({ title, distribution, cohortDistribution, question, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
+export default function DistributionChart({ title, distribution, cohortDistribution, question, cohort, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
@@ -184,7 +184,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
               >Pie</button>
             </div>
             
-            {question && <AddToReportButton questionId={question.id} iconOnly />}
+            {question && <AddToReportButton questionId={question.id} cohort={cohort} iconOnly />}
             {question && <SharePopover url={window.location.origin + window.location.pathname + "#/question/" + question.id} questionId={question.id} questionPrompt={question.prompt} onExportImage={handleDownload} />}
             <button 
               onClick={handleDownload}

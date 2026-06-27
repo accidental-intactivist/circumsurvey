@@ -16,6 +16,7 @@ export default function PathwayPage({ routerState, navigate, updateState, setExh
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Survey Map' exhibit. This page displays a full interactive flowchart showing the architectural map of the survey. The survey begins with universal questions, splits into unique pathways (Intact, Circumcised, Restoring, Observer, Trans/Intersex) based on respondent demographics, and then converges again for final universal questions.",
         exhibitName: "Pathway Hub",
         pathway: pathwayId
       });

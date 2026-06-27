@@ -188,3 +188,28 @@ export const Info = createThemedIcon(
   Lucide.Info,
   () => <path d="M 5,2 H 11 M 12,3 V 5 H 14 V 11 H 12 V 13 M 11,14 H 5 M 4,13 V 11 H 2 V 5 H 4 V 3 Z M 8,5 H 8.01 M 8,8 V 12" />
 );
+
+export const Cross = createThemedIcon(
+  Lucide.Cross,
+  () => <path d="M 8,2 V 14 M 4,5 H 12" />
+);
+
+export const Star = createThemedIcon(
+  Lucide.Star,
+  () => <path d="M 8,2 L 10,6 H 14 L 11,9 L 12,14 L 8,11 L 4,14 L 5,9 L 2,6 H 6 Z" />
+);
+
+export const Moon = createThemedIcon(
+  Lucide.Moon,
+  () => <path d="M 10,2 A 6,6 0 1,0 14,10 A 4,4 0 1,1 10,2 Z" />
+);
+
+export const Atom = createThemedIcon(
+  Lucide.Atom,
+  () => <path d="M 8,8 M 2,6 L 14,10 M 2,10 L 14,6 M 8,2 V 14" />
+);
+
+export const Flame = createThemedIcon(
+  Lucide.Flame,
+  () => <path d="M 8,2 C 12,6 12,14 8,14 C 4,14 4,6 8,2 Z M 8,8 V 12" />
+);

@@ -6,7 +6,7 @@
 //   • "By Generation" — streamgraph trends from Silent → Gen Z
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { C, FONT, API_BASE } from "../styles/tokens";
 import { getQuestions } from "../lib/api";
 import ExhibitHero from "../components/ExhibitHero";
@@ -237,20 +237,24 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: `The user is viewing the 'Culture & Generations' exhibit. Current viewing lens: ${mode === 'generation' ? 'Generational Timeline (Streamgraph)' : 'Cohort Distribution'}. This exhibit shows trends in societal views, stereotypes, and attitudes toward circumcision across demographic cohorts.`,
         exhibitName: "Culture & Generations",
         exhibitDescription: "Explore cultural norms, stereotypes, and attitudes regarding circumcision — viewed by cohort or by generational shift.",
         mode,
         activeAssoc,
+        activeSankeyTarget
       });
     }
-  }, [mode, activeAssoc, setExhibitContext]);
+  }, [mode, activeAssoc, activeSankeyTarget, setExhibitContext]);
 
   const activeAssocPrompt = ASSOC_QUESTIONS.find(q => q.id === activeAssoc)?.label || "";
-  const sankeyDims = [
-    DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "country_born"),
-    DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "pathway"),
-    { id: activeSankeyTarget, label: SANKEY_TARGETS.find(t => t.id === activeSankeyTarget)?.label || "Belief" },
-  ];
+  const sankeyDims = useMemo(() => {
+    return [
+      { id: "demo_country_born", label: "Country Born" },
+      { id: "pathway", label: "Pathway" },
+      { id: activeSankeyTarget, label: SANKEY_TARGETS.find(t => t.id === activeSankeyTarget)?.label || "Belief", type: "question" },
+    ];
+  }, [activeSankeyTarget]);
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
@@ -268,7 +272,7 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
           description="How do societal norms, stereotypes, and media influence our understanding of the male body? Explore how attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z."
         />
         
-        <div style={{
+        <div className="explore-grid" style={{
           display: "grid",
           gridTemplateColumns: "260px 1fr",
           gap: "3rem",
@@ -276,7 +280,7 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
           marginTop: "3rem",
         }}>
           {/* ── LEFT: Topic Navigator ─────────────────────────────── */}
-          <aside style={{
+          <aside className="explore-nav" style={{
             position: "sticky",
             top: "calc(var(--header-height, 56px) + 1.5rem)",
             maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
@@ -366,6 +370,17 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
                   These <strong>Streamgraphs</strong> trace shifting cultural attitudes across time. The timeline moves chronologically from the Silent Generation on the left, to Gen Z on the right.
                   <br /><br />
                   Each colored "ribbon" represents a specific answer choice. The <strong>vertical thickness</strong> of the ribbon represents the percentage of that generation who chose that answer. Watch how ribbons expand or squeeze into nothingness as generations evolve.
+                  
+                  <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: `1px solid ${C.ghost}` }}>
+                    <strong style={{ color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: FONT.condensed, fontSize: "0.75rem" }}>Generational Definitions</strong>
+                    <ul style={{ margin: "0.5rem 0 0", paddingLeft: "1.2rem", color: C.muted }}>
+                      <li><strong>Silent Gen:</strong> Born 1928–1945</li>
+                      <li><strong>Baby Boomers:</strong> Born 1946–1964</li>
+                      <li><strong>Gen X:</strong> Born 1965–1980</li>
+                      <li><strong>Millennials:</strong> Born 1981–1996</li>
+                      <li><strong>Gen Z:</strong> Born 1997–2012</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}
@@ -468,10 +483,13 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
                 letterSpacing: "0.1em",
                 borderBottom: `1px solid ${C.ghost}`,
                 paddingBottom: "0.5rem",
-                marginBottom: "1.5rem",
+                marginBottom: "1rem",
               }}>
                 Belief Pathways
               </h2>
+              <p style={{ color: C.muted, fontFamily: FONT.body, lineHeight: 1.6, marginBottom: "2rem", maxWidth: "800px" }}>
+                This diagram illustrates the flow of respondents based on their demographic background through their chosen circumcision pathway, and finally to their current beliefs or perceptions. By following the colored bands, you can see how different origins and experiences contribute to shaping these cultural attitudes.
+              </p>
               <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap" }}>
                 <span style={{ fontFamily: FONT.condensed, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: C.muted }}>
                   Map flow for:

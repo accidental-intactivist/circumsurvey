@@ -24,7 +24,7 @@ import { C, FONT, PATH_COLORS, API_BASE, resolveCssColor } from "../styles/token
 gsap.registerPlugin(ScrollTrigger);
 import { getResponseDistribution, getAggregate, getCount, getGeo } from "../lib/api";
 import { normalizeName } from "../lib/formatters";
-import DemographicFilterBar, { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
+import { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
 import AddToReportButton from "../components/AddToReportButton";
 import SharePopover from "../components/SharePopover";
 import { useTooltip, Tooltip } from "../components/Tooltip";
@@ -167,8 +167,10 @@ function useInView(options = {}) {
 // MAIN PAGE COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function DemographicsDashboardPage({ routerState, navigate, updateState, setExhibitContext }) {
-  const cohort = routerState?.cohort;
+export default function DemographicsDashboardPage({ navigate, updateState, setExhibitContext }) {
+  // ── Global State ─────────────────────────────────────────────────────────
+  // We intentionally ignore global cohort filters here so the Explorer always uses the full sample.
+  const cohort = null;
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   // Section refs for scroll navigation
@@ -188,6 +190,7 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Cohort X-Ray' demographics dashboard. This exhibit contains 4 sections: Geographic Origins, Geographic Flow (Sankey), Pathway DNA Strip (Demographic Stacked Bars), and Divergence Radar (Spider chart).",
         cohort,
         sankeySource: sankeyDims[0]?.id,
         sankeyMiddle: sankeyDims[1]?.id,
@@ -241,10 +244,10 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
         <InlineBreadcrumb currentRoute="demographics" navigate={navigate} />
       </div>
 
-      <div style={{ padding: "4rem 2rem", maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "260px 1fr", gap: "3rem", alignItems: "start" }}>
+      <div className="explore-grid" style={{ padding: "4rem 2rem", maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "260px 1fr", gap: "3rem", alignItems: "start" }}>
         
         {/* Left Column: Topic Navigator */}
-        <aside style={{
+        <aside className="explore-nav" style={{
           position: "sticky",
           top: "calc(var(--header-height, 56px) + 1.5rem)",
           maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
@@ -296,8 +299,6 @@ export default function DemographicsDashboardPage({ routerState, navigate, updat
               <span style={{ fontSize: "1.1em" }}>{s.icon}</span> {s.label}
             </div>
           ))}
-          <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "1.5rem 0 1rem", opacity: 0.5 }} />
-          <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
         </aside>
 
         {/* Right Column: Sections */}
@@ -449,7 +450,7 @@ function PathwayDNAStrip({ cohort, tooltip }) {
     <section ref={ref} className="xray-section" style={{ marginBottom: "4rem", minHeight: "600px" }}>
       <SectionHeader 
         title="Pathway DNA Strip"
-        subtitle="How does each pathway's demographic profile differ? Each row compares the full population breakdown across a dimension."
+        subtitle="What is the demographic DNA of this cohort? Each row shows the population breakdown across a single dimension."
         icon="≡"
       />
 
@@ -661,11 +662,11 @@ function DivergenceRadar({ cohort, tooltip }) {
   };
 
   const toggleCohort = (cohortId) => {
-    setActiveCohorts(prev => 
-      prev.includes(cohortId) 
-        ? prev.filter(c => c !== cohortId) 
-        : [...prev, cohortId]
-    );
+    setActiveCohorts(prev => {
+      if (prev.includes(cohortId)) return prev.filter(c => c !== cohortId);
+      if (prev.length >= 3) return prev;
+      return [...prev, cohortId];
+    });
   };
 
   // Helper to get color for a cohort
@@ -751,12 +752,15 @@ function DivergenceRadar({ cohort, tooltip }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           {dimensionCohorts.map((cohortOpt, idx) => {
             const isActive = activeCohorts.includes(cohortOpt.value);
+            const isMaxed = !isActive && activeCohorts.length >= 3;
             const color = getCohortColor(cohortOpt.value, idx);
             
             return (
               <button
                 key={cohortOpt.value}
                 onClick={() => toggleCohort(cohortOpt.value)}
+                disabled={isMaxed}
+                title={isMaxed ? "Maximum 3 cohorts for readability" : ""}
                 style={{
                   background: isActive ? color : "transparent",
                   color: isActive ? "#050505" : color,
@@ -767,7 +771,8 @@ function DivergenceRadar({ cohort, tooltip }) {
                   fontSize: "0.75rem",
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
-                  cursor: "pointer",
+                  cursor: isMaxed ? "not-allowed" : "pointer",
+                  opacity: isMaxed ? 0.4 : 1,
                   transition: "all 0.2s",
                   boxShadow: isActive ? "0 2px 0 rgba(0,0,0,0.15)" : "none"
                 }}
@@ -1439,7 +1444,7 @@ function LinkedRegionRadar({ selectedRegions, locationTime, onRemoveRegion, onCl
           </div>
 
           {/* Axis-by-axis comparison table */}
-          <div style={{ flex: "1 1 320px", minWidth: 280, overflowX: "auto" }}>
+          <div className="mobile-scroll-hint" style={{ flex: "1 1 320px", minWidth: 280, overflowX: "auto" }}>
             <div style={{
               fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.14em",
               textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700,

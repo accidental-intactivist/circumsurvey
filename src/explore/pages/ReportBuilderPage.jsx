@@ -21,7 +21,7 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
     }
   }, [cohort, setExhibitContext]);
 
-  const { reportItems, removeFromReport, reorderReport, clearReport } = useReport();
+  const { reportItems, reportMeta, updateReportMeta, addTextBlock, updateTextBlock, removeFromReport, reorderReport, clearReport } = useReport();
   const [questions, setQuestions] = useState([]);
   const [distributions, setDistributions] = useState({});
   const [loading, setLoading] = useState(true);
@@ -37,29 +37,29 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
     return () => { cancelled = true; };
   }, []);
 
-  // Fetch all necessary data for the report items
+  // Fetch all necessary data for the report question blocks
   useEffect(() => {
     let cancelled = false;
     if (reportItems.length === 0 || questions.length === 0) return;
     
-    const toFetch = reportItems.filter(id => !distributions[id]);
+    const toFetch = reportItems.filter(item => item.type === 'question' && !distributions[item.id]);
     
-    toFetch.forEach(id => {
-      const q = questions.find(q => q.id === id);
+    toFetch.forEach(item => {
+      const q = questions.find(q => q.id === item.refId);
       if (!q) return;
 
-      const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(id);
+      const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(item.refId);
 
-      const promises = [getResponseDistribution(id)];
+      const promises = [getResponseDistribution(item.refId, { cohort: item.cohort })];
       
       if (q.type === "open_text" && !isGeographic) {
-        promises.push(getNarratives(id).catch(() => null));
+        promises.push(getNarratives(item.refId, { cohort: item.cohort }).catch(() => null));
       } else {
         promises.push(Promise.resolve(null));
       }
 
       if (isGeographic) {
-         promises.push(getAggregate(id, { by: "pathway" }).catch(() => null));
+         promises.push(getAggregate(item.refId, { by: "pathway", cohort: item.cohort }).catch(() => null));
       } else {
          promises.push(Promise.resolve(null));
       }
@@ -68,24 +68,18 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
         if (!cancelled) {
           setDistributions(prev => ({
             ...prev,
-            [id]: {
+            [item.id]: {
                distribution: distRes?.distribution || [],
                narratives: narRes?.narratives || null,
                byPathway: pathRes || null
             }
           }));
         }
-      }).catch(e => console.error("Failed to fetch full data for", id, e));
+      }).catch(e => console.error("Failed to fetch full data for", item.refId, e));
     });
     
     return () => { cancelled = true; };
   }, [reportItems, questions, distributions]);
-
-  const reportQuestions = useMemo(() => {
-    return reportItems
-      .map(id => questions.find(q => q.id === id))
-      .filter(Boolean);
-  }, [reportItems, questions]);
 
   const moveUp = (index) => {
     if (index > 0) reorderReport(index, index - 1);
@@ -96,15 +90,17 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
   };
 
   const exportCSV = () => {
-    let csv = "Question ID,Prompt,Theme,Data\\n";
-    reportQuestions.forEach(q => {
-      const data = distributions[q.id];
+    let csv = "Question ID,Prompt,Cohort,Theme,Data\\n";
+    reportItems.filter(item => item.type === 'question').forEach(item => {
+      const q = questions.find(q => q.id === item.refId);
+      if (!q) return;
+      const data = distributions[item.id];
       const dist = data?.distribution;
       let dataStr = "";
       if (dist) {
         dataStr = dist.map(d => `${d.label}: ${d.n} (${d.pct.toFixed(1)}%)`).join(" | ");
       }
-      csv += `"${q.id}","${q.prompt.replace(/"/g, '""')}","${q.section || ''}","${dataStr}"\\n`;
+      csv += `"${q.id}","${q.prompt.replace(/"/g, '""')}","${item.cohort || 'All'}","${q.section || ''}","${dataStr}"\\n`;
     });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -116,18 +112,26 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
 
   const exportText = () => {
     let txt = "=== CIRCUMSURVEY CUSTOM REPORT ===\\n\\n";
-    reportQuestions.forEach((q, i) => {
-      txt += `${i + 1}. ${q.prompt}\\n`;
-      txt += `ID: ${q.id} | Section: ${q.section || 'N/A'}\\n`;
-      const data = distributions[q.id];
-      const dist = data?.distribution;
-      if (dist) {
-        dist.forEach(d => {
-          const bars = "█".repeat(Math.round(d.pct / 5));
-          txt += `  ${d.label.padEnd(25)} | ${String(d.n).padStart(4)} | ${bars} ${d.pct.toFixed(1)}%\\n`;
-        });
+    txt += `${reportMeta.title}\\n${reportMeta.subtitle ? reportMeta.subtitle + '\\n' : ''}${reportMeta.author ? 'By ' + reportMeta.author + '\\n' : ''}\\n`;
+    
+    reportItems.forEach((item, i) => {
+      if (item.type === 'text') {
+        txt += `--- TEXT BLOCK ---\\n${item.content}\\n\\n`;
+      } else if (item.type === 'question') {
+        const q = questions.find(q => q.id === item.refId);
+        if (!q) return;
+        txt += `${i + 1}. ${q.prompt}\\n`;
+        txt += `ID: ${q.id} | Cohort: ${item.cohort || 'All'} | Section: ${q.section || 'N/A'}\\n`;
+        const data = distributions[item.id];
+        const dist = data?.distribution;
+        if (dist) {
+          dist.forEach(d => {
+            const bars = "█".repeat(Math.round(d.pct / 5));
+            txt += `  ${d.label.padEnd(25)} | ${String(d.n).padStart(4)} | ${bars} ${d.pct.toFixed(1)}%\\n`;
+          });
+        }
+        txt += "\\n";
       }
-      txt += "\\n";
     });
     const blob = new Blob([txt], { type: "text/plain;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -179,17 +183,22 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
       <style>{`
         @media print {
           .no-print { display: none !important; }
+          .print-only { display: block !important; }
           body { background: white !important; color: black !important; }
-          .print-container { padding: 0 !important; }
+          .print-container { padding: 0 !important; max-width: 100% !important; }
           * { text-shadow: none !important; box-shadow: none !important; }
           .report-block { break-inside: avoid; margin-bottom: 2rem; border-color: #ddd !important; }
+          .cover-page { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; break-after: page; }
+          .report-input-title { color: black !important; }
+          input { color: black !important; }
         }
       `}</style>
 
       <div className="print-container" style={{ maxWidth: 900, margin: "0 auto" }}>
         
         {/* Action Toolbar */}
-        {reportQuestions.length > 0 && (
+        {/* Action Toolbar */}
+        {reportItems.length > 0 && (
           <div className="no-print" style={{
             display: "flex",
             alignItems: "center",
@@ -230,27 +239,63 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
         )}
 
         <div ref={reportRef}>
-          <h1 style={{
-            fontFamily: FONT.display,
-            fontWeight: 700,
-            fontSize: "2.5rem",
-            color: C.textBright,
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
-            marginBottom: "0.5rem",
-          }}>Custom Narrative Report</h1>
-          <p style={{
-            fontFamily: FONT.body,
-            fontSize: "1.1rem",
-            color: C.muted,
-            marginBottom: "3rem",
-          }}>
-            {reportQuestions.length} {reportQuestions.length === 1 ? 'item' : 'items'} selected from the inquiry.
-          </p>
+          {/* Cover Page */}
+          <div className="cover-page" style={{ marginBottom: "4rem" }}>
+            <input 
+              className="report-input-title"
+              value={reportMeta.title}
+              onChange={(e) => updateReportMeta({ title: e.target.value })}
+              placeholder="Report Title"
+              style={{
+                fontFamily: FONT.display,
+                fontWeight: 700,
+                fontSize: "2.5rem",
+                color: C.textBright,
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                width: "100%",
+                lineHeight: 1.1,
+                letterSpacing: "-0.02em",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input 
+              value={reportMeta.subtitle}
+              onChange={(e) => updateReportMeta({ subtitle: e.target.value })}
+              placeholder="Optional Subtitle or Description..."
+              style={{
+                fontFamily: FONT.body,
+                fontSize: "1.1rem",
+                color: C.muted,
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                width: "100%",
+                marginBottom: "0.5rem",
+              }}
+            />
+            <input 
+              value={reportMeta.author}
+              onChange={(e) => updateReportMeta({ author: e.target.value })}
+              placeholder="Author Name..."
+              style={{
+                fontFamily: FONT.condensed,
+                fontSize: "0.9rem",
+                color: C.dim,
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                width: "100%",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase"
+              }}
+            />
+          </div>
 
           {loading ? (
             <div style={{ color: C.muted, fontStyle: "italic" }}>Loading questions...</div>
-          ) : reportQuestions.length === 0 ? (
+          ) : reportItems.length === 0 ? (
             <div style={{ 
               padding: "4rem", 
               textAlign: "center", 
@@ -261,84 +306,77 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
               Your report is empty. Browse the Master Index to add questions here.
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-              {reportQuestions.map((q, index) => {
-                const data = distributions[q.id];
-                const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(q.id);
-                const isOpenText = q.type === "open_text" && !isGeographic;
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {/* Top Insert Button */}
+              <div className="no-print" style={{ textAlign: "center" }}>
+                <button onClick={() => addTextBlock(0)} style={{ ...buttonStyle, fontSize: "0.65rem", padding: "0.2rem 0.6rem" }}>
+                  + Add Text Block
+                </button>
+              </div>
+
+              {reportItems.map((item, index) => {
+                const isText = item.type === 'text';
+                const isQuestion = item.type === 'question';
                 
-                const displayDist = data ? { distribution: applyLikert(data.distribution, q) } : null;
-
-                return (
-                  <div key={q.id} className="report-block" style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-                    <div className="no-print" style={{ display: "flex", flexDirection: "column", gap: "0.2rem", marginTop: "1.5rem" }}>
-                      <button 
-                        onClick={() => moveUp(index)}
-                        disabled={index === 0}
+                let contentNode = null;
+                
+                if (isText) {
+                  contentNode = (
+                    <div style={{ width: "100%" }}>
+                      <textarea
+                        value={item.content}
+                        onChange={(e) => updateTextBlock(item.id, e.target.value)}
+                        placeholder="Write your analysis or narrative here..."
                         style={{
-                          background: "transparent", border: "none", color: index === 0 ? C.dim : C.muted,
-                          cursor: index === 0 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem"
+                          width: "100%",
+                          minHeight: "100px",
+                          background: "rgba(255,255,255,0.03)",
+                          border: `1px solid ${C.ghost}`,
+                          borderRadius: 8,
+                          color: C.textBright,
+                          fontFamily: FONT.body,
+                          fontSize: "1rem",
+                          padding: "1rem",
+                          resize: "vertical",
+                          outline: "none"
                         }}
-                      >▲</button>
-                      <button 
-                        onClick={() => moveDown(index)}
-                        disabled={index === reportQuestions.length - 1}
-                        style={{
-                          background: "transparent", border: "none", color: index === reportQuestions.length - 1 ? C.dim : C.muted,
-                          cursor: index === reportQuestions.length - 1 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem"
-                        }}
-                      >▼</button>
+                        onFocus={(e) => e.target.style.borderColor = C.gold}
+                        onBlur={(e) => e.target.style.borderColor = C.ghost}
+                        className="no-print"
+                      />
+                      {/* Print only view */}
+                      <div className="print-only" style={{ display: "none", fontFamily: FONT.body, fontSize: "1rem", color: C.textBright, whiteSpace: "pre-wrap", padding: "1rem 0" }}>
+                        {item.content || " "}
+                      </div>
                     </div>
-                    
-                    <div style={{ 
-                      flex: 1, 
-                      border: `1px solid ${C.ghost}`, 
-                      borderRadius: 12, 
-                      background: C.bgCard,
-                      overflow: "hidden" 
-                    }}>
-                      <div style={{ padding: "1.5rem 1.8rem" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
-                          <div>
-                            <span style={{
-                              fontFamily: FONT.condensed, fontSize: "0.65rem", fontWeight: 700,
-                              letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold,
-                              display: "block", marginBottom: "0.4rem"
-                            }}>{q.section || "General"}</span>
-                            <h2 style={{ 
-                              fontFamily: FONT.display, fontSize: "1.35rem", color: C.textBright, 
-                              lineHeight: 1.25, marginBottom: "1rem", letterSpacing: "-0.01em"
-                            }}>
-                              {index + 1}. {q.prompt}
-                            </h2>
-                            {q.subtitle && (
-                              <p style={{
-                                fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted,
-                                fontStyle: "italic", marginBottom: "1.5rem"
-                              }}>{q.subtitle}</p>
-                            )}
-                          </div>
-                          <button 
-                            className="no-print"
-                            onClick={() => removeFromReport(q.id)}
-                            style={{
-                              background: "transparent", border: "none", color: C.dim,
-                              cursor: "pointer", padding: "0.2rem", fontSize: "1.4rem",
-                              transition: "color 0.15s", lineHeight: 1
-                            }}
-                            onMouseEnter={e => e.target.style.color = C.red}
-                            onMouseLeave={e => e.target.style.color = C.dim}
-                            title="Remove from report"
-                          >×</button>
-                        </div>
+                  );
+                } else if (isQuestion) {
+                  const q = questions.find(q => q.id === item.refId);
+                  if (!q) return null;
+                  
+                  const data = distributions[item.id];
+                  const isGeographic = ["demo_country_born", "demo_country_current", "demo_us_state_born", "demo_us_state_current", "demo_can_province_born", "demo_can_province_current"].includes(q.id);
+                  const isOpenText = q.type === "open_text" && !isGeographic;
+                  
+                  const displayDist = data ? { distribution: applyLikert(data.distribution, q) } : null;
 
+                  contentNode = (
+                    <div style={{ width: "100%", border: `1px solid ${C.ghost}`, borderRadius: 12, background: C.bgCard, overflow: "hidden" }}>
+                      <div style={{ padding: "1.5rem 1.8rem" }}>
+                        <span style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.4rem" }}>
+                          {item.cohort ? `COHORT: ${item.cohort.toUpperCase()} | ` : ''}{q.section || "General"}
+                        </span>
+                        <h2 style={{ fontFamily: FONT.display, fontSize: "1.35rem", color: C.textBright, lineHeight: 1.25, marginBottom: "1rem", letterSpacing: "-0.01em" }}>
+                          {q.prompt}
+                        </h2>
+                        
                         {!data ? (
                           <div style={{ color: C.dim, fontStyle: "italic" }}>Loading data...</div>
                         ) : isOpenText ? (
                           <>
                             <WordCloud narratives={data.narratives || []} />
                             <div style={{ marginTop: "1.5rem" }}>
-                              <NarrativeList distribution={data.narratives || []} />
+                              <NarrativeList distribution={data.narratives || []} cohort={item.cohort} />
                             </div>
                           </>
                         ) : isGeographic ? (
@@ -352,9 +390,49 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
                           <DistributionChart 
                             distribution={displayDist} 
                             title="Distribution" 
+                            cohort={item.cohort}
                           />
                         )}
                       </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={item.id} className="report-block" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
+                      {/* Controls Sidebar */}
+                      <div className="no-print" style={{ display: "flex", flexDirection: "column", gap: "0.2rem", marginTop: isText ? "1rem" : "1.5rem" }}>
+                        <button 
+                          onClick={() => moveUp(index)}
+                          disabled={index === 0}
+                          style={{ background: "transparent", border: "none", color: index === 0 ? C.dim : C.muted, cursor: index === 0 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem" }}
+                        >▲</button>
+                        <button 
+                          onClick={() => removeFromReport(item.id)}
+                          style={{ background: "transparent", border: "none", color: C.dim, cursor: "pointer", padding: "0.2rem", fontSize: "1.4rem", transition: "color 0.15s", lineHeight: 1 }}
+                          onMouseEnter={e => e.target.style.color = C.red}
+                          onMouseLeave={e => e.target.style.color = C.dim}
+                          title="Remove from report"
+                        >×</button>
+                        <button 
+                          onClick={() => moveDown(index)}
+                          disabled={index === reportItems.length - 1}
+                          style={{ background: "transparent", border: "none", color: index === reportItems.length - 1 ? C.dim : C.muted, cursor: index === reportItems.length - 1 ? "default" : "pointer", padding: "0 0.2rem", fontSize: "1rem" }}
+                        >▼</button>
+                      </div>
+                      
+                      {/* Main Content */}
+                      <div style={{ flex: 1 }}>
+                        {contentNode}
+                      </div>
+                    </div>
+
+                    {/* Insert Text Block Button Below */}
+                    <div className="no-print" style={{ textAlign: "center", margin: "0.5rem 0" }}>
+                      <button onClick={() => addTextBlock(index + 1)} style={{ ...buttonStyle, fontSize: "0.65rem", padding: "0.2rem 0.6rem" }}>
+                        + Add Text Block
+                      </button>
                     </div>
                   </div>
                 );

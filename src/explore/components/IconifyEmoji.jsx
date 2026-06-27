@@ -2,6 +2,7 @@ import React from "react";
 import * as Lucide from "lucide-react";
 import { PATH_COLORS, C } from "../styles/tokens";
 import HarveyBall from "./HarveyBall";
+import { Cross, Star, Moon, Atom, Activity, Flame } from "./Icons";
 
 // For solid circles, we create a small wrapper around Lucide's Circle
 const SolidCircle = (props) => <Lucide.Circle fill="currentColor" strokeWidth={0} {...props} />;
@@ -33,10 +34,10 @@ const EMOJI_MAPPING = {
   "\u{1F3AD}": Lucide.VenetianMask,
   
   // Religions
-  "\u{269B}\u{FE0F}": Lucide.Atom,
-  "\u{271D}\u{FE0F}": Lucide.Cross,
-  "\u{2721}\u{FE0F}": Lucide.Star,
-  "\u{262A}\u{FE0F}": Lucide.Moon,
+  "\u{269B}\u{FE0F}": Atom,
+  "\u{271D}\u{FE0F}": Cross,
+  "\u{2721}\u{FE0F}": Star,
+  "\u{262A}\u{FE0F}": Moon,
   
   // Recommendations / editorial
   "\u{1F4AC}": Lucide.MessageSquare,
@@ -45,8 +46,8 @@ const EMOJI_MAPPING = {
   "\u{1F4DC}": Lucide.ScrollText || Lucide.FileText,
   
   // Fallbacks for others that might pop up
-  "\u{1F549}\u{FE0F}": Lucide.Activity,
-  "\u{1F56F}\u{FE0F}": Lucide.Flame || Lucide.Zap,
+  "\u{1F549}\u{FE0F}": Activity,
+  "\u{1F56F}\u{FE0F}": Flame,
   
   // New Header Emojis
   "⏱️": Lucide.Timer,

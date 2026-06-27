@@ -127,17 +127,11 @@ export const ROUTE_META = {
     desc: "A deep dive into the Parent Observer subgroup, tracing the timeline, tipping points, and reflections of parents making the circumcision decision.",
     navTitle: "The Decision",
   },
-  "cognizant-alteration": {
-    kicker: "Exhibit 11",
-    title: "Before & After: The Adult Experience",
-    desc: "The unique perspective of those circumcised as adults — old enough to remember both states and articulate how the change affected sensation, function, and identity.",
-    navTitle: "Adult Experience",
-  },
-  "adult-experience": {
-    kicker: "Exhibit 11",
-    title: "Before & After: The Adult Experience",
-    desc: "The unique perspective of those circumcised as adults — old enough to remember both states and articulate how the change affected sensation, function, and identity.",
-    navTitle: "Adult Experience",
+  "for-parents": {
+    kicker: "Exhibit 13",
+    title: "For New & Expectant Parents",
+    desc: "A curated, shareable resource presenting what grown children, other parents, medical professionals, and faith communities say — so you can make the most informed decision.",
+    navTitle: "For Parents",
   },
   "final-thoughts": {
     kicker: "Exhibit 15",
@@ -146,7 +140,7 @@ export const ROUTE_META = {
     navTitle: "Final Thoughts",
   },
   "the-forward-view": {
-    kicker: "Exhibit 16",
+    kicker: "Exhibit 14",
     title: "The Forward View",
     desc: "How lived experience informs the choices we make for the next generation.",
     navTitle: "The Forward View",
@@ -154,15 +148,9 @@ export const ROUTE_META = {
   "trans-intersex": {
     kicker: "Phase 2",
     title: "Trans & Intersex Experiences",
-    desc: "Placeholder for Phase 2 deep dive into transgender and intersex perspectives, which require distinct analytical lenses.",
+    desc: "A deep dive into transgender and intersex perspectives, which require distinct analytical lenses to be fully explored in Phase 2 of this project.",
     navTitle: "Trans & Intersex",
-  },
-  "for-parents": {
-    kicker: "Resource",
-    title: "For New & Expectant Parents",
-    desc: "A curated, shareable resource presenting what grown children, other parents, medical professionals, and faith communities say — so you can make the most informed decision.",
-    navTitle: "For Parents",
-  },
+  }
 };
 
 export const EXHIBIT_ROUTES = [
@@ -178,8 +166,10 @@ export const EXHIBIT_ROUTES = [
   { route: "restoration-journey", num: "Exhibit 10", label: "Restoration Journey", tagline: "Methods, progress & sensitivity gains", icon: "RefreshCw", colorVar: "var(--c-gold)" },
   { route: "adult-experience", num: "Exhibit 11", label: "Before & After: The Adult Experience", tagline: "Those who remember both states", icon: "Zap", colorVar: "var(--c-green)" },
   { route: "numbers", num: "Exhibit 12", label: "By the Numbers", tagline: "Key statistical stories & functional shifts", icon: "BarChart2", colorVar: "var(--c-gold)" },
-  { route: "for-parents", num: "Resource", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-red)" },
-  { route: "the-forward-view", num: "Conclusion", label: "The Forward View", tagline: "Decisions for the next generation", icon: "CheckCircle", colorVar: "var(--c-purple)" },
+  // "the-decision" (was Exhibit 13) — hidden from discovery until Phase 2 content exists. Page stub + route remain.
+  { route: "for-parents", num: "Exhibit 13", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-red)" },
+  // "final-thoughts" (was Exhibit 15) — hidden from discovery until Phase 2 content exists. Page stub + route remain.
+  { route: "the-forward-view", num: "Exhibit 14", label: "The Forward View", tagline: "Decisions for the next generation", icon: "CheckCircle", colorVar: "var(--c-purple)" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {
@@ -323,8 +313,25 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           }}
         >
           {/* Left: Brand / Breadcrumbs */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", position: "relative" }} ref={dropdownRef}>
-            <button
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }} ref={dropdownRef}>
+            {scrolled && (
+              <div style={{
+                fontFamily: FONT.condensed,
+                fontSize: "0.55rem",
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "var(--c-dim)",
+                lineHeight: 1,
+                marginBottom: "0.1rem",
+                marginTop: "-0.2rem",
+                animation: "fadeIn 0.2s ease-out forwards",
+              }}>
+                The Accidental Intactivist's Inquiry
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+              <button
               onClick={() => {
                 setDropdownOpen(false);
                 navigate("index");
@@ -464,6 +471,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                 })()}
               </>
             )}
+            </div>
           </div>
 
           {/* Right: ThemeToggle + Findings link */}

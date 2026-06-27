@@ -42,7 +42,8 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
     getQuestions({ counts: true })
       .then((data) => {
         if (cancelled) return;
-        setQuestions(data.questions || []);
+        const mappedQs = (data.questions || []).map((q, i) => ({ ...q, globalIndex: i + 1 }));
+        setQuestions(mappedQs);
         setLoading(false);
       })
       .catch((err) => {
@@ -299,18 +300,18 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
           </div>
         )}
 
-        {/* Three-panel grid */}
+        {/* Two-panel grid */}
         <div
           className="explore-grid"
           style={{
             display: "grid",
-            gridTemplateColumns: "260px 1fr 340px",
-            gap: "1.5rem",
+            gridTemplateColumns: "260px 1fr",
+            gap: "2.5rem",
             alignItems: "start",
           }}
         >
           {/* LEFT: Scroll Spy Navigator */}
-          <aside style={{
+          <aside className="explore-nav" style={{
             position: "sticky",
             top: "calc(var(--header-height, 56px) + 1.5rem)",
             maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
@@ -638,9 +639,9 @@ function SectionGroup({ group, pathway, distributions, cohortDistributions, navi
                   fontFamily: FONT.condensed, fontSize: "0.75rem", color: C.goldBright, 
                   textTransform: "uppercase", letterSpacing: "0.12em", padding: "0.5rem 0.5rem 0.3rem"
                 }}>
-                  {sub === "Universal" ? "🌐 Universal Religion" : 
-                   sub === "Jewish" ? "✡️ Jewish Perspectives" :
-                   sub === "Christian" ? "✝️ Christian Perspectives" : "☪️ Islamic Perspectives"}
+                  {sub === "Universal" ? "Universal Religion" : 
+                   sub === "Jewish" ? "Jewish Perspectives" :
+                   sub === "Christian" ? "Christian Perspectives" : "Islamic Perspectives"}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.12rem" }}>
                   {subQuestions.map((q, i) => (

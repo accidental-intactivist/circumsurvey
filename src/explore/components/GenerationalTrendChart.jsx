@@ -228,7 +228,7 @@ export default function GenerationalTrendChart({ questionId, overallDist }) {
     .curve(curveCatmullRom.alpha(0.5));
 
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div style={{ position: "relative", width: "100%", marginTop: "3rem" }}>
       <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 40}`} style={{ width: "100%", height: "auto", overflow: "visible" }}>
         
         {/* X-Axis Generation Labels (Bottom & Top lines) */}

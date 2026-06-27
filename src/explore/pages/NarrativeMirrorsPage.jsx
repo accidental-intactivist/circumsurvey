@@ -72,6 +72,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Narrative Mirrors' exhibit, which directly compares qualitative, open-text responses between different pathways (Intact, Circumcised, and sometimes Restoring) across the same thematic question.",
         exhibitName: "Narrative Mirrors",
         exhibitDescription: "Compare qualitative open-text narratives between intact and circumcised pathways.",
         activeMirrorTopic: NARRATIVE_CONCEPTS.find(c => c.id === selectedConceptId)?.label
@@ -143,24 +144,25 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
                 onClick={() => setSelectedConceptId(c.id)}
                 style={{
                   padding: "0.5rem 1rem",
-                  background: isActive ? C.bgCard : "transparent",
-                  color: isActive ? C.textBright : C.muted,
-                  border: `1px solid ${isActive ? C.ghost : "transparent"}`,
+                  background: isActive ? `linear-gradient(135deg, ${C.goldBright} 0%, ${C.orange} 100%)` : "rgba(255,255,255,0.03)",
+                  color: isActive ? C.bgDeep : C.textBright,
+                  border: `1px solid ${isActive ? "transparent" : C.ghost}`,
                   borderRadius: 20,
                   fontFamily: FONT.condensed,
                   fontSize: "0.85rem",
-                  fontWeight: isActive ? 700 : 400,
+                  fontWeight: isActive ? 700 : 500,
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
                   cursor: "pointer",
-                  transition: "all 0.2s",
-                  boxShadow: isActive ? "0 2px 0 rgba(0,0,0,0.15)" : "none"
+                  transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                  boxShadow: isActive ? "0 4px 12px rgba(212, 160, 48, 0.3)" : "none",
+                  transform: isActive ? "scale(1.02)" : "scale(1)"
                 }}
                 onMouseOver={e => {
-                  if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                  if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.08)";
                 }}
                 onMouseOut={e => {
-                  if (!isActive) e.currentTarget.style.background = "transparent";
+                  if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.03)";
                 }}
               >
                 {c.label}
@@ -180,16 +182,14 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
         </div>
 
         {/* Cohort Columns Grid */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: activeCols.length === 3 ? "1fr 1fr 1fr" : "1fr 1fr", 
-          gap: "1.5rem",
-          alignItems: "start",
-          width: "100%",
-          "@media (max-width: 900px)": {
-            gridTemplateColumns: "1fr"
-          }
-        }}>
+        <div className="mobile-scroll-hint" style={{ overflowX: "auto" }}>
+          <div style={{ 
+            display: "grid", 
+            gridTemplateColumns: activeCols.length === 3 ? "1fr 1fr 1fr" : "1fr 1fr", 
+            gap: "1.5rem",
+            alignItems: "start",
+            minWidth: activeCols.length === 3 ? "900px" : "600px"
+          }}>
           {activeCols.map(({ key, conf, color }) => {
             const question = questionsMap[conf.qid];
             return (
@@ -237,6 +237,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </div>

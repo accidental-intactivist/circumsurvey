@@ -12,6 +12,13 @@ import SmallSampleBadge from "../components/SmallSampleBadge";
 import ExhibitDataLoader from "../components/ExhibitDataLoader";
 import HarveyBall from "../components/HarveyBall";
 import { flattenMultiSelect } from "../lib/formatters";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+
+const SECTIONS = [
+  { id: "section-1-context", label: "1: Context & Consent" },
+  { id: "section-2-ratings", label: "2: Before & After" },
+  { id: "section-3-narratives", label: "3: The New Normal" },
+];
 
 const CONTEXT_QUESTIONS = [
   { id: "circ_adult_context", label: "Context of the Procedure", width: "1fr" },
@@ -80,6 +87,7 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Before & After: The Adult Experience' exhibit. This explores the unique perspectives of respondents who were circumcised as adults and can compare both states. It covers their context & consent for the procedure, quantitative before/after ratings on function and sensation, and qualitative narratives on their adjustment and retrospective feelings.",
         exhibitName: "Beyond Infancy: The Youth & Adult Experience",
         exhibitDescription: "Analysis of the unique perspectives of individuals who were circumcised as youths or adults and can compare both states.",
         cohort
@@ -146,9 +154,17 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
           }
         />
 
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
+          
+          {/* LEFT: Nav sidebar */}
+          <ExhibitSidebarNav sections={SECTIONS} />
+
+          {/* RIGHT: Content */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
 
         {/* SECTION 1: CONTEXT */}
         <ExhibitSectionHeading
+          id="section-1-context"
           title="Section 1: Context & Consent"
           icon="📙"
           color={C.textBright}
@@ -189,6 +205,7 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
 
         {/* SECTION 2: RATINGS */}
         <ExhibitSectionHeading
+          id="section-2-ratings"
           title="Section 2: Before & After Ratings"
           icon="⚖️"
           color={C.textBright}
@@ -255,6 +272,7 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
 
         {/* SECTION 3 & 4: NARRATIVES */}
         <ExhibitSectionHeading
+          id="section-3-narratives"
           title="Section 3: The New Normal & Looking Back"
           icon="💬"
           color={C.textBright}
@@ -314,7 +332,8 @@ export default function AdultExperiencePage({ routerState, navigate, updateState
             })}
           </div>
         </ExhibitSectionHeading>
-
+        </div> {/* End right column */}
+        </div> {/* End grid */}
       </div>
     </div>
   );

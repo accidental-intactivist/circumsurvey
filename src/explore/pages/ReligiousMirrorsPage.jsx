@@ -10,6 +10,14 @@ import ExhibitHero from "../components/ExhibitHero";
 import { flattenMultiSelect } from "../lib/formatters";
 import ExhibitDataLoader from "../components/ExhibitDataLoader";
 import { colorForLabel } from "../components/MiniSparkline";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+
+const RELIGION_SECTIONS = [
+  { id: "section-congregation", label: "The Missing Congregation" },
+  { id: "section-a-universal", label: "A: Cross-Tradition Views" },
+  { id: "section-b-departure", label: "B: Departure Stories" },
+  { id: "section-c-cultural", label: "C: Cultural Mechanics" },
+];
 
 // ── TRADITIONS (filter syntax for cross-tabbing) ───────────────────────────
 const TRADITIONS = [
@@ -89,6 +97,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'Religious Mirrors' exhibit. This exhibit contains 3 sections: Universal Cross-Tradition Views, Departure Stories (tradition-specific deep dives for Jewish, Islamic, and Christian respondents), and Cultural Mechanics (cross-tabbed by religion).",
         exhibitName: "The Missing Congregation",
         exhibitDescription: "Who speaks about religion and circumcision — and who stays silent?",
         traditionsCompared: ["Secular", "Christian", "Jewish", "Islamic"],
@@ -146,15 +155,25 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
           description="Religion is the oldest driver of ritual circumcision — yet in a survey promoted through bodily autonomy communities, deeply religious respondents are starkly underrepresented. This exhibit explores how the remaining cohort reconciles faith, body image, and medical history."
         />
 
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
+          
+          {/* LEFT: Nav sidebar */}
+          <ExhibitSidebarNav sections={RELIGION_SECTIONS} />
+
+          {/* RIGHT: Content */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
+
         {/* ── THE MISSING CONGREGATION CALLOUT ────────────────────── */}
-        <MissingCongregation
+        <div id="section-congregation">
+          <MissingCongregation
           traditionCounts={traditionCounts}
           totalRespondents={totalRespondents}
           questionsMap={questionsMap}
         />
+        </div>
 
         {/* ── SECTION A: Universal Cross-Tradition Views ──────────── */}
-        <SectionHeader title="Section A" subtitle="Universal Cross-Tradition Views" />
+        <SectionHeader id="section-a-universal" title="Section A" subtitle="Universal Cross-Tradition Views" />
         <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
           These questions were asked of all respondents. Here we cross-tabulate by the four largest religious groupings
           to reveal where worldview diverges.
@@ -168,7 +187,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
         <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "5rem 0 1rem", opacity: 0.5 }} />
 
         {/* ── SECTION B: Departure Stories ─────────────────────────── */}
-        <SectionHeader title="Section B" subtitle="Departure Stories" />
+        <SectionHeader id="section-b-departure" title="Section B" subtitle="Departure Stories" />
         <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
           Each tradition has its own set of questions exploring theological awareness, identity importance,
           and openness to alternatives. Rather than a sparse comparison grid, we present each tradition's
@@ -189,7 +208,7 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
         <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "5rem 0 1rem", opacity: 0.5 }} />
 
         {/* ── SECTION C: Cultural Mechanics ────────────────────────── */}
-        <SectionHeader title="Section C" subtitle="Cultural Mechanics" />
+        <SectionHeader id="section-c-cultural" title="Section C" subtitle="Cultural Mechanics" />
         <p style={{ color: C.muted, fontSize: "0.92rem", lineHeight: 1.6, maxWidth: 900, margin: "0 auto 3rem", textAlign: "center" }}>
           Universal questions about the cultural forces that perpetuate circumcision — media, social pressure,
           consent ethics, and future predictions — cross-tabulated by religious background.
@@ -198,7 +217,11 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
           {CULTURAL_QUESTIONS.map(qDef => (
             <UniversalRow key={qDef.id} qDef={qDef} questionsMap={questionsMap} />
           ))}
-        </div>
+        <SharedLegend q={questionsMap["culture_body_intervention_view"]} />
+        </div> {/* End right column */}
+        </div> {/* End grid */}
+
+      </div>
       </div>
     </div>
   );
@@ -336,9 +359,9 @@ function MissingCongregation({ traditionCounts, totalRespondents, questionsMap }
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION HEADER
 // ═══════════════════════════════════════════════════════════════════════════
-function SectionHeader({ title, subtitle }) {
+function SectionHeader({ title, subtitle, id }) {
   return (
-    <h2 style={{
+    <h2 id={id} style={{
       fontFamily: FONT.condensed,
       fontSize: "1.5rem",
       color: C.gold,

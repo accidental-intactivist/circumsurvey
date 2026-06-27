@@ -22,12 +22,12 @@ const COMPONENT_TO_EXHIBIT = {
   ObserverTriad: "08",
   ReligiousMirrors: "09",
   RestorationJourney: "10",
-  ByTheNumbers: "11",
   AdultExperience: "11",
+  ByTheNumbers: "12",
   Question: "—",
 };
 
-export default function QuestionRow({ q, index, distribution, cohortDistribution, onClick, searchTerm = "" }) {
+export default function QuestionRow({ q, index, distribution, cohortDistribution, cohort, onClick, searchTerm = "" }) {
   // Pathway tag (for non-"all" questions)
   const pathwayObj = q.pathway && q.pathway !== "all" ? PATHWAYS[q.pathway] : null;
 
@@ -66,15 +66,32 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
         e.currentTarget.style.borderLeftColor = "transparent";
       }}
     >
-      {/* Row number */}
-      <span style={{
-        fontFamily: FONT.mono,
-        fontSize: "0.64rem",
-        color: C.dim,
-        minWidth: "1.6rem",
-        paddingTop: "0.15rem",
-        flexShrink: 0,
-      }}>{String(index + 1).padStart(2, "0")}</span>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", flexShrink: 0, minWidth: "1.6rem", paddingTop: "0.15rem" }}>
+        {/* Row number */}
+        <span style={{
+          fontFamily: FONT.mono,
+          fontSize: "0.64rem",
+          color: C.dim,
+        }}>{q.globalIndex ? String(q.globalIndex).padStart(2, "0") : String(index + 1).padStart(2, "0")}</span>
+
+        {/* Format Badge */}
+        <span title={q.type === "open_text" ? "Qualitative Open Response" : q.type === "single_select" ? "Single Select Choice" : "Multiple Select Choices"} style={{
+          color: q.type === "open_text" ? "#a8b5c4" : C.dim,
+          opacity: 0.6,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "help",
+        }}>
+          {q.type === "open_text" ? (
+            <MessageSquareText size={12} strokeWidth={2.5} />
+          ) : q.type === "multi_select" ? (
+            <ListChecks size={12} strokeWidth={2.5} />
+          ) : (
+            <CheckCircle2 size={12} strokeWidth={2.5} />
+          )}
+        </span>
+      </div>
 
       {/* Main content */}
       <div style={{ flex: 1, minWidth: 0, display: "grid", gridTemplateColumns: "1fr auto", gap: "2rem", alignItems: "start" }}>
@@ -122,29 +139,6 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
               </span>
             )}
 
-            {/* Exhibit badges removed per user request */}
-
-            {/* Format Badge */}
-            <span title={q.type === "open_text" ? "Qualitative Open Response" : q.type === "single_select" ? "Single Select Choice" : "Multiple Select Choices"} style={{
-              color: q.type === "open_text" ? "#a8b5c4" : C.dim,
-              background: q.type === "open_text" ? "rgba(168,181,196,0.12)" : "rgba(255,255,255,0.03)",
-              border: `1px solid ${q.type === "open_text" ? "rgba(168,181,196,0.25)" : C.ghost}`,
-              borderRadius: 6,
-              padding: "0.15rem 0.25rem",
-              flexShrink: 0,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "help",
-            }}>
-              {q.type === "open_text" ? (
-                <MessageSquareText size={12} strokeWidth={2.5} />
-              ) : q.type === "multi_select" ? (
-                <ListChecks size={12} strokeWidth={2.5} />
-              ) : (
-                <CheckCircle2 size={12} strokeWidth={2.5} />
-              )}
-            </span>
           </div>
 
           {/* Prompt */}
@@ -217,7 +211,7 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
 
       {/* Add to Report Button (Right aligned) */}
       <div onClick={(e) => e.stopPropagation()} style={{ paddingTop: "0.1rem", paddingRight: "0.2rem", flexShrink: 0 }}>
-        <AddToReportButton questionId={q.id} iconOnly />
+        <AddToReportButton questionId={q.id} cohort={cohort} iconOnly />
       </div>
 
       {/* Chevron */}

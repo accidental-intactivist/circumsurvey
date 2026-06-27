@@ -65,7 +65,7 @@ export default function ExhibitDataLoader({
     return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem", padding: "0.5rem" }}>No responses.</div>;
   }
 
-  const isMulti = question.type === "multi_select" || ["demo_ethnicity", "demo_race_ethnicity", "demo_gender_identity", "demo_sexuality"].includes(question.id);
+  const isMulti = question.type === "multi_select" || ["demo_ethnicity", "demo_race_ethnicity", "demo_gender_identity", "demo_sexuality", "observe_advocate_primary_role"].includes(question.id);
   const chartData = isMulti && effectiveType !== "open_text" ? {
     ...data,
     distribution: flattenMultiSelect(dist, question)
@@ -75,7 +75,13 @@ export default function ExhibitDataLoader({
 
   return effectiveType === "open_text" ? (
     <div style={{ height: height || "100%", overflowY: "auto", paddingRight: "0.25rem", marginTop: "-0.5rem" }}>
-      <NarrativeList question={question} distribution={dist} hideChart={true} viewMode={bare ? "side-by-side" : "list"} />
+      <NarrativeList 
+        question={question} 
+        distribution={dist} 
+        hideChart={true} 
+        viewMode={bare ? "side-by-side" : "list"} 
+        cohort={cohort}
+      />
     </div>
   ) : (
     <SmallSampleBadge n={quantTotal} label="this group" inline={bare}>
@@ -90,6 +96,7 @@ export default function ExhibitDataLoader({
         forceChartType={forceChartType}
         customColorMap={customColorMap}
         bare={bare}
+        cohort={cohort}
       />
     </SmallSampleBadge>
   );

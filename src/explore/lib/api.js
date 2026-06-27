@@ -192,10 +192,14 @@ export async function getNarratives(questionId, { pathway = null, cohort = null 
   return fetchJson(`${API_BASE}/narratives?${params.toString()}`);
 }
 
-export async function getAggregate(questionId, { by = "pathway", cohort = null } = {}) {
+export async function getAggregate(questionId, { by = "pathway", by_question = null, cohort = null } = {}) {
   const params = new URLSearchParams();
   params.set("q", questionId);
-  params.set("by", by);
+  if (by_question) {
+    params.set("by_question", by_question);
+  } else {
+    params.set("by", by);
+  }
   
   let pathways = [];
   if (cohort && cohort.pathway) {

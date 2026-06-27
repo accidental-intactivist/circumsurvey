@@ -45,7 +45,36 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // ── Helper functions ──
     const lerp = (start, end, t) => start + (end - start) * t;
     const sweep = (t) => Math.asin(Math.sin(t)) * (2 / Math.PI);
-    
+
+    // ── Tunable motion parameters ───────────────────────────────────────────
+    // These drive the three behaviours the masthead is going for:
+    //   • moirePhaseSpread → PHASE SHIFTING: each stacked line samples the
+    //     curves at a slightly offset time, so the layers slide past one another
+    //     and read as a translucent ribbon rotating in space (the moiré effect).
+    //   • parentSeparation / loopAmpScale → TENSION & RELEASE: how far the two
+    //     invisible parent curves sit apart and how hard the looping term shoves
+    //     them, so they cross into tight knots, then unravel into wide arcs.
+    //   • travelSpeed / waveFreq / ampYScale → CONTINUOUS OSCILLATION: the slow
+    //     Lissajous "breathing" drift of the anchor points.
+    // An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html —
+    // dial it there, then copy the values back into this block.
+    const PARAMS = {
+      speed: 0.03,             // global time scale (higher = faster overall)
+      travelSpeed: 0.0012,     // traveling-wave propagation along each curve
+      waveFreq: 2.8,           // number of waves packed along a curve
+      moirePhaseSpread: 420,   // per-line time offset across ribbon depth (the moiré)
+      ampXScale: 0.55,         // horizontal sweep amplitude
+      ampYScale: 0.75,         // vertical sweep amplitude
+      rippleAmpScale: 0.20,    // fast secondary "wind ripple"
+      loopAmpScale: 0.35,      // figure-8 / knot-forming push
+      parentSeparation: 0.35,  // vertical gap between the two parent curves (smaller = more knots)
+      endAnchorMargin: 0.6,    // how far past the edge the line ENDS are pinned (×half). Keeps endpoints off-canvas
+      nodeCount: 7,            // control points per curve — MORE = more kinks/weave along each line (min 4)
+      kinkDepth: 1.35,         // how hard interior points wander (>1 = curvier, knottier; 1 = gentle arcs)
+      focalLength: 800,        // perspective depth (lower = stronger 3D)
+      lineWidth: 1.8,          // stroke weight multiplier
+    };
+
     const createNode = (type, wavy = false) => ({
       type,
       wavy,
@@ -60,20 +89,29 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       pz: Math.random() * Math.PI * 2,
     });
 
-    const createHorizontalCurve = (offsetYMultiplier = 0) => [
-      { ...createNode('left'), xFract: 0.0, offsetYMultiplier },
-      { ...createNode('inner', true), xFract: 0.33, offsetYMultiplier },
-      { ...createNode('inner', true), xFract: 0.66, offsetYMultiplier },
-      { ...createNode('right'), xFract: 1.0, offsetYMultiplier }
-    ];
+    // A curve is a chain of nodeCount control points spread across the width.
+    // The first/last are off-canvas anchors; everything between is an "inner"
+    // point free to wander — more of them ⇒ more kinks and twists per line.
+    const createHorizontalCurve = (offsetYMultiplier = 0) => {
+      const n = Math.max(4, Math.round(PARAMS.nodeCount));
+      const nodes = [];
+      for (let i = 0; i < n; i++) {
+        const xFract = i / (n - 1);
+        const type = i === 0 ? 'left' : i === n - 1 ? 'right' : 'inner';
+        nodes.push({ ...createNode(type, type === 'inner'), xFract, offsetYMultiplier });
+      }
+      return nodes;
+    };
 
-    // Define the Two Invisible Parent Lines for Ribbon 1
-    const r1_p1 = createHorizontalCurve(-0.35);
-    const r1_p2 = createHorizontalCurve(0.35);
+    // Define the Two Invisible Parent Lines for Ribbon 1 (symmetric gap)
+    const sep = PARAMS.parentSeparation;
+    const r1_p1 = createHorizontalCurve(-sep);
+    const r1_p2 = createHorizontalCurve(sep);
 
-    // Define the Two Invisible Parent Lines for Ribbon 2
-    const r2_p1 = createHorizontalCurve(-0.25);
-    const r2_p2 = createHorizontalCurve(0.45);
+    // Define the Two Invisible Parent Lines for Ribbon 2 (offset gap so the
+    // two ribbons cross at different moments → richer moiré where they overlap)
+    const r2_p1 = createHorizontalCurve(-sep * 0.7);
+    const r2_p2 = createHorizontalCurve(sep * 1.3);
 
     // Custom colors
     // ── Read theme colors from CSS custom properties ──
@@ -94,7 +132,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       return fallback;
     };
 
-    const focalLength = 800;
+    const focalLength = PARAMS.focalLength;
 
     // Higher density of steps to make it look like a detailed mesh ribbon, similar to the ad
     const steps = 48;
@@ -133,8 +171,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     };
 
     const totalLines = (steps + 1) + (halfSteps + 1);
+    const nodeCount = Math.max(4, Math.round(PARAMS.nodeCount));
     const linesToDraw = Array.from({ length: totalLines }, () => ({
-      x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0,
+      pts: Array.from({ length: nodeCount }, () => ({ x: 0, y: 0 })),
       avgZ: 0, scale: 0, style: ''
     }));
 
@@ -148,9 +187,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // Target ~30fps for this ambient animation — no need for 60+fps
     const MIN_FRAME_INTERVAL = 1000 / 30; // ~33ms
 
-    // Speed multiplier: lower = slower. Was effectively ~10.66 per 16ms frame 
-    // (≈666 units/sec). We slow it down to ~50 units/sec for a very chilled feel.
-    const SPEED = 0.03;
+    // Speed multiplier: lower = slower, for a chilled ambient feel. (See PARAMS.)
+    const SPEED = PARAMS.speed;
 
     const evalParentNode = (n, t) => {
       const cw = canvas.width / dpr;
@@ -161,8 +199,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       const xFract = n.xFract ?? 0.5;
       const xBase = -half - 100 + xFract * (span + 200);
 
-      const speed = 0.0012;
-      const waveFreq = 2.8; // Increased for more waves (scarf-like)
+      const speed = PARAMS.travelSpeed;
+      const waveFreq = PARAMS.waveFreq; // waves packed along each curve (scarf-like)
       const travelingPhase = t * speed - xFract * waveFreq * Math.PI * 2;
 
       const phaseX = t * n.fx + n.px + travelingPhase;
@@ -174,19 +212,37 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       // "Unstarched" looping phase to force figure-8 knots and backward folds
       const loopPhase = t * (speed * 1.9) - xFract * (waveFreq * 1.7) * Math.PI * 2 + n.py;
 
-      const ampX = half * 0.55 * n.ax;
-      const ampY = half * 0.75 * n.ay; 
-      const rippleAmp = half * 0.20 * n.ay; 
-      const loopAmp = half * 0.35 * n.ax; // Large enough horizontal push to fold the fabric backwards
+      // Interior points wander harder (kinkDepth) so each line genuinely kinks
+      // and twists rather than tracing one gentle arc. End anchors keep k = 1.
+      const k = n.type === 'inner' ? PARAMS.kinkDepth : 1;
+      const ampX = half * PARAMS.ampXScale * n.ax * k;
+      const ampY = half * PARAMS.ampYScale * n.ay * k;
+      const rippleAmp = half * PARAMS.rippleAmpScale * n.ay * k;
+      const loopAmp = half * PARAMS.loopAmpScale * n.ax * k; // horizontal push to fold the fabric backwards
+
+      const offset = (n.offsetYMultiplier ?? 0) * half;
+
+      // Y includes base sweep + wind ripples + a figure-8 vertical knot component tied to the loop
+      const y = Math.sin(phaseY) * ampY + Math.cos(ripplePhase) * rippleAmp + Math.cos(loopPhase * 1.5) * (rippleAmp * 1.2) + offset;
+
+      // END ANCHORS OFF-CANVAS: the first/last control point of every curve (the
+      // bezier endpoints) is pinned beyond the screen edge and held at flat depth
+      // (z = 0) so perspective can't pull it back toward center. The line endpoints
+      // therefore always live off-screen — you only ever see the ribbon's body
+      // flowing through the frame, never a loose end dancing in the middle. The
+      // ends still drift vertically, so the ribbon enters/exits at varying heights.
+      if (n.type === 'left' || n.type === 'right') {
+        const dir = n.type === 'left' ? -1 : 1;
+        return {
+          x: dir * half * (1 + PARAMS.endAnchorMargin),
+          y,
+          z: 0,
+        };
+      }
 
       // X includes the base traveling sweep + a looping modifier
       const x = xBase + Math.cos(phaseX) * ampX + Math.sin(loopPhase) * loopAmp;
-      
-      const offset = (n.offsetYMultiplier ?? 0) * half;
-      
-      // Y includes base sweep + wind ripples + a figure-8 vertical knot component tied to the loop
-      const y = Math.sin(phaseY) * ampY + Math.cos(ripplePhase) * rippleAmp + Math.cos(loopPhase * 1.5) * (rippleAmp * 1.2) + offset;
-      
+
       const z = Math.sin(t * n.fz + n.pz) * n.az;
 
       return { x, y, z };
@@ -204,40 +260,40 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       const cx = cw / 2;
       const cy = ch / 2;
 
-      const p1_0 = evalParentNode(parent1[0], time);
-      const p1_1 = evalParentNode(parent1[1], time);
-      const p1_2 = evalParentNode(parent1[2], time);
-      const p1_3 = evalParentNode(parent1[3], time);
-
-      const p2_0 = evalParentNode(parent2[0], time);
-      const p2_1 = evalParentNode(parent2[1], time);
-      const p2_2 = evalParentNode(parent2[2], time);
-      const p2_3 = evalParentNode(parent2[3], time);
-
       let lineIdx = startIdx;
       for (let i = 0; i <= ribbonSteps; i++) {
         // Faux 3D Shading: Cosine interpolation bunches lines up at the edges (0 and 1) and spreads them out in the middle
         const linearBlend = i / ribbonSteps;
         const blend = 0.5 - Math.cos(linearBlend * Math.PI) * 0.5;
-        const c0 = lerpNode(p1_0, p2_0, blend);
-        const c1 = lerpNode(p1_1, p2_1, blend);
-        const c2 = lerpNode(p1_2, p2_2, blend);
-        const c3 = lerpNode(p1_3, p2_3, blend);
 
-        const scale0 = focalLength / Math.max(1, focalLength + c0.z);
-        const scale1 = focalLength / Math.max(1, focalLength + c1.z);
-        const scale2 = focalLength / Math.max(1, focalLength + c2.z);
-        const scale3 = focalLength / Math.max(1, focalLength + c3.z);
+        // PHASE SHIFTING (moiré): sample the parent curves at a per-line time
+        // offset so adjacent layers slide across one another instead of moving
+        // as one rigid ruled surface. This is what turns the flat fan of lines
+        // into a translucent ribbon that appears to twist in 3D.
+        const lineTime = time + (linearBlend - 0.5) * PARAMS.moirePhaseSpread;
 
         const line = linesToDraw[lineIdx++];
-        
-        line.x0 = cx + c0.x * scale0; line.y0 = cy + c0.y * scale0;
-        line.x1 = cx + c1.x * scale1; line.y1 = cy + c1.y * scale1;
-        line.x2 = cx + c2.x * scale2; line.y2 = cy + c2.y * scale2;
-        line.x3 = cx + c3.x * scale3; line.y3 = cy + c3.y * scale3;
+        const nodeCount = parent1.length;
+        let zSum = 0;
+        let scaleSum = 0;
 
-        line.avgZ = (c0.z + c1.z + c2.z + c3.z) * 0.25;
-        line.scale = (scale0 + scale1 + scale2 + scale3) * 0.25;
+        // Thread the line through ALL nodeCount points (blended between the two
+        // parent curves), each with its own perspective scale. More points here
+        // = more kinks; a single cubic could only ever arc once.
+        for (let j = 0; j < nodeCount; j++) {
+          const a = evalParentNode(parent1[j], lineTime);
+          const b = evalParentNode(parent2[j], lineTime);
+          const cz = lerp(a.z, b.z, blend);
+          const sc = focalLength / Math.max(1, focalLength + cz);
+          const pt = line.pts[j];
+          pt.x = cx + lerp(a.x, b.x, blend) * sc;
+          pt.y = cy + lerp(a.y, b.y, blend) * sc;
+          zSum += cz;
+          scaleSum += sc;
+        }
+
+        line.avgZ = zSum / nodeCount;
+        line.scale = scaleSum / nodeCount;
         line.style = precomputedStyles[i];
       }
       return lineIdx;
@@ -284,8 +340,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       // Group by style to minimize state changes (significant perf win on canvas)
       const styleGroups = new Map();
       for (const line of linesToDraw) {
-        // Significantly increase thickness for bolder lines (from 0.7 to 1.8)
-        const w = Math.max(0.4, line.scale * 1.8 * sizeScale);
+        // Stroke weight (PARAMS.lineWidth), scaled by depth + container size
+        const w = Math.max(0.4, line.scale * PARAMS.lineWidth * sizeScale);
         const key = `${line.style}|${w.toFixed(2)}`;
         if (!styleGroups.has(key)) {
           styleGroups.set(key, { style: line.style, width: w, lines: [] });
@@ -298,8 +354,22 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         ctx.lineWidth = group.width;
         ctx.beginPath();
         for (const line of group.lines) {
-          ctx.moveTo(line.x0, line.y0);
-          ctx.bezierCurveTo(line.x1, line.y1, line.x2, line.y2, line.x3, line.y3);
+          const pts = line.pts;
+          const n = pts.length;
+          ctx.moveTo(pts[0].x, pts[0].y);
+          // Catmull-Rom → cubic bezier: one smooth curve woven through every
+          // control point, so the line kinks and twists instead of arcing once.
+          for (let s = 0; s < n - 1; s++) {
+            const p0 = pts[s - 1] || pts[0];
+            const p1 = pts[s];
+            const p2 = pts[s + 1];
+            const p3 = pts[s + 2] || pts[n - 1];
+            ctx.bezierCurveTo(
+              p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6,
+              p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6,
+              p2.x, p2.y
+            );
+          }
         }
         ctx.stroke();
       }

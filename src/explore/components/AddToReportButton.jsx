@@ -2,14 +2,14 @@ import React from "react";
 import { useReport } from "../contexts/ReportContext";
 import { C, FONT } from "../styles/tokens";
 
-export default function AddToReportButton({ questionId, iconOnly }) {
-  const { reportItems, toggleInReport } = useReport();
-  const isInReport = reportItems.includes(questionId);
+export default function AddToReportButton({ questionId, cohort = null, iconOnly }) {
+  const { isQuestionInReport, toggleInReport } = useReport();
+  const isInReport = isQuestionInReport(questionId, cohort);
 
   if (iconOnly) {
     return (
       <button
-        onClick={() => toggleInReport(questionId)}
+        onClick={() => toggleInReport(questionId, cohort)}
         title={isInReport ? "Remove from Custom Report" : "Add to Custom Report"}
         style={{
           background: isInReport ? "rgba(212,160,48,0.15)" : "transparent",
@@ -46,7 +46,7 @@ export default function AddToReportButton({ questionId, iconOnly }) {
 
   return (
     <button
-      onClick={() => toggleInReport(questionId)}
+      onClick={() => toggleInReport(questionId, cohort)}
       title={isInReport ? "Remove from Custom Report" : "Add to Custom Report"}
       style={{
         background: isInReport ? "rgba(212,160,48,0.15)" : "transparent",

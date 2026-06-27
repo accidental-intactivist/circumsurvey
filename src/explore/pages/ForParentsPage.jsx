@@ -8,6 +8,14 @@ import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import SankeyChart from "../components/SankeyChart";
 import { MessageSquareText, BarChart2, Activity, Scale } from "../components/Icons";
 import PleasureGapWidget from "../components/PleasureGapWidget";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+
+const PARENT_SECTIONS = [
+  { id: "section-testimonies", label: "Testimonies" },
+  { id: "section-reality", label: "Reality of the Procedure" },
+  { id: "section-hindsight", label: "Hindsight & Professionals" },
+  { id: "section-regret", label: "Regret & Resentment" },
+];
 
 // We curate a list of questions that directly speak to the "new/expectant parent" experience.
 // The user noted: "What we want to basically get in front of parents' eyes are the testimonies 
@@ -42,6 +50,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
   useEffect(() => {
     if (setExhibitContext) {
       setExhibitContext({
+        page_description: "The user is viewing the 'For New & Expectant Parents' exhibit. This exhibit curates direct testimonies from circumcised and intact men directed at parents, extracts the most relevant data on the procedure's reality (health, hygiene, sexual pleasure gap), and presents hindsight perspectives from other parents and medical counseling stances.",
         exhibitName: "For New & Expectant Parents",
         exhibitDescription: "A curated resource for parents: adult testimonies, the sexual-experience data, parent hindsight, and professional counseling stances.",
       });
@@ -78,7 +87,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
   if (error) return <div style={{ padding: "4rem", textAlign: "center", color: C.red }}>Error: {error}</div>;
 
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "2rem 1.1rem 6rem", fontFamily: FONT.body, color: C.text }}>
+    <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem", fontFamily: FONT.body, color: C.text }}>
 
       <InlineBreadcrumb currentRoute="for-parents" navigate={navigate} />
 
@@ -87,8 +96,17 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         description="A curated, shareable resource presenting what grown children, other parents, medical professionals, and advocates actually say — the transparency and lived-experience data often missing from standard counseling, offered so you can make the fully informed decision that is yours to make."
       />
 
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
+          
+          {/* LEFT: Nav sidebar */}
+          <ExhibitSidebarNav sections={PARENT_SECTIONS} />
+
+          {/* RIGHT: Content */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0rem" }}>
+
       {/* ── SECTION 1: Messages to Parents ────────────────────────────── */}
       <ExhibitSectionHeading
+        id="section-testimonies"
         Icon={MessageSquareText}
         title="Testimonies: What Grown Sons Wish Their Parents Knew"
         description="Adult men—both circumcised and intact—were asked what they would say to parents making this decision today."
@@ -129,6 +147,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       {/* ── SECTION 2: The Data Behind The Decision ────────────────────────────── */}
       <ExhibitSectionHeading
+        id="section-reality"
         Icon={BarChart2}
         title="The Reality of the Procedure"
         description="Self-reported data on the adult sexual experience, set against the long-held assumptions of standard medical advice."
@@ -152,6 +171,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       {/* ── SECTION 3: Current Parents & Professionals ────────────────────────────── */}
       <ExhibitSectionHeading
+        id="section-hindsight"
         Icon={Activity}
         title="Hindsight & Professional Stances"
         description="Perspectives from parents who have already made their choices, and the medical professionals providing counseling."
@@ -208,6 +228,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       {/* ── SECTION 4: Regret & Resentment Sankey ────────────────────────────── */}
       <ExhibitSectionHeading
+        id="section-regret"
         Icon={Scale}
         title="Regret & Resentment: The Outcome"
         description="A flow mapping of how an individual's pathway corresponds with eventual feelings of regret or resentment regarding their circumcision status."
@@ -223,6 +244,9 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
           />
         ) : <span style={{ color: C.dim }}>Loading...</span>}
       </div>
+
+          </div> {/* End right column */}
+        </div> {/* End grid */}
 
     </div>
   );

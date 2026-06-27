@@ -960,8 +960,8 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
 // Individual question with full text, meta tags, and "See Responses" button
 
 function QuestionRow({ q, index, navigate }) {
-  const { reportItems, toggleInReport } = useReport();
-  const isInReport = reportItems?.includes(q.id);
+  const { isQuestionInReport, toggleInReport } = useReport();
+  const isInReport = isQuestionInReport(q.id);
 
   return (
     <div

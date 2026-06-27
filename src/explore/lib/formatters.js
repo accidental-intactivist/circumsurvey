@@ -145,7 +145,7 @@ export function getHarveyBallScore(label) {
     l.includes("no change") || 
     l.includes("no noticeable change") || 
     l.includes("mixed feelings") ||
-    l.includes("rarely")
+    (l.includes("rarely") && !l.includes("find it"))
   ) return 3;
   
   if (
@@ -560,6 +560,57 @@ export const flattenMultiSelect = (distArray, q) => {
       "I have felt pressure AND have seriously considered getting circumcised for myself at some point.",
       "I am planning getting circumcised for myself at some point."
     ];
+  } else if (qId === "circ_restoration_awareness") {
+    prefixes = [
+      "Yes, I know a lot about it (methods, devices, etc.)",
+      "Yes, I've heard of it, but don't know much about how it works",
+      "I've heard rumors or jokes, but wasn't sure if it was real",
+      "No, I had no idea this was possible before taking this survey"
+    ];
+  } else if (qId === "exp_orgasm_confidence_rating") {
+    prefixes = [
+      "Very confident, I rarely have issues",
+      "Somewhat confident, but it can occasionally be difficult",
+      "Neutral / It varies",
+      "Not very confident, I often struggle or require very specific conditions",
+      "Not confident at all / I experience significant anorgasmia",
+      "Not applicable / I don't engage in sexual activities"
+    ];
+  } else if (qId === "exp_lubrication_need") {
+    prefixes = [
+      "Yes, it's always or almost always necessary for comfort and pleasure",
+      "Sometimes, depending on the situation or partner",
+      "Never find it necessary; my body's natural lubrication (or saliva) is sufficient",
+      "Rarely find it necessary",
+      "Often helpful for maximizing pleasure, but not strictly necessary for basic comfort",
+      "Not applicable / No sexual experience of this kind"
+    ];
+  } else if (qId === "exp_pleasure_comm_difficulty") {
+    prefixes = [
+      "No, I generally feel my partners understand what provides me pleasure.",
+      "Yes, I've often felt this kind of disconnect or difficulty in communication.",
+      "Yes, I've occasionally experienced this.",
+      "Not applicable / No partnered sexual experience of this kind.",
+      "I've never really thought about it in these terms."
+    ];
+  } else if (qId === "circ_presentation_by_medical") {
+    prefixes = [
+      "No alternative options, it was presented as the standard and only path.",
+      "Yes, leaving him intact was presented as a viable, normal option.",
+      "Yes, leaving him intact was presented as an option, but heavily discouraged.",
+      "I don't recall or wasn't part of the conversation",
+      "Not applicable (e.g. out of hospital birth, or it was never discussed at all)"
+    ];
+  } else if (qId === "observe_advocate_primary_role") {
+    prefixes = [
+      "A \"quiet\" ally, sharing information within my personal social circle",
+      "Academic / Independent Researcher",
+      "Grassroots Organizer / Protester",
+      "Legal or Legislative Advocate (working on law and policy)",
+      "Parental Support / Counselor (helping expectant parents navigate the decision)",
+      "Personal Storyteller / Testimonial Sharer",
+      "Public Educator / Awareness Raiser (e.g., social media, blogging, public speaking)"
+    ];
   }
 
 
@@ -594,7 +645,7 @@ export const flattenMultiSelect = (distArray, q) => {
         });
 
         // Any leftover write-in text in remaining is consolidated to "Other"
-        remaining = remaining.replace(/^[,\s]+|[,\s]+$/g, "").trim();
+        remaining = remaining.replace(/^[,\s.;]+|[,\s.;]+$/g, "").trim();
         if (remaining) {
           newMap.set("Other", (newMap.get("Other") || 0) + n);
         }
@@ -1305,3 +1356,161 @@ export const sortDistribution = (distArray, question) => {
   return distArray;
 };
 
+
+
+// Consolidates messy write-ins and multi-select comma joins into clean buckets
+export function consolidateLabel(rawLabel, questionId) {
+  if (!rawLabel) return "Unknown";
+  const l = rawLabel.toLowerCase();
+  
+  if (questionId && questionId.includes("profession")) {
+    if (l.includes("stay-at-home") || l.includes("homemaker")) return "Stay-at-Home Parent";
+    if (l.includes("education") || l.includes("teacher") || l.includes("professor") || l.includes("academia")) return "Education / Academia";
+    if (l.includes("healthcare") || l.includes("medicine") || l.includes("nurse") || l.includes("doctor") || l.includes("medical") || l.includes("therapist")) return "Healthcare / Medicine";
+    if (l.includes("business") || l.includes("finance") || l.includes("management") || l.includes("hr director")) return "Business / Finance";
+    if (l.includes("clerical") || l.includes("administrative") || l.includes("secretary") || l.includes("coordinator")) return "Clerical / Admin";
+    if (l.includes("retail") || l.includes("customer service") || l.includes("hospitality")) return "Retail / Hospitality";
+    if (l.includes("skilled trades") || l.includes("electrician") || l.includes("mechanic") || l.includes("hairstylist") || l.includes("seamstris")) return "Skilled Trades";
+    if (l.includes("factory") || l.includes("manufacturing") || l.includes("general labor") || l.includes("odd jobs")) return "Factory / General Labor";
+    if (l.includes("law") || l.includes("government") || l.includes("public service") || l.includes("military") || l.includes("civil servant")) return "Gov't / Law / Military";
+    if (l.includes("arts") || l.includes("humanities") || l.includes("entertainment") || l.includes("artist") || l.includes("writer") || l.includes("striper") || l.includes("journalism")) return "Arts / Entertainment";
+    if (l.includes("science") || l.includes("research")) return "Science / Research";
+    if (l.includes("tech") || l.includes("software") || l.includes("coder") || l.includes("engineering") || l.includes("architect")) return "Tech / Engineering";
+    if (l.includes("personal care") || l.includes("service")) return "Personal Care / Service";
+    if (l.includes("transportation") || l.includes("telecommunications")) return "Transport / Telecom";
+    return "Other / Mixed Profession";
+  }
+  
+  if (questionId === "demo_education_self" || questionId === "education" || questionId === "family_mother_education" || questionId === "family_father_education") {
+    if (l.includes("less than high school")) return "Less than High School";
+    if (l.includes("high school")) return "High School / GED";
+    if (l.includes("trade school") || l.includes("apprenticeship") || l.includes("journeyman")) return "Trade / Apprenticeship";
+    if (l.includes("some college") || l.includes("associate")) return "Some College / Associate's";
+    if (l.includes("bachelor")) return "Bachelor's Degree";
+    if (l.includes("master")) return "Master's Degree";
+    if (l.includes("professional") || l.includes("jd") || l.includes("md") || l.includes("pharmd") || l.includes("dds")) return "Professional Degree (MD, JD, etc)";
+    if (l.includes("doctoral") || l.includes("phd") || l.includes("edd")) return "Doctoral Degree (PhD, etc)";
+  }
+  
+  if (questionId === "demo_sexuality" || questionId === "sexuality") {
+    if (l.includes("pansexual") || l.includes("fluid")) return "Pansexual";
+    if (l.includes("bi") || l.includes("heteroflexible")) return "Bisexual";
+    if (l.includes("lesbian")) return "Lesbian";
+    if (l.includes("gay") || l.includes("homosexual")) return "Gay";
+    if (l.includes("queer") || l.includes("questioning") || l.includes("curious")) return "Questioning";
+    if (l.includes("straight") || l.includes("hetero")) return "Straight/Heterosexual";
+    if (l.includes("asexual") || l.includes("demisexual")) return "Asexual";
+    
+    return "Other / Write-in";
+  }
+  
+  if (questionId === "demo_gender_identity" || questionId === "gender") {
+    if (l.includes("trans")) return "Transgender";
+    if (l.includes("non-binary") || l.includes("nonbinary") || l.includes("queer") || l.includes("fluid") || l.includes("agender") || l.includes("enby")) return "Non-binary / Genderqueer";
+    if (l.includes("female") || l.includes("woman")) return "Female";
+    if (l.includes("male") || l.includes("man") || l.includes("masculine")) return "Male";
+    return "Other / Write-in";
+  }
+  
+  if (questionId === "demo_sex_assigned_at_birth" || questionId === "sex_assigned") {
+    if (l.includes("intersex")) return "Intersex";
+    if (l.includes("female") || l.includes("afab")) return "Female (AFAB)";
+    if (l.includes("male") || l.includes("amab")) return "Male (AMAB)";
+  }
+  
+  if (questionId === "family_ses" || questionId === "socioeconomic") {
+    if (l.includes("lower income") || l.includes("struggled to")) return "Lower Income";
+    if (l.includes("working class") || l.includes("lower-middle income")) return "Working Class / Lower-Middle";
+    if (l.includes("middle income") || l.includes("generally comfortable")) return "Middle Income";
+    if (l.includes("upper-middle income") || l.includes("financially secure")) return "Upper-Middle Income";
+    if (l.includes("upper income") || l.includes("wealthy")) return "Upper Income / Wealthy";
+  }
+  
+  // Specific Long-Form Survey Question overrides
+  if (questionId === "family_upbringing_status") {
+    if (l.includes("birth/biological")) return "Raised by Biological Parents";
+    if (l.includes("infant")) return "Adopted as Infant";
+    if (l.includes("child or teenager")) return "Adopted as Child/Teenager";
+    if (l.includes("different family structure")) return "Other Family Structure";
+  }
+  
+  if (questionId === "family_father_status") {
+    if (l.includes("intact")) return "Intact";
+    if (l.includes("circumcised")) return "Circumcised";
+    if (l.includes("restoring")) return "Restoring";
+    if (l.includes("unsure") || l.includes("don't know")) return "Unsure / Unknown";
+  }
+  
+  if (questionId === "religion_is_significant") {
+    if (l.includes("major role")) return "Major Role";
+    if (l.includes("minor")) return "Minor Role";
+    if (l.includes("not a significant part")) return "Not Significant";
+  }
+  
+  if (questionId === "religion_primary_tradition") {
+    if (l.includes("christianity")) return "Christianity";
+    if (l.includes("judaism")) return "Judaism";
+    if (l.includes("islam")) return "Islam";
+    if (l.includes("atheist") || l.includes("agnostic")) return "Atheist / Agnostic";
+  }
+  
+  if (questionId === "culture_primary_view_of_circ") {
+    if (l.includes("expected and considered")) return "Expected Standard";
+    if (l.includes("cosmetic preference")) return "Cosmetic Preference";
+    if (l.includes("medical necessity")) return "Medical Necessity";
+    if (l.includes("religious requirement")) return "Religious Requirement";
+    if (l.includes("private family choice")) return "Private Choice";
+    if (l.includes("questioned, but ultimately")) return "Questioned Standard";
+    if (l.includes("actively opposed")) return "Actively Opposed";
+  }
+  
+  if (questionId === "culture_social_pressure_role") {
+    if (l.includes("significant factor")) return "Significant Factor";
+    if (l.includes("minor factor")) return "Minor Factor";
+    if (l.includes("not a factor")) return "Not a Factor";
+    if (l.includes("don't know")) return "Unknown";
+  }
+  
+  if (questionId === "family_cultural_background") {
+    if (l.includes(",")) return "Mixed / Multi-Cultural";
+    if (l.includes("christian")) return "Christian";
+    if (l.includes("jewish") || l.includes("judaism")) return "Jewish";
+    if (l.includes("islam") || l.includes("muslim")) return "Islamic";
+    if (l.includes("buddhism") || l.includes("buddhist")) return "Buddhism";
+    if (l.includes("hinduism") || l.includes("hindu")) return "Hinduism";
+    if (l.includes("atheist") || l.includes("agnostic") || l.includes("secular")) return "Secular / Non-Religious";
+  }
+  
+  if (questionId === "final_social_norm_perception" || questionId === "culture_community_expectation") {
+    // String variants for different questions
+    if (l.includes("overwhelmingly seen as the normal and expected")) {
+      if (l.includes("intact state is overwhelmingly")) return "Intact Overwhelmingly Normal";
+      if (l.includes("circumcised state is overwhelmingly")) return "Circumcised Overwhelmingly Normal";
+    }
+    if (l.includes("generally seen as more normal")) {
+      if (l.includes("intact state is generally")) return "Intact Generally Normal";
+      if (l.includes("circumcised state is generally")) return "Circumcised Generally Normal";
+    }
+    
+    // Community Expectations variants
+    if (l.includes("uncommon; being left intact")) return "Intact was the Norm";
+    if (l.includes("50/50 choice")) return "50/50 Choice";
+    if (l.includes("very common")) return "Very Common";
+    if (l.includes("unquestioned norm; i believe nearly all boys")) return "Circumcised was the Norm";
+    if (l.includes("not sure what the expectation was")) return "Unsure / Unknown";
+    
+    if (l.includes("equally normal and acceptable")) return "Both Equally Normal";
+    if (l.includes("private, almost taboo")) return "Private / Taboo";
+    if (l.includes("active debate")) return "Active Debate";
+    if (l.includes("unquestioned default")) return "Unquestioned Default";
+  }
+  
+  // Clean up any remaining parentheticals for un-caught labels
+  let cleaned = rawLabel.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  if (cleaned.length > 40) {
+    // If STILL too long, try to take just the first sentence or first clause before a comma
+    cleaned = cleaned.split(".")[0].split(",")[0].trim();
+  }
+  
+  return cleaned;
+}

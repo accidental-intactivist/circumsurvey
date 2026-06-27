@@ -97,6 +97,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
   const [viewMode, setViewMode] = useState("columns");
   const [activeQuestionId, setActiveQuestionId] = useState(QUESTIONS[0].id);
   const [showGap, setShowGap] = useState(false);
+  const [showHowTo, setShowHowTo] = useState(false);
   const [activeCohorts, setActiveCohorts] = useState({ intact: true, circumcised: true, restoring: true });
   const [liveQuotes, setLiveQuotes] = useState({ intact: [], circumcised: [], restoring: [] });
   const [quoteSeed, setQuoteSeed] = useState(0);
@@ -117,11 +118,20 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
     let cancelled = false;
     setLoading(true);
     setError(null);
+    
+    // AI Docent Context
+    setExhibitContext({
+      page_description: "The user is looking at 'The Pleasure Gap', an exhibit charting self-reported pleasure and physical sensitivity ratings across Intact, Circumcised, and Restoring cohorts. Data is displayed as diverging dumbbells indicating the spread between cohorts on a 1 to 5 scale.",
+      active_cohorts: activeCohortsList.map(c => c.label).join(", "),
+      active_demographic_filter: cohortLabel || "None"
+    });
 
-    Promise.all(
-      QUESTIONS.map(q => getAggregate(q.id, { by: "pathway", cohort }))
-    )
-      .then(results => {
+    async function load() {
+      try {
+        const promises = QUESTIONS.map(q => 
+          getAggregate(q.id, { by: "pathway", cohort })
+        );
+        const results = await Promise.all(promises);
         if (cancelled) return;
         const mappedData = {};
         QUESTIONS.forEach((q, idx) => {
@@ -129,13 +139,14 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
         });
         setData(mappedData);
         setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         if (cancelled) return;
         console.error("Failed to fetch aggregate scores", err);
         setError(err.message || String(err));
         setLoading(false);
-      });
+      }
+    }
+    load();
 
     return () => {
       cancelled = true;
@@ -434,6 +445,56 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                         </button>
                       </div>
                     </div>
+                  </div>
+                )}
+                
+                {/* How to Read This Grid Toggle */}
+                {viewMode === "dumbbell" && (
+                  <div style={{ marginBottom: "2rem" }}>
+                    <button
+                      onClick={() => setShowHowTo(!showHowTo)}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: C.muted,
+                        fontFamily: FONT.condensed,
+                        fontSize: "0.8rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        padding: 0,
+                      }}
+                    >
+                      <span style={{ fontSize: "1rem" }}>{showHowTo ? "−" : "+"}</span> How to Read This Chart
+                    </button>
+                    
+                    {showHowTo && (
+                      <div style={{
+                        marginTop: "1rem",
+                        background: C.bgSoft,
+                        border: `1px solid ${C.ghost}`,
+                        borderRadius: 8,
+                        padding: "1.5rem",
+                        color: C.textBright,
+                        fontFamily: FONT.body,
+                        fontSize: "0.95rem",
+                        lineHeight: 1.6,
+                        animation: "fadeIn 0.2s ease-out"
+                      }}>
+                        <p style={{ margin: "0 0 0.8rem 0" }}>
+                          <strong>The Dumbbell Plot</strong> visualizes the "gap" in self-reported physical pleasure and sensitivity across cohorts. 
+                        </p>
+                        <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                          <li style={{ marginBottom: "0.5rem" }}>Each row represents a specific aspect of the sexual experience.</li>
+                          <li style={{ marginBottom: "0.5rem" }}>The <strong>Circles</strong> represent the average score (out of 5) for a given cohort.</li>
+                          <li style={{ marginBottom: "0.5rem" }}>The <strong>Connecting Line</strong> illustrates the <em>spread</em> or <em>gap</em> between those averages.</li>
+                          <li>Toggle <strong>Show Gap</strong> to explicitly highlight the numerical deficit or advantage between the lowest and highest scoring cohorts in each category.</li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

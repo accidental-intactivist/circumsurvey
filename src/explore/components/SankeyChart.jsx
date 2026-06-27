@@ -214,7 +214,10 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
       if (customColorMap[node.originalName]) return customColorMap[node.originalName];
       if (customColorMap[node.name]) return customColorMap[node.name];
     }
-    return "#a855f7"; // fallback
+    const colors = [C.pink, C.cyan, C.goldBright, C.greenBright, C.orange, C.blue, C.purple];
+    // Fallback to a vibrant cycle based on the node's name length or sortIndex
+    const hash = node.name ? node.name.length + (node.sortIndex || 0) : 0;
+    return colors[Math.abs(hash) % colors.length];
   };
 
   const totalN = useMemo(() => {
@@ -272,10 +275,11 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                   fill="none"
                   stroke={color}
                   strokeWidth={Math.max(1, link.width)}
-                  opacity={0.35}
-                  style={{ transition: "stroke-opacity 0.2s" }}
+                  opacity={0.65}
+                  style={{ transition: "stroke-opacity 0.2s, filter 0.2s" }}
                   onMouseEnter={(e) => {
-                    e.target.style.filter = "brightness(1.2)";
+                    e.target.style.filter = "brightness(1.3)";
+                    e.target.style.opacity = "0.9";
                     showTooltip(e, (
                       <div>
                         <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 4 }}>
@@ -289,7 +293,8 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
                   }}
                   onMouseMove={(e) => moveTooltip(e)}
                   onMouseLeave={(e) => {
-                    e.target.style.opacity = 0.35;
+                    e.target.style.filter = "none";
+                    e.target.style.opacity = 0.65;
                     hideTooltip();
                   }}
                 />

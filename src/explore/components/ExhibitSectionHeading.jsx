@@ -8,10 +8,11 @@ export default function ExhibitSectionHeading({
   color = C.goldBright,
   description,
   children,
-  hideDivider = false
+  hideDivider = false,
+  id
 }) {
   return (
-    <div style={{ marginBottom: "1rem" }}>
+    <div id={id} style={{ marginBottom: "1rem" }}>
       {!hideDivider && (
         <div style={{ borderBottom: "5px dotted var(--c-ghost)", margin: "5rem 0 1rem", opacity: 0.5 }} />
       )}

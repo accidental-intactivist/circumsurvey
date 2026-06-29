@@ -255,6 +255,7 @@ function MissingCongregation({ traditionCounts, totalRespondents, questionsMap }
       border: `1px solid rgba(212,160,48,0.18)`,
       borderRadius: 16,
       padding: "2.5rem",
+      marginTop: 0,
       marginBottom: "4rem",
       position: "relative",
     }}>

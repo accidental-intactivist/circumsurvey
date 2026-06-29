@@ -22,6 +22,7 @@ export default function ExhibitSectionHeading({
         color: color, 
         textTransform: "uppercase", 
         letterSpacing: "0.15em", 
+        marginTop: 0,
         marginBottom: description ? "1rem" : "2rem", 
         textAlign: "left", 
         display: "flex", 

@@ -228,6 +228,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
           title="Section A: Starting Points & Motivations"
           icon="🟣"
           color="#a855f7"
+          hideDivider={true}
           description="Respondents began restoring for a range of reasons and from a range of starting feelings. The distributions below show what they reported."
         >
 

@@ -111,6 +111,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         title="Testimonies: What Grown Sons Wish Their Parents Knew"
         description="Adult men—both circumcised and intact—were asked what they would say to parents making this decision today."
         color="var(--c-red)"
+        hideDivider={true}
       />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", marginBottom: "4rem" }}>

@@ -59,20 +59,26 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html —
     // dial it there, then copy the values back into this block.
     const PARAMS = {
-      speed: 0.03,             // global time scale (higher = faster overall)
-      travelSpeed: 0.0012,     // traveling-wave propagation along each curve
-      waveFreq: 2.8,           // number of waves packed along a curve
-      moirePhaseSpread: 420,   // per-line time offset across ribbon depth (the moiré)
-      ampXScale: 0.55,         // horizontal sweep amplitude
-      ampYScale: 0.75,         // vertical sweep amplitude
-      rippleAmpScale: 0.20,    // fast secondary "wind ripple"
-      loopAmpScale: 0.35,      // figure-8 / knot-forming push
-      parentSeparation: 0.35,  // vertical gap between the two parent curves (smaller = more knots)
-      endAnchorMargin: 0.6,    // how far past the edge the line ENDS are pinned (×half). Keeps endpoints off-canvas
-      nodeCount: 7,            // control points per curve — MORE = more kinks/weave along each line (min 4)
-      kinkDepth: 1.35,         // how hard interior points wander (>1 = curvier, knottier; 1 = gentle arcs)
-      focalLength: 800,        // perspective depth (lower = stronger 3D)
-      lineWidth: 1.8,          // stroke weight multiplier
+      speed: 0.01,             // global time scale — kept slow & thoughtful
+      travelSpeed: 0.0011,     // traveling-wave propagation along each curve
+      waveFreq: 1.70,          // number of waves packed along a curve
+      moirePhaseSpread: 10,    // per-line time offset across ribbon depth (the moiré)
+      ampXScale: 0,            // horizontal sweep amplitude
+      ampYScale: 0.66,         // vertical sweep amplitude
+      rippleAmpScale: 0,       // fast secondary "wind ripple"
+      loopAmpScale: 0.7,       // figure-8 / knot-forming push
+      parentSeparation: 0.16,  // vertical gap between the two parent curves (smaller = more knots)
+      endAnchorMargin: 0.1,    // how far past the edge the line ENDS are pinned (×half). Keeps endpoints off-canvas
+      nodeCount: 6,            // control points per curve — MORE = more kinks/weave along each line (min 4)
+      kinkDepth: 0.5,          // how hard interior points wander (>1 = curvier, knottier; 1 = gentle arcs)
+      focalLength: 1600,       // perspective depth (lower = stronger 3D)
+      lineWidth: 1.60,         // stroke weight multiplier
+      // THE GLISTEN — a slow shimmer of light raking across the threads, like sun
+      // catching the warp of a loom (the LucasArts "Loom" vibe). 0 = off.
+      glintStrength: 0.3,      // peak brightness of the shimmer (0–1)
+      glintSpeed: 0.0001,      // sweep speed across the weave (per millisecond)
+      glintWidth: 0.06,        // width of the shimmer band (fraction of the weave)
+      glintAngle: 0.25,        // rake direction in radians (~60° diagonal)
     };
 
     const createNode = (type, wavy = false) => ({
@@ -182,6 +188,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // high-refresh displays), we accumulate real elapsed milliseconds.
     // This makes the animation speed identical on 60Hz, 120Hz, or 240Hz.
     let time = 0;
+    let glintTime = 0; // real-ms accumulator for the glisten sweep (decoupled from speed)
     let lastFrameTime = performance.now();
 
     // Target ~30fps for this ambient animation — no need for 60+fps
@@ -254,6 +261,25 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       z: lerp(pA.z, pB.z, t)
     });
 
+    // Trace a Catmull-Rom spline through a line's points onto the current path
+    // (caller handles beginPath/strokeStyle/stroke). Shared by the base weave
+    // draw and the glisten overlay so they always follow identical geometry.
+    const traceSpline = (pts) => {
+      const n = pts.length;
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let s = 0; s < n - 1; s++) {
+        const p0 = pts[s - 1] || pts[0];
+        const p1 = pts[s];
+        const p2 = pts[s + 1];
+        const p3 = pts[s + 2] || pts[n - 1];
+        ctx.bezierCurveTo(
+          p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6,
+          p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6,
+          p2.x, p2.y
+        );
+      }
+    };
+
     const generateRibbon = (parent1, parent2, precomputedStyles, ribbonSteps, startIdx) => {
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;
@@ -317,6 +343,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       // Clamp delta to avoid huge jumps if tab was backgrounded
       const delta = Math.min(elapsed, 100);
       time += delta * SPEED;
+      glintTime += delta;
       lastFrameTime = now;
 
       const cw = canvas.width / dpr;
@@ -349,29 +376,45 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         styleGroups.get(key).lines.push(line);
       }
 
+      // ── Base weave: the threads themselves ──
       for (const group of styleGroups.values()) {
         ctx.strokeStyle = group.style;
         ctx.lineWidth = group.width;
         ctx.beginPath();
-        for (const line of group.lines) {
+        for (const line of group.lines) traceSpline(line.pts);
+        ctx.stroke();
+      }
+
+      // ── The glisten: a slow band of light raking diagonally across the weave,
+      // drawn additively (composite "lighter") on top so it reads as a shiny
+      // shimmer catching the threads — the LucasArts "Loom" glint. ──
+      if (PARAMS.glintStrength > 0) {
+        const ca = Math.cos(PARAMS.glintAngle);
+        const sa = Math.sin(PARAMS.glintAngle);
+        const denom = (cw * Math.abs(ca) + ch * Math.abs(sa)) || 1;
+        // Light sweeps a normalized position from -0.5 to 1.5, so each pass
+        // glides fully across, then a gap before the next — unhurried, occasional.
+        const lightNorm = -0.5 + 2.0 * ((glintTime * PARAMS.glintSpeed) % 1);
+        const invW = 1 / Math.max(0.02, PARAMS.glintWidth);
+
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+        for (const line of linesToDraw) {
           const pts = line.pts;
           const n = pts.length;
-          ctx.moveTo(pts[0].x, pts[0].y);
-          // Catmull-Rom → cubic bezier: one smooth curve woven through every
-          // control point, so the line kinks and twists instead of arcing once.
-          for (let s = 0; s < n - 1; s++) {
-            const p0 = pts[s - 1] || pts[0];
-            const p1 = pts[s];
-            const p2 = pts[s + 1];
-            const p3 = pts[s + 2] || pts[n - 1];
-            ctx.bezierCurveTo(
-              p1.x + (p2.x - p0.x) / 6, p1.y + (p2.y - p0.y) / 6,
-              p2.x - (p3.x - p1.x) / 6, p2.y - (p3.y - p1.y) / 6,
-              p2.x, p2.y
-            );
-          }
+          const mid = pts[(n - 1) >> 1]; // a point on the visible body (ends are off-canvas)
+          const nrm = (mid.x * ca + mid.y * sa) / denom;
+          const d = (nrm - lightNorm) * invW;
+          const g = Math.exp(-d * d);
+          if (g < 0.03) continue;
+          ctx.strokeStyle = `rgba(255, 244, 214, ${(g * PARAMS.glintStrength).toFixed(3)})`;
+          ctx.lineWidth = Math.max(0.5, line.scale * PARAMS.lineWidth * sizeScale * 1.4);
+          ctx.beginPath();
+          traceSpline(pts);
+          ctx.stroke();
         }
-        ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineCap = 'butt';
       }
 
       animationFrameId = requestAnimationFrame(render);

@@ -10,8 +10,20 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
+    // ── Low-power / mobile detection ──
+    // Phones (and reduced-motion users) get a lighter render: lower DPR, fewer
+    // threads, coarser glint sampling, and a slower frame cap — so the masthead
+    // never thrashes a small browser. Desktop keeps full fidelity.
+    const prefersReduced = typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const coarsePointer = typeof window.matchMedia === 'function'
+      && window.matchMedia('(pointer: coarse)').matches;
+    const fewCores = (navigator.hardwareConcurrency || 8) <= 4;
+    const smallScreen = Math.min(window.innerWidth || 9999, window.innerHeight || 9999) < 700;
+    const lowPower = prefersReduced || coarsePointer || fewCores || smallScreen;
+
     // ── Device pixel ratio for crisp rendering without overdraw ──
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap at 2x
+    const dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 2);
 
     // Set canvas to parent size, respecting DPR
     const resizeCanvas = () => {
@@ -59,7 +71,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     // An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html —
     // dial it there, then copy the values back into this block.
     const PARAMS = {
-      speed: 0.01,             // global time scale — kept slow & thoughtful
+      speed: 0.03,             // global time scale — slow & contemplative (still visibly drifting)
       travelSpeed: 0.0011,     // traveling-wave propagation along each curve
       waveFreq: 1.70,          // number of waves packed along a curve
       moirePhaseSpread: 10,    // per-line time offset across ribbon depth (the moiré)
@@ -72,13 +84,18 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       nodeCount: 6,            // control points per curve — MORE = more kinks/weave along each line (min 4)
       kinkDepth: 0.5,          // how hard interior points wander (>1 = curvier, knottier; 1 = gentle arcs)
       focalLength: 1600,       // perspective depth (lower = stronger 3D)
-      lineWidth: 1.60,         // stroke weight multiplier
-      // THE GLISTEN — a slow shimmer of light raking across the threads, like sun
-      // catching the warp of a loom (the LucasArts "Loom" vibe). 0 = off.
-      glintStrength: 0.3,      // peak brightness of the shimmer (0–1)
-      glintSpeed: 0.0001,      // sweep speed across the weave (per millisecond)
-      glintWidth: 0.06,        // width of the shimmer band (fraction of the weave)
-      glintAngle: 0.25,        // rake direction in radians (~60° diagonal)
+      lineWidth: 3.60,         // stroke weight multiplier
+      // THE GLISTEN — an occasional event, organised by COLOUR FAMILY. Lines are
+      // binned by hue into `glintGroups` families; each family gets its own glint
+      // that traces only its own lines, alternates direction (left→right vs
+      // right→left), and is staggered in time — so opposite-moving glints of
+      // different hues cross. Arc-length paced for a smooth glide.
+      glintGroups: 2,          // colour families, each with its own glint lane
+      glintInterval: 17.5,     // SECONDS between a family's glints (families staggered)
+      glintSpeed: 0.05,        // pace of a pass (line-lengths/sec)
+      glintWidth: 0.14,        // streak length as a FRACTION of the line
+      glintStrength: 0.45,     // brightness of the streak (0–1)
+      glintTint: 0.55,         // 0 = stark white, 1 = the thread's own colour
     };
 
     const createNode = (type, wavy = false) => ({
@@ -140,14 +157,21 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
 
     const focalLength = PARAMS.focalLength;
 
-    // Higher density of steps to make it look like a detailed mesh ribbon, similar to the ad
-    const steps = 48;
-    const halfSteps = 32;
+    // Higher density of steps to make it look like a detailed mesh ribbon, similar to the ad.
+    // Fewer threads on low-power devices to keep the per-frame work down.
+    const steps = lowPower ? 30 : 48;
+    const halfSteps = lowPower ? 20 : 32;
 
     let initialized = false;
     let deferTimer;
     const precomputedStyles1 = [];
     const precomputedStyles2 = [];
+
+    // Per-line base RGB (parallel to precomputedStyles) so the glisten can paint
+    // each sparkle as a "brightened" version of that thread's own colour — which
+    // is what keeps the shimmer theme-responsive (it tracks the weave palette).
+    const precomputedRGB1 = [];
+    const precomputedRGB2 = [];
 
     const initColors = () => {
       const cRed = parseColor('--c-red', [217, 79, 79]);
@@ -155,6 +179,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       const cBlue = parseColor('--c-blue', [91, 147, 199]);
 
       precomputedStyles1.length = 0;
+      precomputedRGB1.length = 0;
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
         const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
@@ -162,9 +187,11 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         const g = Math.round(lerp(cRed[1], cGold[1], t));
         const b = Math.round(lerp(cRed[2], cGold[2], t));
         precomputedStyles1.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+        precomputedRGB1.push([r, g, b]);
       }
 
       precomputedStyles2.length = 0;
+      precomputedRGB2.length = 0;
       for (let i = 0; i <= halfSteps; i++) {
         const t = i / halfSteps;
         const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
@@ -172,7 +199,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         const g = Math.round(lerp(cGold[1], cBlue[1], t));
         const b = Math.round(lerp(cGold[2], cBlue[2], t));
         precomputedStyles2.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+        precomputedRGB2.push([r, g, b]);
       }
+
       initialized = true;
     };
 
@@ -180,8 +209,11 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     const nodeCount = Math.max(4, Math.round(PARAMS.nodeCount));
     const linesToDraw = Array.from({ length: totalLines }, () => ({
       pts: Array.from({ length: nodeCount }, () => ({ x: 0, y: 0 })),
-      avgZ: 0, scale: 0, style: ''
+      avgZ: 0, scale: 0, style: '', rgb: [255, 255, 255], colorPos: 0,
+      phase: Math.random() * Math.PI * 2 // stable per-thread seed
     }));
+
+    // (The glisten is drawn in the render loop as sweeping light bars — see below.)
 
     // ── Delta-time animation ──
     // Instead of `time += constant` per frame (which runs faster on 
@@ -191,8 +223,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     let glintTime = 0; // real-ms accumulator for the glisten sweep (decoupled from speed)
     let lastFrameTime = performance.now();
 
-    // Target ~30fps for this ambient animation — no need for 60+fps
-    const MIN_FRAME_INTERVAL = 1000 / 30; // ~33ms
+    // Target ~30fps for this ambient animation (24fps on low-power) — no need for 60+fps
+    const MIN_FRAME_INTERVAL = 1000 / (lowPower ? 24 : 30);
 
     // Speed multiplier: lower = slower, for a chilled ambient feel. (See PARAMS.)
     const SPEED = PARAMS.speed;
@@ -261,6 +293,23 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       z: lerp(pA.z, pB.z, t)
     });
 
+    // Position on the rendered Catmull-Rom spline at u∈[0,1] along the whole line
+    // — used to scatter glisten sparkles exactly onto the threads.
+    const splinePoint = (pts, u) => {
+      const n = pts.length;
+      const seg = Math.min(n - 2, Math.floor(u * (n - 1)));
+      const t = u * (n - 1) - seg;
+      const p0 = pts[seg - 1] || pts[0];
+      const p1 = pts[seg];
+      const p2 = pts[seg + 1];
+      const p3 = pts[seg + 2] || pts[n - 1];
+      const t2 = t * t, t3 = t2 * t;
+      return {
+        x: 0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3),
+        y: 0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3)
+      };
+    };
+
     // Trace a Catmull-Rom spline through a line's points onto the current path
     // (caller handles beginPath/strokeStyle/stroke). Shared by the base weave
     // draw and the glisten overlay so they always follow identical geometry.
@@ -280,7 +329,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       }
     };
 
-    const generateRibbon = (parent1, parent2, precomputedStyles, ribbonSteps, startIdx) => {
+    const generateRibbon = (parent1, parent2, precomputedStyles, precomputedRGB, ribbonSteps, startIdx, colorStart, colorEnd) => {
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;
       const cx = cw / 2;
@@ -321,6 +370,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         line.avgZ = zSum / nodeCount;
         line.scale = scaleSum / nodeCount;
         line.style = precomputedStyles[i];
+        line.rgb = precomputedRGB[i];
+        // Position along the full red→gold→blue spectrum, for binning into hue families.
+        line.colorPos = colorStart + (ribbonSteps > 0 ? i / ribbonSteps : 0) * (colorEnd - colorStart);
       }
       return lineIdx;
     };
@@ -357,8 +409,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       ctx.clearRect(0, 0, cw, ch);
 
       let idx = 0;
-      idx = generateRibbon(r1_p1, r1_p2, precomputedStyles1, steps, idx);
-      generateRibbon(r2_p1, r2_p2, precomputedStyles2, halfSteps, idx);
+      idx = generateRibbon(r1_p1, r1_p2, precomputedStyles1, precomputedRGB1, steps, idx, 0, 0.5);
+      generateRibbon(r2_p1, r2_p2, precomputedStyles2, precomputedRGB2, halfSteps, idx, 0.5, 1);
 
       // Z-sort for depth ordering
       linesToDraw.sort((a, b) => b.avgZ - a.avgZ);
@@ -385,36 +437,92 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         ctx.stroke();
       }
 
-      // ── The glisten: a slow band of light raking diagonally across the weave,
-      // drawn additively (composite "lighter") on top so it reads as a shiny
-      // shimmer catching the threads — the LucasArts "Loom" glint. ──
-      if (PARAMS.glintStrength > 0) {
-        const ca = Math.cos(PARAMS.glintAngle);
-        const sa = Math.sin(PARAMS.glintAngle);
-        const denom = (cw * Math.abs(ca) + ch * Math.abs(sa)) || 1;
-        // Light sweeps a normalized position from -0.5 to 1.5, so each pass
-        // glides fully across, then a gap before the next — unhurried, occasional.
-        const lightNorm = -0.5 + 2.0 * ((glintTime * PARAMS.glintSpeed) % 1);
-        const invW = 1 / Math.max(0.02, PARAMS.glintWidth);
+      // ── The glisten: one glint PER COLOUR FAMILY. Lines are binned by hue into
+      // `glintGroups` families; each family glints on its own staggered interval and
+      // alternates travel direction (left→right vs right→left), so opposite-moving
+      // glints of different hues cross. Arc-length paced for a smooth glide; quiet
+      // families are skipped entirely. ──
+      if (PARAMS.glintGroups > 0) {
+        const groups = Math.max(1, Math.round(PARAMS.glintGroups));
+        const tailFrac = Math.max(0.02, PARAMS.glintWidth);
+        const tint = PARAMS.glintTint;
+        const A = PARAMS.glintStrength;
+        const N = lowPower ? 32 : 64; // glint samples per line — coarser on phones
+        const tSec = glintTime / 1000;
+        const period = Math.max(0.5, PARAMS.glintInterval);
+        const speed = Math.max(0.001, PARAMS.glintSpeed);
+        const travelT = Math.min(period, 1 / speed); // time for one comet to cross a line
 
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.lineCap = 'round';
-        for (const line of linesToDraw) {
-          const pts = line.pts;
-          const n = pts.length;
-          const mid = pts[(n - 1) >> 1]; // a point on the visible body (ends are off-canvas)
-          const nrm = (mid.x * ca + mid.y * sa) / denom;
-          const d = (nrm - lightNorm) * invW;
-          const g = Math.exp(-d * d);
-          if (g < 0.03) continue;
-          ctx.strokeStyle = `rgba(255, 244, 214, ${(g * PARAMS.glintStrength).toFixed(3)})`;
-          ctx.lineWidth = Math.max(0.5, line.scale * PARAMS.lineWidth * sizeScale * 1.4);
-          ctx.beginPath();
-          traceSpline(pts);
-          ctx.stroke();
+        // Per-family head progress (0..1, or -1 when quiet) + travel direction.
+        const headByGroup = new Array(groups);
+        const dirByGroup = new Array(groups);
+        let anyActive = false;
+        for (let g = 0; g < groups; g++) {
+          dirByGroup[g] = (g % 2 === 0) ? 1 : -1;            // alternate L→R / R→L
+          const offset = (g / groups) * period;              // stagger families in time
+          const localT = (((tSec - offset) % period) + period) % period;
+          if (localT < travelT) { headByGroup[g] = localT / travelT; anyActive = true; }
+          else headByGroup[g] = -1;
         }
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.lineCap = 'butt';
+
+        if (anyActive) {
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          for (const line of linesToDraw) {
+            const g = Math.min(groups - 1, Math.max(0, Math.floor((line.colorPos || 0) * groups)));
+            const hp0 = headByGroup[g];
+            if (hp0 < 0) continue; // this colour family isn't glinting right now
+            const dir = dirByGroup[g];
+
+            const pts = line.pts;
+            const rgb = line.rgb || [255, 255, 255];
+            const cr = Math.round(255 - (255 - rgb[0]) * tint);
+            const cg = Math.round(255 - (255 - rgb[1]) * tint);
+            const cb = Math.round(255 - (255 - rgb[2]) * tint);
+            const w = Math.max(1, line.scale * PARAMS.lineWidth * sizeScale * 1.5);
+
+            // Dense sample + ARC LENGTH for a constant-speed glide.
+            const sx = [], sy = [], cum = [];
+            let total = 0, px0 = 0, py0 = 0;
+            for (let i = 0; i <= N; i++) {
+              const p = splinePoint(pts, i / N);
+              sx[i] = p.x; sy[i] = p.y;
+              if (i === 0) cum[i] = 0;
+              else { total += Math.hypot(p.x - px0, p.y - py0); cum[i] = total; }
+              px0 = p.x; py0 = p.y;
+            }
+            if (total < 1) continue;
+            const tailLen = tailFrac * total;
+            const at = (s) => {
+              let i = 1;
+              while (i < N && cum[i] < s) i++;
+              const c0 = cum[i - 1], c1 = cum[i];
+              const t = c1 > c0 ? (s - c0) / (c1 - c0) : 0;
+              return { x: sx[i - 1] + (sx[i] - sx[i - 1]) * t, y: sy[i - 1] + (sy[i] - sy[i - 1]) * t };
+            };
+
+            // Head sweeps from the family's start side; tail trails behind it.
+            const hp = dir === 1 ? hp0 : (1 - hp0);
+            const sHead = hp * total;
+            const sTail = dir === 1 ? Math.max(0, sHead - tailLen) : Math.min(total, sHead + tailLen);
+            if (Math.abs(sHead - sTail) < 0.5) continue;
+            const T = at(sTail), H = at(sHead);
+            const grad = ctx.createLinearGradient(T.x, T.y, H.x, H.y);
+            grad.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, 0)`);  // transparent tail
+            grad.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, ${A})`); // bright head
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = w;
+            ctx.beginPath();
+            ctx.moveTo(T.x, T.y);
+            const sLo = Math.min(sTail, sHead), sHi = Math.max(sTail, sHead);
+            if (dir === 1) { for (let i = 0; i <= N; i++) if (cum[i] > sLo && cum[i] < sHi) ctx.lineTo(sx[i], sy[i]); }
+            else { for (let i = N; i >= 0; i--) if (cum[i] > sLo && cum[i] < sHi) ctx.lineTo(sx[i], sy[i]); }
+            ctx.lineTo(H.x, H.y);
+            ctx.stroke();
+          }
+          ctx.lineCap = 'butt';
+          ctx.lineJoin = 'miter';
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);

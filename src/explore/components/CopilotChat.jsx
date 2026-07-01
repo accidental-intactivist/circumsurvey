@@ -7,6 +7,7 @@ import { Sparkles } from "./Icons";
 import DistributionChart from "./DistributionChart";
 import SurveyFlowchart from "./SurveyFlowchart";
 import { Link } from "react-router-dom";
+import { LOOM_CONFIG } from "../../components/HarmonicCanvas";
 
 function DocentChart({ questionId }) {
   const [question, setQuestion] = useState(null);
@@ -123,10 +124,29 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       return;
     }
 
+    // Hidden easter egg: a nod to the LucasArts game "Loom" reveals the live
+    // Harmonic Loom config (the masthead's motion + glisten). Triggered by
+    // "I'm Bobbin Threadbare, are you my mother?" (punctuation/case forgiving).
+    const _norm = query.trim().toLowerCase().replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
+    if (_norm.includes("bobbin threadbare")) {
+      const body = Object.entries(LOOM_CONFIG).map(([k, v]) => `  ${k}: ${v},`).join("\n");
+      setResult({
+        answer:
+          "\"No, Bobbin — I am not your mother. But I am the Loom, and I still remember the pattern she wove for you.\"\n\n" +
+          "Here is the weave drifting behind the header — its motion and its glisten:\n\n" +
+          "const PARAMS = {\n" + body + "\n};\n\n" +
+          "Carry the pattern to the tuner (docs/harmonic-tuner.html) or to LOOM_CONFIG in HarmonicCanvas.jsx.",
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "harmonic_loom" }
+      });
+      return;
+    }
+
     if (updateState) {
       updateState({ ai_query: query.trim() });
     }
-    
+
     executeSearch(query.trim());
   };
 

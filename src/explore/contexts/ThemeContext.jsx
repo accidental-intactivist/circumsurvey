@@ -79,8 +79,9 @@ export function ThemeProvider({ children }) {
     }
   });
 
-  // Apply attributes to the root <html> element
-  useEffect(() => {
+  // Synchronously apply attributes to the root <html> element during render
+  // so that children calling getComputedStyle() during their render get the right values.
+  if (typeof window !== 'undefined') {
     const root = document.documentElement;
     root.setAttribute('data-theme', theme || 'standard');
     root.setAttribute('data-typeface', typeface || 'tomorrow');
@@ -88,16 +89,13 @@ export function ThemeProvider({ children }) {
     root.setAttribute('data-colorblind', String(!!colorblind));
     root.setAttribute('data-dyslexic', String(!!dyslexicFont));
     
-    // Manage CSS multiplier for typography scale
     let scaleMultiplier = 1;
     if (typeScale === 'large') scaleMultiplier = 1.15;
     if (typeScale === 'xlarge') scaleMultiplier = 1.3;
-    
-    // We could apply this to a CSS variable if we converted FONT sizes to calc(),
-    // but the easiest robust way is just setting the root font-size percentage.
-    // 100% is 16px by default. 
     root.style.fontSize = `${scaleMultiplier * 100}%`;
+  }
 
+  useEffect(() => {
     try {
       localStorage.setItem('cs_theme_name', theme || 'standard');
       localStorage.setItem('cs_theme_typeface', typeface || 'tomorrow');

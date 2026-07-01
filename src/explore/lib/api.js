@@ -7,6 +7,7 @@ import { API_BASE } from "../styles/tokens";
 
 // ── Simple in-memory cache with 5-minute TTL ──────────────────────────────
 const cache = new Map();
+const inFlight = new Map();
 const TTL_MS = 5 * 60 * 1000;
 
 async function fetchJson(url, retries = 3) {
@@ -14,24 +15,41 @@ async function fetchJson(url, retries = 3) {
   const now = Date.now();
   const cached = cache.get(key);
   if (cached && now - cached.ts < TTL_MS) {
-    return cached.data;
+    // Deep clone to prevent mutations (like filtering questions) from affecting the cache
+    return JSON.parse(JSON.stringify(cached.data));
   }
 
-  for (let i = 0; i < retries; i++) {
-    try {
-      const r = await fetch(url);
-      if (!r.ok) {
-        const text = await r.text().catch(() => "");
-        throw new Error(`API ${r.status}: ${text.slice(0, 200)}`);
+  if (inFlight.has(key)) {
+    const data = await inFlight.get(key);
+    return JSON.parse(JSON.stringify(data));
+  }
+
+  const promise = (async () => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) {
+          const text = await r.text().catch(() => "");
+          throw new Error(`API ${r.status}: ${text.slice(0, 200)}`);
+        }
+        const data = await r.json();
+        cache.set(key, { ts: Date.now(), data });
+        return data;
+      } catch (err) {
+        if (i === retries - 1) throw err;
+        // Exponential backoff
+        await new Promise(res => setTimeout(res, 500 * Math.pow(2, i)));
       }
-      const data = await r.json();
-      cache.set(key, { ts: now, data });
-      return data;
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      // Exponential backoff
-      await new Promise(res => setTimeout(res, 500 * Math.pow(2, i)));
     }
+  })();
+
+  inFlight.set(key, promise);
+  
+  try {
+    const data = await promise;
+    return JSON.parse(JSON.stringify(data));
+  } finally {
+    inFlight.delete(key);
   }
 }
 
@@ -112,6 +130,16 @@ export async function getQuestions({ counts = true, pathway = null, tier = null,
         q.pathway = "amab_anatomy";
       } else if (q.pathway === "intersex") {
         q.section = "Intersex Pathway";
+      } else if (q.section === "Religion") {
+        if (q.id.startsWith("religion_christian_")) {
+          q.subsection = "Christianity";
+        } else if (q.id.startsWith("religion_jewish_")) {
+          q.subsection = "Judaism";
+        } else if (q.id.startsWith("religion_islamic_")) {
+          q.subsection = "Islam";
+        } else {
+          q.subsection = "General";
+        }
       } else if (q.section === "Uncategorized" || !q.section || q.section === "Observer Pathway") {
         if (q.id.startsWith("observe_parent_") || q.id.startsWith("observe_undecided_")) {
           q.section = "Parents & Guardians";

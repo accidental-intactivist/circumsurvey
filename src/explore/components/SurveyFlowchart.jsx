@@ -11,32 +11,60 @@ import { PATHWAYS, OBSERVER_SUBROLES, observerSubrolesForQuestion, CIRCUMCISED_S
 import { getQuestions } from "../lib/api";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { useReport } from "../contexts/ReportContext";
+import * as Icons from "./Icons";
+
+// ── Global Animations ────────────────────────────────────────────────────────
+const FLOWCHART_STYLES = `
+  @keyframes sfFlowDash {
+    to { stroke-dashoffset: -40; }
+  }
+  @keyframes sfPulseGlow {
+    0% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 20px var(--pulse-color-rgba), 0 0 0 0 var(--pulse-color-rgba); }
+    70% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 20px var(--pulse-color-rgba), 0 0 0 8px transparent; }
+    100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 20px var(--pulse-color-rgba), 0 0 0 0 transparent; }
+  }
+  @keyframes flowDotVertical {
+    0% { transform: translateY(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+  .sf-flow-anim {
+    animation: sfFlowDash 1.2s linear infinite;
+  }
+  .sf-card {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+  }
+  .sf-card:hover {
+    transform: translateY(-2px);
+  }
+`;
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const UNIVERSAL_SECTIONS = [
-  { name: "Demographics", emoji: "📊", desc: "Country, age, generation, education, sexuality, gender" },
-  { name: "Family", emoji: "👨‍👩‍👦", desc: "Parents, upbringing, politics, socioeconomic status" },
-  { name: "Religion", emoji: "🕊️", desc: "Tradition, significance, denomination details" },
-  { name: "Appearance", emoji: "👁️", desc: "Body image and self-perception" },
-  { name: "Sexual Experience", emoji: "💡", desc: "Sensation, orgasm, lubrication, communication" },
-  { name: "Experience", emoji: "📝", desc: "Pre-ejaculate, needs, partner communication" },
-  { name: "Pride & Regret", emoji: "⚖️", desc: "Overall satisfaction and emotional impact" },
-  { name: "Pathway Routing", emoji: "🔀", desc: "Circumcision state — determines branching" },
+  { name: "Demographics", icon: Icons.PieChart, desc: "Country, age, generation, education, sexuality, gender" },
+  { name: "Family", icon: Icons.Users, desc: "Parents, upbringing, politics, socioeconomic status" },
+  { name: "Religion", icon: Icons.Feather, desc: "Tradition, significance, denomination details" },
+  { name: "Appearance", icon: Icons.Eye, desc: "Body image and self-perception" },
+  { name: "Sexual Experience", icon: Icons.Zap, desc: "Sensation, orgasm, lubrication, communication" },
+  { name: "Experience", icon: Icons.FileText, desc: "Pre-ejaculate, needs, partner communication" },
+  { name: "Pride & Regret", icon: Icons.Award, desc: "Overall satisfaction and emotional impact" },
+  { name: "Pathway Routing", icon: Icons.GitBranch, desc: "Circumcision state — determines branching" },
 ];
 
 const SYNTHESIS_SECTIONS = [
-  { name: "Culture & Attitudes", emoji: "🌍", desc: "Norms, stereotypes, ethics, autonomy, media" },
-  { name: "Follow-up", emoji: "📨", desc: "Contact consent, final reflections" },
+  { name: "Culture & Attitudes", icon: Icons.Globe, desc: "Norms, stereotypes, ethics, autonomy, media" },
+  { name: "Follow-up", icon: Icons.Mail, desc: "Contact consent, final reflections" },
 ];
 
 const BRANCH_CONFIGS = [
-  { id: "intact", label: "Intact", emoji: "🟢", color: PATH_COLORS.intact, desc: "Never circumcised", sections: ["Intact Pathway"] },
-  { id: "circumcised", label: "Circumcised", emoji: "🔵", color: PATH_COLORS.circumcised, desc: "Circumcised as infants or later in life", sections: ["Circumcised Pathway"], hasSubRoles: true },
-  { id: "restoring", label: "Restoring", emoji: "🟣", color: PATH_COLORS.restoring, desc: "Actively restoring foreskin", sections: ["Restoring Pathway"] },
-  { id: "observer", label: "Observer", emoji: "🟠", color: PATH_COLORS.observer, desc: "Partners, parents, providers, advocates", sections: ["Observer Pathway"], hasSubRoles: true },
-  { id: "trans", label: "Trans", emoji: "🔴", color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
-  { id: "intersex", label: "Intersex", emoji: "⚪", color: PATH_COLORS.intersex, desc: "Intersex perspectives", sections: ["Intersex Pathway"], waiting: true },
+  { id: "intact", label: "Intact", icon: Icons.Circle, color: PATH_COLORS.intact, desc: "Never circumcised", sections: ["Intact Pathway"] },
+  { id: "circumcised", label: "Circumcised", icon: Icons.Circle, color: PATH_COLORS.circumcised, desc: "Circumcised as infants or later in life", sections: ["Circumcised Pathway"], hasSubRoles: true },
+  { id: "restoring", label: "Restoring", icon: Icons.Circle, color: PATH_COLORS.restoring, desc: "Actively restoring foreskin", sections: ["Restoring Pathway"] },
+  { id: "observer", label: "Observer", icon: Icons.Circle, color: PATH_COLORS.observer, desc: "Partners, parents, providers, advocates", sections: ["Observer Pathway"], hasSubRoles: true },
+  { id: "trans", label: "Trans", icon: Icons.Circle, color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
+  { id: "intersex", label: "Intersex", icon: Icons.Circle, color: PATH_COLORS.intersex, desc: "Intersex perspectives", sections: ["Intersex Pathway"], waiting: true },
 ];
 
 // ── Main Component ───────────────────────────────────────────────────────────
@@ -60,10 +88,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     return { universal: true };
   });
   const [expandedSections, setExpandedSections] = useState({});
-  const [compareMode, setCompareMode] = useState(() => {
-    const exp = searchParams.get("expanded");
-    return exp && exp.split(",").length > 1;
-  });
+  const [pinned, setPinned] = useState({});
+  const [hoveredPathway, setHoveredPathway] = useState(null);
   const containerRef = useRef(null);
   const [nodePositions, setNodePositions] = useState({});
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -92,49 +118,51 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
       .catch((e) => setError(e.message || String(e)));
   }, []);
 
-  const handleToggleCompareMode = useCallback(() => {
-    setCompareMode((prev) => {
-      const nextMode = !prev;
-      if (!nextMode) {
-        // Collapsing all other pathways except the first active one we find
-        setExpanded((prevExp) => {
-          const nextExp = { ...prevExp };
-          let foundActive = false;
-          for (const branch of BRANCH_CONFIGS) {
-            if (nextExp[branch.id]) {
-              if (foundActive) {
-                nextExp[branch.id] = false;
-              } else {
-                foundActive = true;
-              }
-            }
-          }
-          return nextExp;
-        });
-      }
-      return nextMode;
-    });
-  }, []);
-
   const toggleNode = useCallback((nodeId) => {
     setExpanded((prev) => {
       const isPathway = BRANCH_CONFIGS.some((b) => b.id === nodeId);
-      if (isPathway && !prev[nodeId] && !compareMode) {
-        const next = { ...prev };
-        for (const branch of BRANCH_CONFIGS) {
-          if (branch.id !== nodeId) {
-            next[branch.id] = false;
+      if (isPathway) {
+        if (prev[nodeId]) {
+          setPinned(p => ({ ...p, [nodeId]: false }));
+          return { ...prev, [nodeId]: false };
+        } else {
+          const next = { ...prev };
+          for (const branch of BRANCH_CONFIGS) {
+            if (branch.id !== nodeId && !pinned[branch.id]) {
+              next[branch.id] = false;
+            }
           }
+          next[nodeId] = true;
+          return next;
         }
-        next[nodeId] = true;
-        return next;
       }
       return { ...prev, [nodeId]: !prev[nodeId] };
     });
-  }, [compareMode]);
+  }, [pinned]);
+
+  const togglePin = useCallback((nodeId, e) => {
+    e.stopPropagation();
+    setPinned(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
+    setExpanded(prev => ({ ...prev, [nodeId]: true }));
+  }, []);
 
   const toggleSection = useCallback((sectionKey) => {
-    setExpandedSections((prev) => ({ ...prev, [sectionKey]: !prev[sectionKey] }));
+    setExpandedSections((prev) => {
+      const isReligion = sectionKey.startsWith("religion-");
+      if (isReligion) {
+        if (prev[sectionKey]) {
+          return { ...prev, [sectionKey]: false };
+        } else {
+          const next = { ...prev };
+          Object.keys(next).forEach(k => {
+            if (k.startsWith("religion-")) next[k] = false;
+          });
+          next[sectionKey] = true;
+          return next;
+        }
+      }
+      return { ...prev, [sectionKey]: !prev[sectionKey] };
+    });
   }, []);
 
   // Group questions by phase and pathway
@@ -213,7 +241,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     const isTrans = branch.id === "trans";
     const n = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
     const qCount = isTrans
-      ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
+      ? totalForPathway("trans")
       : (branch.id === "observer" ? totalForPathway("observer") : totalForPathway(branch.id));
     return { n, qCount };
   }, [nForPathway, totalForPathway]);
@@ -235,14 +263,26 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     );
   }
 
+  const activePathways = searchQuery
+    ? BRANCH_CONFIGS.filter(b => {
+        const isTrans = b.id === "trans";
+        const count = isTrans
+          ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
+          : (b.id === "observer" ? totalForPathway("observer") : totalForPathway(b.id));
+        return count > 0;
+      })
+    : expandedPathways;
+
   return (
     <div ref={containerRef} style={{ position: "relative", maxWidth: 1200, margin: "0 auto" }}>
+      <style>{FLOWCHART_STYLES}</style>
       <style>{`
         .flowchart-grid {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
-          gap: 0.75rem;
-          margin-top: 0.5rem;
+          column-gap: 0.75rem;
+          row-gap: 0;
+          margin-top: 0;
           margin-bottom: 0;
         }
         .flowchart-connectors {
@@ -254,7 +294,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         @media (max-width: 1100px) {
           .flowchart-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            column-gap: 1rem;
+            row-gap: 0;
           }
           .flowchart-connectors {
             display: none !important;
@@ -266,7 +307,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         @media (max-width: 600px) {
           .flowchart-grid {
             grid-template-columns: 1fr;
-            gap: 1rem;
+            column-gap: 1rem;
+            row-gap: 0;
           }
         }
       `}</style>
@@ -347,8 +389,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
       <FlowNode
         nodeId="universal"
         title="Universal Questions"
-        emoji="📋"
-        color={C.gold}
+        icon={Icons.FileText}
+        color={C.ltBlue}
         desc="Questions every respondent answered"
         qCount={totalForPathway("universal")}
         nCount={501}
@@ -360,12 +402,26 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           const qs = grouped?.universal[sec.name] || [];
           if (qs.length === 0) return null;
           const secKey = `universal-${sec.name}`;
+          if (sec.name === "Religion") {
+            return (
+              <ReligionPathways 
+                key={secKey}
+                section={sec}
+                questions={qs}
+                expandedSections={expandedSections}
+                toggleSection={toggleSection}
+                searchQuery={searchQuery}
+                navigate={navigate}
+              />
+            );
+          }
+
           return (
             <SectionBlock
               key={secKey}
               section={sec}
               questions={qs}
-              color={C.gold}
+              color={C.ltBlue}
               isExpanded={searchQuery ? true : expandedSections[secKey]}
               onToggle={() => toggleSection(secKey)}
               navigate={navigate}
@@ -375,60 +431,15 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
       </FlowNode>
 
       {/* ═══ VERTICAL CONNECTOR: Universal → Fork ═══ */}
-      <VerticalConnector color={C.gold} height={48} />
-      <MobileConnector color={C.gold} height={24} />
-
-      {/* ═══ FORK DIAMOND ═══ */}
-      <ForkDiamond />
-
-      {/* ═══ COMPARE MODE TOGGLE ═══ */}
-      <div className="flowchart-connectors" style={{
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "0.25rem 0 0.75rem",
-        zIndex: 10,
-        position: "relative"
-      }}>
-        <label style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.6rem",
-          cursor: "pointer",
-          fontSize: "0.72rem",
-          fontFamily: FONT.mono,
-          textTransform: "uppercase",
-          letterSpacing: "0.08em",
-          color: compareMode ? C.goldBright : C.dim,
-          background: "rgba(255, 255, 255, 0.03)",
-          border: `1px solid ${compareMode ? C.gold + "50" : C.ghost}`,
-          borderRadius: 20,
-          padding: "0.3rem 0.8rem",
-          transition: "all 0.2s ease",
-          userSelect: "none",
-          boxShadow: compareMode ? `0 0 10px ${C.gold}15` : "none",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = C.gold;
-          e.currentTarget.style.color = C.textBright;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = compareMode ? C.gold + "50" : C.ghost;
-          e.currentTarget.style.color = compareMode ? C.goldBright : C.dim;
-        }}
-        >
-          <input
-            type="checkbox"
-            checked={compareMode}
-            onChange={handleToggleCompareMode}
-            style={{
-              accentColor: C.gold,
-              cursor: "pointer",
-              margin: 0,
-            }}
-          />
-          <span>Compare Mode (Unfold Multiple)</span>
-        </label>
-      </div>
+      <VerticalConnector 
+        branches={BRANCH_CONFIGS}
+        activePathways={activePathways}
+        hoveredPathway={hoveredPathway}
+        onHoverChange={setHoveredPathway}
+        getFlowInfo={getFlowInfo}
+        height={48} 
+      />
+      <MobileConnector color={activePathways.length === 1 ? activePathways[0].color : C.ltBlue} height={24} />
 
       {/* ═══ BRANCH CONNECTORS ═══ */}
       <BranchConnectors 
@@ -437,6 +448,9 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         onMove={moveTooltip} 
         onLeave={hideTooltip} 
         getFlowInfo={getFlowInfo} 
+        activePathways={activePathways}
+        hoveredPathway={hoveredPathway}
+        onHoverChange={setHoveredPathway}
       />
       <MobileConnector color={C.gold} height={24} />
 
@@ -447,7 +461,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           const isTrans = branch.id === "trans";
           const branchN = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
           const branchQCount = isTrans
-            ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
+            ? totalForPathway("trans")
             : (branch.id === "observer" ? totalForPathway("observer") : totalForPathway(branch.id));
 
           return (
@@ -455,12 +469,14 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
               key={branch.id}
               nodeId={branch.id}
               title={branch.label}
-              emoji={branch.emoji}
+              icon={branch.icon}
               color={branch.color}
               desc={branch.desc}
               qCount={branchQCount}
               nCount={branchN}
               isExpanded={searchQuery ? branchQCount > 0 : expanded[branch.id]}
+              isHovered={hoveredPathway === branch.id}
+              onHoverChange={(h) => setHoveredPathway(h ? branch.id : null)}
               onToggle={() => toggleNode(branch.id)}
               waiting={branch.waiting}
               compact
@@ -470,182 +486,185 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
 
         {/* Expanded Full-Width Content Container */}
         {(() => {
-          const activePathways = searchQuery
-            ? BRANCH_CONFIGS.filter(b => {
-                const isTrans = b.id === "trans";
-                const count = isTrans
-                  ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
-                  : (b.id === "observer" ? totalForPathway("observer") : totalForPathway(b.id));
-                return count > 0;
-              })
-            : expandedPathways;
-
           if (activePathways.length === 0) return null;
 
           return (
-            <div
-              style={{
-                gridColumn: "1 / -1",
-                display: "grid",
-                gridTemplateColumns: `repeat(${activePathways.length}, 1fr)`,
-                gap: "1rem",
-                marginTop: "0.5rem",
-                marginBottom: "0.5rem",
-              }}
-            >
-              {activePathways.map((branch) => {
-                const isObserver = branch.hasSubRoles;
-                const isTrans = branch.id === "trans";
-                const branchN = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
-                const branchQCount = isTrans
-                  ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
-                  : (branch.id === "observer" ? totalForPathway("observer") : totalForPathway(branch.id));
-                const k = activePathways.length;
-
-                return (
-                <div
-                  key={`expanded-content-${branch.id}`}
+            <>
+              <ExpandedConnectors branches={BRANCH_CONFIGS} activePathways={activePathways} />
+              <div
                   style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
-                    border: `2px solid ${branch.color}`,
-                    borderRadius: 12,
-                    padding: "1.2rem 1.4rem",
+                    gridColumn: "1 / -1",
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${activePathways.length}, 1fr)`,
+                    gap: "1rem",
+                    marginTop: 0,
+                    marginBottom: "1rem",
                     position: "relative",
-                    boxShadow: `0 0 32px ${branch.color}15, 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)`,
-                    backdropFilter: "blur(12px)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.8rem",
+                    zIndex: 10,
                   }}
                 >
-                  {/* Header inside the expanded content block to show which pathway it is */}
-                  <div style={{
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 20,
-                    background: "rgba(18, 18, 18, 0.8)",
-                    backdropFilter: "blur(12px)",
-                    margin: "-1.2rem -1.4rem 0.8rem",
-                    padding: "1rem 1.4rem",
-                    borderRadius: "12px 12px 0 0",
-                    borderBottom: `1px solid ${branch.color}40`,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.6rem",
-                    flexWrap: "wrap",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                  }}>
-                    <span style={{ fontSize: "1.1rem" }}>{branch.emoji}</span>
-                    <span style={{
-                      fontFamily: FONT.display,
-                      fontWeight: 700,
-                      fontSize: "1.05rem",
-                      color: branch.color,
-                      letterSpacing: "0.04em",
-                      textTransform: "uppercase",
-                    }}>{branch.label} PATHWAY QUESTIONS</span>
-                    
-                    <span style={{
-                      fontFamily: FONT.mono,
-                      fontSize: "0.65rem",
-                      color: C.muted,
-                      background: "rgba(255,255,255,0.05)",
-                      padding: "0.1rem 0.4rem",
-                      borderRadius: 999,
-                      border: `1px solid ${C.ghost}`,
-                    }}>{branchQCount}q</span>
+                  {activePathways.map((branch) => {
+                    const isObserver = branch.id === "observer";
+                    const isTrans = branch.id === "trans";
+                    const isPinned = pinned[branch.id];
+                    const branchN = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
+                    const branchQCount = isTrans
+                      ? totalForPathway("trans")
+                      : (branch.id === "observer" ? totalForPathway("observer") : totalForPathway(branch.id));
+                    const k = activePathways.length;
 
-                    {branchN !== null && (
-                      <span style={{
-                        fontFamily: FONT.mono,
-                        fontSize: "0.65rem",
-                        color: branch.waiting ? C.dim : C.muted,
-                        background: "rgba(255,255,255,0.05)",
-                        padding: "0.1rem 0.4rem",
-                        borderRadius: 999,
-                        border: `1px solid ${branch.waiting ? C.ghost : branch.color + "40"}`,
-                      }}>{branch.waiting ? "n=0" : `n=${branchN}`}</span>
-                    )}
+                    return (
+                      <div
+                        key={`expanded-content-${branch.id}`}
+                        style={{
+                          background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+                          border: `2px solid ${branch.color}`,
+                          borderRadius: 12,
+                          padding: "1.2rem 1.4rem",
+                          position: "relative",
+                          boxShadow: `0 0 32px ${branch.color}15, 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)`,
+                          backdropFilter: "blur(12px)",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0.8rem",
+                        }}
+                      >
+                        <div style={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 20,
+                          background: "rgba(18, 18, 18, 0.8)",
+                          backdropFilter: "blur(12px)",
+                          margin: "-1.2rem -1.4rem 0.8rem",
+                          padding: "1rem 1.4rem",
+                          borderRadius: "12px 12px 0 0",
+                          borderBottom: `1px solid ${branch.color}40`,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.6rem",
+                          flexWrap: "wrap",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                        }}>
+                          {branch.icon && <branch.icon size={22} color={branch.color} fill={branch.color} />}
+                          <span style={{
+                            fontFamily: FONT.display,
+                            fontWeight: 700,
+                            fontSize: "1.05rem",
+                            color: branch.color,
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                          }}>{branch.label} PATHWAY QUESTIONS</span>
+                          
+                          <span style={{
+                            fontFamily: FONT.mono,
+                            fontSize: "0.65rem",
+                            color: C.muted,
+                            background: "rgba(255,255,255,0.05)",
+                            padding: "0.1rem 0.4rem",
+                            borderRadius: 999,
+                            border: `1px solid ${C.ghost}`,
+                          }}>{branchQCount}q</span>
 
-                    <button
-                      onClick={() => toggleNode(branch.id)}
-                      style={{
-                        marginLeft: "auto",
-                        background: "transparent",
-                        border: `1px solid ${C.ghost}`,
-                        color: C.dim,
-                        fontSize: "0.6rem",
-                        fontFamily: FONT.mono,
-                        textTransform: "uppercase",
-                        padding: "0.15rem 0.55rem",
-                        borderRadius: 4,
-                        cursor: "pointer",
-                        transition: "all 0.15s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = branch.color;
-                        e.currentTarget.style.color = C.textBright;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = C.ghost;
-                        e.currentTarget.style.color = C.dim;
-                      }}
-                    >
-                      Close ✕
-                    </button>
-                  </div>
+                          {branchN !== null && (
+                            <span style={{
+                              fontFamily: FONT.mono,
+                              fontSize: "0.65rem",
+                              color: branch.waiting ? C.dim : C.muted,
+                              background: "rgba(255,255,255,0.05)",
+                              padding: "0.1rem 0.4rem",
+                              borderRadius: 999,
+                              border: `1px solid ${branch.waiting ? C.ghost : branch.color + "40"}`,
+                            }}>{branch.waiting ? "n=0" : `n=${branchN}`}</span>
+                          )}
 
-                  {!branch.hasSubRoles && !isTrans && branch.sections.length === 1 ? (
-                    <div style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.2rem",
-                      border: `1px solid ${branch.color}15`,
-                      background: "rgba(0, 0, 0, 0.22)",
-                      borderRadius: 8,
-                      padding: "0.6rem 0.8rem",
-                    }}>
-                      {(grouped?.branches?.[branch.id]?.[branch.sections[0]] || []).map((q, i) => (
-                        <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{
-                      display: "grid",
-                      gridTemplateColumns: k === 1 ? "repeat(auto-fill, minmax(320px, 1fr))" : "1fr",
-                      gap: "0.85rem",
-                    }}>
-                      {/* Circumcised: show sub-roles */}
-                      {branch.id === "circumcised" && (
-                        <CircumcisedSubRoles
-                          questions={questions}
-                          navigate={navigate}
-                          isSingleColumn={k > 1}
-                        />
-                      )}
+                          <button
+                            onClick={(e) => togglePin(branch.id, e)}
+                            style={{
+                              marginLeft: "auto",
+                              background: isPinned ? `${branch.color}20` : "transparent",
+                              border: `1px solid ${isPinned ? branch.color : C.ghost}`,
+                              color: isPinned ? C.textBright : C.dim,
+                              fontSize: "0.6rem",
+                              fontFamily: FONT.mono,
+                              textTransform: "uppercase",
+                              padding: "0.15rem 0.55rem",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              transition: "all 0.15s",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.3rem",
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isPinned) {
+                                e.currentTarget.style.borderColor = branch.color;
+                                e.currentTarget.style.color = C.textBright;
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isPinned) {
+                                e.currentTarget.style.borderColor = C.ghost;
+                                e.currentTarget.style.color = C.dim;
+                              }
+                            }}
+                          >
+                            <Icons.Pin size={12} fill={isPinned ? branch.color : "transparent"} style={{ marginBottom: "-1px", marginRight: "4px" }} /> {isPinned ? "Pinned" : "Pin to compare"}
+                          </button>
 
-                      {/* Observer: show sub-roles */}
-                      {isObserver && (
-                        <ObserverSubRoles
-                          questions={questions}
-                          navigate={navigate}
-                          isSingleColumn={k > 1}
-                        />
-                      )}
+                          <button
+                            onClick={() => toggleNode(branch.id)}
+                            style={{
+                              background: "transparent",
+                              border: `1px solid ${C.ghost}`,
+                              color: C.dim,
+                              fontSize: "0.6rem",
+                              fontFamily: FONT.mono,
+                              textTransform: "uppercase",
+                              padding: "0.15rem 0.55rem",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              transition: "all 0.15s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = branch.color;
+                              e.currentTarget.style.color = C.textBright;
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = C.ghost;
+                              e.currentTarget.style.color = C.dim;
+                            }}
+                          >
+                            Close ✕
+                          </button>
+                        </div>
 
-                      {/* Trans: show both sub-pathways */}
-                      {isTrans && (
-                        <>
-                          {["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"].map((secName) => {
-                            const qs = [
-                              ...(grouped?.branches?.trans_vaginoplasty?.[secName] || []),
-                              ...(grouped?.branches?.trans_phalloplasty?.[secName] || []),
-                            ];
-                            const secKey = `trans-${secName}`;
+                        <div style={{
+                          display: "grid",
+                          gridTemplateColumns: k === 1 ? "repeat(auto-fill, minmax(320px, 1fr))" : "1fr",
+                          gap: "0.85rem",
+                        }}>
+                          {branch.id === "circumcised" && (
+                            <CircumcisedSubRoles
+                              questions={questions}
+                              navigate={navigate}
+                              isSingleColumn={k > 1}
+                            />
+                          )}
+                          {isObserver && (
+                            <ObserverSubRoles
+                              questions={questions}
+                              navigate={navigate}
+                              isSingleColumn={k > 1}
+                            />
+                          )}
+                          {isTrans && (() => {
+                            const qs = Object.values(grouped?.branches?.trans || {}).flat();
+                            if (qs.length === 0) return null;
+                            const secKey = `trans-all`;
                             return (
                               <SectionBlock
                                 key={secKey}
-                                section={{ name: secName.toUpperCase(), emoji: "🔴", desc: "" }}
+                                section={{ name: "Transgender Perspectives", icon: Icons.Sparkles, desc: "" }}
                                 questions={qs}
                                 color={branch.color}
                                 isExpanded={searchQuery ? true : expandedSections[secKey]}
@@ -654,35 +673,48 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                                 staticOpen={true}
                               />
                             );
+                          })()}
+                          {!isObserver && !isTrans && branch.id === "intersex" && (() => {
+                            const qs = Object.values(grouped?.branches?.intersex || {}).flat();
+                            if (qs.length === 0) return null;
+                            const secKey = `intersex-all`;
+                            return (
+                              <SectionBlock
+                                key={secKey}
+                                section={{ name: "Intersex Perspectives", icon: Icons.Atom, desc: "" }}
+                                questions={qs}
+                                color={branch.color}
+                                isExpanded={searchQuery ? true : expandedSections[secKey]}
+                                onToggle={() => toggleSection(secKey)}
+                                navigate={navigate}
+                                staticOpen={true}
+                              />
+                            );
+                          })()}
+                          {!isObserver && !isTrans && branch.id !== "intersex" && branch.sections.map((secName) => {
+                            const qs = grouped?.branches?.[branch.id]?.[secName] || [];
+                            if (qs.length === 0) return null;
+                            const secKey = `${branch.id}-${secName}`;
+                            return (
+                              <SectionBlock
+                                key={secKey}
+                                section={{ name: secName.toUpperCase(), icon: branch.icon, desc: "" }}
+                                questions={qs}
+                                color={branch.color}
+                                isExpanded={searchQuery ? true : expandedSections[secKey]}
+                                onToggle={() => toggleSection(secKey)}
+                                navigate={navigate}
+                              />
+                            );
                           })}
-                        </>
-                      )}
-
-                      {/* Regular pathways with multiple sections (fallback) */}
-                      {!isObserver && !isTrans && branch.sections.map((secName) => {
-                        const qs = grouped?.branches?.[branch.id]?.[secName] || [];
-                        if (qs.length === 0) return null;
-                        const secKey = `${branch.id}-${secName}`;
-                        return (
-                          <SectionBlock
-                            key={secKey}
-                            section={{ name: secName.toUpperCase(), emoji: branch.emoji, desc: "" }}
-                            questions={qs}
-                            color={branch.color}
-                            isExpanded={searchQuery ? true : expandedSections[secKey]}
-                            onToggle={() => toggleSection(secKey)}
-                            navigate={navigate}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-        );
-      })()}
+            </>
+          );
+        })()}
       </div>
 
       {/* ═══ MERGE CONNECTORS ═══ */}
@@ -692,6 +724,9 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         onMove={moveTooltip} 
         onLeave={hideTooltip} 
         getFlowInfo={getFlowInfo} 
+        activePathways={activePathways}
+        hoveredPathway={hoveredPathway}
+        onHoverChange={setHoveredPathway}
       />
       <MobileConnector color={C.gold} height={24} />
 
@@ -699,7 +734,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
       <FlowNode
         nodeId="synthesis"
         title="SYNTHESIS"
-        emoji="🔀"
+        icon={Icons.Grid}
         color={C.gold}
         desc="All pathways reconvene"
         qCount={totalForPathway("synthesis")}
@@ -742,64 +777,77 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
 // ── FlowNode ────────────────────────────────────────────────────────────────
 // Glassmorphic card for each major block (Universal, pathway, Synthesis)
 
-function FlowNode({ nodeId, title, emoji, color, desc, qCount, nCount, isExpanded, onToggle, children, waiting, compact, style }) {
+function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isExpanded, isHovered: controlledIsHovered, onHoverChange, onToggle, children, waiting, compact, style }) {
+  const [localHovered, setLocalHovered] = useState(false);
+  const isHovered = controlledIsHovered !== undefined ? controlledIsHovered : localHovered;
+  const active = isExpanded || isHovered;
+
   return (
     <div
+      className="sf-card"
+      onMouseEnter={() => {
+        setLocalHovered(true);
+        if (onHoverChange) onHoverChange(true);
+      }}
+      onMouseLeave={() => {
+        setLocalHovered(false);
+        if (onHoverChange) onHoverChange(false);
+      }}
       style={{
-        background: `linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)`,
-        border: `1px solid ${isExpanded ? color : C.ghost}`,
-        borderRadius: 12,
-        padding: compact ? "0.85rem" : "1.1rem 1.3rem",
+        background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
+        border: active ? `2px solid ${color}` : `1px solid ${color}40`,
+        borderRadius: (active && compact) ? "12px 12px 0 0" : 12,
         position: "relative",
         overflow: "hidden",
-        transition: "border-color 0.3s ease, box-shadow 0.3s ease",
-        boxShadow: isExpanded ? `0 0 20px ${color}22, inset 0 1px 0 rgba(255,255,255,0.06)` : `inset 0 1px 0 rgba(255,255,255,0.04)`,
+        transition: "border 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease",
+        boxShadow: isExpanded ? `0 0 20px ${color}22` : `none`,
         backdropFilter: "blur(12px)",
+        animation: isExpanded ? "sfPulseGlow 2.5s infinite" : "none",
+        "--pulse-color-rgba": color + "33",
         ...style,
       }}
     >
-      {/* Glow accent bar */}
-      <div style={{
-        position: "absolute",
-        top: 0, left: 0, right: 0,
-        height: 2,
-        background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-        opacity: isExpanded ? 0.8 : 0.3,
-        transition: "opacity 0.3s",
-      }} />
-
       {/* Header */}
       <div
         onClick={onToggle}
         style={{
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: "0.6rem",
           cursor: "pointer",
           userSelect: "none",
+          background: active ? color : "transparent",
+          padding: compact ? "0.85rem" : "1.1rem 1.3rem",
+          transition: "background 0.3s ease",
         }}
       >
-        <span style={{ fontSize: compact ? "1rem" : "1.2rem" }}>{emoji}</span>
-        <div style={{ flex: 1 }}>
+        {Icon && (
+          <div style={{ marginTop: compact ? "0.05rem" : "0.15rem", display: "flex", transition: "color 0.3s, fill 0.3s" }}>
+            <Icon size={compact ? 20 : 24} color={active ? C.bg : color} fill={Icon === Icons.Circle ? (active ? C.bg : color) : "transparent"} />
+          </div>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
             <span style={{
               fontFamily: FONT.display,
               fontWeight: 700,
               fontSize: compact ? "0.95rem" : "1.15rem",
-              color: isExpanded ? color : C.textBright,
+              color: active ? C.bg : C.textBright,
               letterSpacing: "0.04em",
               textTransform: "uppercase",
+              transition: "color 0.3s"
             }}>{title}</span>
 
             {/* Question count badge */}
             <span style={{
               fontFamily: FONT.mono,
               fontSize: "0.62rem",
-              color: C.muted,
-              background: "rgba(255,255,255,0.05)",
+              color: active ? C.bg : C.muted,
+              background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
               padding: "0.1rem 0.4rem",
               borderRadius: 999,
-              border: `1px solid ${C.ghost}`,
+              border: `1px solid ${active ? "transparent" : C.ghost}`,
+              transition: "color 0.3s, background 0.3s, border-color 0.3s"
             }}>{qCount}q</span>
 
             {/* Respondent count */}
@@ -808,11 +856,12 @@ function FlowNode({ nodeId, title, emoji, color, desc, qCount, nCount, isExpande
                 fontFamily: FONT.mono,
                 fontSize: "0.62rem",
                 fontWeight: 600,
-                color: waiting ? C.dim : C.muted,
-                background: "rgba(255,255,255,0.05)",
+                color: active ? C.bg : (waiting ? C.dim : C.muted),
+                background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
                 padding: "0.1rem 0.4rem",
                 borderRadius: 999,
-                border: `1px solid ${waiting ? C.ghost : color + "40"}`,
+                border: `1px solid ${active ? "transparent" : (waiting ? C.ghost : color + "40")}`,
+                transition: "color 0.3s, background 0.3s, border-color 0.3s"
               }}>{waiting ? "n=0 ✦" : `n=${nCount}`}</span>
             )}
 
@@ -823,50 +872,193 @@ function FlowNode({ nodeId, title, emoji, color, desc, qCount, nCount, isExpande
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: C.dim,
-                background: "rgba(255,255,255,0.03)",
+                color: active ? "rgba(0,0,0,0.5)" : C.dim,
+                background: active ? "transparent" : "rgba(255,255,255,0.03)",
                 padding: "0.08rem 0.4rem",
                 borderRadius: 999,
-                border: `1px dashed ${C.ghost}`,
+                border: `1px dashed ${active ? "rgba(0,0,0,0.3)" : C.ghost}`,
+                transition: "color 0.3s, background 0.3s, border-color 0.3s"
               }}>awaiting voices</span>
             )}
           </div>
           <div style={{
             fontFamily: FONT.body,
             fontSize: compact ? "0.72rem" : "0.8rem",
-            color: C.dim,
+            color: active ? "rgba(0,0,0,0.7)" : C.dim,
             marginTop: "0.15rem",
+            transition: "color 0.3s"
           }}>{desc}</div>
         </div>
 
         {/* Expand chevron */}
-        <div style={{
-          color: isExpanded ? color : C.dim,
-          fontSize: "0.75rem",
-          transition: "transform 0.25s ease, color 0.25s ease",
-          transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-        }}>▼</div>
+        {children && (
+          <div style={{
+            color: active ? C.bg : (isExpanded ? color : C.dim),
+            fontSize: "0.75rem",
+            transition: "transform 0.25s ease, color 0.3s ease",
+            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+          }}>▼</div>
+        )}
       </div>
 
       {/* Expandable content */}
+      {children && (
+        <div style={{
+          display: "grid",
+          gridTemplateRows: isExpanded ? "1fr" : "0fr",
+          transition: "grid-template-rows 0.3s ease-in-out",
+        }}>
+          <div style={{ overflow: "hidden" }}>
+            <div style={{
+              padding: compact ? "0 0.85rem 0.85rem" : "0 1.3rem 1.3rem",
+              paddingTop: isExpanded ? "0.7rem" : 0,
+              borderTop: isExpanded ? `1px solid ${color}25` : "1px solid transparent",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.4rem",
+              opacity: isExpanded ? 1 : 0,
+              transition: "all 0.3s ease-in-out",
+              pointerEvents: isExpanded ? "auto" : "none",
+            }}>
+              {children}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ReligionPathways ─────────────────────────────────────────────────────────
+// Custom side-by-side layout for Religion sub-pathways
+
+function ReligionPathways({ section, questions, expandedSections, toggleSection, searchQuery, navigate }) {
+  const isExpanded = searchQuery ? true : expandedSections[`universal-${section.name}`];
+  
+  // Group questions by subsection
+  const subQs = {
+    "General": [],
+    "Christianity": [],
+    "Judaism": [],
+    "Islam": []
+  };
+  questions.forEach(q => {
+    subQs[q.subsection || "General"].push(q);
+  });
+
+  const cards = [
+    { id: "General", label: "General", icon: Icons.FileText, color: C.ltBlue },
+    { id: "Christianity", label: "Christian", icon: Icons.Circle, color: PATH_COLORS.restoring },
+    { id: "Judaism", label: "Jewish", icon: Icons.Circle, color: PATH_COLORS.intact },
+    { id: "Islam", label: "Muslim", icon: Icons.Circle, color: PATH_COLORS.circumcised }
+  ];
+
+  return (
+    <div style={{ marginBottom: "0.5rem" }}>
+      <div 
+        onClick={() => toggleSection(`universal-${section.name}`)}
+        style={{
+          display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer",
+          padding: "0.5rem 0.6rem", background: isExpanded ? `${C.ltBlue}0A` : "transparent",
+          border: `1px solid ${isExpanded ? C.ltBlue + "50" : C.ghost}`,
+          borderRadius: 6, transition: "background 0.2s"
+        }}
+      >
+        {section.icon && <section.icon size={16} color={isExpanded ? C.textBright : C.dim} />}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <span style={{
+            fontFamily: FONT.body,
+            fontWeight: 600,
+            fontSize: "0.78rem",
+            color: isExpanded ? C.textBright : C.text,
+            textTransform: "uppercase",
+            letterSpacing: "0.03em",
+          }}>{section.name}</span>
+          <span style={{
+            marginLeft: "0.4rem",
+            fontFamily: FONT.mono,
+            fontSize: "0.58rem",
+            color: C.muted,
+            background: "rgba(255,255,255,0.05)",
+            padding: "0.05rem 0.3rem",
+            borderRadius: 999,
+            border: `1px solid ${C.ghost}`,
+          }}>{questions.length}q</span>
+        </div>
+        <div style={{
+          color: isExpanded ? C.gold : C.dim,
+          fontSize: "0.75rem",
+          transition: "transform 0.25s ease, color 0.25s ease",
+          transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+        }}>
+          ▼
+        </div>
+      </div>
+
       <div style={{
         display: "grid",
         gridTemplateRows: isExpanded ? "1fr" : "0fr",
-        transition: "grid-template-rows 0.3s ease-in-out",
+        transition: "grid-template-rows 0.25s ease-in-out",
       }}>
         <div style={{ overflow: "hidden" }}>
-          <div style={{
-            marginTop: isExpanded ? "0.85rem" : 0,
-            paddingTop: isExpanded ? "0.7rem" : 0,
-            borderTop: isExpanded ? `1px solid ${color}25` : "1px solid transparent",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.4rem",
-            opacity: isExpanded ? 1 : 0,
-            transition: "all 0.3s ease-in-out",
-            pointerEvents: isExpanded ? "auto" : "none",
-          }}>
-            {children}
+          <div style={{ padding: "0.8rem 0", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+            
+            {/* The Side-by-Side Cards */}
+            <div className="flowchart-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)", margin: 0 }}>
+              {cards.map(c => {
+                const qs = subQs[c.id];
+                if (qs.length === 0) return null;
+                const isSubExpanded = searchQuery ? true : expandedSections[`religion-${c.id}`];
+                return (
+                  <FlowNode
+                    key={c.id}
+                    nodeId={`religion-${c.id}`}
+                    title={c.label}
+                    icon={c.icon}
+                    color={c.color}
+                    desc=""
+                    qCount={qs.length}
+                    isExpanded={isSubExpanded}
+                    onToggle={() => toggleSection(`religion-${c.id}`)}
+                    compact
+                  />
+                );
+              })}
+            </div>
+
+            {/* Expanded Content for Religion Sub-pathways */}
+            {cards.map(c => {
+              const qs = subQs[c.id];
+              const isSubExpanded = searchQuery ? true : expandedSections[`religion-${c.id}`];
+              if (!isSubExpanded || qs.length === 0) return null;
+              
+              return (
+                <div key={`expanded-${c.id}`} style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+                  border: `1px solid ${c.color}`,
+                  borderRadius: 12,
+                  padding: "1.2rem",
+                  boxShadow: `0 0 20px ${c.color}15, inset 0 1px 0 rgba(255,255,255,0.06)`,
+                }}>
+                  <div style={{
+                     fontFamily: FONT.display, fontWeight: 700, color: c.color, marginBottom: "1rem", 
+                     textTransform: "uppercase", letterSpacing: "0.04em", display: "flex", alignItems: "center", gap: "0.5rem"
+                  }}>
+                    {c.icon && <c.icon size={18} color={c.color} fill={c.icon === Icons.Circle ? c.color : "transparent"} />}
+                    {c.label} Questions
+                  </div>
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem"
+                  }}>
+                    {qs.map((q, i) => (
+                      <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -899,7 +1091,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
           transition: "background 0.2s",
         }}
       >
-        <span style={{ fontSize: "0.8rem" }}>{section.emoji}</span>
+        {section.icon && <section.icon size={16} color={showExpanded ? C.textBright : C.dim} />}
         <div style={{ flex: 1, minWidth: 0 }}>
           <span style={{
             fontFamily: FONT.body,
@@ -939,12 +1131,15 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
           <div style={{
             borderTop: showExpanded ? `1px solid ${color}19` : "1px solid transparent",
             background: "rgba(0,0,0,0.22)",
-            padding: showExpanded ? "0.3rem 0.2rem 0.5rem" : "0 0.2rem",
+            padding: showExpanded ? "0.8rem 0.6rem" : "0 0.6rem",
             maxHeight: 500,
             overflowY: "auto",
             opacity: showExpanded ? 1 : 0,
             transition: "all 0.25s ease-in-out",
             pointerEvents: showExpanded ? "auto" : "none",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem"
           }}>
             {questions.map((q, i) => (
               <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
@@ -1205,49 +1400,56 @@ function ForkDiamond() {
 
 // ── VerticalConnector ────────────────────────────────────────────────────────
 
-function VerticalConnector({ color, height = 48 }) {
-  const trunkW = 160;
+function VerticalConnector({ branches, activePathways, hoveredPathway, onHoverChange, getFlowInfo, height = 48 }) {
   const svgW = 1200;
+  const trunkW = 160;
+  const trunkLeft = (svgW - trunkW) / 2;
+
+  const flows = branches.map((b, i) => {
+    const info = getFlowInfo(b);
+    return {
+      id: b.id,
+      color: b.color,
+      n: info.n,
+      weight: Math.max(15, info.n),
+      i,
+    };
+  });
+  const totalWeight = flows.reduce((s, f) => s + f.weight, 0);
+
+  let currentX = trunkLeft;
+  
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
-      <svg viewBox={`0 0 ${svgW} ${height}`} style={{ width: "100%", height, overflow: "visible" }}>
-        <defs>
-          <linearGradient id="trunkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity={0.6} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.4} />
-          </linearGradient>
-        </defs>
-        <rect
-          x={(svgW - trunkW) / 2}
-          y={0}
-          width={trunkW}
-          height={height}
-          fill="url(#trunkGrad)"
-          opacity={0.3}
-          stroke={color}
-          strokeWidth={0.5}
-          strokeOpacity={0.5}
-        />
-        {/* Glowing flow dot in the center of the trunk */}
-        <circle
-          cx={svgW / 2}
-          r={3}
-          fill={color}
-          opacity={0.8}
-          style={{
-            animation: `flowDotVertical 2s infinite ease-in-out`,
-            boxShadow: `0 0 8px ${color}`,
-          }}
-        />
+      <svg viewBox={`0 0 ${svgW} ${height}`} style={{ width: "100%", height, overflow: "visible", display: "block" }}>
+        {flows.map((f) => {
+          const w = (f.weight / totalWeight) * trunkW;
+          const x = currentX;
+          currentX += w;
+          
+          const isDormant = f.n === 0;
+          const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
+          const fill = f.color;
+          const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
+
+          return (
+            <rect
+              key={f.id}
+              x={x}
+              y={0}
+              width={w}
+              height={height}
+              fill={fill}
+              opacity={opacity}
+              stroke="none"
+              style={{ transition: "opacity 0.25s, fill 0.25s", cursor: "pointer" }}
+              strokeDasharray={isDormant ? "4,3" : "none"}
+              onMouseEnter={() => onHoverChange && onHoverChange(f.id)}
+              onMouseLeave={() => onHoverChange && onHoverChange(null)}
+            />
+          );
+        })}
       </svg>
-      <style>{`
-        @keyframes flowDotVertical {
-          0% { cy: 0; opacity: 0; }
-          20% { opacity: 1; }
-          80% { opacity: 1; }
-          100% { cy: ${height}px; opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -1265,7 +1467,8 @@ function MobileConnector({ color, height = 24 }) {
       <div style={{
         width: 2,
         height: "100%",
-        background: `linear-gradient(to bottom, ${color}60, ${color}30)`,
+        background: color,
+        opacity: 0.3,
       }} />
     </div>
   );
@@ -1274,7 +1477,7 @@ function MobileConnector({ color, height = 24 }) {
 // ── BranchConnectors ─────────────────────────────────────────────────────────
 // Vertical Sankey ribbons fanning out from the fork to each pathway card
 
-function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
+function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange }) {
   const count = branches.length;
   const svgW = 1200;
   const svgH = 80;
@@ -1301,7 +1504,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
 
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible" }}>
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const topL = currentX;
@@ -1323,24 +1526,25 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
             Z
           `;
 
-          const baseOpacity = f.n === 0 ? 0.18 : 0.38;
           const isDormant = f.n === 0;
+          const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
+          const fill = f.color;
+          const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
 
           return (
             <g key={f.id}>
               <path
                 d={d}
-                fill={f.color}
-                opacity={baseOpacity}
-                stroke={f.color}
-                strokeWidth={0.5}
-                strokeOpacity={0.6}
+                fill={fill}
+                opacity={opacity}
+                stroke="none"
                 style={{
                   cursor: "pointer",
                   transition: "opacity 0.25s, fill 0.25s",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = 0.85;
+                  if (onHoverChange) onHoverChange(f.id);
                   onHover(
                     e,
                     `<strong>${f.label} Pathway</strong><br/>` +
@@ -1350,7 +1554,8 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
                 }}
                 onMouseMove={onMove}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = baseOpacity;
+                  e.currentTarget.style.opacity = opacity;
+                  if (onHoverChange) onHoverChange(null);
                   onLeave();
                 }}
                 strokeDasharray={isDormant ? "4,3" : "none"}
@@ -1366,7 +1571,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
 // ── MergeConnectors ──────────────────────────────────────────────────────────
 // Vertical Sankey ribbons merging from each pathway card back to the synthesis trunk
 
-function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
+function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange }) {
   const count = branches.length;
   const svgW = 1200;
   const svgH = 80;
@@ -1393,7 +1598,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
 
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible" }}>
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const botL = currentX;
@@ -1415,24 +1620,25 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
             Z
           `;
 
-          const baseOpacity = f.n === 0 ? 0.18 : 0.38;
           const isDormant = f.n === 0;
+          const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
+          const fill = f.color;
+          const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
 
           return (
             <g key={f.id}>
               <path
                 d={d}
-                fill={f.color}
-                opacity={baseOpacity}
-                stroke={f.color}
-                strokeWidth={0.5}
-                strokeOpacity={0.6}
+                fill={fill}
+                opacity={opacity}
+                stroke="none"
                 style={{
                   cursor: "pointer",
                   transition: "opacity 0.25s, fill 0.25s",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.opacity = 0.85;
+                  if (onHoverChange) onHoverChange(f.id);
                   onHover(
                     e,
                     `<strong>${f.label} Pathway (Reconvening)</strong><br/>` +
@@ -1442,7 +1648,8 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo }) {
                 }}
                 onMouseMove={onMove}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = baseOpacity;
+                  e.currentTarget.style.opacity = opacity;
+                  if (onHoverChange) onHoverChange(null);
                   onLeave();
                 }}
                 strokeDasharray={isDormant ? "4,3" : "none"}
@@ -1518,7 +1725,7 @@ function ObserverSubRoles({ questions, navigate, isSingleColumn }) {
           }
         }}
       >
-        <span style={{ fontSize: "1.4rem" }}>👥</span>
+        <Icons.Users size={24} color={selectedRoleId === "universal" ? PATH_COLORS.observer : C.dim} />
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
             <span style={{
@@ -1625,7 +1832,10 @@ function ObserverSubRoles({ questions, navigate, isSingleColumn }) {
               }}
             >
               <div style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
-                <span style={{ fontSize: "0.9rem", marginTop: "0.05rem" }}>{role.emoji}</span>
+                {(() => {
+                  const Icon = Icons[role.icon];
+                  return Icon ? <Icon size={18} color={isSelected ? PATH_COLORS.observer : C.dim} /> : null;
+                })()}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
                     <span style={{
@@ -1867,7 +2077,7 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
           }
         }}
       >
-        <span style={{ fontSize: "1.4rem" }}>👥</span>
+        <Icons.Users size={24} color={selectedRoleId === "universal" ? PATH_COLORS.circumcised : C.dim} />
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
             <span style={{
@@ -1974,7 +2184,10 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
               }}
             >
               <div style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem" }}>
-                <span style={{ fontSize: "0.9rem", marginTop: "0.05rem" }}>{role.emoji}</span>
+                {(() => {
+                  const Icon = Icons[role.icon];
+                  return Icon ? <Icon size={18} color={isSelected ? PATH_COLORS.circumcised : C.dim} /> : null;
+                })()}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
                     <span style={{
@@ -2033,7 +2246,10 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
             borderBottom: `1px solid ${PATH_COLORS.circumcised}15`,
             paddingBottom: "0.4rem",
           }}>
-            <span>{activeRole.emoji}</span>
+            {(() => {
+              const Icon = activeRole.id === "universal" ? Icons.Users : Icons[activeRole.icon];
+              return Icon ? <Icon size={18} color={PATH_COLORS.circumcised} /> : null;
+            })()}
             <span style={{ textTransform: "uppercase", letterSpacing: "0.03em" }}>{activeRole.label} Questions</span>
             <span style={{
               fontFamily: FONT.mono,
@@ -2083,6 +2299,87 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
           Proceed to the final survey phase to answer the Culture & Attitudes and Follow-up sections
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── ExpandedConnectors ───────────────────────────────────────────────────────
+// Sankey ribbons that flow from the bottom of selected pathway cards down 
+// and outward to the top of the expanded questions box grid.
+
+function ExpandedConnectors({ branches, activePathways, svgW = 1200, svgH = 50 }) {
+  if (!activePathways || activePathways.length === 0) return null;
+
+  const cardW = (svgW - 5 * 12) / 6; // 190
+  const gap = 12;
+
+  const k = activePathways.length;
+  const boxGap = 16; // 1rem
+  const boxW = (svgW - (k - 1) * boxGap) / k;
+
+  return (
+    <div style={{
+      gridColumn: "1 / -1",
+      height: svgH,
+      width: "100%",
+      marginTop: 0,
+      marginBottom: 0,
+      display: "flex",
+      justifyContent: "center",
+      overflow: "visible",
+      position: "relative",
+      zIndex: 0,
+    }}>
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+        {activePathways.map((branch, j) => {
+          // Top coordinates (from the bottom of the card)
+          const i = branches.findIndex(b => b.id === branch.id);
+          const topL = i * (cardW + gap);
+          const topR = topL + cardW;
+
+          // Bottom coordinates (to the top of the expanded box)
+          const botL = j * (boxW + boxGap);
+          const botR = botL + boxW;
+
+          const cpY = svgH * 0.5;
+
+          const d = `
+            M ${topL} 0
+            C ${topL} ${cpY}, ${botL} ${svgH - cpY}, ${botL} ${svgH}
+            L ${botR} ${svgH}
+            C ${botR} ${svgH - cpY}, ${topR} ${cpY}, ${topR} 0
+            Z
+          `;
+
+          return (
+            <g key={branch.id}>
+              <path
+                d={d}
+                fill={branch.color}
+                opacity={0.85}
+              />
+              <path
+                d={d}
+                fill="transparent"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth={1}
+                strokeDasharray="4 8"
+                className="sf-flow-anim"
+                style={{ pointerEvents: "none" }}
+              />
+              {/* Waypoint glowing node at bottom */}
+              <circle
+                cx={botL + boxW / 2}
+                cy={svgH}
+                r={4}
+                fill={branch.color}
+                opacity={0.8}
+                style={{ boxShadow: `0 0 8px ${branch.color}` }}
+              />
+            </g>
+          );
+        })}
+      </svg>
     </div>
   );
 }

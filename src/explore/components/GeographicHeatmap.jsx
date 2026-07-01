@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Fragment } from "react";
 import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
 import { scaleLinear } from "d3-scale";
 import * as topojson from "topojson-client";
@@ -339,7 +339,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       let cumulativeSum = T;
       
       return (
-        <div key={`bullseye-${norm}`}>
+        <Fragment key={`bullseye-${norm}`}>
           {activeCohorts.map((cohort, idx) => {
             const r = R_max * Math.sqrt(cumulativeSum / T);
             cumulativeSum -= cohort.n;
@@ -359,7 +359,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               />
             );
           })}
-        </div>
+        </Fragment>
       );
     });
   };

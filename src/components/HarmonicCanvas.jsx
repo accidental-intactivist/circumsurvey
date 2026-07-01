@@ -1,6 +1,40 @@
 import React, { useEffect, useRef } from 'react';
 import { resolveCssColor } from '../explore/styles/tokens';
 
+// ── The Harmonic Loom configuration ────────────────────────────────────────
+// Single source of truth for the masthead's motion + glisten. The component
+// reads it below, and the AI Docent echoes it via the `/loom` command, so the
+// live values are always discoverable from inside the app.
+//   • moirePhaseSpread → PHASE SHIFTING (the moiré: layers sliding past each other)
+//   • parentSeparation / loopAmpScale → TENSION & RELEASE (knots, then wide arcs)
+//   • travelSpeed / waveFreq / ampYScale → CONTINUOUS OSCILLATION (the slow drift)
+// An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html.
+export const LOOM_CONFIG = {
+  speed: 0.01,             // global time scale
+  travelSpeed: 0.0021,     // traveling-wave propagation along each curve
+  waveFreq: 4.60,          // number of waves packed along a curve
+  moirePhaseSpread: 380,   // per-line time offset across ribbon depth (the moiré)
+  ampXScale: 0.64,         // horizontal sweep amplitude
+  ampYScale: 0,            // vertical sweep amplitude
+  rippleAmpScale: 0.34,    // fast secondary "wind ripple"
+  loopAmpScale: 0,         // figure-8 / knot-forming push
+  parentSeparation: 0.45,  // vertical gap between the two parent curves (smaller = more knots)
+  endAnchorMargin: 0,      // how far past the edge the line ENDS are pinned (×half)
+  nodeCount: 6,            // control points per curve — MORE = more kinks/weave
+  kinkDepth: 1.10,         // how hard interior points wander (>1 = curvier, knottier)
+  focalLength: 1500,       // perspective depth (lower = stronger 3D)
+  lineWidth: 2.40,         // stroke weight multiplier
+  // THE GLISTEN — an occasional event, organised by COLOUR FAMILY. Lines are
+  // binned by hue into `glintGroups` families; each family gets its own glint
+  // that alternates direction and is staggered in time, so glints cross.
+  glintGroups: 5,          // colour families, each with its own glint lane
+  glintInterval: 20,       // SECONDS between a family's glints (families staggered)
+  glintSpeed: 0.05,        // pace of a pass (line-lengths/sec)
+  glintWidth: 0.09,        // streak (tail) length as a FRACTION of the line
+  glintStrength: 0.25,     // brightness of the streak (0–1)
+  glintTint: 0,            // HOLOGRAPHIC saturation: 0 = vivid rainbow, 1 = pearly white
+};
+
 export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '' }) {
   const canvasRef = useRef(null);
 
@@ -58,45 +92,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     const lerp = (start, end, t) => start + (end - start) * t;
     const sweep = (t) => Math.asin(Math.sin(t)) * (2 / Math.PI);
 
-    // ── Tunable motion parameters ───────────────────────────────────────────
-    // These drive the three behaviours the masthead is going for:
-    //   • moirePhaseSpread → PHASE SHIFTING: each stacked line samples the
-    //     curves at a slightly offset time, so the layers slide past one another
-    //     and read as a translucent ribbon rotating in space (the moiré effect).
-    //   • parentSeparation / loopAmpScale → TENSION & RELEASE: how far the two
-    //     invisible parent curves sit apart and how hard the looping term shoves
-    //     them, so they cross into tight knots, then unravel into wide arcs.
-    //   • travelSpeed / waveFreq / ampYScale → CONTINUOUS OSCILLATION: the slow
-    //     Lissajous "breathing" drift of the anchor points.
-    // An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html —
-    // dial it there, then copy the values back into this block.
-    const PARAMS = {
-      speed: 0.03,             // global time scale — slow & contemplative (still visibly drifting)
-      travelSpeed: 0.0011,     // traveling-wave propagation along each curve
-      waveFreq: 1.70,          // number of waves packed along a curve
-      moirePhaseSpread: 10,    // per-line time offset across ribbon depth (the moiré)
-      ampXScale: 0,            // horizontal sweep amplitude
-      ampYScale: 0.66,         // vertical sweep amplitude
-      rippleAmpScale: 0,       // fast secondary "wind ripple"
-      loopAmpScale: 0.7,       // figure-8 / knot-forming push
-      parentSeparation: 0.16,  // vertical gap between the two parent curves (smaller = more knots)
-      endAnchorMargin: 0.1,    // how far past the edge the line ENDS are pinned (×half). Keeps endpoints off-canvas
-      nodeCount: 6,            // control points per curve — MORE = more kinks/weave along each line (min 4)
-      kinkDepth: 0.5,          // how hard interior points wander (>1 = curvier, knottier; 1 = gentle arcs)
-      focalLength: 1600,       // perspective depth (lower = stronger 3D)
-      lineWidth: 3.60,         // stroke weight multiplier
-      // THE GLISTEN — an occasional event, organised by COLOUR FAMILY. Lines are
-      // binned by hue into `glintGroups` families; each family gets its own glint
-      // that traces only its own lines, alternates direction (left→right vs
-      // right→left), and is staggered in time — so opposite-moving glints of
-      // different hues cross. Arc-length paced for a smooth glide.
-      glintGroups: 2,          // colour families, each with its own glint lane
-      glintInterval: 17.5,     // SECONDS between a family's glints (families staggered)
-      glintSpeed: 0.05,        // pace of a pass (line-lengths/sec)
-      glintWidth: 0.14,        // streak length as a FRACTION of the line
-      glintStrength: 0.45,     // brightness of the streak (0–1)
-      glintTint: 0.55,         // 0 = stark white, 1 = the thread's own colour
-    };
+    // Motion + glisten config (the "Harmonic Loom"). Single source of truth is
+    // LOOM_CONFIG at module scope (also surfaced by the Docent's /loom command).
+    const PARAMS = LOOM_CONFIG;
 
     const createNode = (type, wavy = false) => ({
       type,
@@ -420,7 +418,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       const styleGroups = new Map();
       for (const line of linesToDraw) {
         // Stroke weight (PARAMS.lineWidth), scaled by depth + container size
-        const w = Math.max(0.4, line.scale * PARAMS.lineWidth * sizeScale);
+        // Cap the width's size-scaling at 1× so strands don't fatten and blur into
+        // each other on large/full-screen displays — keeps individual strands crisp.
+        const w = Math.max(0.4, line.scale * PARAMS.lineWidth * Math.min(sizeScale, 1));
         const key = `${line.style}|${w.toFixed(2)}`;
         if (!styleGroups.has(key)) {
           styleGroups.set(key, { style: line.style, width: w, lines: [] });
@@ -445,7 +445,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       if (PARAMS.glintGroups > 0) {
         const groups = Math.max(1, Math.round(PARAMS.glintGroups));
         const tailFrac = Math.max(0.02, PARAMS.glintWidth);
-        const tint = PARAMS.glintTint;
+        const sat = Math.max(0, Math.min(100, Math.round(95 - PARAMS.glintTint * 60))); // holographic saturation (higher glintTint = whiter)
         const A = PARAMS.glintStrength;
         const N = lowPower ? 32 : 64; // glint samples per line — coarser on phones
         const tSec = glintTime / 1000;
@@ -475,10 +475,6 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
             const dir = dirByGroup[g];
 
             const pts = line.pts;
-            const rgb = line.rgb || [255, 255, 255];
-            const cr = Math.round(255 - (255 - rgb[0]) * tint);
-            const cg = Math.round(255 - (255 - rgb[1]) * tint);
-            const cb = Math.round(255 - (255 - rgb[2]) * tint);
             const w = Math.max(1, line.scale * PARAMS.lineWidth * sizeScale * 1.5);
 
             // Dense sample + ARC LENGTH for a constant-speed glide.
@@ -507,9 +503,19 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
             const sTail = dir === 1 ? Math.max(0, sHead - tailLen) : Math.min(total, sHead + tailLen);
             if (Math.abs(sHead - sTail) < 0.5) continue;
             const T = at(sTail), H = at(sHead);
+            // HOLOGRAPHIC: a prism of hue runs along the streak, and the base hue
+            // drifts over time (offset per colour family) so the glint shimmers
+            // like a hologram. Alpha falls off quickly toward the tail (short-lived);
+            // higher glintTint desaturates the spectrum toward a pearly white.
             const grad = ctx.createLinearGradient(T.x, T.y, H.x, H.y);
-            grad.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, 0)`);  // transparent tail
-            grad.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, ${A})`); // bright head
+            const hueBase = glintTime * 0.03 + g * 140 + (line.colorPos || 0) * 60;
+            for (let q = 0; q <= 6; q++) {
+              const f = q / 6;
+              const hue = (((hueBase + f * 150) % 360) + 360) % 360;
+              const light = 60 + f * 28;             // whiter toward the head
+              const alpha = Math.pow(f, 1.8) * A;     // quick tail falloff → short-lived
+              grad.addColorStop(f, `hsla(${hue.toFixed(0)}, ${sat}%, ${light.toFixed(0)}%, ${alpha.toFixed(3)})`);
+            }
             ctx.strokeStyle = grad;
             ctx.lineWidth = w;
             ctx.beginPath();

@@ -9,7 +9,7 @@ export const PATHWAYS = {
   intact: {
     id: "intact",
     label: "Intact",
-    emoji: "🟢",
+    icon: "Circle",
     color: PATH_COLORS.intact,
     n: 142,
     desc: "Never circumcised",
@@ -17,7 +17,7 @@ export const PATHWAYS = {
   circumcised: {
     id: "circumcised",
     label: "Circumcised",
-    emoji: "🔵",
+    icon: "Activity",
     color: PATH_COLORS.circumcised,
     n: 213,
     desc: "Circumcised as infants or later in life",
@@ -25,7 +25,7 @@ export const PATHWAYS = {
   restoring: {
     id: "restoring",
     label: "Restoring",
-    emoji: "🟣",
+    icon: "RefreshCw",
     color: PATH_COLORS.restoring,
     n: 109,
     desc: "Actively restoring foreskin",
@@ -33,7 +33,7 @@ export const PATHWAYS = {
   observer: {
     id: "observer",
     label: "Observer",
-    emoji: "🟠",
+    icon: "Eye",
     color: PATH_COLORS.observer,
     n: 37,
     desc: "Partners, parents, providers, advocates",
@@ -41,7 +41,7 @@ export const PATHWAYS = {
   trans: {
     id: "trans",
     label: "Transgender",
-    emoji: "🔴",
+    icon: "Sparkles",
     color: PATH_COLORS.trans_vaginoplasty, // or a generic trans color if we have one
     n: 0,
     desc: "Transgender respondents",
@@ -50,7 +50,7 @@ export const PATHWAYS = {
   intersex: {
     id: "intersex",
     label: "Intersex",
-    emoji: "⚪",
+    icon: "Atom",
     color: PATH_COLORS.intersex,
     n: 0,
     desc: "Intersex perspectives",
@@ -59,7 +59,7 @@ export const PATHWAYS = {
   amab_anatomy: {
     id: "amab_anatomy",
     label: "Anatomy & Appearance",
-    emoji: "🔍",
+    icon: "Info",
     color: PATH_COLORS.all,
     n: 0,
     desc: "Appearance, sensation, and physical experience (AMAB only)",
@@ -76,7 +76,7 @@ export const SURVEY_PHASES = [
   {
     id: "universal",
     label: "Universal",
-    emoji: "📋",
+    icon: "FileText",
     desc: "Questions every respondent saw",
     sections: [
       { name: "Demographics", desc: "Country, age, generation, education, sexuality, gender" },
@@ -92,14 +92,14 @@ export const SURVEY_PHASES = [
   {
     id: "branches",
     label: "Pathway Branches",
-    emoji: "🌿",
+    icon: "Compass",
     desc: "Survey splits — each respondent answered ONE of these",
     // pathways injected at render time
   },
   {
     id: "synthesis",
     label: "Synthesis",
-    emoji: "🔀",
+    icon: "Grid",
     desc: "All pathways reconvene",
     sections: [
       { name: "Culture & Attitudes", desc: "Norms, stereotypes, ethics, autonomy, media" },
@@ -133,7 +133,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "parent",
     label: "As a Parent / Guardian",
-    icon: "Smile",
+    icon: "Circle",
     desc: "Decision factors, info quality, emotional state, regret",
     match: (q) => (q.id || "").startsWith("observe_parent_") || /^\[PARENT\]|as a PARENT|PARENT or GUARDIAN|PARENTS\/GUARDIANS/i.test(q.prompt || ""),
     n: 7,
@@ -190,7 +190,7 @@ export const OBSERVER_SUBROLES = [
   {
     id: "multi",
     label: "Wearing Multiple Hats",
-    emoji: "🎭",
+    icon: "Users",
     desc: "Respondents who selected more than one Observer role",
     match: () => false,  // synthetic — shown as meta-callout
     n: 16,
@@ -214,8 +214,7 @@ export const TRANS_SUBROLES = [
   {
     id: "vaginoplasty",
     label: "Post-Vaginoplasty",
-    icon: "Users", // Using generic icon, or we can use specific ones
-    emoji: "♀",
+    icon: "Users",
     desc: "Trans women who have undergone vaginoplasty",
     n: 0,
   },
@@ -223,7 +222,6 @@ export const TRANS_SUBROLES = [
     id: "phalloplasty",
     label: "Post-Phalloplasty",
     icon: "Users",
-    emoji: "♂",
     desc: "Trans men who have undergone phalloplasty",
     n: 0,
   },
@@ -233,7 +231,7 @@ export const CIRCUMCISED_SUBROLES = [
   {
     id: "universal",
     label: "Universal (all circumcised)",
-    emoji: "👥",
+    icon: "Users",
     desc: "Questions every circumcised respondent saw",
     match: (q) => (q.id || "").startsWith("circ_") && !q.id.startsWith("circ_parents_") && !q.id.startsWith("circ_adult_"),
     n: 213,
@@ -241,7 +239,7 @@ export const CIRCUMCISED_SUBROLES = [
   {
     id: "infant",
     label: "Circumcised as Infant / Parent Decision",
-    emoji: "👶",
+    icon: "Circle",
     desc: "Information quality, emotional state, and parent reasons",
     match: (q) => (q.id || "").startsWith("circ_parents_"),
     n: 191,
@@ -249,7 +247,7 @@ export const CIRCUMCISED_SUBROLES = [
   {
     id: "adult",
     label: "Circumcised Later in Life / Teen & Adult",
-    emoji: "🙋‍♂️",
+    icon: "Clock",
     desc: "Before/after satisfaction comparison, consent, and new normal",
     match: (q) => (q.id || "").startsWith("circ_adult_"),
     n: 22,

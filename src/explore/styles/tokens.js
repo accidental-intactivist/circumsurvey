@@ -98,7 +98,7 @@ export const GLOBAL_CSS = `
     --path-intact: #2a9d8f;
     --path-circumcised: #e76f51;
     --path-restoring: #e9c46a;
-    --path-observer: #a0a0a0;
+    --path-observer: #7868b8;
     --path-trans-vag: #e85d50;
     --path-trans-phal: #c64639;
     --path-intersex: #b0a888;

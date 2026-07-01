@@ -213,3 +213,13 @@ export const Flame = createThemedIcon(
   Lucide.Flame,
   () => <path d="M 8,2 C 12,6 12,14 8,14 C 4,14 4,6 8,2 Z M 8,8 V 12" />
 );
+
+export const Circle = createThemedIcon(
+  (props) => <Lucide.Circle {...props} fill={props.color || "currentColor"} stroke="none" />,
+  (color) => <circle cx="8" cy="8" r="5" fill={color || "currentColor"} stroke="none" />
+);
+
+export const Pin = createThemedIcon(
+  Lucide.Pin,
+  () => <path d="M 8,2 L 8,8 M 5,2 H 11 M 7,8 L 4,12 H 12 L 9,8 M 8,12 V 15" />
+);

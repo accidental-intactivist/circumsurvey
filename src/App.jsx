@@ -1,8 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import ExplorePage from './pages/ExplorePage';
-import AboutPage from './pages/AboutPage';
-import FaqPage from './pages/FaqPage';
 import SpecialReportPage from './pages/SpecialReportPage';
 import { ThemeProvider } from './explore/contexts/ThemeContext';
 import { GLOBAL_CSS } from './explore/styles/tokens';
@@ -13,11 +11,14 @@ export default function App() {
       <style>{GLOBAL_CSS}</style>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          {/* The Special Report (guided tour) is the front door of the
+              findings site. The former landing page remains at /landing. */}
+          <Route path="/" element={<SpecialReportPage />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/explore/*" element={<ExplorePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/special-report" element={<SpecialReportPage />} />
+          <Route path="/about" element={<Navigate to="/explore#/about" replace />} />
+          <Route path="/faq" element={<Navigate to="/explore#/faq" replace />} />
+          <Route path="/special-report" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

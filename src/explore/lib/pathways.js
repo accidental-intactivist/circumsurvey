@@ -214,18 +214,28 @@ export const TRANS_SUBROLES = [
   {
     id: "vaginoplasty",
     label: "Post-Vaginoplasty",
-    icon: "Users",
+    icon: "Sparkles",
     desc: "Trans women who have undergone vaginoplasty",
+    match: (q) => q.section?.toLowerCase().includes("vaginoplasty") || /vaginoplasty/i.test(q.prompt || ""),
     n: 0,
   },
   {
     id: "phalloplasty",
     label: "Post-Phalloplasty",
-    icon: "Users",
+    icon: "Sparkles",
     desc: "Trans men who have undergone phalloplasty",
+    match: (q) => q.section?.toLowerCase().includes("phalloplasty") || /phalloplasty/i.test(q.prompt || ""),
     n: 0,
   },
 ];
+
+export function transSubrolesForQuestion(q) {
+  const hits = [];
+  for (const r of TRANS_SUBROLES) {
+    if (r.match(q)) hits.push(r.id);
+  }
+  return hits.length > 0 ? hits : [TRANS_SUBROLES[0].id];
+}
 
 export const CIRCUMCISED_SUBROLES = [
   {

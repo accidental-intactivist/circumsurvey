@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from 'react-markdown';
 import { C, FONT } from "../styles/tokens";
 import { queryCopilot, getQuestions, getResponseDistribution } from "../lib/api";
 import BivariateHeatmap from "./BivariateHeatmap";
@@ -154,11 +155,22 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     <div style={{
       display: "flex",
       flexDirection: "column",
-      gap: "1rem",
+      height: "100%",
+      overflow: "hidden"
     }}>
+      {/* Scrollable history/results container */}
       <div style={{
+        flex: 1,
+        overflowY: "auto",
         display: "flex",
-        justifyContent: "flex-end",
+        flexDirection: "column",
+        gap: "1rem",
+        paddingBottom: "1rem",
+        paddingRight: "0.5rem"
+      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "flex-end",
         alignItems: "center",
         marginBottom: "-1rem" // pulls the chat closer since header is gone
       }}>
@@ -187,56 +199,48 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
         )}
       </div>
 
-      <form onSubmit={handleSearch} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-        <textarea
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              if (query.trim() && !loading) {
-                handleSearch(e);
-              }
-            }
-          }}
-          placeholder="Ask about the data… (Enter to send, Shift+Enter for newline)"
-          style={{
-            width: "100%",
-            minHeight: "80px",
-            resize: "vertical",
-            padding: "0.8rem",
-            background: C.bgCard,
-            border: `1px solid ${C.ghost}`,
-            borderRadius: 8,
-            color: C.textBright,
-            fontFamily: FONT.body,
-            fontSize: "0.9rem",
-            outline: "none",
-          }}
-          disabled={loading}
-        />
-        <button
-          type="submit"
-          disabled={loading || !query.trim()}
-          style={{
-            padding: "0.7rem",
-            background: loading ? C.dim : C.gold,
-            color: loading ? C.bg : "#000",
-            border: "none",
-            borderRadius: 8,
+      {!result && !loading && !error && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+          <h5 style={{
             fontFamily: FONT.condensed,
-            fontWeight: 700,
-            fontSize: "0.9rem",
-            letterSpacing: "0.08em",
+            fontSize: "0.75rem",
+            letterSpacing: "0.1em",
             textTransform: "uppercase",
-            cursor: loading || !query.trim() ? "not-allowed" : "pointer",
-            transition: "all 0.2s",
-            alignSelf: "flex-end"
-          }}
-        >
-          {loading ? "Thinking..." : "Ask AI"}
-        </button>
-      </form>
+            color: C.dim,
+            margin: 0
+          }}>Suggested Queries</h5>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {[
+              "What can I learn from this page?",
+              "Summarize the key findings here."
+            ].map((sua, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setQuery(sua);
+                  executeSearch(sua);
+                }}
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: `1px solid ${C.ghost}`,
+                  borderRadius: 16,
+                  padding: "0.4rem 0.8rem",
+                  color: C.goldBright,
+                  fontFamily: FONT.body,
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.1)"; e.target.style.borderColor = C.goldBright; }}
+                onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.05)"; e.target.style.borderColor = C.ghost; }}
+              >
+                {sua}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
 
       {error && (
@@ -308,7 +312,6 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
             color: C.text,
             lineHeight: 1.6,
             fontSize: "0.95rem",
-            whiteSpace: "pre-wrap",
             marginBottom: result.suggestions && result.suggestions.length > 0 ? "1.5rem" : "0"
           }}>
             {(result.answer || "").split(/(\[CHART:[^\]]+\]|\[SANKEY\]|\[EXHIBIT:[^\]]+\])/g).map((part, i) => {
@@ -333,7 +336,21 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                   </Link>
                 );
               }
-              return <span key={i}>{part}</span>;
+              return (
+                <ReactMarkdown
+                  key={i}
+                  components={{
+                    p: ({node, ...props}) => <p style={{ marginTop: 0, marginBottom: "1rem" }} {...props} />,
+                    ul: ({node, ...props}) => <ul style={{ paddingLeft: "1.5rem", marginTop: 0, marginBottom: "1rem" }} {...props} />,
+                    ol: ({node, ...props}) => <ol style={{ paddingLeft: "1.5rem", marginTop: 0, marginBottom: "1rem" }} {...props} />,
+                    li: ({node, ...props}) => <li style={{ marginBottom: "0.5rem" }} {...props} />,
+                    strong: ({node, ...props}) => <strong style={{ color: C.textBright, fontWeight: 700 }} {...props} />,
+                    a: ({node, ...props}) => <a style={{ color: C.goldBright, textDecoration: "underline" }} target="_blank" rel="noopener noreferrer" {...props} />
+                  }}
+                >
+                  {part}
+                </ReactMarkdown>
+              );
             })}
           </div>
 
@@ -488,6 +505,67 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
           )}
         </div>
       )}
+      </div>
+
+      {/* Fixed bottom input container */}
+      <div style={{
+        flexShrink: 0,
+        paddingTop: "1.5rem",
+        marginTop: "0.5rem",
+        borderTop: `1px solid ${C.ghost}`
+      }}>
+        <form onSubmit={handleSearch} style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+          <textarea
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (query.trim() && !loading) {
+                  handleSearch(e);
+                }
+              }
+            }}
+            placeholder={result ? "Ask a follow up question..." : "Ask about the data… (Enter to send)"}
+            style={{
+              width: "100%",
+              minHeight: "80px",
+              resize: "vertical",
+              padding: "0.8rem",
+              background: C.bgCard,
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 8,
+              color: C.textBright,
+              fontFamily: FONT.body,
+              fontSize: "0.9rem",
+              outline: "none",
+            }}
+            disabled={loading}
+          />
+          <button
+            type="submit"
+            disabled={loading || !query.trim()}
+            style={{
+              padding: "0.7rem",
+              background: loading ? C.dim : C.gold,
+              color: loading ? C.bg : "#000",
+              border: "none",
+              borderRadius: 8,
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              cursor: loading || !query.trim() ? "not-allowed" : "pointer",
+              transition: "all 0.2s",
+              alignSelf: "flex-end"
+            }}
+          >
+            {loading ? "Thinking..." : "Ask AI"}
+          </button>
+        </form>
+      </div>
+
     </div>
   );
 }

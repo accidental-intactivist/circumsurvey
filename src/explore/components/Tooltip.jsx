@@ -44,7 +44,7 @@ export function Tooltip({ visible, content, x, y }) {
       zIndex: 99999,
       boxShadow: "0 8px 24px rgba(0,0,0,0.6)"
     }}>
-      {content}
+      {typeof content === 'string' ? <span dangerouslySetInnerHTML={{ __html: content }} /> : content}
     </div>,
     document.body
   );

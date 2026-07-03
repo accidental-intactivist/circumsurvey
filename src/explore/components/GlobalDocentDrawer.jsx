@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { C, FONT } from "../styles/tokens";
 import CopilotChat from "./CopilotChat";
-import { Sparkles, ArrowRight } from "./Icons";
+import { Sparkles, X } from "./Icons";
 
 export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updateState, exhibitContext }) {
   // Stay mounted even when closed (slide off-screen) so the conversation
@@ -76,15 +76,17 @@ export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updat
             onMouseEnter={e => { e.currentTarget.style.color = C.textBright; e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
             onMouseLeave={e => { e.currentTarget.style.color = C.muted; e.currentTarget.style.background = "transparent"; }}
           >
-            <ArrowRight size={20} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Content Body */}
         <div style={{
           flex: 1,
-          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
           padding: "1.5rem",
+          overflow: "hidden"
         }}>
           <CopilotChat 
             routerState={routerState} 

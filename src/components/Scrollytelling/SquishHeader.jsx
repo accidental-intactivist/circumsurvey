@@ -161,32 +161,44 @@ export default function SquishHeader() {
   const navContentRef = useRef(null);
   const canvasRef = useRef(null);
 
+  // Theme-aware "scrolled" chrome (glass, border, shadow) — matches
+  // ExploreMasthead's docked treatment instead of a hardcoded dark rgba.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 100);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useGSAP(() => {
-    // We want the squish to complete over the first 600px of scrolling
-    const scrollDistance = 600;
+    // 1:1 with scroll, like ExploreMasthead (height = HERO − scrollY):
+    // the squish completes exactly when the spacer has scrolled past, so
+    // content rises to meet the docked bar with no dead gap.
+    const scrollDistance = Math.max(200, Math.round(window.innerHeight * 0.85) - 70);
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: document.body,
         start: "top top",
         end: `+=${scrollDistance}`,
-        scrub: 0.5,
+        scrub: true, // exact 1:1, no smoothing lag
       }
     });
 
-    // 1. The header container shrinks from 100vh to 70px, becomes a glassmorphic bar
+    // 1. The header container shrinks from 85vh to a 70px bar.
+    //    (Background/border/blur are handled reactively via `scrolled`.)
     tl.to(headerRef.current, {
       height: "70px",
       minHeight: "70px",
-      background: "rgba(10,10,12,0.85)", // Glassmorphic background
-      backdropFilter: "blur(12px)",
-      borderBottom: "1px solid var(--c-ghost)",
+      duration: 1,
       ease: "none"
     }, 0);
 
     // Fade the canvas background opacity as the header squishes/docks
     tl.to(canvasRef.current, {
       opacity: 0.15,
+      duration: 1,
       ease: "none"
     }, 0);
 
@@ -194,6 +206,7 @@ export default function SquishHeader() {
     tl.to(titleGroupRef.current, {
       y: 0,
       marginTop: "0px", // Align to center of the 70px bar
+      duration: 1,
       ease: "none"
     }, 0);
 
@@ -202,6 +215,7 @@ export default function SquishHeader() {
       opacity: 0,
       height: 0,
       margin: 0,
+      duration: 1,
       ease: "power2.out"
     }, 0);
 
@@ -209,6 +223,7 @@ export default function SquishHeader() {
       fontSize: "1.2rem", // Nav bar size
       letterSpacing: "0.02em",
       y: isTomorrow ? -3 : 0,
+      duration: 1,
       ease: "none"
     }, 0);
 
@@ -217,6 +232,7 @@ export default function SquishHeader() {
       opacity: 0,
       height: 0,
       margin: 0,
+      duration: 1,
       ease: "power2.out"
     }, 0);
 
@@ -224,6 +240,7 @@ export default function SquishHeader() {
       opacity: 0,
       height: 0,
       margin: 0,
+      duration: 0.5,
       ease: "power2.out"
     }, 0);
 
@@ -253,26 +270,38 @@ export default function SquishHeader() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'radial-gradient(ellipse at center, var(--c-bgSoft) 0%, var(--c-bg) 50%, var(--c-bgDeep) 100%)',
-          overflow: 'hidden',
+          background: scrolled
+            ? 'color-mix(in srgb, var(--c-bg) 88%, transparent)'
+            : 'radial-gradient(ellipse at center, var(--c-bgSoft) 0%, var(--c-bg) 50%, var(--c-bgDeep) 100%)',
+          backdropFilter: scrolled ? 'blur(14px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
+          borderBottom: `1px solid ${scrolled ? 'var(--c-ghost)' : 'transparent'}`,
+          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.3)' : 'none',
+          transition: 'background 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease',
+          // NOTE: no overflow:hidden here — it would clip the ThemeToggle
+          // settings panel. The canvas gets its own clipping wrapper below.
         }}
       >
-        {/* Harmonic background canvas that squishes (crops) with the header height */}
-        <div 
-          ref={canvasRef}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            width: '100%',
-            height: '85vh',
-            transform: 'translateY(-50%)',
-            pointerEvents: 'none',
-            zIndex: 0,
-            opacity: 0.8,
-          }}
-        >
-          <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} />
+        {/* Clipping wrapper so the Loom crops with the header height without
+            clipping UI (the ThemeToggle panel must escape the header). */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+          {/* Harmonic background canvas that squishes (crops) with the header height */}
+          <div
+            ref={canvasRef}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              width: '100%',
+              height: '85vh',
+              transform: 'translateY(-50%)',
+              pointerEvents: 'none',
+              zIndex: 0,
+              opacity: 0.8,
+            }}
+          >
+            <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} />
+          </div>
         </div>
 
         {/* Rainbow accent line at the bottom of the masthead (always there, but moves up) */}
@@ -298,10 +327,16 @@ export default function SquishHeader() {
             pointerEvents: 'none', // Prevent clicking when invisible
           }}
         >
-          {/* Left Side: Navigation Anchors */}
+          {/* Left Side: Navigation Anchors — jump to tour stations */}
           <div style={{ display: 'flex', gap: '1rem', pointerEvents: 'auto' }}>
-            {['The Question', 'The People', 'The Voices', 'The Reality'].map((label, i) => (
-              <button key={label} style={{
+            {[
+              ['01 The Map', '#st01'],
+              ['03 The Gap', '#st03'],
+              ['06 The Voices', '#st06'],
+              ['13 For Parents', '#st13'],
+              ['14 Forward', '#st14'],
+            ].map(([label, href]) => (
+              <a key={label} href={href} style={{
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--c-muted)',
@@ -311,96 +346,116 @@ export default function SquishHeader() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.1em',
                 cursor: 'pointer',
+                textDecoration: 'none',
                 transition: 'color 0.2s',
               }}>
                 {label}
-              </button>
+              </a>
             ))}
           </div>
 
-          {/* Right Side: Tools & Actions */}
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', pointerEvents: 'auto' }}>
-            <ThemeToggle />
-            <div style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
-            <a href="/explore" style={{
-              fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              color: 'var(--c-goldBright)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              textDecoration: 'none',
-              padding: '0.3rem 0.8rem',
-              border: '1px solid rgba(212,160,48,0.4)',
-              borderRadius: 100,
-              background: 'rgba(212,160,48,0.1)',
-            }}>
-              Interactive Explorer ➔
-            </a>
-          </div>
         </div>
 
-        {/* Centered Title Group */}
-        <div 
-          ref={titleGroupRef}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-            position: 'relative',
-            zIndex: 20,
-            padding: '0 1rem',
-          }}
-        >
-          <div 
-            ref={eyebrowRef}
-            style={{
-              fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
-              fontWeight: 700,
-              fontSize: "clamp(0.75rem, 1.2vw, 0.88rem)",
-              color: "var(--c-gold)",
-              textTransform: "uppercase",
-              letterSpacing: "0.3em",
-              marginBottom: "1rem",
-            }}
-          >
-            ★ Special Report ★
-          </div>
-          
-          <h1 
-            ref={titleRef}
-            style={{
-              fontFamily: "var(--f-display, 'Playfair Display', serif)",
-              fontWeight: 800,
-              fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-              color: "var(--c-textBright)",
-              lineHeight: 1.05,
-              letterSpacing: "-0.015em",
-              margin: 0,
-              textTransform: "uppercase",
-              transform: isTomorrow ? "translateY(-6px)" : "none",
-            }}
-          >
-            The Accidental Intactivist's Inquiry
-          </h1>
-          
-          <div 
-            ref={subRef}
-            style={{
-              fontFamily: "var(--f-display, 'Playfair Display', serif)",
-              fontWeight: 400,
-              fontStyle: "italic",
-              fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
-              color: "var(--c-muted)",
-              marginTop: "1rem",
-            }}
-          >
-            {PHASE1_TOTAL} Voices · Six Pathways · One Question, Asked Honestly
-          </div>
+        {/* Right Side: Tools & Actions — ALWAYS visible (not gated on dock),
+            so Display Settings are reachable from the full masthead too. */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          height: 70,
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'center',
+          padding: '0 1.5rem',
+          zIndex: 110,
+          pointerEvents: 'auto',
+        }}>
+          <ThemeToggle />
+          <div style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
+          <a href="/explore" style={{
+            fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+            fontWeight: 700,
+            fontSize: '0.75rem',
+            color: 'var(--c-goldBright)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            textDecoration: 'none',
+            padding: '0.3rem 0.8rem',
+            border: '1px solid rgba(212,160,48,0.4)',
+            borderRadius: 100,
+            background: 'rgba(212,160,48,0.1)',
+          }}>
+            Interactive Explorer ➔
+          </a>
+        </div>
 
-          <div ref={factsRef}>
-            <RotatingFact />
+        {/* Clipping layer for the title group — squishes with the header */}
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 10, pointerEvents: 'none' }}>
+          <div 
+            ref={titleGroupRef}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              right: 0,
+              transform: 'translateY(-50%)',
+              padding: '0 1rem',
+              pointerEvents: 'auto',
+            }}
+          >
+            <div 
+              ref={eyebrowRef}
+              style={{
+                fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                fontWeight: 700,
+                fontSize: "clamp(0.75rem, 1.2vw, 0.88rem)",
+                color: "var(--c-gold)",
+                textTransform: "uppercase",
+                letterSpacing: "0.3em",
+                marginBottom: "1rem",
+              }}
+            >
+              ★ Special Report ★
+            </div>
+            
+            <h1 
+              ref={titleRef}
+              style={{
+                fontFamily: "var(--f-display, 'Playfair Display', serif)",
+                fontWeight: 800,
+                fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+                color: "var(--c-textBright)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.015em",
+                margin: 0,
+                textTransform: "uppercase",
+                transform: isTomorrow ? "translateY(-6px)" : "none",
+              }}
+            >
+              The Accidental Intactivist's Inquiry
+            </h1>
+            
+            <div 
+              ref={subRef}
+              style={{
+                fontFamily: "var(--f-display, 'Playfair Display', serif)",
+                fontWeight: 400,
+                fontStyle: "italic",
+                fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
+                color: "var(--c-muted)",
+                marginTop: "1rem",
+              }}
+            >
+              {PHASE1_TOTAL} Voices · Six Pathways · One Question, Asked Honestly
+            </div>
+
+            <div ref={factsRef}>
+              <RotatingFact />
+            </div>
           </div>
         </div>
       </header>

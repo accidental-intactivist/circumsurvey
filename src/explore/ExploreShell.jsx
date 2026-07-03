@@ -33,6 +33,8 @@ import FinalThoughtsPage from "./pages/FinalThoughtsPage";
 import TransIntersexPage from "./pages/TransIntersexPage";
 import TheForwardViewPage from "./pages/TheForwardViewPage";
 import ForParentsPage from "./pages/ForParentsPage";
+import AboutPage from "./pages/AboutPage";
+import FaqPage from "./pages/FaqPage";
 import GlobalFooter from "./components/GlobalFooter";
 
 export default function ExploreShell() {
@@ -143,6 +145,10 @@ export default function ExploreShell() {
     page = <TransIntersexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "the-forward-view") {
     page = <TheForwardViewPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "about") {
+    page = <AboutPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "faq") {
+    page = <FaqPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   }

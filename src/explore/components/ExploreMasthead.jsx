@@ -150,6 +150,18 @@ export const ROUTE_META = {
     title: "Trans & Intersex Experiences",
     desc: "A deep dive into transgender and intersex perspectives, which require distinct analytical lenses to be fully explored in Phase 2 of this project.",
     navTitle: "Trans & Intersex",
+  },
+  about: {
+    kicker: "Project",
+    title: "About the Project",
+    desc: "Methodology, central hypothesis, and the ethical philosophy behind The Accidental Intactivist's Inquiry.",
+    navTitle: "About",
+  },
+  faq: {
+    kicker: "Questions",
+    title: "Frequently Asked Questions",
+    desc: "Your questions, our answers. Everything from the survey structure to engaging with pro-circumcision arguments.",
+    navTitle: "FAQ",
   }
 };
 
@@ -229,6 +241,22 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
 
   return (
     <>
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .mobile-hide { display: none !important; }
+            .masthead-title {
+              white-space: normal !important;
+              width: 100%;
+              padding: 0 1rem;
+              text-align: center;
+              line-height: 1.0 !important;
+            }
+            .mobile-docent-text { display: none !important; }
+            .mobile-findings-text { display: none !important; }
+          }
+        `}
+      </style>
       {/* Spacer: reserves space so content doesn't jump under sticky header */}
       <div style={{ height: HERO_HEIGHT }} />
 
@@ -476,8 +504,35 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
 
           {/* Right: ThemeToggle + Findings link */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <a href="#/about" className="mobile-hide" style={{
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              color: "var(--c-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              textDecoration: "none",
+              transition: "color 0.2s"
+            }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-textBright)"}
+               onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-muted)"}>
+              About
+            </a>
+            <a href="#/faq" className="mobile-hide" style={{
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              color: "var(--c-muted)",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              textDecoration: "none",
+              transition: "color 0.2s"
+            }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-textBright)"}
+               onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-muted)"}>
+              FAQ
+            </a>
+            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5, margin: "0 0.25rem" }} />
             <ThemeToggle />
-            <div style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5 }} />
+            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5 }} />
             <a
               href="/"
               style={{
@@ -504,7 +559,8 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                 e.currentTarget.style.borderColor = "rgba(212,160,48,0.35)";
               }}
             >
-              ← Findings
+              <span className="mobile-findings-text">← Findings</span>
+              <span className="mobile-hide" style={{ display: "none" }}>←</span>
             </a>
             
             <button
@@ -541,13 +597,14 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               }}
             >
               <Sparkles size={12} color="currentColor" />
-              Ask A Docent
+              <span className="mobile-docent-text">Ask A Docent</span>
             </button>
           </div>
         </div>
 
         {/* ── Collapsing Exhibit Title ────────────────────────────────────── */}
         <h1
+          className="masthead-title"
           style={{
             position: "absolute",
             left: "50%",

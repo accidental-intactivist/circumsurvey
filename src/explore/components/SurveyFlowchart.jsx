@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { C, FONT, RAINBOW, PATH_COLORS } from "../styles/tokens";
-import { PATHWAYS, OBSERVER_SUBROLES, observerSubrolesForQuestion, CIRCUMCISED_SUBROLES, circumcisedSubrolesForQuestion, phaseForQuestion } from "../lib/pathways";
+import { PATHWAYS, OBSERVER_SUBROLES, observerSubrolesForQuestion, CIRCUMCISED_SUBROLES, circumcisedSubrolesForQuestion, TRANS_SUBROLES, transSubrolesForQuestion, phaseForQuestion } from "../lib/pathways";
 import { getQuestions } from "../lib/api";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { useReport } from "../contexts/ReportContext";
@@ -33,10 +33,7 @@ const FLOWCHART_STYLES = `
     animation: sfFlowDash 1.2s linear infinite;
   }
   .sf-card {
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
-  }
-  .sf-card:hover {
-    transform: translateY(-2px);
+    transition: box-shadow 0.2s;
   }
 `;
 
@@ -90,6 +87,18 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
   const [expandedSections, setExpandedSections] = useState({});
   const [pinned, setPinned] = useState({});
   const [hoveredPathway, setHoveredPathway] = useState(null);
+
+  // Search only "activates" at 2+ characters — a single keystroke matches
+  // nearly every question and would blast the whole board open.
+  const effectiveQuery = searchQuery.trim().length >= 2 ? searchQuery : "";
+
+  // One-click reset: clear search + close every node, section, and pin.
+  const collapseAll = useCallback(() => {
+    setSearchQuery("");
+    setExpanded({});
+    setExpandedSections({});
+    setPinned({});
+  }, []);
   const containerRef = useRef(null);
   const [nodePositions, setNodePositions] = useState({});
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
@@ -172,7 +181,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     const synthesis = {};
     const branches = {};
 
-    const query = searchQuery.toLowerCase().trim();
+    const query = effectiveQuery.toLowerCase().trim();
 
     for (const q of questions) {
       if (query) {
@@ -210,7 +219,10 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     }
 
     return { universal, synthesis, branches };
-  }, [questions]);
+    // effectiveQuery is used in the filter above — without it in the deps the
+    // counts never re-filter while typing, so every node claimed matches and
+    // the whole board expanded on the first keystroke.
+  }, [questions, effectiveQuery]);
 
   // Count questions per section
   const countForSection = useCallback((sectionName, pathwayId) => {
@@ -237,7 +249,6 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
   }, []);
 
   const getFlowInfo = useCallback((branch) => {
-    const isObserver = branch.hasSubRoles;
     const isTrans = branch.id === "trans";
     const n = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
     const qCount = isTrans
@@ -263,7 +274,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     );
   }
 
-  const activePathways = searchQuery
+  const activePathways = effectiveQuery
     ? BRANCH_CONFIGS.filter(b => {
         const isTrans = b.id === "trans";
         const count = isTrans
@@ -272,6 +283,15 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         return count > 0;
       })
     : expandedPathways;
+
+  const activeCircuitBranch = hoveredPathway 
+    ? BRANCH_CONFIGS.find(b => b.id === hoveredPathway) 
+    : (activePathways.length === 1 ? activePathways[0] : null);
+
+  const isCircuitActive = hoveredPathway !== null || activePathways.length > 0;
+  
+  const universalColor = C.ltBlue;
+  const synthesisColor = C.gold;
 
   return (
     <div ref={containerRef} style={{ position: "relative", maxWidth: 1200, margin: "0 auto" }}>
@@ -318,6 +338,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         marginBottom: "1.5rem",
         display: "flex",
         justifyContent: "center",
+        alignItems: "stretch",
+        gap: "0.6rem",
       }}>
         <div style={{
           position: "relative",
@@ -383,6 +405,37 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
             </button>
           )}
         </div>
+
+        {/* Collapse All — one click closes search, nodes, sections & pins */}
+        <button
+          onClick={collapseAll}
+          title="Close every open card on the board"
+          style={{
+            flexShrink: 0,
+            fontFamily: FONT.condensed,
+            fontWeight: 700,
+            fontSize: "0.68rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: C.muted,
+            background: "rgba(255, 255, 255, 0.05)",
+            border: `1px solid ${C.ghost}`,
+            borderRadius: 24,
+            padding: "0 1.1rem",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = C.gold;
+            e.currentTarget.style.color = C.goldBright;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = C.ghost;
+            e.currentTarget.style.color = C.muted;
+          }}
+        >
+          Collapse All
+        </button>
       </div>
 
       {/* ═══ UNIVERSAL BLOCK ═══ */}
@@ -390,11 +443,12 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         nodeId="universal"
         title="Universal Questions"
         icon={Icons.FileText}
-        color={C.ltBlue}
+        color={universalColor}
         desc="Questions every respondent answered"
         qCount={totalForPathway("universal")}
         nCount={501}
-        isExpanded={searchQuery ? totalForPathway("universal") > 0 : expanded.universal}
+        isExpanded={effectiveQuery ? totalForPathway("universal") > 0 : expanded.universal}
+        isHighlighted={true}
         onToggle={() => toggleNode("universal")}
         style={{ marginBottom: 0 }}
       >
@@ -410,7 +464,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                 questions={qs}
                 expandedSections={expandedSections}
                 toggleSection={toggleSection}
-                searchQuery={searchQuery}
+                searchQuery={effectiveQuery}
                 navigate={navigate}
               />
             );
@@ -422,7 +476,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
               section={sec}
               questions={qs}
               color={C.ltBlue}
-              isExpanded={searchQuery ? true : expandedSections[secKey]}
+              isExpanded={effectiveQuery ? true : expandedSections[secKey]}
               onToggle={() => toggleSection(secKey)}
               navigate={navigate}
             />
@@ -430,34 +484,23 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         })}
       </FlowNode>
 
-      {/* ═══ VERTICAL CONNECTOR: Universal → Fork ═══ */}
-      <VerticalConnector 
+      {/* ═══ FORK CONNECTORS: Universal → Pathways ═══ */}
+      <UniversalForkConnector
         branches={BRANCH_CONFIGS}
-        activePathways={activePathways}
-        hoveredPathway={hoveredPathway}
-        onHoverChange={setHoveredPathway}
+        onHover={showTooltip}
+        onMove={moveTooltip}
+        onLeave={hideTooltip}
         getFlowInfo={getFlowInfo}
-        height={48} 
-      />
-      <MobileConnector color={activePathways.length === 1 ? activePathways[0].color : C.ltBlue} height={24} />
-
-      {/* ═══ BRANCH CONNECTORS ═══ */}
-      <BranchConnectors 
-        branches={BRANCH_CONFIGS} 
-        onHover={showTooltip} 
-        onMove={moveTooltip} 
-        onLeave={hideTooltip} 
-        getFlowInfo={getFlowInfo} 
         activePathways={activePathways}
         hoveredPathway={hoveredPathway}
         onHoverChange={setHoveredPathway}
+        searchActive={!!effectiveQuery}
       />
       <MobileConnector color={C.gold} height={24} />
 
       {/* ═══ PATHWAY BRANCHES ═══ */}
-      <div className="flowchart-grid">
+      <div className="flowchart-grid" style={{ position: "relative", zIndex: 1 }}>
         {BRANCH_CONFIGS.map((branch) => {
-          const isObserver = branch.hasSubRoles;
           const isTrans = branch.id === "trans";
           const branchN = isTrans ? 0 : (branch.id === "observer" ? 37 : nForPathway(branch.id));
           const branchQCount = isTrans
@@ -474,7 +517,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
               desc={branch.desc}
               qCount={branchQCount}
               nCount={branchN}
-              isExpanded={searchQuery ? branchQCount > 0 : expanded[branch.id]}
+              isExpanded={effectiveQuery ? branchQCount > 0 : expanded[branch.id]}
               isHovered={hoveredPathway === branch.id}
               onHoverChange={(h) => setHoveredPathway(h ? branch.id : null)}
               onToggle={() => toggleNode(branch.id)}
@@ -519,10 +562,10 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                         style={{
                           background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
                           border: `2px solid ${branch.color}`,
-                          borderRadius: 12,
+                          borderRadius: "0 0 12px 12px",
                           padding: "1.2rem 1.4rem",
                           position: "relative",
-                          boxShadow: `0 0 32px ${branch.color}15, 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)`,
+                          boxShadow: `0 0 32px color-mix(in srgb, ${branch.color}, transparent 92%), 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)`,
                           backdropFilter: "blur(12px)",
                           display: "flex",
                           flexDirection: "column",
@@ -537,8 +580,8 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                           backdropFilter: "blur(12px)",
                           margin: "-1.2rem -1.4rem 0.8rem",
                           padding: "1rem 1.4rem",
-                          borderRadius: "12px 12px 0 0",
-                          borderBottom: `1px solid ${branch.color}40`,
+                          borderRadius: 0,
+                          borderBottom: `1px solid color-mix(in srgb, ${branch.color}, transparent 75%)`,
                           display: "flex",
                           alignItems: "center",
                           gap: "0.6rem",
@@ -573,7 +616,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                               background: "rgba(255,255,255,0.05)",
                               padding: "0.1rem 0.4rem",
                               borderRadius: 999,
-                              border: `1px solid ${branch.waiting ? C.ghost : branch.color + "40"}`,
+                              border: `1px solid ${branch.waiting ? C.ghost : `color-mix(in srgb, ${branch.color}, transparent 75%)`}`,
                             }}>{branch.waiting ? "n=0" : `n=${branchN}`}</span>
                           )}
 
@@ -581,7 +624,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                             onClick={(e) => togglePin(branch.id, e)}
                             style={{
                               marginLeft: "auto",
-                              background: isPinned ? `${branch.color}20` : "transparent",
+                              background: isPinned ? `color-mix(in srgb, ${branch.color}, transparent 87%)` : "transparent",
                               border: `1px solid ${isPinned ? branch.color : C.ghost}`,
                               color: isPinned ? C.textBright : C.dim,
                               fontSize: "0.6rem",
@@ -640,7 +683,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
 
                         <div style={{
                           display: "grid",
-                          gridTemplateColumns: k === 1 ? "repeat(auto-fill, minmax(320px, 1fr))" : "1fr",
+                          gridTemplateColumns: "1fr",
                           gap: "0.85rem",
                         }}>
                           {branch.id === "circumcised" && (
@@ -657,23 +700,13 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                               isSingleColumn={k > 1}
                             />
                           )}
-                          {isTrans && (() => {
-                            const qs = Object.values(grouped?.branches?.trans || {}).flat();
-                            if (qs.length === 0) return null;
-                            const secKey = `trans-all`;
-                            return (
-                              <SectionBlock
-                                key={secKey}
-                                section={{ name: "Transgender Perspectives", icon: Icons.Sparkles, desc: "" }}
-                                questions={qs}
-                                color={branch.color}
-                                isExpanded={searchQuery ? true : expandedSections[secKey]}
-                                onToggle={() => toggleSection(secKey)}
-                                navigate={navigate}
-                                staticOpen={true}
-                              />
-                            );
-                          })()}
+                          {isTrans && (
+                            <TransSubRoles
+                              questions={questions}
+                              navigate={navigate}
+                              isSingleColumn={k > 1}
+                            />
+                          )}
                           {!isObserver && !isTrans && branch.id === "intersex" && (() => {
                             const qs = Object.values(grouped?.branches?.intersex || {}).flat();
                             if (qs.length === 0) return null;
@@ -684,29 +717,20 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                                 section={{ name: "Intersex Perspectives", icon: Icons.Atom, desc: "" }}
                                 questions={qs}
                                 color={branch.color}
-                                isExpanded={searchQuery ? true : expandedSections[secKey]}
+                                isExpanded={effectiveQuery ? true : expandedSections[secKey]}
                                 onToggle={() => toggleSection(secKey)}
                                 navigate={navigate}
                                 staticOpen={true}
                               />
                             );
                           })()}
-                          {!isObserver && !isTrans && branch.id !== "intersex" && branch.sections.map((secName) => {
-                            const qs = grouped?.branches?.[branch.id]?.[secName] || [];
-                            if (qs.length === 0) return null;
-                            const secKey = `${branch.id}-${secName}`;
-                            return (
-                              <SectionBlock
-                                key={secKey}
-                                section={{ name: secName.toUpperCase(), icon: branch.icon, desc: "" }}
-                                questions={qs}
-                                color={branch.color}
-                                isExpanded={searchQuery ? true : expandedSections[secKey]}
-                                onToggle={() => toggleSection(secKey)}
-                                navigate={navigate}
-                              />
-                            );
-                          })}
+                          {!isObserver && !isTrans && branch.id !== "intersex" && branch.id !== "circumcised" && (() => {
+                            const allQs = branch.sections.flatMap(secName => grouped?.branches?.[branch.id]?.[secName] || []);
+                            if (allQs.length === 0) return null;
+                            return allQs.map((q, i) => (
+                              <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
+                            ));
+                          })()}
                         </div>
                       </div>
                     );
@@ -735,11 +759,12 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         nodeId="synthesis"
         title="SYNTHESIS"
         icon={Icons.Grid}
-        color={C.gold}
+        color={synthesisColor}
         desc="All pathways reconvene"
         qCount={totalForPathway("synthesis")}
         nCount={501}
         isExpanded={expanded.synthesis}
+        isHighlighted={isCircuitActive}
         onToggle={() => toggleNode("synthesis")}
         style={{ marginTop: 0 }}
       >
@@ -757,7 +782,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                 isExpanded={expandedSections[secKey]}
                 onToggle={() => toggleSection(secKey)}
                 navigate={navigate}
-                staticOpen={visible.length === 1}
+                staticOpen={true}
               />
             );
           });
@@ -777,10 +802,10 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
 // ── FlowNode ────────────────────────────────────────────────────────────────
 // Glassmorphic card for each major block (Universal, pathway, Synthesis)
 
-function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isExpanded, isHovered: controlledIsHovered, onHoverChange, onToggle, children, waiting, compact, style }) {
+function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isExpanded, isHovered: controlledIsHovered, isHighlighted, onHoverChange, onToggle, children, waiting, compact, style }) {
   const [localHovered, setLocalHovered] = useState(false);
   const isHovered = controlledIsHovered !== undefined ? controlledIsHovered : localHovered;
-  const active = isExpanded || isHovered;
+  const active = isHighlighted !== undefined ? (isHighlighted || isHovered) : (isExpanded || isHovered);
 
   return (
     <div
@@ -794,16 +819,26 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
         if (onHoverChange) onHoverChange(false);
       }}
       style={{
-        background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
-        border: active ? `2px solid ${color}` : `1px solid ${color}40`,
-        borderRadius: (active && compact) ? "12px 12px 0 0" : 12,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        background: active
+          ? `linear-gradient(135deg, color-mix(in srgb, ${color}, transparent 75%) 0%, color-mix(in srgb, ${color}, transparent 85%) 100%)`
+          : `linear-gradient(135deg, color-mix(in srgb, ${color}, transparent 75%) 0%, color-mix(in srgb, ${color}, transparent 85%) 100%)`,
+        borderTop: compact ? "none" : `1px solid ${active ? color : `color-mix(in srgb, ${color}, transparent 70%)`}`,
+        borderBottom: compact ? "none" : `1px solid ${active ? color : `color-mix(in srgb, ${color}, transparent 70%)`}`,
+        borderLeft: compact
+          ? `1px solid color-mix(in srgb, ${color}, transparent ${active ? "0%" : "50%"})`
+          : `1px solid ${active ? color : `color-mix(in srgb, ${color}, transparent 70%)`}`,
+        borderRight: compact
+          ? `1px solid color-mix(in srgb, ${color}, transparent ${active ? "0%" : "50%"})`
+          : `1px solid ${active ? color : `color-mix(in srgb, ${color}, transparent 70%)`}`,
+        borderRadius: compact ? 0 : 12,
         position: "relative",
         overflow: "hidden",
-        transition: "border 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease",
-        boxShadow: isExpanded ? `0 0 20px ${color}22` : `none`,
+        transition: "border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease",
+        boxShadow: active ? `0 0 20px color-mix(in srgb, ${color}, transparent 85%)` : `none`,
         backdropFilter: "blur(12px)",
-        animation: isExpanded ? "sfPulseGlow 2.5s infinite" : "none",
-        "--pulse-color-rgba": color + "33",
         ...style,
       }}
     >
@@ -812,6 +847,7 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
         onClick={onToggle}
         style={{
           display: "flex",
+          flex: 1,
           alignItems: "flex-start",
           gap: "0.6rem",
           cursor: "pointer",
@@ -860,7 +896,7 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
                 background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
                 padding: "0.1rem 0.4rem",
                 borderRadius: 999,
-                border: `1px solid ${active ? "transparent" : (waiting ? C.ghost : color + "40")}`,
+                border: `1px solid ${active ? "transparent" : (waiting ? C.ghost : `color-mix(in srgb, ${color}, transparent 75%)`)}`,
                 transition: "color 0.3s, background 0.3s, border-color 0.3s"
               }}>{waiting ? "n=0 ✦" : `n=${nCount}`}</span>
             )}
@@ -878,7 +914,7 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
                 borderRadius: 999,
                 border: `1px dashed ${active ? "rgba(0,0,0,0.3)" : C.ghost}`,
                 transition: "color 0.3s, background 0.3s, border-color 0.3s"
-              }}>awaiting voices</span>
+              }}>coming in phase 2</span>
             )}
           </div>
           <div style={{
@@ -912,7 +948,7 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
             <div style={{
               padding: compact ? "0 0.85rem 0.85rem" : "0 1.3rem 1.3rem",
               paddingTop: isExpanded ? "0.7rem" : 0,
-              borderTop: isExpanded ? `1px solid ${color}25` : "1px solid transparent",
+              borderTop: isExpanded ? `1px solid color-mix(in srgb, ${color}, transparent 85%)` : "1px solid transparent",
               display: "flex",
               flexDirection: "column",
               gap: "0.4rem",
@@ -948,9 +984,9 @@ function ReligionPathways({ section, questions, expandedSections, toggleSection,
 
   const cards = [
     { id: "General", label: "General", icon: Icons.FileText, color: C.ltBlue },
-    { id: "Christianity", label: "Christian", icon: Icons.Circle, color: PATH_COLORS.restoring },
-    { id: "Judaism", label: "Jewish", icon: Icons.Circle, color: PATH_COLORS.intact },
-    { id: "Islam", label: "Muslim", icon: Icons.Circle, color: PATH_COLORS.circumcised }
+    { id: "Christianity", label: "Christian", icon: Icons.Cross, color: PATH_COLORS.restoring },
+    { id: "Judaism", label: "Jewish", icon: Icons.Star, color: PATH_COLORS.intact },
+    { id: "Islam", label: "Muslim", icon: Icons.Moon, color: PATH_COLORS.circumcised }
   ];
 
   return (
@@ -959,8 +995,8 @@ function ReligionPathways({ section, questions, expandedSections, toggleSection,
         onClick={() => toggleSection(`universal-${section.name}`)}
         style={{
           display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer",
-          padding: "0.5rem 0.6rem", background: isExpanded ? `${C.ltBlue}0A` : "transparent",
-          border: `1px solid ${isExpanded ? C.ltBlue + "50" : C.ghost}`,
+          padding: "0.5rem 0.6rem", background: isExpanded ? `color-mix(in srgb, ${C.ltBlue}, transparent 96%)` : "transparent",
+          border: `1px solid ${isExpanded ? `color-mix(in srgb, ${C.ltBlue}, transparent 69%)` : C.ghost}`,
           borderRadius: 6, transition: "background 0.2s"
         }}
       >
@@ -1001,10 +1037,10 @@ function ReligionPathways({ section, questions, expandedSections, toggleSection,
         transition: "grid-template-rows 0.25s ease-in-out",
       }}>
         <div style={{ overflow: "hidden" }}>
-          <div style={{ padding: "0.8rem 0", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
+          <div style={{ padding: "0.8rem 0", display: "flex", flexDirection: "column", gap: 0 }}>
             
             {/* The Side-by-Side Cards */}
-            <div className="flowchart-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)", margin: 0 }}>
+            <div className="flowchart-grid" style={{ gridTemplateColumns: "repeat(4, 1fr)", margin: 0, position: "relative", zIndex: 1 }}>
               {cards.map(c => {
                 const qs = subQs[c.id];
                 if (qs.length === 0) return null;
@@ -1034,17 +1070,20 @@ function ReligionPathways({ section, questions, expandedSections, toggleSection,
               
               return (
                 <div key={`expanded-${c.id}`} style={{
+                  position: "relative",
+                  zIndex: 2,
+                  marginTop: "-2px",
                   background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
-                  border: `1px solid ${c.color}`,
-                  borderRadius: 12,
+                  border: `2px solid ${c.color}`,
+                  borderRadius: c.id === "General" ? "0 12px 12px 12px" : c.id === "Islam" ? "12px 0 12px 12px" : 12,
                   padding: "1.2rem",
-                  boxShadow: `0 0 20px ${c.color}15, inset 0 1px 0 rgba(255,255,255,0.06)`,
+                  boxShadow: `0 0 20px color-mix(in srgb, ${c.color}, transparent 92%), inset 0 1px 0 rgba(255,255,255,0.06)`,
                 }}>
                   <div style={{
                      fontFamily: FONT.display, fontWeight: 700, color: c.color, marginBottom: "1rem", 
                      textTransform: "uppercase", letterSpacing: "0.04em", display: "flex", alignItems: "center", gap: "0.5rem"
                   }}>
-                    {c.icon && <c.icon size={18} color={c.color} fill={c.icon === Icons.Circle ? c.color : "transparent"} />}
+                    {c.icon && <c.icon size={18} color={c.color} />}
                     {c.label} Questions
                   </div>
                   <div style={{
@@ -1075,7 +1114,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
     <div style={{
       borderRadius: 6,
       overflow: "hidden",
-      border: `1px solid ${showExpanded ? color + "50" : C.ghost}`,
+      border: `1px solid ${showExpanded ? `color-mix(in srgb, ${color}, transparent 69%)` : C.ghost}`,
       transition: "border-color 0.2s",
     }}>
       <div
@@ -1085,7 +1124,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
           alignItems: "center",
           gap: "0.5rem",
           padding: "0.5rem 0.6rem",
-          background: showExpanded ? `${color}0A` : "transparent",
+          background: showExpanded ? `color-mix(in srgb, ${color}, transparent 96%)` : "transparent",
           cursor: staticOpen ? "default" : "pointer",
           userSelect: "none",
           transition: "background 0.2s",
@@ -1129,7 +1168,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
       }}>
         <div style={{ overflow: "hidden" }}>
           <div style={{
-            borderTop: showExpanded ? `1px solid ${color}19` : "1px solid transparent",
+            borderTop: showExpanded ? `1px solid color-mix(in srgb, ${color}, transparent 90%)` : "1px solid transparent",
             background: "rgba(0,0,0,0.22)",
             padding: showExpanded ? "0.8rem 0.6rem" : "0 0.6rem",
             maxHeight: 500,
@@ -1157,6 +1196,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
 function QuestionRow({ q, index, navigate }) {
   const { isQuestionInReport, toggleInReport } = useReport();
   const isInReport = isQuestionInReport(q.id);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
@@ -1169,8 +1209,8 @@ function QuestionRow({ q, index, navigate }) {
         borderRadius: 4,
         transition: "background 0.15s",
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = index % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent"; }}
+      onMouseEnter={(e) => { setIsHovered(true); e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+      onMouseLeave={(e) => { setIsHovered(false); e.currentTarget.style.background = index % 2 === 0 ? "rgba(255,255,255,0.015)" : "transparent"; }}
     >
       {/* +/- Toggle Switch for Custom Report */}
       <button 
@@ -1283,39 +1323,41 @@ function QuestionRow({ q, index, navigate }) {
             }}>{q.type}</span>
           )}
 
-          {/* See Responses button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate("question", { id: q.id });
-            }}
-            style={{
-              marginLeft: "auto",
-              fontFamily: FONT.condensed,
-              fontSize: "0.58rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: C.gold,
-              background: "rgba(212,160,48,0.08)",
-              border: `1px solid rgba(212,160,48,0.25)`,
-              borderRadius: 999,
-              padding: "0.15rem 0.55rem",
-              cursor: "pointer",
-              transition: "all 0.15s",
-              whiteSpace: "nowrap",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(212,160,48,0.18)";
-              e.currentTarget.style.borderColor = "rgba(212,160,48,0.5)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(212,160,48,0.08)";
-              e.currentTarget.style.borderColor = "rgba(212,160,48,0.25)";
-            }}
-          >
-            See Responses →
-          </button>
+          {/* See Responses button — only on hover */}
+          {isHovered && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("question", { id: q.id });
+              }}
+              style={{
+                marginLeft: "auto",
+                fontFamily: FONT.condensed,
+                fontSize: "0.58rem",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: C.gold,
+                background: "rgba(212,160,48,0.08)",
+                border: `1px solid rgba(212,160,48,0.25)`,
+                borderRadius: 999,
+                padding: "0.15rem 0.55rem",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(212,160,48,0.18)";
+                e.currentTarget.style.borderColor = "rgba(212,160,48,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(212,160,48,0.08)";
+                e.currentTarget.style.borderColor = "rgba(212,160,48,0.25)";
+              }}
+            >
+              See Responses →
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -1422,6 +1464,14 @@ function VerticalConnector({ branches, activePathways, hoveredPathway, onHoverCh
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
       <svg viewBox={`0 0 ${svgW} ${height}`} style={{ width: "100%", height, overflow: "visible", display: "block" }}>
+        <defs>
+          {flows.map(f => (
+            <linearGradient id={`grad-vert-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
+              <stop offset="0%" stopColor={C.ltBlue} />
+              <stop offset="100%" stopColor={f.color} />
+            </linearGradient>
+          ))}
+        </defs>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const x = currentX;
@@ -1429,7 +1479,7 @@ function VerticalConnector({ branches, activePathways, hoveredPathway, onHoverCh
           
           const isDormant = f.n === 0;
           const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
-          const fill = f.color;
+          const fill = `url(#grad-vert-${f.id})`;
           const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
 
           return (
@@ -1477,6 +1527,155 @@ function MobileConnector({ color, height = 24 }) {
 // ── BranchConnectors ─────────────────────────────────────────────────────────
 // Vertical Sankey ribbons fanning out from the fork to each pathway card
 
+// ── UniversalForkConnector ───────────────────────────────────────────────────
+// Unified Sankey funnel from Universal Questions → each pathway card.
+// Mirrors MergeConnectors but fanning out (top = trunk, bottom = cards).
+
+function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange, searchActive }) {
+  const svgW = 1200;
+  const svgH = 130;
+
+  const flows = branches.map((b, i) => {
+    const info = getFlowInfo(b);
+    return {
+      id: b.id,
+      label: b.label,
+      color: b.color,
+      n: info.n,
+      qCount: info.qCount,
+      weight: Math.max(15, info.n),
+      i,
+    };
+  });
+
+  const totalWeight = flows.reduce((s, f) => s + f.weight, 0);
+
+  // The trunk at top matches the Universal block width (roughly center of SVG)
+  const trunkW = 160;
+  const trunkLeft = (svgW - trunkW) / 2;
+
+  let currentX = trunkLeft;
+
+  return (
+    <div style={{ position: "relative", overflow: "visible", marginTop: "-0.5rem", marginBottom: "-2px" }}>
+      {/* Instruction text overlaid on top of the funnel */}
+      <div style={{
+        position: "relative",
+        zIndex: 2,
+        textAlign: "center",
+        padding: "0.6rem 1rem 0",
+        fontFamily: FONT.body,
+        fontSize: "0.82rem",
+        color: C.dim,
+        lineHeight: 1.5,
+        maxWidth: 640,
+        margin: "0 auto",
+        letterSpacing: "0.01em",
+      }}>
+        From here the survey forks into <strong style={{ color: C.muted }}>six distinct pathways</strong> based on each respondent's circumcision status.
+        Click any pathway below to explore its questions, or select multiple to compare side by side.
+      </div>
+
+      {/* SVG Sankey funnel */}
+      <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", position: "relative", zIndex: 1 }}>
+        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+          <defs>
+            {flows.map(f => (
+              <linearGradient id={`grad-fork-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
+                <stop offset="0%" stopColor={C.ltBlue} />
+                <stop offset="100%" stopColor={f.color} />
+              </linearGradient>
+            ))}
+          </defs>
+          {flows.map((f) => {
+            const w = (f.weight / totalWeight) * trunkW;
+            const topL = currentX;
+            const topR = currentX + w;
+            currentX += w;
+
+            const cardW = (svgW - 5 * 12) / 6; // ~190px per card
+            const gap = 12;
+            const botL = f.i * (cardW + gap);
+            const botR = botL + cardW;
+
+            const cpY = svgH * 0.55;
+
+            const d = `
+              M ${topL} 0
+              C ${topL} ${cpY}, ${botL} ${svgH - cpY}, ${botL} ${svgH}
+              L ${botR} ${svgH}
+              C ${botR} ${svgH - cpY}, ${topR} ${cpY}, ${topR} 0
+              Z
+            `;
+
+            const isDormant = f.n === 0;
+            const isMatch = searchActive && activePathways && activePathways.some(p => p.id === f.id);
+            const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
+            const fill = `url(#grad-fork-${f.id})`;
+            // While searching, the board lights the route: matching ribbons
+            // glow at near-full strength, everything else falls dark.
+            const opacity = searchActive
+              ? (isMatch ? 0.95 : 0.06)
+              : (isActive ? 0.85 : (isDormant ? 0.1 : 0.25));
+
+            // Center spine of the ribbon — the "current" runs down this path
+            // when search lights the route to a matching pathway.
+            const topC = (topL + topR) / 2;
+            const botC = (botL + botR) / 2;
+            const spineD = `M ${topC} 0 C ${topC} ${cpY}, ${botC} ${svgH - cpY}, ${botC} ${svgH}`;
+
+            return (
+              <g key={f.id}>
+                <path
+                  d={d}
+                  fill={fill}
+                  opacity={opacity}
+                  stroke="none"
+                  style={{
+                    cursor: "pointer",
+                    transition: "opacity 0.25s, fill 0.25s",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (onHoverChange) onHoverChange(f.id);
+                    onHover(
+                      e,
+                      `<strong>${f.label} Pathway</strong><br/>` +
+                      `Questions: ${f.qCount}<br/>` +
+                      `Respondents: ${isDormant ? "0 (Coming in Phase 2)" : `n = ${f.n}`}`
+                    );
+                  }}
+                  onMouseMove={onMove}
+                  onMouseLeave={(e) => {
+                    if (onHoverChange) onHoverChange(null);
+                    onLeave();
+                  }}
+                  strokeDasharray={isDormant ? "4,3" : "none"}
+                />
+                {isMatch && (
+                  <path
+                    d={spineD}
+                    fill="none"
+                    stroke={f.color}
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    strokeDasharray="6 10"
+                    className="sf-flow-anim"
+                    opacity={0.9}
+                    style={{
+                      filter: `drop-shadow(0 0 6px ${f.color})`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange }) {
   const count = branches.length;
   const svgW = 1200;
@@ -1503,7 +1702,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: "-2px", position: "relative", zIndex: 0 }}>
       <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
@@ -1543,18 +1742,16 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
                   transition: "opacity 0.25s, fill 0.25s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = 0.85;
                   if (onHoverChange) onHoverChange(f.id);
                   onHover(
                     e,
                     `<strong>${f.label} Pathway</strong><br/>` +
                     `Questions: ${f.qCount}<br/>` +
-                    `Respondents: ${isDormant ? "0 (Awaiting voices)" : `n = ${f.n}`}`
+                    `Respondents: ${isDormant ? "0 (Coming in Phase 2)" : `n = ${f.n}`}`
                   );
                 }}
                 onMouseMove={onMove}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = opacity;
                   if (onHoverChange) onHoverChange(null);
                   onLeave();
                 }}
@@ -1597,8 +1794,16 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-2px", position: "relative", zIndex: 0 }}>
       <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+        <defs>
+          {flows.map(f => (
+            <linearGradient id={`grad-merge-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
+              <stop offset="0%" stopColor={f.color} />
+              <stop offset="100%" stopColor={C.gold} />
+            </linearGradient>
+          ))}
+        </defs>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const botL = currentX;
@@ -1622,7 +1827,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
 
           const isDormant = f.n === 0;
           const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
-          const fill = f.color;
+          const fill = `url(#grad-merge-${f.id})`;
           const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
 
           return (
@@ -1637,18 +1842,16 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
                   transition: "opacity 0.25s, fill 0.25s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = 0.85;
                   if (onHoverChange) onHoverChange(f.id);
                   onHover(
                     e,
                     `<strong>${f.label} Pathway (Reconvening)</strong><br/>` +
                     `Questions: ${f.qCount}<br/>` +
-                    `Respondents: ${isDormant ? "0 (Awaiting voices)" : `n = ${f.n}`}`
+                    `Respondents: ${isDormant ? "0 (Coming in Phase 2)" : `n = ${f.n}`}`
                   );
                 }}
                 onMouseMove={onMove}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = opacity;
                   if (onHoverChange) onHoverChange(null);
                   onLeave();
                 }}
@@ -2303,6 +2506,138 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
   );
 }
 
+// ── TransSubRoles ────────────────────────────────────────────────────────────
+// Sub-role selector for the Trans pathway (Universal, Post-Vaginoplasty, Post-Phalloplasty)
+
+function TransSubRoles({ questions, navigate, isSingleColumn }) {
+  const [selectedRoleId, setSelectedRoleId] = useState("vaginoplasty");
+
+  const transQuestions = useMemo(() =>
+    questions.filter((q) => q.pathway === "trans"),
+    [questions]
+  );
+
+  const activeRole = TRANS_SUBROLES.find((r) => r.id === selectedRoleId);
+  const activeRoleQs = useMemo(() => {
+    return transQuestions.filter((q) =>
+      transSubrolesForQuestion(q).includes(selectedRoleId)
+    ).sort((a, b) => (a.col_idx || 0) - (b.col_idx || 0));
+  }, [transQuestions, selectedRoleId]);
+
+  const transColor = PATH_COLORS.trans_vaginoplasty;
+
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.8rem",
+      gridColumn: "1 / -1"
+    }}>
+
+      {/* Sub-role selector tabs */}
+      <div style={{
+        display: "flex",
+        gap: "0.5rem",
+        flexWrap: "wrap",
+      }}>
+        {TRANS_SUBROLES.map((role) => {
+          const isSelected = selectedRoleId === role.id;
+          const roleQs = transQuestions.filter((q) =>
+            transSubrolesForQuestion(q).includes(role.id)
+          );
+          return (
+            <button
+              key={role.id}
+              onClick={() => setSelectedRoleId(role.id)}
+              style={{
+                flex: 1,
+                minWidth: 120,
+                borderRadius: 8,
+                border: `1px solid ${isSelected ? transColor : C.ghost}`,
+                background: isSelected ? `color-mix(in srgb, ${transColor}, transparent 85%)` : "rgba(255, 255, 255, 0.02)",
+                cursor: "pointer",
+                padding: "0.6rem 0.8rem",
+                userSelect: "none",
+                transition: "all 0.2s ease",
+                boxShadow: isSelected ? `0 0 12px color-mix(in srgb, ${transColor}, transparent 75%)` : "none",
+                textAlign: "left",
+              }}
+              onMouseEnter={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.borderColor = `color-mix(in srgb, ${transColor}, transparent 50%)`;
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.borderColor = C.ghost;
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)";
+                }
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                <span style={{
+                  fontFamily: FONT.display,
+                  fontWeight: 700,
+                  fontSize: "0.82rem",
+                  color: isSelected ? transColor : C.muted,
+                  transition: "color 0.2s",
+                }}>{role.label}</span>
+                <span style={{
+                  fontFamily: FONT.mono,
+                  fontSize: "0.55rem",
+                  color: isSelected ? transColor : C.dim,
+                  background: "rgba(255,255,255,0.05)",
+                  padding: "0.05rem 0.3rem",
+                  borderRadius: 999,
+                  border: `1px solid ${C.ghost}`,
+                }}>{roleQs.length}q</span>
+              </div>
+              <div style={{
+                fontFamily: FONT.body,
+                fontSize: "0.68rem",
+                color: C.dim,
+                marginTop: "0.2rem",
+              }}>{role.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Questions for selected sub-role */}
+      {activeRoleQs.length > 0 ? (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: isSingleColumn ? "1fr" : "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: "0.85rem",
+        }}>
+          {activeRoleQs.map((q, i) => (
+            <QuestionRow key={q.id} q={q} index={i} navigate={navigate} />
+          ))}
+        </div>
+      ) : (
+        <div style={{
+          padding: "2rem",
+          textAlign: "center",
+          color: C.dim,
+          fontFamily: FONT.body,
+          fontSize: "0.82rem",
+          border: `1px dashed color-mix(in srgb, ${transColor}, transparent 60%)`,
+          borderRadius: 8,
+        }}>
+          <span style={{ fontSize: "1.2rem" }}>🏳️‍⚧️</span>
+          <div style={{ marginTop: "0.5rem" }}>
+            <strong style={{ color: C.muted }}>Coming in Phase 2</strong>
+          </div>
+          <div style={{ marginTop: "0.3rem", fontSize: "0.75rem" }}>
+            This pathway is structured and ready — awaiting voices from Phase 2 outreach
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── ExpandedConnectors ───────────────────────────────────────────────────────
 // Sankey ribbons that flow from the bottom of selected pathway cards down 
 // and outward to the top of the expanded questions box grid.
@@ -2358,13 +2693,12 @@ function ExpandedConnectors({ branches, activePathways, svgW = 1200, svgH = 50 }
                 fill={branch.color}
                 opacity={0.85}
               />
+              {/* Subtle edge highlight */}
               <path
                 d={d}
                 fill="transparent"
-                stroke="rgba(255,255,255,0.4)"
-                strokeWidth={1}
-                strokeDasharray="4 8"
-                className="sf-flow-anim"
+                stroke="rgba(255,255,255,0.15)"
+                strokeWidth={0.5}
                 style={{ pointerEvents: "none" }}
               />
               {/* Waypoint glowing node at bottom */}

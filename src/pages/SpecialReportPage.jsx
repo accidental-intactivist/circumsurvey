@@ -1,9 +1,17 @@
 import React from 'react';
 import SquishHeader from '../components/Scrollytelling/SquishHeader';
-import ScrollyEngine from '../components/Scrollytelling/ScrollyEngine';
-import HarmonicCanvas from '../components/HarmonicCanvas';
+import GuidedTour from '../components/GuidedTour/GuidedTour';
+import GlobalFooter from '../explore/components/GlobalFooter';
 
+// The Special Report — a guided tour through all fourteen exhibits of the
+// exhibition, in the Accidental Intactivist's reporting voice. Fully
+// theme-engine native (same tokens/typeface/mode/colorblind as /explore).
+// GlobalFooter provides the exhibition's Master Index directory; navigation
+// from here crosses into the Explore app.
 export default function SpecialReportPage() {
+  const navigateToExplore = (route) => {
+    window.location.href = route === 'index' ? '/explore' : `/explore#/${route}`;
+  };
   return (
     <div style={{
       background: 'var(--c-bg)',
@@ -15,7 +23,8 @@ export default function SpecialReportPage() {
     }}>
       <div style={{ position: 'relative', zIndex: 1 }}>
         <SquishHeader />
-        <ScrollyEngine />
+        <GuidedTour />
+        <GlobalFooter route="special-report" navigate={navigateToExplore} />
       </div>
     </div>
   );

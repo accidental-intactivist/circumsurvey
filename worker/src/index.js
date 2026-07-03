@@ -1154,13 +1154,47 @@ ${q1 ? `If a visual distribution chart would help explain this data, you can emb
 
     // Since metadata filtering is not enabled on the index, we manually fetch the static docs and compute similarity.
     const staticIds = [
-      "get_involved_1", "get_involved_2", "get_involved_3", "get_involved_4", 
-      "resources_1", "resources_2", "about_author", "about_methodology_1", 
-      "about_bias", "faq_purpose", "faq_health_benefits"
+      // About & Project
+      "about_author", "about_methodology_1", "about_methodology_2",
+      "about_bias", "about_data_security", "about_ethical_commitment",
+      "about_impact", "about_alliances",
+      // Glossary
+      "glossary",
+      // Get Involved & Resources
+      "get_involved_1", "get_involved_2", "get_involved_3", "get_involved_4",
+      "resources_1",
+      // FAQ: About the Survey
+      "faq_who_is_ai", "faq_purpose", "faq_audience", "faq_pro_circ_engagement",
+      "faq_propaganda_response", "faq_american_centric", "faq_ethics_oversight",
+      "faq_language_translation", "faq_survey_specifics", "faq_survey_duration",
+      "faq_raw_data_release", "faq_org_collaboration", "faq_anonymous_methodology",
+      "faq_manifesto_download",
+      // FAQ: Taking the Survey
+      "faq_survey_length", "faq_contradictory_answers", "faq_circ_and_restoring",
+      "faq_colorblind_charts", "faq_technical_issues", "faq_restorer_sensitivity",
+      "faq_mixed_religion", "faq_save_progress", "faq_see_results",
+      // FAQ: Big Questions
+      "faq_feel_fine", "faq_health_benefits", "faq_adult_circumcision",
+      "faq_anti_religious", "faq_vmmc_africa", "faq_variation_results",
+      "faq_restoration_explained", "faq_women_partners",
+      // FAQ: Feelings & Emotions
+      "faq_anger_trauma", "faq_regret_vs_resentment", "faq_parental_regret",
+      "faq_shaming_parents", "faq_silenced_voices"
     ];
     
     let matches;
-    const staticPromise = env.VECTORIZE.getByIds(staticIds);
+    const getStaticDocsInChunks = async (ids) => {
+      const results = [];
+      for (let i = 0; i < ids.length; i += 20) {
+        const chunk = ids.slice(i, i + 20);
+        const res = await env.VECTORIZE.getByIds(chunk);
+        if (Array.isArray(res)) {
+          results.push(...res);
+        }
+      }
+      return results;
+    };
+    const staticPromise = getStaticDocsInChunks(staticIds);
 
     if (context && context.questionId) {
       const specificPromise = env.VECTORIZE.query(queryVector, {

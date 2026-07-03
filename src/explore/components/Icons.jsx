@@ -223,3 +223,18 @@ export const Pin = createThemedIcon(
   Lucide.Pin,
   () => <path d="M 8,2 L 8,8 M 5,2 H 11 M 7,8 L 4,12 H 12 L 9,8 M 8,12 V 15" />
 );
+
+export const PieChart = createThemedIcon(
+  Lucide.PieChart,
+  () => <path d="M 8,2 A 6,6 0 1,0 14,8 M 8,2 L 8,8 L 14,8" />
+);
+
+export const Feather = createThemedIcon(
+  Lucide.Feather,
+  () => <path d="M 14,2 L 2,14 M 14,2 L 10,2 M 14,2 L 14,6 M 10,6 L 6,10" />
+);
+
+export const X = createThemedIcon(
+  Lucide.X,
+  () => <path d="M 3,3 L 13,13 M 13,3 L 3,13" />
+);

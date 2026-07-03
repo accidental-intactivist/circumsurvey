@@ -10,28 +10,28 @@ import { resolveCssColor } from '../explore/styles/tokens';
 //   • travelSpeed / waveFreq / ampYScale → CONTINUOUS OSCILLATION (the slow drift)
 // An interactive tuner that mirrors this math lives at docs/harmonic-tuner.html.
 export const LOOM_CONFIG = {
-  speed: 0.01,             // global time scale
-  travelSpeed: 0.0021,     // traveling-wave propagation along each curve
-  waveFreq: 4.60,          // number of waves packed along a curve
-  moirePhaseSpread: 380,   // per-line time offset across ribbon depth (the moiré)
-  ampXScale: 0.64,         // horizontal sweep amplitude
-  ampYScale: 0,            // vertical sweep amplitude
-  rippleAmpScale: 0.34,    // fast secondary "wind ripple"
-  loopAmpScale: 0,         // figure-8 / knot-forming push
-  parentSeparation: 0.45,  // vertical gap between the two parent curves (smaller = more knots)
-  endAnchorMargin: 0,      // how far past the edge the line ENDS are pinned (×half)
+  speed: 0.018,            // global time scale
+  travelSpeed: 0.0014,     // traveling-wave propagation along each curve
+  waveFreq: 3.80,          // number of waves packed along a curve
+  moirePhaseSpread: 520,   // per-line time offset across ribbon depth (the moiré)
+  ampXScale: 0.47,         // horizontal sweep amplitude
+  ampYScale: 0.58,         // vertical sweep amplitude
+  rippleAmpScale: 0.52,    // fast secondary "wind ripple"
+  loopAmpScale: 0.32,      // figure-8 / knot-forming push
+  parentSeparation: 0.32,  // vertical gap between the two parent curves (smaller = more knots)
+  endAnchorMargin: 0.15,   // how far past the edge the line ENDS are pinned (×half)
   nodeCount: 6,            // control points per curve — MORE = more kinks/weave
-  kinkDepth: 1.10,         // how hard interior points wander (>1 = curvier, knottier)
-  focalLength: 1500,       // perspective depth (lower = stronger 3D)
-  lineWidth: 2.40,         // stroke weight multiplier
+  kinkDepth: 0.5,          // how hard interior points wander (>1 = curvier, knottier)
+  focalLength: 1270,       // perspective depth (lower = stronger 3D)
+  lineWidth: 4,            // stroke weight multiplier
   // THE GLISTEN — an occasional event, organised by COLOUR FAMILY. Lines are
   // binned by hue into `glintGroups` families; each family gets its own glint
   // that alternates direction and is staggered in time, so glints cross.
-  glintGroups: 5,          // colour families, each with its own glint lane
+  glintGroups: 2,          // colour families, each with its own glint lane
   glintInterval: 20,       // SECONDS between a family's glints (families staggered)
   glintSpeed: 0.05,        // pace of a pass (line-lengths/sec)
-  glintWidth: 0.09,        // streak (tail) length as a FRACTION of the line
-  glintStrength: 0.25,     // brightness of the streak (0–1)
+  glintWidth: 0.15,        // streak (tail) length as a FRACTION of the line
+  glintStrength: 0.5,      // brightness of the streak (0–1)
   glintTint: 0,            // HOLOGRAPHIC saturation: 0 = vivid rainbow, 1 = pearly white
 };
 

@@ -5,14 +5,18 @@ import * as Icons from "./Icons";
 
 // ── Compact Exhibit Card (Gemstone Aesthetic) ────────────────────────────────
 
-function ExhibitCard({ exhibit, meta }) {
+// Exported so other views (e.g. the Special Report guided tour) can reuse the
+// gemstone tiles with a custom link target (`href`/`onClick`) while keeping
+// the exact Explore look. Defaults preserve dashboard behavior.
+export function ExhibitCard({ exhibit, meta, href, onClick }) {
   const [hovered, setHovered] = useState(false);
   const color = resolveCssColor(exhibit.colorVar || "var(--c-gold)");
   const CardIcon = Icons[exhibit.icon] || Icons.Compass;
 
   return (
     <a
-      href={`#/${exhibit.route}`}
+      href={href || `#/${exhibit.route}`}
+      onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

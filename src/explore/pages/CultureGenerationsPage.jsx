@@ -250,7 +250,7 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
   const activeAssocPrompt = ASSOC_QUESTIONS.find(q => q.id === activeAssoc)?.label || "";
   const sankeyDims = useMemo(() => {
     return [
-      { id: "demo_country_born", label: "Country Born" },
+      { id: "country_born", label: "Country Born" },
       { id: "pathway", label: "Pathway" },
       { id: activeSankeyTarget, label: SANKEY_TARGETS.find(t => t.id === activeSankeyTarget)?.label || "Belief", type: "question" },
     ];

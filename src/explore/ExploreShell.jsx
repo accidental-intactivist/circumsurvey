@@ -36,6 +36,8 @@ import ForParentsPage from "./pages/ForParentsPage";
 import AboutPage from "./pages/AboutPage";
 import FaqPage from "./pages/FaqPage";
 import GlobalFooter from "./components/GlobalFooter";
+import ErrorBoundary from "./ErrorBoundary";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -149,6 +151,8 @@ export default function ExploreShell() {
     page = <AboutPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "faq") {
     page = <FaqPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
+  } else if (route === "not-found") {
+    page = <NotFoundPage onOpenDocent={() => setDocentOpen(true)} />;
   } else {
     page = <IndexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   }
@@ -176,9 +180,11 @@ export default function ExploreShell() {
         isDocentOpen={isDocentOpen}
         setDocentOpen={setDocentOpen}
       />
-      <main className={`explore-page-container ${isDocentOpen ? 'docent-open' : ''}`}>
-        {page}
-        <GlobalFooter route={route} navigate={navigate} />
+      <main className={`explore-page-container ${isDocentOpen ? 'docent-open' : ''}`} style={{ minHeight: "80vh" }}>
+        <ErrorBoundary>
+          {page}
+        </ErrorBoundary>
+        <GlobalFooter currentRoute={route} navigate={navigate} />
       </main>
       <GlobalDocentDrawer 
         isOpen={isDocentOpen} 

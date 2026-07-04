@@ -19,6 +19,7 @@ export default function App() {
           <Route path="/about" element={<Navigate to="/explore#/about" replace />} />
           <Route path="/faq" element={<Navigate to="/explore#/faq" replace />} />
           <Route path="/special-report" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/explore#/not-found" replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

@@ -1614,7 +1614,7 @@ function FactorGrid({ showTooltip, moveTooltip, hideTooltip }) {
                         <td
                           key={out.id}
                           onClick={() => setExpandedCell(isExpanded ? null : `${dim.id}-${out.id}`)}
-                          onMouseEnter={(e) => cell && showTooltip(`${cell.min.toFixed(0)}–${cell.max.toFixed(0)}% range (Δ${cell.range.toFixed(0)}pp)`, e)}
+                          onMouseEnter={(e) => cell && showTooltip(e, `${cell.min.toFixed(0)}–${cell.max.toFixed(0)}% range (Δ${cell.range.toFixed(0)}pp)`)}
                           onMouseMove={moveTooltip}
                           onMouseLeave={hideTooltip}
                           style={{
@@ -1812,10 +1812,10 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
   }, [setCustomMeta]);
 
   const sections = [
-    { id: "snapshots", label: "At a Glance", icon: "★" },
-    { id: "quiz", label: "Challenge Your Assumptions", icon: "◇" },
-    { id: "persona-builder", label: "Persona Builder", icon: "◈" },
-    { id: "factor-grid", label: "The Factor Grid", icon: "▦" },
+    { id: "snapshots", label: "At a Glance", icon: "★", desc: "Top-level takeaways and standout statistics." },
+    { id: "quiz", label: "Challenge Your Assumptions", icon: "◇", desc: "Test your intuition against the actual data." },
+    { id: "persona-builder", label: "Persona Builder", icon: "◈", desc: "Filter the dataset dynamically by demographic traits." },
+    { id: "factor-grid", label: "The Factor Grid", icon: "▦", desc: "A dense heatmap showing which demographics predict which outcomes." },
   ];
 
   return (
@@ -1882,9 +1882,23 @@ export default function ByTheNumbersPage({ routerState, navigate, updateState, s
                   }
                 }}
               >
-                <span style={{ display: "flex", alignItems: "center" }}>
-                  <IconifyEmoji emoji={s.icon} size="1.1em" />
-                </span> {s.label}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ display: "flex", alignItems: "center", color: activeSection === s.id ? resolveCssColor(C.goldBright) : C.dim }}>
+                      <IconifyEmoji emoji={s.icon} size="1.1em" />
+                    </span>
+                    <span style={{ fontWeight: activeSection === s.id ? 600 : 400 }}>{s.label}</span>
+                  </div>
+                  {s.desc && (
+                    <div style={{
+                      fontSize: "0.7rem", color: activeSection === s.id ? C.text : C.dim,
+                      lineHeight: 1.3, paddingLeft: "1.6rem",
+                      transition: "color 0.2s"
+                    }}>
+                      {s.desc}
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </aside>

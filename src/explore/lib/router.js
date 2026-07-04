@@ -64,6 +64,14 @@ function parseHash() {
     route = "adult-experience";
   } else if (segments[0] === "for-parents") {
     route = "for-parents";
+  } else if (segments[0] === "about") {
+    route = "about";
+  } else if (segments[0] === "faq") {
+    route = "faq";
+  } else if (segments[0] === "the-forward-view") {
+    route = "the-forward-view";
+  } else if (segments.length > 0 && segments[0] !== "index") {
+    route = "not-found";
   }
 
   // Extract standardized query state
@@ -113,6 +121,10 @@ function serializeState(route, params, state) {
   else if (route === "final-thoughts") path = "/final-thoughts";
   else if (route === "trans-intersex") path = "/trans-intersex";
   else if (route === "for-parents") path = "/for-parents";
+  else if (route === "about") path = "/about";
+  else if (route === "faq") path = "/faq";
+  else if (route === "the-forward-view") path = "/the-forward-view";
+  else if (route === "not-found") path = "/404";
   else path = "/";
 
   const q = new URLSearchParams();

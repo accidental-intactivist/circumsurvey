@@ -7,7 +7,10 @@ import SharePopover from "./SharePopover";
 import { sortDistribution, applyLikert, shortLabel, getHarveyBallScore } from "../lib/formatters";
 import HarveyBall from "./HarveyBall";
 
+import { useTheme } from "../contexts/ThemeContext";
+
 export default function DistributionChart({ title, distribution, cohortDistribution, question, cohort, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
+  const { colorblind, theme } = useTheme();
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const [hiddenItems, setHiddenItems] = useState(new Set());
   const [isExpanded, setIsExpanded] = useState(false);
@@ -249,7 +252,11 @@ export default function DistributionChart({ title, distribution, cohortDistribut
         </div>
       )}
 
-      {!hideLegend && (
+      {!hideLegend && (() => {
+          // Only use Harvey Balls when ALL items in the distribution have a score.
+          // A mix of Harvey Balls and squares looks inconsistent.
+          const useHarveyBalls = parsedDist.length > 0 && parsedDist.every(d => getHarveyBallScore(d.label) !== null);
+          return (
         <>
           {/* Legend / per-option rows */}
           <div style={{ marginTop: "1.1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
@@ -294,7 +301,7 @@ export default function DistributionChart({ title, distribution, cohortDistribut
                     }
                   }}
                 >
-                  {getHarveyBallScore(d.label) !== null ? (
+                  {useHarveyBalls ? (
                     <HarveyBall 
                       score={getHarveyBallScore(d.label)} 
                       color={isHidden ? C.ghost : (colorMap[d.label] || colorForLabel(d.label, i))} 
@@ -372,7 +379,8 @@ export default function DistributionChart({ title, distribution, cohortDistribut
             </button>
           )}
         </>
-      )}
+          );
+      })()}
 
       {/* Cohort caption */}
       {cohortDistribution && cohortTotal > 0 && (

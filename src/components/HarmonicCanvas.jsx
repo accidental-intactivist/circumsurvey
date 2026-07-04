@@ -35,8 +35,13 @@ export const LOOM_CONFIG = {
   glintTint: 0,            // HOLOGRAPHIC saturation: 0 = vivid rainbow, 1 = pearly white
 };
 
-export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '' }) {
+export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '', paused = false }) {
   const canvasRef = useRef(null);
+  const pausedRef = useRef(paused);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -392,9 +397,15 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       // ── Delta-time accumulation ──
       // Clamp delta to avoid huge jumps if tab was backgrounded
       const delta = Math.min(elapsed, 100);
+      lastFrameTime = now;
+
+      if (pausedRef.current) {
+        animationFrameId = requestAnimationFrame(render);
+        return; // skip drawing entirely to save CPU
+      }
+
       time += delta * SPEED;
       glintTime += delta;
-      lastFrameTime = now;
 
       const cw = canvas.width / dpr;
       const ch = canvas.height / dpr;

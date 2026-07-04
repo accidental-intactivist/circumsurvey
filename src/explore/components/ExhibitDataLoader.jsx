@@ -5,6 +5,7 @@ import { getResponseDistribution, getNarratives } from "../lib/api";
 import DistributionChart from "./DistributionChart";
 import NarrativeList from "./NarrativeList";
 import SmallSampleBadge from "./SmallSampleBadge";
+import HarmonicLoader from "./HarmonicLoader";
 
 // Questions tagged as multi_select in the DB but whose responses are actually
 // free-text narratives. They should NOT be comma-split by flattenMultiSelect.
@@ -57,7 +58,7 @@ export default function ExhibitDataLoader({
     return () => { cancelled = true; };
   }, [question?.id, effectiveType, JSON.stringify(cohort)]);
 
-  if (loading) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>Loading data...</div>;
+  if (loading) return <HarmonicLoader text={`Retrieving Data...`} />;
   if (!data) return <div style={{ color: C.dim, fontStyle: "italic", fontSize: "0.82rem" }}>No data.</div>;
 
   const dist = effectiveType === "open_text" ? data.narratives : data.distribution;

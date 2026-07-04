@@ -117,6 +117,18 @@ export function ReportProvider({ children }) {
     });
   };
 
+  const addAIChatBlock = (query, answer) => {
+    setReportItems((prev) => {
+      const newBlock = {
+        id: `ai_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        type: 'ai_chat',
+        query,
+        answer
+      };
+      return [...prev, newBlock];
+    });
+  };
+
   const updateTextBlock = (itemId, content) => {
     setReportItems((prev) => prev.map(item => 
       item.id === itemId ? { ...item, content } : item
@@ -162,6 +174,7 @@ export function ReportProvider({ children }) {
       removeFromReport,
       toggleInReport,
       addTextBlock,
+      addAIChatBlock,
       updateTextBlock,
       updateReportMeta,
       clearReport,

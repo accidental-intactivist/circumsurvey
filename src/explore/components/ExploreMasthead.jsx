@@ -15,6 +15,7 @@ import { useTheme } from "../contexts/ThemeContext";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 import ThemeToggle from "./ThemeToggle";
 import { Sparkles } from "./Icons";
+import { Play, Pause } from "lucide-react";
 
 // ── Easy-to-adjust height constants ─────────────────────────────────────
 const HERO_HEIGHT = 240;   // px – hero / expanded state (adjust to taste)
@@ -191,6 +192,21 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  
+  const [loomPaused, setLoomPaused] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("cs_loom_paused") === "true";
+    }
+    return false;
+  });
+
+  const toggleLoom = () => {
+    const next = !loomPaused;
+    setLoomPaused(next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cs_loom_paused", String(next));
+    }
+  };
 
   // Close breadcrumb dropdown when clicking outside
   useEffect(() => {
@@ -310,6 +326,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             <HarmonicCanvas
               themeKey={`${theme}-${mode}-${colorblind}`}
               opacity={1}
+              paused={loomPaused}
             />
           </div>
         </div>
@@ -597,7 +614,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               }}
             >
               <Sparkles size={12} color="currentColor" />
-              <span className="mobile-docent-text">Ask A Docent</span>
+              <span className="mobile-docent-text">Research Assistant</span>
             </button>
           </div>
         </div>
@@ -689,6 +706,48 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             */}
           </div>
         </div>
+
+        {/* ── Pause Button for Harmonic Loom ── */}
+        <button
+          onClick={toggleLoom}
+          title={loomPaused ? "Play background animation" : "Pause background animation"}
+          style={{
+            position: "absolute",
+            bottom: "1.2rem",
+            right: "1.5rem",
+            zIndex: 20,
+            background: "rgba(0,0,0,0.4)",
+            border: `1px solid ${loomPaused ? "var(--c-goldBright)" : "var(--c-ghost)"}`,
+            color: loomPaused ? "var(--c-goldBright)" : "var(--c-dim)",
+            borderRadius: "50%",
+            width: "32px",
+            height: "32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            opacity: scrolled ? 0 : 0.6,
+            pointerEvents: scrolled ? "none" : "auto",
+            backdropFilter: "blur(4px)",
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.opacity = 1;
+            e.currentTarget.style.color = "var(--c-goldBright)";
+            e.currentTarget.style.borderColor = "var(--c-goldBright)";
+            e.currentTarget.style.background = "rgba(0,0,0,0.6)";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.opacity = scrolled ? 0 : 0.6;
+            if (!loomPaused) {
+              e.currentTarget.style.color = "var(--c-dim)";
+              e.currentTarget.style.borderColor = "var(--c-ghost)";
+              e.currentTarget.style.background = "rgba(0,0,0,0.4)";
+            }
+          }}
+        >
+          {loomPaused ? <Play size={14} style={{ marginLeft: "2px", fill: "currentColor" }} /> : <Pause size={14} style={{ fill: "currentColor" }} />}
+        </button>
       </header>
     </>
   );

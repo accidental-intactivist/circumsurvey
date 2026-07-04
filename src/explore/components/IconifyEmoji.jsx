@@ -58,6 +58,7 @@ const EMOJI_MAPPING = {
   "≡": Lucide.Menu,
   "◎": Lucide.CircleDot,
   "◈": Lucide.Target,
+  "💡": Lucide.Lightbulb,
   "🔍": Lucide.Search,
   "🙋‍♂️": Lucide.User,
   "♂": Lucide.User,
@@ -106,6 +107,7 @@ const EMOJI_COLORS = {
   "\u{1F4CB}": C.gold,
   "\u{1F33F}": C.gold,
   "\u{1F500}": C.gold,
+  "💡": C.yellow,
 };
 
 export function IconifyEmoji({ emoji, size = "1.2em", style, ...props }) {

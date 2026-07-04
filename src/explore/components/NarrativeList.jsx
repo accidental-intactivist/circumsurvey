@@ -161,25 +161,10 @@ export default function NarrativeList({ cohort,
     return <div style={{ color: C.dim, fontStyle: "italic" }}>No narrative responses found for this cohort.</div>;
   }
 
-  const MIN_NARRATIVE_COHORT = 20;
-  const isPrivacyMasked = distribution.length > 0 && distribution.length < MIN_NARRATIVE_COHORT;
+  const isPrivacyMasked = false;
   
   return (
     <div style={{ marginTop: "1rem" }}>
-      {isPrivacyMasked && (
-        <div style={{ padding: "1rem", background: "rgba(212,160,48,0.06)", border: `1px solid rgba(212,160,48,0.3)`, borderRadius: 8, marginBottom: "1.2rem", display: "flex", gap: "0.8rem", alignItems: "center" }}>
-          <div style={{ fontSize: "1.5rem" }}>🛡️</div>
-          <div>
-            <div style={{ color: C.goldBright, marginBottom: "0.2rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
-              Privacy Guardrail Active (Small Cohort n={distribution.length})
-            </div>
-            <div style={{ color: C.muted, fontSize: "0.85rem", fontFamily: FONT.body, lineHeight: 1.4 }}>
-              To prevent potential re-identification in this small sub-cohort, verbatim narratives are shown but all generational and demographic metadata has been redacted.
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Header controls */}
       <div style={{
         display: "flex",

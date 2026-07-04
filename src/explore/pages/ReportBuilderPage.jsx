@@ -131,6 +131,10 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
           });
         }
         txt += "\\n";
+      } else if (item.type === 'ai_chat') {
+        txt += `--- AI RESEARCH ASSISTANT ---\\n`;
+        txt += `Q: ${item.query}\\n\\n`;
+        txt += `${item.answer}\\n\\n`;
       }
     });
     const blob = new Blob([txt], { type: "text/plain;charset=utf-8;" });
@@ -393,6 +397,22 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
                             cohort={item.cohort}
                           />
                         )}
+                      </div>
+                    </div>
+                  );
+                } else if (isAiChat) {
+                  contentNode = (
+                    <div style={{ width: "100%", border: `1px solid ${C.blue}`, borderRadius: 12, background: "rgba(0, 10, 40, 0.4)", overflow: "hidden" }}>
+                      <div style={{ padding: "1.5rem 1.8rem" }}>
+                        <span style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.blue, display: "block", marginBottom: "0.4rem" }}>
+                          AI Research Assistant
+                        </span>
+                        <h2 style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.textBright, lineHeight: 1.25, marginBottom: "1rem", letterSpacing: "-0.01em", fontStyle: "italic" }}>
+                          "{item.query}"
+                        </h2>
+                        <div style={{ color: C.textBright, fontFamily: FONT.body, lineHeight: 1.6, fontSize: "0.95rem" }} className="markdown-body">
+                          <ReactMarkdown>{item.answer}</ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                   );

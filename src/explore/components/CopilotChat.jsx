@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from 'react-markdown';
 import { C, FONT } from "../styles/tokens";
 import { queryCopilot, getQuestions, getResponseDistribution } from "../lib/api";
@@ -9,22 +9,35 @@ import DistributionChart from "./DistributionChart";
 import SurveyFlowchart from "./SurveyFlowchart";
 import { Link } from "react-router-dom";
 import { LOOM_CONFIG } from "../../components/HarmonicCanvas";
+import { EXHIBIT_ROUTES } from "./ExploreMasthead";
+import { useReport } from "../contexts/ReportContext";
 
 function DocentChart({ questionId }) {
   const [question, setQuestion] = useState(null);
   const [dist, setDist] = useState(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    getQuestions().then(qs => {
-      if (!cancelled) setQuestion(qs.find(q => q.id === questionId));
-    });
-    getResponseDistribution(questionId).then(d => {
-      if (!cancelled) setDist(d);
+    Promise.all([
+      getQuestions(),
+      getResponseDistribution(questionId),
+    ]).then(([qs, d]) => {
+      if (cancelled) return;
+      const q = qs.find(q => q.id === questionId);
+      if (!q || !d?.distribution) {
+        setFailed(true);
+      } else {
+        setQuestion(q);
+        setDist(d);
+      }
+    }).catch(() => {
+      if (!cancelled) setFailed(true);
     });
     return () => { cancelled = true; };
   }, [questionId]);
 
+  if (failed) return null;
   if (!question || !dist) return <div style={{ color: C.dim, fontSize: "0.8rem", padding: "1rem" }}>Loading chart for {questionId}...</div>;
   return (
     <div style={{ marginTop: "1rem", marginBottom: "1rem", border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1rem", background: C.bgCard }}>
@@ -36,48 +49,25 @@ function DocentChart({ questionId }) {
 
 export default function CopilotChat({ routerState, updateState, question, exhibitContext }) {
   const { unlockTheme, setTheme } = useTheme();
+  const { addAIChatBlock } = useReport();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [addedToReport, setAddedToReport] = useState(false);
   const initialRunDone = useRef(false);
 
-  const executeSearch = async (searchQuery) => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
-
-    const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
-    let pageSnapshot = undefined;
-    
-    if (isSnapshotRequested) {
-      const mainEl = document.querySelector('main');
-      if (mainEl) {
-        // Strip out excessive whitespace and limit to ~15,000 characters to avoid payload bloat
-        pageSnapshot = mainEl.innerText.replace(/\n{3,}/g, '\n\n').slice(0, 15000);
-      }
-    }
-
-    const context = {
-      route: routerState?.route,
-      questionId: routerState?.params?.id,
-      cohort: routerState?.cohort,
-      questionPrompt: question?.prompt,
-      questionOptions: question?.opts ? JSON.stringify(question.opts) : undefined,
-      questionPathway: question?.pathway,
-      pageSnapshot,
-      ...exhibitContext
-    };
-
-    try {
-      const data = await queryCopilot(searchQuery, context);
-      setResult(data);
-    } catch (err) {
-      setError(err.message || String(err));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const astuteSua = useMemo(() => {
+    const list = [
+      "Can you cross-tabulate generation against circumcision regret?",
+      "What is the most unexpected demographic correlation in the data?",
+      "What are the hidden emotional themes in the open-text narratives?",
+      "How do geographical origins affect respondents' views on bodily autonomy?",
+      "Are there statistical differences between religious and secular upbringing?",
+      "What is the most statistically significant finding regarding the pleasure gap?"
+    ];
+    return list[Math.floor(Math.random() * list.length)];
+  }, [routerState?.route]);
 
   // Auto-run if URL has ai_query
   useEffect(() => {
@@ -151,6 +141,44 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     executeSearch(query.trim());
   };
 
+  const executeSearch = async (searchQuery) => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setAddedToReport(false);
+
+    const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
+    let pageSnapshot = undefined;
+    
+    if (isSnapshotRequested) {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        // Strip out excessive whitespace and limit to ~15,000 characters to avoid payload bloat
+        pageSnapshot = mainEl.innerText.replace(/\n{3,}/g, '\n\n').slice(0, 15000);
+      }
+    }
+
+    const context = {
+      route: routerState?.route,
+      questionId: routerState?.params?.id,
+      cohort: routerState?.cohort,
+      questionPrompt: question?.prompt,
+      questionOptions: question?.opts ? JSON.stringify(question.opts) : undefined,
+      questionPathway: question?.pathway,
+      pageSnapshot,
+      ...exhibitContext
+    };
+
+    try {
+      const data = await queryCopilot(searchQuery, context);
+      setResult(data);
+    } catch (err) {
+      setError(err.message || String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{
       display: "flex",
@@ -171,35 +199,104 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
         <div style={{
           display: "flex",
           justifyContent: "flex-end",
-        alignItems: "center",
-        marginBottom: "-1rem" // pulls the chat closer since header is gone
-      }}>
-        {(result || query) && (
-          <button
-            onClick={handleClear}
-            style={{
-              marginLeft: "auto",
-              background: "transparent",
-              border: `1px solid ${C.ghost}`,
-              color: C.muted,
-              fontFamily: FONT.condensed,
-              fontSize: "0.62rem",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              padding: "0.15rem 0.55rem",
-              borderRadius: 4,
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = C.textBright; e.currentTarget.style.borderColor = C.muted; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; e.currentTarget.style.borderColor = C.ghost; }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
+          alignItems: "center",
+          marginBottom: "0.5rem",
+          minHeight: "2rem",
+          gap: "0.5rem"
+        }}>
+          {result && !error && (
+            <button
+              onClick={() => {
+                if (addedToReport) return;
+                addAIChatBlock(query, result.answer);
+                setAddedToReport(true);
+              }}
+              style={{
+                background: addedToReport ? "rgba(100, 200, 100, 0.1)" : "transparent",
+                border: `1px solid ${addedToReport ? C.green : C.ghost}`,
+                color: addedToReport ? C.green : C.gold,
+                fontFamily: FONT.condensed,
+                fontSize: "0.65rem",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "0.3rem 0.75rem",
+                borderRadius: 999,
+                cursor: addedToReport ? "default" : "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => { 
+                if (addedToReport) return;
+                e.currentTarget.style.color = C.goldBright; 
+                e.currentTarget.style.borderColor = C.gold; 
+              }}
+              onMouseLeave={(e) => { 
+                if (addedToReport) return;
+                e.currentTarget.style.color = C.gold; 
+                e.currentTarget.style.borderColor = C.ghost; 
+              }}
+            >
+              {addedToReport ? "Added to Report" : "+ Add to Report"}
+            </button>
+          )}
+          {(result || query) && (
+            <button
+              onClick={handleClear}
+              style={{
+                background: "transparent",
+                border: `1px solid ${C.ghost}`,
+                color: C.muted,
+                fontFamily: FONT.condensed,
+                fontSize: "0.65rem",
+                fontWeight: 600,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "0.3rem 0.75rem",
+                borderRadius: 999,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.textBright; e.currentTarget.style.borderColor = C.muted; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; e.currentTarget.style.borderColor = C.ghost; }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
-      {!result && !loading && !error && (
+      {!result && !loading && !error && (() => {
+        // "What can I learn from this page?" is universal.
+        const route = routerState?.route;
+        let second;
+        
+        const routeSpecificSuas = {
+          "index": "Which exhibit covers sensitivity and satisfaction?",
+          "question": "How do different demographic groups answer this question?",
+          "not-found": "What topics does this survey cover?",
+          "pathways": "How do the three pathways differ overall?",
+          "pairs": "What are the most polarized answers between cohorts?",
+          "pleasure-gap": "How does circumcision status impact sexual satisfaction?",
+          "correlations": "Which demographic factors predict the strongest regret?",
+          "demographics": "Show me a breakdown of the participants by generation.",
+          "narrative-mirrors": "What are the most common emotional themes in the narratives?",
+          "culture": "How have cultural attitudes shifted between generations?",
+          "observer-lens": "How do partners and parents view circumcision differently?",
+          "religious-mirrors": "How does religion influence the decision to circumcise?",
+          "restoration-journey": "Why do men choose to undergo foreskin restoration?",
+          "adult-experience": "What do men who remember both states say about the change?",
+          "numbers": "What are the most statistically significant findings in the survey?",
+          "for-parents": "What data is most relevant for expecting parents?",
+          "the-forward-view": "Are respondents likely to advocate for or against circumcision?"
+        };
+
+        second = routeSpecificSuas[route] || "What surprised respondents most about this topic?";
+        
+        const suas = [
+          "What can I learn from this page?",
+          second,
+          astuteSua
+        ];
+        return (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
           <h5 style={{
             fontFamily: FONT.condensed,
@@ -210,10 +307,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
             margin: 0
           }}>Suggested Queries</h5>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {[
-              "What can I learn from this page?",
-              "Summarize the key findings here."
-            ].map((sua, i) => (
+            {suas.map((sua, i) => (
               <button
                 key={i}
                 onClick={() => {
@@ -240,7 +334,8 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
             ))}
           </div>
         </div>
-      )}
+        );
+      })()}
 
 
       {error && (
@@ -252,60 +347,55 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       {result && (
         <div style={{
           background: C.bgSoft,
-          borderRadius: 8,
+          borderRadius: 10,
           padding: "1.5rem",
           border: `1px solid ${C.ghost}`,
+          borderTop: `2px solid ${C.gold}40`,
           fontFamily: FONT.body,
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem" }}>
-            <h4 style={{
-              fontFamily: FONT.display,
-              fontWeight: 700,
-              fontSize: "1.2rem",
-              color: C.textBright,
-            }}>AI Synthesis</h4>
-            
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-              {result.metadata?.intent && (
-                <span style={{
-                  fontFamily: FONT.mono,
-                  fontSize: "0.65rem",
-                  color: C.dim,
-                  border: `1px solid ${C.ghost}`,
-                  padding: "0.1rem 0.4rem",
-                  borderRadius: 4,
-                  textTransform: "uppercase"
-                }}>
-                  {result.metadata.intent} query detected
-                </span>
-              )}
-              
-              <button
-                onClick={(e) => {
-                  navigator.clipboard.writeText(window.location.href);
-                  const origText = e.target.innerText;
-                  e.target.innerText = "✓ COPIED";
-                  setTimeout(() => { e.target.innerText = origText; }, 2000);
-                }}
-                style={{
-                  background: "transparent",
-                  border: `1px solid ${C.ghost}`,
-                  color: C.goldBright,
-                  fontFamily: FONT.condensed,
-                  fontSize: "0.64rem",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  padding: "0.1rem 0.5rem",
-                  borderRadius: 4,
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => { e.target.style.background = "rgba(212,160,48,0.1)"; }}
-                onMouseLeave={(e) => { e.target.style.background = "transparent"; }}
-              >
-                🔗 Share Link
-              </button>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <Sparkles size={16} color={C.gold} style={{ opacity: 0.7 }} />
+              <h4 style={{
+                fontFamily: FONT.condensed,
+                fontWeight: 700,
+                fontSize: "0.8rem",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: C.gold,
+                margin: 0,
+              }}>Synthesis</h4>
             </div>
+            
+            <button
+              onClick={(e) => {
+                navigator.clipboard.writeText(window.location.href);
+                const span = e.currentTarget.querySelector('span');
+                e.currentTarget.style.borderColor = C.gold;
+                span.textContent = 'Copied';
+                setTimeout(() => { span.textContent = 'Share'; e.currentTarget.style.borderColor = C.ghost; }, 2000);
+              }}
+              style={{
+                background: "transparent",
+                border: `1px solid ${C.ghost}`,
+                color: C.muted,
+                fontFamily: FONT.condensed,
+                fontSize: "0.65rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                padding: "0.2rem 0.6rem",
+                borderRadius: 999,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright; e.currentTarget.style.borderColor = C.gold; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; e.currentTarget.style.borderColor = C.ghost; }}
+            >
+              <span>Share</span>
+            </button>
           </div>
           
           <div style={{
@@ -330,10 +420,13 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               }
               if (part.startsWith("[EXHIBIT:")) {
                 const exid = part.replace("[EXHIBIT:", "").replace("]", "").trim();
+                const routeConfig = EXHIBIT_ROUTES.find(r => r.route === exid);
+                const title = routeConfig ? `${routeConfig.num} - ${routeConfig.label}` : (exid.charAt(0).toUpperCase() + exid.slice(1).replace(/-/g, ' '));
+                
                 return (
-                  <Link key={i} to={`/exhibits/${exid}`} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0" }}>
-                    Explore Exhibit: {exid}
-                  </Link>
+                  <a key={i} href={`#/${exid}`} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0", fontWeight: 600 }}>
+                    {title}
+                  </a>
                 );
               }
               return (
@@ -366,7 +459,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               fontSize: "0.75rem",
               color: C.muted
             }}>
-              <div style={{ color: C.dim, marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>🔍 Query Executed By AI</div>
+              <div style={{ color: C.dim, marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em", fontFamily: FONT.condensed }}>Query</div>
               <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: C.ltBlue }}>
                 {result.metadata.sql}
               </pre>
@@ -561,7 +654,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               alignSelf: "flex-end"
             }}
           >
-            {loading ? "Thinking..." : "Ask AI"}
+            {loading ? "Thinking…" : "Submit"}
           </button>
         </form>
       </div>

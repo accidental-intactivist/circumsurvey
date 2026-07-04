@@ -7,6 +7,7 @@ import WordCloud from "../components/WordCloud";
 import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
+import { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
 
 const NARRATIVE_CONCEPTS = [
   {
@@ -68,6 +69,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedConceptId, setSelectedConceptId] = useState(NARRATIVE_CONCEPTS[0].id);
+  const [cohort, setCohort] = useState(null);
 
   useEffect(() => {
     if (setExhibitContext) {
@@ -171,12 +173,42 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
           })}
         </div>
 
+        {/* Global Filter */}
+        <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
+          <span style={{ fontFamily: FONT.condensed, color: C.gold, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>Filter by Generation:</span>
+          <select 
+            value={cohort?.generation?.[0] || ""} 
+            onChange={e => {
+              const val = e.target.value;
+              if (val) setCohort({ generation: [val] });
+              else setCohort(null);
+            }}
+            style={{
+              background: "rgba(0,0,0,0.4)",
+              border: `1px solid ${C.ghost}`,
+              color: C.textBright,
+              fontFamily: FONT.body,
+              fontSize: "1rem",
+              padding: "0.5rem 1rem",
+              borderRadius: 8,
+              outline: "none",
+              cursor: "pointer",
+              minWidth: "250px"
+            }}
+          >
+            <option value="">All Generations</option>
+            {DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "generation")?.options.map(o => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Concept Metadata */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 style={{ fontFamily: FONT.display, fontSize: "2rem", color: C.textBright, marginBottom: "0.5rem" }}>
             {activeConcept.label}
           </h2>
-          <p style={{ fontFamily: FONT.body, fontSize: "1.05rem", color: C.muted, maxWidth: 800, margin: "0 auto" }}>
+          <p style={{ fontFamily: FONT.display, fontSize: "1.25rem", color: C.muted, maxWidth: 900, margin: "0 auto", lineHeight: 1.4 }}>
             {activeConcept.desc}
           </p>
         </div>
@@ -228,6 +260,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
                   <NarrativeLoader 
                     qid={conf.qid} 
                     pathway={conf.pathway} 
+                    cohort={cohort}
                     selectedWord={selectedWord}
                     setSelectedWord={setSelectedWord}
                   />
@@ -245,7 +278,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
 }
 
 // ── COHORT NARRATIVE LOADER ────────────────────────────────────────────────
-function NarrativeLoader({ qid, pathway, selectedWord, setSelectedWord }) {
+function NarrativeLoader({ qid, pathway, cohort, selectedWord, setSelectedWord }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -254,7 +287,7 @@ function NarrativeLoader({ qid, pathway, selectedWord, setSelectedWord }) {
     setLoading(true);
     setData(null);
     
-    getNarratives(qid, { pathway })
+    getNarratives(qid, { pathway, cohort })
       .then(d => {
         if (!cancelled) {
           setData(d);
@@ -267,7 +300,7 @@ function NarrativeLoader({ qid, pathway, selectedWord, setSelectedWord }) {
       });
       
     return () => { cancelled = true; };
-  }, [qid, pathway]);
+  }, [qid, pathway, cohort]);
 
   if (loading) return <div style={{ color: C.dim, padding: "2rem", fontStyle: "italic", textAlign: "center" }}>Loading responses...</div>;
   if (!data) return null;

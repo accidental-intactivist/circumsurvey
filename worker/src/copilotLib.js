@@ -47,7 +47,7 @@ export function validateToolCall(toolCall, { validIds = [], excludedIds = [] } =
 // NEXT opening tag (lookahead so it isn't consumed), or end-of-string. This
 // survives the model dropping a closing tag — a suggestion is never lost or
 // merged into its neighbor. [\s\S] lets a suggestion span a line break.
-const SUA_REGEX = /<S?UA>\s*([\s\S]*?)\s*(?:<\/S?UA>|(?=<S?UA>)|$)/gi;
+const SUA_REGEX = /[<\[]S?UA[>\]]*\s*([\s\S]*?)\s*(?:[<\[]\/S?UA[>\]]*|(?=[<\[]S?UA)|$)/gi;
 
 export function extractSuggestions(rawAnswer) {
   const out = [];

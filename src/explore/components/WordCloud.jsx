@@ -183,7 +183,7 @@ export default function WordCloud({ narratives = [], selectedWord = null, onWord
       background: C.bgSoft,
       border: `1px solid ${C.ghost}`,
       borderRadius: 8,
-      padding: "1.5rem",
+      padding: isOpen ? "1.5rem" : "0.75rem 1.5rem",
       marginTop: "1.5rem",
     }}>
       <div 

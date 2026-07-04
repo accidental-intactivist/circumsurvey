@@ -87,6 +87,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
   const [expandedSections, setExpandedSections] = useState({});
   const [pinned, setPinned] = useState({});
   const [hoveredPathway, setHoveredPathway] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   // Search only "activates" at 2+ characters — a single keystroke matches
   // nearly every question and would blast the whole board open.
@@ -100,21 +101,43 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     setPinned({});
   }, []);
   const containerRef = useRef(null);
+  const expandedContentRef = useRef(null);
   const [nodePositions, setNodePositions] = useState({});
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
-  // Sync expanded state to URL
+  // Read & Erase URL state: Pulls `expanded` on mount (done in useState), then cleans the URL immediately.
   useEffect(() => {
-    const active = Object.keys(expanded).filter(k => expanded[k]);
-    setSearchParams(prev => {
-      if (active.length === 0) {
+    if (searchParams.has("expanded")) {
+      setSearchParams(prev => {
         prev.delete("expanded");
-      } else {
-        prev.set("expanded", active.join(","));
-      }
-      return prev;
-    }, { replace: true });
-  }, [expanded, setSearchParams]);
+        return prev;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  const handleShare = useCallback(() => {
+    const active = Object.keys(expanded).filter(k => expanded[k]);
+    const url = new URL(window.location.href);
+    // Since HashRouter puts the search inside the hash (e.g. #/explore?expanded=...), 
+    // we need to construct it carefully depending on how window.location is structured.
+    // React Router's useSearchParams handles the ? within the hash. 
+    // Let's rebuild the hash path:
+    const hashSplit = window.location.hash.split("?");
+    const path = hashSplit[0] || "#/";
+    const newSearchParams = new URLSearchParams(hashSplit[1] || "");
+    
+    if (active.length > 0) {
+      newSearchParams.set("expanded", active.join(","));
+    } else {
+      newSearchParams.delete("expanded");
+    }
+    
+    const finalUrl = window.location.origin + window.location.pathname + path + "?" + newSearchParams.toString();
+    
+    navigator.clipboard.writeText(finalUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [expanded]);
 
   const expandedPathways = useMemo(() => {
     return BRANCH_CONFIGS.filter((b) => expanded[b.id]);
@@ -256,7 +279,35 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
       : (branch.id === "observer" ? totalForPathway("observer") : totalForPathway(branch.id));
     return { n, qCount };
   }, [nForPathway, totalForPathway]);
+  const activePathways = effectiveQuery
+    ? BRANCH_CONFIGS.filter(b => {
+        const isTrans = b.id === "trans";
+        const count = isTrans
+          ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
+          : (b.id === "observer" ? totalForPathway("observer") : totalForPathway(b.id));
+        return count > 0;
+      })
+    : expandedPathways;
 
+  const activeCircuitBranch = hoveredPathway 
+    ? BRANCH_CONFIGS.find(b => b.id === hoveredPathway) 
+    : (activePathways.length === 1 ? activePathways[0] : null);
+
+  const isCircuitActive = hoveredPathway !== null || activePathways.length > 0;
+  
+  // Smooth scroll to expanded content
+  useEffect(() => {
+    if (expandedContentRef.current && activePathways.length > 0) {
+      const timer = setTimeout(() => {
+        // Find header offset to prevent scrolling under sticky headers if applicable
+        const yOffset = -60;
+        const element = expandedContentRef.current;
+        const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [expanded]);
 
   if (error) {
     return (
@@ -274,22 +325,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     );
   }
 
-  const activePathways = effectiveQuery
-    ? BRANCH_CONFIGS.filter(b => {
-        const isTrans = b.id === "trans";
-        const count = isTrans
-          ? (totalForPathway("trans_vaginoplasty") + totalForPathway("trans_phalloplasty"))
-          : (b.id === "observer" ? totalForPathway("observer") : totalForPathway(b.id));
-        return count > 0;
-      })
-    : expandedPathways;
 
-  const activeCircuitBranch = hoveredPathway 
-    ? BRANCH_CONFIGS.find(b => b.id === hoveredPathway) 
-    : (activePathways.length === 1 ? activePathways[0] : null);
-
-  const isCircuitActive = hoveredPathway !== null || activePathways.length > 0;
-  
   const universalColor = C.ltBlue;
   const synthesisColor = C.gold;
 
@@ -315,7 +351,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           .flowchart-grid {
             grid-template-columns: repeat(3, 1fr);
             column-gap: 1rem;
-            row-gap: 0;
+            row-gap: 1rem;
           }
           .flowchart-connectors {
             display: none !important;
@@ -328,7 +364,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           .flowchart-grid {
             grid-template-columns: 1fr;
             column-gap: 1rem;
-            row-gap: 0;
+            row-gap: 1rem;
           }
         }
       `}</style>
@@ -436,6 +472,44 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         >
           Collapse All
         </button>
+
+        {/* Share View */}
+        <button
+          onClick={handleShare}
+          title="Copy a link to this exact view"
+          style={{
+            flexShrink: 0,
+            fontFamily: FONT.condensed,
+            fontWeight: 700,
+            fontSize: "0.68rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: copied ? C.bgDeep : C.muted,
+            background: copied ? C.green : "rgba(255, 255, 255, 0.05)",
+            border: `1px solid ${copied ? C.green : C.ghost}`,
+            borderRadius: 24,
+            padding: "0 1.1rem",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem"
+          }}
+          onMouseEnter={(e) => {
+            if (!copied) {
+              e.currentTarget.style.borderColor = C.gold;
+              e.currentTarget.style.color = C.goldBright;
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!copied) {
+              e.currentTarget.style.borderColor = C.ghost;
+              e.currentTarget.style.color = C.muted;
+            }
+          }}
+        >
+          {copied ? <><Icons.Check size={12}/> Copied!</> : <><Icons.Link size={12}/> Share View</>}
+        </button>
       </div>
 
       {/* ═══ UNIVERSAL BLOCK ═══ */}
@@ -535,10 +609,11 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
             <>
               <ExpandedConnectors branches={BRANCH_CONFIGS} activePathways={activePathways} />
               <div
+                  ref={expandedContentRef}
                   style={{
                     gridColumn: "1 / -1",
                     display: "grid",
-                    gridTemplateColumns: `repeat(${activePathways.length}, 1fr)`,
+                    gridTemplateColumns: `repeat(auto-fit, minmax(320px, 1fr))`,
                     gap: "1rem",
                     marginTop: 0,
                     marginBottom: "1rem",
@@ -845,6 +920,15 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
       {/* Header */}
       <div
         onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        aria-expanded={children ? isExpanded : undefined}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (onToggle) onToggle();
+          }
+        }}
         style={{
           display: "flex",
           flex: 1,
@@ -993,6 +1077,15 @@ function ReligionPathways({ section, questions, expandedSections, toggleSection,
     <div style={{ marginBottom: "0.5rem" }}>
       <div 
         onClick={() => toggleSection(`universal-${section.name}`)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleSection(`universal-${section.name}`);
+          }
+        }}
         style={{
           display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer",
           padding: "0.5rem 0.6rem", background: isExpanded ? `color-mix(in srgb, ${C.ltBlue}, transparent 96%)` : "transparent",
@@ -1119,6 +1212,15 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
     }}>
       <div
         onClick={staticOpen ? undefined : onToggle}
+        role={staticOpen ? undefined : "button"}
+        tabIndex={staticOpen ? undefined : 0}
+        aria-expanded={showExpanded}
+        onKeyDown={(e) => {
+          if (!staticOpen && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            if (onToggle) onToggle();
+          }
+        }}
         style={{
           display: "flex",
           alignItems: "center",
@@ -1463,7 +1565,7 @@ function VerticalConnector({ branches, activePathways, hoveredPathway, onHoverCh
   
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible" }}>
-      <svg viewBox={`0 0 ${svgW} ${height}`} style={{ width: "100%", height, overflow: "visible", display: "block" }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${height}`} style={{ width: "100%", height, overflow: "visible", display: "block" }}>
         <defs>
           {flows.map(f => (
             <linearGradient id={`grad-vert-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
@@ -1578,7 +1680,7 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
 
       {/* SVG Sankey funnel */}
       <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", position: "relative", zIndex: 1 }}>
-        <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+        <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
           <defs>
             {flows.map(f => (
               <linearGradient id={`grad-fork-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
@@ -1703,7 +1805,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
 
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: "-2px", position: "relative", zIndex: 0 }}>
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const topL = currentX;
@@ -1795,7 +1897,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
 
   return (
     <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-2px", position: "relative", zIndex: 0 }}>
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         <defs>
           {flows.map(f => (
             <linearGradient id={`grad-merge-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
@@ -2006,6 +2108,15 @@ function ObserverSubRoles({ questions, navigate, isSingleColumn }) {
             <div
               key={role.id}
               onClick={() => setSelectedRoleId(role.id)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedRoleId(role.id);
+                }
+              }}
               style={{
                 borderRadius: 8,
                 overflow: "hidden",
@@ -2358,6 +2469,15 @@ function CircumcisedSubRoles({ questions, navigate, isSingleColumn }) {
             <div
               key={role.id}
               onClick={() => setSelectedRoleId(role.id)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedRoleId(role.id);
+                }
+              }}
               style={{
                 borderRadius: 8,
                 overflow: "hidden",
@@ -2665,7 +2785,7 @@ function ExpandedConnectors({ branches, activePathways, svgW = 1200, svgH = 50 }
       position: "relative",
       zIndex: 0,
     }}>
-      <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {activePathways.map((branch, j) => {
           // Top coordinates (from the bottom of the card)
           const i = branches.findIndex(b => b.id === branch.id);

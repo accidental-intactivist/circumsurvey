@@ -201,6 +201,42 @@ export function DataRows({ rows }) {
   );
 }
 
+// ── BarRows: colorful horizontal bars — the visual sibling of DataRows.
+// Use this instead of dotted ledgers wherever a number deserves a bar.
+// rows: [{ label, value (number), suffix, decimals, colorVar, max }]
+export function BarRows({ rows, max = 100 }) {
+  const [ref, seen] = useInView();
+  return (
+    <div ref={ref}>
+      {rows.map((r, i) => {
+        const rowMax = r.max ?? max;
+        const pct = Math.max(0, Math.min(100, (r.value / rowMax) * 100));
+        return (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.45rem 0" }}>
+            <span style={{
+              fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.7rem",
+              letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted,
+              width: 200, flexShrink: 0, textAlign: "right", lineHeight: 1.25,
+            }}>
+              {r.label}
+            </span>
+            <div style={{ flex: 1, height: 16, background: "rgba(255,255,255,.06)", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{
+                height: "100%", borderRadius: 3, background: r.colorVar || C.gold,
+                width: seen ? `${pct}%` : 0,
+                transition: `width .9s cubic-bezier(.25,.8,.3,1) ${(i * 0.07).toFixed(2)}s`,
+              }} />
+            </div>
+            <span style={{ fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.82rem", color: r.colorVar || C.textBright, width: 58, flexShrink: 0 }}>
+              <CountUp to={r.value} suffix={r.suffix || "%"} decimals={r.decimals ?? (String(r.value).includes(".") ? 1 : 0)} run={seen} />
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── ArrowNote ──────────────────────────────────────────────────────────────
 export function ArrowNote({ lines }) {
   return (
@@ -222,6 +258,74 @@ export function StatCallout({ big, colorVar, children }) {
     }}>
       <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "2rem", lineHeight: 1, color: colorVar }}>{big}</div>
       <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.76rem", color: C.muted, lineHeight: 1.5 }}>{children}</div>
+    </div>
+  );
+}
+
+// ── PullStat: full-width display-type breathing moment between stations.
+// The single most powerful editorial device in data journalism: a huge
+// number, one quiet line, and whitespace. Use at most 3–4 per page.
+export function PullStat({ kicker, stat, line, colorVar }) {
+  const [ref, seen] = useInView(0.4);
+  return (
+    <div ref={ref} style={{
+      textAlign: "center", padding: "5.5rem 1rem 5rem", maxWidth: 780, margin: "0 auto",
+      opacity: seen ? 1 : 0, transform: seen ? "none" : "translateY(18px) scale(.985)",
+      transition: "opacity .9s ease, transform .9s cubic-bezier(.2,.7,.3,1)",
+    }}>
+      {kicker && (
+        <div style={{
+          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.7rem",
+          letterSpacing: "0.26em", textTransform: "uppercase", color: C.muted, marginBottom: "1rem",
+        }}>
+          {kicker}
+        </div>
+      )}
+      <div style={{
+        fontFamily: FONT.display, fontWeight: 800, fontSize: "clamp(3rem, 8vw, 5.5rem)",
+        lineHeight: 1, color: colorVar || C.goldBright, letterSpacing: "-0.02em",
+        textShadow: `0 0 60px color-mix(in srgb, ${colorVar || C.goldBright} 18%, transparent)`,
+      }}>
+        {stat}
+      </div>
+      {line && (
+        <div style={{
+          fontFamily: FONT.body, fontWeight: 300, fontSize: "1.05rem", color: C.muted,
+          marginTop: "1.1rem", lineHeight: 1.6, maxWidth: 520, marginLeft: "auto", marginRight: "auto",
+        }}>
+          {line}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── MethodPillars: the methodology as four scannable pillars, not prose ────
+export function MethodPillars({ pillars }) {
+  return (
+    <div style={{
+      display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      gap: "1.6rem 2rem", padding: "0.4rem 0",
+    }}>
+      {pillars.map(({ Icon, title, line, colorVar }) => (
+        <div key={title} style={{ textAlign: "center" }}>
+          {Icon && (
+            <div style={{ marginBottom: "0.7rem" }}>
+              <Icon size={30} color={colorVar || C.goldBright} />
+            </div>
+          )}
+          <div style={{
+            fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.72rem",
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            color: colorVar || C.goldBright, marginBottom: "0.4rem",
+          }}>
+            {title}
+          </div>
+          <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.82rem", color: C.muted, lineHeight: 1.55 }}>
+            {line}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

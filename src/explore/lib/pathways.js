@@ -66,7 +66,7 @@ export const PATHWAYS = {
   },
 };
 
-export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans", "intersex", "amab_anatomy"];
+export const PATHWAY_IDS = ["intact", "circumcised", "restoring", "observer", "trans", "intersex"];
 
 // ── Survey phase ordering ──────────────────────────────────────────────────
 // The survey has three phases: Universal questions, then Pathway-specific,

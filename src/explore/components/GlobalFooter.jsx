@@ -246,10 +246,10 @@ export default function GlobalFooter({ route, navigate }) {
           marginBottom: "4rem"
         }} />
 
-        {/* Sitemap Grid (3-column layout) */}
+        {/* Sitemap Grid (4-column layout) */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           gap: "4rem",
         }}>
           
@@ -272,8 +272,34 @@ export default function GlobalFooter({ route, navigate }) {
             }}>
               An open-source exploration into the lived experiences, perceptions, and pathways of 501 respondents.
             </div>
-            <div style={{
+            
+            <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
               marginTop: "1rem",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: C.gold,
+              color: C.bgDeep,
+              padding: "0.75rem 1.5rem",
+              borderRadius: "100px",
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              border: `1px solid ${C.gold}`,
+              transition: "all 0.2s ease",
+              alignSelf: "flex-start",
+            }}
+            onMouseEnter={e => e.target.style.background = C.goldBright}
+            onMouseLeave={e => e.target.style.background = C.gold}
+            >
+              Take the Anonymous Survey
+            </a>
+
+            <div style={{
+              marginTop: "1.5rem",
               height: "2px",
               width: "40px",
               background: RAINBOW,
@@ -312,16 +338,30 @@ export default function GlobalFooter({ route, navigate }) {
             </div>
           </div>
 
+          {/* Project & Community */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div style={{ fontFamily: FONT.condensed, fontSize: "0.8rem", letterSpacing: "0.1em", textTransform: "uppercase", color: C.dim, fontWeight: 700 }}>
+              Project & Community
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("about"); }}>About the Project</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("methodology"); }}>Survey Methodology</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("get-involved"); }}>Get Involved</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("about"); }}>Strategic Partners</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("faq"); }}>FAQ</a>
+            </div>
+          </div>
+
           {/* Resources */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             <div style={{ fontFamily: FONT.condensed, fontSize: "0.8rem", letterSpacing: "0.1em", textTransform: "uppercase", color: C.dim, fontWeight: 700 }}>
               Resources & Tools
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("methodology"); }}>Survey Methodology</a>
-              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("report"); }}>Report Builder</a>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("for-parents"); }}>For New Parents</a>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("demographics"); }}>Demographic Profile</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("report"); }}>Report Builder</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("resources"); }}>Downloads & External</a>
             </div>
           </div>
 

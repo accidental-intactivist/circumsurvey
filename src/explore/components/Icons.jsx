@@ -253,3 +253,18 @@ export const ArrowLeft = createThemedIcon(
   Lucide.ArrowLeft,
   () => <path d="M 15,8 H 2 M 7,3 L 2,8 L 7,13" />
 );
+
+export const Award = createThemedIcon(
+  Lucide.Award,
+  () => <path d="M 8,14 V 9 L 6,11 L 4,9 L 4,14 M 8,2 A 4,4 0 1,0 8,10 A 4,4 0 1,0 8,2" />
+);
+
+export const GitBranch = createThemedIcon(
+  Lucide.GitBranch,
+  () => <path d="M 4,4 V 12 M 4,12 A 2,2 0 1,0 4,16 A 2,2 0 1,0 4,12 M 12,4 A 2,2 0 1,0 12,8 A 2,2 0 1,0 12,4 M 4,8 Q 12,8 12,4" />
+);
+
+export const Mail = createThemedIcon(
+  Lucide.Mail,
+  () => <path d="M 2,4 H 14 V 12 H 2 Z M 2,4 L 8,9 L 14,4" />
+);

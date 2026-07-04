@@ -13,16 +13,17 @@ import { ReportProvider } from "../../explore/contexts/ReportContext";
 import ExhibitSurveyFlowchart from "../../explore/components/SurveyFlowchart";
 import { TOUR, PATHS, N_TOTAL, PLEASURE_METRICS, pooledMean } from "./tourData";
 import {
-  Reveal, StationHero, Lens, TourCard, DataRows, ArrowNote, StatCallout,
-  SectionKicker, EXPLORE_BASE,
+  Reveal, StationHero, Lens, TourCard, BarRows, ArrowNote, StatCallout,
+  SectionKicker, PullStat, MethodPillars, EXPLORE_BASE,
 } from "./tourKit";
+import * as Icons from "../../explore/components/Icons";
 import {
-  PunchCardAtlas, DumbbellSeparation, ConvergenceSankey,
+  PunchCardAtlas, ConvergenceSankey,
   WordMirrors, ResentmentMirror, ProjectionGate,
 } from "./TourVisuals";
+import PleasureGapWidget from "../../explore/components/PleasureGapWidget";
 
 const st = (num) => TOUR.find((t) => t.num === num);
-const pct = (v) => ({ value: v, suffix: "%", decimals: String(v).includes(".") ? 1 : 0 });
 
 function VoiceCard({ colorVar, label, children }) {
   return (
@@ -132,38 +133,18 @@ export default function GuidedTour() {
 
         <SectionKicker kicker="The instrument" title="The Inquiry & Its Method" />
         <TourCard title="How This Inquiry Works" refText="METHODOLOGY · CONDENSED · FULL VERSION ONE CLICK AWAY" stamp="Read First">
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "1.2rem 2rem",
-          }}>
-            {[
-              ["Experience before status",
-               "Sensation, orgasm, and body-image questions were asked before any mention of circumcision — so baseline answers were given before the comparison was framed."],
-              ["Six pathways, one instrument",
-               "A branching design routes each respondent — intact, circumcised, restoring, observer, trans, intersex — through questions phrased for their life. Eighteen questions are asked as mirrored pairs across the fence."],
-              ["Anonymous by design",
-               "No identifying information is collected with responses. Every question is optional. Quotes shown anywhere are individually curated with identifying details removed."],
-              ["An honest sample",
-               "Respondents are self-selected, drawn largely from communities already thinking about this topic. That is reported plainly, everywhere — this is a record of lived experience, not a census."],
-            ].map(([label, body]) => (
-              <div key={label}>
-                <div style={{
-                  fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem",
-                  letterSpacing: "0.14em", textTransform: "uppercase",
-                  color: C.goldBright, marginBottom: "0.35rem",
-                }}>
-                  {label}
-                </div>
-                <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.8rem", color: C.muted, lineHeight: 1.6 }}>
-                  {body}
-                </div>
-              </div>
-            ))}
-          </div>
+          <MethodPillars pillars={[
+            { Icon: Icons.Zap,       colorVar: "var(--c-orange)", title: "Experience first",
+              line: "Sensation was rated before circumcision was ever mentioned." },
+            { Icon: Icons.GitBranch, colorVar: "var(--c-blue)",   title: "Six pathways",
+              line: "Every respondent walks a route phrased for their life." },
+            { Icon: Icons.Shield,    colorVar: "var(--c-green)",  title: "Anonymous by design",
+              line: "No identifiers. Every question optional. Quotes scrubbed." },
+            { Icon: Icons.Users,     colorVar: "var(--c-grey)",   title: "An honest sample",
+              line: "Self-selected, mostly North American — reported as exactly that." },
+          ]} />
           <ArrowNote lines={[
-            <span key="m1">Full survey design, ethics framework & limitations: <a href={EXPLORE_BASE + "methodology"} style={{ color: C.blue }}>Survey Methodology</a></span>,
-            <span key="m2">The project, the researcher & the collaborators: <a href="https://circumsurvey.online" style={{ color: C.blue }}>circumsurvey.online</a></span>,
+            <span key="m1">Full survey design, ethics framework & limitations: <a href={EXPLORE_BASE + "methodology"} style={{ color: C.blue }}>Survey Methodology</a> · the project & collaborators: <a href="https://circumsurvey.online" style={{ color: C.blue }}>circumsurvey.online</a></span>,
           ]} />
         </TourCard>
 
@@ -243,16 +224,18 @@ export default function GuidedTour() {
           </TourCard>
         </Station>
 
-        {/* ── 03 Pleasure Gap: pooled + gate ── */}
+        {/* ── 03 Pleasure Gap: the gate ── */}
         <Station num="03">
-          <TourCard title="Sexual Experience Assessment — Pooled" refText="FORM CS-048 · ALL STATUS PATHWAYS · SCALE 1–5" stamp="Pooled">
-            <DataRows rows={PLEASURE_METRICS.map((m) => ({
-              label: m.label === "Mobile skin" ? "Pleasure from mobile skin" : m.label,
-              value: pooledMean(m), decimals: 2,
-            }))} />
-            <ArrowNote lines={["Pooled means computed from pathway n · canonical values stamped by the freeze script"]} />
-          </TourCard>
           <TourCard title="Audience Participation" refText="MAKE YOUR PROJECTION" stamp="Sealed">
+            <div style={{
+              textAlign: "center", fontFamily: FONT.body, fontWeight: 300,
+              fontSize: "0.9rem", color: C.muted, maxWidth: 560,
+              margin: "0 auto 0.4rem", lineHeight: 1.65,
+            }}>
+              Pooled together — before anyone was sorted — every one of the six sensation ratings
+              sits near the middle of the scale, between {Math.min(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} and {Math.max(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} out
+              of 5. One unremarkable pool of answers.
+            </div>
             <ProjectionGate predicted={!!predicted} onPredict={setPredicted} />
           </TourCard>
         </Station>
@@ -282,21 +265,19 @@ export default function GuidedTour() {
           <Lens center>{predicted ? VERDICT[predicted] : "Sorted by a single question, the pool of answers comes apart."}</Lens>
           {predicted && (
             <>
-              <TourCard title="Sexual Experience — The Separation" refText="EXHIBIT 03 · SAME RESPONDENTS AS POOLED · SCALE 1–5" stamp="Separated">
-                <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, marginBottom: "0.6rem" }}>
-                  Every dot starts at the pooled average you just saw — then slides to where its pathway actually reported it.
-                </div>
-                <DumbbellSeparation />
+              <TourCard title="Sexual Experience — The Separation" refText="EXHIBIT 03 · THE PLEASURE GAP, LIVE" stamp="Separated">
+                {/* The exhibit's own polished chart — self-fetching, theme-native */}
+                <PleasureGapWidget />
                 <ArrowNote lines={[
-                  "Largest gap in the dataset: pleasure from mobile skin, 4.47 vs 1.96",
-                  <span key="c">Filter by any cohort yourself: <a href={EXPLORE_BASE + "pleasure-gap"} style={{ color: C.blue }}>Exhibit 03</a></span>,
+                  "Largest gap in the dataset: pleasure from mobile skin — roughly 2.5 points on a 5-point scale",
+                  <span key="c">Gap plot, cohort filters & voices: <a href={EXPLORE_BASE + "pleasure-gap"} style={{ color: C.blue }}>Exhibit 03</a></span>,
                 ]} />
               </TourCard>
               <TourCard title="Lubrication Requirement" refText="FORM CS-058 · ANSWERING “NEVER” · N = 486" stamp="Fig. 3">
-                <DataRows rows={[
-                  { label: "Intact",      swatch: PATHS.intact.color,      colorVar: PATHS.intact.color,      ...pct(55.5) },
-                  { label: "Restoring",   swatch: PATHS.restoring.color,   colorVar: PATHS.restoring.color,   ...pct(16.0) },
-                  { label: "Circumcised", swatch: PATHS.circumcised.color, colorVar: PATHS.circumcised.color, ...pct(5.5) },
+                <BarRows rows={[
+                  { label: "Intact",      value: 55.5, colorVar: PATHS.intact.color },
+                  { label: "Restoring",   value: 16.0, colorVar: PATHS.restoring.color },
+                  { label: "Circumcised", value: 5.5,  colorVar: PATHS.circumcised.color },
                 ]} />
                 <StatCallout big="10:1" colorVar={PATHS.circumcised.color}>
                   The ratio between intact and circumcised respondents who never need artificial
@@ -310,12 +291,22 @@ export default function GuidedTour() {
 
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
 
+        {/* breathing moment */}
+        {predicted && (
+          <PullStat
+            kicker="The widest gap the survey measured"
+            stat="4.47 vs 1.96"
+            line="Pleasure from mobile skin, intact vs circumcised — two and a half points apart on a five-point scale."
+            colorVar={PATHS.intact.color}
+          />
+        )}
+
         {/* ── 04 Correlations ── */}
         <Station num="04">
           <TourCard title="The Cycle, Cross-Tabulated" refText="EXHIBIT 04 · FATHER STATUS × RESPONDENT STATUS" stamp="Cross-Tab">
-            <DataRows rows={[
-              { label: "Circumcised respondents with circumcised fathers", colorVar: PATHS.circumcised.color, ...pct(67.1) },
-              { label: "Intact respondents with intact fathers",           colorVar: PATHS.intact.color,      ...pct(48.9) },
+            <BarRows rows={[
+              { label: "Circumcised respondents with circumcised fathers", value: 67.1, colorVar: PATHS.circumcised.color },
+              { label: "Intact respondents with intact fathers",           value: 48.9, colorVar: PATHS.intact.color },
             ]} />
             <ArrowNote lines={[
               "The status tends to repeat — until someone examines it. See Exhibit 14 for where the cycle goes next",
@@ -369,14 +360,32 @@ export default function GuidedTour() {
         {/* ── 07 Culture ── */}
         <Station num="07">
           <TourCard title="“What was the norm in your community growing up?”" refText="EXHIBIT 07 · MIRROR · CIRCUMCISED VS INTACT" stamp="Two Worlds">
-            <DataRows rows={[
-              { label: "Automatic / unquestioned",   value: <span><span style={{ color: PATHS.circumcised.color }}>47.6%</span> <span style={{ color: C.dim }}>vs</span> <span style={{ color: PATHS.intact.color }}>23.5%</span></span> },
-              { label: "Strong push / very common",  value: <span><span style={{ color: PATHS.circumcised.color }}>18.9%</span> <span style={{ color: C.dim }}>vs</span> <span style={{ color: PATHS.intact.color }}>22.8%</span></span> },
-              { label: "Not discussed / uncommon",   value: <span><span style={{ color: PATHS.circumcised.color }}>7.6%</span> <span style={{ color: C.dim }}>vs</span> <span style={{ color: PATHS.intact.color }}>33.8%</span></span> },
-              { label: "Neutral / 50-50",            value: <span><span style={{ color: PATHS.circumcised.color }}>2.7%</span> <span style={{ color: C.dim }}>vs</span> <span style={{ color: PATHS.intact.color }}>12.5%</span></span> },
-            ]} />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1.6rem" }}>
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem", color: PATHS.circumcised.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                  The circumcised respondents' world
+                </div>
+                <BarRows rows={[
+                  { label: "Automatic / unquestioned",  value: 47.6, colorVar: PATHS.circumcised.color },
+                  { label: "Strong push / very common", value: 18.9, colorVar: PATHS.circumcised.color },
+                  { label: "Not discussed / uncommon",  value: 7.6,  colorVar: PATHS.circumcised.color },
+                  { label: "Neutral / 50-50",           value: 2.7,  colorVar: PATHS.circumcised.color },
+                ]} max={50} />
+              </div>
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem", color: PATHS.intact.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                  The intact respondents' world
+                </div>
+                <BarRows rows={[
+                  { label: "Automatic / unquestioned",  value: 23.5, colorVar: PATHS.intact.color },
+                  { label: "Strong push / very common", value: 22.8, colorVar: PATHS.intact.color },
+                  { label: "Not discussed / uncommon",  value: 33.8, colorVar: PATHS.intact.color },
+                  { label: "Neutral / 50-50",           value: 12.5, colorVar: PATHS.intact.color },
+                ]} max={50} />
+              </div>
+            </div>
             <ArrowNote lines={[
-              "First value = circumcised respondents' world · second = intact respondents' world",
+              "Same question, mirrored — two very different weather reports",
               <span key="f">Generational trend lines, Silent Generation through Gen Z: <a href={EXPLORE_BASE + "culture"} style={{ color: C.blue }}>Exhibit 07</a></span>,
             ]} />
           </TourCard>
@@ -385,9 +394,9 @@ export default function GuidedTour() {
         {/* ── 08 Observer ── */}
         <Station num="08">
           <TourCard title="The Witnesses" refText="EXHIBIT 08 · N = 37 · SMALL-SAMPLE FLAGGED" stamp="n=37">
-            <DataRows rows={[
-              { label: "Would keep a future son intact", colorVar: PATHS.observer.color, ...pct(90.9) },
-              { label: "Prioritize bodily autonomy",     colorVar: PATHS.observer.color, ...pct(97.0) },
+            <BarRows rows={[
+              { label: "Would keep a future son intact", value: 90.9, colorVar: PATHS.observer.color },
+              { label: "Prioritize bodily autonomy",     value: 97.0, colorVar: PATHS.observer.color },
             ]} />
             <ArrowNote lines={[<span key="g">Partner, parent & professional breakdowns: <a href={EXPLORE_BASE + "observer-lens"} style={{ color: C.blue }}>Exhibit 08</a></span>]} />
           </TourCard>
@@ -407,12 +416,15 @@ export default function GuidedTour() {
         {/* ── 10 Restoration ── */}
         <Station num="10">
           <TourCard title="The Restoring Cohort, In Numbers" refText="EXHIBIT 10 · N = 110" stamp="Restoring">
-            <DataRows rows={[
-              { label: "Report no resentment, ever",                  colorVar: PATHS.circumcised.color, ...pct(0.0), decimals: 1 },
-              { label: "“Something is missing” (orgasm confidence)",  colorVar: PATHS.restoring.color,   ...pct(59.6) },
-              { label: "Mobile-skin pleasure vs circumcised baseline", value: "2.85 vs 1.96", colorVar: "var(--c-green)" },
-              { label: "Would keep a future son intact",              colorVar: PATHS.restoring.color,   ...pct(98.1) },
+            <BarRows rows={[
+              { label: "Report no resentment, ever",                 value: 0.0,  decimals: 1, colorVar: PATHS.circumcised.color },
+              { label: "“Something is missing” (orgasm confidence)", value: 59.6, colorVar: PATHS.restoring.color },
+              { label: "Would keep a future son intact",             value: 98.1, colorVar: PATHS.restoring.color },
             ]} />
+            <StatCallout big="2.85" colorVar="var(--c-green)">
+              Restoring respondents' mobile-skin pleasure rating — sitting clearly above the 1.96
+              circumcised baseline. Partial regain, in their own numbers.
+            </StatCallout>
             <ArrowNote lines={[
               "Every restoring respondent reports some resentment — and their mobile-skin ratings sit above the circumcised baseline",
               <span key="i">Methods, RCI progress & timelines: <a href={EXPLORE_BASE + "restoration-journey"} style={{ color: C.blue }}>Exhibit 10</a></span>,
@@ -434,11 +446,11 @@ export default function GuidedTour() {
         {/* ── 12 Numbers ── */}
         <Station num="12">
           <TourCard title="Three Unexpected Numbers" refText="EXHIBIT 12 · COHORT FILTERS AVAILABLE" stamp="Key Stats">
-            <DataRows rows={[
-              { label: "Circumcised men preferring the intact appearance",    colorVar: PATHS.circumcised.color, ...pct(52) },
-              { label: "Circumcised who often wonder about intact experience", colorVar: PATHS.circumcised.color, ...pct(67.8) },
-              { label: "Intact who often wonder the reverse",                  colorVar: PATHS.intact.color,      ...pct(27.3) },
-              { label: "Prioritize bodily autonomy (all pathways)",            value: "81–100%", colorVar: "var(--c-green)" },
+            <BarRows rows={[
+              { label: "Circumcised men preferring the intact appearance",     value: 52,   colorVar: PATHS.circumcised.color },
+              { label: "Circumcised who often wonder about intact experience", value: 67.8, colorVar: PATHS.circumcised.color },
+              { label: "Intact who often wonder the reverse",                  value: 27.3, colorVar: PATHS.intact.color },
+              { label: "Prioritize bodily autonomy (every pathway's floor)",   value: 81,   colorVar: "var(--c-green)" },
             ]} />
             <ArrowNote lines={[
               "The curiosity points overwhelmingly in one direction; we leave it to you to say which",
@@ -447,15 +459,23 @@ export default function GuidedTour() {
           </TourCard>
         </Station>
 
+        {/* breathing moment */}
+        <PullStat
+          kicker="How the decision was presented to parents"
+          stat="2.7%"
+          line="were offered circumcision as a neutral choice with pros and cons. The other 97.3% got a default."
+          colorVar={PATHS.circumcised.color}
+        />
+
         {/* ── 13 For parents ── */}
         <Station num="13">
           <TourCard title="How the Decision Was Handled" refText="FORM CS-095 · CIRCUMCISED PATHWAY · EXHIBIT 13" stamp="For Parents">
-            <DataRows rows={[
-              { label: "Routine / automatic",           colorVar: PATHS.circumcised.color, ...pct(47.6) },
-              { label: "No idea",                       colorVar: "var(--c-grey)",         ...pct(23.2) },
-              { label: "Strong medical recommendation", colorVar: "var(--c-orange)",       ...pct(18.9) },
-              { label: "Not brought up",                colorVar: "var(--c-text)",         ...pct(7.6) },
-              { label: "Neutral pros & cons",           colorVar: PATHS.intact.color,      ...pct(2.7) },
+            <BarRows max={50} rows={[
+              { label: "Routine / automatic",           value: 47.6, colorVar: PATHS.circumcised.color },
+              { label: "No idea",                       value: 23.2, colorVar: "var(--c-grey)" },
+              { label: "Strong medical recommendation", value: 18.9, colorVar: "var(--c-orange)" },
+              { label: "Not brought up",                value: 7.6,  colorVar: "var(--c-yellow)" },
+              { label: "Neutral pros & cons",           value: 2.7,  colorVar: PATHS.intact.color },
             ]} />
             <StatCallout big="2.7%" colorVar={PATHS.circumcised.color}>
               report the procedure was presented as a neutral choice with pros and cons. This exhibit
@@ -465,6 +485,14 @@ export default function GuidedTour() {
             <ArrowNote lines={[<span key="l">The shareable parents' resource: <a href={EXPLORE_BASE + "for-parents"} style={{ color: C.blue }}>Exhibit 13</a></span>]} />
           </TourCard>
         </Station>
+
+        {/* breathing moment */}
+        <PullStat
+          kicker="If you had a son today"
+          stat="433 of 500"
+          line="would keep him intact — including 78% of circumcised respondents. Whatever their past, watch where they flow."
+          colorVar="var(--c-green)"
+        />
 
         {/* ── 14 Forward view ── */}
         <Station num="14">

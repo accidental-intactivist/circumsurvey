@@ -163,6 +163,18 @@ export const ROUTE_META = {
     title: "Frequently Asked Questions",
     desc: "Your questions, our answers. Everything from the survey structure to engaging with pro-circumcision arguments.",
     navTitle: "FAQ",
+  },
+  "get-involved": {
+    kicker: "Action",
+    title: "Get Involved & Support",
+    desc: "Help us expand our reach, volunteer your skills, or support this independent research project.",
+    navTitle: "Get Involved",
+  },
+  resources: {
+    kicker: "Library",
+    title: "Resources & Downloads",
+    desc: "Dive deeper into the research, download the Manifesto, and access shareable materials.",
+    navTitle: "Resources",
   }
 };
 
@@ -182,7 +194,7 @@ export const EXHIBIT_ROUTES = [
   // "the-decision" (was Exhibit 13) — hidden from discovery until Phase 2 content exists. Page stub + route remain.
   { route: "for-parents", num: "Exhibit 13", label: "For New & Expectant Parents", tagline: "Curated data for informed decisions", icon: "Shield", colorVar: "var(--c-red)" },
   // "final-thoughts" (was Exhibit 15) — hidden from discovery until Phase 2 content exists. Page stub + route remain.
-  { route: "the-forward-view", num: "Exhibit 14", label: "The Forward View", tagline: "Decisions for the next generation", icon: "CheckCircle", colorVar: "var(--c-purple)" },
+  { route: "the-forward-view", num: "Exhibit 14", label: "The Forward View", tagline: "Decisions for the next generation", icon: "FastForward", colorVar: "var(--c-purple)" },
 ];
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {

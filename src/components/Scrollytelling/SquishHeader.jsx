@@ -1,10 +1,13 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import ThemeToggle from '../../explore/components/ThemeToggle';
+import BreadcrumbDropdown from '../../explore/components/BreadcrumbDropdown';
 import HarmonicCanvas from '../../components/HarmonicCanvas';
 import { useTheme } from '../../explore/contexts/ThemeContext';
+import { TOUR } from '../GuidedTour/tourData';
+import { Play, Pause } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -158,18 +161,57 @@ export default function SquishHeader() {
   const titleRef = useRef(null);
   const subRef = useRef(null);
   const factsRef = useRef(null);
+
+  const [loomPaused, setLoomPaused] = useState(() => {
+    try {
+      return localStorage.getItem("cs_loom_paused") === "true";
+    } catch { return false; }
+  });
+
+  const toggleLoom = () => {
+    const next = !loomPaused;
+    setLoomPaused(next);
+    try {
+      localStorage.setItem("cs_loom_paused", String(next));
+    } catch {}
+  };
   const navContentRef = useRef(null);
   const canvasRef = useRef(null);
 
   // Theme-aware "scrolled" chrome (glass, border, shadow) — matches
   // ExploreMasthead's docked treatment instead of a hardcoded dark rgba.
   const [scrolled, setScrolled] = useState(false);
+
+  // Scrollspy: which tour station is currently on screen. Drives the
+  // Explore-style breadcrumb in the docked bar ("where am I" + jump anywhere).
+  const stations = useMemo(() => ([
+    { id: 'tourmapCard', label: 'Tour Map' },
+    ...TOUR.map((t) => ({ id: `st${t.num}`, label: `Exhibit ${t.num} · ${t.title}` })),
+  ]), []);
+  const [currentId, setCurrentId] = useState('tourmapCard');
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 100);
+    let raf = null;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        setScrolled(window.scrollY > 100);
+        // last station whose top has passed under the docked bar
+        let current = 'tourmapCard';
+        for (const s of stations) {
+          const el = document.getElementById(s.id);
+          if (el && el.getBoundingClientRect().top <= 140) current = s.id;
+        }
+        setCurrentId(current);
+      });
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, [stations]);
+
+  const currentStation = stations.find((s) => s.id === currentId) || stations[0];
 
   useGSAP(() => {
     // 1:1 with scroll, like ExploreMasthead (height = HERO − scrollY):
@@ -210,12 +252,17 @@ export default function SquishHeader() {
       ease: "none"
     }, 0);
 
+    // Interior settles FAST (first ~30% of the squish), so that for most of
+    // the scroll there is only ONE visible motion: the header's bottom edge
+    // gliding up with the content glued to it. Multiple elements collapsing
+    // at different rates over the full distance is what made the squish feel
+    // like the masthead and page were scrolling at different speeds.
     tl.to(eyebrowRef.current, {
       fontSize: "0px", // Disappears
       opacity: 0,
       height: 0,
       margin: 0,
-      duration: 1,
+      duration: 0.3,
       ease: "power2.out"
     }, 0);
 
@@ -223,8 +270,8 @@ export default function SquishHeader() {
       fontSize: "1.2rem", // Nav bar size
       letterSpacing: "0.02em",
       y: isTomorrow ? -3 : 0,
-      duration: 1,
-      ease: "none"
+      duration: 0.55,
+      ease: "power1.out"
     }, 0);
 
     tl.to(subRef.current, {
@@ -232,7 +279,7 @@ export default function SquishHeader() {
       opacity: 0,
       height: 0,
       margin: 0,
-      duration: 1,
+      duration: 0.3,
       ease: "power2.out"
     }, 0);
 
@@ -240,7 +287,7 @@ export default function SquishHeader() {
       opacity: 0,
       height: 0,
       margin: 0,
-      duration: 0.5,
+      duration: 0.25,
       ease: "power2.out"
     }, 0);
 
@@ -286,12 +333,11 @@ export default function SquishHeader() {
             clipping UI (the ThemeToggle panel must escape the header). */}
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
           {/* Harmonic background canvas that squishes (crops) with the header height */}
-          <div
+          <div 
             ref={canvasRef}
             style={{
               position: 'absolute',
-              top: '50%',
-              left: 0,
+              top: '50%', left: 0,
               width: '100%',
               height: '85vh',
               transform: 'translateY(-50%)',
@@ -300,7 +346,7 @@ export default function SquishHeader() {
               opacity: 0.8,
             }}
           >
-            <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} />
+            <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} paused={loomPaused} />
           </div>
         </div>
 
@@ -327,31 +373,36 @@ export default function SquishHeader() {
             pointerEvents: 'none', // Prevent clicking when invisible
           }}
         >
-          {/* Left Side: Navigation Anchors — jump to tour stations */}
-          <div style={{ display: 'flex', gap: '1rem', pointerEvents: 'auto' }}>
-            {[
-              ['01 The Map', '#st01'],
-              ['03 The Gap', '#st03'],
-              ['06 The Voices', '#st06'],
-              ['13 For Parents', '#st13'],
-              ['14 Forward', '#st14'],
-            ].map(([label, href]) => (
-              <a key={label} href={href} style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--c-muted)',
-                fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
-                fontWeight: 700,
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                transition: 'color 0.2s',
-              }}>
-                {label}
-              </a>
-            ))}
+          {/* Left Side — Explore-masthead pattern: wordmark, then a
+              scrollspy breadcrumb of the current station with the full
+              tour in its dropdown. */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            pointerEvents: 'auto',
+            fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+            fontWeight: 700,
+            fontSize: '0.75rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+          }}>
+            <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              style={{ color: 'var(--c-textBright)', textDecoration: 'none' }}>
+              Findings
+            </a>
+            <span style={{ color: 'var(--c-dim)' }}>/</span>
+            <span style={{ color: 'var(--c-muted)' }}>
+              <BreadcrumbDropdown
+                label={currentStation.label}
+                currentId={currentId}
+                items={stations.map((s) => ({ id: s.id, href: `#${s.id}`, label: s.label }))}
+                onSelect={(item) => {
+                  const el = document.getElementById(item.id);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+              />
+            </span>
           </div>
 
         </div>
@@ -458,6 +509,48 @@ export default function SquishHeader() {
             </div>
           </div>
         </div>
+
+        {/* ── Pause Button for Harmonic Loom ── */}
+        <button
+          onClick={toggleLoom}
+          title={loomPaused ? "Play background animation" : "Pause background animation"}
+          style={{
+            position: "absolute",
+            bottom: "1.5rem",
+            right: "2rem",
+            zIndex: 120,
+            background: "rgba(0,0,0,0.4)",
+            border: `1px solid ${loomPaused ? "var(--c-goldBright)" : "var(--c-ghost)"}`,
+            color: loomPaused ? "var(--c-goldBright)" : "var(--c-dim)",
+            borderRadius: "50%",
+            width: "36px",
+            height: "36px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            opacity: scrolled ? 0 : 0.6,
+            pointerEvents: scrolled ? "none" : "auto",
+            backdropFilter: "blur(4px)",
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.opacity = 1;
+            e.currentTarget.style.color = "var(--c-goldBright)";
+            e.currentTarget.style.borderColor = "var(--c-goldBright)";
+            e.currentTarget.style.background = "rgba(0,0,0,0.6)";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.opacity = scrolled ? 0 : 0.6;
+            if (!loomPaused) {
+              e.currentTarget.style.color = "var(--c-dim)";
+              e.currentTarget.style.borderColor = "var(--c-ghost)";
+              e.currentTarget.style.background = "rgba(0,0,0,0.4)";
+            }
+          }}
+        >
+          {loomPaused ? <Play size={15} style={{ marginLeft: "2px", fill: "currentColor" }} /> : <Pause size={15} style={{ fill: "currentColor" }} />}
+        </button>
       </header>
     </div>
   );

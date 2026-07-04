@@ -148,24 +148,44 @@ export default function AboutPage() {
         <SectionBlock title="Our Strategic Alliances & Collaborators">
           <p>While this project began as an independent inquiry, our commitment to rigorous, data-driven research has earned the recognition and support of key leaders and organizations in the fields of genital autonomy, legal advocacy, and men's health. We are honored to be in active collaboration and communication with:</p>
           
-          <div style={{ marginTop: "1.5rem" }}>
-            <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", marginBottom: "0.5rem" }}>DOCTORS OPPOSING CIRCUMCISION (DOC)</h3>
-            <p style={{ marginTop: 0 }}>We are proud to be in direct collaboration with DOC, a foundational, Seattle-based organization of medical professionals who have been advocating for genital autonomy since 1995.</p>
+          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flexShrink: 0, width: "120px", height: "120px", background: "#fff", borderRadius: "8px", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logos/doc.jpg" alt="DOC Logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+            <div style={{ flex: "1 1 300px" }}>
+              <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>DOCTORS OPPOSING CIRCUMCISION (DOC)</h3>
+              <p style={{ marginTop: 0 }}>We are proud to be in direct collaboration with DOC, a foundational, Seattle-based organization of medical professionals who have been advocating for genital autonomy since 1995.</p>
+            </div>
           </div>
 
-          <div style={{ marginTop: "1.5rem" }}>
-            <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", marginBottom: "0.5rem" }}>INTACT GLOBAL</h3>
-            <p style={{ marginTop: 0 }}>We are honored to be working as a strategic partner with Intact Global and its president, attorney Eric Clopper. Our survey project is now an active tool in their crucial effort to prepare a landmark Equal Protection lawsuit in Washington State, aiming to secure the same legal right to bodily integrity for boys that is already afforded to girls.</p>
+          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flexShrink: 0, width: "120px", height: "120px", background: "#fff", borderRadius: "8px", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logos/intact-global.png" alt="Intact Global Logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+            <div style={{ flex: "1 1 300px" }}>
+              <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>INTACT GLOBAL</h3>
+              <p style={{ marginTop: 0 }}>We are honored to be working as a strategic partner with Intact Global and its president, attorney Eric Clopper. Our survey project is now an active tool in their crucial effort to prepare a landmark Equal Protection lawsuit in Washington State, aiming to secure the same legal right to bodily integrity for boys that is already afforded to girls.</p>
+            </div>
           </div>
 
-          <div style={{ marginTop: "1.5rem" }}>
-            <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", marginBottom: "0.5rem" }}>GENITAL AUTONOMY LEGAL DEFENSE & EDUCATION FUND (GALDEF)</h3>
-            <p style={{ marginTop: 0 }}>We are also grateful for the strategic advice and support from foundational researcher Tim Hammond (NOHARMM/GALDEF) and attorney Eric Clopper (Intact Global), which has opened a path toward potential academic review of our findings with researchers at Quinnipiac University.</p>
+          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flexShrink: 0, width: "120px", height: "120px", background: "#fff", borderRadius: "8px", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logos/galdef.png" alt="GALDEF Logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+            <div style={{ flex: "1 1 300px" }}>
+              <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>GENITAL AUTONOMY LEGAL DEFENSE & EDUCATION FUND (GALDEF)</h3>
+              <p style={{ marginTop: 0 }}>We are also grateful for the strategic advice and support from foundational researcher Tim Hammond (NOHARMM/GALDEF) and attorney Eric Clopper (Intact Global), which has opened a path toward potential academic review of our findings with researchers at Quinnipiac University.</p>
+            </div>
           </div>
 
-          <div style={{ marginTop: "1.5rem" }}>
-            <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", marginBottom: "0.5rem" }}>WASHINGTON INITIATIVE FOR BOYS AND MEN (WIBM)</h3>
-            <p style={{ marginTop: 0 }}>We are actively working with WIBM, the leading political advocacy group for men's and boys' issues in Washington State, to provide them with WA-specific data to support their legislative efforts.</p>
+          <div style={{ marginTop: "2rem", display: "flex", gap: "1.5rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flexShrink: 0, width: "120px", height: "120px", background: "#fff", borderRadius: "8px", padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/logos/wibm.jpg" alt="WIBM Logo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+            <div style={{ flex: "1 1 300px" }}>
+              <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>WASHINGTON INITIATIVE FOR BOYS AND MEN (WIBM)</h3>
+              <p style={{ marginTop: 0 }}>We are actively working with WIBM, the leading political advocacy group for men's and boys' issues in Washington State, to provide them with WA-specific data to support their legislative efforts.</p>
+            </div>
           </div>
         </SectionBlock>
 

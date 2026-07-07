@@ -182,13 +182,20 @@ export default function SquishHeader() {
   // ExploreMasthead's docked treatment instead of a hardcoded dark rgba.
   const [scrolled, setScrolled] = useState(false);
 
-  // Scrollspy: which tour station is currently on screen. Drives the
+  // Scrollspy: which chapter is currently on screen. Drives the
   // Explore-style breadcrumb in the docked bar ("where am I" + jump anywhere).
-  const stations = useMemo(() => ([
-    { id: 'tourmapCard', label: 'Tour Map' },
-    ...TOUR.map((t) => ({ id: `st${t.num}`, label: `Exhibit ${t.num} · ${t.title}` })),
+  const chapters = useMemo(() => ([
+    { id: 'ch-prologue', label: 'Prologue \u00B7 The Researcher\'s Letter' },
+    { id: 'ch-who-took', label: 'Chapter 1 \u00B7 Who Took This Survey?' },
+    { id: 'ch-what-feel', label: 'Chapter 2 \u00B7 What Does It Actually Feel Like?' },
+    { id: 'ch-how-feel', label: 'Chapter 3 \u00B7 How Do They Feel About It?' },
+    { id: 'ch-world-told', label: 'Chapter 4 \u00B7 What Did The World Tell Them?' },
+    { id: 'ch-witnesses', label: 'Chapter 5 \u00B7 What Do The Witnesses Say?' },
+    { id: 'ch-undone', label: 'Chapter 6 \u00B7 Can It Be Undone?' },
+    { id: 'ch-future-son', label: 'Chapter 7 \u00B7 If You Had A Son Today?' },
+    { id: 'ch-epilogue', label: 'Epilogue \u00B7 The Evidence, Summarized' },
   ]), []);
-  const [currentId, setCurrentId] = useState('tourmapCard');
+  const [currentId, setCurrentId] = useState('ch-prologue');
 
   useEffect(() => {
     let raf = null;
@@ -197,9 +204,9 @@ export default function SquishHeader() {
       raf = requestAnimationFrame(() => {
         raf = null;
         setScrolled(window.scrollY > 100);
-        // last station whose top has passed under the docked bar
-        let current = 'tourmapCard';
-        for (const s of stations) {
+        // last chapter whose top has passed under the docked bar
+        let current = 'ch-prologue';
+        for (const s of chapters) {
           const el = document.getElementById(s.id);
           if (el && el.getBoundingClientRect().top <= 140) current = s.id;
         }
@@ -209,9 +216,9 @@ export default function SquishHeader() {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, [stations]);
+  }, [chapters]);
 
-  const currentStation = stations.find((s) => s.id === currentId) || stations[0];
+  const currentChapter = chapters.find((s) => s.id === currentId) || chapters[0];
 
   useGSAP(() => {
     // 1:1 with scroll, like ExploreMasthead (height = HERO − scrollY):
@@ -394,9 +401,9 @@ export default function SquishHeader() {
             <span style={{ color: 'var(--c-dim)' }}>/</span>
             <span style={{ color: 'var(--c-muted)' }}>
               <BreadcrumbDropdown
-                label={currentStation.label}
+                label={currentChapter.label}
                 currentId={currentId}
-                items={stations.map((s) => ({ id: s.id, href: `#${s.id}`, label: s.label }))}
+                items={chapters.map((s) => ({ id: s.id, href: `#${s.id}`, label: s.label }))}
                 onSelect={(item) => {
                   const el = document.getElementById(item.id);
                   if (el) el.scrollIntoView({ behavior: 'smooth' });

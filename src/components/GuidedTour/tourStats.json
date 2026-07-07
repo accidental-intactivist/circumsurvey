@@ -1,0 +1,266 @@
+{
+  "pleasure_gap": {
+    "intensity": {
+      "label": "Intensity",
+      "intact": {
+        "mean": 3.708,
+        "sd": 0.713,
+        "n": 48,
+        "ci95": [
+          3.501,
+          3.915
+        ]
+      },
+      "circumcised": {
+        "mean": 3.014,
+        "sd": 1.007,
+        "n": 73,
+        "ci95": [
+          2.779,
+          3.249
+        ]
+      },
+      "restoring": {
+        "mean": 2.933,
+        "sd": 1.009,
+        "n": 45,
+        "ci95": [
+          2.63,
+          3.236
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 0.77,
+        "t_stat": 4.439,
+        "p_value": 2.0421469504119424e-05,
+        "stars": "***"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": -0.08,
+        "t_stat": -0.421,
+        "p_value": 0.6750313753119387,
+        "stars": "ns"
+      }
+    },
+    "duration": {
+      "label": "Duration",
+      "intact": {
+        "mean": 3.769,
+        "sd": 0.645,
+        "n": 52,
+        "ci95": [
+          3.59,
+          3.949
+        ]
+      },
+      "circumcised": {
+        "mean": 2.806,
+        "sd": 0.988,
+        "n": 72,
+        "ci95": [
+          2.573,
+          3.038
+        ]
+      },
+      "restoring": {
+        "mean": 2.654,
+        "sd": 0.947,
+        "n": 52,
+        "ci95": [
+          2.39,
+          2.918
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 1.119,
+        "t_stat": 6.563,
+        "p_value": 1.3781422018223794e-09,
+        "stars": "***"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": -0.156,
+        "t_stat": -0.864,
+        "p_value": 0.38926035453745883,
+        "stars": "ns"
+      }
+    },
+    "ease": {
+      "label": "Ease",
+      "intact": {
+        "mean": 3.462,
+        "sd": 0.896,
+        "n": 52,
+        "ci95": [
+          3.212,
+          3.711
+        ]
+      },
+      "circumcised": {
+        "mean": 2.918,
+        "sd": 1.003,
+        "n": 85,
+        "ci95": [
+          2.701,
+          3.134
+        ]
+      },
+      "restoring": {
+        "mean": 2.8,
+        "sd": 0.992,
+        "n": 40,
+        "ci95": [
+          2.483,
+          3.117
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 0.564,
+        "t_stat": 3.294,
+        "p_value": 0.0013041418112345374,
+        "stars": "**"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": -0.118,
+        "t_stat": -0.616,
+        "p_value": 0.5395066770494749,
+        "stars": "ns"
+      }
+    },
+    "light_touch": {
+      "label": "Light Touch",
+      "intact": {
+        "mean": 3.696,
+        "sd": 0.726,
+        "n": 46,
+        "ci95": [
+          3.48,
+          3.911
+        ]
+      },
+      "circumcised": {
+        "mean": 2.602,
+        "sd": 0.922,
+        "n": 93,
+        "ci95": [
+          2.412,
+          2.792
+        ]
+      },
+      "restoring": {
+        "mean": 2.667,
+        "sd": 0.954,
+        "n": 42,
+        "ci95": [
+          2.369,
+          2.964
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 1.267,
+        "t_stat": 7.616,
+        "p_value": 9.399065888610175e-12,
+        "stars": "***"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": 0.069,
+        "t_stat": 0.367,
+        "p_value": 0.7143013193201687,
+        "stars": "ns"
+      }
+    },
+    "mobile_skin": {
+      "label": "Mobile Skin",
+      "intact": {
+        "mean": 3.889,
+        "sd": 0.465,
+        "n": 36,
+        "ci95": [
+          3.732,
+          4.046
+        ]
+      },
+      "circumcised": {
+        "mean": 2.506,
+        "sd": 0.875,
+        "n": 83,
+        "ci95": [
+          2.315,
+          2.697
+        ]
+      },
+      "restoring": {
+        "mean": 3.0,
+        "sd": 1.015,
+        "n": 34,
+        "ci95": [
+          2.646,
+          3.354
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 1.784,
+        "t_stat": 11.211,
+        "p_value": 5.050714475418209e-20,
+        "stars": "***"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": 0.539,
+        "t_stat": 2.485,
+        "p_value": 0.016087801280524436,
+        "stars": "*"
+      }
+    },
+    "variety": {
+      "label": "Variety",
+      "intact": {
+        "mean": 3.795,
+        "sd": 0.615,
+        "n": 39,
+        "ci95": [
+          3.596,
+          3.994
+        ]
+      },
+      "circumcised": {
+        "mean": 2.633,
+        "sd": 0.936,
+        "n": 79,
+        "ci95": [
+          2.423,
+          2.843
+        ]
+      },
+      "restoring": {
+        "mean": 2.652,
+        "sd": 0.948,
+        "n": 46,
+        "ci95": [
+          2.371,
+          2.934
+        ]
+      },
+      "intact_vs_circ": {
+        "cohens_d": 1.376,
+        "t_stat": 8.06,
+        "p_value": 1.1846785039242627e-12,
+        "stars": "***"
+      },
+      "restoring_vs_circ": {
+        "cohens_d": 0.02,
+        "t_stat": 0.11,
+        "p_value": 0.9125914148951365,
+        "stars": "ns"
+      }
+    }
+  },
+  "meta": {
+    "total_responses": 816,
+    "pathway_counts": {
+      "intact": 146,
+      "restoring": 109,
+      "circumcised": 223,
+      "null": 338
+    },
+    "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American sample. All tests two-tailed Welch's t-test."
+  }
+}

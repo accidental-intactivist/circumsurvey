@@ -86,7 +86,7 @@ export function StationHero({ station }) {
           fontFamily: FONT.condensed, fontSize: "0.75rem", fontWeight: 700,
           letterSpacing: "0.2em", textTransform: "uppercase", color: col, marginBottom: "0.6rem",
         }}>
-          Interactive Exhibit {station.num}
+          Exhibit {station.num}
         </div>
         <h2 style={{
           fontFamily: FONT.display, fontWeight: 800, fontSize: "2.1rem",
@@ -347,3 +347,215 @@ export function SectionKicker({ kicker, title, colorVar }) {
     </Reveal>
   );
 }
+
+// ── EffectSizeBadge: inline "d = 1.78 ★★★" badge ─────────────────────────
+export function EffectSizeBadge({ d, stars, colorVar, tooltip }) {
+  const mag = Math.abs(d);
+  const bgOpacity = mag >= 1.5 ? 0.14 : mag >= 1.0 ? 0.10 : mag >= 0.5 ? 0.07 : 0.04;
+  return (
+    <span
+      title={tooltip || `Cohen's d = ${d.toFixed(2)} — effect size`}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "0.3rem",
+        fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
+        padding: "0.2rem 0.55rem", borderRadius: 100,
+        color: colorVar || C.red,
+        background: `color-mix(in srgb, ${colorVar || C.red} ${Math.round(bgOpacity * 100)}%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${colorVar || C.red} 25%, transparent)`,
+        whiteSpace: "nowrap",
+      }}
+    >
+      d&thinsp;=&thinsp;{d.toFixed(2)} {stars}
+    </span>
+  );
+}
+
+// ── EffectSizeRow: a labeled row with an effect size bar + badge ───────────
+export function EffectSizeRow({ label, d, stars, colorVar, maxD = 2.0 }) {
+  const [ref, seen] = useInView();
+  const pct = Math.min(100, (Math.abs(d) / maxD) * 100);
+  return (
+    <div ref={ref} style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.35rem 0" }}>
+      <span style={{
+        fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.68rem",
+        letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted,
+        width: 120, flexShrink: 0, textAlign: "right", lineHeight: 1.25,
+      }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, height: 18, background: "rgba(255,255,255,.06)", borderRadius: 3, overflow: "hidden", position: "relative" }}>
+        <div style={{
+          height: "100%", borderRadius: 3, background: colorVar || C.red,
+          width: seen ? `${pct}%` : 0,
+          transition: "width 1.1s cubic-bezier(.25,.8,.3,1)",
+        }} />
+      </div>
+      <span style={{ fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.72rem", color: colorVar || C.red, width: 80, flexShrink: 0 }}>
+        d={d.toFixed(2)} {stars}
+      </span>
+    </div>
+  );
+}
+
+// ── EffectBenchmarkChart: lollipop chart comparing effect sizes against known benchmarks ──
+export function EffectBenchmarkChart({ benchmarks, maxD = 2.2 }) {
+  const [ref, seen] = useInView();
+  return (
+    <div ref={ref} style={{ padding: "0.4rem 0" }}>
+      {/* Reference scale */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", marginBottom: "0.2rem", marginLeft: 160,
+        fontFamily: FONT.mono, fontSize: "0.48rem", color: C.dim, letterSpacing: "0.08em",
+      }}>
+        {[0, 0.5, 1.0, 1.5, 2.0].map((v) => (
+          <span key={v} style={{ width: `${(v / maxD) * 100}%`, textAlign: "center" }}>{v.toFixed(1)}</span>
+        ))}
+      </div>
+      {/* Reference lines */}
+      <div style={{ position: "relative", marginLeft: 160, height: 0, marginBottom: "0.1rem" }}>
+        {[0.2, 0.5, 0.8].map((v) => (
+          <div key={v} style={{
+            position: "absolute", left: `${(v / maxD) * 100}%`, top: -4, height: benchmarks.length * 30 + 8,
+            borderLeft: `1px dashed ${C.ghost}`,
+          }}>
+            <span style={{
+              position: "absolute", top: -14,
+              fontFamily: FONT.mono, fontSize: "0.44rem", color: C.dim,
+              transform: "translateX(-50%)", whiteSpace: "nowrap",
+            }}>
+              {v === 0.2 ? "small" : v === 0.5 ? "medium" : "large"}
+            </span>
+          </div>
+        ))}
+      </div>
+      {benchmarks.map((b, i) => {
+        const pct = Math.min(100, (b.d / maxD) * 100);
+        return (
+          <div key={b.label} style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: "0.28rem 0" }}>
+            <span style={{
+              fontFamily: FONT.body, fontWeight: b.highlight ? 700 : 400,
+              fontSize: "0.68rem", color: b.highlight ? C.textBright : C.muted,
+              width: 155, flexShrink: 0, textAlign: "right", lineHeight: 1.25,
+            }}>
+              {b.label}
+            </span>
+            <div style={{ flex: 1, height: 14, position: "relative" }}>
+              {/* Track */}
+              <div style={{ position: "absolute", top: 6, left: 0, right: 0, height: 2, background: "rgba(255,255,255,.06)", borderRadius: 1 }} />
+              {/* Lollipop line */}
+              <div style={{
+                position: "absolute", top: 2, left: 0, height: 10,
+                width: seen ? `${pct}%` : 0,
+                borderTop: `2px solid ${b.color}`,
+                transition: `width 1s cubic-bezier(.25,.8,.3,1) ${i * 0.12}s`,
+                marginTop: 4,
+              }} />
+              {/* Dot */}
+              <div style={{
+                position: "absolute", top: 1, width: 12, height: 12, borderRadius: "50%",
+                background: b.highlight ? b.color : "transparent",
+                border: `2.5px solid ${b.color}`,
+                left: seen ? `calc(${pct}% - 6px)` : "-6px",
+                transition: `left 1s cubic-bezier(.25,.8,.3,1) ${i * 0.12}s`,
+              }} />
+            </div>
+            <span style={{
+              fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.66rem",
+              color: b.highlight ? b.color : C.muted, width: 40, flexShrink: 0,
+            }}>
+              {b.d.toFixed(2)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Narrative Engine Building Blocks ───────────────────────────────────────
+
+export function ChapterDivider({ id, act, title, children }) {
+  return (
+    <div id={id} style={{ margin: "6rem 0 3rem", textAlign: "center", scrollMarginTop: 90 }}>
+      <div style={{ borderTop: `1px solid ${C.ghost}`, width: 60, margin: "0 auto 2rem" }} />
+      <div style={{
+        fontFamily: FONT.mono, fontSize: "0.62rem", color: C.goldBright, letterSpacing: "0.25em",
+        textTransform: "uppercase", marginBottom: "0.8rem", fontWeight: 600,
+      }}>
+        {act}
+      </div>
+      <h2 style={{
+        fontFamily: FONT.display, fontSize: "2.8rem", fontWeight: 800,
+        color: C.textBright, letterSpacing: "-0.03em", margin: "0 0 1.2rem", lineHeight: 1.1,
+      }}>
+        {title}
+      </h2>
+      <div style={{
+        fontFamily: FONT.body, fontSize: "1.1rem", fontWeight: 300, color: C.text,
+        maxWidth: 680, margin: "0 auto", lineHeight: 1.6,
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function DocentMarker({ topic, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      title={`Ask the Docent about ${topic}`}
+      style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: 26, height: 26, borderRadius: "50%", border: `1px solid ${C.gold}`,
+        background: `color-mix(in srgb, ${C.gold} 12%, transparent)`,
+        color: C.goldBright, cursor: "pointer", verticalAlign: "middle",
+        marginLeft: "0.4rem", transition: "all 0.2s ease",
+        fontFamily: FONT.mono, fontSize: "0.8rem", padding: 0,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = C.gold;
+        e.currentTarget.style.color = C.bgDeep;
+        e.currentTarget.style.transform = "scale(1.1)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = `color-mix(in srgb, ${C.gold} 12%, transparent)`;
+        e.currentTarget.style.color = C.goldBright;
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+    >
+      <Icons.Info size={14} style={{ verticalAlign: "middle", pointerEvents: "none" }} />
+    </button>
+  );
+}
+
+export function ResearcherFootnote({ children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ marginTop: "1rem" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          background: "none", border: "none", padding: 0, cursor: "pointer",
+          display: "inline-flex", alignItems: "center", gap: "0.4rem",
+          fontFamily: FONT.mono, fontSize: "0.55rem", letterSpacing: "0.15em", textTransform: "uppercase",
+          color: open ? C.textBright : C.dim, transition: "color 0.2s",
+        }}
+      >
+        <Icons.ChevronDown size={12} style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+        {open ? "Close Academic Detail" : "For Researchers: Academic Detail"}
+      </button>
+      {open && (
+        <div style={{
+          marginTop: "0.6rem", padding: "0.8rem 1rem", background: "rgba(255,255,255,0.03)",
+          borderLeft: `2px solid ${C.dim}`, borderRadius: "0 4px 4px 0",
+          fontFamily: FONT.mono, fontSize: "0.65rem", color: C.muted, lineHeight: 1.6,
+        }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+

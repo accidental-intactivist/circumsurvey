@@ -12,7 +12,7 @@ import * as Icons from "./Icons";
 // breadcrumb — no per-page color/icon plumbing required:
 //   • color  → the exhibit's catalog color, resolved through the theme engine
 //   • icon   → the exhibit's catalog icon
-//   • number → derived from the catalog kicker ("Interactive Exhibit 03")
+//   • number → derived from the catalog kicker ("Exhibit 03")
 //
 // Routes not in the catalog (Methodology, By the Numbers, Report) fall back to
 // the gold accent and any explicitly passed `color` / `BackgroundIcon`.
@@ -74,7 +74,7 @@ export default function ExhibitHero({
           color: resolvedColor,
           marginBottom: "0.6rem"
         }}>
-          {/^\d+$/.test(String(exhibitNumber)) ? `Interactive Exhibit ${exhibitNumber}` : exhibitNumber}
+          {/^\d+$/.test(String(exhibitNumber)) ? `Exhibit ${exhibitNumber}` : exhibitNumber}
         </div>
       )}
 

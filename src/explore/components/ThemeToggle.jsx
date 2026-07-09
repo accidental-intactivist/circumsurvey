@@ -135,7 +135,7 @@ export default function ThemeToggle() {
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 {['standard', 'large', 'xlarge'].map(scale => (
                   <button key={scale} onClick={() => setTypeScale(scale)} style={buttonStyle(typeScale === scale)}>
-                    {scale === 'standard' ? 'Std' : scale === 'large' ? 'Lg' : 'XL'}
+                    {scale === 'standard' ? 'Standard' : scale === 'large' ? 'Large' : 'X-tra Large'}
                   </button>
                 ))}
               </div>

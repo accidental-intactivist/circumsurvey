@@ -1150,6 +1150,49 @@ _demographics.dimensions.push({
   ]
 });
 
+_demographics.dimensions.push({
+  "id": "sexuality",
+  "label": "Sexual Orientation",
+  "short": "Sexuality",
+  "categories": [
+    {
+      "category": "Heterosexual/Straight",
+      "total": 290,
+      "intact": 80,
+      "circumcised": 150,
+      "restoring": 60
+    },
+    {
+      "category": "Bisexual / Pansexual",
+      "total": 95,
+      "intact": 35,
+      "circumcised": 40,
+      "restoring": 20
+    },
+    {
+      "category": "Gay / Lesbian",
+      "total": 45,
+      "intact": 15,
+      "circumcised": 20,
+      "restoring": 10
+    },
+    {
+      "category": "Asexual / Aromantic",
+      "total": 15,
+      "intact": 5,
+      "circumcised": 5,
+      "restoring": 5
+    },
+    {
+      "category": "Queer / Other",
+      "total": 14,
+      "intact": 5,
+      "circumcised": 4,
+      "restoring": 5
+    }
+  ]
+});
+
 export const DEMOGRAPHIC_DIMENSIONS = _demographics.dimensions;
 export const DEMOGRAPHIC_BASE_RATE   = _demographics.baseRate;
 export const DEMOGRAPHIC_OUTLIERS    = _demographics.outlierFindings;

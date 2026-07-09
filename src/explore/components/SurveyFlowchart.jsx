@@ -947,15 +947,18 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
           </div>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap", minWidth: 0 }}>
             <span style={{
               fontFamily: FONT.display,
               fontWeight: 700,
-              fontSize: compact ? "0.95rem" : "1.15rem",
+              fontSize: compact ? "0.72rem" : "1.15rem",
               color: active ? C.bg : C.textBright,
-              letterSpacing: "0.04em",
+              letterSpacing: compact ? "0.01em" : "0.03em",
               textTransform: "uppercase",
-              transition: "color 0.3s"
+              transition: "color 0.3s",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}>{title}</span>
 
             {/* Question count badge */}
@@ -1659,7 +1662,7 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
   let currentX = trunkLeft;
 
   return (
-    <div style={{ position: "relative", overflow: "visible", marginTop: "-0.5rem", marginBottom: "-2px" }}>
+    <div style={{ position: "relative", overflow: "visible", marginTop: "-0.5rem", marginBottom: "-12px" }}>
       {/* Instruction text overlaid on top of the funnel */}
       <div style={{
         position: "relative",
@@ -1804,7 +1807,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: "-2px", position: "relative", zIndex: 0 }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: "-12px", position: "relative", zIndex: 0 }}>
       <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
@@ -1896,7 +1899,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-2px", position: "relative", zIndex: 0 }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-12px", position: "relative", zIndex: 0 }}>
       <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         <defs>
           {flows.map(f => (

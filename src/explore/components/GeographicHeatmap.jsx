@@ -75,7 +75,7 @@ function FitBounds({ geojson, mapLevel }) {
   return null;
 }
 
-export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions }) {
+export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions, layout = "stack" }) {
   const themeContext = useTheme();
   const { theme, mode } = themeContext || { theme: "standard", mode: "dark" };
   
@@ -85,7 +85,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   }, [selectedRegions]);
 
   const [activeTab, setActiveTab] = useState("all");
-  const [visType, setVisType] = useState("bullseye");
+  const [visType, setVisType] = useState(() => (byCohort && byCohort.results && Object.keys(byCohort.results).length > 0) ? "bullseye" : "heatmap");
   const [usGeo, setUsGeo] = useState(null);
   const [caGeo, setCaGeo] = useState(null);
   const [worldGeo, setWorldGeo] = useState(null);
@@ -367,7 +367,14 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const isLoading = !worldGeo || !usGeo || !caGeo;
 
   return (
-    <div style={{ background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, padding: "1.5rem", position: "relative" }}>
+    <div style={{ 
+      background: C.bgCard, borderRadius: 12, overflow: "hidden", border: `1px solid ${C.ghost}`, 
+      padding: "1.5rem", position: "relative", 
+      display: layout === "split" ? "flex" : "block", 
+      flexDirection: layout === "split" ? "row" : "column", 
+      gap: "2rem" 
+    }}>
+      <div style={{ flex: 2, display: "flex", flexDirection: "column" }}>
       <style>{`
         .leaflet-container {
           background: transparent !important;
@@ -434,30 +441,30 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
       `}</style>
       <h2 style={{ fontFamily: FONT.display, fontSize: "1.2rem", marginBottom: "1rem", color: C.textBright }}>{title}</h2>
       
-      <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-        {/* Cohort Filters */}
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          {tabKeys.map(tabKey => {
-            if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
-            const isActive = activeTab === tabKey;
-            const label = tabKey === "all" ? "All Participants" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
-            const color = getCohortColor(tabKey);
-            return (
-              <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
-                background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent", 
-                border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
-                color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`, 
-                padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
-                fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
-              }}>
-                {label}
-              </button>
-            );
-          })}
-        </div>
+      {tabKeys.length > 1 && (
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+          {/* Cohort Filters */}
+          <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+            {tabKeys.map(tabKey => {
+              if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
+              const isActive = activeTab === tabKey;
+              const label = tabKey === "all" ? "All Participants" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
+              const color = getCohortColor(tabKey);
+              return (
+                <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
+                  background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent", 
+                  border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
+                  color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`, 
+                  padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
+                  fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
+                }}>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Vis Type Toggle */}
-        {tabKeys.length > 1 && (
+          {/* Vis Type Toggle */}
           <div style={{
             marginLeft: "auto", display: "flex", background: "rgba(255, 255, 255, 0.03)",
             border: `1px solid ${C.ghost}`, borderRadius: 999, padding: "0.15rem"
@@ -486,8 +493,8 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               </button>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div style={{ 
         aspectRatio: "16 / 9",
@@ -520,7 +527,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               const isSelected = selectedRegionNorms.has(norm);
               
               // Leaflet layers require style updates when states change, so we incorporate state variables in the key to force re-render when style properties update.
-              const featureKey = `${norm}-${visType}-${activeTab}-${isSelected}`;
+              const featureKey = `${norm}-${feature.properties.level}-${visType}-${activeTab}-${isSelected}`;
               
               return (
                 <GeoJSON
@@ -576,30 +583,43 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
           Total mapped: n={dataMap.total} &middot; {cohortDistribution?.distribution?.length > 0 ? "Showing cohort distribution" : "Showing overall distribution"}
         </span>
       </div>
+      </div>
 
       {aggregatedDist.length > 0 && (
-        <div style={{ marginTop: "2rem" }}>
+        <div style={{ flex: 1, marginTop: layout === "split" ? 0 : "2rem", display: "flex", flexDirection: "column" }}>
           <h3 style={{
             fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.muted,
             textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.8rem",
             borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.4rem"
           }}>
-            Complete Data Table ({activeTab === "all" ? "All Pathways" : (PATHWAYS[activeTab === "unclassified" ? "observer" : activeTab]?.label || activeTab)})
+            Top Locations ({activeTab === "all" ? "All Pathways" : (PATHWAYS[activeTab === "unclassified" ? "observer" : activeTab]?.label || activeTab)})
           </h3>
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "0.4rem 1rem"
+            display: "grid", 
+            gridTemplateColumns: layout === "split" ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))", 
+            gap: layout === "split" ? "0" : "0.4rem 1rem",
+            border: layout === "split" ? `1px solid ${C.ghost}` : "none",
+            borderRadius: layout === "split" ? 4 : 0,
+            overflow: layout === "split" ? "auto" : "hidden",
+            maxHeight: layout === "split" ? 500 : "none"
           }}>
-            {aggregatedDist.map((d, i) => (
+            {[...aggregatedDist].sort((a,b) => b.n - a.n).slice(0, 24).map((d, i) => (
               <div key={i} style={{
-                display: "flex", justifyContent: "space-between", padding: "0.3rem 0.5rem",
-                background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent",
-                borderRadius: 4, fontFamily: FONT.body, fontSize: "0.85rem"
+                display: "flex", justifyContent: "space-between", 
+                padding: layout === "split" ? "0.6rem 0.8rem" : "0.3rem 0.5rem",
+                background: layout === "split" ? (i % 2 === 0 ? "rgba(255,255,255,0.03)" : "transparent") : (i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent"),
+                borderBottom: layout === "split" && i < 23 ? `1px dashed ${C.ghost}` : "none",
+                borderRadius: layout === "split" ? 0 : 4,
+                fontFamily: layout === "split" ? FONT.mono : FONT.body, 
+                fontSize: layout === "split" ? "0.75rem" : "0.85rem",
+                textTransform: layout === "split" ? "uppercase" : "none",
+                letterSpacing: layout === "split" ? "0.05em" : "normal"
               }}>
                 <span style={{ color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: "1rem" }} title={d.label}>
                   {d.label}
                 </span>
-                <span style={{ color: C.goldBright, fontFamily: FONT.mono, fontWeight: 500 }}>
-                  n={d.n}
+                <span style={{ color: C.goldBright, fontFamily: FONT.mono, fontWeight: layout === "split" ? 700 : 500 }}>
+                  {layout === "split" ? String(d.n).padStart(3, '0') : `n=${d.n}`}
                 </span>
               </div>
             ))}

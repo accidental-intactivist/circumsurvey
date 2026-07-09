@@ -6,7 +6,6 @@ import PlotterCanvas from './PlotterCanvas';
 import RegistrationMarks from './RegistrationMarks';
 import ScrollyNarrative from './ScrollyNarrative';
 import CIROLegend from './CIROLegend';
-import CIRODotExplorer from './CIRODotExplorer';
 import ScrollyDataChart from './ScrollyDataChart';
 import BeliefSwarm from './BeliefSwarm';
 import ObserverLens from './ObserverLens';
@@ -155,6 +154,39 @@ const GEN_DATA = [
   { label: 'Boomer (1946-1964)', values: { total: 45 } },
   { label: 'Xennial/Oregon Trail', values: { total: 24 } },
 ];
+
+// ── Demographic Maps Block (replaces Dot Explorer) ─────────────────────────
+function DemographicMapsBlock() {
+  const [worldDist, setWorldDist] = useState(null);
+  const [usDist, setUsDist] = useState(null);
+
+  React.useEffect(() => {
+    async function load() {
+      try {
+        const [w, u] = await Promise.all([
+          getResponseDistribution('demographics_country'),
+          getResponseDistribution('demographics_us_state')
+        ]);
+        setWorldDist(w);
+        setUsDist(u);
+      } catch (e) {
+        console.error("Failed to load map data", e);
+      }
+    }
+    load();
+  }, []);
+
+  return (
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, position: 'relative', minHeight: 250, background: 'rgba(0,0,0,0.1)', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--c-ghost)' }}>
+        {worldDist ? <GeographicHeatmap questionId="demographics_country" distribution={worldDist} title="Global Reach" /> : null}
+      </div>
+      <div style={{ flex: 1, position: 'relative', minHeight: 250, background: 'rgba(0,0,0,0.1)', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--c-ghost)' }}>
+        {usDist ? <GeographicHeatmap questionId="demographics_us_state" distribution={usDist} title="United States" /> : null}
+      </div>
+    </div>
+  );
+}
 
 // ── Rotating Fact Hook ────────────────────────────────────────────────────
 function RotatingHook() {
@@ -753,11 +785,7 @@ export default function ScrollyEngine() {
         <StickyScrollyBlock
           stickyContent={
             <div style={{ width: '100%', height: '100%' }}>
-              <CIRODotExplorer 
-                controlledDimension={ciroDimension} 
-                controlledSplit={ciroSplitMode} 
-                hideControls={true}
-              />
+              <DemographicMapsBlock />
             </div>
           }
           scrollingContent={
@@ -1416,7 +1444,7 @@ export default function ScrollyEngine() {
             }}>
               Interactive: Phase 1 Respondents
             </div>
-            <CIRODotExplorer />
+            <DemographicMapsBlock />
           </div>
 
           {/* CTA block */}

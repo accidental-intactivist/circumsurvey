@@ -46,7 +46,7 @@ export const TOUR = [
   { num: "05", route: "demographics",        icon: "Users",             colorVar: "var(--c-purple)",
     chapter: "ch-who-took",
     title: "Demographic Explorer", tagline: "Age, generation, geography & more",
-    lens: "Who showed up? Heavily North Americans — which is itself the finding.",
+    lens: "Who showed up? The survey was spread primarily online through grassroots efforts. Initially aimed at North America, people from across the globe ultimately joined to share their voices.",
     docentContext: "The user is looking at the respondent demographics. Confirm that this is a predominantly North American, self-selected sample of 500 people, crossing many occupations, generations, and political identities." },
   { num: "06", route: "narrative-mirrors",   icon: "MessageSquareText", colorVar: "var(--c-orange)",
     chapter: "ch-how-feel",

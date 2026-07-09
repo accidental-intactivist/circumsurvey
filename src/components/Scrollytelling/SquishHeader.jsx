@@ -7,149 +7,22 @@ import BreadcrumbDropdown from '../../explore/components/BreadcrumbDropdown';
 import HarmonicCanvas from '../../components/HarmonicCanvas';
 import { useTheme } from '../../explore/contexts/ThemeContext';
 import { TOUR } from '../GuidedTour/tourData';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, ChevronDown } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const PHASE1_TOTAL = 500;
 
-const HERO_FACTS = [
-  {
-    big:   "96%",
-    line1: "prioritize the child's right",
-    line2: "to bodily autonomy.",
-    context: "Across every pathway — intact, circumcised, restoring, observer.",
-    color: "#5b93c7", // C.blue
-  },
-  {
-    big:   "80%",
-    line1: "of restoring respondents",
-    line2: "report strong, frequent resentment.",
-    context: "0% said they have never felt negative about their circumcision.",
-    color: "#e85d50", // C.red
-  },
-  {
-    big:   "47.6%",
-    line1: "describe the decision as",
-    line2: "\"routine / automatic.\"",
-    context: "Only 2.7% were offered it as a neutral choice with pros and cons.",
-    color: "#e8a44a", // C.orange
-  },
-  {
-    big:   "52%",
-    line1: "of circumcised respondents",
-    line2: "prefer the intact appearance.",
-    context: "A quiet majority, in their own words.",
-    color: "#e8c868", // C.yellow
-  },
-  {
-    big:   "88%",
-    line1: "of intact respondents would",
-    line2: "keep their son intact.",
-    context: "78% of circumcised respondents would make the same choice for their son.",
-    color: "#68b878", // C.green
-  },
+const TEASER_QUOTES = [
+  { text: "“I’ve always wanted to include it into a discussion but haven’t had the chance, so I’ll put it here.”", author: "Observer, Millennial" },
+  { text: "“Despite trying to restore and fix myself, I feel like something was fundamentally broken when I realized what was done to me.”", author: "Restoring, Gen Z" },
+  { text: "“I think what stands out most to me is how normal and positive my experience of being intact has always been, and how little that narrative is represented.”", author: "Intact, Millennial" },
+  { text: "“Growing up intact with anxiety about it shaped my personality in challenging ways. I had difficulty connecting with other boys because I knew I had a secret to keep.”", author: "Intact, Gen X" },
+  { text: "“There is a secondary harm that come about from this abuse when culture/society refuses to acknowledge or validate the victims.”", author: "Circumcised, Millennial" },
+  { text: "“My parents did not decide to circumcise me. It was so common that the doctors did it with[out] our asking.”", author: "Circumcised, Baby Boomer" },
+  { text: "“It's odd that society almost refuses to acknowledge the magnitude of this topic and yet they continue to adamantly perpetuate it.”", author: "Observer, Gen X" },
+  { text: "“Finding sexual partners has been very easy with an intact penis. Simply revealing this fact to new potential partners has always made them curious and more interested.”", author: "Intact, Gen Z" },
 ];
-
-function CountUp({ to, suffix = "", duration = 1400, decimals = 0, visible = true }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!visible) { setVal(0); return; }
-    let start = performance.now();
-    let r = requestAnimationFrame(function step(now) {
-      let p = Math.min((now - start) / duration, 1);
-      // easeOutExpo
-      let e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
-      setVal(to * e);
-      if (p < 1) requestAnimationFrame(step);
-    });
-    return () => cancelAnimationFrame(r);
-  }, [to, duration, visible]);
-  return <>{val.toFixed(decimals)}{suffix}</>;
-}
-
-function RotatingFact() {
-  const [idx, setIdx] = useState(0);
-  const [phase, setPhase] = useState("in"); // in | holding | out
-  useEffect(() => {
-    let t;
-    if (phase === "in")      t = setTimeout(() => setPhase("holding"), 1200);
-    else if (phase === "holding") t = setTimeout(() => setPhase("out"), 4500);
-    else if (phase === "out")     t = setTimeout(() => {
-      setIdx(i => (i + 1) % HERO_FACTS.length);
-      setPhase("in");
-    }, 700);
-    return () => clearTimeout(t);
-  }, [phase]);
-
-  const fact = HERO_FACTS[idx];
-  const opacity = phase === "holding" ? 1 : phase === "in" ? 1 : 0;
-  const y = phase === "in" ? 0 : phase === "holding" ? 0 : -16;
-
-  return (
-    <div style={{
-      textAlign: "center",
-      maxWidth: 820,
-      margin: "2rem auto 0",
-      opacity,
-      transform: `translateY(${y}px)`,
-      transition: "opacity 0.6s ease-out, transform 0.7s ease-out",
-    }}>
-      <div style={{
-        fontFamily: "'Playfair Display', serif",
-        fontWeight: 800,
-        fontSize: "clamp(3rem, 8vw, 6rem)",
-        color: fact.color,
-        lineHeight: 1,
-        letterSpacing: "-0.02em",
-        marginBottom: "1rem",
-        textShadow: `0 0 48px ${fact.color}22`,
-        transition: "color 0.7s ease-out, text-shadow 0.7s ease-out",
-      }}>
-        <CountUp 
-          to={parseFloat(fact.big)} 
-          suffix={fact.big.replace(/[\d.]+/g, "")}
-          duration={1400} 
-          decimals={fact.big.includes(".") ? 1 : 0}
-          visible={phase === "in" || phase === "holding"} 
-        />
-      </div>
-
-      <div style={{
-        fontFamily: "'Playfair Display', serif",
-        fontWeight: 600,
-        fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
-        color: "var(--c-textBright)",
-        lineHeight: 1.3,
-        marginBottom: "0.3rem",
-      }}>
-        {fact.line1}
-      </div>
-      <div style={{
-        fontFamily: "'Playfair Display', serif",
-        fontWeight: 600,
-        fontSize: "clamp(1.3rem, 2.5vw, 1.9rem)",
-        color: "var(--c-textBright)",
-        lineHeight: 1.3,
-        marginBottom: "1.25rem",
-      }}>
-        {fact.line2}
-      </div>
-      <div style={{
-        fontFamily: "'Barlow', sans-serif",
-        fontWeight: 400,
-        fontStyle: "italic",
-        fontSize: "clamp(0.95rem, 1.1vw, 1.05rem)",
-        color: "var(--c-muted)",
-        lineHeight: 1.55,
-        maxWidth: 540,
-        margin: "0 auto",
-      }}>
-        {fact.context}
-      </div>
-    </div>
-  );
-}
 
 export default function SquishHeader() {
   const { theme, mode, colorblind, typeface } = useTheme();
@@ -161,6 +34,19 @@ export default function SquishHeader() {
   const titleRef = useRef(null);
   const subRef = useRef(null);
   const factsRef = useRef(null);
+  const teaserRef = useRef(null);
+  const arrow1Ref = useRef(null);
+  const arrow2Ref = useRef(null);
+  const arrow3Ref = useRef(null);
+
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex(i => (i + 1) % TEASER_QUOTES.length);
+    }, 7000); // 7 seconds per quote for slow reading
+    return () => clearInterval(interval);
+  }, []);
 
   const [loomPaused, setLoomPaused] = useState(() => {
     try {
@@ -177,9 +63,9 @@ export default function SquishHeader() {
   };
   const navContentRef = useRef(null);
   const canvasRef = useRef(null);
+  const spacerRef = useRef(null);
 
-  // Theme-aware "scrolled" chrome (glass, border, shadow) — matches
-  // ExploreMasthead's docked treatment instead of a hardcoded dark rgba.
+  // Theme-aware "scrolled" chrome (glass, border, shadow)
   const [scrolled, setScrolled] = useState(false);
 
   // Scrollspy: which chapter is currently on screen. Drives the
@@ -204,7 +90,6 @@ export default function SquishHeader() {
       raf = requestAnimationFrame(() => {
         raf = null;
         setScrolled(window.scrollY > 100);
-        // last chapter whose top has passed under the docked bar
         let current = 'ch-prologue';
         for (const s of chapters) {
           const el = document.getElementById(s.id);
@@ -221,10 +106,19 @@ export default function SquishHeader() {
   const currentChapter = chapters.find((s) => s.id === currentId) || chapters[0];
 
   useGSAP(() => {
-    // 1:1 with scroll, like ExploreMasthead (height = HERO − scrollY):
-    // the squish completes exactly when the spacer has scrolled past, so
-    // content rises to meet the docked bar with no dead gap.
-    const scrollDistance = Math.max(200, Math.round(window.innerHeight * 0.85) - 70);
+    // Exact pixel measurement of the spacer's rendered 85vh to prevent scroll tearing
+    const startHeight = spacerRef.current ? spacerRef.current.offsetHeight : Math.round(window.innerHeight * 0.85);
+    const scrollDistance = Math.max(200, startHeight - 70);
+
+    // Cascading glow animation for the arrow trail
+    gsap.to([arrow1Ref.current, arrow2Ref.current, arrow3Ref.current], {
+      opacity: 1,
+      duration: 0.5,
+      stagger: 0.2,
+      repeat: -1,
+      yoyo: true,
+      ease: "power2.inOut"
+    });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -235,14 +129,13 @@ export default function SquishHeader() {
       }
     });
 
-    // 1. The header container shrinks from 85vh to a 70px bar.
-    //    (Background/border/blur are handled reactively via `scrolled`.)
-    tl.to(headerRef.current, {
-      height: "70px",
-      minHeight: "70px",
-      duration: 1,
-      ease: "none"
-    }, 0);
+    // 1. The header perfectly hugs the scrolling content below it.
+    // By using a fromTo with exact pixel values, 1px of scroll removes exactly 1px of height.
+    tl.fromTo(headerRef.current, 
+      { height: `${startHeight}px`, minHeight: `${startHeight}px` },
+      { height: "70px", minHeight: "70px", duration: 1, ease: "none" },
+      0
+    );
 
     // Fade the canvas background opacity as the header squishes/docks
     tl.to(canvasRef.current, {
@@ -292,9 +185,21 @@ export default function SquishHeader() {
 
     tl.to(factsRef.current, {
       opacity: 0,
+      y: -100, // Slides up behind the title
       height: 0,
       margin: 0,
-      duration: 0.25,
+      padding: 0,
+      duration: 0.35,
+      ease: "power2.out"
+    }, 0);
+
+    tl.to(teaserRef.current, {
+      opacity: 0,
+      y: -120, // Slides up faster for parallax
+      height: 0,
+      margin: 0,
+      padding: 0,
+      duration: 0.3, 
       ease: "power2.out"
     }, 0);
 
@@ -310,7 +215,7 @@ export default function SquishHeader() {
   return (
     <div ref={containerRef} style={{ position: 'relative', zIndex: 100 }}>
       {/* Spacer to push content down initially since header is fixed */}
-      <div style={{ height: '85vh' }} />
+      <div ref={spacerRef} style={{ height: '85vh' }} />
 
       <header 
         ref={headerRef}
@@ -483,6 +388,8 @@ export default function SquishHeader() {
             <h1 
               ref={titleRef}
               style={{
+                position: "relative",
+                zIndex: 20,
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 800,
                 fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
@@ -497,25 +404,156 @@ export default function SquishHeader() {
               The Accidental Intactivist's Inquiry
             </h1>
             
-            <div 
-              ref={subRef}
-              style={{
+            <div ref={subRef} />
+
+            <div ref={factsRef} style={{
+              width: "100%",
+              maxWidth: 780,
+              boxSizing: "border-box",
+              marginTop: "clamp(1rem, 3vh, 2rem)",
+              background: "var(--c-bgCard)",
+              borderRadius: 6,
+              padding: "clamp(10px, 2vh, 20px)",
+            }}>
+              {/* Gold frame (the band around the content) */}
+              <div style={{
+                border: "2.5px solid var(--c-gold)",
+                borderRadius: 2,
+                padding: "clamp(1.5rem, 3vh, 2.2rem) clamp(1.5rem, 4vw, 3.5rem)",
+              }}>
+              {/* Line 1 */}
+              <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 400,
                 fontStyle: "italic",
-                fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
-                color: "var(--c-muted)",
-                marginTop: "1rem",
-              }}
-            >
-              {PHASE1_TOTAL} Voices · Six Pathways · One Question, Asked Honestly
+                fontSize: "clamp(1.1rem, 2vw, 1.5rem)",
+                color: "var(--c-text)",
+                lineHeight: 1.4,
+                letterSpacing: "0.01em",
+              }}>
+                If someone asked you honestly how you felt about your
+              </div>
+
+              {/* Line 2: "circumcision status" — highlighted */}
+              <div style={{
+                fontFamily: "var(--f-display, 'Playfair Display', serif)",
+                fontWeight: 800,
+                fontSize: "clamp(1.8rem, 4vw, 3.2rem)",
+                lineHeight: 1.1,
+                letterSpacing: "-0.01em",
+                textTransform: "uppercase",
+                margin: "clamp(0.5rem, 2vh, 1rem) 0",
+                background: "linear-gradient(135deg, var(--c-goldBright), var(--c-gold), var(--c-orange))",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>
+                circumcision status
+              </div>
+
+              {/* Line 3: "what would you say?" */}
+              <div style={{
+                fontFamily: "var(--f-display, 'Playfair Display', serif)",
+                fontWeight: 700,
+                fontSize: "clamp(1.6rem, 3.5vw, 2.6rem)",
+                color: "var(--c-textBright)",
+                lineHeight: 1.2,
+                letterSpacing: "-0.01em",
+                marginTop: "0",
+              }}>
+                what would you say?
+              </div>
+
+              {/* Divider rule */}
+              <div style={{
+                width: 60, height: 2, margin: "1.4rem auto",
+                background: "linear-gradient(90deg, var(--c-gold), var(--c-orange))",
+                borderRadius: 1,
+              }} />
+
+              {/* Tagline */}
+              <div style={{
+                fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                fontWeight: 700,
+                fontSize: "clamp(0.7rem, 1vw, 0.85rem)",
+                textTransform: "uppercase",
+                letterSpacing: "0.25em",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.4rem",
+              }}>
+                <span style={{ color: "var(--c-muted)" }}>{PHASE1_TOTAL} people answered anonymously.</span>
+                <span style={{ color: "var(--c-goldBright)" }}>Here's what they chose to share.</span>
+              </div>
+              </div>
             </div>
 
-            <div ref={factsRef}>
-              <RotatingFact />
+            {/* Teaser Quotes Carousel (Moved inside titleGroupRef to prevent overlap) */}
+            <div ref={teaserRef} style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 780,
+              boxSizing: "border-box",
+              marginTop: "clamp(1rem, 3vh, 2rem)",
+              background: "var(--c-bgCard)",
+              border: "1px solid var(--c-ghost)",
+              borderRadius: 6,
+              padding: "clamp(10px, 2vh, 20px)",
+              textAlign: "center",
+              zIndex: 10,
+              pointerEvents: "none",
+            }}>
+              <div style={{
+                position: "relative",
+                border: "2.5px solid transparent",
+                width: "100%",
+                minHeight: "90px",
+                boxSizing: "border-box",
+              }}>
+                {TEASER_QUOTES.map((q, i) => (
+                  <div key={i} style={{
+                    position: "absolute",
+                    top: "50%", 
+                    left: "clamp(1.5rem, 4vw, 3.5rem)", 
+                    right: "clamp(1.5rem, 4vw, 3.5rem)",
+                    transform: "translateY(-50%)",
+                  opacity: quoteIndex === i ? 1 : 0,
+                  transition: "opacity 1.5s ease-in-out",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.6rem",
+                  alignItems: "center"
+                }}>
+                  <div style={{
+                    fontFamily: "var(--f-display, 'Playfair Display', serif)",
+                    fontSize: "clamp(1rem, 2vw, 1.15rem)",
+                    fontStyle: "italic",
+                    color: "var(--c-goldBright)",
+                    lineHeight: 1.4,
+                    textShadow: "0 2px 4px var(--c-bg)", // ensures readability over the loom
+                  }}>
+                    {q.text}
+                  </div>
+                  <div style={{
+                    fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                    fontSize: "clamp(0.65rem, 1.5vw, 0.75rem)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
+                    color: "var(--c-gold)",
+                    opacity: 0.8,
+                  }}>
+                    — {q.author}
+                  </div>
+                </div>
+              ))}
+              </div>
             </div>
+
           </div>
         </div>
+
+        {/* Teaser Quotes Carousel was moved inside titleGroupRef */}
 
         {/* ── Pause Button for Harmonic Loom ── */}
         <button
@@ -559,6 +597,36 @@ export default function SquishHeader() {
           {loomPaused ? <Play size={15} style={{ marginLeft: "2px", fill: "currentColor" }} /> : <Pause size={15} style={{ fill: "currentColor" }} />}
         </button>
       </header>
+
+      {/* ── Scroll Indicator (On the Canvas) ── */}
+      <div style={{
+        position: "absolute",
+        bottom: 0,
+        left: "50%",
+        transform: "translate(-50%, 150%)", // Pushes it down past the 85vh spacer onto the canvas
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "0.2rem",
+        color: "var(--c-gold)",
+        zIndex: 10,
+        pointerEvents: "none",
+      }}>
+        <span style={{
+          fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+          fontSize: "0.85rem",
+          fontWeight: 700,
+          textTransform: "uppercase",
+          letterSpacing: "0.15em",
+          opacity: 0.7,
+        }}>Scroll to Read the Full Phase 1 Report</span>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: "-0.2rem" }}>
+          <ChevronDown ref={arrow1Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-12px" }} />
+          <ChevronDown ref={arrow2Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-12px" }} />
+          <ChevronDown ref={arrow3Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2 }} />
+        </div>
+      </div>
+
     </div>
   );
 }

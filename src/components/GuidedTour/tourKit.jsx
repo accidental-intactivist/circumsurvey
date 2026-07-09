@@ -7,6 +7,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { C, FONT } from "../../explore/styles/tokens";
 import * as Icons from "../../explore/components/Icons";
+import { ChevronDown } from "lucide-react";
 
 export const EXPLORE_BASE = "/explore#/";
 
@@ -59,53 +60,42 @@ export function CountUp({ to, suffix = "", decimals = 0, run = true, duration = 
   return <>{val.toFixed(decimals)}{suffix}</>;
 }
 
-// ── StationHero: ExhibitHero-consistent title card + enter link ────────────
-// Mirrors explore/components/ExhibitHero.jsx (tint, border, top bar, kicker,
-// watermark icon) with an explicit catalog entry + anchor id + enter pill.
 export function StationHero({ station }) {
   const Icon = Icons[station.icon];
   const col = station.colorVar;
   return (
     <Reveal>
-      <div id={`st${station.num}`} style={{
-        position: "relative", overflow: "hidden", borderRadius: 12,
-        padding: "2rem", margin: "4.5rem 0 1.4rem",
-        background: `linear-gradient(135deg, color-mix(in srgb, ${col} 8%, transparent) 0%, color-mix(in srgb, ${col} 1%, transparent) 100%)`,
-        backdropFilter: "blur(16px)",
-        border: `1px solid color-mix(in srgb, ${col} 25%, transparent)`,
-        boxShadow: "0 6px 0 rgba(0,0,0,0.15)",
-        scrollMarginTop: 90,
+      <div style={{
+        margin: "1rem 0 4rem", padding: "1.2rem 1.4rem",
+        borderTop: `1px solid ${C.ghost}`,
+        borderBottom: `1px solid ${C.ghost}`,
+        background: "rgba(255,255,255,0.01)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        gap: "1rem", flexWrap: "wrap",
       }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: col }} />
-        {Icon && (
-          <div style={{ position: "absolute", right: "-5%", bottom: "-20%", opacity: 0.15, pointerEvents: "none", transform: "rotate(-10deg)" }}>
-            <Icon size={300} color={col} />
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {Icon && <div style={{ background: `color-mix(in srgb, ${col} 15%, transparent)`, padding: "0.6rem", borderRadius: 8, display: "flex" }}>
+            <Icon size={20} color={col} />
+          </div>}
+          <div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.text, lineHeight: 1.2 }}>
+              Explore the raw data for <strong>{station.title}</strong>
+            </div>
+            <div style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "0.25rem" }}>
+              Interactive Exhibit {station.num} · {station.tagline}
+            </div>
           </div>
-        )}
-        <div style={{
-          fontFamily: FONT.condensed, fontSize: "0.75rem", fontWeight: 700,
-          letterSpacing: "0.2em", textTransform: "uppercase", color: col, marginBottom: "0.6rem",
-        }}>
-          Exhibit {station.num}
         </div>
-        <h2 style={{
-          fontFamily: FONT.display, fontWeight: 800, fontSize: "2.1rem",
-          color: C.textBright, lineHeight: 1.15, letterSpacing: "-0.02em", margin: "0 0 0.6rem",
-        }}>
-          {station.title}
-        </h2>
-        <p style={{ fontFamily: FONT.body, fontSize: "1rem", color: C.text, lineHeight: 1.6, maxWidth: 680, margin: 0 }}>
-          {station.tagline}
-        </p>
         <a href={EXPLORE_BASE + station.route} style={{
-          display: "inline-flex", alignItems: "center", gap: "0.4rem", marginTop: "1.1rem",
-          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.72rem",
+          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem",
           letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
-          borderRadius: 100, padding: "0.45rem 1.1rem", color: col,
-          border: `1px solid color-mix(in srgb, ${col} 40%, transparent)`,
+          color: col, display: "inline-flex", alignItems: "center", gap: "0.4rem",
           background: `color-mix(in srgb, ${col} 10%, transparent)`,
+          padding: "0.5rem 1.2rem", borderRadius: 100,
+          border: `1px solid color-mix(in srgb, ${col} 30%, transparent)`,
+          whiteSpace: "nowrap"
         }}>
-          Enter the exhibit ➔
+          Open Exhibit ➔
         </a>
       </div>
     </Reveal>
@@ -350,11 +340,12 @@ export function SectionKicker({ kicker, title, colorVar }) {
 
 // ── EffectSizeBadge: inline "d = 1.78 ★★★" badge ─────────────────────────
 export function EffectSizeBadge({ d, stars, colorVar, tooltip }) {
-  const mag = Math.abs(d);
+  const validD = d === undefined || isNaN(d) ? 0 : d;
+  const mag = Math.abs(validD);
   const bgOpacity = mag >= 1.5 ? 0.14 : mag >= 1.0 ? 0.10 : mag >= 0.5 ? 0.07 : 0.04;
   return (
     <span
-      title={tooltip || `Cohen's d = ${d.toFixed(2)} — effect size`}
+      title={tooltip || `Cohen's d = ${validD.toFixed(2)} — effect size`}
       style={{
         display: "inline-flex", alignItems: "center", gap: "0.3rem",
         fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700,
@@ -365,7 +356,7 @@ export function EffectSizeBadge({ d, stars, colorVar, tooltip }) {
         whiteSpace: "nowrap",
       }}
     >
-      d&thinsp;=&thinsp;{d.toFixed(2)} {stars}
+      d&thinsp;=&thinsp;{validD.toFixed(2)} {stars}
     </span>
   );
 }
@@ -373,7 +364,8 @@ export function EffectSizeBadge({ d, stars, colorVar, tooltip }) {
 // ── EffectSizeRow: a labeled row with an effect size bar + badge ───────────
 export function EffectSizeRow({ label, d, stars, colorVar, maxD = 2.0 }) {
   const [ref, seen] = useInView();
-  const pct = Math.min(100, (Math.abs(d) / maxD) * 100);
+  const validD = d === undefined || isNaN(d) ? 0 : d;
+  const pct = Math.min(100, (Math.abs(validD) / maxD) * 100);
   return (
     <div ref={ref} style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.35rem 0" }}>
       <span style={{
@@ -391,7 +383,7 @@ export function EffectSizeRow({ label, d, stars, colorVar, maxD = 2.0 }) {
         }} />
       </div>
       <span style={{ fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.72rem", color: colorVar || C.red, width: 80, flexShrink: 0 }}>
-        d={d.toFixed(2)} {stars}
+        d={validD.toFixed(2)} {stars}
       </span>
     </div>
   );
@@ -507,24 +499,21 @@ export function DocentMarker({ topic, onClick }) {
       title={`Ask the Docent about ${topic}`}
       style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center",
-        width: 26, height: 26, borderRadius: "50%", border: `1px solid ${C.gold}`,
-        background: `color-mix(in srgb, ${C.gold} 12%, transparent)`,
+        background: "transparent", border: "none",
         color: C.goldBright, cursor: "pointer", verticalAlign: "middle",
         marginLeft: "0.4rem", transition: "all 0.2s ease",
-        fontFamily: FONT.mono, fontSize: "0.8rem", padding: 0,
+        padding: 0,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = C.gold;
-        e.currentTarget.style.color = C.bgDeep;
-        e.currentTarget.style.transform = "scale(1.1)";
+        e.currentTarget.style.color = C.textBright;
+        e.currentTarget.style.transform = "scale(1.15)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = `color-mix(in srgb, ${C.gold} 12%, transparent)`;
         e.currentTarget.style.color = C.goldBright;
         e.currentTarget.style.transform = "scale(1)";
       }}
     >
-      <Icons.Info size={14} style={{ verticalAlign: "middle", pointerEvents: "none" }} />
+      <Icons.Info size={16} style={{ verticalAlign: "middle", pointerEvents: "none" }} />
     </button>
   );
 }
@@ -542,7 +531,7 @@ export function ResearcherFootnote({ children }) {
           color: open ? C.textBright : C.dim, transition: "color 0.2s",
         }}
       >
-        <Icons.ChevronDown size={12} style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
+        <ChevronDown size={12} style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }} />
         {open ? "Close Academic Detail" : "For Researchers: Academic Detail"}
       </button>
       {open && (

@@ -149,10 +149,10 @@ export const GLOBAL_CSS = `
     --c-ghost: #d4cfc4;
     --c-gold: #a87e18;
     --c-goldBright: #d4a030;
-    /* Map: Pearl White & Gold */
-    --map-ocean: #E8E2D8;
+    /* Map: Deep Navy & White */
+    --map-ocean: #1a2a3a;
     --map-land: #FFFFFF;
-    --map-border: rgba(168, 126, 24, 0.25);
+    --map-border: rgba(168, 126, 24, 0.35);
     /* Pathway: Match Tableau 10 Categorical for harmony */
     --path-intact: var(--chart-4);
     --path-circumcised: var(--chart-2);
@@ -209,10 +209,10 @@ export const GLOBAL_CSS = `
     --c-blue: #00e5ff;
     --c-grey: #b39ddb;
     --c-purple: #d500f9;
-    /* Map: Lavender & Violet */
-    --map-ocean: #E9D9FF;
+    /* Map: Deep Violet & White */
+    --map-ocean: #2d1b4e;
     --map-land: #FFFFFF;
-    --map-border: rgba(206, 147, 216, 0.4);
+    --map-border: rgba(206, 147, 216, 0.5);
     /* Categorical: Deep Pink → Violet → Teal */
     --chart-0: #d81b60; --chart-1: #8e24aa; --chart-2: #00838f; --chart-3: #c2185b; --chart-4: #5e35b1;
     --chart-5: #00695c; --chart-6: #ad1457; --chart-7: #7b1fa2; --chart-8: #00897b; --chart-9: #f9a825;
@@ -277,10 +277,10 @@ export const GLOBAL_CSS = `
     --c-blue: #8fb39f;
     --c-grey: #d4e3d9;
     --c-purple: #8e50b8;
-    /* Map: Sage & Pearl */
-    --map-ocean: #D4E3D9;
+    /* Map: Deep Forest & White */
+    --map-ocean: #1a3327;
     --map-land: #FFFFFF;
-    --map-border: rgba(92, 122, 106, 0.25);
+    --map-border: rgba(92, 122, 106, 0.35);
 
     /* Categorical: Nature (light) */
     --chart-0: #047857;
@@ -354,10 +354,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0284c7;
     --c-grey: #e0f2fe;
     --c-purple: #7c3aed;
-    /* Map: Sky Blue & White */
-    --map-ocean: #BAE6FD;
+    /* Map: Deep Ocean & White */
+    --map-ocean: #0c3547;
     --map-land: #FFFFFF;
-    --map-border: rgba(3, 105, 161, 0.2);
+    --map-border: rgba(3, 105, 161, 0.35);
 
     /* Categorical: Coastal (light) */
     --chart-0: #0369a1;
@@ -422,10 +422,10 @@ export const GLOBAL_CSS = `
     --c-blue: #0a9f9d;
     --c-grey: #e8dcc4;
     --c-purple: #9c6c84;
-    /* Map: Antique Parchment & Amber */
-    --map-ocean: #E8DCC4;
+    /* Map: Deep Amber & White */
+    --map-ocean: #2a1f0e;
     --map-land: #FFFFFF;
-    --map-border: rgba(193, 135, 72, 0.25);
+    --map-border: rgba(193, 135, 72, 0.35);
 
     /* Categorical: Warm Earth (light) */
     --chart-0: #0a9f9d; --chart-1: #e54e21; --chart-2: #6c8645; --chart-3: #c18748; --chart-4: #9c6c84;
@@ -482,10 +482,10 @@ export const GLOBAL_CSS = `
     --c-blue: #007d82;
     --c-grey: #79716c;
     --c-purple: #004042;
-    /* Map: Warm Cream & Ivory */
-    --map-ocean: #E5DFD5;
+    /* Map: Deep Espresso & White */
+    --map-ocean: #2d1f18;
     --map-land: #FFFFFF;
-    --map-border: rgba(195, 137, 97, 0.2);
+    --map-border: rgba(195, 137, 97, 0.35);
 
     /* Categorical: Earthy Muted (light) */
     --chart-0: #007d82; --chart-1: #950404; --chart-2: #e04b28; --chart-3: #388f30; --chart-4: #9f5630;
@@ -542,10 +542,10 @@ export const GLOBAL_CSS = `
     --c-blue: #00695c;
     --c-grey: #8d6e63;
     --c-purple: #6d4c41;
-    /* Map: Sandy & Coral */
-    --map-ocean: #FFB380;
+    /* Map: Deep Terra & White */
+    --map-ocean: #3d1a04;
     --map-land: #FFFFFF;
-    --map-border: rgba(230, 74, 25, 0.2);
+    --map-border: rgba(230, 74, 25, 0.35);
 
     /* Categorical: Desert (light) */
     --chart-0: #00695c; --chart-1: #e64a19; --chart-2: #ff5722; --chart-3: #00897b; --chart-4: #6d4c41;
@@ -602,10 +602,10 @@ export const GLOBAL_CSS = `
     --c-blue: #263238;
     --c-grey: #546e7a;
     --c-purple: #880e4f;
-    /* Map: Rose & Slate */
-    --map-ocean: #FF9999;
+    /* Map: Deep Crimson & White */
+    --map-ocean: #2a0808;
     --map-land: #FFFFFF;
-    --map-border: rgba(183, 28, 28, 0.2);
+    --map-border: rgba(183, 28, 28, 0.35);
 
     /* Categorical: Industrial (light) */
     --chart-0: #263238; --chart-1: #b71c1c; --chart-2: #e53935; --chart-3: #455a64; --chart-4: #880e4f;
@@ -664,10 +664,10 @@ export const GLOBAL_CSS = `
     --c-blue: #111111;
     --c-grey: #666666;
     --c-purple: #111111;
-    /* Map: Pearl White & Graphite */
-    --map-ocean: #D4D4D4;
+    /* Map: Jet Black & White */
+    --map-ocean: #1a1a1a;
     --map-land: #FFFFFF;
-    --map-border: rgba(17, 17, 17, 0.15);
+    --map-border: rgba(17, 17, 17, 0.25);
     --path-intact: #111111;
     --path-circumcised: #111111;
     --path-restoring: #111111;
@@ -798,7 +798,7 @@ export const GLOBAL_CSS = `
     --c-goldBright: #fa9600;
     
     --map-ocean: #0055aa;
-    --map-land: #ffffff;
+    --map-land: var(--c-bgDeep);
     --map-border: rgba(250, 150, 0, 0.5);
     
     --c-red: #ff0000;
@@ -1071,9 +1071,9 @@ const lightModeFallbacks = {
   "--path-trans-vag": "#e85d50",
   "--path-trans-phal": "#c64639",
   "--path-intersex": "#b0a888",
-  "--map-ocean": "#E8E2D8",
+  "--map-ocean": "#1a2a3a",
   "--map-land": "#FFFFFF",
-  "--map-border": "rgba(168, 126, 24, 0.25)"
+  "--map-border": "rgba(168, 126, 24, 0.35)"
 };
 
 export function resolveCssColor(varStr) {
@@ -1084,6 +1084,7 @@ export function resolveCssColor(varStr) {
       const hasTheme = document.documentElement.hasAttribute("data-theme");
       if (hasTheme) {
         const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        if (val && val.includes("var(")) return resolveCssColor(val);
         if (val) return val;
       }
       
@@ -1091,12 +1092,19 @@ export function resolveCssColor(varStr) {
       try {
         const mode = localStorage.getItem("cs_theme_mode") || "dark";
         if (mode === "light" && lightModeFallbacks[varName]) {
-          return lightModeFallbacks[varName];
+          const fb = lightModeFallbacks[varName];
+          return fb.includes("var(") ? resolveCssColor(fb) : fb;
         }
       } catch (e) {}
-      if (staticFallbacks[varName]) return staticFallbacks[varName];
+      if (staticFallbacks[varName]) {
+        const fb = staticFallbacks[varName];
+        return fb.includes("var(") ? resolveCssColor(fb) : fb;
+      }
     } else {
-      if (staticFallbacks[varName]) return staticFallbacks[varName];
+      if (staticFallbacks[varName]) {
+        const fb = staticFallbacks[varName];
+        return fb.includes("var(") ? resolveCssColor(fb) : fb;
+      }
     }
   }
   if (typeof varStr === "string" && (varStr.startsWith("#") || varStr.startsWith("rgb") || varStr.startsWith("hsl"))) {

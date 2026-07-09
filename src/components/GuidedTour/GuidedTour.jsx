@@ -11,7 +11,19 @@ import { ExhibitCard } from "../../explore/components/ExhibitsDashboard";
 import { EXHIBIT_ROUTES, ROUTE_META } from "../../explore/components/ExploreMasthead";
 
 import ExhibitSurveyFlowchart from "../../explore/components/SurveyFlowchart";
+import { getGeo } from "../../explore/lib/api";
+import { normalizeName } from "../../explore/lib/formatters";
 import { TOUR, PATHS, N_TOTAL, PLEASURE_METRICS, pooledMean } from "./tourData";
+
+const WORLD_GEO_URL = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
+const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
+const CANADA_GEO_URL = "https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/canada.geojson";
+
+const GEO_URLS = {
+  country: WORLD_GEO_URL,
+  usa: US_TOPO_URL,
+  canada: CANADA_GEO_URL
+};
 import {
   Reveal, StationHero, Lens, TourCard, BarRows, ArrowNote, StatCallout,
   ChapterDivider, DocentMarker, ResearcherFootnote,
@@ -23,8 +35,144 @@ import {
   PunchCardAtlas, ConvergenceSankey,
   WordMirrors, ResentmentMirror, ProjectionGate,
 } from "./TourVisuals";
+import { DemographicGrids } from "./DemographicGrids";
 import PleasureGapWidget from "../../explore/components/PleasureGapWidget";
+import GeographicHeatmap from "../../explore/components/GeographicHeatmap";
+import WireframeGlobe from "../../explore/components/WireframeGlobe";
 import { PLEASURE_GAP_STATS, EFFECT_BENCHMARKS, dMagnitude, sigLabel } from "./tourStats";
+
+// ── Demographic Maps Block ──────────────────────────────────────────────────
+function DemographicMapsBlock() {
+  const [geoLevel, setGeoLevel] = useState('country');
+  const [worldDist, setWorldDist] = useState(null);
+  const [hoveredCountry, setHoveredCountry] = useState(null);
+
+  React.useEffect(() => {
+    async function load() {
+      try {
+        if (geoLevel === 'north_america') {
+          const [usGeo, caGeo] = await Promise.all([
+            getGeo('us_state'),
+            getGeo('canada_province')
+          ]);
+          const combined = [...(usGeo.locations || []), ...(caGeo.locations || [])];
+          setWorldDist({ distribution: combined.map(loc => ({ label: loc.location, n: loc.n })) });
+        } else {
+          const geo = await getGeo('country');
+          setWorldDist({ distribution: (geo.locations || []).map(loc => ({ label: loc.location, n: loc.n })) });
+        }
+      } catch (e) {
+        console.error("Failed to load map data", e);
+      }
+    }
+    load();
+  }, [geoLevel]);
+
+  return (
+    <div style={{ width: '100%', margin: '0.5rem 0', boxSizing: 'border-box' }}>
+      {worldDist && (
+        <>
+          <div style={{ display: 'flex', gap: '1.6rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start' }}>
+            {/* ── Globe — padded to prevent corner clipping ── */}
+            <div style={{ flex: '1 1 340px', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem' }}>
+              <WireframeGlobe 
+                distribution={worldDist} 
+                initialRotation={geoLevel === 'north_america' ? [105, -48, 0] : [20, -15, 0]} 
+                scale={geoLevel === 'north_america' ? 1.8 : 1.1}
+                width={340}
+                height={340}
+                geoUrl={geoLevel === 'north_america' ? [GEO_URLS.country, GEO_URLS.usa, GEO_URLS.canada] : GEO_URLS.country}
+                targetCountry={hoveredCountry}
+                centerOnHover={geoLevel === 'country'}
+                autoRotate={geoLevel === 'country'}
+              />
+            </div>
+
+            {/* ── Table panel ── */}
+            <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', maxHeight: 360 }}>
+              {/* ── Header: kicker + toggle pills ── */}
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                paddingBottom: '0.5rem', marginBottom: '0.5rem',
+                borderBottom: `1px solid ${C.ghost}`,
+              }}>
+                <span style={{
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: '0.7rem',
+                  color: C.muted,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}>
+                  {geoLevel === 'country' ? 'Top Countries' : 'Top States & Provinces'}
+                </span>
+
+                {/* Toggle pills */}
+                <div style={{
+                  display: 'flex',
+                  border: `1px solid ${C.ghost}`,
+                  borderRadius: 999,
+                  overflow: 'hidden',
+                }}>
+                  {['country', 'north_america'].map(lvl => (
+                    <button key={lvl} onClick={() => setGeoLevel(lvl)} style={{
+                      background: geoLevel === lvl ? C.gold : 'transparent',
+                      color: geoLevel === lvl ? '#fff' : C.muted,
+                      border: 'none',
+                      borderRight: lvl === 'country' ? `1px solid ${C.ghost}` : 'none',
+                      padding: '0.2rem 0.55rem',
+                      cursor: 'pointer',
+                      fontFamily: FONT.condensed,
+                      fontWeight: 700,
+                      fontSize: '0.6rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      transition: 'all 0.2s',
+                    }}>
+                      {lvl === 'country' ? 'World' : 'North America'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Ranked list — matching stat card rows ── */}
+              <div style={{
+                overflowY: 'auto',
+                flex: 1,
+                paddingRight: '1rem', // Prevent scrollbar from overlapping text
+              }}>{[...worldDist.distribution].sort((a,b) => b.n - a.n).slice(0, 20).map((d, i) => (
+                  <div 
+                    key={i} 
+                    onMouseEnter={() => setHoveredCountry(d.label)}
+                    onMouseLeave={() => setHoveredCountry(null)}
+                    style={{
+                      display: "flex", alignItems: "baseline", gap: "0.5rem", padding: "0.5rem 0",
+                      borderBottom: i < 19 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      cursor: "default"
+                    }}
+                  >
+                    <span style={{
+                      fontFamily: FONT.display, fontWeight: 600, fontSize: "0.76rem", color: C.text,
+                      width: 170, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                    }} title={d.label}>
+                      {d.label}
+                    </span>
+                    <span style={{ flex: 1, borderBottom: `2px dotted ${C.ghost}`, marginBottom: 3, minWidth: 20 }} />
+                    <span style={{
+                      fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.92rem", color: C.gold, flexShrink: 0
+                    }}>
+                      {d.n}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 const st = (num) => TOUR.find((t) => t.num === num);
 
@@ -47,11 +195,11 @@ function VoiceCard({ colorVar, label, children }) {
 function Station({ num, children }) {
   const s = st(num);
   return (
-    <>
-      <StationHero station={s} />
+    <div id={`st${s.num}`} style={{ scrollMarginTop: 90 }}>
       <Lens>{s.lens} <DocentMarker topic={s.title} onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: s.docentContext } }))} /></Lens>
       {children}
-    </>
+      <StationHero station={s} />
+    </div>
   );
 }
 
@@ -155,18 +303,29 @@ export default function GuidedTour() {
           </ChapterDivider>
 
           <Station num="05">
-            <TourCard title="Respondent Census & Origins" refText={`FORM CS-001 · PHASE 1 · N = ${N_TOTAL}`} stamp="Phase 1">
-              <div style={{ display: "flex", justifyContent: "center", gap: "2rem", flexWrap: "wrap", margin: "0.4rem 0 1.4rem" }}>
-                {Object.values(PATHS).map((p) => (
-                  <div key={p.label} style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "1.9rem", lineHeight: 1, color: p.color }}>{p.n}</div>
-                    <div style={{ fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.62rem", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, marginTop: "0.3rem" }}>{p.label}</div>
-                  </div>
-                ))}
+            <TourCard title="Grassroots Recruitment" refText="ONLINE OUTREACH" stamp="Context">
+              <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 280, fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6 }}>
+                  The survey was spread entirely online through grassroots efforts — organic sharing, forum posts, and word-of-mouth. This self-selected approach found respondents eager to finally talk about an experience that goes largely unasked.
+                </div>
+                <div style={{ position: "relative", width: 340, height: 240, flexShrink: 0, padding: "0.5rem" }}>
+                  <img src="/flyers/recruitment-3.jpg" style={{ position: "absolute", left: 90, top: 10, width: 180, height: 220, objectFit: "cover", objectPosition: "center 30%", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.3)", transform: "rotate(6deg)", zIndex: 1, filter: "brightness(0.85)" }} alt="Street pole covered in grassroots survey posters" />
+                  <img src="/flyers/recruitment-1.png" style={{ position: "absolute", left: 0, top: 25, width: 140, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.4)", transform: "rotate(-5deg)", zIndex: 2 }} alt="Survey recruitment flyer: If someone asked you honestly how you felt about your circumcision status - what would you say?" />
+                  <img src="/flyers/recruitment-2.png" style={{ position: "absolute", right: 20, top: 55, width: 140, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.4)", transform: "rotate(3deg)", zIndex: 3 }} alt="Survey recruitment flyer: What's really going on down there?" />
+                </div>
               </div>
-              <PunchCardAtlas />
+            </TourCard>
+
+            <TourCard title="Global Reach" refText={`FORM CS-001 · PHASE 1`} stamp="Map">
+              <DemographicMapsBlock />
               <ArrowNote lines={[
                 <span key="e">Regional counts provisional — stamped by the freeze script · country detail: <a href={EXPLORE_BASE + "demographics"} style={{ color: C.blue }}>Exhibit 05</a></span>,
+              ]} />
+            </TourCard>
+
+            <TourCard title="Respondent Census & Origins" refText={`FORM CS-001 · PHASE 1 · N = ${N_TOTAL}`} stamp="Phase 1">
+              <DemographicGrids />
+              <ArrowNote lines={[
                 "Trans & intersex pathways receive dedicated treatment under the small-sample rule",
               ]} />
             </TourCard>
@@ -189,20 +348,18 @@ export default function GuidedTour() {
             Every respondent rated their own sexual experience on the same six questions. Watch what happens when you sort the answers.
           </ChapterDivider>
           
-          <Station num="03">
-            <TourCard title="Audience Participation" refText="MAKE YOUR PROJECTION" stamp="Sealed">
-              <div style={{
-                textAlign: "center", fontFamily: FONT.body, fontWeight: 300,
-                fontSize: "0.9rem", color: C.muted, maxWidth: 560,
-                margin: "0 auto 0.4rem", lineHeight: 1.65,
-              }}>
-                Pooled together — before anyone was sorted — every one of the six sensation ratings
-                sits near the middle of the scale, between {Math.min(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} and {Math.max(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} out
-                of 5. One unremarkable pool of answers.
-              </div>
-              <ProjectionGate predicted={!!predicted} onPredict={setPredicted} />
-            </TourCard>
-          </Station>
+          <TourCard title="Audience Participation" refText="MAKE YOUR PROJECTION" stamp="Sealed">
+            <div style={{
+              textAlign: "center", fontFamily: FONT.body, fontWeight: 300,
+              fontSize: "0.9rem", color: C.muted, maxWidth: 560,
+              margin: "0 auto 0.4rem", lineHeight: 1.65,
+            }}>
+              Pooled together — before anyone was sorted — every one of the six sensation ratings
+              sits near the middle of the scale, between {Math.min(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} and {Math.max(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} out
+              of 5. One unremarkable pool of answers.
+            </div>
+            <ProjectionGate predicted={!!predicted} onPredict={setPredicted} />
+          </TourCard>
         </div>
 
         {/* ── 03 · The Demonstration (deep-dark band, gated) ── */}
@@ -313,15 +470,17 @@ export default function GuidedTour() {
           </div>
         </section>
 
-        {/* breathing moment */}
-        {predicted && (
-          <PullStat
-            kicker="The widest gap the survey measured"
-            stat="d = 1.78"
-            line={"Pleasure from mobile skin. The bar exceeds the height difference between men and women."}
-            colorVar={C.red}
-          />
-        )}
+        <Station num="03">
+          {/* breathing moment */}
+          {predicted && (
+            <PullStat
+              kicker="The widest gap the survey measured"
+              stat="d = 1.78"
+              line={"Pleasure from mobile skin. The bar exceeds the height difference between men and women."}
+              colorVar={C.red}
+            />
+          )}
+        </Station>
 
         {/* ── Chapter 3 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>

@@ -7,9 +7,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { C, FONT } from "../../explore/styles/tokens";
 import {
   PATHS, PLEASURE_METRICS, pooledMean, SANKEY,
-  ATLAS_ROWS, ATLAS_REGIONS, WORDS_CIRC, WORDS_INTACT, RESENTMENT_MIRROR,
+  ATLAS_ROWS, ATLAS_REGIONS, RESENTMENT_MIRROR,
+  MIRROR_PAIR_DATA,
 } from "./tourData";
-import { useInView, CountUp } from "./tourKit";
+import { useInView, CountUp, EXPLORE_BASE } from "./tourKit";
+import { useLegibleColor } from "../../explore/lib/colorUtils";
+import { Heart, Circle, Activity, Users, HelpCircle, BookOpen, ArrowRight, AlertTriangle, Grid } from "lucide-react";
+import CorrelationExplorerPage from "../../explore/pages/CorrelationExplorerPage";
+import MultiSankeyChart from "../../explore/components/MultiSankeyChart";
+import { RESTORATION_COLOR_MAP, RATING_QUESTIONS, RCI_DEFINITIONS } from "../../explore/pages/RestorationJourneyPage";
+import { getQuestions } from "../../explore/lib/api";
+
+const ICON_MAP = { Heart, Circle, Activity, Users, HelpCircle, BookOpen, AlertTriangle };
 
 const mono = { fontFamily: FONT.mono };
 const disp = { fontFamily: FONT.display };
@@ -250,7 +259,7 @@ export function ConvergenceSankey() {
 }
 
 // ── Exhibit 06: word mirrors ───────────────────────────────────────────────
-export function WordMirrors() {
+export function WordMirrors({ wordsCirc, wordsIntact }) {
   const [ref, seen] = useInView();
   const Panel = ({ words, colorVar, title, tint }) => (
     <div style={{ flex: 1, minWidth: 250, padding: "1.2rem 1.4rem", textAlign: "center", background: tint }}>
@@ -275,9 +284,9 @@ export function WordMirrors() {
   );
   return (
     <div ref={ref} style={{ display: "flex", flexWrap: "wrap" }}>
-      <Panel words={WORDS_CIRC} colorVar={PATHS.circumcised.color} title="Circumcised, in their words"
+      <Panel words={wordsCirc} colorVar={PATHS.circumcised.color} title="Circumcised, in their words"
         tint="color-mix(in srgb, var(--path-circumcised) 4%, transparent)" />
-      <Panel words={WORDS_INTACT} colorVar={PATHS.intact.color} title="Intact, in their words"
+      <Panel words={wordsIntact} colorVar={PATHS.intact.color} title="Intact, in their words"
         tint="color-mix(in srgb, var(--path-intact) 4%, transparent)" />
     </div>
   );
@@ -327,42 +336,868 @@ export function ResentmentMirror() {
   );
 }
 
-// ── Audience-participation projection gate ─────────────────────────────────
-export function ProjectionGate({ onPredict, predicted }) {
-  const OPTIONS = [
-    { key: "split", label: "They split wide apart" },
-    { key: "small", label: "Small differences" },
-    { key: "same",  label: "About the same" },
-  ];
-  const [choice, setChoice] = useState(null);
+// ── MirrorPairToggle: interactive toggle for curated mirror pairs ───────────
+const PAIR_ORDER = ["resentment", "curiosity", "advantages", "triggers", "thought_level"];
+
+export function MirrorPairToggle() {
+  const [active, setActive] = useState("resentment");
+  const [ref, seen] = useInView();
+  const pair = MIRROR_PAIR_DATA[active];
+  
+  // Calculate a legible color for the white text against the gold active background
+  const activeTextColor = useLegibleColor("#ffffff", "var(--c-gold)", 4.5);
+
+  // Check if both sides share the same row labels → butterfly layout
+  const circLabels = pair.circumcised.rows.map(r => r.label);
+  const intactLabels = pair.intact.rows.map(r => r.label);
+  const labelsMatch = circLabels.length === intactLabels.length && circLabels.every((l, i) => l === intactLabels[i]);
+
+  const Side = ({ data, pathway }) => (
+    <div style={{
+      flex: 1, minWidth: 250, padding: "1.4rem",
+      background: `color-mix(in srgb, ${PATHS[pathway].color} 4%, transparent)`,
+    }}>
+      <div style={{
+        fontFamily: FONT.display, fontWeight: 700, fontSize: "0.78rem", marginBottom: "0.15rem",
+        color: PATHS[pathway].color, display: "flex", alignItems: "center", gap: "0.4rem",
+      }}>
+        <i style={{ width: 9, height: 9, borderRadius: "50%", background: PATHS[pathway].color, display: "inline-block" }} />
+        The {PATHS[pathway].label} Pathway
+      </div>
+      <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.74rem", color: C.muted, fontStyle: "italic", margin: "0 0 0.7rem", lineHeight: 1.45 }}>
+        {data.question}
+      </div>
+      {data.rows.map((r) => (
+        <div key={r.label} style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.32rem" }}>
+          <div style={{ flex: 1, height: 14, background: "rgba(255,255,255,.06)", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{
+              height: "100%", borderRadius: 3, background: r.colorVar,
+              width: seen ? `${r.pct}%` : 0, transition: "width .9s cubic-bezier(.25,.8,.3,1)",
+              display: "flex", alignItems: "center", paddingLeft: 4,
+              fontFamily: FONT.mono, fontSize: "0.48rem", fontWeight: 700, color: "rgba(0,0,0,.55)",
+            }}>
+              {r.pct > 40 ? `${Math.round(r.pct)}%` : ""}
+            </div>
+          </div>
+          <div style={{ fontFamily: FONT.body, fontSize: "0.62rem", color: C.muted, width: 110, flexShrink: 0 }}>{r.label}</div>
+          <div style={{ fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700, color: C.text, width: 40, textAlign: "right", flexShrink: 0 }}>{r.pct}%</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Build butterfly rows from matching data
+  const butterflyRows = labelsMatch
+    ? circLabels.map((label, i) => ({
+        label,
+        circPct: pair.circumcised.rows[i].pct,
+        intactPct: pair.intact.rows[i].pct,
+      }))
+    : [];
+
   return (
-    <div style={{ textAlign: "center", padding: "0.4rem 0" }}>
-      <h3 style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "1.35rem", letterSpacing: "0.03em", textTransform: "uppercase", color: C.textBright, margin: "0 0 0.4rem" }}>
-        Then came the fork.
-      </h3>
-      <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, margin: 0 }}>
-        “Are you circumcised?” — and every answer above could suddenly be sorted. What do you expect happened to these numbers?
-      </p>
-      <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", justifyContent: "center", marginTop: "1.2rem" }}>
-        {OPTIONS.map((o) => (
-          <button key={o.key} onClick={() => { setChoice(o.key); onPredict(o.key); }} style={{
-            fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.7rem", letterSpacing: "0.08em",
-            textTransform: "uppercase", cursor: "pointer",
-            color: choice === o.key ? C.goldBright : C.muted,
-            background: choice === o.key ? "rgba(212,160,48,.14)" : "transparent",
-            border: `1.5px solid ${choice === o.key ? "var(--c-goldBright)" : C.ghost}`,
-            borderRadius: 100, padding: "0.55rem 1.2rem", transition: "all .15s ease",
-            transform: choice === o.key ? "scale(1.05)" : "none",
-          }}>
-            {o.label}
+    <div ref={ref}>
+      {/* Toggle buttons */}
+      <div style={{
+        display: "flex", flexWrap: "wrap", gap: "0.4rem",
+        marginBottom: "1rem", justifyContent: "center",
+      }}>
+        {PAIR_ORDER.map((key) => {
+          const p = MIRROR_PAIR_DATA[key];
+          const isActive = active === key;
+          return (
+            <button key={key} onClick={() => setActive(key)} style={{
+              fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.62rem",
+              letterSpacing: "0.06em", textTransform: "uppercase",
+              cursor: "pointer", border: "none", borderRadius: 100,
+              padding: "0.4rem 0.85rem",
+              color: isActive ? activeTextColor : C.muted,
+              background: isActive ? "var(--c-gold)" : "rgba(255,255,255,0.06)",
+              transition: "all .2s ease",
+              transform: isActive ? "scale(1.05)" : "none",
+              boxShadow: isActive ? "0 2px 8px rgba(212,160,48,0.3)" : "none",
+            }}>
+              {p.concept}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Mirror display — butterfly if labels match, dual-panel otherwise */}
+      <div key={active} style={{ animation: "fadeSlideIn 0.35s ease" }}>
+        {labelsMatch ? (
+          <div>
+            <TourButterflyChart
+              rows={butterflyRows}
+              intactLabel="Intact"
+              circLabel="Circumcised"
+              subtitles={{ intact: pair.intact.question, circumcised: pair.circumcised.question }}
+            />
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            <Side data={pair.circumcised} pathway="circumcised" />
+            <Side data={pair.intact} pathway="intact" />
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export function ProjectionGate({ onPredict, predicted }) {
+  const [choice, setChoice] = useState(null);
+  
+  const blindBtnStyle = {
+    fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.08em",
+    textTransform: "uppercase", cursor: "pointer",
+    color: C.text, background: "transparent",
+    border: `1px solid ${C.dim}`, borderRadius: 100, padding: "0.5rem 1.4rem",
+    transition: "all .15s ease",
+  };
+
+  return (
+    <div style={{ padding: "1rem 0 0" }}>
+      <div style={{ display: "flex", gap: "1.5rem", justifyContent: "center", marginBottom: "2rem", flexWrap: "wrap" }}>
+        {/* GROUP A */}
+        <div style={{ flex: 1, minWidth: 200, maxWidth: 240, background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1.5rem", textAlign: "center" }}>
+          <div style={{ fontFamily: FONT.display, fontSize: "0.8rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+            {predicted ? "Intact Cohort" : "Group A"}
+          </div>
+          <div style={{ fontFamily: FONT.mono, fontSize: "2.4rem", fontWeight: 700, color: predicted ? PATHS.intact.color : C.textBright, transition: "color 0.4s ease" }}>
+            3.7
+          </div>
+          <div style={{ fontFamily: FONT.body, fontSize: "0.75rem", color: C.dim, marginTop: "0.2rem" }}>out of 5</div>
+        </div>
+
+        {/* GROUP B */}
+        <div style={{ flex: 1, minWidth: 200, maxWidth: 240, background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1.5rem", textAlign: "center" }}>
+          <div style={{ fontFamily: FONT.display, fontSize: "0.8rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+            {predicted ? "Circumcised Cohort" : "Group B"}
+          </div>
+          <div style={{ fontFamily: FONT.mono, fontSize: "2.4rem", fontWeight: 700, color: predicted ? PATHS.circumcised.color : C.textBright, transition: "color 0.4s ease" }}>
+            2.6
+          </div>
+          <div style={{ fontFamily: FONT.body, fontSize: "0.75rem", color: C.dim, marginTop: "0.2rem" }}>out of 5</div>
+        </div>
+      </div>
+
+      {!predicted ? (
+        <div style={{ textAlign: "center" }}>
+          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.05em", textTransform: "uppercase", color: C.text, margin: "0 0 1rem" }}>
+            Based on these reports, which group is Circumcised?
+          </h3>
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+            <button onClick={() => { setChoice('A'); onPredict('A'); }} style={blindBtnStyle} onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={e => e.target.style.background = 'transparent'}>Group A</button>
+            <button onClick={() => { setChoice('B'); onPredict('B'); }} style={blindBtnStyle} onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={e => e.target.style.background = 'transparent'}>Group B</button>
+            <button onClick={() => { setChoice('neither'); onPredict('neither'); }} style={blindBtnStyle} onMouseOver={e => e.target.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={e => e.target.style.background = 'transparent'}>I can't tell</button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ textAlign: "center", marginTop: "1rem", fontFamily: FONT.mono, fontSize: "0.65rem", color: C.goldBright, letterSpacing: "0.1em" }}>
+          DATA UNSEALED · THE DEMONSTRATION BELOW IS NOW OPEN
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CuratedInsightsToggle ──────────────────────────────────────────────────
+export function CuratedInsightsToggle() {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const INSIGHTS = [
+    { id: "sex-vs-regret", label: "Sexuality to Pathway to Regret", mode: "flow", x: "sexuality", y: "pathway", z: "aggregate_regret" },
+    { id: "soc-vs-pathway", label: "Socioeconomics vs. Pathway", mode: "pairwise", x: "socioeconomic", y: "pathway" },
+    { id: "pol-vs-norms", label: "Politics vs. Social Norms", mode: "pairwise", x: "political_identity", y: "final_social_norm_perception" },
+    { id: "gen-trad-path", label: "Generation to Tradition to Pathway", mode: "flow", x: "generation", y: "primary_tradition", z: "pathway" },
+    { id: "trad-path-regret", label: "Tradition to Pathway to Regret", mode: "flow", x: "primary_tradition", y: "pathway", z: "aggregate_regret" },
+    { id: "upb-path-pride", label: "Upbringing to Pathway to Pride", mode: "flow", x: "family_upbringing", y: "pathway", z: "exp_pride_satisfaction_rating" },
+    { id: "sex-path-lube", label: "Sexuality to Pathway to Lubrication", mode: "flow", x: "sexuality", y: "pathway", z: "exp_lubrication_need" },
+  ];
+
+  const activeInsight = INSIGHTS[activeIdx];
+  const activeTextColor = useLegibleColor("#ffffff", "var(--c-gold)", 4.5);
+
+  return (
+    <div style={{ marginTop: "1.5rem" }}>
+      <div style={{ fontFamily: FONT.display, fontSize: "0.85rem", fontWeight: 700, color: C.textBright, marginBottom: "0.8rem", textTransform: "uppercase", letterSpacing: "0.04em", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Grid size={16} color={C.gold} />
+        Curated Insights
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem" }}>
+        {INSIGHTS.map((insight, idx) => (
+          <button
+            key={insight.id}
+            onClick={() => setActiveIdx(idx)}
+            style={{
+              fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.62rem",
+              letterSpacing: "0.06em", textTransform: "uppercase",
+              cursor: "pointer", border: "none", borderRadius: 100,
+              padding: "0.4rem 0.85rem",
+              color: activeIdx === idx ? activeTextColor : C.muted,
+              background: activeIdx === idx ? "var(--c-gold)" : "rgba(255,255,255,0.06)",
+              transition: "all .2s ease",
+              transform: activeIdx === idx ? "scale(1.05)" : "none",
+              boxShadow: activeIdx === idx ? "0 2px 8px rgba(212,160,48,0.3)" : "none",
+            }}
+            onMouseEnter={e => { 
+              if (activeIdx !== idx) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                e.currentTarget.style.color = C.text;
+              }
+            }}
+            onMouseLeave={e => { 
+              if (activeIdx !== idx) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.color = C.muted;
+              }
+            }}
+          >
+            {insight.label}
           </button>
         ))}
       </div>
-      {predicted && (
-        <div style={{ marginTop: "1rem", fontFamily: FONT.mono, fontSize: "0.62rem", color: C.goldBright }}>
-          PROJECTION RECORDED · THE DEMONSTRATION BELOW IS NOW OPEN
+      
+      <div style={{ 
+        background: "rgba(0,0,0,0.2)", 
+        border: `1px solid ${C.dim}`, 
+        borderRadius: 8, 
+        padding: "0.5rem", 
+        minHeight: 480, 
+        position: "relative" 
+      }}>
+        <CorrelationExplorerPage inlineMode={true} inlineConfig={activeInsight} />
+      </div>
+    </div>
+  );
+}
+
+// ── Compact butterfly chart for the tour ──────────────────────────────────
+export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLabel = "Circumcised", intactN, circN, subtitles }) {
+  const maxPct = Math.max(...rows.flatMap(r => [r.intactPct, r.circPct]), 1);
+  return (
+    <div style={{
+      background: `linear-gradient(135deg, ${C.bgCard} 0%, color-mix(in srgb, ${C.bgCard} 85%, ${PATHS.intact.color}) 100%)`,
+      border: `2px solid ${C.ghost}`,
+      borderRadius: 12, padding: "1.4rem 1.8rem", marginTop: "1.1rem",
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.15)`,
+    }}>
+      {title && (
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "1rem", color: C.textBright,
+          textTransform: "uppercase", letterSpacing: "0.12em", textAlign: "center", marginBottom: "1.2rem" }}>
+          {title}
         </div>
       )}
+      {subtitles && (
+        <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 180, textAlign: "right" }}>
+            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.intact.color, display: "flex", alignItems: "center", gap: "0.35rem", justifyContent: "flex-end", marginBottom: "0.15rem" }}>
+              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.intact.color, display: "inline-block" }} />
+              Intact
+            </div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, fontStyle: "italic", lineHeight: 1.4 }}>
+              "{subtitles.intact}"
+            </div>
+          </div>
+          <div style={{ width: 150, flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: 180, textAlign: "left" }}>
+            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.circumcised.color, display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.15rem" }}>
+              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.circumcised.color, display: "inline-block" }} />
+              Circumcised
+            </div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, fontStyle: "italic", lineHeight: 1.4 }}>
+              "{subtitles.circumcised}"
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Header row */}
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+        <div style={{ flex: 1, textAlign: "right", fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.8rem",
+          color: PATHS.intact.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          {intactLabel}{intactN ? ` (N=${intactN})` : ""}
+        </div>
+        <div style={{ width: 150, textAlign: "center", fontFamily: FONT.mono, fontSize: "0.65rem", color: C.muted, fontWeight: 700 }}>
+          ← vs →
+        </div>
+        <div style={{ flex: 1, textAlign: "left", fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.8rem",
+          color: PATHS.circumcised.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          {circLabel}{circN ? ` (N=${circN})` : ""}
+        </div>
+      </div>
+      {/* Data rows */}
+      {rows.map((row) => (
+        <div key={row.label} style={{ display: "flex", alignItems: "center", marginBottom: "0.45rem", minHeight: 30 }}>
+          {/* Intact bar (grows right-to-left) */}
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: PATHS.intact.color, flexShrink: 0 }}>
+              {row.intactPct.toFixed(1)}%
+            </span>
+            <div style={{ width: `${(row.intactPct / maxPct) * 100}%`, height: 22, borderRadius: "4px 0 0 4px",
+              background: PATHS.intact.color,
+              boxShadow: `0 2px 6px color-mix(in srgb, ${PATHS.intact.color} 40%, transparent)`,
+              transition: "width 0.6s ease", minWidth: row.intactPct > 0 ? 4 : 0,
+            }} />
+          </div>
+          {/* Center label */}
+          <div style={{ width: 150, textAlign: "center", fontFamily: FONT.condensed, fontWeight: 700,
+            fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.04em",
+            lineHeight: 1.2, flexShrink: 0, padding: "0 0.2rem",
+          }}>
+            {row.label}
+          </div>
+          {/* Circumcised bar (grows left-to-right) */}
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-start", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ width: `${(row.circPct / maxPct) * 100}%`, height: 22, borderRadius: "0 4px 4px 0",
+              background: PATHS.circumcised.color,
+              boxShadow: `0 2px 6px color-mix(in srgb, ${PATHS.circumcised.color} 40%, transparent)`,
+              transition: "width 0.6s ease", minWidth: row.circPct > 0 ? 4 : 0,
+            }} />
+            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: PATHS.circumcised.color, flexShrink: 0 }}>
+              {row.circPct.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Compact Generational Shift Stacked Bar Chart for the tour ─────────────
+export function GenerationalShiftChart({ data }) {
+  // Colors for the 5 satisfaction states (from green to red)
+  const colors = {
+    proud: "#2e7d32",
+    somewhatProud: "#66bb6a",
+    neutral: "var(--c-dim)",
+    somewhatDissatisfied: "#e57373",
+    dissatisfied: "#c62828"
+  };
+
+  return (
+    <div style={{
+      background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)",
+      border: `1px solid ${C.ghost}`,
+      borderRadius: 10, padding: "1.2rem 1.2rem", marginTop: "1.1rem",
+    }}>
+      <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem", color: C.gold,
+        textTransform: "uppercase", letterSpacing: "0.1em", textAlign: "center", marginBottom: "0.4rem" }}>
+        Circumcised Satisfaction By Generation
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", fontFamily: FONT.mono, fontSize: "0.5rem", color: C.dim, textTransform: "uppercase", marginBottom: "1.2rem" }}>
+        <span>← Proud & Satisfied</span>
+        <span>Dissatisfied →</span>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        {data.map((row) => (
+          <div key={row.gen} style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+            <div style={{ width: 65, textAlign: "right", fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.6rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              {row.gen}
+            </div>
+            
+            <div style={{ flex: 1, display: "flex", height: 16, borderRadius: 4, overflow: "hidden", background: "rgba(0,0,0,0.2)" }}>
+              <div style={{ width: `${row.proud}%`, background: colors.proud }} title={`Very Proud: ${row.proud}%`} />
+              <div style={{ width: `${row.somewhatProud}%`, background: colors.somewhatProud }} title={`Generally Proud: ${row.somewhatProud}%`} />
+              <div style={{ width: `${row.neutral}%`, background: colors.neutral }} title={`Neutral: ${row.neutral}%`} />
+              <div style={{ width: `${row.somewhatDissatisfied}%`, background: colors.somewhatDissatisfied }} title={`Somewhat Dissatisfied: ${row.somewhatDissatisfied}%`} />
+              <div style={{ width: `${row.dissatisfied}%`, background: colors.dissatisfied }} title={`Very Dissatisfied: ${row.dissatisfied}%`} />
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1.2rem", flexWrap: "wrap" }}>
+        {[
+          { label: "Very Proud", color: colors.proud },
+          { label: "Generally Proud", color: colors.somewhatProud },
+          { label: "Neutral", color: colors.neutral },
+          { label: "Somewhat Dissat.", color: colors.somewhatDissatisfied },
+          { label: "Very Dissat.", color: colors.dissatisfied }
+        ].map(k => (
+          <div key={k.label} style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: k.color }} />
+            <span style={{ fontFamily: FONT.mono, fontSize: "0.45rem", color: C.muted, textTransform: "uppercase" }}>{k.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── TourObserverBreakdown ────────────────────────────────────────────────
+export function TourObserverBreakdown() {
+  const [activeId, setActiveId] = useState(null);
+
+  const roles = [
+    { 
+      id: "partner", label: "Partners", n: 5, icon: "Heart",
+      color: "#e879f9",
+      desc: "Intimacy observations",
+      insight: "Consistently reported noticing distinct mechanical and sensory differences when comparing intact and circumcised partners during intimacy."
+    },
+    { 
+      id: "parent", label: "Parents", n: 7, icon: "Circle",
+      color: "#fb923c",
+      desc: "Decision factors & regret",
+      insight: "Many expressed deep frustration over the lack of informed consent and incomplete anatomical guidance provided by pediatricians at birth."
+    },
+    { 
+      id: "healthcare", label: "Healthcare Providers", n: 2, icon: "Activity",
+      color: "#34d399",
+      desc: "Medical realities",
+      insight: "Highlighted a stark disconnect between standard medical training protocols and the complex anatomical realities they observe in daily practice."
+    },
+    { 
+      id: "advocate", label: "Advocates", n: 7, icon: "AlertTriangle",
+      color: "#f87171",
+      desc: "Policy & analysis",
+      insight: "Emphasized the human rights perspective and pointed out methodological flaws in historical studies that ignored foreskin function."
+    },
+    { 
+      id: "skeptic", label: "Skeptics", n: 4, icon: "HelpCircle",
+      color: "#60a5fa",
+      desc: "Persuasion & critique",
+      insight: "Questioned the intactivist framing, often focusing on social norms or challenging the severity of the sensory impact."
+    },
+    { 
+      id: "curious", label: "Researchers", n: 5, icon: "BookOpen",
+      color: "#fbbf24",
+      desc: "Shaping factors",
+      insight: "Focused on understanding the cultural and social climate that perpetuates the practice without medical necessity."
+    }
+  ];
+  
+  return (
+    <div style={{
+      background: "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)",
+      border: `1px solid ${C.ghost}`, borderRadius: 10, padding: "1.6rem", marginTop: "1.2rem"
+    }}>
+      <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem", color: PATHS.observer.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1.2rem", textAlign: "center" }}>
+        Key Observations by Role (n=37)
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "0.8rem" }}>
+        {roles.map(r => {
+          const isActive = activeId === r.id;
+          const Icon = ICON_MAP[r.icon] || Users;
+          const col = r.color;
+          return (
+            <div 
+              key={r.id} 
+              onMouseEnter={() => setActiveId(r.id)}
+              onMouseLeave={() => setActiveId(null)}
+              style={{
+                display: "flex", flexDirection: "column",
+                background: isActive ? `color-mix(in srgb, ${col} 10%, transparent)` : "rgba(255,255,255,0.02)", 
+                border: `1px solid ${isActive ? col : C.dim}`, 
+                borderRadius: 8, padding: "1rem 1.2rem", 
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)", 
+                cursor: "default",
+                transform: isActive ? "scale(1.02)" : "scale(1)",
+                boxShadow: isActive ? `0 4px 12px color-mix(in srgb, ${col} 20%, transparent)` : "none"
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                  <Icon size={18} color={isActive ? col : C.muted} style={{ transition: "color 0.3s ease" }} />
+                  <div>
+                    <div style={{ fontFamily: FONT.display, fontWeight: 600, fontSize: "0.95rem", color: isActive ? C.textBright : C.text, lineHeight: 1.1 }}>{r.label}</div>
+                    <div style={{ fontFamily: FONT.body, fontSize: "0.65rem", color: C.muted, fontStyle: "italic", marginTop: "0.2rem" }}>{r.desc}</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "3px" }}>
+                   <span style={{ fontFamily: FONT.mono, fontSize: "0.65rem", color: col, opacity: isActive ? 1 : 0.7 }}>n={r.n}</span>
+                   <div style={{ width: 30, height: 3, borderRadius: 2, background: C.ghost, overflow: "hidden" }}>
+                     <div style={{ height: "100%", width: `${(r.n / 37) * 100}%`, background: col, opacity: isActive ? 1 : 0.6, transition: "opacity 0.3s ease" }} />
+                   </div>
+                </div>
+              </div>
+              <div style={{ 
+                fontFamily: FONT.body, fontSize: "0.8rem", color: C.muted, lineHeight: 1.5,
+                flexGrow: 1
+              }}>
+                "{r.insight}"
+              </div>
+              <div style={{ 
+                marginTop: "0.8rem", overflow: "hidden",
+                maxHeight: isActive ? 40 : 0, opacity: isActive ? 1 : 0,
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+              }}>
+                <a href={`${EXPLORE_BASE}observer-lens?role=${r.id}`} style={{
+                  display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                  fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em",
+                  color: col, textDecoration: "none",
+                }}>
+                  Explore {r.label} Data <ArrowRight size={12} />
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ textAlign: "center", marginTop: "1rem", fontFamily: FONT.body, fontSize: "0.7rem", color: C.dim, fontStyle: "italic" }}>
+        Hover or tap to reveal insights
+      </div>
+    </div>
+  );
+}
+
+// ── Tour Restoration Pathway ─
+export function TourRestorationPathway() {
+  const [outcomeId, setOutcomeId] = useState("restore_impact_rating_sensation");
+  const [questionsMap, setQuestionsMap] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { questions } = await getQuestions();
+        const map = {};
+        if (questions) {
+          questions.forEach(q => map[q.id] = q);
+        }
+        setQuestionsMap(map);
+      } catch (err) {
+        console.error("Failed to load questions for restoration pathway", err);
+      }
+    }
+    load();
+  }, []);
+
+  if (!questionsMap || !questionsMap["restore_rci_start"] || !questionsMap["restore_duration"] || !questionsMap["restore_rci_current"] || !questionsMap[outcomeId]) {
+    return <div style={{ padding: "2rem", color: C.dim, fontStyle: "italic", textAlign: "center" }}>Loading restoration flow data...</div>;
+  }
+
+  return (
+    <div style={{ marginTop: "1.5rem", background: "rgba(0,0,0,0.15)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem", overflowX: "auto" }}>
+      <div style={{ minWidth: 600 }}>
+        <MultiSankeyChart
+          pathQuestions={[
+            questionsMap["restore_rci_start"],
+            questionsMap["restore_rci_current"],
+            questionsMap[outcomeId],
+            questionsMap["restore_duration"]
+          ]}
+          headers={[
+            "Starting CI", 
+            "Current RCI", 
+            <div key="dropdown" style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+              <span style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>Outcome:</span>
+              <select
+                value={outcomeId}
+                onChange={(e) => setOutcomeId(e.target.value)}
+                style={{
+                  padding: "0.2rem 0.4rem", borderRadius: 4, border: `1px solid #a855f7`,
+                  background: C.bgDeep, color: C.textBright, fontFamily: FONT.body,
+                  fontWeight: 600, fontSize: "11px", cursor: "pointer", outline: "none"
+                }}
+              >
+                {RATING_QUESTIONS.map(rq => (
+                  <option key={rq.id} value={rq.id}>{rq.label}</option>
+                ))}
+              </select>
+            </div>,
+            "Years Restoring"
+          ]}
+          customColorMap={RESTORATION_COLOR_MAP}
+          height={400}
+        />
+        
+        {/* RCI Legend */}
+        <div style={{ marginTop: "2rem", background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem 2rem", maxWidth: 800, margin: "2rem auto 0" }}>
+          <h3 style={{ fontFamily: FONT.condensed, color: C.textBright, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1.2rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
+            <span style={{ marginRight: "0.5rem" }}>🟣</span> Coverage Index Reference
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {RCI_DEFINITIONS.map(def => (
+              <div key={def.index} style={{ display: "flex", gap: "0.8rem", alignItems: "flex-start", breakInside: "avoid", marginBottom: "0.5rem" }}>
+                <div style={{ 
+                  background: RESTORATION_COLOR_MAP[def.label], 
+                  color: "#ffffff", 
+                  fontWeight: 700, 
+                  fontSize: "0.8rem",
+                  padding: "0.2rem 0.6rem", 
+                  borderRadius: 4,
+                  minWidth: 45,
+                  textAlign: "center"
+                }}>
+                  {def.label}
+                </div>
+                <div style={{ fontSize: "0.85rem", color: C.text, lineHeight: 1.4, flex: 1 }}>
+                  {def.desc}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ── TestimonyRotator ─────────────────────────────────────────────────────
+const CIRC_QUOTES = [
+  "Please don't. Let him decide for himself when he's old enough. You can't undo it.",
+  "I wish my parents had researched instead of just going along with the hospital's default.",
+  "It's his body, not yours. He will have to live with your choice for the rest of his life.",
+  "I didn't know what I was missing until I started restoring. The difference is night and day.",
+  "Nobody asked me. That's the part that hurts the most — the choice was never mine.",
+  "Don't let a doctor tell you it's 'just a snip.' They're removing thousands of nerve endings.",
+  "I've spent years grieving something I can't get back. Please just wait and let him choose.",
+  "The locker-room argument is dead. Rates are below 50% now. Your son won't be the odd one out.",
+  "If he wants it done later, he can choose that. But you can never give it back.",
+  "I was told it was cleaner, healthier. None of that turned out to be true in my experience.",
+];
+
+const INTACT_QUOTES = [
+  "My parents left me intact and I am grateful every single day. There is nothing to fix.",
+  "The gliding mechanism is real. It's not just skin — it's a functional part of the sexual experience.",
+  "Trust your son's body. Nature doesn't make mistakes that need a scalpel to correct at birth.",
+  "I've never had a single hygiene issue. It takes five seconds in the shower. That's it.",
+  "Every partner I've had has noticed the difference — and preferred it. The mechanics are just different.",
+  "My parents simply said 'we didn't see a reason to cut part of our baby off.' That was enough.",
+  "I'm raising my son intact too. Once you understand what the foreskin actually does, the choice is obvious.",
+  "I grew up in the US as an outlier. Not once did I wish I'd been circumcised. Not once.",
+  "The sensitivity is real. I can't imagine voluntarily giving that up, and I wouldn't impose it on a child.",
+  "Leave him whole. He can always choose later. You can never choose to undo it.",
+];
+
+function shuffleSlice(arr, count) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+export function TestimonyRotator() {
+  const [circSet, setCircSet] = useState(() => shuffleSlice(CIRC_QUOTES, 3));
+  const [intactSet, setIntactSet] = useState(() => shuffleSlice(INTACT_QUOTES, 3));
+  const [fadeKey, setFadeKey] = useState(0);
+
+  const refresh = () => {
+    setCircSet(shuffleSlice(CIRC_QUOTES, 3));
+    setIntactSet(shuffleSlice(INTACT_QUOTES, 3));
+    setFadeKey(k => k + 1);
+  };
+
+  // Auto-rotate every 20 seconds
+  useEffect(() => {
+    const t = setInterval(refresh, 20000);
+    return () => clearInterval(t);
+  }, []);
+
+  const QuoteList = ({ quotes, pathway }) => (
+    <div style={{
+      background: `color-mix(in srgb, ${PATHS[pathway].color} 5%, transparent)`,
+      border: `1px solid ${C.ghost}`, borderTop: `3px solid ${PATHS[pathway].color}`,
+      borderRadius: "0 0 8px 8px", padding: "1.2rem",
+    }}>
+      <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.85rem", color: PATHS[pathway].color, marginBottom: "0.3rem" }}>
+        {pathway === "circumcised" ? "From Circumcised Men" : "From Intact Men"}
+      </div>
+      <div style={{ fontFamily: FONT.body, fontSize: "0.68rem", color: C.dim, fontStyle: "italic", marginBottom: "0.9rem" }}>
+        {pathway === "circumcised"
+          ? "\"If you could speak directly to parents considering whether to circumcise their son, what would you say?\""
+          : "\"What message would you give to parents considering whether to circumcise their son?\""}
+      </div>
+      <div key={fadeKey} style={{ animation: "fadeSlideIn 0.45s ease" }}>
+        {quotes.map((q, i) => (
+          <div key={q} style={{
+            fontFamily: FONT.body, fontSize: "0.78rem", color: C.text, lineHeight: 1.55,
+            padding: "0.6rem 0", borderBottom: i < quotes.length - 1 ? `1px solid ${C.ghost}` : "none",
+          }}>
+            "{q}"
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", color: C.textBright, textAlign: "center", marginBottom: "1rem" }}>
+        What Grown Sons Wish Their Parents Knew
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+        <QuoteList quotes={circSet} pathway="circumcised" />
+        <QuoteList quotes={intactSet} pathway="intact" />
+      </div>
+      <div style={{ textAlign: "center", marginTop: "0.8rem" }}>
+        <button onClick={refresh} style={{
+          fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.65rem",
+          letterSpacing: "0.08em", textTransform: "uppercase",
+          background: "none", border: `1px solid ${C.dim}`, borderRadius: 100,
+          padding: "0.35rem 1rem", color: C.muted, cursor: "pointer",
+          transition: "all .2s ease",
+        }}
+          onMouseEnter={e => { e.target.style.borderColor = C.gold; e.target.style.color = C.textBright; }}
+          onMouseLeave={e => { e.target.style.borderColor = C.dim; e.target.style.color = C.muted; }}
+        >
+          ↻ More voices ({CIRC_QUOTES.length + INTACT_QUOTES.length} total)
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── ParentInsightCharts ──────────────────────────────────────────────────
+// Frozen data from observe_parent_intact_factors & observe_parent_intact_regret_reconsider
+const INTACT_FACTORS = [
+  { label: "Ethical beliefs / bodily autonomy", pct: 22.2, color: "#f87171" },
+  { label: "No clear medical necessity",        pct: 22.2, color: "#fbbf24" },
+  { label: "Foreskin function & sensitivity",   pct: 16.7, color: "#34d399" },
+  { label: "Independent research",              pct: 16.7, color: "#67e8f9" },
+  { label: "Surgical risk concerns",            pct: 13.9, color: "#fb923c" },
+  { label: "Partner preference",                pct:  2.8, color: "#e879f9" },
+  { label: "Medical claims unconvincing",        pct:  2.8, color: "#f472b6" },
+  { label: "Other",                             pct:  2.8, color: "#a78bfa" },
+];
+
+// Frozen data from final_healthier_hygienic_belief (N=500)
+const HEALTH_BELIEFS = [
+  { label: "Intact significantly healthier",                      pct: 35.4, color: "#34d399" },
+  { label: "Intact slightly healthier (foreskin protection)",     pct: 27.4, color: "#6ee7b7" },
+  { label: "No significant difference",                          pct: 17.4, color: "#fbbf24" },
+  { label: "Circumcised slightly healthier / more hygienic",     pct:  9.6, color: "#f87171" },
+  { label: "Circumcised significantly healthier (medical)",      pct:  7.6, color: "#ef4444" },
+  { label: "Genuinely unsure",                                   pct:  2.6, color: "#60a5fa" },
+];
+
+function MiniDonut({ segments, size = 140, thickness = 28, label }) {
+  const r = (size - thickness) / 2;
+  const circ = 2 * Math.PI * r;
+  let offset = 0;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
+        {segments.map((s, i) => {
+          const dashLen = (s.pct / 100) * circ;
+          const el = (
+            <circle
+              key={i}
+              cx={size / 2} cy={size / 2} r={r}
+              fill="none" stroke={s.color} strokeWidth={thickness}
+              strokeDasharray={`${dashLen} ${circ - dashLen}`}
+              strokeDashoffset={-offset}
+              style={{ transition: "stroke-dasharray 0.8s ease, stroke-dashoffset 0.8s ease" }}
+            />
+          );
+          offset += dashLen;
+          return el;
+        })}
+      </svg>
+      {label && (
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.62rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "0.5rem", textAlign: "center" }}>
+          {label}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function ParentInsightCharts() {
+  const [ref, seen] = useInView();
+
+  return (
+    <div ref={ref} style={{
+      display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+      gap: "1rem", marginTop: "1.2rem", marginBottom: "1rem",
+    }}>
+      {/* Chart 1: Why parents kept intact */}
+      <div style={{
+        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 10,
+        padding: "1.2rem",
+      }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "1rem" }}>
+          Why Parents Kept Their Sons Intact
+        </div>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+          <MiniDonut segments={seen ? INTACT_FACTORS : INTACT_FACTORS.map(s => ({ ...s, pct: 0 }))} size={120} thickness={22} label="n = 8" />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            {INTACT_FACTORS.map((f) => (
+              <div key={f.label} style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: f.color, flexShrink: 0 }} />
+                <div style={{ fontFamily: FONT.body, fontSize: "0.62rem", color: C.muted, flex: 1 }}>{f.label}</div>
+                <div style={{ fontFamily: FONT.mono, fontSize: "0.6rem", fontWeight: 700, color: C.text, flexShrink: 0 }}>{f.pct}%</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Chart 2: Regret about keeping intact */}
+      <div style={{
+        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 10,
+        padding: "1.2rem",
+      }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "1rem" }}>
+          Any Regret About Keeping Intact?
+        </div>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "center" }}>
+          <MiniDonut
+            segments={seen ? [{ pct: 100, color: PATHS.intact.color }] : [{ pct: 0, color: PATHS.intact.color }]}
+            size={120} thickness={22} label="n = 7"
+          />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: FONT.mono, fontSize: "2.2rem", fontWeight: 800, color: PATHS.intact.color, lineHeight: 1 }}>
+              100%
+            </div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.75rem", color: C.muted, lineHeight: 1.4, marginTop: "0.3rem" }}>
+              "Extremely proud and confident it was the right choice"
+            </div>
+            <div style={{
+              marginTop: "0.6rem", fontFamily: FONT.body, fontSize: "0.65rem", color: C.dim, fontStyle: "italic",
+              borderTop: `1px solid ${C.ghost}`, paddingTop: "0.5rem",
+            }}>
+              Zero regret. Zero reconsideration. Every parent who kept their son intact reported complete confidence.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart 3: Health & hygiene beliefs — full width */}
+      <div style={{
+        gridColumn: "1 / -1",
+        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 10,
+        padding: "1.2rem",
+      }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "0.4rem" }}>
+          "Which State Is Medically Healthier?"
+        </div>
+        <div style={{ fontFamily: FONT.body, fontSize: "0.65rem", color: C.dim, fontStyle: "italic", marginBottom: "1rem" }}>
+          Putting aside personal satisfaction — which state do respondents believe is healthier or more hygienic? (N = 500)
+        </div>
+        <div style={{ display: "flex", gap: "1.5rem", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+          <MiniDonut
+            segments={seen ? HEALTH_BELIEFS : HEALTH_BELIEFS.map(s => ({ ...s, pct: 0 }))}
+            size={140} thickness={26} label="N = 500"
+          />
+          <div style={{ flex: 1, minWidth: 240, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+            {HEALTH_BELIEFS.map((f) => (
+              <div key={f.label} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: f.color, flexShrink: 0 }} />
+                <div style={{ fontFamily: FONT.body, fontSize: "0.68rem", color: C.muted, flex: 1, lineHeight: 1.35 }}>{f.label}</div>
+                <div style={{ fontFamily: FONT.mono, fontSize: "0.65rem", fontWeight: 700, color: C.text, flexShrink: 0 }}>{f.pct}%</div>
+              </div>
+            ))}
+            <div style={{
+              marginTop: "0.6rem", paddingTop: "0.5rem", borderTop: `1px solid ${C.ghost}`,
+              fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, lineHeight: 1.5,
+            }}>
+              <strong style={{ color: C.textBright }}>62.8%</strong> believe intact is healthier.{" "}
+              <strong style={{ color: C.textBright }}>17.2%</strong> favor circumcised.{" "}
+              The hygiene argument — the most common justification parents hear — is not supported by the people who live in these bodies.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

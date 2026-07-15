@@ -368,31 +368,6 @@ export default function GenerationalTrendChart({ questionId, overallDist }) {
         })}
       </svg>
 
-      {/* Legible Answer Legend below chart */}
-      <div style={{
-        marginTop: "3rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.6rem",
-        paddingTop: "1.5rem",
-        borderTop: `1px solid ${C.ghost}`
-      }}>
-        <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: C.goldBright, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-          Legend
-        </h3>
-        {layers.map((layer, idx) => {
-          const rowColor = colorMap[layer.label] || colorForLabel(layer.label, idx);
-          return (
-            <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
-              <div style={{ width: 14, height: 14, borderRadius: 3, background: rowColor, flexShrink: 0, marginTop: "0.15rem" }}></div>
-              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.4 }}>
-                {layer.label}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      
       <Tooltip {...tooltip} />
     </div>
   );

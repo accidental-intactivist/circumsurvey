@@ -181,7 +181,7 @@ export const OBSERVER_SUBROLES = [
   },
   {
     id: "curious",
-    label: "Curious / Researcher",
+    label: "Researcher / Academic",
     icon: "BookOpen",
     desc: "Shaping factors, social climate, researcher perspective",
     match: (q) => (q.id || "").startsWith("observe_curious_") || (q.id || "").startsWith("observe_student_") || /^\[CURIOUS\]|student_|curious_/i.test(q.prompt || "") || /observe_(curious|student)_/i.test(q.id || ""),

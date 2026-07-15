@@ -55,8 +55,8 @@ export default function ThemeToggle() {
     flex: 1, 
     padding: "0.4rem", 
     background: isActive ? "var(--c-bgDeep)" : "transparent",
-    color: isActive ? "var(--c-gold)" : "var(--c-muted)",
-    border: `1px solid ${isActive ? "var(--c-gold)" : "var(--c-ghost)"}`,
+    color: isActive ? "var(--c-textBright)" : "var(--c-muted)",
+    border: `1px solid ${isActive ? "var(--c-textBright)" : "var(--c-ghost)"}`,
     borderRadius: 4, 
     cursor: "pointer", 
     fontFamily: FONT.condensed,
@@ -82,16 +82,20 @@ export default function ThemeToggle() {
       {/* ── POPOVER MENU ── */}
       {isOpen && (
         <div style={{
-          position: "absolute",
-          top: "calc(100% + 0.5rem)",
-          right: 0,
-          width: "min(18.5rem, 90vw)",
+          position: window.innerWidth < 600 ? "fixed" : "absolute",
+          top: window.innerWidth < 600 ? "3.5rem" : "calc(100% + 0.5rem)",
+          right: window.innerWidth < 600 ? "0.5rem" : 0,
+          left: window.innerWidth < 600 ? "0.5rem" : "auto",
+          width: window.innerWidth < 600 ? "auto" : "min(18.5rem, 90vw)",
+          maxWidth: "18.5rem",
           background: "var(--c-bgCard)",
           border: "1px solid var(--c-ghost)",
           borderRadius: 8,
           boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
           overflow: "hidden",
           fontFamily: FONT.body,
+          maxHeight: window.innerWidth < 600 ? "calc(100vh - 4rem)" : "none",
+          overflowY: window.innerWidth < 600 ? "auto" : "visible",
         }}>
           <div style={{ padding: "1rem", borderBottom: "1px solid var(--c-ghost)" }}>
             <h4 style={{ margin: 0, fontFamily: FONT.display, color: "var(--c-textBright)", fontSize: "1.1rem" }}>Display Settings</h4>

@@ -47,7 +47,7 @@ function DocentChart({ questionId }) {
   );
 }
 
-export default function CopilotChat({ routerState, updateState, question, exhibitContext }) {
+export default function CopilotChat({ routerState, updateState, question, exhibitContext, tourSuas }) {
   const { unlockTheme, setTheme } = useTheme();
   const { addAIChatBlock } = useReport();
   const [query, setQuery] = useState(routerState?.ai_query || "");
@@ -291,11 +291,14 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
 
         second = routeSpecificSuas[route] || "What surprised respondents most about this topic?";
         
-        const suas = [
-          "What can I learn from this page?",
-          second,
-          astuteSua
-        ];
+        // If tourSuas are provided (from the scrolly tale), use those instead
+        const suas = tourSuas && tourSuas.length > 0
+          ? tourSuas
+          : [
+              "What can I learn from this page?",
+              second,
+              astuteSua
+            ];
         return (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
           <h5 style={{
@@ -422,9 +425,10 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                 const exid = part.replace("[EXHIBIT:", "").replace("]", "").trim();
                 const routeConfig = EXHIBIT_ROUTES.find(r => r.route === exid);
                 const title = routeConfig ? `${routeConfig.num} - ${routeConfig.label}` : (exid.charAt(0).toUpperCase() + exid.slice(1).replace(/-/g, ' '));
-                
+                const isExplorer = window.location.pathname.includes("/explore");
+                const exhibitHref = isExplorer ? `#/${exid}` : `/explore#/${exid}`;
                 return (
-                  <a key={i} href={`#/${exid}`} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0", fontWeight: 600 }}>
+                  <a key={i} href={exhibitHref} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0", fontWeight: 600 }}>
                     {title}
                   </a>
                 );

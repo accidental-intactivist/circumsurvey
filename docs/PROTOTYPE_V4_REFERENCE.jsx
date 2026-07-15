@@ -190,7 +190,7 @@ function Pie({ data, colors, size=150, hovered, onHover }) {
 
 /* ═════════════════════ PATHWAY TOGGLE ═════════════════════ */
 function PathwayToggle({ pathways, active, onChange, showCombined }) {
-  // For born-circumcised questions, offer combined view
+  // For infant-circumcised questions, offer combined view
   const options = pathways.includes("circumcised") && pathways.includes("restoring") && showCombined
     ? ["born_circ", ...pathways.filter(p => p !== "observer"), ...(pathways.includes("observer") ? ["observer"] : [])]
     : pathways;
@@ -211,7 +211,7 @@ function PathwayToggle({ pathways, active, onChange, showCombined }) {
   );
 }
 
-/* ═════════════════════ COMBINED PIE for born-circumcised ═════════════════════ */
+/* ═════════════════════ COMBINED PIE for infant-circumcised ═════════════════════ */
 function getCombinedData(q) {
   // For distribution questions, average circumcised and restoring weighted by n
   const cN = PATHWAY.circumcised.n;

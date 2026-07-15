@@ -8,6 +8,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { C, FONT } from "../../explore/styles/tokens";
 import * as Icons from "../../explore/components/Icons";
 import { ChevronDown } from "lucide-react";
+import { useLegibleColor } from "../../explore/lib/colorUtils";
+import { Tooltip, useTooltip } from "../../explore/components/Tooltip";
 
 export const EXPLORE_BASE = "/explore#/";
 
@@ -60,45 +62,54 @@ export function CountUp({ to, suffix = "", decimals = 0, run = true, duration = 
   return <>{val.toFixed(decimals)}{suffix}</>;
 }
 
-export function StationHero({ station }) {
+// ── ExhibitBadge: Otl Aicher–style wayfinding pictogram ────────────────────
+// Bold geometric badge with exhibit number + icon. Used everywhere an exhibit
+// is referenced so readers always know which path they're looking at.
+export function ExhibitBadge({ station, size = "md", showLabel = false }) {
   const Icon = Icons[station.icon];
-  const col = station.colorVar;
+  const isLg = size === "lg";
+  const numSize = isLg ? "1.8rem" : "1.1rem";
+  const titleSize = isLg ? "2rem" : "1.25rem";
+  const iconSize = isLg ? 22 : 14;
+  const badgeLegibleCol = useLegibleColor("var(--c-bg)", station.colorVar);
+  const labelLegibleCol = useLegibleColor(station.colorVar, "var(--c-bg)");
+
   return (
-    <Reveal>
+    <div style={{ display: "flex", alignItems: "center", gap: isLg ? "1.2rem" : "0.8rem" }}>
       <div style={{
-        margin: "1rem 0 4rem", padding: "1.2rem 1.4rem",
-        borderTop: `1px solid ${C.ghost}`,
-        borderBottom: `1px solid ${C.ghost}`,
-        background: "rgba(255,255,255,0.01)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        gap: "1rem", flexWrap: "wrap",
+        background: station.colorVar, borderRadius: "8px",
+        width: isLg ? 64 : 42, height: isLg ? 64 : 42,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2px",
+        boxShadow: `0 0 15px color-mix(in srgb, ${station.colorVar} 40%, transparent)`
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          {Icon && <div style={{ background: `color-mix(in srgb, ${col} 15%, transparent)`, padding: "0.6rem", borderRadius: 8, display: "flex" }}>
-            <Icon size={20} color={col} />
-          </div>}
-          <div>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.text, lineHeight: 1.2 }}>
-              Explore the raw data for <strong>{station.title}</strong>
-            </div>
-            <div style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "0.25rem" }}>
-              Interactive Exhibit {station.num} · {station.tagline}
-            </div>
+        {Icon && <Icon size={iconSize} color={badgeLegibleCol} strokeWidth={2.2} />}
+        <div style={{
+          fontFamily: FONT.condensed, fontWeight: 800,
+          fontSize: numSize, color: badgeLegibleCol,
+          letterSpacing: "0.05em", lineHeight: 1,
+        }}>
+          {station.num}
+        </div>
+      </div>
+      {showLabel && (
+        <div>
+          <div style={{
+            fontFamily: FONT.condensed, fontWeight: 700,
+            fontSize: "0.65rem", color: labelLegibleCol,
+            textTransform: "uppercase", letterSpacing: "0.14em",
+            lineHeight: 1, marginBottom: "0.3rem",
+          }}>
+            Interactive Explorer
+          </div>
+          <div style={{
+            fontFamily: FONT.display, fontSize: titleSize,
+            fontWeight: 700, color: C.textBright, lineHeight: 1.15,
+          }}>
+            {station.title}
           </div>
         </div>
-        <a href={EXPLORE_BASE + station.route} style={{
-          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem",
-          letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
-          color: col, display: "inline-flex", alignItems: "center", gap: "0.4rem",
-          background: `color-mix(in srgb, ${col} 10%, transparent)`,
-          padding: "0.5rem 1.2rem", borderRadius: 100,
-          border: `1px solid color-mix(in srgb, ${col} 30%, transparent)`,
-          whiteSpace: "nowrap"
-        }}>
-          Open Exhibit ➔
-        </a>
-      </div>
-    </Reveal>
+      )}
+    </div>
   );
 }
 
@@ -108,7 +119,7 @@ export function Lens({ children, center }) {
     <Reveal>
       <p style={{
         fontFamily: FONT.body, fontWeight: 300, fontSize: "1rem", color: C.muted,
-        lineHeight: 1.75, margin: center ? "0 auto 1.4rem" : "0 0 1.4rem",
+        lineHeight: 1.75, margin: center ? "0 auto 1.4rem" : "0 0 1.4rem 1.6rem",
         maxWidth: 740, textAlign: center ? "center" : "left",
       }}>
         {children}
@@ -118,13 +129,17 @@ export function Lens({ children, center }) {
 }
 
 // ── TourCard: ruled data card (Bureau DNA on theme tokens) ─────────────────
-export function TourCard({ title, refText, stamp, children, style }) {
+export function TourCard({ title, refText, children, style, exhibitStation }) {
+  const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
+
   return (
     <Reveal>
       <div style={{
-        background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12,
-        position: "relative", overflow: "visible", marginBottom: "2.4rem",
-        scrollMarginTop: 90, ...style,
+        position: "relative",
+        background: C.bgCard, border: `1px solid ${C.ghost}`,
+        borderRadius: 12, marginBottom: "1.5rem",
+        boxShadow: `0 8px 30px rgba(0,0,0,0.05)`,
+        ...style
       }}>
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -146,17 +161,56 @@ export function TourCard({ title, refText, stamp, children, style }) {
           )}
         </div>
         <div style={{ padding: "1.6rem 1.5rem" }}>{children}</div>
-        {stamp && (
-          <div style={{
-            position: "absolute", bottom: 14, right: 18,
-            fontFamily: FONT.display, fontWeight: 700, fontSize: "0.5rem",
-            textTransform: "uppercase", letterSpacing: "0.14em", color: C.red,
-            border: `2px solid ${C.red}`, padding: "0.2rem 0.45rem",
-            transform: "rotate(-4deg)", opacity: 0.45, borderRadius: 2, pointerEvents: "none",
+        {exhibitStation && (
+          <div className="exhibit-portal" style={{
+            borderTop: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
+            padding: "1.5rem",
+            background: `linear-gradient(180deg, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 0%, color-mix(in srgb, ${exhibitStation.colorVar} 15%, var(--c-bgDeep)) 100%)`,
+            boxShadow: `inset 0 4px 15px color-mix(in srgb, var(--c-text) 5%, transparent)`,
+            borderRadius: "0 0 12px 12px",
+            position: "relative",
+            overflow: "hidden",
+            marginTop: "1rem"
           }}>
-            {stamp}
+            {PortalIcon && (
+              <div style={{ position: "absolute", right: "-10%", bottom: "-40%", opacity: 0.1, pointerEvents: "none", transform: "rotate(-10deg)" }}>
+                <PortalIcon size={240} color={exhibitStation.colorVar} />
+              </div>
+            )}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", position: "relative", zIndex: 2 }}>
+              <ExhibitBadge station={exhibitStation} size="md" showLabel />
+              <a href={EXPLORE_BASE + exhibitStation.route} 
+                 className="insert-coin-btn"
+                 style={{
+                  fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.85rem",
+                  letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none",
+                  color: "var(--c-bg)", display: "inline-flex", alignItems: "center", gap: "0.5rem",
+                  background: exhibitStation.colorVar,
+                  padding: "0.4rem 1.2rem", borderRadius: 999,
+                  border: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 80%, var(--c-textBright))`,
+                  whiteSpace: "nowrap", transition: "all 0.2s ease"
+              }}>
+                Enter Exhibit ➔
+              </a>
+            </div>
+            {exhibitStation.exhibitTeaser && (
+              <div style={{
+                fontFamily: FONT.body, fontSize: "0.95rem", color: "var(--c-text)",
+                lineHeight: 1.5, marginTop: "1rem", paddingTop: "0.8rem",
+                borderTop: `1px dashed color-mix(in srgb, ${exhibitStation.colorVar} 30%, transparent)`,
+                position: "relative", zIndex: 2
+              }}>
+                {exhibitStation.exhibitTeaser}
+              </div>
+            )}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: "100%",
+              background: `linear-gradient(0deg, transparent 0%, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 50%, transparent 100%)`,
+              opacity: 0.5, pointerEvents: "none", zIndex: 1
+            }} />
           </div>
         )}
+
       </div>
     </Reveal>
   );
@@ -362,17 +416,37 @@ export function EffectSizeBadge({ d, stars, colorVar, tooltip }) {
 }
 
 // ── EffectSizeRow: a labeled row with an effect size bar + badge ───────────
+const PARAM_DESCS = {
+  "Mobile Skin": "The intact foreskin is a double-layered mucous membrane that glides back and forth over the glans. Circumcision removes this structure, tethering the remaining shaft skin tightly.",
+  "Light Touch": "The foreskin is densely packed with specialized fine-touch sensory receptors which are highly sensitive to light pressure and texture.",
+  "Variety": "An intact penis features multiple distinct sensory zones (ridged band, frenulum, inner mucosa) which each respond differently to stimuli.",
+  "Duration": "The natural gliding mechanism reduces friction, meaning sexual stamina and comfort can be maintained longer without irritation.",
+  "Ease": "The inner mucosa naturally retains moisture, allowing for smooth, friction-free movement without the need for artificial lubricants.",
+  "Intensity": "The high density of nerve endings in the specialized erogenous tissue provides sharp, highly concentrated peaks of sensation."
+};
+
 export function EffectSizeRow({ label, d, stars, colorVar, maxD = 2.0 }) {
   const [ref, seen] = useInView();
+  const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
   const validD = d === undefined || isNaN(d) ? 0 : d;
   const pct = Math.min(100, (Math.abs(validD) / maxD) * 100);
+  
+  const desc = PARAM_DESCS[label];
+
   return (
     <div ref={ref} style={{ display: "flex", alignItems: "center", gap: "0.6rem", margin: "0.35rem 0" }}>
-      <span style={{
-        fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.68rem",
-        letterSpacing: "0.06em", textTransform: "uppercase", color: C.muted,
-        width: 120, flexShrink: 0, textAlign: "right", lineHeight: 1.25,
-      }}>
+      <span 
+        style={{
+          fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.68rem",
+          letterSpacing: "0.06em", textTransform: "uppercase", color: C.textBright,
+          width: 120, flexShrink: 0, textAlign: "right", lineHeight: 1.25,
+          cursor: desc ? "help" : "default",
+          borderBottom: desc ? `1px dotted ${C.ghost}` : "none",
+        }}
+        onMouseEnter={(e) => desc && showTooltip(e, desc)}
+        onMouseMove={desc ? moveTooltip : undefined}
+        onMouseLeave={desc ? hideTooltip : undefined}
+      >
         {label}
       </span>
       <div style={{ flex: 1, height: 18, background: "rgba(255,255,255,.06)", borderRadius: 3, overflow: "hidden", position: "relative" }}>
@@ -385,6 +459,7 @@ export function EffectSizeRow({ label, d, stars, colorVar, maxD = 2.0 }) {
       <span style={{ fontFamily: FONT.mono, fontWeight: 800, fontSize: "0.72rem", color: colorVar || C.red, width: 80, flexShrink: 0 }}>
         d={validD.toFixed(2)} {stars}
       </span>
+      <Tooltip {...tooltip} />
     </div>
   );
 }

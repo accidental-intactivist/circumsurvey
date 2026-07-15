@@ -203,38 +203,47 @@ const SHORT_LABELS = {
   "exp_sex_rating_pleasure_mobile_skin": "Pleasure from Mobile Skin (1–5)"
 };
 
-export default function CorrelationExplorerPage({ routerState, navigate, updateState, setExhibitContext }) {
-  const { cohort } = routerState;
+function resolveAxis(id, defaultId) {
+  if (!id) id = defaultId;
+  const demo = DEMOGRAPHIC_DIMENSIONS.find(d => d.column === id || d.id === id);
+  if (demo) return { type: "demographic", id, source: demo };
+  const agg = MIRROR_AGGREGATES.find(a => a.id === id);
+  if (agg) return { type: "aggregate", id, source: agg };
+  if (CURATED_IDS.includes(id)) return { type: "question", id };
+  // fallback
+  return resolveAxis(defaultId, defaultId); // guaranteed to exist
+}
+
+export default function CorrelationExplorerPage({ routerState = {}, navigate, updateState = () => {}, setExhibitContext, inlineMode = false, inlineConfig = null }) {
+  const targetState = inlineMode ? (inlineConfig || {}) : routerState;
+  const { cohort } = targetState;
   const { addExhibitToReport, isExhibitInReport } = useReport();
 
   const [questions, setQuestions] = useState([]);
-  // Both axes are now state. Row axis = the variable whose options become rows.
-  // Column axis = the variable whose options become columns. Either can be a
-  // demographic dimension or a curated outcome question.
-  // (We keep the historical activeX/activeY names internally — activeX feeds
-  //  rows, activeY feeds columns — since UniversalMatrix still expects that.)
-  const [activeX, setActiveX] = useState({
-    type: "demographic",
-    id: "generation",
-    source: DEMOGRAPHIC_DIMENSIONS.find(d => d.column === "generation") || DEMOGRAPHIC_DIMENSIONS[1],
-  });
-  const [activeY, setActiveY] = useState({
-    type: "aggregate",
-    id: "aggregate_regret",
-    source: MIRROR_AGGREGATES[0],
-  });
-  // Third dimension — only used in flow mode. Defaults to Religion so the
-  // out-of-the-box flow view is something meaningfully different from the
-  // pairwise default (Family SES → Generation → Pathway is a useful default
-  // pipe to skim before the user starts swapping pieces).
-  const [activeZ, setActiveZ] = useState({
-    type: "demographic",
-    id: "primary_tradition",
-    source: DEMOGRAPHIC_DIMENSIONS.find(d => d.id === "primary_tradition" || d.column === "primary_tradition"),
-  });
-  // View mode: "pairwise" renders the 2D matrix (existing behavior).
-  // "flow" renders a 3-stage Sankey using activeX → activeY → activeZ.
-  const [mode, setMode] = useState("pairwise");
+
+  const [activeX, setActiveX] = useState(() => resolveAxis(targetState.x, "generation"));
+  const [activeY, setActiveY] = useState(() => resolveAxis(targetState.y, "aggregate_regret"));
+  const [activeZ, setActiveZ] = useState(() => resolveAxis(targetState.z, "primary_tradition"));
+  
+  const [mode, setMode] = useState(targetState.mode || "pairwise");
+
+  // Sync state back to URL (or ignore if inline)
+  useEffect(() => {
+    if (!inlineMode) {
+      updateState({ x: activeX.id, y: activeY.id, z: activeZ.id, mode }, true);
+    }
+  }, [activeX.id, activeY.id, activeZ.id, mode, updateState, inlineMode]);
+
+  // Sync state from inlineConfig if it changes
+  useEffect(() => {
+    if (inlineMode && inlineConfig) {
+      setActiveX(resolveAxis(inlineConfig.x, "generation"));
+      setActiveY(resolveAxis(inlineConfig.y, "aggregate_regret"));
+      setActiveZ(resolveAxis(inlineConfig.z, "primary_tradition"));
+      setMode(inlineConfig.mode || "pairwise");
+    }
+  }, [inlineMode, inlineConfig]);
+
   const [showHowTo, setShowHowTo] = useState(false);
   const sankeyTooltip = useTooltip();
 
@@ -334,9 +343,12 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
     });
   }, [cohort]);
 
+  const bothDemographics = activeX?.type === "demographic" && activeY?.type === "demographic";
+
   // Serialize API endpoint
   const fetchUrl = useMemo(() => {
     if (!activeX || !activeY) return null;
+    if (bothDemographics) return null; // handled by the demoCrosstab effect below
     
     let qAxis = activeX;
     let byAxis = activeY;
@@ -345,7 +357,6 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
     // If activeX is a demographic, swap them for the API call. UniversalMatrix's 
     // aggregateToObserved automatically maps the results back to the correct display axes.
     if (activeX.type === "demographic") {
-      if (activeY.type === "demographic") return null; // Two demographics cannot be cross-tabbed natively
       qAxis = activeY;
       byAxis = activeX;
     }
@@ -364,7 +375,7 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
       }
     }
     return url;
-  }, [activeX, activeY, JSON.stringify(cohort)]);
+  }, [activeX, activeY, JSON.stringify(cohort), bothDemographics]);
 
   const cohortLabel = useMemo(() => describeCohort(cohort), [JSON.stringify(cohort)]);
 
@@ -396,6 +407,66 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   // through buildAggregateObserved instead.
   const isAggregateMode = activeX?.type === "aggregate" || activeY?.type === "aggregate";
   const bothAggregates = activeX?.type === "aggregate" && activeY?.type === "aggregate";
+
+  // ── Demo × Demo cross-tab (client-side build) ─────────────────────────────
+  // When both axes are demographics, we use a bridge question that every
+  // respondent has answered, fetch it grouped by one demographic, and filter
+  // by each value of the other demographic to build the full cross-tab.
+  const [demoObserved, setDemoObserved] = useState(null);
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  useEffect(() => {
+    if (!bothDemographics || !activeX || !activeY) {
+      setDemoObserved(null);
+      return;
+    }
+    let cancelled = false;
+    setDemoLoading(true);
+
+    // Use one demo as `by`, and the other's options as pathway filters.
+    // We pick a bridge question with near-universal coverage.
+    const BRIDGE_Q = "exp_pride_satisfaction_rating";
+    const rowAxis = activeX; // rows
+    const colAxis = activeY; // cols
+
+    // Fetch once: bridge question grouped by rowAxis demographic
+    // For each colAxis value, we filter and count.
+    // Simplest: one fetch per col-option, filtered by that demographic value.
+    const colOpts = (colAxis.source.options || []).map(o => typeof o === "string" ? o : o.value);
+    const rowId = rowAxis.source.column || rowAxis.id;
+    const colId = colAxis.source.column || colAxis.id;
+
+    // Build one API call per column option value, using filter= to restrict
+    const fetches = colOpts.map(colVal =>
+      getAggregate(BRIDGE_Q, { by: rowId, cohort: { ...cohort, [colId]: colVal } })
+        .then(res => ({ colVal, results: res.results || {} }))
+        .catch(() => ({ colVal, results: {} }))
+    );
+
+    Promise.all(fetches).then(allRes => {
+      if (cancelled) return;
+      // Build observed: { rowLabel: { colLabel: count } }
+      const observed = {};
+      const rowOpts = yOptions; // yOptions = toMatrixOptions(activeX) = row labels
+      for (const ro of rowOpts) {
+        observed[ro.key] = {};
+        for (const co of xOptions) {
+          observed[ro.key][co.key] = 0;
+        }
+      }
+      for (const { colVal, results } of allRes) {
+        for (const [rowVal, data] of Object.entries(results)) {
+          if (observed[rowVal]) {
+            observed[rowVal][colVal] = (observed[rowVal][colVal] || 0) + (data.n || 0);
+          }
+        }
+      }
+      setDemoObserved(observed);
+      setDemoLoading(false);
+    });
+
+    return () => { cancelled = true; };
+  }, [activeX, activeY, JSON.stringify(cohort), bothDemographics, xOptions, yOptions]);
 
   // ── Aggregate fetch+merge ────────────────────────────────────────────────
   // When one axis is a mirror-pair aggregate, we fetch each underlying source
@@ -558,94 +629,99 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
   const sankeyDimensions = useMemo(() => {
     return [activeX, activeY, activeZ]
       .filter(Boolean)
-      .map((a) => ({ id: a.id, label: axisDisplayName(a) }));
-  }, [activeX, activeY, activeZ]);
+      .map((a) => ({ id: a.id, type: a.type, source: a.source, label: axisDisplayName(a, questions) }));
+  }, [activeX, activeY, activeZ, questions]);
 
   return (
     <div style={{
-      minHeight: "100vh",
-      background: C.bg,
+      minHeight: inlineMode ? "auto" : "100vh",
+      background: inlineMode ? "transparent" : C.bg,
       color: C.text,
       fontFamily: FONT.body,
-      padding: "1.5rem 1.1rem 3rem",
+      padding: inlineMode ? 0 : "1.5rem 1.1rem 3rem",
     }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <InlineBreadcrumb currentRoute="correlations" navigate={navigate} />
-        
-        <ExhibitHero
-          title="Correlations Explorer"
-          description="Cross-tabulate two predictor variables, or map a three-variable flow, to identify statistical correlations, demographic trends, and overlapping factors across the dataset."
-          color={C.red}
-          gradientColor={C.orange}
-          BackgroundIcon={Grid}
-        />
+        {!inlineMode && (
+          <>
+            <InlineBreadcrumb currentRoute="correlations" navigate={navigate} />
+            <ExhibitHero
+              title="Correlations Explorer"
+              description="Cross-tabulate two predictor variables, or map a three-variable flow, to identify statistical correlations, demographic trends, and overlapping factors across the dataset."
+              color={C.red}
+              gradientColor={C.orange}
+              BackgroundIcon={Grid}
+            />
+          </>
+        )}
         
         {/* Layout Grid */}
-        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "1.5rem", alignItems: "start" }}>
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: inlineMode ? "1fr" : "260px 1fr", gap: "1.5rem", alignItems: "start" }}>
                 
           {/* LEFT: Cohort filter */}
-          <aside className="explore-nav" style={{
-            position: "sticky",
-            top: "calc(var(--header-height, 56px) + 1rem)",
-            maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
-            overflowY: "auto",
-            paddingRight: "0.3rem",
-            zIndex: 100,
-          }}>
-            <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
-            <div style={{ marginTop: "1.25rem", padding: "0.75rem 0.85rem", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 7, fontFamily: FONT.body, fontSize: "0.78rem", color: C.muted, lineHeight: 1.55 }}>
-              <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.goldBright, marginBottom: "0.4rem", fontWeight: 700 }}>How this works</div>
-              {mode === "pairwise" 
-                ? "Pick two variables to cross-tabulate. Either dropdown can be a demographic dimension or a survey outcome. Cells brighten when the observed count exceeds chance alone. To compare three variables, choose Flow mode."
-                : "Pick three variables to map respondent pathways. Follow the flow from primary demographics through sub-groups to their final survey outcomes. To cross-tabulate two variables, choose Pairwise mode."}
-            </div>
-
-            <div style={{ marginTop: "2rem" }}>
-              <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700 }}>
-                Curated Insights
+          {!inlineMode && (
+            <aside className="explore-nav" style={{
+              position: "sticky",
+              top: "calc(var(--header-height, 56px) + 1rem)",
+              maxHeight: "calc(100vh - var(--header-height, 56px) - 2rem)",
+              overflowY: "auto",
+              paddingRight: "0.3rem",
+              zIndex: 100,
+            }}>
+              <DemographicFilterBar cohort={cohort} onChange={(c) => updateState({ cohort: c })} />
+              <div style={{ marginTop: "1.25rem", padding: "0.75rem 0.85rem", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 7, fontFamily: FONT.body, fontSize: "0.78rem", color: C.muted, lineHeight: 1.55 }}>
+                <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.goldBright, marginBottom: "0.4rem", fontWeight: 700 }}>How this works</div>
+                {mode === "pairwise" 
+                  ? "Pick two variables to cross-tabulate. Either dropdown can be a demographic dimension or a survey outcome. Cells brighten when the observed count exceeds chance alone. To compare three variables, choose Flow mode."
+                  : "Pick three variables to map respondent pathways. Follow the flow from primary demographics through sub-groups to their final survey outcomes. To cross-tabulate two variables, choose Pairwise mode."}
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {[
-                  { label: "Socioeconomics vs. Regret", x: "demo:socioeconomic", y: "agg:aggregate_regret" },
-                  { label: "Sexuality vs. Satisfaction", x: "demo:sexuality", y: "q:exp_pride_satisfaction_rating" },
-                  { label: "Family Upbringing vs. Social Norms", x: "demo:family_upbringing", y: "q:final_social_norm_perception" },
-                  { label: "Generational Shifts in Sexual Need", x: "demo:generation", y: "q:exp_lubrication_need" },
-                  { label: "Education to Pathway to Orgasm", x: "demo:education", y: "demo:pathway", z: "q:exp_sex_rating_orgasm_intensity" },
-                  { label: "Upbringing to Pathway to Pride", x: "demo:family_upbringing", y: "demo:pathway", z: "q:exp_pride_satisfaction_rating" },
-                  { label: "Generation to Pathway to Regret", x: "demo:generation", y: "demo:pathway", z: "agg:aggregate_regret" }
-                ].map(preset => (
-                  <button
-                    key={preset.label}
-                    onClick={() => applyPreset(preset)}
-                    style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: `1px solid ${C.ghost}`,
-                      borderRadius: 6,
-                      padding: "0.6rem 0.8rem",
-                      color: C.textBright,
-                      fontFamily: FONT.body,
-                      fontSize: "0.85rem",
-                      textAlign: "left",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center"
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = C.gold; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = C.ghost; }}
-                  >
-                    <span>{preset.label}</span>
-                    <span style={{ color: C.gold, opacity: 0.7, fontSize: "1.1em" }}>→</span>
-                  </button>
-                ))}
+  
+              <div style={{ marginTop: "2rem" }}>
+                <div style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, marginBottom: "0.8rem", fontWeight: 700 }}>
+                  Curated Insights
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {[
+                    { label: "Sexuality vs. Regret", x: "demo:sexuality", y: "agg:aggregate_regret", mode: "pairwise" },
+                    { label: "Socioeconomics vs. Pathway", x: "demo:socioeconomic", y: "demo:pathway", mode: "pairwise" },
+                    { label: "Politics vs. Social Norms", x: "demo:political_identity", y: "q:final_social_norm_perception", mode: "pairwise" },
+                    { label: "Generation to Tradition to Pathway", x: "demo:generation", y: "demo:primary_tradition", z: "demo:pathway", mode: "flow" },
+                    { label: "Tradition to Pathway to Regret", x: "demo:primary_tradition", y: "demo:pathway", z: "agg:aggregate_regret", mode: "flow" },
+                    { label: "Upbringing to Pathway to Pride", x: "demo:family_upbringing", y: "demo:pathway", z: "q:exp_pride_satisfaction_rating", mode: "flow" },
+                    { label: "Sexuality to Pathway to Lubrication", x: "demo:sexuality", y: "demo:pathway", z: "q:exp_lubrication_need", mode: "flow" }
+                  ].map(preset => (
+                    <button
+                      key={preset.label}
+                      onClick={() => applyPreset(preset)}
+                      style={{
+                        background: "rgba(255,255,255,0.03)",
+                        border: `1px solid ${C.ghost}`,
+                        borderRadius: 6,
+                        padding: "0.6rem 0.8rem",
+                        color: C.textBright,
+                        fontFamily: FONT.body,
+                        fontSize: "0.85rem",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.borderColor = C.gold; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.borderColor = C.ghost; }}
+                    >
+                      <span>{preset.label}</span>
+                      <span style={{ color: C.gold, opacity: 0.7, fontSize: "1.1em" }}>→</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          )}
 
           {/* RIGHT: Main Matrix Engine */}
-          <main>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <main style={{ height: inlineMode ? "100%" : "auto", display: "flex", flexDirection: "column" }}>
+            <div style={{ display: inlineMode ? "none" : "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               {/* Mode Toggle */}
               <ModeToggle mode={mode} setMode={setMode} />
               
@@ -675,12 +751,12 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
 
             {/* Control Panel — axes (2 in pairwise mode, 3 in flow mode) */}
             <div style={{
+              display: inlineMode ? "none" : "flex",
               background: C.bgSoft,
               border: `1px solid ${C.ghost}`,
               borderRadius: 12,
               padding: "1.25rem",
               marginBottom: "1.5rem",
-              display: "flex",
               flexDirection: "column",
               gap: "1rem"
             }}>
@@ -847,21 +923,25 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
 
             {/* Visualization */}
             <div className="mobile-scroll-hint" style={{ background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "2rem", overflowX: "auto" }}>
-              {mode === "pairwise" && activeX && activeY && activeX.type === "demographic" && activeY.type === "demographic" && (
-                <div style={{
-                  padding: "2.5rem 1.5rem",
-                  textAlign: "center",
-                  color: C.muted,
-                  fontFamily: FONT.body,
-                  fontSize: "0.95rem",
-                  lineHeight: 1.5,
-                }}>
-                  Cross-tabulating two demographic dimensions is not currently supported.
-                  <br />
-                  <span style={{ color: C.dim, fontSize: "0.85rem" }}>
-                    Please ensure at least one axis is a survey question.
-                  </span>
+              {mode === "pairwise" && bothDemographics && demoLoading && (
+                <div style={{ padding: "3rem", textAlign: "center", color: C.muted, fontStyle: "italic" }}>
+                  Building cross-tabulation…
                 </div>
+              )}
+              {mode === "pairwise" && bothDemographics && !demoLoading && demoObserved && (
+                <UniversalMatrix
+                  xOptions={xOptions}
+                  yOptions={yOptions}
+                  observed={demoObserved}
+                  autoStories={false}
+                  activeXId={activeX?.id}
+                  cohortLabel={cohortLabel}
+                  title=""
+                  subtitle=""
+                  eyebrow={`${axisDisplayName(activeX, questions)} × ${axisDisplayName(activeY, questions)}`}
+                  leftLabel={axisDisplayName(activeX, questions)}
+                  rightLabel={axisDisplayName(activeY, questions)}
+                />
               )}
               {mode === "pairwise" && activeX && activeY && bothAggregates && (
                 <div style={{
@@ -898,9 +978,9 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                     cohortLabel={cohortLabel}
                     title=""
                     subtitle=""
-                    eyebrow={`${axisDisplayName(activeX)} × ${axisDisplayName(activeY)}`}
-                    leftLabel={axisDisplayName(activeX)}
-                    rightLabel={axisDisplayName(activeY)}
+                    eyebrow={`${axisDisplayName(activeX, questions)} × ${axisDisplayName(activeY, questions)}`}
+                    leftLabel={axisDisplayName(activeX, questions)}
+                    rightLabel={axisDisplayName(activeY, questions)}
                   />
                 )
               )}
@@ -914,9 +994,9 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   cohortLabel={cohortLabel}
                   title=""
                   subtitle=""
-                  eyebrow={`${axisDisplayName(activeX)} × ${axisDisplayName(activeY)}`}
-                  leftLabel={axisDisplayName(activeX)}
-                  rightLabel={axisDisplayName(activeY)}
+                  eyebrow={`${axisDisplayName(activeX, questions)} × ${axisDisplayName(activeY, questions)}`}
+                  leftLabel={axisDisplayName(activeX, questions)}
+                  rightLabel={axisDisplayName(activeY, questions)}
                 />
               )}
               {mode === "flow" && activeX && activeY && activeZ && (
@@ -924,13 +1004,13 @@ export default function CorrelationExplorerPage({ routerState, navigate, updateS
                   <div style={{
                     fontFamily: FONT.condensed,
                     fontSize: "0.65rem",
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: C.gold,
                     fontWeight: 700,
+                    color: C.muted,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
                     marginBottom: "0.4rem",
                   }}>
-                    {axisDisplayName(activeX)} → {axisDisplayName(activeY)} → {axisDisplayName(activeZ)}
+                    {axisDisplayName(activeX, questions)} → {axisDisplayName(activeY, questions)} → {axisDisplayName(activeZ, questions)}
                   </div>
                   <div style={{
                     fontFamily: FONT.body,
@@ -1022,13 +1102,17 @@ function FlowArrow() {
 }
 
 // ── Helper: render a label for an axis selection ───────────────────────────
-function axisDisplayName(axis) {
+function axisDisplayName(axis, questions = []) {
   if (!axis) return "Variable";
   if (axis.type === "demographic") {
     return axis.source?.label || axis.id;
   }
+  if (axis.type === "aggregate") {
+    return axis.source?.label || axis.id;
+  }
   if (axis.type === "question") {
-    return SHORT_LABELS[axis.id] || axis.source?.label || axis.source?.section || axis.id;
+    const qLabel = questions.find(q => q.id === axis.id)?.label;
+    return SHORT_LABELS[axis.id] || axis.source?.label || qLabel || axis.source?.section || axis.id;
   }
   return "Variable";
 }

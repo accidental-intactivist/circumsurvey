@@ -3,7 +3,7 @@ import { C, FONT } from "../styles/tokens";
 import CopilotChat from "./CopilotChat";
 import { Sparkles, X } from "./Icons";
 
-export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updateState, exhibitContext }) {
+export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updateState, exhibitContext, tourSuas }) {
   const [showInfo, setShowInfo] = useState(false);
 
   // Stay mounted even when closed (slide off-screen) so the conversation
@@ -166,6 +166,7 @@ export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updat
             routerState={routerState} 
             updateState={updateState} 
             exhibitContext={exhibitContext}
+            tourSuas={tourSuas}
           />
         </div>
 

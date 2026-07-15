@@ -73,7 +73,8 @@ export default function WireframeGlobe({
   initialRotation = [0, -20, 0],
   geoUrl = WORLD_GEO_URL,
   targetCountry = null,
-  centerOnHover = true
+  centerOnHover = true,
+  onHover
 }) {
   const canvasRef = useRef(null);
   const [geoData, setGeoData] = useState(null);  // STATE, not ref — triggers re-render
@@ -193,6 +194,8 @@ export default function WireframeGlobe({
       }
     }
     
+    const baseRadius = Math.min(width, height) / 2 - 10;
+    
     // ── The render loop ──
     const drawFrame = () => {
       projection.rotate(rotationRef.current);
@@ -204,9 +207,20 @@ export default function WireframeGlobe({
       const radius = projection.scale();
       const center = projection.translate();
       
-      // Clip everything to the sphere circle
+      // Draw globe background with drop shadow
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(center[0], center[1], radius, 0, 2 * Math.PI);
+      ctx.arc(center[0], center[1], baseRadius, 0, 2 * Math.PI);
+      ctx.shadowColor = 'rgba(0,0,0,0.15)';
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetY = 4;
+      ctx.fillStyle = colors.ocean;
+      ctx.fill();
+      ctx.restore();
+      
+      // Clip everything to the fixed base circle (solves the telescope effect when zoomed in)
+      ctx.beginPath();
+      ctx.arc(center[0], center[1], baseRadius, 0, 2 * Math.PI);
       ctx.clip();
       
       const t = (Date.now() % 12000) / 12000; // 0 to 1 over 12 seconds
@@ -220,9 +234,9 @@ export default function WireframeGlobe({
         // Shift global time 't' (which goes 0 to 1 over 4s)
         const localT = (t + phaseOffset) % 1.0;
         
-        // Sweep diagonally across the globe
-        const sweepX = cx + (localT - 0.5) * (radius * 3.5);
-        const sweepY = cy + (localT - 0.5) * (radius * 3.5);
+        // Sweep diagonally across the base globe area
+        const sweepX = cx + (localT - 0.5) * (baseRadius * 3.5);
+        const sweepY = cy + (localT - 0.5) * (baseRadius * 3.5);
         
         // Diagonal linear gradient (sweep from top-left to bottom-right)
         // This gives a massive sweeping slash of light, but avoids flashing vertical lines instantly
@@ -248,9 +262,9 @@ export default function WireframeGlobe({
       });
       ctx.globalAlpha = 1.0;
       
-      // Border Glint (matches the 8s schedule)
-      const borderSweepX = cx + (t - 0.5) * (radius * 3.5);
-      const borderSweepY = cy + (t - 0.5) * (radius * 3.5);
+      // Border Glint (matches the 8s schedule, scaled to base screen size)
+      const borderSweepX = cx + (t - 0.5) * (baseRadius * 3.5);
+      const borderSweepY = cy + (t - 0.5) * (baseRadius * 3.5);
       const borderGrad = ctx.createLinearGradient(borderSweepX - 120, borderSweepY - 120, borderSweepX + 120, borderSweepY + 120);
       // Use theme-specific translucent color for the unlit borders so they stand out against vibrant land
       const baseBorder = colors.landBorder || 'rgba(0, 0, 0, 0.4)';
@@ -288,20 +302,27 @@ export default function WireframeGlobe({
         ctx.stroke();
       });
       
+      // Remove the clipping path before drawing the bounding border and dots
+      ctx.restore();
+      
       // 3.5 OUTER SPHERE BORDER
       // Draw a clean ring around the entire globe that catches the scanning glint
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 1.5;
+      ctx.arc(cx, cy, baseRadius, 0, 2 * Math.PI);
+      ctx.lineWidth = 3.0; // Thicker so it looks like a clear boundary when zoomed in
       ctx.strokeStyle = borderGrad;
       ctx.shadowBlur = 4;
       ctx.shadowColor = colors.glint;
       ctx.stroke();
       ctx.shadowBlur = 0;
+      ctx.restore();
       
       let hoveredThisFrame = null;
       
       // 4. DATA DOTS — bright accent on top of land
+      // Note: Data dots are now drawn without the globe clip, meaning dots on the edge might stick out slightly, 
+      // but that is usually desirable. If they need clipping, we could clip again.
       geoData.features.forEach(feature => {
         const norm = normalizeName(feature.properties.name);
         const val = dataMap.map[norm] || 0;
@@ -339,19 +360,25 @@ export default function WireframeGlobe({
       });
       
       setTooltip(prev => {
-        if (!prev && !hoveredThisFrame) return prev;
-        if (prev && hoveredThisFrame && prev.label === hoveredThisFrame.label) return prev;
-        return hoveredThisFrame;
+        const next = hoveredThisFrame;
+        const prevLabel = prev ? prev.label : null;
+        const nextLabel = next ? next.label : null;
+        
+        if (prevLabel !== nextLabel) {
+          if (onHover) onHover(nextLabel);
+        }
+        
+        if (!prev && !next) return prev;
+        if (prev && next && prevLabel === nextLabel) return prev;
+        return next;
       });
       
       // 5. Sphere border
       ctx.beginPath();
-      ctx.arc(center[0], center[1], radius, 0, 2 * Math.PI);
+      ctx.arc(center[0], center[1], baseRadius, 0, 2 * Math.PI);
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = colors.border;
       ctx.stroke();
-      
-      ctx.restore();
       
       // Advance rotation for next frame
       if (targetCoords) {
@@ -395,7 +422,7 @@ export default function WireframeGlobe({
   };
 
   return (
-    <div style={{ position: 'relative', width, height, background: oceanBg, borderRadius: '50%', boxShadow: `0 4px 20px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,215,0,0.15)` }}>
+    <div style={{ position: 'relative', width, height }}>
       <canvas 
         ref={canvasRef} 
         style={{ 
@@ -403,7 +430,6 @@ export default function WireframeGlobe({
           height: '100%',
           cursor: tooltip ? 'pointer' : 'default',
           display: 'block',
-          borderRadius: '50%',
         }} 
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}

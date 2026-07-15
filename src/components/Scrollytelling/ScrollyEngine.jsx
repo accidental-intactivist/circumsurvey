@@ -964,7 +964,7 @@ export default function ScrollyEngine() {
                   <GenerationalTrendChart questionId={selectedGenQuestion} />
                   
                   <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-                    <a href="/explore#/generational-faultlines" style={{
+                    <a href="/explore#/culture" style={{
                       fontFamily: "var(--f-condensed)",
                       fontWeight: 700,
                       fontSize: '0.78rem',

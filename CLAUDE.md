@@ -33,7 +33,7 @@ This is the project's thesis statement. The site is a **data instrument**, not a
 - **"Pathways" not "cohorts."** The survey has six pathways; the site mirrors this language.
 - **"Respondents" not "men."** The dataset includes women, trans, non-binary, and intersex individuals.
 - **"Resentment" not "regret"** for circumcised respondents — regret implies agency in a decision they didn't make. The community pushed back on "regret" and this distinction matters.
-- **"Born circumcised"** when referring to the combined Circumcised + Restoring population (n=319).
+- **"Infant-circumcised"** when referring to the combined Circumcised + Restoring population (n=319).
 - **"100% of restoring respondents who expressed a preference"** — not "97.9%." The non-intact responses were "N/A / no plans for children," not choosing circumcision.
 - Never use "MGM" or "genital mutilation" on the findings site. That language is for advocacy contexts, not data presentation.
 
@@ -541,7 +541,7 @@ These are the headline numbers from the n=496 dataset. Update these when the dat
 
 - **Pleasure from Mobile Skin gap:** Intact 4.47 vs Circumcised 1.96 (Δ 2.52, 56% drop) — largest single finding
 - **Light Touch Sensitivity gap:** Intact 4.24 vs Circumcised 2.24 (Δ 2.00, 47% drop)
-- **Resentment (born-circumcised combined):** 86% report some level, 63% strong & frequent, only 14% "no, never"
+- **Resentment (circumcised as infants combined):** 86% report some level, 63% strong & frequent, only 14% "no, never"
 - **Resentment (restoring only):** 0% said "no, never" — every single restoring respondent reports negative feelings
 - **Orgasm confidence "something is missing":** Intact 4.5%, Circumcised 48.2%, Restoring 59.6%
 - **Lubrication never needed:** Intact 55.5%, Circumcised 5.5% (10:1 ratio)

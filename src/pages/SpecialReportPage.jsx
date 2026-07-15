@@ -13,10 +13,12 @@ import { ReportProvider } from '../explore/contexts/ReportContext';
 export default function SpecialReportPage() {
   const [isDocentOpen, setDocentOpen] = useState(false);
   const [docentContext, setDocentContext] = useState(null);
+  const [docentTourSuas, setDocentTourSuas] = useState(null);
 
   useEffect(() => {
     const handleOpenDocent = (e) => {
       if (e.detail?.context) setDocentContext(e.detail.context);
+      if (e.detail?.tourSuas) setDocentTourSuas(e.detail.tourSuas);
       setDocentOpen(true);
     };
     window.addEventListener('open-docent', handleOpenDocent);
@@ -45,6 +47,7 @@ export default function SpecialReportPage() {
           isOpen={isDocentOpen} 
           onClose={() => setDocentOpen(false)}
           exhibitContext={docentContext}
+          tourSuas={docentTourSuas}
         />
       </div>
     </ReportProvider>

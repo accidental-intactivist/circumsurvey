@@ -48,6 +48,7 @@ export default function PleasureGapWidget() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeCohorts, setActiveCohorts] = useState({ intact: true, restoring: true, circumcised: true });
   const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
 
   useEffect(() => {
@@ -76,12 +77,15 @@ export default function PleasureGapWidget() {
     return () => { cancelled = true; };
   }, []);
 
+  const activeCohortsList = useMemo(() => COHORTS.filter(c => activeCohorts[c.id]), [activeCohorts]);
+
   const stats = useMemo(() => {
     if (!data) return { matrix: {}, totalN: 0, sortedQuestions: QUESTIONS };
     const matrix = {};
     let totalN = 0;
     
     COHORTS.forEach(c => {
+      if (!activeCohorts[c.id]) return;
       matrix[c.id] = {};
       QUESTIONS.forEach(q => {
         const pathData = data[q.id]?.[c.id];
@@ -98,7 +102,7 @@ export default function PleasureGapWidget() {
     });
 
     return { matrix, totalN, sortedQuestions };
-  }, [data]);
+  }, [data, activeCohorts]);
 
   if (loading) return <div style={{ color: C.dim, padding: "2rem", textAlign: "center" }}>Loading Pleasure Gap Data...</div>;
   if (error) return <div style={{ color: C.red, padding: "2rem", textAlign: "center" }}>Error: {error}</div>;
@@ -109,7 +113,7 @@ export default function PleasureGapWidget() {
       <div style={{ position: "relative", width: "100%", height: 360 }}>
         <PleasureBarChart 
           stats={stats} 
-          activeCohortsList={COHORTS} 
+          activeCohortsList={activeCohortsList} 
           groupBy="cohort" 
           showGap={true} 
           showTooltip={showTooltip} 
@@ -118,23 +122,30 @@ export default function PleasureGapWidget() {
         />
       </div>
 
-      {/* ── Legend ── */}
+      {/* ── Cohort toggle pills ── */}
       <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginTop: "-1rem" }}>
-        {COHORTS.map(c => (
-          <div key={c.id} style={{
-            background: `var(${c.colorVar})`,
-            color: C.bg,
-            padding: "0.2rem 1rem",
-            borderRadius: 20,
-            fontSize: "0.8rem",
-            fontWeight: 700,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            fontFamily: FONT.condensed
-          }}>
-            {c.label}
-          </div>
-        ))}
+        {COHORTS.map(c => {
+          const active = activeCohorts[c.id];
+          return (
+            <button key={c.id} onClick={() => setActiveCohorts(prev => ({ ...prev, [c.id]: !prev[c.id] }))} style={{
+              background: active ? `var(${c.colorVar})` : "transparent",
+              color: active ? C.bg : C.muted,
+              border: active ? "none" : `1px solid ${C.ghost}`,
+              padding: "0.2rem 1rem",
+              borderRadius: 20,
+              fontSize: "0.8rem",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              fontFamily: FONT.condensed,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              opacity: active ? 1 : 0.5,
+            }}>
+              {c.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Detailed Matrix ── */}
@@ -162,7 +173,7 @@ export default function PleasureGapWidget() {
           <thead>
             <tr style={{ borderBottom: `2px solid rgba(255,255,255,0.1)` }}>
               <th style={{ textAlign: "left", padding: "0.5rem", color: C.muted }}>Sexual Experience Factor</th>
-              {COHORTS.map(c => (
+              {activeCohortsList.map(c => (
                 <th key={c.id} style={{ textAlign: "right", padding: "0.5rem", color: C.textBright, fontWeight: 600 }}>{c.label}</th>
               ))}
               <th style={{ textAlign: "right", padding: "0.5rem", color: C.red, fontWeight: 700 }}>The Gap<br/><span style={{fontSize:"0.65rem", color: C.muted}}>(Intact vs. Circ)</span></th>
@@ -177,7 +188,7 @@ export default function PleasureGapWidget() {
                     <span>{q.label}</span>
                   </div>
                 </td>
-                {COHORTS.map(c => {
+                {activeCohortsList.map(c => {
                   const valObj = stats.matrix[c.id]?.[q.id] || { average: 0, n: 0 };
                   return (
                     <td key={c.id} style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>

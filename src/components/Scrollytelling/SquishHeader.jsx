@@ -60,6 +60,10 @@ export default function SquishHeader() {
     try {
       localStorage.setItem("cs_loom_paused", String(next));
     } catch {}
+    // One switch, every loom: the Underloom (LoomChoreography) listens for
+    // this so the pause button stops ALL background animation, not just
+    // the masthead's HarmonicCanvas.
+    window.dispatchEvent(new CustomEvent("cs-loom-pause", { detail: { paused: next } }));
   };
   const navContentRef = useRef(null);
   const canvasRef = useRef(null);
@@ -111,10 +115,10 @@ export default function SquishHeader() {
     const scrollDistance = Math.max(200, startHeight - 70);
 
     // Cascading glow animation for the arrow trail
-    gsap.to([arrow1Ref.current, arrow2Ref.current, arrow3Ref.current], {
+    gsap.to(".scroll-arrow-chevron", {
       opacity: 1,
       duration: 0.5,
-      stagger: 0.2,
+      stagger: 0.15,
       repeat: -1,
       yoyo: true,
       ease: "power2.inOut"
@@ -621,9 +625,11 @@ export default function SquishHeader() {
           opacity: 0.7,
         }}>Scroll to Read the Full Phase 1 Report</span>
         <div style={{ display: "flex", flexDirection: "column", marginTop: "-0.2rem" }}>
-          <ChevronDown ref={arrow1Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-12px" }} />
-          <ChevronDown ref={arrow2Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-12px" }} />
-          <ChevronDown ref={arrow3Ref} size={22} strokeWidth={1.5} style={{ opacity: 0.2 }} />
+          <ChevronDown className="scroll-arrow-chevron" size={22} strokeWidth={1.5} style={{ opacity: 0.15, marginBottom: "-8px" }} />
+          <ChevronDown className="scroll-arrow-chevron" size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-8px" }} />
+          <ChevronDown className="scroll-arrow-chevron" size={22} strokeWidth={1.5} style={{ opacity: 0.3, marginBottom: "-8px" }} />
+          <ChevronDown className="scroll-arrow-chevron" size={22} strokeWidth={1.5} style={{ opacity: 0.2, marginBottom: "-8px" }} />
+          <ChevronDown className="scroll-arrow-chevron" size={22} strokeWidth={1.5} style={{ opacity: 0.15 }} />
         </div>
       </div>
 

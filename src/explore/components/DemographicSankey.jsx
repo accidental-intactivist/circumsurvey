@@ -156,6 +156,28 @@ export default function DemographicSankey({ cohort, dimensions, tooltip, targetQ
                   }
                 }
                 return { g0: rd.g0, g1, results: formattedResults };
+              } else if (dim2Obj?.type === "aggregate") {
+                const { sources, buckets } = dim2Obj.source;
+                let aggFormatted = {};
+                for (const qid of sources) {
+                   const res = await getResponseDistribution(qid, {
+                     cohort: { ...cohort, [dim0]: rd.g0.rawKeys, [dim1]: g1.rawKeys }
+                   });
+                   for (const d of res.distribution || []) {
+                     if (d.label && d.label !== "-" && d.label !== "—") {
+                       let bucketLabel = d.label; // fallback
+                       for (const b of buckets) {
+                         if (b.match.some(m => d.label.toLowerCase().includes(m.toLowerCase()))) {
+                           bucketLabel = b.label;
+                           break;
+                         }
+                       }
+                       if (!aggFormatted[bucketLabel]) aggFormatted[bucketLabel] = { n: 0 };
+                       aggFormatted[bucketLabel].n += d.n;
+                     }
+                   }
+                }
+                return { g0: rd.g0, g1, results: aggFormatted };
               } else {
                 const pRes = await getAggregate(targetQuestion, { 
                   by: dim2, 

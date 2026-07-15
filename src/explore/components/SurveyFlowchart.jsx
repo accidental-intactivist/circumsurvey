@@ -336,7 +336,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         .flowchart-grid {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
-          column-gap: 0.75rem;
+          column-gap: 0;
           row-gap: 0;
           margin-top: 0;
           margin-bottom: 0;
@@ -951,14 +951,12 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
             <span style={{
               fontFamily: FONT.display,
               fontWeight: 700,
-              fontSize: compact ? "0.72rem" : "1.15rem",
+              fontSize: compact ? "0.72rem" : "0.95rem",
               color: active ? C.bg : C.textBright,
               letterSpacing: compact ? "0.01em" : "0.03em",
               textTransform: "uppercase",
               transition: "color 0.3s",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              lineHeight: 1.1,
             }}>{title}</span>
 
             {/* Question count badge */}
@@ -1638,7 +1636,7 @@ function MobileConnector({ color, height = 24 }) {
 
 function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange, searchActive }) {
   const svgW = 1200;
-  const svgH = 130;
+  const svgH = 170;
 
   const flows = branches.map((b, i) => {
     const info = getFlowInfo(b);
@@ -1658,14 +1656,19 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
   // The trunk at top matches the Universal block width (roughly center of SVG)
   const trunkW = 160;
   const trunkLeft = (svgW - trunkW) / 2;
+  const pinchY = 60; // where the hourglass pinches
 
-  let currentX = trunkLeft;
+  let currentXPinch = trunkLeft;
+  let currentXTop = 0;
 
   return (
     <div style={{ position: "relative", overflow: "visible", marginTop: "-0.5rem", marginBottom: "-12px" }}>
       {/* Instruction text overlaid on top of the funnel */}
       <div style={{
-        position: "relative",
+        position: "absolute",
+        top: 10,
+        left: 0,
+        right: 0,
         zIndex: 2,
         textAlign: "center",
         padding: "0.6rem 1rem 0",
@@ -1693,23 +1696,33 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
             ))}
           </defs>
           {flows.map((f) => {
-            const w = (f.weight / totalWeight) * trunkW;
-            const topL = currentX;
-            const topR = currentX + w;
-            currentX += w;
+            const wPinch = (f.weight / totalWeight) * trunkW;
+            const pinchL = currentXPinch;
+            const pinchR = currentXPinch + wPinch;
+            currentXPinch += wPinch;
 
-            const cardW = (svgW - 5 * 12) / 6; // ~190px per card
-            const gap = 12;
+            const wTop = (f.weight / totalWeight) * svgW;
+            const topL = currentXTop;
+            const topR = currentXTop + wTop;
+            currentXTop += wTop;
+
+            const cardW = svgW / 6; // ~200px per card with no gap
+            const gap = 0;
             const botL = f.i * (cardW + gap);
             const botR = botL + cardW;
 
-            const cpY = svgH * 0.55;
+            const cp1Y = pinchY * 0.4;
+            const cp2Y = pinchY * 0.6;
+            const cp3Y = pinchY + (svgH - pinchY) * 0.55;
+            const cp4Y = svgH - (svgH - pinchY) * 0.45;
 
             const d = `
               M ${topL} 0
-              C ${topL} ${cpY}, ${botL} ${svgH - cpY}, ${botL} ${svgH}
+              C ${topL} ${cp1Y}, ${pinchL} ${cp2Y}, ${pinchL} ${pinchY}
+              C ${pinchL} ${cp3Y}, ${botL} ${cp4Y}, ${botL} ${svgH}
               L ${botR} ${svgH}
-              C ${botR} ${svgH - cpY}, ${topR} ${cpY}, ${topR} 0
+              C ${botR} ${cp4Y}, ${pinchR} ${cp3Y}, ${pinchR} ${pinchY}
+              C ${pinchR} ${cp2Y}, ${topR} ${cp1Y}, ${topR} 0
               Z
             `;
 
@@ -1726,8 +1739,13 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
             // Center spine of the ribbon — the "current" runs down this path
             // when search lights the route to a matching pathway.
             const topC = (topL + topR) / 2;
+            const pinchC = (pinchL + pinchR) / 2;
             const botC = (botL + botR) / 2;
-            const spineD = `M ${topC} 0 C ${topC} ${cpY}, ${botC} ${svgH - cpY}, ${botC} ${svgH}`;
+            const spineD = `
+              M ${topC} 0 
+              C ${topC} ${cp1Y}, ${pinchC} ${cp2Y}, ${pinchC} ${pinchY}
+              C ${pinchC} ${cp3Y}, ${botC} ${cp4Y}, ${botC} ${svgH}
+            `;
 
             return (
               <g key={f.id}>
@@ -1899,7 +1917,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-12px", position: "relative", zIndex: 0 }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-12px", marginBottom: "-12px", position: "relative", zIndex: 0 }}>
       <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         <defs>
           {flows.map(f => (

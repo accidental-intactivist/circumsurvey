@@ -48,6 +48,9 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
+    // Paused = HOLD, not blank: when paused we draw exactly one frame and
+    // keep it (reset on resize so a held frame is never stretched/blank).
+    let pausedHeld = false;
 
     // ── Low-power / mobile detection ──
     // Phones (and reduced-motion users) get a lighter render: lower DPR, fewer
@@ -74,6 +77,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pausedHeld = false; // resizing clears the canvas — re-draw the held frame
     };
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
@@ -400,8 +404,13 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       lastFrameTime = now;
 
       if (pausedRef.current) {
-        animationFrameId = requestAnimationFrame(render);
-        return; // skip drawing entirely to save CPU
+        if (pausedHeld) {
+          animationFrameId = requestAnimationFrame(render);
+          return; // frame already held — skip all work
+        }
+        pausedHeld = true; // draw exactly one frame below, then hold it
+      } else {
+        pausedHeld = false;
       }
 
       time += delta * SPEED;

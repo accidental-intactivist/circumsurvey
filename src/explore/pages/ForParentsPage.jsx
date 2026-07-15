@@ -19,7 +19,7 @@ const PARENT_SECTIONS = [
 
 // We curate a list of questions that directly speak to the "new/expectant parent" experience.
 // The user noted: "What we want to basically get in front of parents' eyes are the testimonies 
-// of what adults would say to their parents about whatever decision they made, and back it up 
+// of what adults would say to their parents about whatever choice they made, and back it up 
 // with the pleasure gap or whatever would be super compelling to a new parent."
 const QUESTIONS = [
   "circ_message_to_parents", 
@@ -93,7 +93,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       <ExhibitHero
         title="For New & Expectant Parents"
-        description="A curated, shareable resource presenting what grown children, other parents, medical professionals, and advocates actually say — the transparency and lived-experience data often missing from standard counseling, offered so you can make the fully informed decision that is yours to make."
+        description="A curated, shareable resource presenting what grown children, other parents, medical professionals, and advocates actually say — the transparency and lived-experience data often missing from standard counseling, offered so you can make the fully informed choice that is yours to make."
       />
 
         <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
@@ -109,7 +109,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         id="section-testimonies"
         Icon={MessageSquareText}
         title="Testimonies: What Grown Sons Wish Their Parents Knew"
-        description="Adult men—both circumcised and intact—were asked what they would say to parents making this decision today."
+        description="Adult men—both circumcised and intact—were asked what they would say to parents considering this choice today."
         color="var(--c-red)"
         hideDivider={true}
       />
@@ -121,7 +121,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
             From Circumcised Men
           </h3>
           <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.textBright, marginBottom: "1.5rem", fontStyle: "italic" }}>
-            "If you could speak directly to parents who are currently deciding whether to circumcise their son, what would you say?"
+            "If you could speak directly to parents who are currently considering whether to circumcise their son, what would you say?"
           </p>
           <div style={{ height: 400 }}>
             {questionsMap["circ_message_to_parents"] ? (
@@ -136,7 +136,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
             From Intact Men
           </h3>
           <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.textBright, marginBottom: "1.5rem", fontStyle: "italic" }}>
-            "What message would you give to parents deciding whether to circumcise their son, or to men considering it for themselves?"
+            "What message would you give to parents considering whether to circumcise their son, or to men considering it for themselves?"
           </p>
           <div style={{ height: 400 }}>
             {questionsMap["intact_message_to_others"] ? (
@@ -146,7 +146,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         </div>
       </div>
 
-      {/* ── SECTION 2: The Data Behind The Decision ────────────────────────────── */}
+      {/* ── SECTION 2: The Data Behind The Choice ────────────────────────────── */}
       <ExhibitSectionHeading
         id="section-reality"
         Icon={BarChart2}
@@ -183,7 +183,7 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         
         <div style={{ background: C.bgSoft, borderRadius: 8, padding: "1.5rem", border: `1px solid ${C.ghost}` }}>
           <h4 style={{ fontFamily: FONT.body, fontSize: "1rem", color: C.textBright, marginBottom: "1rem", lineHeight: 1.4 }}>
-            {questionsMap["observe_parent_emotional_state"]?.prompt || "Parents' emotional state regarding their decision"}
+            {questionsMap["observe_parent_emotional_state"]?.prompt || "Parents' emotional state regarding their choice"}
           </h4>
           <div style={{ minHeight: 300, display: "flex", flexDirection: "column" }}>
             {questionsMap["observe_parent_emotional_state"] ? (

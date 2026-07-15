@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import ExhibitSectionHeading from "../components/ExhibitSectionHeading";
 import ExhibitHero from "../components/ExhibitHero";
 import ExhibitDataLoader from "../components/ExhibitDataLoader";
-import { C, FONT, API_BASE } from "../styles/tokens";
+import { C, FONT, API_BASE, PATH_COLORS } from "../styles/tokens";
+import { useLegibleColor } from "../lib/colorUtils";
 import NarrativeList from "../components/NarrativeList";
 import DistributionChart from "../components/DistributionChart";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
@@ -14,7 +15,7 @@ const ICON_MAP = {
   Users, Heart, Smile, Clock, Activity, AlertTriangle, Eye, BookOpen, HelpCircle
 };
 
-export default function ObserverLensPage({ navigate, setExhibitContext }) {
+export default function ObserverLensPage({ routerState = {}, updateState, navigate, setExhibitContext }) {
   const [questionsMap, setQuestionsMap] = useState({});
   const [roleQuestions, setRoleQuestions] = useState({});
   
@@ -23,7 +24,20 @@ export default function ObserverLensPage({ navigate, setExhibitContext }) {
     return OBSERVER_SUBROLES.filter(r => !r.multi && r.id !== "universal" && !r.rare);
   }, []);
   
-  const [activeTab, setActiveTab] = useState(validRoles[0]?.id || "partner");
+  const [activeTab, setActiveTab] = useState(routerState.observerRole || validRoles[0]?.id || "partner");
+
+  useEffect(() => {
+    if (routerState.observerRole && routerState.observerRole !== activeTab) {
+      setActiveTab(routerState.observerRole);
+    }
+  }, [routerState.observerRole]);
+
+  const handleTabChange = (roleId) => {
+    setActiveTab(roleId);
+    if (updateState) {
+      updateState({ observerRole: roleId });
+    }
+  };
 
   useEffect(() => {
     if (setExhibitContext) {
@@ -58,42 +72,21 @@ export default function ObserverLensPage({ navigate, setExhibitContext }) {
   const activeRole = validRoles.find(r => r.id === activeTab);
   const questionsToRender = roleQuestions[activeTab] || [];
   const ActiveIcon = ICON_MAP[activeRole?.icon] || Users;
+  
+  const activeTextColor = useLegibleColor("#ffffff", PATH_COLORS.observer, 4.5);
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "1.5rem 2rem 0" }}>
         <InlineBreadcrumb currentRoute="observer-lens" navigate={navigate} />
         
-        {/* Editorial introduction block */}
-        <div style={{ marginTop: "2.5rem", marginBottom: "1rem" }}>
-          <div style={{
-            fontFamily: FONT.condensed,
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: C.gold,
-            marginBottom: "0.4rem",
-          }}>★ Special Perspective ★</div>
-          <h1 style={{
-            fontFamily: FONT.display,
-            fontSize: "2.2rem",
-            fontWeight: 800,
-            color: C.textBright,
-            margin: 0,
-            lineHeight: 1.2,
-          }}>The Observer Lens</h1>
-          <p style={{
-            fontFamily: FONT.body,
-            fontSize: "1.05rem",
-            color: C.muted,
-            lineHeight: 1.6,
-            marginTop: "0.6rem",
-            marginBottom: 0
-          }}>
-            Not all respondents were writing about their own bodies. The Observer pathway captures testimonies from partners, parents, healthcare professionals, researchers, and advocates—those who observe its physical, emotional, and social dimensions from the outside.
-          </p>
-        </div>
+        <ExhibitHero
+          title="The Observer Lens"
+          description="Not all respondents were writing about their own bodies. The Observer pathway captures testimonies from partners, parents, healthcare professionals, researchers, and advocates—those who observe its physical, emotional, and social dimensions from the outside."
+          color={PATH_COLORS.observer}
+          gradientColor={C.purple}
+          BackgroundIcon={Eye}
+        />
 
         <div style={{
           background: "rgba(212,160,48,0.06)",
@@ -144,24 +137,38 @@ export default function ObserverLensPage({ navigate, setExhibitContext }) {
             return (
               <button
                 key={role.id}
-                onClick={() => setActiveTab(role.id)}
+                onClick={() => handleTabChange(role.id)}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: "0.4rem",
                   padding: "0.6rem 1.2rem",
-                  background: isActive ? C.bgCard : "transparent",
-                  color: isActive ? C.textBright : C.muted,
-                  border: `1px solid ${isActive ? C.ghost : "transparent"}`,
-                  borderRadius: 20,
+                  background: isActive ? PATH_COLORS.observer : "rgba(255,255,255,0.06)",
+                  color: isActive ? activeTextColor : C.muted,
+                  border: "none",
+                  borderRadius: 100,
                   fontFamily: FONT.condensed,
                   fontSize: "0.85rem",
+                  fontWeight: 600,
                   textTransform: "uppercase",
-                  letterSpacing: "0.05em",
+                  letterSpacing: "0.06em",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
-                  transition: "all 0.2s",
-                  boxShadow: isActive ? "0 2px 0 rgba(0,0,0,0.15)" : "none"
+                  transition: "all 0.2s ease",
+                  transform: isActive ? "scale(1.05)" : "none",
+                  boxShadow: isActive ? `0 4px 12px ${PATH_COLORS.observer}66` : "none"
+                }}
+                onMouseEnter={e => { 
+                  if (!isActive) {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                    e.currentTarget.style.color = C.text;
+                  }
+                }}
+                onMouseLeave={e => { 
+                  if (!isActive) {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                    e.currentTarget.style.color = C.muted;
+                  }
                 }}
               >
                 <Icon size={16} />

@@ -68,12 +68,6 @@ export const ROUTE_META = {
     desc: "Side-by-side word clouds and full-text search across open-ended narratives. Hear the language each cohort uses in their own words.",
     navTitle: "Narratives",
   },
-  "generational-faultlines": {
-    kicker: "Exhibit 07",
-    title: "Culture & Generations",
-    desc: "Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z.",
-    navTitle: "Culture & Generations",
-  },
   "observer-lens": {
     kicker: "Exhibit 08",
     title: "The Observer Lens",

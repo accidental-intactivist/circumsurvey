@@ -33,8 +33,6 @@ function parseHash() {
     route = "religious-mirrors";
   } else if (segments[0] === "narrative-mirrors") {
     route = "narrative-mirrors";
-  } else if (segments[0] === "generational-faultlines") {
-    route = "generational-faultlines";
   } else if (segments[0] === "observer-triad" || segments[0] === "observer-lens") {
     route = "observer-lens";
   } else if (segments[0] === "numbers") {
@@ -84,6 +82,10 @@ function parseHash() {
     observerRole: query.get("role") || null,
     format: query.get("format") || null,
     ai_query: query.get("ai_query") || "",
+    x: query.get("x") || null,
+    y: query.get("y") || null,
+    z: query.get("z") || null,
+    mode: query.get("mode") || null,
   };
 
   // Cohort filters (demographic): prefix "c_"
@@ -141,6 +143,10 @@ function serializeState(route, params, state) {
   if (state.observerRole) q.set("role", state.observerRole);
   if (state.format) q.set("format", state.format);
   if (state.ai_query) q.set("ai_query", state.ai_query);
+  if (state.x) q.set("x", state.x);
+  if (state.y) q.set("y", state.y);
+  if (state.z) q.set("z", state.z);
+  if (state.mode) q.set("mode", state.mode);
   if (state.cohort) {
     for (const [k, v] of Object.entries(state.cohort)) {
       if (v) {

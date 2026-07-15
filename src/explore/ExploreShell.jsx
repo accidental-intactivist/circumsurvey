@@ -29,7 +29,6 @@ import RestorationJourneyPage from "./pages/RestorationJourneyPage";
 import CultureGenerationsPage from "./pages/CultureGenerationsPage";
 import TheDecisionPage from "./pages/TheDecisionPage";
 import AdultExperiencePage from "./pages/AdultExperiencePage"; // Trigger HMR
-import FinalThoughtsPage from "./pages/FinalThoughtsPage";
 import TransIntersexPage from "./pages/TransIntersexPage";
 import TheForwardViewPage from "./pages/TheForwardViewPage";
 import ForParentsPage from "./pages/ForParentsPage";
@@ -143,8 +142,6 @@ export default function ExploreShell() {
     page = <AdultExperiencePage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "for-parents") {
     page = <ForParentsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
-  } else if (route === "final-thoughts") {
-    page = <FinalThoughtsPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "trans-intersex") {
     page = <TransIntersexPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "the-forward-view") {

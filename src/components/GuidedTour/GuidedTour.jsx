@@ -3,17 +3,23 @@
 // Fully theme-engine native: tokens, PATH_COLORS, HarmonicCanvas, Icons.
 // Voice: the Accidental Intactivist lens — summarize and report, never argue.
 // ═══════════════════════════════════════════════════════════════════════════
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import SnapshotWall from "../../explore/components/SnapshotWall";
 import { C, FONT, RAINBOW } from "../../explore/styles/tokens";
-import HarmonicCanvas from "../HarmonicCanvas";
+import LoomChoreography from "./LoomChoreography";
 import { useTheme } from "../../explore/contexts/ThemeContext";
 import { ExhibitCard } from "../../explore/components/ExhibitsDashboard";
 import { EXHIBIT_ROUTES, ROUTE_META } from "../../explore/components/ExploreMasthead";
+import ResourcesCTA from "../ResourcesCTA";
+import RotatingVoiceCards from "../RotatingVoiceCards";
 
 import ExhibitSurveyFlowchart from "../../explore/components/SurveyFlowchart";
+import { ArrowRight } from "lucide-react";
 import { getGeo } from "../../explore/lib/api";
 import { normalizeName } from "../../explore/lib/formatters";
-import { TOUR, PATHS, N_TOTAL, PLEASURE_METRICS, pooledMean } from "./tourData";
+import { TOUR, PATHS, N_TOTAL, PLEASURE_METRICS, pooledMean, NARRATIVE_MIRROR_DATA, TRADITION_BREAKDOWN, INFLUENCE_RANKING, CHRISTIAN_CIRC_VIEW, AWARENESS_AGE_BUTTERFLY, GENERATIONAL_SATISFACTION, RESTORATION_MOTIVES } from "./tourData";
+import { useLegibleColor } from "../../explore/lib/colorUtils";
 
 const WORLD_GEO_URL = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -25,7 +31,7 @@ const GEO_URLS = {
   canada: CANADA_GEO_URL
 };
 import {
-  Reveal, StationHero, Lens, TourCard, BarRows, ArrowNote, StatCallout,
+  Reveal, Lens, TourCard, BarRows, ArrowNote, StatCallout,
   ChapterDivider, DocentMarker, ResearcherFootnote,
   SectionKicker, PullStat, MethodPillars, EXPLORE_BASE,
   EffectSizeRow, EffectBenchmarkChart, EffectSizeBadge,
@@ -33,13 +39,18 @@ import {
 import * as Icons from "../../explore/components/Icons";
 import {
   PunchCardAtlas, ConvergenceSankey,
-  WordMirrors, ResentmentMirror, ProjectionGate,
+  WordMirrors, ResentmentMirror, MirrorPairToggle, ProjectionGate,
+  TourButterflyChart, GenerationalShiftChart, TourObserverBreakdown, CuratedInsightsToggle,
+  TourRestorationPathway, TestimonyRotator, ParentInsightCharts
 } from "./TourVisuals";
 import { DemographicGrids } from "./DemographicGrids";
 import PleasureGapWidget from "../../explore/components/PleasureGapWidget";
 import GeographicHeatmap from "../../explore/components/GeographicHeatmap";
+import DemographicSankey from "../../explore/components/DemographicSankey";
 import WireframeGlobe from "../../explore/components/WireframeGlobe";
+import GenerationalTrendChart from "../../explore/components/GenerationalTrendChart";
 import { PLEASURE_GAP_STATS, EFFECT_BENCHMARKS, dMagnitude, sigLabel } from "./tourStats";
+
 
 // ── Demographic Maps Block ──────────────────────────────────────────────────
 function DemographicMapsBlock() {
@@ -85,6 +96,7 @@ function DemographicMapsBlock() {
                 targetCountry={hoveredCountry}
                 centerOnHover={geoLevel === 'country'}
                 autoRotate={geoLevel === 'country'}
+                onHover={(label) => setHoveredCountry(label)}
               />
             </div>
 
@@ -148,6 +160,7 @@ function DemographicMapsBlock() {
                     style={{
                       display: "flex", alignItems: "baseline", gap: "0.5rem", padding: "0.5rem 0",
                       borderBottom: i < 19 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                      background: hoveredCountry === d.label ? "rgba(255,255,255,0.08)" : "transparent",
                       cursor: "default"
                     }}
                   >
@@ -192,18 +205,115 @@ function VoiceCard({ colorVar, label, children }) {
   );
 }
 
+function RotatingTestimonials({ motives, intervalMs = 12000 }) {
+  const [index, setIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    if (!motives || motives.length === 0) return;
+    const timer = setInterval(() => {
+      setFading(true);
+      setTimeout(() => {
+        setIndex(prev => (prev + 4) % motives.length);
+        setFading(false);
+      }, 400);
+    }, intervalMs);
+    return () => clearInterval(timer);
+  }, [motives, intervalMs]);
+
+  if (!motives || motives.length === 0) return null;
+
+  const currentBatch = [];
+  for (let i = 0; i < 4; i++) {
+    currentBatch.push(motives[(index + i) % motives.length]);
+  }
+
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem",
+      opacity: fading ? 0 : 1, transition: "opacity 0.4s ease-in-out"
+    }}>
+      {currentBatch.map((v, i) => (
+        <VoiceCard key={`${index}-${i}`} colorVar={PATHS.restoring.color} label={`— ${v.generation || "Respondent"} · Restoring`}>
+          "{v.text}"
+        </VoiceCard>
+      ))}
+    </div>
+  );
+}
+
 function Station({ num, children }) {
   const s = st(num);
   return (
     <div id={`st${s.num}`} style={{ scrollMarginTop: 90 }}>
-      <Lens>{s.lens} <DocentMarker topic={s.title} onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: s.docentContext } }))} /></Lens>
+      <Lens>{s.lens} <DocentMarker topic={s.title} onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: s.docentContext, tourSuas: s.tourSuas } }))} /></Lens>
       {children}
-      <StationHero station={s} />
+    </div>
+  );
+}
+
+function NarrativeMirrorToggle() {
+  const [active, setActive] = useState("physical");
+  const data = NARRATIVE_MIRROR_DATA[active];
+  const activeTextColor = useLegibleColor("#ffffff", "var(--c-gold)", 4.5);
+  
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1.5rem", justifyContent: "center" }}>
+        {Object.keys(NARRATIVE_MIRROR_DATA).map((key) => {
+          const p = NARRATIVE_MIRROR_DATA[key];
+          const isActive = active === key;
+          return (
+            <button key={key} onClick={() => setActive(key)} style={{
+              fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.62rem",
+              letterSpacing: "0.06em", textTransform: "uppercase",
+              cursor: "pointer", border: "none", borderRadius: 100,
+              padding: "0.4rem 0.85rem",
+              color: isActive ? activeTextColor : C.muted,
+              background: isActive ? "var(--c-gold)" : "rgba(255,255,255,0.06)",
+              transition: "all .2s ease",
+              transform: isActive ? "scale(1.05)" : "none",
+              boxShadow: isActive ? "0 2px 8px rgba(212,160,48,0.3)" : "none",
+            }}>
+              {p.concept}
+            </button>
+          );
+        })}
+      </div>
+      
+      <div key={active} style={{ animation: "fadeSlideIn 0.35s ease" }}>
+        <WordMirrors wordsCirc={data.circumcised.words} wordsIntact={data.intact.words} />
+        
+        {active === "emotional" && (
+          <TourButterflyChart
+            title="Age of Awareness — When They First Understood"
+            rows={AWARENESS_AGE_BUTTERFLY}
+            intactN={144}
+            circN={219}
+          />
+        )}
+
+        <div style={{ borderTop: `1px dashed ${C.ghost}`, marginTop: "1.1rem", paddingTop: "1.1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "0.7rem" }}>
+            {data.circumcised.quotes.slice(0, 3).map((q, i) => (
+              <VoiceCard key={`c-${i}`} colorVar={PATHS.circumcised.color} label={`— Circumcised Voice · ${q.age_bracket || q.generation || "Anonymous"}`}>
+                “{q.text}”
+              </VoiceCard>
+            ))}
+            {data.intact.quotes.slice(0, 3).map((q, i) => (
+              <VoiceCard key={`i-${i}`} colorVar={PATHS.intact.color} label={`— Intact Voice · ${q.age_bracket || q.generation || "Anonymous"}`}>
+                “{q.text}”
+              </VoiceCard>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function GuidedTour() {
+  const navigate = useNavigate();
   const { theme, mode, colorblind } = useTheme();
   const [predicted, setPredicted] = useState(null);
 
@@ -215,7 +325,10 @@ export default function GuidedTour() {
 
   return (
     <>
-      <div style={{ paddingBottom: "12rem" }}>
+      {/* Scroll-choreographed background: one transparent canvas, formations
+          morph between stations. Theme-token native — no palette flips. */}
+      <LoomChoreography themeKey={`${theme}-${mode}-${colorblind}`} />
+      <div style={{ paddingBottom: "12rem", position: "relative", zIndex: 1 }}>
         {/* ── Prologue ── */}
         <div id="ch-prologue" style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", paddingTop: "8rem" }}>
           <SectionKicker kicker="Prologue" title="The Researcher's Letter" colorVar={C.goldBright} />
@@ -257,11 +370,41 @@ export default function GuidedTour() {
                 conclude. It asks the people who live in these bodies what their experience actually is,
                 and it reports what they said.
               </p>
+              <div style={{
+                float: "right", width: 220, marginLeft: "1.4rem", marginBottom: "0.8rem",
+                marginTop: "0.2rem",
+              }}>
+                <div style={{ position: "relative", width: 220, height: 175 }}>
+                  <div style={{ position: "absolute", left: 55, top: 0, width: 130, height: 165, borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.3)", transform: "rotate(6deg)", zIndex: 1, overflow: "hidden" }}>
+                    <img src="/flyers/recruitment-3.jpg" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "23% 45%", transform: "scale(2.5)", transformOrigin: "23% 45%" }} alt="Street pole covered in grassroots survey posters" />
+                  </div>
+                  <img src="/flyers/recruitment-1.png" style={{ position: "absolute", left: 0, top: 10, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(-5deg)", zIndex: 2 }} alt="Survey recruitment flyer" />
+                  <img src="/flyers/recruitment-2.png" style={{ position: "absolute", right: 5, top: 35, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(3deg)", zIndex: 3 }} alt="Survey recruitment flyer" />
+                </div>
+                <div style={{ fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.5rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "0.4rem", textAlign: "center" }}>
+                  Survey recruitment flyers, 2024
+                </div>
+              </div>
+              <div style={{
+                fontFamily: FONT.display, fontWeight: 700, fontSize: "0.85rem",
+                color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.08em",
+                margin: "1.2rem 0 0.6rem", lineHeight: 1.2,
+              }}>
+                Grassroots Outreach
+              </div>
+              <p style={{ margin: "0 0 1rem" }}>
+                There was no advertising budget, no institutional backing, no clinical recruitment
+                pipeline. The survey was spread entirely through grassroots efforts — flyers posted
+                to forums, shared across social media, and passed hand to hand. Just a question,
+                posted into the clearing of the internet, and an invitation to answer anonymously.
+                Five hundred people showed up — not because they were asked to, but because they
+                had been waiting to be asked.
+              </p>
               <p style={{ margin: "0 0 1rem" }}>
                 So I asked. <strong style={{ color: C.textBright }}>96% of respondents across every
                 pathway</strong> — intact, circumcised, restoring, and observers alike — agree the
                 child should have the right to decide; no other question in this survey produces a
-                consensus that strong. <strong style={{ color: C.textBright }}>86% of born-circumcised
+                consensus that strong. <strong style={{ color: C.textBright }}>86% of infant-circumcised
                 respondents</strong> (circumcised + restoring) report some resentment, loss, anger,
                 or grief; only 14% say they have never felt negative about it. Their testimonies
                 speak directly to the old assumption that "they don't remember, so they don't care."
@@ -303,27 +446,28 @@ export default function GuidedTour() {
           </ChapterDivider>
 
           <Station num="05">
-            <TourCard title="Grassroots Recruitment" refText="ONLINE OUTREACH" stamp="Context">
-              <div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: 280, fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6 }}>
-                  The survey was spread entirely online through grassroots efforts — organic sharing, forum posts, and word-of-mouth. This self-selected approach found respondents eager to finally talk about an experience that goes largely unasked.
-                </div>
-                <div style={{ position: "relative", width: 340, height: 240, flexShrink: 0, padding: "0.5rem" }}>
-                  <img src="/flyers/recruitment-3.jpg" style={{ position: "absolute", left: 90, top: 10, width: 180, height: 220, objectFit: "cover", objectPosition: "center 30%", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.3)", transform: "rotate(6deg)", zIndex: 1, filter: "brightness(0.85)" }} alt="Street pole covered in grassroots survey posters" />
-                  <img src="/flyers/recruitment-1.png" style={{ position: "absolute", left: 0, top: 25, width: 140, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.4)", transform: "rotate(-5deg)", zIndex: 2 }} alt="Survey recruitment flyer: If someone asked you honestly how you felt about your circumcision status - what would you say?" />
-                  <img src="/flyers/recruitment-2.png" style={{ position: "absolute", right: 20, top: 55, width: 140, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 8px 16px rgba(0,0,0,0.4)", transform: "rotate(3deg)", zIndex: 3 }} alt="Survey recruitment flyer: What's really going on down there?" />
-                </div>
-              </div>
-            </TourCard>
+
 
             <TourCard title="Global Reach" refText={`FORM CS-001 · PHASE 1`} stamp="Map">
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.5rem", padding: "0 1rem" }}>
+                <p style={{ margin: "0 0 0.8rem" }}>I initially set out to create a US-focused inquiry, but the clearing we created for anonymous sharing quickly tapped into a profound, universal need to speak. Word spread organically, and soon people from all over the world were showing up, eager to respond.</p>
+                <p style={{ margin: 0 }}>Seeing this international outpouring allowed me to step back and recognize this as a truly global phenomenon, using that diverse momentum to fine-tune the survey’s question sets and pathways to accommodate narratives from far outside my original scope.</p>
+              </div>
               <DemographicMapsBlock />
+              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginTop: "1rem", padding: "0 1rem" }}>
+                <p style={{ margin: "0 0 0.6rem" }}>The map tells a story the survey wasn’t originally designed to capture. Circumcision is not solely an American phenomenon — it intersects religious covenants, colonial medical legacies, and cultural norms on every inhabited continent.</p>
+                <p style={{ margin: 0 }}>Respondents from non-cutting cultures contributed something equally valuable: a baseline of experience that the United States has largely never had access to.</p>
+              </div>
               <ArrowNote lines={[
                 <span key="e">Regional counts provisional — stamped by the freeze script · country detail: <a href={EXPLORE_BASE + "demographics"} style={{ color: C.blue }}>Exhibit 05</a></span>,
               ]} />
             </TourCard>
 
-            <TourCard title="Respondent Census & Origins" refText={`FORM CS-001 · PHASE 1 · N = ${N_TOTAL}`} stamp="Phase 1">
+            <TourCard title="Respondent Census & Origins" refText={`FORM CS-001 · PHASE 1 · N = ${N_TOTAL}`} stamp="Phase 1" exhibitStation={st("05")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                <p style={{ margin: "0 0 0.8rem" }}>Who are these five hundred people? They span six decades of birth years, from the Silent Generation through Gen Z. They cross political lines, income brackets, education levels, and occupations. They are not a single demographic bloc — and that is precisely the point.</p>
+                <p style={{ margin: 0 }}>These are people who <em style={{ color: C.textBright }}>wanted</em> to talk about this. That self-selection is the study’s defining feature and its most important limitation.</p>
+              </div>
               <DemographicGrids />
               <ArrowNote lines={[
                 "Trans & intersex pathways receive dedicated treatment under the small-sample rule",
@@ -332,7 +476,11 @@ export default function GuidedTour() {
           </Station>
 
           <Station num="01">
-            <TourCard title="The Architecture" refText="EXHIBIT 01 · ROUTING LOGIC" stamp="Map">
+            <TourCard title="The Architecture" refText="EXHIBIT 01 · ROUTING LOGIC" stamp="Map" exhibitStation={st("01")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                <p style={{ margin: "0 0 0.8rem" }}>The survey was engineered with a single, critical constraint: every respondent answered the same core experience questions — <em style={{ color: C.textBright }}>how things feel, how things work, how satisfied they are</em> — before the survey ever asked about their circumcision status.</p>
+                <p style={{ margin: 0 }}>Only after those ratings were sealed did the instrument fork into separate pathways. This means the pleasure data you are about to see was collected blind.</p>
+              </div>
               <ExhibitSurveyFlowchart />
               <ArrowNote lines={[
                 "A respondent is completely blind to the other pathways until the survey is submitted",
@@ -345,48 +493,25 @@ export default function GuidedTour() {
         {/* ── Chapter 2 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
           <ChapterDivider id="ch-what-feel" act="Act II" title="What Does It Actually Feel Like?">
-            Every respondent rated their own sexual experience on the same six questions. Watch what happens when you sort the answers.
+            Every respondent rated their own sexual experience on the same six questions. This is the distribution of their answers.
           </ChapterDivider>
           
-          <TourCard title="Audience Participation" refText="MAKE YOUR PROJECTION" stamp="Sealed">
-            <div style={{
-              textAlign: "center", fontFamily: FONT.body, fontWeight: 300,
-              fontSize: "0.9rem", color: C.muted, maxWidth: 560,
-              margin: "0 auto 0.4rem", lineHeight: 1.65,
-            }}>
-              Pooled together — before anyone was sorted — every one of the six sensation ratings
-              sits near the middle of the scale, between {Math.min(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} and {Math.max(...PLEASURE_METRICS.map(pooledMean)).toFixed(1)} out
-              of 5. One unremarkable pool of answers.
-            </div>
-            <ProjectionGate predicted={!!predicted} onPredict={setPredicted} />
-          </TourCard>
         </div>
 
-        {/* ── 03 · The Demonstration (deep-dark band, gated) ── */}
-        <section style={{
+        {/* ── 03 · The Demonstration (deep-dark band) ──
+            The band's embedded HarmonicCanvas yielded to the UNDERLOOM:
+            the background is translucent so the fixed choreography canvas
+            shows through, and #demonstration-band is a formation anchor. */}
+        <section id="demonstration-band" style={{
           position: "relative", overflow: "hidden", margin: "4rem 0",
-          background: C.bgDeep, borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
+          background: "color-mix(in srgb, var(--c-bgDeep) 72%, transparent)",
+          borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
         }}>
-          <div style={{ position: "absolute", inset: 0, opacity: 0.5 }}>
-            <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} />
-          </div>
-          {!predicted && (
-            <div style={{
-              position: "absolute", inset: 0, zIndex: 3, background: "color-mix(in srgb, var(--c-bgDeep) 92%, transparent)",
-              backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center",
-              textAlign: "center", padding: "2rem",
-            }}>
-              <div style={{ fontFamily: FONT.display, fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.22em", textTransform: "uppercase", color: C.goldBright }}>
-                The demonstration awaits your projection above
-              </div>
-            </div>
-          )}
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "0 auto", padding: "4.5rem 1.6rem" }}>
-            <SectionKicker kicker="Exhibit 03 · Lights down, please" title="The Separation" colorVar={st("03").colorVar} />
-            <Lens center>{predicted ? VERDICT[predicted] : "Sorted by a single question, the pool of answers comes apart."} <DocentMarker topic="The separation of pleasure data" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: st("03").docentContext } }))} /></Lens>
-            {predicted && (
-              <>
-                <TourCard title="Sexual Experience — The Separation" refText="EXHIBIT 03 · THE PLEASURE GAP, LIVE" stamp="Separated">
+            <SectionKicker kicker="Exhibit 03" title="The Separation" colorVar={st("03").colorVar} />
+            <Lens center>Sorted by a single question, the pool of answers comes apart. <DocentMarker topic="The separation of pleasure data" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: st("03").docentContext, tourSuas: st("03").tourSuas } }))} /></Lens>
+            
+            <TourCard title="Sexual Experience — The Separation" refText="EXHIBIT 03 · THE PLEASURE GAP, LIVE" stamp="Separated">
                   <PleasureGapWidget stats={PLEASURE_GAP_STATS} />
                   <ArrowNote lines={[
                     <span key="b">Explore the metrics: <a href={EXPLORE_BASE + "pleasure-gap"} style={{ color: C.blue }}>Exhibit 03</a></span>,
@@ -395,12 +520,20 @@ export default function GuidedTour() {
                 
                 <TourCard title="How Large Are These Differences?" refText="STATISTICAL EFFECT SIZES · COHEN'S d" stamp="Analysis">
                   <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginBottom: "1rem" }}>
-                    In the chart above, you can see the intact bars extend further to the right. 
-                    But how significant is that gap? We measured the "effect size" — a standard way to gauge how different two groups really are.
+                    The data reveals a clear and consistent separation between the two cohorts across all physiological metrics. In the chart above, you can see the intact bars extend further to the right. But how significant is that gap? We measured the "effect size" — a standard way to gauge how different two groups really are.
                   </div>
-                  {PLEASURE_METRICS.map(k => (
-                    <EffectSizeRow key={k} statKey={k} data={PLEASURE_GAP_STATS[k]} colorVar={st("03").colorVar} />
-                  ))}
+                  {PLEASURE_GAP_STATS.map((stat, idx) => {
+                    const spectrum = [C.red, C.orange, C.gold, C.green, C.teal, C.blue];
+                    return (
+                      <EffectSizeRow 
+                        key={stat.label} 
+                        label={stat.label} 
+                        d={stat.intact_vs_circ.cohens_d} 
+                        stars={stat.intact_vs_circ.stars} 
+                        colorVar={spectrum[idx % spectrum.length]} 
+                      />
+                    );
+                  })}
                   
                   <ResearcherFootnote>
                     Effect sizes (Cohen's d) measure the standardized difference between two means. 
@@ -424,73 +557,76 @@ export default function GuidedTour() {
                   </div>
                 </TourCard>
 
-                <TourCard title="For Perspective: Known Effect Sizes" refText="COHEN'S d BENCHMARKS · PUBLISHED LITERATURE" stamp="Context">
-                  <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginBottom: "0.4rem" }}>
-                    Is d = 1.78 big? Here is how it compares to well-known effect sizes from other domains. The dashed lines 
-                    mark Cohen's conventional thresholds.
-                  </div>
-                  <EffectBenchmarkChart benchmarks={EFFECT_BENCHMARKS} />
-                  <ArrowNote lines={[
-                    "The mobile-skin gap exceeds the height difference between men and women (d = 1.6) — one of the largest known biological effect sizes",
-                    "Self-selected sample; these statistics describe the magnitude of differences within this dataset, not population prevalence"
-                  ]} />
-                </TourCard>
 
-                <TourCard title="Lubrication Requirement" refText={"FORM CS-058 · ANSWERING “NEVER” · N = 486"} stamp="Fig. 3">
+                <TourCard title="Lubrication Requirement" refText={"FORM CS-058 · ANSWERING “NEVER” · N = 486"} stamp="Fig. 3" exhibitStation={st("03")}>
                   <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.6, marginBottom: "1rem" }}>
-                    More than half of intact respondents say they've never needed artificial lubrication. For circumcised respondents, that number is 5.5%.
+                    For many circumcised respondents, artificial lubrication is simply a fact of life—a mandatory requirement for intimacy. But the data reveals this is not a universal male experience; it is a consequence of altered anatomy. The intact body has a built-in mechanical solution.
                   </div>
-                  <BarRows rows={[
-                    { label: "Intact",      value: 55.5, colorVar: PATHS.intact.color },
-                    { label: "Restoring",   value: 16.0, colorVar: PATHS.restoring.color },
-                    { label: "Circumcised", value: 5.5,  colorVar: PATHS.circumcised.color },
-                  ]} />
-                  <StatCallout big="10:1" colorVar={PATHS.circumcised.color}>
-                    The ratio between intact and circumcised respondents who never need artificial
-                    lubrication — in the respondents' own reporting.
-                  </StatCallout>
+                  <div style={{
+                    background: "rgba(255,255,255,0.03)", padding: "0.8rem", borderRadius: "6px",
+                    border: `1px solid ${C.dim}`, marginBottom: "1.2rem",
+                    fontFamily: FONT.body, fontSize: "0.75rem", color: C.muted, fontStyle: "italic", lineHeight: 1.5
+                  }}>
+                    <strong style={{ color: C.textBright, fontStyle: "normal" }}>Survey Question:</strong> "Do you generally need to use artificial lubrication (e.g., store-bought lube, saliva, lotion) for comfortable and pleasurable masturbation or partnered sex?"
+                  </div>
+
+                  <TourButterflyChart
+                    title="Lubrication Requirement Frequency"
+                    rows={[
+                      { label: "Never", intactPct: 56.3, circPct: 6.3 },
+                      { label: "Rarely", intactPct: 17.6, circPct: 14.5 },
+                      { label: "Sometimes", intactPct: 19.7, circPct: 20.8 },
+                      { label: "Often", intactPct: 4.9, circPct: 18.4 },
+                      { label: "Always", intactPct: 1.4, circPct: 40.1 },
+                    ]}
+                    intactN={142}
+                    circN={207}
+                  />
                   <div style={{
                     marginTop: "1.1rem", padding: "0.65rem 0.9rem",
                     background: "color-mix(in srgb, var(--c-gold) 6%, transparent)",
                     borderLeft: `3px solid ${C.gold}`, borderRadius: "0 4px 4px 0",
                     fontFamily: FONT.body, fontSize: "0.68rem", fontStyle: "italic", color: C.muted, lineHeight: 1.55,
                   }}>
-                    <strong style={{ color: C.goldBright, fontStyle: "normal", fontWeight: 600 }}>{"★"} Why this gap exists: </strong>
-                    The intact foreskin's double-layered gliding mechanism provides its own
-                    lubrication-free stimulation — the skin moves, the hand doesn't need to. Cultural
-                    euphemisms like "pass the lotion" are so pervasive that many circumcised men assume
-                    external lubrication is a universal requirement. It isn't. More than half of intact
-                    respondents report they have <em>never</em> needed it. This is the natural mechanical
-                    function that circumcision removes — and the function that Masters & Johnson's
-                    sensitivity studies never measured.
+                    <strong style={{ color: C.goldBright, fontStyle: "normal", fontWeight: 600 }}>{"★"} The Mechanical Reality: </strong>
+                    The intact foreskin is a double-layered gliding mechanism that provides its own friction-free
+                    stimulation—the skin moves, so the hand doesn't need to. By removing this structure and tethering 
+                    the remaining skin tightly to the shaft, circumcision introduces a lifetime requirement for an 
+                    external commercial product just to simulate the body's original baseline function. Cultural 
+                    euphemisms like "pass the lotion" are so pervasive that many circumcised men assume external 
+                    lubrication is a universal requirement. The data shows it isn't.
                   </div>
                 </TourCard>
-              </>
-            )}
+          </div>
+
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", marginBottom: "4rem" }}>
+            <PullStat
+              kicker="Across every measure of sexual experience"
+              stat="6 for 6"
+              line={"On all six pleasure metrics — sensation, mobility, orgasm quality, variety, duration, and ease — the intact cohort scores higher. Not one exception."}
+              colorVar={C.red}
+            />
+          </div>
+
+          {/* ── Chapter 3 ── */}
+          <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", paddingBottom: "5rem" }}>
+            <ChapterDivider id="ch-how-feel" act="Act II" title="What Is Their Experience?">
+              The physical data speaks to mechanism. But the people who live in these bodies are the experts on what that means. We asked every respondent the same question: what has your experience actually been?
+            </ChapterDivider>
           </div>
         </section>
 
-        <Station num="03">
-          {/* breathing moment */}
-          {predicted && (
-            <PullStat
-              kicker="The widest gap the survey measured"
-              stat="d = 1.78"
-              line={"Pleasure from mobile skin. The bar exceeds the height difference between men and women."}
-              colorVar={C.red}
-            />
-          )}
-        </Station>
-
-        {/* ── Chapter 3 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-how-feel" act="Act II" title="How Do They Feel About It?">
-            The physical difference is one thing. The psychological experience is another. We asked respondents how they felt about what happened to them.
-          </ChapterDivider>
 
           <Station num="02">
-            <TourCard title="Resentment vs Regret" refText="EXHIBIT 02 · THE MIRROR PAIRS" stamp="Contrasts">
-              <ResentmentMirror />
+            <TourCard title="The Mirror Pairs" refText="EXHIBIT 02 · 5 OF 18 PAIRS" stamp="Contrasts" exhibitStation={st("02")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                Five of the eighteen mirror pairs from the full exhibit. Use the toggles to explore each one.
+              </div>
+              <MirrorPairToggle />
+              <StatCallout big="86% vs 38%" colorVar={C.gold}>
+                Infant-circumcised respondents reporting some negative feeling about their status — versus intact respondents who have ever felt any regret.
+              </StatCallout>
               <ArrowNote lines={[
                 <span key="c">Compare all 18 mirror pairs: <a href={EXPLORE_BASE + "pairs"} style={{ color: C.blue }}>Exhibit 02</a></span>,
               ]} />
@@ -498,19 +634,14 @@ export default function GuidedTour() {
           </Station>
 
           <Station num="06">
-            <TourCard title="Narrative Mirrors — The Language of Each Side" refText="EXHIBIT 06 · OPEN-ENDED · CURATED SAMPLE" stamp="Voices" style={{ overflow: "hidden" }}>
-              <WordMirrors />
+            <TourCard title="Narrative Mirrors — The Language of Each Side" refText="EXHIBIT 06 · OPEN-ENDED · CURATED SAMPLE" stamp="Voices" style={{ overflow: "hidden" }} exhibitStation={st("06")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                When the survey opened a blank text box and asked people to describe their experience in their own words, two entirely different vocabularies came back. One side speaks in terms of <em style={{ color: C.textBright }}>loss</em>. The other didn't know there was anything to say.
+              </div>
+              <NarrativeMirrorToggle />
               <div style={{ borderTop: `1px dashed ${C.ghost}`, marginTop: "1.1rem", paddingTop: "1.1rem" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "0.7rem" }}>
-                  <VoiceCard colorVar={PATHS.circumcised.color} label="— Circumcised Voice · On drawbacks">
-                    “Pain. Loss of pleasure. Loss of confidence. Loss of trust. Self hatred. Depression.”
-                  </VoiceCard>
-                  <VoiceCard colorVar={PATHS.intact.color} label="— Intact Voice · On the everyday">
-                    “Honestly? I never think about it. It works, everything moves, nothing hurts. I didn't realize that was worth saying out loud until this survey.”
-                  </VoiceCard>
-                  <VoiceCard colorVar={PATHS.circumcised.color} label="— Circumcised Voice · On satisfaction">
-                    “I'm fine with it. My parents did what everyone did. I don't feel damaged and I don't feel angry.”
-                  </VoiceCard>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.72rem", color: C.dim, marginTop: "0.7rem", lineHeight: 1.5 }}>
+                  Not every circumcised respondent is distressed. The “fine with it” voice is real, and documenting that range is part of honest reporting. What the data shows is a distribution — and where the weight of that distribution falls.
                 </div>
                 <div style={{ fontFamily: FONT.mono, fontSize: "0.5rem", color: C.dim, marginTop: "0.55rem" }}>
                   ★ Anonymous quotes selected from open-ended responses. All identifying details removed.
@@ -523,15 +654,22 @@ export default function GuidedTour() {
         {/* ── Chapter 4 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
           <ChapterDivider id="ch-world-told" act="Act II" title="What Did The World Tell Them?">
-            Nobody grows up in a vacuum. We asked everyone the same question: 'What was the norm where you grew up?' The answers describe two different Americas.
+            Nobody grows up in a vacuum. But the culture surrounding circumcision has undergone a tectonic shift over the last fifty years. With the advent of the internet and social media, a practice that was once unquestioned is now facing unprecedented scrutiny from the very generations who experienced it.
           </ChapterDivider>
 
           <Station num="07">
-            <TourCard title="“What was the norm in your community growing up?”" refText="EXHIBIT 07 · MIRROR · CIRCUMCISED VS INTACT" stamp="Two Worlds">
+            <TourCard title="The Generational Faultline" refText="EXHIBIT 07 · CULTURE & GENERATIONS" stamp="Shifting Norms" exhibitStation={st("07")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                <p style={{ margin: "0 0 0.8rem" }}>The data reveals a dramatic collapse in satisfaction across generations. For the Baby Boomers, circumcision was a near-universal norm—over half report being proud and satisfied with their status. But for Generation Z, who grew up with unfettered access to information and global perspectives via the internet, that paradigm has inverted. Over half of Gen Z respondents report dissatisfaction, with the largest single group being "very dissatisfied."</p>
+                <p style={{ margin: 0 }}>This generational divide is mirrored in how respondents remember the communities they grew up in. For circumcised respondents, the procedure was overwhelmingly described as <em style={{ color: C.textBright }}>automatic</em> or <em style={{ color: C.textBright }}>unquestioned</em>. For intact respondents, the landscape was far more varied.</p>
+              </div>
+
+
+
               <div style={{ display: "flex", flexWrap: "wrap", gap: "1.6rem" }}>
                 <div style={{ flex: 1, minWidth: 280 }}>
                   <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem", color: PATHS.circumcised.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-                    The circumcised respondents' world
+                    “What was the norm in your community?” (Circumcised)
                   </div>
                   <BarRows rows={[
                     { label: "Automatic / unquestioned",  value: 47.6, colorVar: PATHS.circumcised.color },
@@ -542,7 +680,7 @@ export default function GuidedTour() {
                 </div>
                 <div style={{ flex: 1, minWidth: 280 }}>
                   <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem", color: PATHS.intact.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
-                    The intact respondents' world
+                    “What was the norm in your community?” (Intact)
                   </div>
                   <BarRows rows={[
                     { label: "Automatic / unquestioned",  value: 23.5, colorVar: PATHS.intact.color },
@@ -552,31 +690,194 @@ export default function GuidedTour() {
                   ]} max={50} />
                 </div>
               </div>
+              <div style={{
+                marginTop: "3rem",
+                paddingTop: "2rem",
+                borderTop: `1px dashed ${C.ghost}`,
+              }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: "0.45rem",
+                  fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem",
+                  textTransform: "uppercase", letterSpacing: "0.14em", color: C.text,
+                  marginBottom: "1rem"
+                }}>
+                  <span style={{ color: C.red }}>★</span> Belief Pathways
+                </div>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "2rem" }}>
+                  <p style={{ margin: 0 }}>This diagram illustrates the flow of respondents based on their demographic background through their chosen circumcision pathway, and finally to their current beliefs or perceptions. By following the colored bands, you can see how different origins and experiences contribute to shaping these cultural attitudes.</p>
+                </div>
+                <div style={{ margin: "0 -1rem" }}>
+                  <DemographicSankey 
+                    dimensions={[
+                      { id: "generation", label: "Generation" },
+                      { id: "pathway", label: "Pathway" },
+                      { id: "exp_pride_satisfaction_rating", label: "Satisfaction", type: "question" }
+                    ]} 
+                    targetQuestion="exp_pride_satisfaction_rating" 
+                  />
+                </div>
+              </div>
+
               <ArrowNote lines={[
-                <span key="f">Generational trend lines, Silent Generation through Gen Z: <a href={EXPLORE_BASE + "culture"} style={{ color: C.blue }}>Exhibit 07</a></span>,
+                <span key="f">Explore the full generational streamgraphs, from the Silent Generation through Gen Z: <a href={EXPLORE_BASE + "culture"} style={{ color: C.blue }}>Exhibit 07</a></span>,
               ]} />
             </TourCard>
           </Station>
 
           <Station num="09">
-            <TourCard title="Three Traditions, One Question Set" refText="EXHIBIT 09 · OPTIONAL FAITH SECTIONS" stamp="In Full">
-              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6 }}>
-                The exhibit presents each tradition's responses in parallel, unabridged and uncompared
-                until you choose to compare them.
+            <TourCard title="The Missing Congregation" refText="EXHIBIT 09 · RELIGION & CIRCUMCISION" stamp="Surprise" exhibitStation={st("09")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                <p style={{ margin: "0 0 0.8rem" }}>Religion is the oldest driver of ritual circumcision — but in this dataset, it barely registers. The traditions with millennia of investment in the practice are represented by single-digit samples. The dominant religious cohort describes circumcision not as theology but as culture. And when circumcised respondents rank the forces that shaped their parents' choice, <em style={{ color: C.textBright }}>religious mandate falls eighth out of eleven</em>.</p>
+                <p style={{ margin: 0 }}>The few faith-identified respondents who did engage produced some of the survey's most searching, conflicted answers. Their voices deserve to be heard on their own terms.</p>
               </div>
-              <ArrowNote lines={[<span key="h">Enter the mirrors: <a href={EXPLORE_BASE + "religious-mirrors"} style={{ color: C.blue }}>Exhibit 09</a></span>]} />
+
+              {/* ── The Missing Congregation: tradition breakdown ── */}
+              <div style={{
+                background: "linear-gradient(135deg, rgba(255,180,60,0.04) 0%, rgba(255,180,60,0.01) 100%)",
+                border: `1px solid rgba(212,160,48,0.18)`,
+                borderRadius: 12, padding: "1.2rem 1.4rem", marginBottom: "1.4rem",
+                position: "relative",
+              }}>
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #d4a030, #68b878, #5b93c7)", borderRadius: "12px 12px 0 0" }} />
+                <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem", color: C.gold, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.7rem" }}>
+                  Who Identified a Religious Tradition?
+                </div>
+                {TRADITION_BREAKDOWN.map((row) => {
+                  const maxN = Math.max(...TRADITION_BREAKDOWN.map(r => r.n));
+                  return (
+                    <div key={row.label} style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
+                      <span style={{ width: 120, fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.68rem", color: row.colorVar || C.muted, textAlign: "right", flexShrink: 0 }}>
+                        {row.label}
+                      </span>
+                      <div style={{ flex: 1, height: 16, background: "rgba(255,255,255,0.06)", borderRadius: 3, overflow: "hidden" }}>
+                        <div style={{
+                          width: `${Math.max((row.n / maxN) * 100, 1)}%`, height: "100%", borderRadius: 3,
+                          background: row.colorVar ? row.colorVar : "rgba(255,255,255,0.25)",
+                          display: "flex", alignItems: "center", paddingLeft: "0.4rem",
+                        }}>
+                          <span style={{ fontFamily: FONT.mono, fontSize: "0.52rem", fontWeight: 700, color: C.textBright, textShadow: "0 1px 2px rgba(0,0,0,0.8)", whiteSpace: "nowrap" }}>
+                            n={row.n}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.dim, marginTop: "0.5rem", lineHeight: 1.45, fontStyle: "italic" }}>
+                  Of {N_TOTAL} respondents, only 21 identified with a tradition historically tied to circumcision. The survey was promoted through bodily autonomy communities — a self-selection pattern worth noting.
+                </div>
+              </div>
+
+              {/* ── Influence Ranking: where religion falls ── */}
+              <div style={{ marginBottom: "1.4rem" }}>
+                <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem", color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.6rem" }}>
+                  "What Influenced Your Parents?" — Where Religion Ranks
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                  {INFLUENCE_RANKING.map((row) => {
+                    const isReligion = row.rank === 8;
+                    const maxN = INFLUENCE_RANKING[0].n;
+                    return (
+                      <div key={row.rank} style={{
+                        display: "flex", alignItems: "center", gap: "0.4rem",
+                        padding: isReligion ? "0.25rem 0.4rem" : "0.1rem 0",
+                        background: isReligion ? "rgba(212,160,48,0.12)" : "transparent",
+                        borderRadius: isReligion ? 6 : 0,
+                        border: isReligion ? `1px solid rgba(212,160,48,0.25)` : "none",
+                      }}>
+                        <span style={{
+                          fontFamily: FONT.mono, fontSize: "0.52rem", fontWeight: 700,
+                          color: isReligion ? C.gold : C.dim, width: 14, textAlign: "right", flexShrink: 0,
+                        }}>
+                          {row.rank}.
+                        </span>
+                        <div style={{ flex: 1, height: 12, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{
+                            width: `${(row.n / maxN) * 100}%`, height: "100%", borderRadius: 2,
+                            background: isReligion ? C.goldBright : "rgba(255,255,255,0.35)",
+                          }} />
+                        </div>
+                        <span style={{
+                          fontFamily: FONT.condensed, fontSize: "0.58rem", fontWeight: isReligion ? 700 : 500,
+                          color: isReligion ? C.gold : C.muted, width: 90, flexShrink: 0,
+                        }}>
+                          {row.short}
+                        </span>
+                        <span style={{
+                          fontFamily: FONT.mono, fontSize: "0.52rem", fontWeight: 700,
+                          color: isReligion ? C.gold : C.dim, width: 25, textAlign: "right", flexShrink: 0,
+                        }}>
+                          {row.n}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.dim, marginTop: "0.5rem", lineHeight: 1.45, fontStyle: "italic" }}>
+                  Silence, institutional inertia, and health/hygiene beliefs outrank religion by a factor of 3–4×. In this dataset, circumcision perpetuates itself through medicine and culture, not faith.
+                </div>
+              </div>
+
+              {/* ── Christian view: not theology ── */}
+              <div style={{ marginBottom: "1.4rem" }}>
+                <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.68rem", color: "#5b93c7", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                  ✝️ The Largest Religious Cohort: Christians (n=229)
+                </div>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.82rem", color: C.muted, lineHeight: 1.5, marginBottom: "0.6rem" }}>
+                  "Within your Christian tradition, was infant circumcision viewed as…"
+                </div>
+                <BarRows rows={CHRISTIAN_CIRC_VIEW.map(r => ({
+                  label: r.label, value: Math.round(r.n / 222 * 100), colorVar: "#5b93c7",
+                }))} />
+                <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.dim, marginTop: "0.5rem", lineHeight: 1.45, fontStyle: "italic" }}>
+                  Over half say "a non-issue, left to parents." Christianity has no theological mandate for circumcision—an obligation Paul explicitly abolished for Gentile converts (Galatians 5:2)—yet American Christians circumcise at rates nearly identical to the secular population. The mechanism is culture, not covenant.
+                </div>
+              </div>
+
+              {/* ── Voice cards: the real voices ── */}
+              <div style={{ borderTop: `1px dashed ${C.ghost}`, paddingTop: "1.1rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "0.7rem" }}>
+                  <VoiceCard colorVar="#5b93c7" label={"— Christian · Restoring"}>
+                    {"“There was no theological basis for circumcision in my family. It was regarded as a routine procedure for health and hygiene.”"}
+                  </VoiceCard>
+                  <VoiceCard colorVar="#d4a030" label={"— Jewish · Circumcised"}>
+                    {"“No one who avoids Brit Milah talks about it. It’s done secretively, I think.”"}
+                  </VoiceCard>
+                  <VoiceCard colorVar="#68b878" label={"— Islamic · Intact"}>
+                    {"“I don’t view circumcision as required at all since it’s not in the Quran. Religion is an individual experience.”"}
+                  </VoiceCard>
+                  <VoiceCard colorVar="#5b93c7" label={"— Christian · Restoring"}>
+                    {"“I was beautifully made in my God’s image and someone took a part of that away from me.”"}
+                  </VoiceCard>
+                  <VoiceCard colorVar="#d4a030" label={"— Jewish · Restoring"}>
+                    {"“Jews are known to discuss hard topics at length but this particular one really seems to be off-limits. I hope that changes.”"}
+                  </VoiceCard>
+                  <VoiceCard colorVar="#68b878" label={"— Islamic · Circumcised"}>
+                    {"“I have tried to discuss this issue with several very religious people several times, but they considered it an insult and had no response.”"}
+                  </VoiceCard>
+                </div>
+                <div style={{ fontFamily: FONT.mono, fontSize: "0.5rem", color: C.dim, marginTop: "0.55rem" }}>
+                  ★ Anonymous quotes from the tradition-specific open-ended responses.
+                </div>
+              </div>
+              <ArrowNote lines={[<span key="h">Explore each tradition in full: <a href={EXPLORE_BASE + "religious-mirrors"} style={{ color: C.blue }}>Exhibit 09</a></span>]} />
             </TourCard>
           </Station>
         </div>
 
         {/* ── Chapter 5 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-witnesses" act="Act II" title="What Do The Witnesses Say?">
-            Is this just one kind of person answering? We look at the data sliced by independent witnesses and cross-tabulations.
+          <ChapterDivider id="ch-observers" act="Act II" title="What Do The Observers Say?">
+            Is this just one kind of person answering? We look at the data sliced by independent observers and cross-tabulations.
           </ChapterDivider>
 
           <Station num="08">
-            <TourCard title="The Witnesses" refText="EXHIBIT 08 · N = 37 · SMALL-SAMPLE FLAGGED" stamp="n=37">
+            <TourCard title="The Observers" refText="EXHIBIT 08 · N = 37 · SMALL-SAMPLE FLAGGED" stamp="n=37" exhibitStation={st("08")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                Thirty-seven respondents answered about bodies that aren't their own — sexual partners, parents who made the choice, and medical professionals who perform the procedure. Their perspective matters because they are independent observers to the outcomes that the other cohorts are describing from the inside.
+              </div>
+              <TourObserverBreakdown />
+              <div style={{ height: "1.2rem" }} />
               <BarRows rows={[
                 { label: "Would keep a future son intact", value: 90.9, colorVar: PATHS.observer.color },
                 { label: "Prioritize bodily autonomy",     value: 97.0, colorVar: PATHS.observer.color },
@@ -586,7 +887,10 @@ export default function GuidedTour() {
           </Station>
 
           <Station num="04">
-            <TourCard title="The Cycle, Cross-Tabulated" refText="EXHIBIT 04 · FATHER STATUS × RESPONDENT STATUS" stamp="Cross-Tab">
+            <TourCard title="The Cycle, Cross-Tabulated" refText="EXHIBIT 04 · FATHER STATUS × RESPONDENT STATUS" stamp="Cross-Tab" exhibitStation={st("04")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                Does the status repeat? When we cross-tabulated each respondent's circumcision status against their father's, a clear pattern emerged: circumcision tends to reproduce itself generationally — until someone stops to examine the choice.
+              </div>
               <BarRows rows={[
                 { label: "Circumcised respondents with circumcised fathers", value: 67.1, colorVar: PATHS.circumcised.color },
                 { label: "Intact respondents with intact fathers",           value: 48.9, colorVar: PATHS.intact.color },
@@ -595,6 +899,7 @@ export default function GuidedTour() {
                 "The status tends to repeat — until someone examines it. See Exhibit 14 for where the cycle goes next",
                 <span key="d">The “keep intact” majority holds across every displayable slice: <a href={EXPLORE_BASE + "correlations"} style={{ color: C.blue }}>Exhibit 04</a></span>,
               ]} />
+              <CuratedInsightsToggle />
             </TourCard>
           </Station>
         </div>
@@ -606,7 +911,10 @@ export default function GuidedTour() {
           </ChapterDivider>
 
           <Station num="10">
-            <TourCard title="The Restoring Cohort, In Numbers" refText="EXHIBIT 10 · N = 110" stamp="Restoring">
+            <TourCard title="The Restoring Cohort, In Numbers" refText="EXHIBIT 10 · N = 110" stamp="Restoring" exhibitStation={st("10")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                These are people who felt strongly enough about what was done to them to undertake a years-long, self-directed process of tissue expansion — with no medical support, no insurance coverage, and no cultural permission.
+              </div>
               <BarRows rows={[
                 { label: "Report no resentment, ever",                 value: 0.0,  decimals: 1, colorVar: PATHS.circumcised.color },
                 { label: "“Something is missing” (orgasm confidence)", value: 59.6, colorVar: PATHS.restoring.color },
@@ -616,19 +924,62 @@ export default function GuidedTour() {
                 Restoring respondents' mobile-skin pleasure rating — sitting above the 1.96
                 circumcised baseline. Partial regain, in their own numbers.
               </StatCallout>
-              <ArrowNote lines={[
-                "Every restoring respondent reports some resentment — and their mobile-skin ratings sit above the circumcised baseline",
-                <span key="i">Methods, RCI progress & timelines: <a href={EXPLORE_BASE + "restoration-journey"} style={{ color: C.blue }}>Exhibit 10</a></span>,
-              ]} />
+              
+              <TourRestorationPathway />
+
+
+              <div style={{ marginTop: "3rem" }}>
+                <h4 style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
+                  The Catalyst
+                </h4>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.5rem", marginTop: "1rem" }}>
+                  What drives a person to embark on a multi-year physical restoration process? We asked respondents to describe the moment that moved them from passive feelings to active restoration.
+                </div>
+                <RotatingTestimonials motives={RESTORATION_MOTIVES} />
+              </div>
+
+              <div style={{ marginTop: "2rem" }}>
+                <ArrowNote lines={[
+                  "Every restoring respondent reports some resentment — and their mobile-skin ratings sit above the circumcised baseline",
+                  <span key="i">Methods, RCI progress & timelines: <a href={EXPLORE_BASE + "restoration-journey"} style={{ color: C.blue }}>Exhibit 10</a></span>,
+                ]} />
+              </div>
             </TourCard>
           </Station>
 
           <Station num="11">
-            <TourCard title="Adult Circumcision Testimony" refText="EXHIBIT 11 · N = 18 · SMALL-SAMPLE FLAGGED" stamp="n=18">
+            <TourCard title="Adult Circumcision Testimony" refText="EXHIBIT 11 · N = 18 · SMALL-SAMPLE FLAGGED" stamp="n=18" exhibitStation={st("11")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                This small group can answer what no one else can: <em style={{ color: C.textBright }}>What changed?</em> These respondents experienced both states — intact and circumcised — as adults, and remember the difference. Their testimony is presented as narrative, not statistics.
+              </div>
+              <div style={{ marginTop: "2rem", marginBottom: "3rem" }}>
+                <h4 style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1.5rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
+                  The Context 
+                </h4>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "2.5rem" }}>
+                  <div>
+                    <div style={{ fontSize: "0.75rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", color: C.dim, marginBottom: "1rem" }}>When were they cut?</div>
+                    <BarRows rows={[
+                      { label: "Adulthood", value: 62.2, colorVar: "var(--c-blue)" },
+                      { label: "Adolescence", value: 37.8, colorVar: "var(--c-blue)" },
+                    ]} max={100} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: "0.75rem", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", color: C.dim, marginBottom: "1rem" }}>Stated Primary Reason</div>
+                    <BarRows rows={[
+                      { label: "Elective (Aesthetic, Partner, Culture)", value: 54.5, colorVar: "var(--c-blue)" },
+                      { label: "Both Medical & Elective", value: 22.7, colorVar: "var(--c-purple)" },
+                      { label: "Medical / Therapeutic", value: 18.2, colorVar: "var(--c-red)" },
+                    ]} max={100} />
+                  </div>
+                </div>
+              </div>
+
               <BarRows rows={[
                 { label: "Report decreased overall sexual pleasure", value: 72.2, colorVar: PATHS.circumcised.color },
                 { label: "Report increased overall sexual pleasure", value: 0.0,  decimals: 1, colorVar: PATHS.circumcised.color },
               ]} max={100} />
+
               <ArrowNote lines={[<span key="j">Read the testimony: <a href={EXPLORE_BASE + "adult-experience"} style={{ color: C.blue }}>Exhibit 11</a></span>]} />
             </TourCard>
           </Station>
@@ -637,36 +988,52 @@ export default function GuidedTour() {
         {/* ── Chapter 7 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
           <ChapterDivider id="ch-future-son" act="Act III" title="If You Had A Son Today?">
-            The final question asks everyone to look forward. Where does this go next?
+            Every cohort, every pathway, every background — we asked them all the same question. The answer, across nearly every demographic slice we tested, flows in one direction.
           </ChapterDivider>
 
           <Station num="13">
-            <TourCard title="The Decision Environment" refText="EXHIBIT 13 · N = 212" stamp="Context">
+            <TourCard title="For New & Expectant Parents" refText={"EXHIBIT 13 · TESTIMONIES & INFORMED CHOICE"} stamp="Parents" exhibitStation={st("13")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
+                The exhibit this station previews exists for one audience above all: parents facing this choice right now. Below, grown men — both circumcised and intact — speak directly to those parents in their own words.
+              </div>
+
+              <TestimonyRotator />
+
+              <ParentInsightCharts />
+
+              {/* ── Choice environment stat ── */}
               <BarRows rows={[
                 { label: "Procedure performed as default/automatic", value: 47.6, colorVar: PATHS.circumcised.color },
                 { label: "Parents offered a neutral choice",         value: 2.7,  colorVar: PATHS.circumcised.color },
               ]} max={100} />
-            </TourCard>
-          </Station>
-
-          <Station num="14">
-            <TourCard title="The Convergence" refText="EXHIBIT 14 · ALL COHORTS" stamp="Future">
-              <ConvergenceSankey />
-              <StatCallout big="433" colorVar={C.textBright}>
-                Of 500 respondents, 433 flow to "Keep Intact."
+              <StatCallout big="2.7%" colorVar={C.red}>
+                The fraction of circumcised respondents whose parents were offered a neutral, pros-and-cons choice before the procedure. This exhibit exists for the other 97.3%.
               </StatCallout>
               <ArrowNote lines={[
-                <span key="l">Follow the individual cohort pathways: <a href={EXPLORE_BASE + "the-forward-view"} style={{ color: C.blue }}>Exhibit 14</a></span>,
+                <span key="p">Read every testimony and explore the full data: <a href={EXPLORE_BASE + "for-parents"} style={{ color: C.blue }}>Exhibit 13</a></span>,
               ]} />
             </TourCard>
           </Station>
 
           <Station num="12">
-            <TourCard title="The Curiosity Gap" refText="EXHIBIT 12 · MIRROR QUESTIONS" stamp="Wonder">
-              <BarRows rows={[
-                { label: "Circumcised respondents who wonder what it's like to be intact", value: 67.8, colorVar: PATHS.circumcised.color },
-                { label: "Intact respondents who wonder what it's like to be circumcised", value: 27.3, colorVar: PATHS.intact.color },
-              ]} max={100} />
+            <TourCard title="By the Numbers: Key Snapshots" refText="EXHIBIT 12 · SNAPSHOT WALL" stamp="Wonder" exhibitStation={st("12")}>
+
+              <SnapshotWall navigate={navigate} isWidget={true} />
+            </TourCard>
+          </Station>
+
+          <Station num="14">
+            <TourCard title="The Convergence" refText="EXHIBIT 14 · ALL COHORTS" stamp="Future" exhibitStation={st("14")}>
+              <ConvergenceSankey />
+              <StatCallout big="433" colorVar={C.textBright}>
+                Of 500 respondents, 433 flow to "Keep Intact."
+              </StatCallout>
+              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginTop: "1rem", textAlign: "center" }}>
+                The convergence holds across every demographic slice we tested — age, generation, geography, political identity, and religious background. The direction is the same.
+              </div>
+              <ArrowNote lines={[
+                <span key="l">Follow the cohort pathways and read respondents' final thoughts and predictions for the future: <a href={EXPLORE_BASE + "the-forward-view"} style={{ color: C.blue }}>Exhibit 14</a></span>,
+              ]} />
             </TourCard>
           </Station>
         </div>
@@ -674,14 +1041,13 @@ export default function GuidedTour() {
         {/* ── Epilogue: Evidence Summarized ── */}
         <div id="ch-epilogue" style={{ maxWidth: 960, margin: "6rem auto", padding: "0 1.6rem" }}>
           <SectionKicker kicker="Epilogue" title="The Evidence, Summarized" colorVar={C.purple} />
-          
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: "1.2rem", margin: "2rem 0"
           }}>
             {[
-              { stat: "d = 1.78", label: "Effect size of the 'mobile skin' pleasure gap", col: C.green },
-              { stat: "86%", label: "Born-circumcised respondents reporting resentment", col: C.gold },
+              { stat: "6 for 6", label: "Pleasure metrics where intact scores higher — a clean sweep", col: C.green },
+              { stat: "86%", label: "Infant-circumcised respondents reporting resentment", col: C.gold },
               { stat: "433", label: "Of 500 respondents who would keep a son intact", col: C.blue },
               { stat: "96%", label: "Believe the child should have the right to decide", col: C.purple },
               { stat: "2.7%", label: "Parents offered a neutral choice before procedure", col: C.red },
@@ -696,6 +1062,35 @@ export default function GuidedTour() {
               </div>
             ))}
           </div>
+
+          <div style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.textBright, lineHeight: 1.7, maxWidth: 680, margin: "0 auto 3rem", textAlign: "left" }}>
+            <p style={{ marginBottom: "1.5rem" }}>
+              These numbers describe what five hundred people reported about their own bodies, their own experiences, and their own wishes for the next generation. But behind every data point is a lived reality. 
+            </p>
+            <p style={{ marginBottom: "1.5rem" }}>
+              When we strip away the euphemisms and the clinical detachment, the data daylights what routine infant circumcision actually is: <strong>a penile reduction surgery</strong>. It is the permanent removal of the most highly innervated, erogenous tissue on the male body, resulting in a measurable diminishment of sexual pleasure, mechanics, and sensitivity.
+            </p>
+            <p style={{ marginBottom: "1.5rem" }}>
+              If parents were routinely given full access to this reality—rather than being offered a "benign cosmetic procedure" by default—this survey suggests that far fewer would consent to altering their child's body. The vast majority of those who have lived it, regardless of their own circumcision status, agree on one fundamental truth: <span style={{ color: C.goldBright }}>the decision belongs to the person who has to live in the body.</span>
+            </p>
+            <p>
+              When you look at the evidence without the cultural blinders, it's hard not to walk away as an accidental intactivist yourself.
+            </p>
+          </div>
+
+          <div style={{ maxWidth: 800, margin: "0 auto 4rem" }}>
+            <h3 style={{ fontFamily: FONT.condensed, fontSize: "1.1rem", color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: "1rem", textAlign: "center" }}>
+              Final Thoughts from the Survey
+            </h3>
+            
+            <RotatingVoiceCards />
+
+            <div style={{ textAlign: "center", marginTop: "2rem" }}>
+               <a href={EXPLORE_BASE} style={{ color: C.blue, fontFamily: FONT.body, fontSize: "0.95rem" }}>The conversation is not over. Every exhibit is available for independent exploration.</a>
+            </div>
+          </div>
+
+          <ResourcesCTA />
 
           <div style={{ textAlign: "center", fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, maxWidth: 600, margin: "0 auto" }}>
             The Accidental Intactivist survey is a self-selected sample (N=500). While these numbers do not represent population prevalence, they document the magnitude of differences and shared experiences within this dataset.

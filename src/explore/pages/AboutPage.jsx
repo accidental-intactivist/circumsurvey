@@ -189,6 +189,30 @@ export default function AboutPage() {
           </div>
         </SectionBlock>
 
+        <SectionBlock title="Acknowledgements & Disclaimer">
+          <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>IN RECOGNITION OF TIM HAMMOND</h3>
+          <p style={{ marginTop: 0, marginBottom: "2rem" }}>
+            This project would not exist without the foundational research and lifelong advocacy of Tim Hammond (NOHARMM/GALDEF). His pioneering surveys on circumcision harm paved the way for modern inquiries like this one to surface. We acknowledge his mentorship, friendship, and unyielding dedication to genital autonomy.
+          </p>
+
+          <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>COMMUNITY SUPPORT</h3>
+          <p style={{ marginTop: 0, marginBottom: "2rem" }}>
+            Thank you to the followers and supporters of r/FriendsoftheFrenulum and the broader Reddit intactivist community. While this survey is an independent inquiry with a self-selected sample, it was these grassroots networks that provided the necessary distribution and volume to make this dataset possible. 
+          </p>
+
+          <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0" }}>SUBSTACK SUPPORTERS</h3>
+          <p style={{ marginTop: 0, marginBottom: "2rem" }}>
+            Special thanks to our founding Substack member, <strong>David Montane</strong>, for helping fund and sustain this independent research.
+          </p>
+
+          <h3 style={{ fontFamily: FONT.condensed, letterSpacing: "0.05em", color: "var(--c-textBright)", fontSize: "1.2rem", margin: "0 0 0.5rem 0", borderTop: "1px solid var(--c-ghost)", paddingTop: "2rem" }}>DISCLAIMERS</h3>
+          <ul style={{ paddingLeft: "1.5rem", margin: 0, display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <li><strong>Not Medical Advice:</strong> This project is an independent research inquiry and should not be used as a substitute for professional medical advice, diagnosis, or treatment.</li>
+            <li><strong>Sample Limitations:</strong> The data presented here is derived from a self-selected sample of 500 respondents. While highly robust in its internal consistency, it does not claim to represent randomized population prevalence.</li>
+            <li><strong>Data Privacy:</strong> All qualitative narratives and quantitative data points have been fully anonymized to protect respondent privacy.</li>
+          </ul>
+        </SectionBlock>
+
       </div>
     </div>
   );

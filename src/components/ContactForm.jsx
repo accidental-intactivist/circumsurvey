@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { C, FONT } from "../explore/styles/tokens";
+import { EXHIBIT_ROUTES, ROUTE_META } from "../explore/components/ExploreMasthead";
+import * as Icons from "../explore/components/Icons";
 
 export default function ContactForm() {
   const [status, setStatus] = useState("idle"); // idle, submitting, success, error
@@ -30,22 +33,98 @@ export default function ContactForm() {
     }
   };
 
+  const navigate = useNavigate();
+
+  // Pick 3 random exhibits on each mount for the success state
+  const suggestions = useMemo(() => {
+    const pool = EXHIBIT_ROUTES.map(ex => ({
+      ...ex,
+      ...ROUTE_META[ex.route],
+      id: ex.route,
+      route: `/explore#/${ex.route}`,
+      icon: Icons[ex.icon] || Icons.Compass,
+    }));
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 3);
+  }, []);
+
   if (status === "success") {
     return (
-      <div style={{ padding: "3rem", background: "rgba(212,160,48,0.06)", border: `1px solid rgba(212,160,48,0.2)`, borderRadius: 12, textAlign: "center" }}>
-        <h3 style={{ fontFamily: FONT.display, fontSize: "1.5rem", color: C.goldBright, marginBottom: "1rem" }}>Message Received</h3>
-        <p style={{ color: C.textBright, fontFamily: FONT.body, lineHeight: 1.6 }}>
-          Thank you for reaching out. I'll get back to you as soon as possible.
-        </p>
-        <button 
-          onClick={() => setStatus("idle")}
-          style={{
-            marginTop: "2rem", background: "transparent", border: `1px solid ${C.goldBright}`, color: C.goldBright,
-            padding: "0.75rem 2rem", borderRadius: 8, fontFamily: FONT.condensed, letterSpacing: "0.05em", cursor: "pointer"
-          }}
-        >
-          SEND ANOTHER MESSAGE
-        </button>
+      <div style={{ 
+        background: "var(--c-bgCard)", 
+        border: `1px solid ${C.ghost}`, 
+        borderTop: `2px solid ${C.goldBright}`,
+        borderRadius: 12, 
+        padding: "3rem", 
+        boxShadow: "0 12px 48px rgba(0,0,0,0.25)" 
+      }}>
+        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <h3 style={{ fontFamily: FONT.display, fontSize: "2rem", color: C.goldBright, marginBottom: "1rem" }}>Message Received</h3>
+          <p style={{ color: C.textBright, fontFamily: FONT.body, fontSize: "1.1rem", lineHeight: 1.6, maxWidth: 600, margin: "0 auto" }}>
+            Thank you for reaching out. You will receive a response as soon as possible.
+          </p>
+        </div>
+
+        <div style={{ 
+          fontFamily: FONT.condensed,
+          fontWeight: 700,
+          fontSize: "0.75rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.15em",
+          color: C.dim,
+          marginBottom: "1.25rem",
+          textAlign: "center"
+        }}>
+          In the meantime, explore the data
+        </div>
+
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", 
+          gap: "1.5rem", 
+          marginBottom: "3rem",
+          textAlign: "left"
+        }}>
+          {suggestions.map((ex) => (
+            <SuggestionCard key={ex.id} exhibit={ex} navigate={navigate} />
+          ))}
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <button
+            onClick={() => navigate("/explore")}
+            style={{
+              background: "transparent",
+              color: C.textBright,
+              border: `1px solid ${C.ghost}`,
+              padding: "0.75rem 2rem",
+              borderRadius: 999,
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.9rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = C.gold;
+              e.currentTarget.style.color = C.goldBright;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = C.ghost;
+              e.currentTarget.style.color = C.textBright;
+            }}
+          >
+            <Icons.ArrowLeft size={16} /> Return to Master Index
+          </button>
+        </div>
       </div>
     );
   }
@@ -247,5 +326,106 @@ export default function ContactForm() {
         </div>
       </div>
     </>
+  );
+}
+
+// ── Suggestion Card ──────────────────────────────────────────
+
+function SuggestionCard({ exhibit, navigate }) {
+  const [hovered, setHovered] = React.useState(false);
+  const CardIcon = exhibit.icon || Icons.Compass;
+
+  return (
+    <div
+      onClick={() => navigate(exhibit.route)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        background: C.bgCard,
+        border: `1px solid ${hovered ? C.gold + "60" : C.ghost}`,
+        borderRadius: 14,
+        padding: "1.5rem 1.25rem",
+        cursor: "pointer",
+        transition: "all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+        transform: hovered ? "translateY(-3px)" : "none",
+        boxShadow: hovered
+          ? `0 10px 25px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,200,50,0.04)`
+          : `0 2px 8px rgba(0,0,0,0.3)`,
+        overflow: "hidden",
+      }}
+    >
+      {/* Subtle radial glow on hover */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: `radial-gradient(circle at 50% 30%, ${C.gold}${hovered ? "18" : "08"} 0%, transparent 70%)`,
+        transition: "background 0.3s ease",
+        pointerEvents: "none",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
+        {/* Top group: kicker + title */}
+        <div>
+          {/* Icon + Kicker row */}
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            marginBottom: "0.75rem",
+          }}>
+            <CardIcon
+              size={18}
+              color={hovered ? C.goldBright : C.gold}
+              style={{ transition: "color 0.2s ease", opacity: 0.9 }}
+            />
+            <span style={{
+              fontFamily: FONT.condensed,
+              fontWeight: 700,
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: C.gold,
+            }}>
+              {exhibit.kicker}
+            </span>
+          </div>
+
+          <h3 style={{
+            fontFamily: FONT.display,
+            fontSize: "1.1rem",
+            fontWeight: 700,
+            color: C.textBright,
+            margin: 0,
+            lineHeight: 1.2,
+          }}>
+            {exhibit.title}
+          </h3>
+        </div>
+
+        {/* Bottom: description */}
+        <p style={{
+          fontFamily: FONT.body,
+          fontSize: "0.82rem",
+          color: C.dim,
+          lineHeight: 1.45,
+          margin: "0.75rem 0 0",
+        }}>
+          {exhibit.desc}
+        </p>
+      </div>
+
+      {/* Arrow indicator */}
+      <div style={{
+        position: "absolute",
+        bottom: "1rem",
+        right: "1rem",
+        color: hovered ? C.goldBright : C.ghost,
+        transition: "all 0.25s ease",
+        transform: hovered ? "translateX(2px)" : "none",
+      }}>
+        <Icons.ArrowRight size={14} />
+      </div>
+    </div>
   );
 }

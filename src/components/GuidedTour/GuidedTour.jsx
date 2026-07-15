@@ -535,7 +535,10 @@ export default function GuidedTour() {
               ))}
             </div>
             
-            <Lens>When we look at the entire dataset as one massive blob, it looks like a normal bell curve. Most people rate their sex lives somewhere in the middle. But what happens when we filter this exact same data by one crucial anatomical factor?</Lens>
+            <Lens>
+              When we look at the entire dataset as one massive blob, it looks like a normal bell curve. Most people rate their sex lives somewhere in the middle. But what happens when we filter this exact same data by one crucial anatomical factor? The pool of answers comes apart.
+              <DocentMarker topic="The separation of pleasure data" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: st("03").docentContext, tourSuas: st("03").tourSuas } }))} />
+            </Lens>
           </div>
         </div>
 
@@ -550,7 +553,6 @@ export default function GuidedTour() {
         }}>
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "0 auto", padding: "4.5rem 1.6rem" }}>
             <SectionKicker kicker="Exhibit 03" title="The Separation" colorVar={st("03").colorVar} />
-            <Lens center>Sorted by a single question, the pool of answers comes apart. <DocentMarker topic="The separation of pleasure data" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: st("03").docentContext, tourSuas: st("03").tourSuas } }))} /></Lens>
             
             <TourCard title="Sexual Experience — The Separation" refText="EXHIBIT 03 · THE PLEASURE GAP, LIVE" stamp="Separated">
                   <PleasureGapWidget stats={PLEASURE_GAP_STATS} />
@@ -590,11 +592,9 @@ export default function GuidedTour() {
                     fontFamily: FONT.body, fontSize: "0.68rem", fontStyle: "italic", color: C.muted, lineHeight: 1.55,
                   }}>
                     <strong style={{ color: C.goldBright, fontStyle: "normal", fontWeight: 600 }}>{"★"} What is mobile skin? </strong>
-                    The intact foreskin is a double-layered mucous membrane that glides back and forth over the glans. 
-                    Circumcision removes this structure, tethering the remaining shaft skin tightly. Because the famous 1966 
-                    Masters & Johnson study only measured the <em>glans</em> (head) of the penis, they missed the primary 
-                    mechanical function of the foreskin entirely. Our data shows this gliding mechanism is the single largest 
-                    source of the pleasure gap.
+                    The intact foreskin is a double-layered mucous membrane that glides freely back and forth over the glans during intercourse. 
+                    Circumcision removes this structure, tethering the remaining shaft skin tightly. Our data shows this fundamental difference 
+                    in penile mechanics is the single largest source of the pleasure gap.
                   </div>
                 </TourCard>
 

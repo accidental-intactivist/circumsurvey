@@ -7,7 +7,7 @@ export default function ContactPage() {
       minHeight: "100vh", 
       padding: "4rem 1.5rem 6rem",
     }}>
-      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <ContactForm />
       </div>
     </div>

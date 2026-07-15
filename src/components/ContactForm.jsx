@@ -133,7 +133,7 @@ export default function ContactForm() {
         boxShadow: "0 12px 48px rgba(0,0,0,0.25)" 
       }}>
         <h2 style={{ fontFamily: FONT.display, fontSize: "2.5rem", color: C.textBright, marginBottom: "0.5rem" }}>
-          Inquiries
+          Contact
         </h2>
         <p style={{ color: C.dim, fontFamily: FONT.body, lineHeight: 1.6, marginBottom: "1.5rem", fontSize: "1.05rem" }}>
           Use this form to submit media inquiries, research proposals, collaboration requests, or general questions regarding the dataset.
@@ -184,8 +184,16 @@ export default function ContactForm() {
             </div>
           </div>
 
-          <Label htmlFor="subject" text="SUBJECT" required />
-          <input type="text" id="subject" name="subject" required className="tb-input" placeholder="What is this regarding?" />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+            <div>
+              <Label htmlFor="subject" text="SUBJECT" required />
+              <input type="text" id="subject" name="subject" required className="tb-input" placeholder="What is this regarding?" />
+            </div>
+            <div>
+              <Label htmlFor="source" text="WHERE DID YOU HEAR ABOUT US?" />
+              <input type="text" id="source" name="source" className="tb-input" placeholder="(Optional) Podcast, Twitter, etc." />
+            </div>
+          </div>
 
           <Label htmlFor="message" text="MESSAGE" required />
           <textarea id="message" name="message" required rows={6} className="tb-input" style={{ resize: "vertical" }} placeholder="How can I help you?"></textarea>

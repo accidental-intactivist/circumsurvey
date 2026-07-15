@@ -525,7 +525,7 @@ export default function GuidedTour() {
                   <div style={{ fontFamily: FONT.condensed, color: `var(--chart-${i})`, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
                     Metric 0{i + 1}
                   </div>
-                  <div style={{ fontFamily: FONT.display, fontSize: "1.1rem", color: C.textBright, marginBottom: "0.5rem" }}>
+                  <div style={{ fontFamily: FONT.display, fontSize: "1.1rem", color: `var(--chart-${i})`, marginBottom: "0.5rem" }}>
                     {q.label}
                   </div>
                   <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.dim, lineHeight: 1.4 }}>

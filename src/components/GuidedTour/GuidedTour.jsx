@@ -441,7 +441,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 1 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-who-took" act="Act I" title="Who Took This Survey?">
+          <ChapterDivider id="ch-who-took" act="Chapter 01" title="Who Took This Survey?">
             Five hundred people entered the same door and answered the same experience questions — before any mention of status. Then the survey forked. Let's look at who showed up.
           </ChapterDivider>
 
@@ -492,7 +492,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 2 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-what-feel" act="Act II" title="What Does It Actually Feel Like?">
+          <ChapterDivider id="ch-what-feel" act="Chapter 02" title="What Does It Actually Feel Like?">
             Every respondent rated their own sexual experience on the same six questions. This is the distribution of their answers.
           </ChapterDivider>
           
@@ -651,7 +651,7 @@ export default function GuidedTour() {
 
           {/* ── Chapter 3 ── */}
           <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", paddingBottom: "5rem" }}>
-            <ChapterDivider id="ch-how-feel" act="Act II" title="What Is Their Experience?">
+            <ChapterDivider id="ch-how-feel" act="Chapter 03" title="What Is Their Experience?">
               The physical data speaks to mechanism. But the people who live in these bodies are the experts on what that means. We asked every respondent the same question: what has your experience actually been?
             </ChapterDivider>
           </div>
@@ -694,7 +694,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 4 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-world-told" act="Act II" title="What Did The World Tell Them?">
+          <ChapterDivider id="ch-world-told" act="Chapter 04" title="What Did The World Tell Them?">
             Nobody grows up in a vacuum. But the culture surrounding circumcision has undergone a tectonic shift over the last fifty years. With the advent of the internet and social media, a practice that was once unquestioned is now facing unprecedented scrutiny from the very generations who experienced it.
           </ChapterDivider>
 
@@ -908,7 +908,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 5 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-observers" act="Act II" title="What Do The Observers Say?">
+          <ChapterDivider id="ch-observers" act="Chapter 05" title="What Do The Observers Say?">
             Is this just one kind of person answering? We look at the data sliced by independent observers and cross-tabulations.
           </ChapterDivider>
 
@@ -947,7 +947,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 6 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-undone" act="Act III" title="Can It Be Undone?">
+          <ChapterDivider id="ch-undone" act="Chapter 06" title="Can It Be Undone?">
             From experience to action. A group of respondents is actively trying to grow back what was removed.
           </ChapterDivider>
 
@@ -1028,7 +1028,7 @@ export default function GuidedTour() {
 
         {/* ── Chapter 7 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
-          <ChapterDivider id="ch-future-son" act="Act III" title="If You Had A Son Today?">
+          <ChapterDivider id="ch-future-son" act="Chapter 07" title="If You Had A Son Today?">
             Every cohort, every pathway, every background — we asked them all the same question. The answer, across nearly every demographic slice we tested, flows in one direction.
           </ChapterDivider>
 

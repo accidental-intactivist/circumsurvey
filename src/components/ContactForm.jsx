@@ -50,7 +50,7 @@ export default function ContactForm() {
     );
   }
 
-  const Label = ({ htmlFor, text, required }) => (
+  const Label = ({ htmlFor, text, required, noMargin }) => (
     <label htmlFor={htmlFor} style={{ 
       fontFamily: FONT.condensed, 
       color: C.dim, 
@@ -58,7 +58,7 @@ export default function ContactForm() {
       fontSize: "0.9rem", 
       display: "flex", 
       justifyContent: "space-between",
-      marginTop: "1.5rem", 
+      marginTop: noMargin ? "0" : "1.5rem", 
       textTransform: "uppercase" 
     }}>
       <span>{text}</span>
@@ -122,6 +122,23 @@ export default function ContactForm() {
         .tb-button:active:not(:disabled) {
           transform: translateY(0px);
         }
+        .contact-container {
+          display: flex;
+          flex-direction: column;
+          gap: 2.5rem;
+        }
+        @media (min-width: 860px) {
+          .contact-container {
+            flex-direction: row;
+            gap: 4rem;
+          }
+          .contact-intro {
+            flex: 0 0 340px;
+          }
+          .contact-fields {
+            flex: 1 1 auto;
+          }
+        }
       `}</style>
 
       <div style={{ 
@@ -132,57 +149,63 @@ export default function ContactForm() {
         padding: "3rem", 
         boxShadow: "0 12px 48px rgba(0,0,0,0.25)" 
       }}>
-        <h2 style={{ fontFamily: FONT.display, fontSize: "2.5rem", color: C.textBright, marginBottom: "0.5rem" }}>
-          Contact
-        </h2>
-        <p style={{ color: C.dim, fontFamily: FONT.body, lineHeight: 1.6, marginBottom: "1.5rem", fontSize: "1.05rem" }}>
-          Use this form to submit media inquiries, research proposals, collaboration requests, or general questions regarding the dataset.
-        </p>
-
-        <div style={{ background: "rgba(212,160,48,0.06)", border: `1px solid rgba(212,160,48,0.3)`, borderRadius: 8, padding: "1.5rem", marginBottom: "2.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-          <div>
-            <h4 style={{ fontFamily: FONT.display, color: C.goldBright, margin: 0, fontSize: "1.2rem", marginBottom: "0.25rem" }}>Have a question about the data?</h4>
-            <p style={{ fontFamily: FONT.body, color: C.textBright, margin: 0, fontSize: "0.95rem", lineHeight: 1.4 }}>
-              The AI Research Assistant is trained on the complete dataset and methodology. It can answer most questions instantly.
+        <div className="contact-container">
+          <div className="contact-intro">
+            <h2 style={{ fontFamily: FONT.display, fontSize: "2.5rem", color: C.textBright, marginBottom: "0.5rem" }}>
+              Contact
+            </h2>
+            <p style={{ color: C.dim, fontFamily: FONT.body, lineHeight: 1.6, marginBottom: "2rem", fontSize: "1.05rem" }}>
+              Use this form to submit media inquiries, research proposals, collaboration requests, or general questions regarding the dataset.
             </p>
-          </div>
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { 
-              detail: { 
-                context: "The user is on the Contact page. Be helpful and answer any general questions about the project, methodology, or dataset so they don't have to wait for an email reply.",
-                tourSuas: ["How was this survey conducted?", "Who funded this research?", "What is the margin of error?"]
-              } 
-            }))}
-            style={{
-              background: "transparent",
-              border: `1px solid ${C.goldBright}`,
-              color: C.goldBright,
-              padding: "0.75rem 1.5rem",
-              borderRadius: 6,
-              fontFamily: FONT.condensed,
-              letterSpacing: "0.05em",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all 0.2s ease"
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.background = C.goldBright; e.currentTarget.style.color = "#000"; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.goldBright; }}
-          >
-            ASK THE AI ASSISTANT
-          </button>
-        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            <div>
-              <Label htmlFor="name" text="NAME" required />
-              <input type="text" id="name" name="name" required className="tb-input" placeholder="Your name" />
-            </div>
-            <div>
-              <Label htmlFor="email" text="EMAIL ADDRESS" required />
-              <input type="email" id="email" name="email" required className="tb-input" placeholder="Your email address" />
+            <div style={{ background: "rgba(212,160,48,0.06)", border: `1px solid rgba(212,160,48,0.3)`, borderRadius: 8, padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <div>
+                <h4 style={{ fontFamily: FONT.display, color: C.goldBright, margin: 0, fontSize: "1.2rem", marginBottom: "0.25rem" }}>Have a question about the data?</h4>
+                <p style={{ fontFamily: FONT.body, color: C.textBright, margin: 0, fontSize: "0.95rem", lineHeight: 1.4 }}>
+                  The AI Research Assistant is trained on the complete dataset and methodology. It can answer most questions instantly.
+                </p>
+              </div>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { 
+                  detail: { 
+                    context: "The user is on the Contact page. Be helpful and answer any general questions about the project, methodology, or dataset so they don't have to wait for an email reply.",
+                    tourSuas: ["How was this survey conducted?", "Who funded this research?", "What is the margin of error?"]
+                  } 
+                }))}
+                style={{
+                  background: "transparent",
+                  border: `1px solid ${C.goldBright}`,
+                  color: C.goldBright,
+                  padding: "0.75rem 1.5rem",
+                  borderRadius: 6,
+                  fontFamily: FONT.condensed,
+                  letterSpacing: "0.05em",
+                  cursor: "pointer",
+                  width: "100%",
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease"
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = C.goldBright; e.currentTarget.style.color = "#000"; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.goldBright; }}
+              >
+                ASK THE AI ASSISTANT
+              </button>
             </div>
           </div>
+
+          <div className="contact-fields">
+            <form onSubmit={handleSubmit}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                <div>
+                  <Label htmlFor="name" text="NAME" required noMargin />
+                  <input type="text" id="name" name="name" required className="tb-input" placeholder="Your name" />
+                </div>
+                <div>
+                  <Label htmlFor="email" text="EMAIL ADDRESS" required noMargin />
+                  <input type="email" id="email" name="email" required className="tb-input" placeholder="Your email address" />
+                </div>
+              </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
             <div>
@@ -211,15 +234,17 @@ export default function ContactForm() {
             </div>
           )}
 
-          <button 
-            type="submit" 
-            className="tb-button"
-            disabled={status === "submitting"}
-            style={{ opacity: status === "submitting" ? 0.7 : 1, cursor: status === "submitting" ? "not-allowed" : "pointer" }}
-          >
-            {status === "submitting" ? "Sending Message..." : "Send Message"}
-          </button>
-        </form>
+              <button 
+                type="submit" 
+                className="tb-button"
+                disabled={status === "submitting"}
+                style={{ opacity: status === "submitting" ? 0.7 : 1, cursor: status === "submitting" ? "not-allowed" : "pointer" }}
+              >
+                {status === "submitting" ? "Sending Message..." : "Send Message"}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </>
   );

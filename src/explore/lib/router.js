@@ -66,6 +66,8 @@ function parseHash() {
     route = "about";
   } else if (segments[0] === "faq") {
     route = "faq";
+  } else if (segments[0] === "contact") {
+    route = "contact";
   } else if (segments[0] === "the-forward-view") {
     route = "the-forward-view";
   } else if (segments.length > 0 && segments[0] !== "index") {

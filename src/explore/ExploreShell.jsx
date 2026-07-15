@@ -35,6 +35,7 @@ import ForParentsPage from "./pages/ForParentsPage";
 import AboutPage from "./pages/AboutPage";
 import FaqPage from "./pages/FaqPage";
 import GetInvolvedPage from "./pages/GetInvolvedPage";
+import ContactPage from "./pages/ContactPage";
 import ResourcesPage from "./pages/ResourcesPage";
 import GlobalFooter from "./components/GlobalFooter";
 import ErrorBoundary from "./ErrorBoundary";
@@ -152,6 +153,8 @@ export default function ExploreShell() {
     page = <FaqPage routerState={routerState} navigate={navigate} updateState={updateState} setCustomMeta={setCustomMeta} setExhibitContext={setExhibitContext} />;
   } else if (route === "get-involved") {
     page = <GetInvolvedPage />;
+  } else if (route === "contact") {
+    page = <ContactPage />;
   } else if (route === "resources") {
     page = <ResourcesPage />;
   } else if (route === "not-found") {

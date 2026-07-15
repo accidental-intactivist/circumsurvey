@@ -346,8 +346,8 @@ export default function GlobalFooter({ route, navigate }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("about"); }}>About the Project</a>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("methodology"); }}>Survey Methodology</a>
+              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("contact"); }}>Contact Us</a>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("get-involved"); }}>Get Involved</a>
-              <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("about"); }}>Strategic Partners</a>
               <a style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => { window.scrollTo(0,0); navigate("faq"); }}>FAQ</a>
             </div>
           </div>

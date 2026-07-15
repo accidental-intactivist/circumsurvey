@@ -60,7 +60,7 @@ const BRANCH_CONFIGS = [
   { id: "circumcised", label: "Circumcised", icon: Icons.Circle, color: PATH_COLORS.circumcised, desc: "Circumcised as infants or later in life", sections: ["Circumcised Pathway"], hasSubRoles: true },
   { id: "restoring", label: "Restoring", icon: Icons.Circle, color: PATH_COLORS.restoring, desc: "Actively restoring foreskin", sections: ["Restoring Pathway"] },
   { id: "observer", label: "Observer", icon: Icons.Circle, color: PATH_COLORS.observer, desc: "Partners, parents, providers, advocates", sections: ["Observer Pathway"], hasSubRoles: true },
-  { id: "trans", label: "Trans", icon: Icons.Circle, color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
+  { id: "trans", label: "Transgender", icon: Icons.Circle, color: PATH_COLORS.trans_vaginoplasty, desc: "Post-vaginoplasty / Post-phalloplasty", sections: ["Post-Vaginoplasty Pathway", "Post-Phalloplasty Pathway"], waiting: true },
   { id: "intersex", label: "Intersex", icon: Icons.Circle, color: PATH_COLORS.intersex, desc: "Intersex perspectives", sections: ["Intersex Pathway"], waiting: true },
 ];
 
@@ -524,7 +524,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         isExpanded={effectiveQuery ? totalForPathway("universal") > 0 : expanded.universal}
         isHighlighted={true}
         onToggle={() => toggleNode("universal")}
-        style={{ marginBottom: 0 }}
+        style={{ marginBottom: 0, borderRadius: "12px 12px 0 0" }}
       >
         {UNIVERSAL_SECTIONS.map((sec) => {
           const qs = grouped?.universal[sec.name] || [];
@@ -616,7 +616,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                     gridTemplateColumns: `repeat(auto-fit, minmax(320px, 1fr))`,
                     gap: "1rem",
                     marginTop: 0,
-                    marginBottom: "1rem",
+                    marginBottom: 0,
                     position: "relative",
                     zIndex: 10,
                   }}
@@ -637,7 +637,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                         style={{
                           background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
                           border: `2px solid ${branch.color}`,
-                          borderRadius: "0 0 12px 12px",
+                          borderRadius: 0,
                           padding: "1.2rem 1.4rem",
                           position: "relative",
                           boxShadow: `0 0 32px color-mix(in srgb, ${branch.color}, transparent 92%), 0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)`,
@@ -651,24 +651,23 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                           position: "sticky",
                           top: 0,
                           zIndex: 20,
-                          background: "rgba(18, 18, 18, 0.8)",
-                          backdropFilter: "blur(12px)",
+                          background: branch.color,
                           margin: "-1.2rem -1.4rem 0.8rem",
                           padding: "1rem 1.4rem",
                           borderRadius: 0,
-                          borderBottom: `1px solid color-mix(in srgb, ${branch.color}, transparent 75%)`,
+                          borderBottom: `1px solid color-mix(in srgb, ${branch.color}, transparent 50%)`,
                           display: "flex",
                           alignItems: "center",
                           gap: "0.6rem",
                           flexWrap: "wrap",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                         }}>
-                          {branch.icon && <branch.icon size={22} color={branch.color} fill={branch.color} />}
+                          {branch.icon && <branch.icon size={22} color={C.bg} fill={C.bg} />}
                           <span style={{
                             fontFamily: FONT.display,
                             fontWeight: 700,
                             fontSize: "1.05rem",
-                            color: branch.color,
+                            color: C.bg,
                             letterSpacing: "0.04em",
                             textTransform: "uppercase",
                           }}>{branch.label} PATHWAY QUESTIONS</span>
@@ -676,22 +675,22 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                           <span style={{
                             fontFamily: FONT.mono,
                             fontSize: "0.65rem",
-                            color: C.muted,
-                            background: "rgba(255,255,255,0.05)",
+                            color: C.bg,
+                            background: "rgba(0,0,0,0.15)",
                             padding: "0.1rem 0.4rem",
                             borderRadius: 999,
-                            border: `1px solid ${C.ghost}`,
+                            border: "1px solid transparent",
                           }}>{branchQCount}q</span>
 
                           {branchN !== null && (
                             <span style={{
                               fontFamily: FONT.mono,
                               fontSize: "0.65rem",
-                              color: branch.waiting ? C.dim : C.muted,
-                              background: "rgba(255,255,255,0.05)",
+                              color: branch.waiting ? "rgba(255,255,255,0.6)" : C.bg,
+                              background: "rgba(0,0,0,0.15)",
                               padding: "0.1rem 0.4rem",
                               borderRadius: 999,
-                              border: `1px solid ${branch.waiting ? C.ghost : `color-mix(in srgb, ${branch.color}, transparent 75%)`}`,
+                              border: `1px solid ${branch.waiting ? "rgba(0,0,0,0.1)" : "transparent"}`,
                             }}>{branch.waiting ? "n=0" : `n=${branchN}`}</span>
                           )}
 
@@ -699,9 +698,9 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                             onClick={(e) => togglePin(branch.id, e)}
                             style={{
                               marginLeft: "auto",
-                              background: isPinned ? `color-mix(in srgb, ${branch.color}, transparent 87%)` : "transparent",
-                              border: `1px solid ${isPinned ? branch.color : C.ghost}`,
-                              color: isPinned ? C.textBright : C.dim,
+                              background: isPinned ? C.bg : "rgba(0,0,0,0.1)",
+                              border: `1px solid ${isPinned ? "transparent" : "rgba(0,0,0,0.25)"}`,
+                              color: isPinned ? branch.color : C.bg,
                               fontSize: "0.6rem",
                               fontFamily: FONT.mono,
                               textTransform: "uppercase",
@@ -715,14 +714,12 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                             }}
                             onMouseEnter={(e) => {
                               if (!isPinned) {
-                                e.currentTarget.style.borderColor = branch.color;
-                                e.currentTarget.style.color = C.textBright;
+                                e.currentTarget.style.background = "rgba(0,0,0,0.2)";
                               }
                             }}
                             onMouseLeave={(e) => {
                               if (!isPinned) {
-                                e.currentTarget.style.borderColor = C.ghost;
-                                e.currentTarget.style.color = C.dim;
+                                e.currentTarget.style.background = "rgba(0,0,0,0.1)";
                               }
                             }}
                           >
@@ -732,9 +729,9 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                           <button
                             onClick={() => toggleNode(branch.id)}
                             style={{
-                              background: "transparent",
-                              border: `1px solid ${C.ghost}`,
-                              color: C.dim,
+                              background: "rgba(0,0,0,0.1)",
+                              border: "1px solid rgba(0,0,0,0.25)",
+                              color: C.bg,
                               fontSize: "0.6rem",
                               fontFamily: FONT.mono,
                               textTransform: "uppercase",
@@ -744,12 +741,10 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
                               transition: "all 0.15s",
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = branch.color;
-                              e.currentTarget.style.color = C.textBright;
+                              e.currentTarget.style.background = "rgba(0,0,0,0.2)";
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = C.ghost;
-                              e.currentTarget.style.color = C.dim;
+                              e.currentTarget.style.background = "rgba(0,0,0,0.1)";
                             }}
                           >
                             Close ✕
@@ -841,7 +836,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
         isExpanded={expanded.synthesis}
         isHighlighted={isCircuitActive}
         onToggle={() => toggleNode("synthesis")}
-        style={{ marginTop: 0 }}
+        style={{ marginTop: 0, borderRadius: "0 0 12px 12px" }}
       >
         {(() => {
           const visible = SYNTHESIS_SECTIONS.filter((sec) => (grouped?.synthesis[sec.name] || []).length > 0);
@@ -932,75 +927,89 @@ function FlowNode({ nodeId, title, icon: Icon, color, desc, qCount, nCount, isEx
         style={{
           display: "flex",
           flex: 1,
-          alignItems: "flex-start",
-          gap: "0.6rem",
+          flexDirection: compact ? "column" : "row",
+          alignItems: compact ? "center" : "flex-start",
+          textAlign: compact ? "center" : "left",
+          gap: compact ? "0.5rem" : "0.6rem",
           cursor: "pointer",
           userSelect: "none",
           background: active ? color : "transparent",
-          padding: compact ? "0.85rem" : "1.1rem 1.3rem",
+          padding: compact ? "0.85rem 0.5rem" : "1.1rem 1.3rem",
           transition: "background 0.3s ease",
         }}
       >
         {Icon && (
-          <div style={{ marginTop: compact ? "0.05rem" : "0.15rem", display: "flex", transition: "color 0.3s, fill 0.3s" }}>
+          <div style={{ marginTop: compact ? 0 : "0.15rem", display: "flex", transition: "color 0.3s, fill 0.3s" }}>
             <Icon size={compact ? 20 : 24} color={active ? C.bg : color} fill={Icon === Icons.Circle ? (active ? C.bg : color) : "transparent"} />
           </div>
         )}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", flexWrap: "wrap", minWidth: 0 }}>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: compact ? "center" : "flex-start", gap: compact ? "0.4rem" : 0 }}>
+          <div style={{
+            display: "flex",
+            flexDirection: compact ? "column" : "row",
+            alignItems: "center",
+            justifyContent: compact ? "center" : "flex-start",
+            gap: compact ? "0.35rem" : "0.5rem",
+            flexWrap: "wrap",
+            minWidth: 0
+          }}>
             <span style={{
               fontFamily: FONT.display,
               fontWeight: 700,
-              fontSize: compact ? "0.72rem" : "0.95rem",
+              fontSize: compact ? "0.85rem" : "0.95rem",
               color: active ? C.bg : C.textBright,
               letterSpacing: compact ? "0.01em" : "0.03em",
               textTransform: "uppercase",
               transition: "color 0.3s",
               lineHeight: 1.1,
+              textAlign: compact ? "center" : "left",
             }}>{title}</span>
 
-            {/* Question count badge */}
-            <span style={{
-              fontFamily: FONT.mono,
-              fontSize: "0.62rem",
-              color: active ? C.bg : C.muted,
-              background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
-              padding: "0.1rem 0.4rem",
-              borderRadius: 999,
-              border: `1px solid ${active ? "transparent" : C.ghost}`,
-              transition: "color 0.3s, background 0.3s, border-color 0.3s"
-            }}>{qCount}q</span>
-
-            {/* Respondent count */}
-            {nCount !== null && nCount !== undefined && (
+            {/* Pills Group */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", flexWrap: "wrap", justifyContent: compact ? "center" : "flex-start" }}>
+              {/* Question count badge */}
               <span style={{
                 fontFamily: FONT.mono,
                 fontSize: "0.62rem",
-                fontWeight: 600,
-                color: active ? C.bg : (waiting ? C.dim : C.muted),
+                color: active ? C.bg : C.muted,
                 background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
                 padding: "0.1rem 0.4rem",
                 borderRadius: 999,
-                border: `1px solid ${active ? "transparent" : (waiting ? C.ghost : `color-mix(in srgb, ${color}, transparent 75%)`)}`,
+                border: `1px solid ${active ? "transparent" : C.ghost}`,
                 transition: "color 0.3s, background 0.3s, border-color 0.3s"
-              }}>{waiting ? "n=0 ✦" : `n=${nCount}`}</span>
-            )}
+              }}>{qCount}q</span>
 
-            {waiting && (
-              <span style={{
-                fontFamily: FONT.condensed,
-                fontSize: "0.54rem",
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: active ? "rgba(0,0,0,0.5)" : C.dim,
-                background: active ? "transparent" : "rgba(255,255,255,0.03)",
-                padding: "0.08rem 0.4rem",
-                borderRadius: 999,
-                border: `1px dashed ${active ? "rgba(0,0,0,0.3)" : C.ghost}`,
-                transition: "color 0.3s, background 0.3s, border-color 0.3s"
-              }}>coming in phase 2</span>
-            )}
+              {/* Respondent count */}
+              {nCount !== null && nCount !== undefined && (
+                <span style={{
+                  fontFamily: FONT.mono,
+                  fontSize: "0.62rem",
+                  fontWeight: 600,
+                  color: active ? C.bg : (waiting ? C.dim : C.muted),
+                  background: active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.05)",
+                  padding: "0.1rem 0.4rem",
+                  borderRadius: 999,
+                  border: `1px solid ${active ? "transparent" : (waiting ? C.ghost : `color-mix(in srgb, ${color}, transparent 75%)`)}`,
+                  transition: "color 0.3s, background 0.3s, border-color 0.3s"
+                }}>{waiting ? "n=0 ✦" : `n=${nCount}`}</span>
+              )}
+
+              {waiting && (
+                <span style={{
+                  fontFamily: FONT.condensed,
+                  fontSize: "0.54rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: active ? "rgba(0,0,0,0.5)" : C.dim,
+                  background: active ? "transparent" : "rgba(255,255,255,0.03)",
+                  padding: "0.08rem 0.4rem",
+                  borderRadius: 999,
+                  border: `1px dashed ${active ? "rgba(0,0,0,0.3)" : C.ghost}`,
+                  transition: "color 0.3s, background 0.3s, border-color 0.3s"
+                }}>coming in phase 2</span>
+              )}
+            </div>
           </div>
           <div style={{
             fontFamily: FONT.body,
@@ -1636,7 +1645,7 @@ function MobileConnector({ color, height = 24 }) {
 
 function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange, searchActive }) {
   const svgW = 1200;
-  const svgH = 170;
+  const svgH = 220;
 
   const flows = branches.map((b, i) => {
     const info = getFlowInfo(b);
@@ -1653,25 +1662,30 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
 
   const totalWeight = flows.reduce((s, f) => s + f.weight, 0);
 
-  // The trunk at top matches the Universal block width (roughly center of SVG)
-  const trunkW = 160;
-  const trunkLeft = (svgW - trunkW) / 2;
-  const pinchY = 60; // where the hourglass pinches
+  // The trunk at top spans the full SVG width (flush with the Universal block)
+  const trunkW = svgW;
+  // Hourglass band — the cinch point
+  const bandW = 180;
+  const bandLeft = (svgW - bandW) / 2;
+  const bandTop = 50;  // start of hourglass band
+  const bandBot = 100; // end of hourglass band
 
-  let currentXPinch = trunkLeft;
+  let currentXBandTop = bandLeft;
+  let currentXBandBot = bandLeft;
   let currentXTop = 0;
 
   return (
-    <div style={{ position: "relative", overflow: "visible", marginTop: "-0.5rem", marginBottom: "-12px" }}>
-      {/* Instruction text overlaid on top of the funnel */}
+    <div style={{ position: "relative", overflow: "visible", marginTop: "-1px", marginBottom: 0 }}>
+      {/* Instruction text over the hourglass band */}
       <div style={{
         position: "absolute",
-        top: 10,
+        top: 65,
         left: 0,
         right: 0,
         zIndex: 2,
+        pointerEvents: "none",
         textAlign: "center",
-        padding: "0.6rem 1rem 0",
+        padding: "0 1rem",
         fontFamily: FONT.body,
         fontSize: "0.82rem",
         color: C.dim,
@@ -1680,49 +1694,59 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
         margin: "0 auto",
         letterSpacing: "0.01em",
       }}>
-        From here the survey forks into <strong style={{ color: C.muted }}>six distinct pathways</strong> based on each respondent's circumcision status.
-        Click any pathway below to explore its questions, or select multiple to compare side by side.
+        <p style={{ margin: "0 0 0.4rem", color: "rgba(0,0,0,0.75)", fontWeight: 500, textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}>
+          From here the survey forks into <strong style={{ color: "rgba(0,0,0,0.9)", fontWeight: 700 }}>six distinct pathways</strong> based on each respondent's circumcision status.
+        </p>
+        <p style={{ margin: 0, color: "rgba(0,0,0,0.65)", textShadow: "0 1px 2px rgba(255,255,255,0.8)" }}>
+          Click any pathway below to explore its questions, or select multiple to compare side by side.
+        </p>
       </div>
 
-      {/* SVG Sankey funnel */}
+      {/* SVG Sankey funnel with hourglass */}
       <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", position: "relative", zIndex: 1 }}>
-        <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+        <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
           <defs>
             {flows.map(f => (
               <linearGradient id={`grad-fork-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
                 <stop offset="0%" stopColor={C.ltBlue} />
+                <stop offset="40%" stopColor={f.color} />
                 <stop offset="100%" stopColor={f.color} />
               </linearGradient>
             ))}
           </defs>
           {flows.map((f) => {
-            const wPinch = (f.weight / totalWeight) * trunkW;
-            const pinchL = currentXPinch;
-            const pinchR = currentXPinch + wPinch;
-            currentXPinch += wPinch;
-
-            const wTop = (f.weight / totalWeight) * svgW;
+            // Top edge: full-width proportional slice
+            const wTop = (f.weight / totalWeight) * trunkW;
             const topL = currentXTop;
             const topR = currentXTop + wTop;
             currentXTop += wTop;
 
-            const cardW = svgW / 6; // ~200px per card with no gap
-            const gap = 0;
-            const botL = f.i * (cardW + gap);
+            // Hourglass band: cinched proportional slice
+            const wBand = (f.weight / totalWeight) * bandW;
+            const bandL = currentXBandTop;
+            const bandR = currentXBandTop + wBand;
+            currentXBandTop += wBand;
+
+            // Bottom edge: evenly divided across 6 card slots
+            const cardW = svgW / 6;
+            const botL = f.i * cardW;
             const botR = botL + cardW;
 
-            const cp1Y = pinchY * 0.4;
-            const cp2Y = pinchY * 0.6;
-            const cp3Y = pinchY + (svgH - pinchY) * 0.55;
-            const cp4Y = svgH - (svgH - pinchY) * 0.45;
+            // Control points for smooth S-curves
+            const cp1Y = bandTop * 0.35;
+            const cp2Y = bandTop * 0.65;
+            const cp3Y = bandBot + (svgH - bandBot) * 0.4;
+            const cp4Y = svgH - (svgH - bandBot) * 0.25;
 
             const d = `
               M ${topL} 0
-              C ${topL} ${cp1Y}, ${pinchL} ${cp2Y}, ${pinchL} ${pinchY}
-              C ${pinchL} ${cp3Y}, ${botL} ${cp4Y}, ${botL} ${svgH}
+              C ${topL} ${cp1Y}, ${bandL} ${cp2Y}, ${bandL} ${bandTop}
+              L ${bandL} ${bandBot}
+              C ${bandL} ${cp3Y}, ${botL} ${cp4Y}, ${botL} ${svgH}
               L ${botR} ${svgH}
-              C ${botR} ${cp4Y}, ${pinchR} ${cp3Y}, ${pinchR} ${pinchY}
-              C ${pinchR} ${cp2Y}, ${topR} ${cp1Y}, ${topR} 0
+              C ${botR} ${cp4Y}, ${bandR} ${cp3Y}, ${bandR} ${bandBot}
+              L ${bandR} ${bandTop}
+              C ${bandR} ${cp2Y}, ${topR} ${cp1Y}, ${topR} 0
               Z
             `;
 
@@ -1730,21 +1754,19 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
             const isMatch = searchActive && activePathways && activePathways.some(p => p.id === f.id);
             const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
             const fill = `url(#grad-fork-${f.id})`;
-            // While searching, the board lights the route: matching ribbons
-            // glow at near-full strength, everything else falls dark.
             const opacity = searchActive
               ? (isMatch ? 0.95 : 0.06)
-              : (isActive ? 0.85 : (isDormant ? 0.1 : 0.25));
+              : (isActive ? 0.9 : (isDormant ? 0.12 : 0.45));
 
-            // Center spine of the ribbon — the "current" runs down this path
-            // when search lights the route to a matching pathway.
+            // Center spine for search animation
             const topC = (topL + topR) / 2;
-            const pinchC = (pinchL + pinchR) / 2;
+            const bandC = (bandL + bandR) / 2;
             const botC = (botL + botR) / 2;
             const spineD = `
               M ${topC} 0 
-              C ${topC} ${cp1Y}, ${pinchC} ${cp2Y}, ${pinchC} ${pinchY}
-              C ${pinchC} ${cp3Y}, ${botC} ${cp4Y}, ${botC} ${svgH}
+              C ${topC} ${cp1Y}, ${bandC} ${cp2Y}, ${bandC} ${bandTop}
+              L ${bandC} ${bandBot}
+              C ${bandC} ${cp3Y}, ${botC} ${cp4Y}, ${botC} ${svgH}
             `;
 
             return (
@@ -1753,7 +1775,9 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
                   d={d}
                   fill={fill}
                   opacity={opacity}
-                  stroke="none"
+                  stroke={C.gold}
+                  strokeWidth={0.5}
+                  strokeOpacity={0.25}
                   style={{
                     cursor: "pointer",
                     transition: "opacity 0.25s, fill 0.25s",
@@ -1825,17 +1849,16 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: "-12px", position: "relative", zIndex: 0 }}>
-      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginBottom: 0, position: "relative", zIndex: 0 }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {flows.map((f) => {
           const w = (f.weight / totalWeight) * trunkW;
           const topL = currentX;
           const topR = currentX + w;
           currentX += w;
 
-          const cardW = (svgW - 5 * 12) / 6; // 190px
-          const gap = 12;
-          const botL = f.i * (cardW + gap);
+          const cardW = svgW / 6;
+          const botL = f.i * cardW;
           const botR = botL + cardW;
 
           const cpY = svgH * 0.55;
@@ -1851,7 +1874,7 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
           const isDormant = f.n === 0;
           const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
           const fill = f.color;
-          const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
+          const opacity = isActive ? 0.9 : (isDormant ? 0.12 : 0.45);
 
           return (
             <g key={f.id}>
@@ -1859,7 +1882,9 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
                 d={d}
                 fill={fill}
                 opacity={opacity}
-                stroke="none"
+                stroke={C.gold}
+                strokeWidth={0.5}
+                strokeOpacity={0.25}
                 style={{
                   cursor: "pointer",
                   transition: "opacity 0.25s, fill 0.25s",
@@ -1892,11 +1917,14 @@ function BranchConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, act
 // Vertical Sankey ribbons merging from each pathway card back to the synthesis trunk
 
 function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, activePathways, hoveredPathway, onHoverChange }) {
-  const count = branches.length;
   const svgW = 1200;
   const svgH = 80;
 
-  const flows = branches.map((b, i) => {
+  const isExpandedMode = activePathways && activePathways.length > 0;
+  const activeSet = isExpandedMode ? activePathways : branches;
+
+  const flows = activeSet.map((b) => {
+    const origIndex = branches.findIndex(br => br.id === b.id);
     const info = getFlowInfo(b);
     return {
       id: b.id,
@@ -1905,7 +1933,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
       n: info.n,
       qCount: info.qCount,
       weight: Math.max(15, info.n),
-      i,
+      origIndex,
     };
   });
 
@@ -1917,8 +1945,8 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
   let currentX = trunkLeft;
 
   return (
-    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: "-12px", marginBottom: "-12px", position: "relative", zIndex: 0 }}>
-      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+    <div className="flowchart-connectors" style={{ justifyContent: "center", overflow: "visible", marginTop: 0, marginBottom: "-1px", position: "relative", zIndex: 0 }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         <defs>
           {flows.map(f => (
             <linearGradient id={`grad-merge-${f.id}`} x1="0" y1="0" x2="0" y2="1" key={f.id}>
@@ -1927,16 +1955,24 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
             </linearGradient>
           ))}
         </defs>
-        {flows.map((f) => {
+        {flows.map((f, j) => {
           const w = (f.weight / totalWeight) * trunkW;
           const botL = currentX;
           const botR = currentX + w;
           currentX += w;
 
-          const cardW = (svgW - 5 * 12) / 6; // 190px
-          const gap = 12;
-          const topL = f.i * (cardW + gap);
-          const topR = topL + cardW;
+          let topL, topR;
+          if (isExpandedMode) {
+            const k = activeSet.length;
+            const boxGap = 16;
+            const boxW = (svgW - (k - 1) * boxGap) / k;
+            topL = j * (boxW + boxGap);
+            topR = topL + boxW;
+          } else {
+            const cardW = svgW / 6;
+            topL = f.origIndex * cardW;
+            topR = topL + cardW;
+          }
 
           const cpY = svgH * 0.55;
 
@@ -1951,7 +1987,7 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
           const isDormant = f.n === 0;
           const isActive = (activePathways && activePathways.some(p => p.id === f.id)) || hoveredPathway === f.id;
           const fill = `url(#grad-merge-${f.id})`;
-          const opacity = isActive ? 0.85 : (isDormant ? 0.1 : 0.25);
+          const opacity = isActive ? 0.9 : (isDormant ? 0.12 : 0.45);
 
           return (
             <g key={f.id}>
@@ -1959,7 +1995,9 @@ function MergeConnectors({ branches, onHover, onMove, onLeave, getFlowInfo, acti
                 d={d}
                 fill={fill}
                 opacity={opacity}
-                stroke="none"
+                stroke={C.gold}
+                strokeWidth={0.5}
+                strokeOpacity={0.25}
                 style={{
                   cursor: "pointer",
                   transition: "opacity 0.25s, fill 0.25s",
@@ -2786,8 +2824,8 @@ function TransSubRoles({ questions, navigate, isSingleColumn }) {
 function ExpandedConnectors({ branches, activePathways, svgW = 1200, svgH = 50 }) {
   if (!activePathways || activePathways.length === 0) return null;
 
-  const cardW = (svgW - 5 * 12) / 6; // 190
-  const gap = 12;
+  const cardW = svgW / 6;
+  const gap = 0;
 
   const k = activePathways.length;
   const boxGap = 16; // 1rem
@@ -2806,7 +2844,7 @@ function ExpandedConnectors({ branches, activePathways, svgW = 1200, svgH = 50 }
       position: "relative",
       zIndex: 0,
     }}>
-      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
+      <svg aria-hidden="true" role="presentation" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ width: "100%", height: svgH, overflow: "visible", display: "block" }}>
         {activePathways.map((branch, j) => {
           // Top coordinates (from the bottom of the card)
           const i = branches.findIndex(b => b.id === branch.id);

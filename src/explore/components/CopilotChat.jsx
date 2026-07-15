@@ -48,7 +48,7 @@ function DocentChart({ questionId }) {
 }
 
 export default function CopilotChat({ routerState, updateState, question, exhibitContext, tourSuas }) {
-  const { unlockTheme, setTheme } = useTheme();
+  const { unlockTheme, setTheme, setMode, setTypeface, setColorblind, setDyslexicFont, setTypeScale } = useTheme();
   const { addAIChatBlock } = useReport();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
@@ -115,6 +115,18 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       return;
     }
 
+    if (upperQ === 'PR#6' || upperQ === 'CALL -151' || upperQ === 'CALL-151') {
+      unlockTheme('woz');
+      setTheme('woz');
+      setResult({
+         answer: "] PR#6\n\nAPPLE ][\n\nDOS VERSION 3.3\n\nMODULE [WOZ_THEME] UNLOCKED IN SETTINGS.",
+         suggestions: [],
+         quotes: [],
+         metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
     // Hidden easter egg: a nod to the LucasArts game "Loom" reveals the live
     // Harmonic Loom config (the masthead's motion + glisten). Triggered by
     // "I'm Bobbin Threadbare, are you my mother?" (punctuation/case forgiving).
@@ -130,6 +142,156 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
         suggestions: [],
         quotes: [],
         metadata: { intent: "harmonic_loom" }
+      });
+      return;
+    }
+
+    if (/(turn off|disable|stop|pause|halt|hide)\s+(animation|animations|loom|harmonic loom|motion|graphics)/.test(_norm)) {
+      window.dispatchEvent(new CustomEvent('toggle-loom', { detail: { enabled: false } }));
+      setResult({
+        answer: "As you wish. The Harmonic Loom animations have been paused.",
+        suggestions: ["Turn animations back on"],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(turn on|enable|start|play|resume|show)\s+(animation|animations|loom|harmonic loom|motion|graphics)/.test(_norm)) {
+      window.dispatchEvent(new CustomEvent('toggle-loom', { detail: { enabled: true } }));
+      setResult({
+        answer: "The Harmonic Loom animations have been restored.",
+        suggestions: ["Turn animations off"],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(change|switch|set)\s+(to\s+)?(the\s+)?(dark|light)\s+(mode|theme)/.test(_norm) || /(dark|light)\s+mode/.test(_norm)) {
+      const isLight = _norm.includes("light");
+      setMode(isLight ? 'light' : 'dark');
+      setResult({
+        answer: `${isLight ? 'Light' : 'Dark'} mode has been enabled.`,
+        suggestions: [`Change to ${isLight ? 'dark' : 'light'} mode`],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    const aestheticMatch = _norm.match(/(change|switch|set)\s+(to\s+)?(the\s+)?(standard|vaporwave|evergreen|ocean|amber|paper|pueblo|brick|mono|frodo|agnes|woz)(\s+theme|\s+aesthetic)?/);
+    if (aestheticMatch) {
+      const targetTheme = aestheticMatch[4];
+      if (targetTheme === 'frodo' || targetTheme === 'agnes' || targetTheme === 'woz') {
+        unlockTheme(targetTheme);
+      }
+      setTheme(targetTheme);
+      setResult({
+        answer: `The ${targetTheme} aesthetic theme has been applied.`,
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    const fontMatch = _norm.match(/(change|switch|set)\s+(to\s+)?(the\s+)?(bureau|tomorrow)(\s+font|\s+typeface)?/);
+    if (fontMatch) {
+      setTypeface(fontMatch[4]);
+      setResult({
+        answer: `The typeface has been changed to ${fontMatch[4]}.`,
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(large|extra large|xl|standard)\s+(text|font|typography)/.test(_norm)) {
+      const scale = _norm.includes("extra large") || _norm.includes("xl") ? 'xlarge' : _norm.includes("large") ? 'large' : 'standard';
+      setTypeScale(scale);
+      setResult({
+        answer: `Typography size set to ${scale}.`,
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(turn on|enable|use)\s+(colorblind|color blind|wong)/.test(_norm)) {
+      setColorblind(true);
+      setResult({
+        answer: "Colorblind-safe charts (Wong palette) have been enabled.",
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    } else if (/(turn off|disable)\s+(colorblind|color blind)/.test(_norm)) {
+      setColorblind(false);
+      setResult({
+        answer: "Colorblind-safe charts have been disabled.",
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(turn on|enable|use)\s+(dyslexic|lexend)/.test(_norm)) {
+      setDyslexicFont(true);
+      setResult({
+        answer: "Dyslexia-friendly typography (Lexend) has been enabled.",
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    } else if (/(turn off|disable)\s+(dyslexic|lexend)/.test(_norm)) {
+      setDyslexicFont(false);
+      setResult({
+        answer: "Dyslexia-friendly typography has been disabled.",
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(download|print|export|save)\s+(my\s+)?report/.test(_norm)) {
+      setResult({
+        answer: "Preparing your report. The print/save dialog should open momentarily.",
+        suggestions: ["Clear my filters"],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      setTimeout(() => window.print(), 500);
+      return;
+    }
+
+    if (/(clear|reset|remove)\s+(my\s+)?(filters|cohorts|cohort)/.test(_norm)) {
+      if (updateState) updateState({ cohort: {} });
+      setResult({
+        answer: "All cohort filters have been cleared. You are now viewing the aggregate data.",
+        suggestions: ["Take me to the Demographics page"],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    const routeMatch = _norm.match(/(take me to|go to|open|show me)\s+(the\s+)?(pleasure gap|culture|demographics|restoration|adult experience|numbers)/);
+    if (routeMatch) {
+      const target = routeMatch[3].replace(" ", "-");
+      const targetId = target === "numbers" ? "numbers" : target === "culture" ? "culture" : target === "demographics" ? "demographics" : target === "restoration" ? "restoration-journey" : target === "adult experience" ? "adult-experience" : target === "pleasure gap" ? "pleasure-gap" : target;
+      window.location.hash = `#/${targetId}`;
+      setResult({
+        answer: `Navigating you to the ${routeMatch[3]} exhibit...`,
+        suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
       });
       return;
     }

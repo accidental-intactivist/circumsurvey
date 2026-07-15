@@ -11,7 +11,7 @@ export default function ResourcesCTA() {
         The data presented throughout this inquiry paints a stark picture of the lived consequences of non-therapeutic circumcision. While we strive to maintain an objective presentation of the findings, the ultimate goal of The Accidental Intactivist's Inquiry is to question the normalcy of a practice that permanently alters the bodies of millions of infants globally. 
       </p>
       <p style={{ color: C.textBright, fontFamily: FONT.body, fontSize: "1.05rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-        I want to invite you to join me in going from an Accidental to an Intentional Intactivist, and help break the silence around a procedure still elected by nearly half of all parents. If you or someone you know is struggling with the physical or emotional impact of circumcision, or if you simply want to learn more, you are not alone. There is a robust and growing community dedicated to bodily autonomy, healing, and foreskin restoration.
+        I want to invite you to join me in going from an Accidental to an Intentional Intactivist, and help break the silence around a procedure still elected by nearly half of all parents. It took me 40 years to build the confidence and reassurance that this conversation is ready for the mainstream. You can help us make that a reality. Share, subscribe, build your own reports, find new ways to explore the data! Get involved.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

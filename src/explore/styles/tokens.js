@@ -841,6 +841,64 @@ export const GLOBAL_CSS = `
     box-shadow: none !important;
   }
 
+  /* ── WOZ THEME (Apple II Easter Egg) ── */
+  [data-theme="woz"] {
+    --c-bg: #000000;
+    --c-bgSoft: #000000;
+    --c-bgCard: #000000;
+    --c-bgDeep: #000000;
+    --c-text: #33ff00;
+    --c-textBright: #33ff00;
+    --c-muted: #28cc00;
+    --c-dim: #1e9900;
+    --c-ghost: #33ff00;
+    --c-gold: #33ff00;
+    --c-goldBright: #33ff00;
+    
+    --map-ocean: #000000;
+    --map-land: #1e9900;
+    --map-border: rgba(51, 255, 0, 0.5);
+    
+    --c-red: #33ff00;
+    --c-orange: #33ff00;
+    --c-yellow: #33ff00;
+    --c-green: #33ff00;
+    --c-ltBlue: #33ff00;
+    --c-blue: #33ff00;
+    --c-grey: #33ff00;
+    --c-purple: #33ff00;
+
+    --path-intact: #33ff00;
+    --path-circumcised: #28cc00;
+    --path-restoring: #1e9900;
+    --path-observer: #0f4d00;
+    
+    --chart-0: #33ff00;
+    --chart-1: #28cc00;
+    --chart-2: #1e9900;
+    --chart-3: #33ff00;
+    --chart-4: #28cc00;
+    --chart-5: #1e9900;
+    --chart-6: #33ff00;
+    --chart-7: #28cc00;
+    --chart-8: #1e9900;
+    --chart-9: #33ff00;
+    
+    --f-display: 'VT323', monospace !important;
+    --f-body: 'VT323', monospace !important;
+    --f-condensed: 'VT323', monospace !important;
+  }
+
+  [data-theme="woz"] body {
+    border: 4px solid #33ff00;
+    padding: 2px;
+  }
+  
+  [data-theme="woz"] * {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
   html, body { 
     background: var(--c-bg); 
     color: var(--c-text); 

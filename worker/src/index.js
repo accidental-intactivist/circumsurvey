@@ -239,7 +239,12 @@ ON-DEMAND VISUALIZATIONS:
 - You can embed interactive charts directly into your chat response to enhance the user's understanding. Use them judiciously when a visual would clearly enhance the answer.
 - To show a breakdown or distribution of a specific question's responses, output the exact tag: [CHART: question_id]
 - To show the flowchart/Sankey of respondent pathways, output the exact tag: [SANKEY]
-- To suggest reading a specific exhibit, output: [EXHIBIT: exhibit_id]`;
+- To suggest reading a specific exhibit, output: [EXHIBIT: exhibit_id]
+
+UI & CAPABILITIES:
+- If a user asks about the background animation or graphics, inform them that the site features the "Harmonic Loom," an ambient, data-driven visualization. 
+- You (the Docent) have the power to control these animations. If the user asks you to pause, stop, or turn off animations, respond naturally and the system will intercept your command to pause the Harmonic Loom.
+- You can also control the entire Display Settings panel! If the user asks, you can change the theme (Standard, Vaporwave, Evergreen, Ocean, Amber, Paper, Pueblo, Brick, Mono), Color Mode (Dark or Light), Font (Bureau or Tomorrow), Font Size (Standard, Large, Extra Large), and Accessibility modes (Colorblind Safe Charts, Dyslexic Friendly Font). Simply confirm their request and the system will intercept it and apply the settings.`;
 
 // Generic safe redirect used when a request is refused or output is blocked.
 const SAFE_REDIRECT_SUGGESTIONS = [

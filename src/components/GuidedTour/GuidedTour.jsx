@@ -496,6 +496,47 @@ export default function GuidedTour() {
             Every respondent rated their own sexual experience on the same six questions. This is the distribution of their answers.
           </ChapterDivider>
           
+          <div id="baseline-questions" style={{ marginTop: "4rem", marginBottom: "2rem", textAlign: "center", maxWidth: 960, margin: "4rem auto 2rem", padding: "0 1.6rem" }}>
+            <Lens>Before separating the data, we asked every single respondent—regardless of their anatomical status—to rate their own experience from 1 to 5 across six core dimensions of physical pleasure: <DocentMarker topic="The Six Dimensions of Pleasure" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: "The user is looking at the baseline physical pleasure questions before the data is separated by circumcision status.", tourSuas: ["Why did you choose these six specific metrics?", "What is 'mobile skin' in a sexual context?"] } }))} /></Lens>
+            
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "1.5rem",
+              marginTop: "2.5rem",
+              marginBottom: "3rem",
+              textAlign: "left"
+            }}>
+              {[
+                { label: "Ease of Orgasm", desc: "How effortlessly peak climax is reached." },
+                { label: "Light Touch Sensitivity", desc: "Responsiveness to subtle, non-vigorous touch." },
+                { label: "Variety of Sensation", desc: "The spectrum of different physical feelings." },
+                { label: "Duration of Orgasm", desc: "The length of the climax experience." },
+                { label: "Pleasure from Mobile Skin", desc: "Sensation derived from the gliding mechanism." },
+                { label: "Orgasm Intensity", desc: "The sheer physical force of the climax." }
+              ].map((q, i) => (
+                <div key={i} style={{
+                  background: "var(--c-bgCard)",
+                  padding: "1.5rem",
+                  borderRadius: 8,
+                  border: `1px solid ${C.ghost}`,
+                  borderTop: `2px solid var(--chart-${i})`,
+                }}>
+                  <div style={{ fontFamily: FONT.condensed, color: `var(--chart-${i})`, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>
+                    Metric 0{i + 1}
+                  </div>
+                  <div style={{ fontFamily: FONT.display, fontSize: "1.1rem", color: C.textBright, marginBottom: "0.5rem" }}>
+                    {q.label}
+                  </div>
+                  <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.dim, lineHeight: 1.4 }}>
+                    {q.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <Lens>When we look at the entire dataset as one massive blob, it looks like a normal bell curve. Most people rate their sex lives somewhere in the middle. But what happens when we filter this exact same data by one crucial anatomical factor?</Lens>
+          </div>
         </div>
 
         {/* ── 03 · The Demonstration (deep-dark band) ──
@@ -1040,7 +1081,10 @@ export default function GuidedTour() {
 
         {/* ── Epilogue: Evidence Summarized ── */}
         <div id="ch-epilogue" style={{ maxWidth: 960, margin: "6rem auto", padding: "0 1.6rem" }}>
-          <SectionKicker kicker="Epilogue" title="The Evidence, Summarized" colorVar={C.purple} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <SectionKicker kicker="Epilogue" title="The Evidence, Summarized" colorVar={C.purple} />
+            <DocentMarker topic="Epilogue & Final Thoughts" onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: "The user has reached the end of the Special Report and is viewing the Epilogue summary statistics.", tourSuas: ["What is the main takeaway of this report?", "Where should I go from here?", "How can I help distribute this data?"] } }))} />
+          </div>
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: "1.2rem", margin: "2rem 0"

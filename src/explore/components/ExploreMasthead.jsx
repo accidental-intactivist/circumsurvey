@@ -207,12 +207,31 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
   });
 
   const toggleLoom = () => {
-    const next = !loomPaused;
-    setLoomPaused(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("cs_loom_paused", String(next));
-    }
+    setLoomPaused(prev => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("cs_loom_paused", String(next));
+      }
+      return next;
+    });
   };
+
+  useEffect(() => {
+    const onToggleLoom = (e) => {
+      setLoomPaused(prev => {
+        let next = !prev;
+        if (e.detail && typeof e.detail.enabled === 'boolean') {
+          next = !e.detail.enabled;
+        }
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cs_loom_paused", String(next));
+        }
+        return next;
+      });
+    };
+    window.addEventListener('toggle-loom', onToggleLoom);
+    return () => window.removeEventListener('toggle-loom', onToggleLoom);
+  }, []);
 
   // Close breadcrumb dropdown when clicking outside
   useEffect(() => {

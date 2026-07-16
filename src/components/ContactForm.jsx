@@ -298,7 +298,7 @@ export default function ContactForm() {
           </div>
 
           <Label htmlFor="message" text="MESSAGE" required />
-          <textarea id="message" name="message" required rows={6} className="tb-input" style={{ resize: "vertical" }} placeholder="How can I help you?"></textarea>
+          <textarea id="message" name="message" required rows={6} className="tb-input" style={{ resize: "vertical" }} placeholder="Please enter your message or inquiry here."></textarea>
 
           <div style={{ marginTop: "2.5rem", display: "flex", gap: "1rem", alignItems: "flex-start", background: "rgba(255,255,255,0.02)", padding: "1.25rem", borderRadius: 8, border: `1px solid ${C.ghost}` }}>
             <input type="checkbox" id="consent" name="consent" required style={{ marginTop: "0.25rem", cursor: "pointer", accentColor: C.goldBright }} />

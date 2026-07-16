@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { getAggregate } from "../lib/api";
 import { C, FONT } from "../styles/tokens";
 import PleasureBarChart from "./PleasureBarChart";
+import PleasureHorizontalBarChart from "./PleasureHorizontalBarChart";
 import { useTooltip, Tooltip } from "./Tooltip";
 
 const QUESTIONS = [
@@ -109,9 +110,38 @@ export default function PleasureGapWidget() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <style>{`
+        @media (min-width: 768px) {
+          .mobile-only-inline { display: none !important; }
+          .desktop-hide { display: none !important; }
+        }
+        @media (max-width: 767px) {
+          .mobile-hide { display: none !important; }
+        }
+      `}</style>
       {/* ── Main Chart ── */}
-      <div style={{ position: "relative", width: "100%", height: 360 }}>
-        <PleasureBarChart 
+      <div className="mobile-hide" style={{ 
+        position: "relative", 
+        width: "100%", 
+        overflowX: "auto", 
+        WebkitOverflowScrolling: "touch",
+        paddingBottom: "1rem"
+      }}>
+        <div style={{ minWidth: 760 }}>
+          <PleasureBarChart 
+            stats={stats} 
+            activeCohortsList={activeCohortsList} 
+            groupBy="cohort" 
+            showGap={true} 
+            showTooltip={showTooltip} 
+            moveTooltip={moveTooltip} 
+            hideTooltip={hideTooltip} 
+          />
+        </div>
+      </div>
+
+      <div className="desktop-hide" style={{ position: "relative", width: "100%" }}>
+        <PleasureHorizontalBarChart 
           stats={stats} 
           activeCohortsList={activeCohortsList} 
           groupBy="cohort" 
@@ -153,22 +183,26 @@ export default function PleasureGapWidget() {
         background: C.bgCard,
         borderTop: `4px solid ${C.ghost}`,
         borderRadius: 12,
-        padding: "1.5rem",
+        padding: "clamp(0.8rem, 3vw, 1.5rem)",
         overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
       }}>
-        <h3 style={{
-          fontFamily: FONT.condensed,
-          fontWeight: 700,
-          fontSize: "0.85rem",
-          color: C.goldBright,
-          textTransform: "uppercase",
-          letterSpacing: "0.08em",
-          marginBottom: "1rem",
-          borderBottom: `1px solid rgba(255,255,255,0.08)`,
-          paddingBottom: "0.6rem"
-        }}>
-          Detailed Matrix (Average Ratings &amp; Samples)
-        </h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem", borderBottom: `1px solid rgba(255,255,255,0.08)`, paddingBottom: "0.6rem" }}>
+          <h3 style={{
+            fontFamily: FONT.condensed,
+            fontWeight: 700,
+            fontSize: "0.85rem",
+            color: C.goldBright,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            margin: 0
+          }}>
+            Detailed Matrix (Average Ratings &amp; Samples)
+          </h3>
+          <span style={{ fontFamily: FONT.body, fontSize: "0.65rem", color: C.dim, fontStyle: "italic", whiteSpace: "nowrap", marginLeft: "1rem" }} className="mobile-only-inline">
+            Scroll →
+          </span>
+        </div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FONT.body, fontSize: "0.85rem", color: C.text }}>
           <thead>
             <tr style={{ borderBottom: `2px solid rgba(255,255,255,0.1)` }}>

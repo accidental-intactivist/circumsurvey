@@ -9,6 +9,7 @@ import DistributionChart from "./DistributionChart";
 import SurveyFlowchart from "./SurveyFlowchart";
 import { Link } from "react-router-dom";
 import { LOOM_CONFIG } from "../../components/HarmonicCanvas";
+import { UNDERLOOM_CONFIG } from "../../components/GuidedTour/LoomChoreography";
 import { EXHIBIT_ROUTES } from "./ExploreMasthead";
 import { useReport } from "../contexts/ReportContext";
 
@@ -128,17 +129,21 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     }
 
     // Hidden easter egg: a nod to the LucasArts game "Loom" reveals the live
-    // Harmonic Loom config (the masthead's motion + glisten). Triggered by
-    // "I'm Bobbin Threadbare, are you my mother?" (punctuation/case forgiving).
+    // config of BOTH looms — the masthead's Harmonic Loom (motion + glisten)
+    // and the Underloom, the scroll-choreographed weave beneath the report.
+    // Triggered by "I'm Bobbin Threadbare, are you my mother?" (forgiving).
     const _norm = query.trim().toLowerCase().replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
     if (_norm.includes("bobbin threadbare")) {
       const body = Object.entries(LOOM_CONFIG).map(([k, v]) => `  ${k}: ${v},`).join("\n");
+      const under = JSON.stringify(UNDERLOOM_CONFIG, null, 2);
       setResult({
         answer:
           "\"No, Bobbin — I am not your mother. But I am the Loom, and I still remember the pattern she wove for you.\"\n\n" +
-          "Here is the weave drifting behind the header — its motion and its glisten:\n\n" +
-          "const PARAMS = {\n" + body + "\n};\n\n" +
-          "Carry the pattern to the tuner (docs/harmonic-tuner.html) or to LOOM_CONFIG in HarmonicCanvas.jsx.",
+          "There are two looms in this hall now. Above the fold, the weave you know — its motion and its glisten:\n\n" +
+          "const LOOM_CONFIG = {\n" + body + "\n};\n\n" +
+          "And beneath the report, the UNDERLOOM — the choreography that re-forms station by station as you walk the tour:\n\n" +
+          "const UNDERLOOM_CONFIG = " + under + ";\n\n" +
+          "Carry the patterns to their tuners — docs/harmonic-tuner.html for the masthead, loom-choreography-v2.html (workspace root) for the Underloom — or stamp them into HarmonicCanvas.jsx and LoomChoreography.jsx.",
         suggestions: [],
         quotes: [],
         metadata: { intent: "harmonic_loom" }

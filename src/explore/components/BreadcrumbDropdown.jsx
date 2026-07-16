@@ -24,7 +24,7 @@ export default function BreadcrumbDropdown({ label, currentId, items, onSelect }
   return (
     <div
       ref={containerRef}
-      style={{ position: "relative", display: "inline-block" }}
+      style={{ position: "relative", display: "inline-flex", maxWidth: "100%", minWidth: 0 }}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
@@ -46,12 +46,13 @@ export default function BreadcrumbDropdown({ label, currentId, items, onSelect }
           gap: "0.2rem",
           borderRadius: "4px",
           transition: "background 0.15s, color 0.15s",
+          maxWidth: "100%",
         }}
         onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright; e.currentTarget.style.background = "var(--c-bgSoft)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.color = "inherit"; e.currentTarget.style.background = "transparent"; }}
       >
-        <span>{label}</span>
-        <ChevronDown size={12} style={{ opacity: 0.7 }} />
+        <span style={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{label}</span>
+        <ChevronDown size={12} style={{ opacity: 0.7, flexShrink: 0 }} />
       </button>
 
       {isOpen && (

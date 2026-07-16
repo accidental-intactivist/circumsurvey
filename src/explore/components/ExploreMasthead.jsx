@@ -284,8 +284,10 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
     <>
       <style>
         {`
+          .mobile-only { display: none; }
           @media (max-width: 768px) {
             .mobile-hide { display: none !important; }
+            .mobile-only { display: inline-block !important; }
             .masthead-title {
               white-space: normal !important;
               width: 100%;
@@ -293,8 +295,14 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               text-align: center;
               line-height: 1.0 !important;
             }
+            .masthead-title.scrolled {
+              opacity: 0 !important;
+              pointer-events: none !important;
+            }
             .mobile-docent-text { display: none !important; }
             .mobile-findings-text { display: none !important; }
+            .desktop-kicker { display: none !important; }
+            .breadcrumb-explore { display: none !important; }
           }
         `}
       </style>
@@ -385,7 +393,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           {/* Left: Brand / Breadcrumbs */}
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }} ref={dropdownRef}>
             {scrolled && (
-              <div style={{
+              <div className="desktop-kicker" style={{
                 fontFamily: FONT.condensed,
                 fontSize: "0.55rem",
                 fontWeight: 700,
@@ -400,8 +408,9 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                 The Accidental Intactivist's Inquiry
               </div>
             )}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", minWidth: 0 }}>
               <button
+              className={!isIndex ? "breadcrumb-explore" : ""}
               onClick={() => {
                 setDropdownOpen(false);
                 navigate("index");
@@ -426,7 +435,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             </button>
             {!isIndex && (
               <>
-                <span style={{ color: "var(--c-dim)", fontSize: "0.85rem", margin: "0 0.25rem", fontFamily: FONT.body, fontWeight: 300 }}>/</span>
+                <span className="breadcrumb-explore" style={{ color: "var(--c-dim)", fontSize: "0.85rem", margin: "0 0.25rem", fontFamily: FONT.body, fontWeight: 300 }}>/</span>
                 
                 {(() => {
                   const activeExhibit = EXHIBIT_ROUTES.find(e => e.route === route);
@@ -456,8 +465,8 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                           onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
                           onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                         >
-                          {activeExhibit.label}
-                          <span style={{ fontSize: "0.55rem", color: "var(--c-dim)", transform: `rotate(${dropdownOpen ? 180 : 0}deg)`, transition: "transform 0.2s" }}>▼</span>
+                          <span style={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{activeExhibit.label}</span>
+                          <span style={{ fontSize: "0.55rem", color: "var(--c-dim)", transform: `rotate(${dropdownOpen ? 180 : 0}deg)`, transition: "transform 0.2s", flexShrink: 0 }}>▼</span>
                         </button>
                         
                         {dropdownOpen && (
@@ -545,7 +554,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           </div>
 
           {/* Right: ThemeToggle + Findings link */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
             <a href="#/about" className="mobile-hide" style={{
               fontFamily: FONT.condensed,
               fontWeight: 700,
@@ -602,7 +611,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               }}
             >
               <span className="mobile-findings-text">← Findings</span>
-              <span className="mobile-hide" style={{ display: "none" }}>←</span>
+              <span className="mobile-only">←</span>
             </a>
             
             <button
@@ -646,14 +655,14 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
 
         {/* ── Collapsing Exhibit Title ────────────────────────────────────── */}
         <h1
-          className="masthead-title"
+          className={`masthead-title ${scrolled ? 'scrolled' : ''}`}
           style={{
             position: "absolute",
             left: "50%",
             top: 136, // Center of the hero area (56px + 184px/2) shifted up slightly
             transform: `translate(-50%, calc(-50% + ${translateY + tomorrowOffset}px)) scale(${scale})`,
             transformOrigin: "center",
-            transition: "transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.35s ease, font-size 0.35s ease",
+            transition: "transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.35s ease, font-size 0.35s ease, opacity 0.25s ease",
             fontFamily: FONT.display,
             fontWeight: 800,
             fontSize: isIndex

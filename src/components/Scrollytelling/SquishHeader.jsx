@@ -218,6 +218,17 @@ export default function SquishHeader() {
 
   return (
     <div ref={containerRef} style={{ position: 'relative', zIndex: 100 }}>
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .mobile-hide { display: none !important; }
+            .squish-title.scrolled { opacity: 0 !important; pointer-events: none !important; }
+            .squish-nav-left { max-width: calc(100% - 130px); }
+            .squish-nav-right { padding: 0 0.5rem !important; gap: 0.5rem !important; }
+            .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
+          }
+        `}
+      </style>
       {/* Spacer to push content down initially since header is fixed */}
       <div ref={spacerRef} style={{ height: '85vh' }} />
 
@@ -292,7 +303,7 @@ export default function SquishHeader() {
           {/* Left Side — Explore-masthead pattern: wordmark, then a
               scrollspy breadcrumb of the current station with the full
               tour in its dropdown. */}
-          <div style={{
+          <div className="squish-nav-left" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.6rem',
@@ -302,13 +313,14 @@ export default function SquishHeader() {
             fontSize: '0.75rem',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
+            minWidth: 0,
           }}>
-            <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              style={{ color: 'var(--c-textBright)', textDecoration: 'none' }}>
+            <a href="#" className="mobile-hide" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              style={{ color: 'var(--c-textBright)', textDecoration: 'none', flexShrink: 0 }}>
               Findings
             </a>
-            <span style={{ color: 'var(--c-dim)' }}>/</span>
-            <span style={{ color: 'var(--c-muted)' }}>
+            <span className="mobile-hide" style={{ color: 'var(--c-dim)', flexShrink: 0 }}>/</span>
+            <span style={{ color: 'var(--c-muted)', minWidth: 0, flexShrink: 1, display: 'inline-flex' }}>
               <BreadcrumbDropdown
                 label={currentChapter.label}
                 currentId={currentId}
@@ -325,7 +337,7 @@ export default function SquishHeader() {
 
         {/* Right Side: Tools & Actions — ALWAYS visible (not gated on dock),
             so Display Settings are reachable from the full masthead too. */}
-        <div style={{
+        <div className="squish-nav-right" style={{
           position: 'absolute',
           top: 0,
           right: 0,
@@ -338,7 +350,7 @@ export default function SquishHeader() {
           pointerEvents: 'auto',
         }}>
           <ThemeToggle />
-          <div style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
+          <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
           <a href="/explore" style={{
             fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
             fontWeight: 700,
@@ -351,8 +363,10 @@ export default function SquishHeader() {
             border: '1px solid rgba(212,160,48,0.4)',
             borderRadius: 100,
             background: 'rgba(212,160,48,0.1)',
+            whiteSpace: 'nowrap',
+            flexShrink: 0
           }}>
-            Interactive Explorer ➔
+            <span className="mobile-hide">Interactive </span>Explorer ➔
           </a>
         </div>
 
@@ -391,6 +405,7 @@ export default function SquishHeader() {
             
             <h1 
               ref={titleRef}
+              className={`squish-title ${scrolled ? 'scrolled' : ''}`}
               style={{
                 position: "relative",
                 zIndex: 20,
@@ -403,6 +418,7 @@ export default function SquishHeader() {
                 margin: 0,
                 textTransform: "uppercase",
                 transform: isTomorrow ? "translateY(-6px)" : "none",
+                transition: "opacity 0.25s ease",
               }}
             >
               The Accidental Intactivist's Inquiry
@@ -509,7 +525,7 @@ export default function SquishHeader() {
               pointerEvents: "none",
             }}>
               <div style={{
-                position: "relative",
+                display: "grid",
                 border: "2.5px solid transparent",
                 width: "100%",
                 minHeight: "90px",
@@ -517,18 +533,17 @@ export default function SquishHeader() {
               }}>
                 {TEASER_QUOTES.map((q, i) => (
                   <div key={i} style={{
-                    position: "absolute",
-                    top: "50%", 
-                    left: "clamp(1.5rem, 4vw, 3.5rem)", 
-                    right: "clamp(1.5rem, 4vw, 3.5rem)",
-                    transform: "translateY(-50%)",
-                  opacity: quoteIndex === i ? 1 : 0,
-                  transition: "opacity 1.5s ease-in-out",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.6rem",
-                  alignItems: "center"
-                }}>
+                    gridArea: "1 / 1",
+                    opacity: quoteIndex === i ? 1 : 0,
+                    transition: "opacity 1.5s ease-in-out",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    gap: "0.6rem",
+                    alignItems: "center",
+                    padding: "0 clamp(1.5rem, 4vw, 3.5rem)",
+                    pointerEvents: quoteIndex === i ? "auto" : "none",
+                  }}>
                   <div style={{
                     fontFamily: "var(--f-display, 'Playfair Display', serif)",
                     fontSize: "clamp(1rem, 2vw, 1.15rem)",

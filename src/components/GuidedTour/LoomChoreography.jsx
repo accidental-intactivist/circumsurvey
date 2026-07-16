@@ -53,7 +53,9 @@ const REGIONS = [
 ];
 
 // Tuned in the standalone draft's ⚙ Tune panel; stamp new values from there.
-const CFG = {
+// Exported so the Docent's Bobbin Threadbare easter egg (CopilotChat.jsx)
+// can recite the Underloom's pattern alongside the masthead's LOOM_CONFIG.
+export const UNDERLOOM_CONFIG = {
   RIB: { waveFreq: 1.5, spread: 1.2, sep: 0.22, speed: 0.3, amp: 0.9 },
   TAR: { angle: 1.1, driftPx: 9.5, breathe: 0.065, alpha: 0.4 },
   TRON: { zN: 1.8, zF: 34, rows: 28, lanes: 30, racers: 6, horizon: 0.27, camY: 1.5, laneW: 1.4, speed: 3.4, gridSpeed: 1.2, trail: 3.5 },
@@ -97,7 +99,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     let sizeScale = 1;
     let T = prefersReduced ? 7 : 0; // reduced motion: freeze at a settled pose
 
-    const { RIB, TAR, TRON, CAN, MO, PEN, FL, GLN, ENG } = CFG;
+    const { RIB, TAR, TRON, CAN, MO, PEN, FL, GLN, ENG } = UNDERLOOM_CONFIG;
 
     // ── Theme tokens (R7: the engine rules above all) ──
     const parseColor = (cssVar, fallback) => {

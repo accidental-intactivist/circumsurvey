@@ -35,6 +35,17 @@ const FLOWCHART_STYLES = `
   .sf-card {
     transition: box-shadow 0.2s;
   }
+  .sf-fork-instruction {
+    position: absolute;
+    top: 65px;
+  }
+  @media (max-width: 1100px) {
+    .sf-fork-instruction {
+      position: relative !important;
+      top: 0 !important;
+      margin: 1.5rem auto 1rem auto !important;
+    }
+  }
 `;
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -1677,9 +1688,7 @@ function UniversalForkConnector({ branches, onHover, onMove, onLeave, getFlowInf
   return (
     <div style={{ position: "relative", overflow: "visible", marginTop: "-1px", marginBottom: 0 }}>
       {/* Instruction text over the hourglass band */}
-      <div style={{
-        position: "absolute",
-        top: 65,
+      <div className="sf-fork-instruction" style={{
         left: 0,
         right: 0,
         zIndex: 2,

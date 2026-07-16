@@ -50,8 +50,8 @@ export default function ExhibitHero({
       backdropFilter: "blur(16px)",
       border: `1px solid ${resolvedColor}40`,
       borderRadius: 12,
-      padding: "2rem",
-      marginBottom: "4rem",
+      padding: "clamp(1.25rem, 5vw, 2rem)",
+      marginBottom: "clamp(2rem, 5vw, 4rem)",
       position: "relative",
       overflow: "hidden",
       boxShadow: `0 6px 0 rgba(0,0,0,0.15)`
@@ -81,11 +81,12 @@ export default function ExhibitHero({
       <h1 style={{
         fontFamily: FONT.display,
         fontWeight: 800,
-        fontSize: "2.5rem",
+        fontSize: "clamp(1.75rem, 6vw, 2.5rem)",
         color: C.textBright,
         lineHeight: 1.15,
         letterSpacing: "-0.025em",
-        marginBottom: "1rem"
+        marginBottom: "1rem",
+        wordBreak: "break-word"
       }}>
         {title}
       </h1>

@@ -335,15 +335,13 @@ export default function GuidedTour() {
           <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
             <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.95rem", color: C.text, lineHeight: 1.75, maxWidth: 760 }}>
               <p style={{ margin: "0 0 1rem" }}>
-                My name is Tone Pettit, and I am the "Accidental Intactivist." This project was born
-                from a lifetime of observation and a single, persistent question.
+                My name is Tone Pettit. If you are an American man reading this, there is a high probability your parents made a decision when you were an infant to remove a portion of your genital skin.
               </p>
               <p style={{ margin: "0 0 1rem" }}>
-                By a conscious choice of my parents in the 1970s, I grew up intact — a complete
-                outlier in a US culture where routine infant circumcision was the unquestioned, 90%
-                norm. I became an <em style={{ color: C.goldBright }}>accidental witness</em> to a
-                profound alteration that nearly all my friends and peers had undergone — something my
-                parents had simply waved off as unnecessary.
+                For most men, this was framed strictly as a prophylactic hygiene measure. It was so normalized that questioning it often feels taboo.
+              </p>
+              <p style={{ margin: "0 0 1rem" }}>
+                By a conscious choice of my parents in the 1970s, I grew up intact. I was an outlier in a culture where routine infant circumcision was the unquestioned, 90% norm. I became an "accidental intactivist," a witness to an alteration that nearly all my peers had undergone without a say.
               </p>
               <blockquote style={{
                 margin: "1.4rem 0", padding: "0.9rem 1.2rem",
@@ -355,20 +353,10 @@ export default function GuidedTour() {
                 If someone asked you honestly how you felt about your circumcision status, what would you say?
               </blockquote>
               <p style={{ margin: "0 0 1rem" }}>
-                That is the question I set out to ask when I built this anonymous survey. I wanted to
-                know: what was the actual, lived experience of the people in these bodies? The biology
-                of the foreskin is well understood. Its nerve density, mechanical function, and
-                immunological role are documented in anatomy textbooks, not fringe pamphlets. And yet
-                routine infant circumcision became standard practice in America during an era when
-                self-pleasure was treated as a medical disorder. The procedure was designed, explicitly,
-                to reduce sexual sensation. That history is not in dispute.
+                That is the question I set out to ask when I built this anonymous survey. The biology of the foreskin is well understood. Its nerve density, mechanical function, and immunological role are documented in anatomy textbooks. Yet routine infant circumcision became standard practice in America during an era when self-pleasure was treated as a medical disorder. The procedure was designed to reduce sexual sensation.
               </p>
               <p style={{ margin: "0 0 1rem" }}>
-                What is shifting is the culture. Newborn circumcision rates in the United States have
-                been reported below 50% for the first time in over a century. Parents are asking
-                questions that a generation ago went unasked. This project does not tell anyone what to
-                conclude. It asks the people who live in these bodies what their experience actually is,
-                and it reports what they said.
+                Now the culture is shifting. Newborn circumcision rates in the United States have fallen below 50% for the first time in over a century. Parents are asking questions that went unasked a generation ago.
               </p>
               <div style={{
                 float: "right", width: 220, marginLeft: "1.4rem", marginBottom: "0.8rem",
@@ -393,27 +381,16 @@ export default function GuidedTour() {
                 Grassroots Outreach
               </div>
               <p style={{ margin: "0 0 1rem" }}>
-                There was no advertising budget, no institutional backing, no clinical recruitment
-                pipeline. The survey was spread entirely through grassroots efforts — flyers posted
-                to forums, shared across social media, and passed hand to hand. Just a question,
-                posted into the clearing of the internet, and an invitation to answer anonymously.
-                Five hundred people showed up — not because they were asked to, but because they
-                had been waiting to be asked.
+                There was no advertising budget or clinical recruitment pipeline. The survey spread entirely through grassroots efforts. It was posted to forums, shared across social media, and passed hand to hand. Five hundred people showed up to answer anonymously.
               </p>
               <p style={{ margin: "0 0 1rem" }}>
-                So I asked. <strong style={{ color: C.textBright }}>96% of respondents across every
-                pathway</strong> — intact, circumcised, restoring, and observers alike — agree the
-                child should have the right to decide; no other question in this survey produces a
-                consensus that strong. <strong style={{ color: C.textBright }}>86% of infant-circumcised
-                respondents</strong> (circumcised + restoring) report some resentment, loss, anger,
-                or grief; only 14% say they have never felt negative about it. Their testimonies
-                speak directly to the old assumption that "they don't remember, so they don't care."
+                The results are striking. <strong style={{ color: C.textBright }}>96% of respondents across every pathway</strong> agree the child should have the right to decide. No other question in this survey produces a consensus that strong. 
+              </p>
+              <p style={{ margin: "0 0 1rem" }}>
+                Furthermore, <strong style={{ color: C.textBright }}>86% of infant-circumcised respondents</strong> report some resentment, loss, anger, or grief. Their testimonies challenge the old assumption that infants don't remember and men don't care.
               </p>
               <p style={{ margin: 0 }}>
-                We are not telling anyone how to feel. This project exists so people can say —
-                anonymously, in their own words — how they actually feel and what they actually
-                experience. What follows is a guided tour through their answers: summarized, never
-                argued. Where I editorialize, it is clearly labeled and kept off the exhibit floor.
+                This project exists to invite you to pay attention to what surfaces when people are given the space to share their experiences honestly. What follows is a guided tour through their answers, summarized and never argued. Where I editorialize, it is clearly labeled. Otherwise, we simply report what they said.
               </p>
               <div style={{
                 display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.4rem",
@@ -450,8 +427,8 @@ export default function GuidedTour() {
 
             <TourCard title="Global Reach" refText={`FORM CS-001 · PHASE 1`} stamp="Map">
               <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.5rem", padding: "0 1rem" }}>
-                <p style={{ margin: "0 0 0.8rem" }}>I initially set out to create a US-focused inquiry, but the clearing we created for anonymous sharing quickly tapped into a profound, universal need to speak. Word spread organically, and soon people from all over the world were showing up, eager to respond.</p>
-                <p style={{ margin: 0 }}>Seeing this international outpouring allowed me to step back and recognize this as a truly global phenomenon, using that diverse momentum to fine-tune the survey’s question sets and pathways to accommodate narratives from far outside my original scope.</p>
+                <p style={{ margin: "0 0 0.8rem" }}>I originally designed this as a US-focused survey. But once it went live, it was quickly picked up and shared across international forums. People from all over the world started taking it.</p>
+                <p style={{ margin: 0 }}>Seeing this broader response, I adjusted the survey's question sets and pathways to ensure non-US respondents could accurately report their experiences, too.</p>
               </div>
               <DemographicMapsBlock />
               <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginTop: "1rem", padding: "0 1rem" }}>
@@ -476,7 +453,7 @@ export default function GuidedTour() {
           </Station>
 
           <Station num="01">
-            <TourCard title="The Architecture" refText="EXHIBIT 01 · ROUTING LOGIC" stamp="Map" exhibitStation={st("01")}>
+            <TourCard title="The Survey Architecture" refText="EXHIBIT 01 · ROUTING LOGIC" stamp="Map" exhibitStation={st("01")}>
               <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
                 <p style={{ margin: "0 0 0.8rem" }}>The survey was engineered with a single, critical constraint: every respondent answered the same core experience questions — <em style={{ color: C.textBright }}>how things feel, how things work, how satisfied they are</em> — before the survey ever asked about their circumcision status.</p>
                 <p style={{ margin: 0 }}>Only after those ratings were sealed did the instrument fork into separate pathways. This means the pleasure data you are about to see was collected blind.</p>
@@ -695,14 +672,15 @@ export default function GuidedTour() {
         {/* ── Chapter 4 ── */}
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem" }}>
           <ChapterDivider id="ch-world-told" act="Chapter 04" title="What Did The World Tell Them?">
-            Nobody grows up in a vacuum. But the culture surrounding circumcision has undergone a tectonic shift over the last fifty years. With the advent of the internet and social media, a practice that was once unquestioned is now facing unprecedented scrutiny from the very generations who experienced it.
+            The culture surrounding circumcision has changed over the last fifty years. With the internet, a practice that was once a quiet routine is now being actively debated and scrutinized by the very generations who experienced it.
           </ChapterDivider>
 
           <Station num="07">
             <TourCard title="The Generational Faultline" refText="EXHIBIT 07 · CULTURE & GENERATIONS" stamp="Shifting Norms" exhibitStation={st("07")}>
               <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
-                <p style={{ margin: "0 0 0.8rem" }}>The data reveals a dramatic collapse in satisfaction across generations. For the Baby Boomers, circumcision was a near-universal norm—over half report being proud and satisfied with their status. But for Generation Z, who grew up with unfettered access to information and global perspectives via the internet, that paradigm has inverted. Over half of Gen Z respondents report dissatisfaction, with the largest single group being "very dissatisfied."</p>
-                <p style={{ margin: 0 }}>This generational divide is mirrored in how respondents remember the communities they grew up in. For circumcised respondents, the procedure was overwhelmingly described as <em style={{ color: C.textBright }}>automatic</em> or <em style={{ color: C.textBright }}>unquestioned</em>. For intact respondents, the landscape was far more varied.</p>
+                <p style={{ margin: "0 0 0.8rem" }}>Satisfaction drops sharply in younger generations. Among Baby Boomers, where circumcision was the overwhelming norm, over half report being proud and satisfied with their status.</p>
+                <p style={{ margin: "0 0 0.8rem" }}>But for Generation Z, the trend flips. Over half of Gen Z respondents report dissatisfaction, with the largest single group identifying as "very dissatisfied."</p>
+                <p style={{ margin: 0 }}>This divide is mirrored in how respondents remember the communities they grew up in. Circumcised respondents overwhelmingly describe the procedure as <em style={{ color: C.textBright }}>automatic</em> or <em style={{ color: C.textBright }}>unquestioned</em>. For intact respondents, the landscape was far more varied.</p>
               </div>
 
 
@@ -1109,16 +1087,19 @@ export default function GuidedTour() {
 
           <div style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.textBright, lineHeight: 1.7, maxWidth: 680, margin: "0 auto 3rem", textAlign: "left" }}>
             <p style={{ marginBottom: "1.5rem" }}>
-              These numbers describe what five hundred people reported about their own bodies, their own experiences, and their own wishes for the next generation. But behind every data point is a lived reality. 
+              These numbers reflect what five hundred people reported about their bodies, experiences, and wishes for the next generation.
             </p>
             <p style={{ marginBottom: "1.5rem" }}>
-              When we strip away the euphemisms and the clinical detachment, the data daylights what routine infant circumcision actually is: <strong>a penile reduction surgery</strong>. It is the permanent removal of the most highly innervated, erogenous tissue on the male body, resulting in a measurable diminishment of sexual pleasure, mechanics, and sensitivity.
+              Without euphemisms or clinical framing, the data points to a straightforward reality: routine infant circumcision is a penile reduction surgery. It permanently removes highly innervated, erogenous tissue. The data shows this results in measurable drops in sexual pleasure, mechanics, and sensitivity.
             </p>
             <p style={{ marginBottom: "1.5rem" }}>
-              If parents were routinely given full access to this reality—rather than being offered a "benign cosmetic procedure" by default—this survey suggests that far fewer would consent to altering their child's body. The vast majority of those who have lived it, regardless of their own circumcision status, agree on one fundamental truth: <span style={{ color: C.goldBright }}>the decision belongs to the person who has to live in the body.</span>
+              If parents were routinely given full access to this reality, rather than being offered a "benign cosmetic procedure" by default, this survey suggests far fewer would consent to altering their child's body.
+            </p>
+            <p style={{ marginBottom: "1.5rem" }}>
+              The vast majority of those who have lived it, regardless of their own circumcision status, agree on one fundamental truth: <span style={{ color: C.goldBright }}>the decision belongs to the person who has to live in the body.</span>
             </p>
             <p>
-              When you look at the evidence without the cultural blinders, it's hard not to walk away as an accidental intactivist yourself.
+              When you look at the evidence without the cultural blinders, it is hard not to walk away as an accidental intactivist yourself.
             </p>
           </div>
 

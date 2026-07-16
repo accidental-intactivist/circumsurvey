@@ -303,7 +303,7 @@ export default function ContactForm() {
           <div style={{ marginTop: "2.5rem", display: "flex", gap: "1rem", alignItems: "flex-start", background: "rgba(255,255,255,0.02)", padding: "1.25rem", borderRadius: 8, border: `1px solid ${C.ghost}` }}>
             <input type="checkbox" id="consent" name="consent" required style={{ marginTop: "0.25rem", cursor: "pointer", accentColor: C.goldBright }} />
             <label htmlFor="consent" style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, lineHeight: 1.5, cursor: "pointer" }}>
-              <strong style={{ color: C.textBright }}>Privacy Disclaimer:</strong> By submitting this form, you consent to having your name, email address, and message securely transmitted for the sole purpose of responding to your inquiry. Your personally identifiable information (PII) will never be shared, sold, or publicly displayed without explicit consent.
+              <strong style={{ color: C.textBright }}>Privacy Disclaimer:</strong> By submitting this form, you consent to having your name, email address, and message securely transmitted for the purpose of reviewing and, if applicable, responding to your inquiry. Your personally identifiable information (PII) will never be shared, sold, or publicly displayed without explicit consent.
             </label>
           </div>
 

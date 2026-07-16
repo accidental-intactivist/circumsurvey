@@ -53,12 +53,29 @@ export default function ExploreShell() {
   const [exhibitContext, setExhibitContext] = useState(null);
   const [isDocentOpen, setDocentOpen] = useState(false);
   const [visibleSection, setVisibleSection] = useState(null);
+  const [docentTourSuas, setDocentTourSuas] = useState(null);
+
+  // Listen for global open-docent events
+  useEffect(() => {
+    const handleOpenDocent = (e) => {
+      if (e.detail?.context) {
+        setExhibitContext(prev => ({ ...prev, overrideContext: e.detail.context }));
+      }
+      if (e.detail?.tourSuas) {
+        setDocentTourSuas(e.detail.tourSuas);
+      }
+      setDocentOpen(true);
+    };
+    window.addEventListener('open-docent', handleOpenDocent);
+    return () => window.removeEventListener('open-docent', handleOpenDocent);
+  }, []);
 
   // Reset custom page metadata and context whenever the route or active question ID changes
   useEffect(() => {
     setCustomMeta(null);
     setExhibitContext(null);
     setVisibleSection(null);
+    setDocentTourSuas(null);
   }, [route, params.id]);
 
   // Set up scroll-spy for AI Docent context tracking
@@ -198,6 +215,7 @@ export default function ExploreShell() {
         routerState={routerState}
         updateState={updateState}
         exhibitContext={{ ...exhibitContext, visibleSection }}
+        tourSuas={docentTourSuas}
       />
     </>
   );

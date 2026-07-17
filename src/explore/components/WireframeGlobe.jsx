@@ -218,6 +218,9 @@ export default function WireframeGlobe({
       ctx.fill();
       ctx.restore();
       
+      // Save the scaled state before applying the clipping mask!
+      ctx.save();
+
       // Clip everything to the fixed base circle (solves the telescope effect when zoomed in)
       ctx.beginPath();
       ctx.arc(center[0], center[1], baseRadius, 0, 2 * Math.PI);
@@ -388,6 +391,9 @@ export default function WireframeGlobe({
       } else if (autoRotate) {
         rotationRef.current[0] += rotationSpeed;
       }
+      
+      // Restore the root scale state for the next frame
+      ctx.restore();
       
       // Always request the next frame so the holographic glint scanner continuously sweeps!
       animFrameRef.current = requestAnimationFrame(drawFrame);

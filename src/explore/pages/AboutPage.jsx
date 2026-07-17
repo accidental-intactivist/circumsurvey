@@ -123,6 +123,31 @@ export default function AboutPage() {
           </ul>
         </SectionBlock>
 
+        <SectionBlock title="Advocacy & Resources">
+          <p>
+            This inquiry exists in a broader ecosystem of researchers, advocates, and legal professionals working toward bodily autonomy for all children. We encourage you to explore and support the following organizations:
+          </p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+            gap: "2rem",
+            alignItems: "center",
+            marginTop: "2.5rem",
+            background: "rgba(255,255,255,0.03)",
+            padding: "2rem",
+            borderRadius: 12,
+            border: "1px solid rgba(255,255,255,0.1)"
+          }}>
+            <img src="/logos/media__1784241129141.png" alt="Doctors Opposing Circumcision" style={{ width: "100%", height: "auto", mixBlendMode: "screen", filter: "brightness(1.5)" }} />
+            <img src="/logos/media__1784241136975.png" alt="Intact Global" style={{ width: "100%", height: "auto" }} />
+            <img src="/logos/media__1784241141247.png" alt="GALDEF" style={{ width: "100%", height: "auto", mixBlendMode: "screen", filter: "brightness(1.5)" }} />
+            <img src="/logos/media__1784241147470.png" alt="WIBM" style={{ width: "100%", height: "auto", mixBlendMode: "screen", filter: "brightness(1.5)" }} />
+          </div>
+          <div style={{ marginTop: "3rem", textAlign: "center" }}>
+            <img src="/logos/media__1784241169049.jpg" alt="The Accidental Intactivist Manifesto" style={{ maxWidth: "300px", width: "100%", height: "auto", borderRadius: 8, boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }} />
+          </div>
+        </SectionBlock>
+
       </div>
     </div>
   );

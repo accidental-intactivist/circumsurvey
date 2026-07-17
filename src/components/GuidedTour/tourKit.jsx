@@ -113,6 +113,47 @@ export function ExhibitBadge({ station, size = "md", showLabel = false }) {
   );
 }
 
+// ── ShareTools: subtle share icons for deep-linking ────────────────────────
+export function ShareTools({ title }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e) => {
+    e.preventDefault();
+    const anchorId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${anchorId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+      <button 
+        onClick={handleCopy}
+        title="Copy link to this finding"
+        style={{
+          background: "transparent",
+          border: "none",
+          color: copied ? C.green : C.dim,
+          cursor: "pointer",
+          padding: "4px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "color 0.2s",
+          fontFamily: FONT.mono,
+          fontSize: "0.6rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}
+      >
+        {copied ? "Copied!" : <Icons.Share2 size={14} />}
+      </button>
+    </div>
+  );
+}
+
 // ── Lens: the guide's wall text ────────────────────────────────────────────
 export function Lens({ children, center }) {
   return (
@@ -134,11 +175,12 @@ export function TourCard({ title, refText, children, style, exhibitStation }) {
 
   return (
     <Reveal>
-      <div style={{
+      <div id={title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} style={{
         position: "relative",
         background: C.bgCard, border: `1px solid ${C.ghost}`,
         borderRadius: 12, marginBottom: "1.5rem",
         boxShadow: `0 8px 30px rgba(0,0,0,0.05)`,
+        scrollMarginTop: 90,
         ...style
       }}>
         <div style={{
@@ -154,11 +196,14 @@ export function TourCard({ title, refText, children, style, exhibitStation }) {
           }}>
             <span style={{ color: C.red }}>★</span> {title}
           </div>
-          {refText && (
-            <div style={{ fontFamily: FONT.mono, fontSize: "0.52rem", color: C.dim, letterSpacing: "0.06em" }}>
-              {refText}
-            </div>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {refText && (
+              <div style={{ fontFamily: FONT.mono, fontSize: "0.52rem", color: C.dim, letterSpacing: "0.06em" }}>
+                {refText}
+              </div>
+            )}
+            <ShareTools title={title} />
+          </div>
         </div>
         <div style={{ padding: "1.6rem 1.5rem" }}>{children}</div>
         {exhibitStation && (

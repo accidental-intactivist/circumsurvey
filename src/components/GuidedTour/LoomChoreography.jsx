@@ -12,7 +12,7 @@
 //
 // Formations: quiet ribbon (editorial), harlequin tartan (crossing sett
 // bands — the full ribbon loom was retired: too close to the masthead's
-// HarmonicCanvas), beam racer (grid floor + light-cycles), canyon flight
+// HarmonicCanvas), beam racer (grid floor + light-cycles), glacier flyover
 // (wireframe terrain flythrough), moiré + blips (traveling saw-tooth
 // packets), pendulum harmonograph (Coral-Records-style nested decaying
 // ellipses, slow precession — replaced the chaotic drawing spirograph),
@@ -40,14 +40,14 @@ const REGIONS = [
   ["#st03", "canyon"],        // pleasure gap — flying the data terrain
   ["#st02", "moire"],         // mirror pairs — interference is the point
   ["#st06", "moire"],         // narrative mirrors
-  ["#st07", "pendulum"],      // culture & generations — the slow swing of eras
+  ["#st07", "flow"],          // culture & generations — the fellow travellers
   ["#st09", "moire"],         // religious mirrors
   ["#st08", "quiet"],         // observer lens — restraint for the witnesses
   ["#st04", "tartan"],        // correlations — crossed bands for cross-tabulation
-  ["#st10", "pendulum"],      // restoration journey — rings patiently retraced
+  ["#st10", "flow"],          // restoration journey — fellow travellers returning
   ["#st11", "moire"],         // before & after — two states, slight offset
   ["#st13", "quiet"],         // for parents — sober decision environment
-  ["#st12", "canyon"],        // by the numbers
+  ["#st12", "pulsar"],        // by the numbers — the CP 1919 stack, pure signal
   ["#st14", "flow"],          // forward view — every stream converges
   ["#ch-epilogue", "quiet"],
 ];
@@ -59,9 +59,35 @@ export const UNDERLOOM_CONFIG = {
   RIB: { waveFreq: 1.5, spread: 1.2, sep: 0.22, speed: 0.3, amp: 0.9 },
   TAR: { angle: 1.1, driftPx: 9.5, breathe: 0.065, alpha: 0.4 },
   TRON: { zN: 1.8, zF: 34, rows: 28, lanes: 30, racers: 6, horizon: 0.27, camY: 1.5, laneW: 1.4, speed: 3.4, gridSpeed: 1.2, trail: 3.5 },
+  // CANYON FLIGHT — the original Fractalus terrain, restored by Tone's
+  // request (the glacier experiment lost the Separation's drama).
   CAN: { zN: 1.6, zF: 26, horizon: 0.26, camY: 2.2, speed: 0.5, xSpan: 30, wall: 3.1, valley: 0.2 },
   MO: { angle: 0.63, drift: 0.028, blipEvery: 3, blipSpeed: 1, teeth: 2, blipAmp: 0.023, blipWin: 0.02 },
-  PEN: { gearRing: 48, gearWheel: 44, penHole: 0.85, size: 0.43, draw: 0.3, shrink: 0, ecc: 0.66, twist: 0.95, prec: 0.11, sway: 0.025, spreadX: 0.26 },
+  // TRUE HYPOTROCHOIDS: each figure is the pattern-guide pen trace itself —
+  // 21 threads each carry one consecutive arc of the closed curve, and the
+  // perpetual pen re-inks it round and round. Gears follow the guide's
+  // semantics (ring/wheel teeth → points = wheel/gcd), penHole = d. shape/
+  // lobe emulate the tin's non-circular wheels by modulating pen distance.
+  // Each figure wears ONE solid strand-group color: red / gold / blue.
+  // Defaults from the Ring 105 guide: Sunflower-35, 7-Star, Daisy-7.
+  // px/py: each figure's home position (fractions of W/H from center) — set
+  // two figures to the same spot to STACK their patterns. mutate = fireworks
+  // mode: a figure inks in, holds, dissolves, then rerolls itself into a new
+  // random pattern-guide figure at a new spot (figs below seed the first
+  // volley). hold = how long a completed figure lingers, in figure-lengths.
+  // Seed trio stamped from Tone's screenshot: the three dense 105-point nets.
+  PEN: {
+    draw: 0.3, prec: 0.04, sway: 0.025, mutate: 1, hold: 1.0,
+    figs: [
+      { gearRing: 105, gearWheel: 52, penHole: 0.8, size: 0.56, ecc: 0, twist: 0, shape: 0, lobe: 0, px: -0.28, py: -0.10 },
+      { gearRing: 105, gearWheel: 64, penHole: 0.9, size: 0.50, ecc: 0, twist: 0.4, shape: 0, lobe: 0, px: 0.30, py: 0.02 },
+      { gearRing: 105, gearWheel: 32, penHole: 0.9, size: 0.42, ecc: 0, twist: 0.9, shape: 0, lobe: 0, px: 0.04, py: 0.36 },
+    ],
+  },
+  // Unknown Pleasures — the pulsar stack (canyon's inverse: flat-on signal;
+  // speed = forward travel over the range, rows cresting at the horizon;
+  // sharp = peakiness of the ridge field — high = sparse JD spikes)
+  PUL: { height: 0.14, env: 0.26, drift: 0.35, speed: 0.02, sharp: 2.6 },
   FL: { pinch: 0.03, shimmer: 0.006, bendIn: 0.18, bendOut: 0.85 },
   GLN: { groups: 2, interval: 20, speed: 0.05, width: 0.15, strength: 0.5, tint: 0, scatter: 0.12 },
   ENG: { gutterA: 0.4, gutterB: 0.66, idleFloor: 0.3, alphaMul: 1, lineWidth: 1.6 },
@@ -99,7 +125,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     let sizeScale = 1;
     let T = prefersReduced ? 7 : 0; // reduced motion: freeze at a settled pose
 
-    const { RIB, TAR, TRON, CAN, MO, PEN, FL, GLN, ENG } = UNDERLOOM_CONFIG;
+    const { RIB, TAR, TRON, CAN, MO, PEN, PUL, FL, GLN, ENG } = UNDERLOOM_CONFIG;
 
     // ── Theme tokens (R7: the engine rules above all) ──
     const parseColor = (cssVar, fallback) => {
@@ -122,6 +148,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
       gold: parseColor("--c-gold", [212, 160, 48]),
       green: parseColor("--c-green", [104, 184, 120]),
       bright: parseColor("--c-textBright", [255, 255, 255]),
+      text: parseColor("--c-text", [238, 238, 238]),
     };
     const PAT = {
       intact: parseColor("--path-intact", [42, 157, 143]),
@@ -132,10 +159,15 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
 
     // ── Helpers ──
     const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+    const gcd = (a, b) => { a = Math.round(a); b = Math.round(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; };
     const ss = (a, b, x) => { x = Math.max(0, Math.min(1, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
     const lerp = (a, b, m) => a + (b - a) * m;
     const wrap = (a, b) => ((a % b) + b) % b;
     const mixc = (c1, c2, t) => [lerp(c1[0], c2[0], t), lerp(c1[1], c2[1], t), lerp(c1[2], c2[2], t)];
+    // The masthead's red→gold→blue spectrum as a ramp (t: 0..1). The quiet
+    // ribbon wears it; per Tone it is the MODEL for the other formations —
+    // continuous colorPos means richer color AND hue-true glint families.
+    const spec3 = (t) => (t < 0.5 ? mixc(PAL.red, PAL.gold, t * 2) : mixc(PAL.gold, PAL.blu, (t - 0.5) * 2));
 
     // ── RIBBON LOOM (HarmonicCanvas DNA: parents, phase spread, taper) ──
     const parentY = (u, tau, seed, amp) => {
@@ -213,6 +245,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     const tronFade = (zw) => ss(TRON.zN, TRON.zN + 1.4, zw) * (1 - ss(TRON.zF - 6, TRON.zF, zw));
 
     // ── CANYON FLIGHT (world-stable terrain, camera flying forward) ──
+    // ── CANYON FLIGHT surface — the original Fractalus terrain, restored ──
     const canyonH = (xw, zw) => {
       const b = Math.sin(xw * 0.5 + zw * 0.4) + 0.6 * Math.sin(xw * 1.1 - zw * 0.23 + 1.7) + 0.35 * Math.sin(xw * 2.2 + zw * 0.72 + 4);
       const h01 = (b + 1.95) / 3.9;
@@ -249,7 +282,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     const settHue = { red: 0.05, gold: 0.35, yellow: 0.5, green: 0.7, grey: 0.85, blue: 0.95 };
 
     // Per-frame derived spirograph geometry (filled by pendulum.prep)
-    const penD = { cyc: 21, step: 0, orbit: 0, loopR: 0, prog: -1 };
+    const penD = { cyc: 21, prog: -1, fam: [{}, {}, {}] }; // per-family gearing (variety)
 
     // ── THE GLISTEN, engine-wide ── faithful port of the Harmonic Loom's
     // glint pass: colour families staggered in time, alternating travel
@@ -260,9 +293,14 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     let glintT = 0; // real-seconds accumulator, decoupled from damp (like the masthead)
     const glisten = (F, wgt) => {
       if (wgt < 0.02 || GLN.groups <= 0) return;
-      const period = Math.max(0.5, GLN.interval);
-      const travelT = Math.min(period, 1 / Math.max(0.001, GLN.speed));
-      const sat = Math.max(0, Math.min(100, Math.round(95 - GLN.tint * 60)));
+      // formations may override glint cadence/size (F.glint) — the spirograph
+      // runs a much denser sparkle so streaks crowd its mesh
+      const gi = F.glint || GLN;
+      const period = Math.max(0.5, gi.interval !== undefined ? gi.interval : GLN.interval);
+      const gWidth = gi.width !== undefined ? gi.width : GLN.width;
+      const gStrength = gi.strength !== undefined ? gi.strength : GLN.strength;
+      const travelT = Math.min(period, 1 / Math.max(0.001, gi.speed !== undefined ? gi.speed : GLN.speed));
+      const sat = Math.max(0, Math.min(100, Math.round(95 - (gi.tint !== undefined ? gi.tint : GLN.tint) * 60)));
       ctx.lineCap = "round";
       for (let i = 0; i < L; i++) {
         const c = F.col(i);
@@ -275,7 +313,10 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         // fall back to index order.
         const cp = F.hue ? F.hue(i) : i / L;
         const g = Math.min(GLN.groups - 1, Math.max(0, Math.floor(cp * GLN.groups)));
-        const dir = g % 2 === 0 ? 1 : -1;
+        // gi.sync = ONE cohesive wave: every thread travels the same
+        // direction on the same clock (no family stagger, no crossing) —
+        // the cascade order alone carries the wave through the formation.
+        const baseDir = gi.sync ? 1 : (g % 2 === 0 ? 1 : -1);
         // STRUCTURED CASCADE (not random): threads fire in the order the
         // formation declares — depth for the canyon (a pulse receding into
         // the scene), station for the spirograph (glints chase the pen),
@@ -283,38 +324,54 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         // rake; formation overrides (F.scatter) widen it into a cascade.
         const ord = F.order ? F.order(i) : cp;
         const effScatter = F.scatter !== undefined ? F.scatter : GLN.scatter;
-        const localT = wrap(glintT - (g / GLN.groups) * period - ord * effScatter * travelT, period);
-        if (localT >= travelT) continue;
-        const hp = localT / travelT;
+        const gOff = gi.sync ? 0 : (g / GLN.groups) * period;
         // The streak rides the thread's VISIBLE span (F.span), not blindly
         // u∈[0,1] — perspective formations map u far past the viewport.
         const spn = F.span ? F.span(i) : null;
         const s0 = spn ? spn[0] : 0, s1 = spn ? spn[1] : 1;
-        const uHead = s0 + (dir === 1 ? hp : 1 - hp) * (s1 - s0);
-        const uTail = Math.max(s0, Math.min(s1, uHead - dir * GLN.width * (s1 - s0)));
-        F.pt(i, uTail, pA);
-        F.pt(i, uHead, pB);
-        if (Math.abs(pA.x - pB.x) + Math.abs(pA.y - pB.y) < 2) continue;
-        const grad = ctx.createLinearGradient(pA.x, pA.y, pB.x, pB.y);
         // Streak hue seeded from the thread's spectrum position, like the
         // masthead (colorPos * 60) — the shimmer tracks the thread's colour.
         const hueBase = glintT * 30 + g * 140 + cp * 60;
-        // Streak brightness rides the thread's own visibility — a ghost-faint
-        // far row carries a ghost-faint glint, never a spotlight.
+        // Streak brightness rides the thread's own visibility — un-inked or
+        // ghost-faint threads carry no glint, so trails only ever appear
+        // where the pen has already been.
         const vis = Math.min(1, c[3] * 5);
-        for (let q = 0; q <= 6; q++) {
-          const f = q / 6;
-          const hue = wrap(hueBase + f * 150, 360);
-          grad.addColorStop(f, `hsla(${hue.toFixed(0)}, ${sat}%, ${(60 + f * 28).toFixed(0)}%, ${(Math.pow(f, 1.8) * GLN.strength * wgt * vis).toFixed(3)})`);
+        if (vis <= 0.01) continue;
+        // gi.crisscross = the masthead's crossing glints, adapted: TWO
+        // counter-running waves — the second cascades from the opposite end,
+        // half a period behind — so holographic trails meet and cross on
+        // the figure, again and again as the pen draws.
+        const passes = gi.crisscross ? 2 : 1;
+        for (let ps = 0; ps < passes; ps++) {
+          const dir = gi.crisscross ? (ps === 0 ? 1 : -1) : baseDir;
+          const pOrd = ps === 0 ? ord : 1 - ord;
+          const pOff = gi.crisscross ? ps * period * 0.5 : gOff;
+          // cascade offsets span the PERIOD (not one crossing), so fast
+          // crossings become one bright head sweeping thread-to-thread.
+          const localT = wrap(glintT - pOff - pOrd * effScatter * period, period);
+          if (localT >= travelT) continue;
+          const hp = localT / travelT;
+          const uHead = s0 + (dir === 1 ? hp : 1 - hp) * (s1 - s0);
+          const uTail = Math.max(s0, Math.min(s1, uHead - dir * gWidth * (s1 - s0)));
+          F.pt(i, uTail, pA);
+          F.pt(i, uHead, pB);
+          if (Math.abs(pA.x - pB.x) + Math.abs(pA.y - pB.y) < 2) continue;
+          const grad = ctx.createLinearGradient(pA.x, pA.y, pB.x, pB.y);
+          const hb = hueBase + ps * 80; // the counter-wave shimmers offset
+          for (let q = 0; q <= 6; q++) {
+            const f = q / 6;
+            const hue = wrap(hb + f * 150, 360);
+            grad.addColorStop(f, `hsla(${hue.toFixed(0)}, ${sat}%, ${(60 + f * 28).toFixed(0)}%, ${(Math.pow(f, 1.8) * gStrength * wgt * vis).toFixed(3)})`);
+          }
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = Math.max(1, c[4] * 1.5 * ENG.lineWidth); // glints ride the same weight
+          ctx.beginPath();
+          for (let s2 = 0; s2 <= 20; s2++) {
+            F.pt(i, uTail + (uHead - uTail) * (s2 / 20), pA);
+            if (s2 === 0) ctx.moveTo(pA.x, pA.y); else ctx.lineTo(pA.x, pA.y);
+          }
+          ctx.stroke();
         }
-        ctx.strokeStyle = grad;
-        ctx.lineWidth = Math.max(1, c[4] * 1.5 * ENG.lineWidth); // glints ride the same weight
-        ctx.beginPath();
-        for (let s2 = 0; s2 <= 20; s2++) {
-          F.pt(i, uTail + (uHead - uTail) * (s2 / 20), pA);
-          if (s2 === 0) ctx.moveTo(pA.x, pA.y); else ctx.lineTo(pA.x, pA.y);
-        }
-        ctx.stroke();
       }
       ctx.lineCap = "butt";
     };
@@ -372,15 +429,33 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
           }
         },
         col: (i) => {
-          if (i < TRON.rows) { const c = PAL.lbl; return [c[0], c[1], c[2], 0.17 * tronFade(tronRowZ(i)), 1]; }
-          if (i < TRON.rows + TRON.lanes) { const c = PAL.lbl; return [c[0], c[1], c[2], 0.10, 1]; }
+          if (i < TRON.rows) {
+            const zw = tronRowZ(i);
+            const c = PAL.lbl;
+            // perspective weight: rows fatten as they roll toward the
+            // bottom of the stage — real-3D line thickness
+            return [c[0], c[1], c[2], 0.17 * tronFade(zw), (0.4 + 4.5 / zw) * sizeScale];
+          }
+          if (i < TRON.rows + TRON.lanes) {
+            // quiet-ribbon treatment: the lanes ramp the spectrum across the
+            // floor, red at the left shoulder through gold to blue at the right
+            const c = spec3((i - TRON.rows) / (TRON.lanes - 1));
+            return [c[0], c[1], c[2], 0.11, 1];
+          }
           const rr = (i - TRON.rows - TRON.lanes) % TRON.racers;
           const c = [PAL.red, PAL.gold, PAL.blu, PAL.green, PAL.yel, PAL.lbl][rr]; // theme-reactive
           const R = racers[rr];
           const head = wrap(T * TRON.speed + rr * (R.tot / TRON.racers) * 1.7, R.tot + 9);
-          return [c[0], c[1], c[2], head < R.tot ? 0.72 : 0, 2.2 * sizeScale];
+          // the beam swells as it nears the viewer, thins toward the horizon
+          racerAt(R, Math.min(R.tot, head));
+          const wZ = Math.max(1.2, rw.z);
+          return [c[0], c[1], c[2], head < R.tot ? 0.72 : 0, Math.min(4, 0.8 + 5 / wZ) * sizeScale];
         },
-        hue: (i) => (i < TRON.rows + TRON.lanes ? 0.9 : [0.05, 0.35, 0.95, 0.7, 0.5, 0.85][(i - TRON.rows - TRON.lanes) % TRON.racers]),
+        hue: (i) => {
+          if (i < TRON.rows) return 0.9; // structural rows stay in the cool lane
+          if (i < TRON.rows + TRON.lanes) return (i - TRON.rows) / (TRON.lanes - 1);
+          return [0.05, 0.35, 0.95, 0.7, 0.5, 0.85][(i - TRON.rows - TRON.lanes) % TRON.racers];
+        },
         pts: (i) => (i < TRON.rows + TRON.lanes ? 2 : 48), // grid lines are straight
       },
       canyon: {
@@ -394,20 +469,16 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         col: (i) => {
           const zw = canyonRowZ(i);
           const near = 1 - (zw - CAN.zN) / (CAN.zF - CAN.zN);
+          // the original mono-cool ramp — pale at the horizon, blue up close
           const c = mixc(PAL.lbl, PAL.blu, near);
           return [c[0], c[1], c[2], (0.05 + 0.33 * Math.pow(near, 1.6)) * canyonFade(zw), (0.7 + 1.7 * near) * sizeScale];
         },
-        // all-cool formation: threads live in the blue family, so only the
-        // cool glint lane fires here — hue-honest, like the masthead's
-        // "quiet families are skipped entirely"
+        // all-cool formation: only the cool glint lane fires — hue-honest
         hue: (i) => 0.8 + 0.15 * (1 - (canyonRowZ(i) - CAN.zN) / (CAN.zF - CAN.zN)),
-        // Glint choreography: a pulse that recedes INTO the canyon — rows
-        // fire in depth order (not a linear sweep, not everyone at once)...
+        // glint pulse recedes INTO the canyon, and each row's streak rides
+        // only its VISIBLE span (near rows map u far past the viewport)
         order: (i) => (canyonRowZ(i) - CAN.zN) / (CAN.zF - CAN.zN),
         scatter: 0.85,
-        // ...and each row's streak rides only its VISIBLE span, so near rows
-        // finally carry beam riders across the foreground instead of glinting
-        // off-screen (a near row's u-range spans several screen-widths).
         span: (i) => {
           const zw = canyonRowZ(i);
           const halfU = Math.min(0.5, (0.62 * W * zw) / (0.9 * Math.min(W, H) * 0.85 * CAN.xSpan));
@@ -418,6 +489,44 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
           const near = 1 - (canyonRowZ(i) - CAN.zN) / (CAN.zF - CAN.zN);
           return 24 + Math.round(near * (P - 24));
         },
+      },
+      // Unknown Pleasures — the CP 1919 pulsar stack. The canyon's inverse:
+      // flat-on, no perspective, pure stacked signal. Rows of quiet lines in
+      // the theme's text token; peaks wake in a center channel, strongest in
+      // the middle rows, bumps drifting slowly. Monochrome by design.
+      pulsar: {
+        pt: (i, u, o) => {
+          // The rows TRAVEL over one continuous WORLD FIELD (the canyon's
+          // trick, flat-on): every row samples the same terrain at its depth,
+          // so ridgelines persist row-to-row and flow coherently toward the
+          // reader instead of each row rolling its own dice.
+          const prog = i / L + T * PUL.speed;
+          const v = wrap(prog, 1);
+          const wD = prog * 3.1;            // world depth — adjacent rows sample nearby terrain
+          const x = (u - 0.5) * 12;         // world x
+          const dr = T * PUL.drift * 0.08;  // the range itself evolves, slowly
+          const b = Math.sin(x * 0.9 + wD * 1.3 + dr)
+            + 0.6 * Math.sin(x * 1.9 - wD * 0.8 + 1.7 - dr * 0.7)
+            + 0.35 * Math.sin(x * 4.2 + wD * 2.1 + 4.0)
+            + 0.18 * Math.sin(x * 9.3 - wD * 3.7 + 2.2);
+          const h01 = Math.max(0, (b + 2.13) / 4.26);
+          const s = Math.pow(h01, PUL.sharp) * 2.2; // sharpen → sparse JD spikes
+          const env = Math.exp(-Math.pow((u - 0.5) / PUL.env, 2));
+          const rowAmp = 0.15 + 0.85 * Math.pow(Math.sin(v * Math.PI), 1.5);
+          const yRow = H * (0.12 + 0.76 * v);
+          o.x = u * W;
+          o.y = yRow - env * s * rowAmp * H * PUL.height;
+        },
+        col: (i) => {
+          const v = wrap(i / L + T * PUL.speed, 1);
+          const c = PAL.text;
+          const edge = ss(0, 0.07, v) * (1 - ss(0.93, 1, v)); // fade the wrap seam
+          return [c[0], c[1], c[2], (0.10 + 0.16 * Math.pow(Math.sin(v * Math.PI), 1.5)) * edge, 1.1 * sizeScale];
+        },
+        hue: () => 0.5, // monochrome — one glint lane, like the sleeve
+        order: (i) => wrap(i / L + T * PUL.speed, 1), // cascade rides the travel
+        scatter: 0.7,
+        pts: () => 100,
       },
       moire: {
         pt: (i, u, o) => {
@@ -446,10 +555,20 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
           o.x = x; o.y = y;
         },
         col: (i) => {
-          const c = i < L / 2 ? PAL.blu : PAL.red;
+          // quiet-ribbon treatment: each grid carries its own half of the
+          // spectrum — cool grid ramps gold→blue, warm grid red→gold — so
+          // the interference is between two gradients, not two flat colors
+          const half = L / 2;
+          const k = i < half ? i : i - half;
+          const pos = i < half ? 0.5 + (k / (half - 1)) * 0.5 : (k / (half - 1)) * 0.5;
+          const c = spec3(pos);
           return [c[0], c[1], c[2], i % MO.blipEvery === 0 ? 0.19 : 0.12, 1];
         },
-        hue: (i) => (i < L / 2 ? 0.9 : 0.08), // the two grids ARE the two hue families
+        hue: (i) => {
+          const half = L / 2;
+          const k = i < half ? i : i - half;
+          return i < half ? 0.5 + (k / (half - 1)) * 0.5 : (k / (half - 1)) * 0.5;
+        },
         pts: (i) => (i % MO.blipEvery === 0 ? P : 2), // only blip carriers bend
       },
       // Pendulum harmonograph — a SPIROGRAPH SIMULATOR with the Coral sleeve
@@ -460,58 +579,120 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
       // dissolves as the pen comes back around. Never resets, never hurries.
       pendulum: {
         prep: () => {
-          const rg = Math.max(24, PEN.gearRing);
-          const rw = Math.max(6, Math.min(PEN.gearWheel, rg - 6));
           penD.cyc = Math.floor(L / 3);
-          penD.step = 6.283 * rw / (rg - rw); // petal advance per loop — the gear ratio speaking
-          const S = Math.min(W, H) * PEN.size;
-          penD.orbit = S * (rg - rw) / rg;
-          penD.loopR = S * (rw / rg) * PEN.penHole;
           penD.prog = PEN.draw > 0 ? T * PEN.draw : -1; // -1 = complete figure, no drawing cycle
+          const cyc = penD.cyc;
+          penD.life = cyc * (1 + PEN.hold + 0.3); // ink + hold + dissolve, in arc-units
+          for (let f = 0; f < 3; f++) {
+            const fig = PEN.figs[f];
+            const G = penD.fam[f];
+            let src = fig;
+            if (PEN.mutate > 0) {
+              // FIREWORKS: each figure lives one lifecycle (ink in → hold →
+              // dissolve), then rerolls into a new random pattern-guide
+              // figure at a new spot. Staggered thirds so they come and go.
+              const tf = T * Math.max(0.05, PEN.draw) + f * penD.life / 3;
+              const lap = Math.floor(tf / penD.life);
+              G.lp = tf - lap * penD.life;
+              if (G.lap === undefined) { G.lap = lap; G.rig = { ...fig }; } // first volley = the seed config
+              else if (G.lap !== lap) {
+                G.lap = lap;
+                const wheels = [24, 30, 32, 36, 40, 42, 45, 48, 50, 52, 56, 60, 63, 64, 72, 75, 80, 84];
+                G.rig = {
+                  gearRing: 105,
+                  gearWheel: wheels[Math.floor(hash(lap * 37.7 + f * 11.3) * wheels.length)],
+                  penHole: 0.6 + 0.38 * hash(lap * 17.3 + f * 5.7),
+                  size: 0.3 + 0.35 * hash(lap * 53.1 + f * 29.9),
+                  px: (hash(lap * 71.7 + f * 3.1) - 0.5) * 0.6,
+                  py: -0.1 + 0.45 * hash(lap * 91.3 + f * 7.9),
+                };
+              }
+              src = G.rig;
+            } else { G.lp = -1; }
+            const rg = Math.max(24, src.gearRing);
+            const rw = Math.max(6, Math.min(src.gearWheel, rg - 6));
+            // The TRUE curve: closes after wheel/gcd revolutions, with
+            // ring/gcd points — exactly the pattern guide's arithmetic.
+            const revs = rw / gcd(rg, rw);
+            G.q = (rg - rw) / rw;                    // wheel spin per carrier rev
+            G.Rr = rg - rw;                          // carrier radius (teeth units)
+            G.d = src.penHole * rw;                  // pen distance from wheel center
+            G.segT = (6.283 * revs) / cyc;           // arc of curve per thread
+            G.scale = (Math.min(W, H) * src.size * 0.55) / (G.Rr + G.d);
+            G.px = src.px !== undefined ? src.px : fig.px;
+            G.py = src.py !== undefined ? src.py : fig.py;
+            G.ecc = fig.ecc;
+            G.rotOff = fig.twist;                    // static orientation offset
+            G.m = Math.round(fig.shape);
+            G.lobe = fig.lobe;
+            G.ptsSeg = Math.max(24, Math.min(P, Math.round(24 + (revs / cyc) * 72)));
+          }
         },
         pt: (i, u, o) => {
           const fam = i % 3, k = (i - fam) / 3;
-          let ph = 1, absIdx = k;
-          if (penD.prog >= 0) {
-            ph = wrap(penD.prog - k, penD.cyc);
-            absIdx = penD.prog - ph; // continuous loop index — stations advance forever
+          const G = penD.fam[fam];
+          let t;
+          if (G.lp >= 0) {
+            // fireworks: arcs ink once in order, sit, then the whole figure fades
+            const frac = Math.max(0, Math.min(1, G.lp - k));
+            t = k * G.segT + u * frac * G.segT;
+          } else {
+            let ph = 1, absIdx = k;
+            if (penD.prog >= 0) {
+              ph = wrap(penD.prog - k, penD.cyc);
+              absIdx = penD.prog - ph; // the pen keeps circling the closed figure
+            }
+            t = absIdx * G.segT + u * Math.min(1, ph) * G.segT;
           }
-          const arc = Math.min(1, ph); // the loop being inked grows to full
-          const thC = fam * 2.09 + absIdx * penD.step + T * PEN.prec * (fam === 1 ? -1 : 1);
-          const r = penD.loopR * (1 - k * PEN.shrink);
-          const cx = W * (0.5 + [-PEN.spreadX, PEN.spreadX, 0][fam]) + Math.cos(thC) * penD.orbit + Math.sin(T * 0.07 + fam * 2.1) * W * PEN.sway;
-          const cy = H * (0.47 + [-0.06, 0.05, 0.34][fam]) + Math.sin(thC) * penD.orbit * 0.55 + Math.cos(T * 0.055 + fam * 1.4) * H * PEN.sway * 0.6;
-          const th = u * 6.283 * arc;
-          const ringRot = thC * PEN.twist;
-          const x1 = Math.cos(th) * r, y1 = Math.sin(th) * r * (1 - PEN.ecc);
-          const cr = Math.cos(ringRot), sr = Math.sin(ringRot);
+          // shape/lobe: the tin's non-circular wheels, as pen-distance breathing
+          const dm = G.d * (1 + (G.m ? G.lobe * Math.cos(G.m * G.q * t) : 0));
+          const x1 = (G.Rr * Math.cos(t) + dm * Math.cos(G.q * t)) * G.scale;
+          const y1 = (G.Rr * Math.sin(t) - dm * Math.sin(G.q * t)) * G.scale * (1 - G.ecc);
+          const rot = G.rotOff + T * PEN.prec * (fam === 1 ? -1 : 1);
+          const cr = Math.cos(rot), sr = Math.sin(rot);
+          const cx = W * (0.5 + G.px) + Math.sin(T * 0.07 + fam * 2.1) * W * PEN.sway;
+          const cy = H * (0.47 + G.py) + Math.cos(T * 0.055 + fam * 1.4) * H * PEN.sway * 0.6;
           o.x = cx + x1 * cr - y1 * sr;
           o.y = cy + (x1 * sr + y1 * cr) * 0.9;
         },
         col: (i) => {
           const fam = i % 3, k = (i - fam) / 3;
-          // the Coral trio (green / red / pale) in theme-reactive tokens
-          const c = [PAL.green, PAL.red, PAL.lbl][fam];
+          const G = penD.fam[fam];
+          // one solid strand-group color per figure, like the harmonic
+          // loom's families: red / gold / blue
+          const c = [PAL.red, PAL.gold, PAL.blu][fam];
           let alMul = 1;
-          if (penD.prog >= 0) {
+          if (G.lp >= 0) {
+            alMul = Math.max(0, Math.min(1, G.lp - k)) > 0 ? 1 : 0; // not yet inked = invisible
+            const holdEnd = penD.cyc * (1 + PEN.hold);
+            if (G.lp > holdEnd) alMul *= Math.max(0, 1 - (G.lp - holdEnd) / (penD.life - holdEnd)); // the firework fades
+          } else if (penD.prog >= 0) {
             const ph = wrap(penD.prog - k, penD.cyc);
-            alMul = 1 - ss(penD.cyc - 2.5, penD.cyc - 0.2, ph); // oldest loops dissolve ahead of the pen
+            alMul = 1 - ss(penD.cyc - 2.5, penD.cyc - 0.2, ph); // oldest arcs dissolve ahead of the pen
           }
-          return [c[0], c[1], c[2], (k % 5 === 0 ? 0.30 : 0.185) * alMul, 1.3 * sizeScale];
+          return [c[0], c[1], c[2], 0.24 * alMul, 1.3 * sizeScale];
         },
-        hue: (i) => [0.68, 0.06, 0.88][i % 3], // green / red / pale on the spectrum axis
-        // Glints chase the pen: loops fire in inking order (newest first),
-        // cascading back around the whole figure — front-to-back — while the
-        // colour lanes cross it left-to-right from opposite directions.
-        order: (i) => {
-          const k = (i - (i % 3)) / 3;
-          return penD.prog >= 0 ? wrap(penD.prog - k, penD.cyc) / Math.max(1, penD.cyc) : k / Math.max(1, penD.cyc);
-        },
-        scatter: 0.9,
+        hue: (i) => [0.05, 0.5, 0.95][i % 3], // red / gold / blue strand groups
+        // Glints chase the pen in inking order; colour lanes cross from
+        // opposite directions.
+        order: (i) => ((i - (i % 3)) / 3) / Math.max(1, penD.cyc),
+        // near-unison so the wave doesn't teleport arc-to-arc (arcs are
+        // spatially scattered around the rosette): a faint lead only.
+        scatter: 0.12,
+        // TOTALLY CHILL, quiet-ribbon style: one soft, slow, coherent wave —
+        // all arcs light at nearly the same parameter, so a single glowing
+        // contour glides smoothly THROUGH the whole figure rather than a
+        // bright head jumping between arcs. sync = one direction/clock;
+        // narrow + dim + pale so it's a gentle sheen, never a manic streak.
+        glint: { interval: 26, width: 0.16, speed: 0.032, sync: true, tint: 0.6, strength: 0.3 },
         pts: (i) => {
-          if (penD.prog < 0) return 52;
-          const ph = wrap(penD.prog - ((i - (i % 3)) / 3), penD.cyc);
-          return 8 + Math.round(Math.min(1, ph) * 44); // resolution grows with the ink
+          const fam = i % 3, k = (i - fam) / 3;
+          const G = penD.fam[fam];
+          const base = G.ptsSeg || 52; // dense figures need dense arcs
+          let frac = 1;
+          if (G.lp >= 0) frac = Math.max(0, Math.min(1, G.lp - k));
+          else if (penD.prog >= 0) frac = Math.min(1, wrap(penD.prog - k, penD.cyc));
+          return 8 + Math.round(frac * (base - 8)); // resolution grows with the ink
         },
       },
       flow: {

@@ -254,6 +254,7 @@ function Station({ num, children }) {
 
 function NarrativeMirrorToggle() {
   const [active, setActive] = useState("physical");
+  const [page, setPage] = useState(0);
   const data = NARRATIVE_MIRROR_DATA[active];
   const activeTextColor = useLegibleColor("#ffffff", "var(--c-gold)", 4.5);
   
@@ -264,7 +265,7 @@ function NarrativeMirrorToggle() {
           const p = NARRATIVE_MIRROR_DATA[key];
           const isActive = active === key;
           return (
-            <button key={key} onClick={() => setActive(key)} style={{
+            <button key={key} onClick={() => { setActive(key); setPage(0); }} style={{
               fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.62rem",
               letterSpacing: "0.06em", textTransform: "uppercase",
               cursor: "pointer", border: "none", borderRadius: 100,
@@ -294,17 +295,47 @@ function NarrativeMirrorToggle() {
         )}
 
         <div style={{ borderTop: `1px dashed ${C.ghost}`, marginTop: "1.1rem", paddingTop: "1.1rem" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "0.7rem" }}>
-            {data.circumcised.quotes.slice(0, 3).map((q, i) => (
-              <VoiceCard key={`c-${i}`} colorVar={PATHS.circumcised.color} label={`— Circumcised Voice · ${q.age_bracket || q.generation || "Anonymous"}`}>
-                “{q.text}”
-              </VoiceCard>
-            ))}
-            {data.intact.quotes.slice(0, 3).map((q, i) => (
-              <VoiceCard key={`i-${i}`} colorVar={PATHS.intact.color} label={`— Intact Voice · ${q.age_bracket || q.generation || "Anonymous"}`}>
-                “{q.text}”
-              </VoiceCard>
-            ))}
+          <div className="quote-grid" style={{ display: "grid", gap: "0.7rem" }}>
+            <style>{`
+              .quote-grid { grid-template-columns: 1fr; }
+              @media (min-width: 768px) { .quote-grid { grid-template-columns: 1fr 1fr; } }
+            `}</style>
+            {[page * 3, page * 3 + 1, page * 3 + 2].flatMap(i => {
+              const cQuote = data.circumcised.quotes[i];
+              const iQuote = data.intact.quotes[i];
+              return [
+                cQuote && (
+                  <VoiceCard key={`c-${i}`} colorVar={PATHS.circumcised.color} label={`— Circumcised Voice · ${cQuote.age_bracket || cQuote.generation || "Anonymous"}`}>
+                    “{cQuote.text}”
+                  </VoiceCard>
+                ),
+                iQuote && (
+                  <VoiceCard key={`i-${i}`} colorVar={PATHS.intact.color} label={`— Intact Voice · ${iQuote.age_bracket || iQuote.generation || "Anonymous"}`}>
+                    “{iQuote.text}”
+                  </VoiceCard>
+                )
+              ].filter(Boolean);
+            })}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
+            <button 
+              onClick={() => {
+                const maxLen = Math.max(data.circumcised.quotes.length, data.intact.quotes.length);
+                const maxPages = Math.ceil(maxLen / 3);
+                setPage((prev) => (prev + 1) % maxPages);
+              }}
+              style={{
+                fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.7rem",
+                letterSpacing: "0.1em", textTransform: "uppercase", color: C.textBright,
+                background: "rgba(255,255,255,0.05)", border: `1px solid ${C.ghost}`,
+                padding: "0.5rem 1.2rem", borderRadius: 100, cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => e.target.style.background = "rgba(255,255,255,0.1)"}
+              onMouseLeave={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
+            >
+              Load More Quotes ↻
+            </button>
           </div>
         </div>
       </div>
@@ -657,13 +688,22 @@ export default function GuidedTour() {
                 When the survey opened a blank text box and asked people to describe their experience in their own words, two entirely different vocabularies came back. One side speaks in terms of <em style={{ color: C.textBright }}>loss</em>. The other didn't know there was anything to say.
               </div>
               <NarrativeMirrorToggle />
-              <div style={{ borderTop: `1px dashed ${C.ghost}`, marginTop: "1.1rem", paddingTop: "1.1rem" }}>
-                <div style={{ fontFamily: FONT.body, fontSize: "0.72rem", color: C.dim, marginTop: "0.7rem", lineHeight: 1.5 }}>
+              <div style={{ 
+                background: "rgba(255, 255, 255, 0.03)", 
+                borderLeft: `3px solid ${C.gold}`, 
+                padding: "1.2rem", 
+                borderRadius: "0 8px 8px 0",
+                marginTop: "2rem" 
+              }}>
+                <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: C.textBright, marginBottom: "0.4rem" }}>
+                  A Note on the Distribution
+                </div>
+                <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.muted, lineHeight: 1.6 }}>
                   Not every circumcised respondent is distressed. The “fine with it” voice is real, and documenting that range is part of honest reporting. What the data shows is a distribution — and where the weight of that distribution falls.
                 </div>
-                <div style={{ fontFamily: FONT.mono, fontSize: "0.5rem", color: C.dim, marginTop: "0.55rem" }}>
-                  ★ Anonymous quotes selected from open-ended responses. All identifying details removed.
-                </div>
+              </div>
+              <div style={{ fontFamily: FONT.mono, fontSize: "0.55rem", color: C.dim, marginTop: "1rem" }}>
+                ★ Anonymous quotes selected from open-ended responses. All identifying details removed.
               </div>
             </TourCard>
           </Station>

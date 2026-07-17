@@ -302,16 +302,26 @@ function extractWords(quotes) {
     .map(([w, c]) => [w, c / max]); // format: [text, value] to match original WORDS arrays
 }
 
+// Simple Fisher-Yates shuffle to randomize quotes on load
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export const NARRATIVE_MIRROR_DATA = {
   physical: {
     id: "physical",
     concept: "The Physical Experience",
     circumcised: {
-      quotes: VOICES_THEMES.drawbacks.pathways.circumcised.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.drawbacks.pathways.circumcised),
       words: extractWords(VOICES_THEMES.drawbacks.pathways.circumcised)
     },
     intact: {
-      quotes: VOICES_THEMES.advantages.pathways.intact.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.advantages.pathways.intact),
       words: extractWords(VOICES_THEMES.advantages.pathways.intact)
     }
   },
@@ -319,11 +329,11 @@ export const NARRATIVE_MIRROR_DATA = {
     id: "emotional",
     concept: "The Emotional Impact",
     circumcised: {
-      quotes: VOICES_THEMES.message_to_parents.pathways.circumcised.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.message_to_parents.pathways.circumcised),
       words: extractWords(VOICES_THEMES.message_to_parents.pathways.circumcised)
     },
     intact: {
-      quotes: VOICES_THEMES.message_to_parents.pathways.intact.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.message_to_parents.pathways.intact),
       words: extractWords(VOICES_THEMES.message_to_parents.pathways.intact)
     }
   },
@@ -331,11 +341,11 @@ export const NARRATIVE_MIRROR_DATA = {
     id: "wish_understood",
     concept: "What I Wish You Understood",
     circumcised: {
-      quotes: VOICES_THEMES.wish_understood.pathways.circumcised.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.wish_understood.pathways.circumcised),
       words: extractWords(VOICES_THEMES.wish_understood.pathways.circumcised)
     },
     intact: {
-      quotes: VOICES_THEMES.wish_understood.pathways.intact.slice(0, 4),
+      quotes: shuffle(VOICES_THEMES.wish_understood.pathways.intact),
       words: extractWords(VOICES_THEMES.wish_understood.pathways.intact)
     }
   }

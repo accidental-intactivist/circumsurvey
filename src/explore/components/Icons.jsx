@@ -249,6 +249,11 @@ export const Link = createThemedIcon(
   () => <path d="M 5,8 H 11 M 4,5 H 6 M 10,5 H 12 M 4,11 H 6 M 10,11 H 12" />
 );
 
+export const Share2 = createThemedIcon(
+  Lucide.Share2,
+  () => <path d="M 11,1 H 14 V 4 H 11 Z M 1,6 H 4 V 9 H 1 Z M 11,11 H 14 V 14 H 11 Z M 4,7 L 11,3 M 4,8 L 11,12" />
+);
+
 export const ArrowLeft = createThemedIcon(
   Lucide.ArrowLeft,
   () => <path d="M 15,8 H 2 M 7,3 L 2,8 L 7,13" />

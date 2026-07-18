@@ -593,7 +593,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                 const routeConfig = EXHIBIT_ROUTES.find(r => r.route === exid);
                 const title = routeConfig ? `${routeConfig.num} - ${routeConfig.label}` : (exid.charAt(0).toUpperCase() + exid.slice(1).replace(/-/g, ' '));
                 const isExplorer = window.location.pathname.includes("/explore");
-                const exhibitHref = isExplorer ? `#/${exid}` : `/explore#/${exid}`;
+                const exhibitHref = isExplorer ? `/${exid}` : `/${exid}`;
                 return (
                   <a key={i} href={exhibitHref} style={{ color: C.goldBright, textDecoration: "underline", display: "inline-block", padding: "0.2rem 0", fontWeight: 600 }}>
                     {title}

@@ -408,7 +408,7 @@ export default function SnapshotWall({ navigate, isWidget = false }) {
                   onClick={() => {
                     if (snap.qid) {
                       if (isWidget) {
-                        window.location.href = `/explore#/q/${snap.qid}`;
+                        window.location.href = `/q/${snap.qid}`;
                       } else {
                         navigate("question", { id: snap.qid });
                       }

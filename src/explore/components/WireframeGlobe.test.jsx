@@ -17,7 +17,8 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   save: vi.fn(), restore: vi.fn(), scale: vi.fn(),
   clearRect: vi.fn(), beginPath: vi.fn(), arc: vi.fn(),
   fill: vi.fn(), stroke: vi.fn(), clip: vi.fn(),
-  moveTo: vi.fn(), lineTo: vi.fn()
+  moveTo: vi.fn(), lineTo: vi.fn(),
+  createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() }))
 }));
 
 // Mock topojson-client

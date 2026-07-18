@@ -11,7 +11,7 @@ import { ChevronDown } from "lucide-react";
 import { useLegibleColor } from "../../explore/lib/colorUtils";
 import { Tooltip, useTooltip } from "../../explore/components/Tooltip";
 
-export const EXPLORE_BASE = "/explore#/";
+export const EXPLORE_BASE = "/";
 
 // ── useInView: one-shot reveal trigger ─────────────────────────────────────
 export function useInView(threshold = 0.2) {

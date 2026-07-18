@@ -431,6 +431,8 @@ export default function WireframeGlobe({
     <div style={{ position: 'relative', width, height }}>
       <canvas 
         ref={canvasRef} 
+        role="figure"
+        aria-label="3D Globe showing global respondent distribution"
         style={{ 
           width: '100%', 
           height: '100%',
@@ -439,7 +441,9 @@ export default function WireframeGlobe({
         }} 
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-      />
+      >
+        <p>Interactive 3D globe visualization of respondent countries.</p>
+      </canvas>
       
       {tooltip && (
         <div style={{

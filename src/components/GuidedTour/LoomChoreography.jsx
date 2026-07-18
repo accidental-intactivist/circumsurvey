@@ -39,12 +39,12 @@ const REGIONS = [
   ["#demonstration-band", "canyon"], // lights down — the flight begins here
   ["#st03", "canyon"],        // pleasure gap — flying the data terrain
   ["#st02", "moire"],         // mirror pairs — interference is the point
-  ["#st06", "moire"],         // narrative mirrors
-  ["#st07", "flow"],          // culture & generations — the fellow travellers
+  ["#st06", "pulsar"],        // narrative mirrors — the voices as signal (breaks the moiré run)
+  ["#st07", "pendulum"],      // culture & generations — the slow swing of eras (SPIROGRAPH)
   ["#st09", "moire"],         // religious mirrors
   ["#st08", "quiet"],         // observer lens — restraint for the witnesses
   ["#st04", "tartan"],        // correlations — crossed bands for cross-tabulation
-  ["#st10", "flow"],          // restoration journey — fellow travellers returning
+  ["#st10", "pendulum"],      // restoration journey — rings patiently retraced (SPIROGRAPH)
   ["#st11", "moire"],         // before & after — two states, slight offset
   ["#st13", "quiet"],         // for parents — sober decision environment
   ["#st12", "pulsar"],        // by the numbers — the CP 1919 stack, pure signal
@@ -76,12 +76,14 @@ export const UNDERLOOM_CONFIG = {
   // random pattern-guide figure at a new spot (figs below seed the first
   // volley). hold = how long a completed figure lingers, in figure-lengths.
   // Seed trio stamped from Tone's screenshot: the three dense 105-point nets.
+  // Defaults stamped from Tone's tuning session, 2026-07-09: three big slow
+  // hypotrochoids, fireworks OFF (mutate 0) so they sit as tuned.
   PEN: {
-    draw: 0.3, prec: 0.04, sway: 0.025, mutate: 1, hold: 1.0,
+    draw: 0.05, prec: 0.025, sway: 0.025, mutate: 0, hold: 0.1,
     figs: [
-      { gearRing: 105, gearWheel: 52, penHole: 0.8, size: 0.56, ecc: 0, twist: 0, shape: 0, lobe: 0, px: -0.28, py: -0.10 },
-      { gearRing: 105, gearWheel: 64, penHole: 0.9, size: 0.50, ecc: 0, twist: 0.4, shape: 0, lobe: 0, px: 0.30, py: 0.02 },
-      { gearRing: 105, gearWheel: 32, penHole: 0.9, size: 0.42, ecc: 0, twist: 0.9, shape: 0, lobe: 0, px: 0.04, py: 0.36 },
+      { gearRing: 119, gearWheel: 40, penHole: 0.65, size: 0.8, ecc: 0, twist: 1.4, shape: 0, lobe: 0, px: -0.27, py: -0.17 },
+      { gearRing: 105, gearWheel: 64, penHole: 0.9, size: 0.64, ecc: 0, twist: 0.4, shape: 0, lobe: 0, px: 0.39, py: 0.02 },
+      { gearRing: 107, gearWheel: 60, penHole: 0.9, size: 0.48, ecc: 0, twist: 0.9, shape: 0, lobe: 0, px: 0.07, py: 0.3 },
     ],
   },
   // Unknown Pleasures — the pulsar stack (canyon's inverse: flat-on signal;
@@ -431,16 +433,17 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         col: (i) => {
           if (i < TRON.rows) {
             const zw = tronRowZ(i);
-            const c = PAL.lbl;
-            // perspective weight: rows fatten as they roll toward the
-            // bottom of the stage — real-3D line thickness
-            return [c[0], c[1], c[2], 0.17 * tronFade(zw), (0.4 + 4.5 / zw) * sizeScale];
+            const near = 1 - (zw - TRON.zN) / (TRON.zF - TRON.zN);
+            // rows now carry the spectrum across depth (warm near → cool far)
+            // AND gradient warm→cool ALONG the row, plus the perspective weight
+            const c = spec3(0.15 + 0.7 * near), c2 = spec3(0.35 + 0.55 * near);
+            return [c[0], c[1], c[2], (0.13 + 0.16 * near) * tronFade(zw), (0.6 + 5 / zw) * sizeScale, c2[0], c2[1], c2[2]];
           }
           if (i < TRON.rows + TRON.lanes) {
-            // quiet-ribbon treatment: the lanes ramp the spectrum across the
-            // floor, red at the left shoulder through gold to blue at the right
-            const c = spec3((i - TRON.rows) / (TRON.lanes - 1));
-            return [c[0], c[1], c[2], 0.11, 1];
+            // lanes ramp the spectrum across the floor and gradient near→far
+            const t = (i - TRON.rows) / (TRON.lanes - 1);
+            const c = spec3(t), c2 = spec3(Math.min(1, t + 0.12));
+            return [c[0], c[1], c[2], 0.16, 1.5 * sizeScale, c2[0], c2[1], c2[2]];
           }
           const rr = (i - TRON.rows - TRON.lanes) % TRON.racers;
           const c = [PAL.red, PAL.gold, PAL.blu, PAL.green, PAL.yel, PAL.lbl][rr]; // theme-reactive
@@ -449,7 +452,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
           // the beam swells as it nears the viewer, thins toward the horizon
           racerAt(R, Math.min(R.tot, head));
           const wZ = Math.max(1.2, rw.z);
-          return [c[0], c[1], c[2], head < R.tot ? 0.72 : 0, Math.min(4, 0.8 + 5 / wZ) * sizeScale];
+          return [c[0], c[1], c[2], head < R.tot ? 0.78 : 0, Math.min(5, 1.0 + 6 / wZ) * sizeScale];
         },
         hue: (i) => {
           if (i < TRON.rows) return 0.9; // structural rows stay in the cool lane
@@ -519,9 +522,12 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         },
         col: (i) => {
           const v = wrap(i / L + T * PUL.speed, 1);
-          const c = PAL.text;
+          const near = Math.pow(Math.sin(v * Math.PI), 1.5);
+          // monochrome by design (CP 1919) but with more body: thicker rows,
+          // brightening toward the front of the stack for luminous depth
+          const c = mixc(PAL.text, PAL.bright, near * 0.5);
           const edge = ss(0, 0.07, v) * (1 - ss(0.93, 1, v)); // fade the wrap seam
-          return [c[0], c[1], c[2], (0.10 + 0.16 * Math.pow(Math.sin(v * Math.PI), 1.5)) * edge, 1.1 * sizeScale];
+          return [c[0], c[1], c[2], (0.12 + 0.20 * near) * edge, (1.2 + 1.3 * near) * sizeScale];
         },
         hue: () => 0.5, // monochrome — one glint lane, like the sleeve
         order: (i) => wrap(i / L + T * PUL.speed, 1), // cascade rides the travel
@@ -556,13 +562,14 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         },
         col: (i) => {
           // quiet-ribbon treatment: each grid carries its own half of the
-          // spectrum — cool grid ramps gold→blue, warm grid red→gold — so
-          // the interference is between two gradients, not two flat colors
+          // spectrum, and each LINE now gradients along its length toward the
+          // adjacent hue — richer, meatier, no flat monochrome lines
           const half = L / 2;
           const k = i < half ? i : i - half;
           const pos = i < half ? 0.5 + (k / (half - 1)) * 0.5 : (k / (half - 1)) * 0.5;
-          const c = spec3(pos);
-          return [c[0], c[1], c[2], i % MO.blipEvery === 0 ? 0.19 : 0.12, 1];
+          const c = spec3(pos), c2 = spec3(wrap(pos + 0.18, 1));
+          const blip = i % MO.blipEvery === 0;
+          return [c[0], c[1], c[2], blip ? 0.22 : 0.15, (blip ? 2.0 : 1.5) * sizeScale, c2[0], c2[1], c2[2]];
         },
         hue: (i) => {
           const half = L / 2;
@@ -658,9 +665,10 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         col: (i) => {
           const fam = i % 3, k = (i - fam) / 3;
           const G = penD.fam[fam];
-          // one solid strand-group color per figure, like the harmonic
-          // loom's families: red / gold / blue
+          // each figure's strand-group color, and each arc gradients from
+          // its base hue toward a brighter tip — richer, more luminous ink
           const c = [PAL.red, PAL.gold, PAL.blu][fam];
+          const c2 = mixc(c, PAL.bright, 0.4);
           let alMul = 1;
           if (G.lp >= 0) {
             alMul = Math.max(0, Math.min(1, G.lp - k)) > 0 ? 1 : 0; // not yet inked = invisible
@@ -670,7 +678,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
             const ph = wrap(penD.prog - k, penD.cyc);
             alMul = 1 - ss(penD.cyc - 2.5, penD.cyc - 0.2, ph); // oldest arcs dissolve ahead of the pen
           }
-          return [c[0], c[1], c[2], 0.24 * alMul, 1.3 * sizeScale];
+          return [c[0], c[1], c[2], 0.26 * alMul, 1.6 * sizeScale, c2[0], c2[1], c2[2]];
         },
         hue: (i) => [0.05, 0.5, 0.95][i % 3], // red / gold / blue strand groups
         // Glints chase the pen in inking order; colour lanes cross from
@@ -837,15 +845,27 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
         let n = FA.pts ? FA.pts(i) : P;
         if (blending && FB.pts) n = Math.max(n, FB.pts(i));
         if (blending) n = Math.max(n, 24); // curves mid-morph need enough joints
-        ctx.strokeStyle = `rgba(${lerp(ca[0], cb[0], mix) | 0},${lerp(ca[1], cb[1], mix) | 0},${lerp(ca[2], cb[2], mix) | 0},${al.toFixed(3)})`;
         ctx.lineWidth = Math.max(0.5, lerp(ca[4], cb[4], mix) * ENG.lineWidth);
+        // RICHNESS: a formation's col() may return a SECOND colour (elems 5-7)
+        // for a per-line gradient — the Harmonic Loom's along-thread spectrum.
+        const grad2 = !blending && ca.length >= 8;
+        let fx = 0, fy = 0, lx = 0, ly = 0;
         ctx.beginPath();
         for (let j = 0; j < n; j++) {
           const u = j / (n - 1);
           FA.pt(i, u, pA);
           let x = pA.x, y = pA.y;
           if (blending) { FB.pt(i, u, pB); x = lerp(x, pB.x, mix); y = lerp(y, pB.y, mix); }
-          if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          if (j === 0) { ctx.moveTo(x, y); fx = x; fy = y; } else ctx.lineTo(x, y);
+          lx = x; ly = y;
+        }
+        if (grad2) {
+          const g = ctx.createLinearGradient(fx, fy, lx, ly);
+          g.addColorStop(0, `rgba(${ca[0] | 0},${ca[1] | 0},${ca[2] | 0},${al.toFixed(3)})`);
+          g.addColorStop(1, `rgba(${ca[5] | 0},${ca[6] | 0},${ca[7] | 0},${al.toFixed(3)})`);
+          ctx.strokeStyle = g;
+        } else {
+          ctx.strokeStyle = `rgba(${lerp(ca[0], cb[0], mix) | 0},${lerp(ca[1], cb[1], mix) | 0},${lerp(ca[2], cb[2], mix) | 0},${al.toFixed(3)})`;
         }
         ctx.stroke();
       }

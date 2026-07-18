@@ -1,16 +1,26 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// Minimal hash router with URL-addressable search params.
-// Routes: #/, #/pathways, #/q/:id
-// Query params live in the hash too: #/q/foo?pathway=intact&view=relevant
+// Minimal router with URL-addressable search params using History API.
+// Routes: /, /pathways, /q/:id
+// Query params: /q/foo?pathway=intact&view=relevant
+// Includes backwards compatibility for legacy hash URLs.
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useState, useCallback } from "react";
 
-function parseHash() {
-  const hash = window.location.hash.replace(/^#/, "") || "/";
-  const [pathPart, queryPart] = hash.split("?");
-  const path = pathPart || "/";
-  const query = new URLSearchParams(queryPart || "");
+function parseLocation() {
+  // Backwards compatibility: if a user visits a legacy hash URL (#/culture), 
+  // immediately rewrite the URL to use the path API without reloading.
+  if (typeof window !== "undefined" && window.location.hash && window.location.hash.startsWith("#/")) {
+    const newUrl = window.location.hash.replace(/^#/, "");
+    try {
+      window.history.replaceState(null, "", newUrl);
+    } catch (e) {
+      console.warn("Ignored invalid legacy hash URL rewrite");
+    }
+  }
+
+  const path = (typeof window !== "undefined" ? window.location.pathname : "/") || "/";
+  const query = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
 
   // Parse path into route + params
   const segments = path.split("/").filter(Boolean);
@@ -55,8 +65,6 @@ function parseHash() {
     segments[0] === "trans-intersex"
   ) {
     // Phase 2 stubs: gated from the public until real content exists.
-    // Direct URLs redirect to the index. Re-enable by restoring the
-    // individual routes here + the EXHIBIT_ROUTES catalog entries.
     route = "index";
   } else if (segments[0] === "cognizant-alteration" || segments[0] === "adult-experience") {
     route = "adult-experience";
@@ -70,7 +78,7 @@ function parseHash() {
     route = "contact";
   } else if (segments[0] === "the-forward-view") {
     route = "the-forward-view";
-  } else if (segments.length > 0 && segments[0] !== "index") {
+  } else if (segments.length > 0 && segments[0] !== "index" && segments[0] !== "explore") {
     route = "not-found";
   }
 
@@ -91,9 +99,9 @@ function parseHash() {
   };
 
   // Cohort filters (demographic): prefix "c_"
-  const cohort = {};
+  const cohort = Object.create(null);
   for (const [key, val] of query.entries()) {
-    if (key.startsWith("c_") && val) {
+    if (key.startsWith("c_") && val && key !== "c___proto__" && key !== "c_constructor") {
       cohort[key.slice(2)] = val.includes(",") ? val.split(",") : val;
     }
   }
@@ -161,34 +169,74 @@ function serializeState(route, params, state) {
     }
   }
   const qs = q.toString();
-  return `#${path}${qs ? "?" + qs : ""}`;
+  return `${path}${qs ? "?" + qs : ""}`;
 }
 
 export function useRouter() {
-  const [current, setCurrent] = useState(parseHash());
+  const [current, setCurrent] = useState(parseLocation());
 
   useEffect(() => {
-    const onHash = () => setCurrent(parseHash());
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    const onLocationChange = () => setCurrent(parseLocation());
+    window.addEventListener("popstate", onLocationChange);
+
+    // Global click interceptor for internal links
+    const handleGlobalClick = (e) => {
+      // Find closest anchor tag
+      const anchor = e.target.closest("a");
+      if (!anchor) return;
+      
+      // Ignore external links, mailto, open in new tab, etc
+      if (
+        anchor.target === "_blank" ||
+        anchor.hasAttribute("download") ||
+        anchor.getAttribute("rel")?.includes("external") ||
+        anchor.href.startsWith("mailto:") ||
+        anchor.href.startsWith("http") && new URL(anchor.href).origin !== window.location.origin
+      ) {
+        return;
+      }
+
+      // Check if it's an internal path 
+      // (sometimes href is absolute on the same domain, so we check origin)
+      const url = new URL(anchor.href, window.location.origin);
+      if (url.origin === window.location.origin) {
+        e.preventDefault();
+        window.history.pushState(null, "", url.pathname + url.search);
+        window.dispatchEvent(new Event("popstate"));
+      }
+    };
+
+    document.addEventListener("click", handleGlobalClick);
+
+    return () => {
+      window.removeEventListener("popstate", onLocationChange);
+      document.removeEventListener("click", handleGlobalClick);
+    };
   }, []);
 
   const navigate = useCallback((route, params = {}, stateOverrides = {}) => {
     const nextState = { ...current.state, ...stateOverrides };
-    window.location.hash = serializeState(route, params, nextState);
+    const nextUrl = serializeState(route, params, nextState);
+    window.history.pushState(null, "", nextUrl);
+    window.dispatchEvent(new Event("popstate"));
   }, [current]);
 
   const updateState = useCallback((overrides) => {
-    window.location.hash = serializeState(current.route, current.params, {
+    const nextUrl = serializeState(current.route, current.params, {
       ...current.state,
       ...overrides,
     });
+    // Replace state instead of push so we don't spam history when tweaking filters
+    window.history.replaceState(null, "", nextUrl);
+    window.dispatchEvent(new Event("popstate"));
   }, [current]);
 
   return { ...current, navigate, updateState };
 }
 
-// Exported helper for building hash links inside components
+// Exported helper for building links inside components
+// IMPORTANT: We keep the name hashLink temporarily so we don't have to rename it in 50 files yet,
+// but it now returns standard paths!
 export function hashLink(route, params = {}, state = {}) {
   return serializeState(route, params, state);
 }

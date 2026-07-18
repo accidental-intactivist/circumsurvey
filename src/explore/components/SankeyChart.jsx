@@ -263,7 +263,15 @@ export default function SankeyChart({ title, beforeQuestion, afterQuestion, filt
       </div>
 
       <div ref={containerRef} style={{ width: "100%", height, position: "relative" }}>
-        <svg width={dimensions.width} height={dimensions.height} style={{ overflow: "visible" }}>
+        <svg 
+          width={dimensions.width} 
+          height={dimensions.height} 
+          style={{ overflow: "visible" }}
+          role="img"
+          aria-label={title || "Sankey Diagram"}
+        >
+          <title>{title || "Sankey Diagram"}</title>
+          <desc>Visualizes the flow and transition of respondents between initial and outcome states.</desc>
           {/* LINKS */}
           <g strokeOpacity={0.4}>
             {sankeyLinks.map((link, i) => {

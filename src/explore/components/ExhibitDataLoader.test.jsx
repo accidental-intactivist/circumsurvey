@@ -14,6 +14,22 @@ vi.mock("../lib/api", () => ({
   getNarratives: vi.fn()
 }));
 
+// Mock Canvas API for HarmonicCanvas
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+  save: vi.fn(), restore: vi.fn(), scale: vi.fn(), setTransform: vi.fn(),
+  clearRect: vi.fn(), beginPath: vi.fn(), arc: vi.fn(),
+  fill: vi.fn(), stroke: vi.fn(), clip: vi.fn(),
+  moveTo: vi.fn(), lineTo: vi.fn(),
+  createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() }))
+}));
+
+// Mock IntersectionObserver for HarmonicCanvas
+global.IntersectionObserver = class IntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // Mock the child components so we can isolate ExhibitDataLoader's logic
 vi.mock("./DistributionChart", () => ({
   default: ({ distribution, question }) => (
@@ -48,7 +64,7 @@ describe("ExhibitDataLoader", () => {
     api.getResponseDistribution.mockReturnValue(new Promise(() => {})); // Never resolves
     const q = { id: "test_q", type: "single_select" };
     render(<ExhibitDataLoader question={q} />);
-    expect(screen.getByText("Loading data...")).toBeTruthy();
+    expect(screen.getByText(/Retrieving Data/i)).toBeTruthy();
   });
 
   it("calls getResponseDistribution for standard quantitative questions", async () => {

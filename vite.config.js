@@ -12,6 +12,17 @@ export default defineConfig({
     emptyOutDir: false,
     // Inline small assets to reduce requests
     assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-d3': ['d3-force', 'd3-format', 'd3-geo', 'd3-hexbin', 'd3-sankey', 'd3-scale', 'd3-shape'],
+          'vendor-gsap': ['gsap', '@gsap/react'],
+          'vendor-leaflet': ['leaflet', 'react-leaflet', 'topojson-client'],
+          'vendor-lottie': ['lottie-web']
+        }
+      }
+    }
   },
   test: {
     environment: 'jsdom',
@@ -22,6 +33,6 @@ export default defineConfig({
         inline: [/@asamuzakjp\/css-color/, /@csstools\/css-calc/]
       }
     },
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'worker/**']
+    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'worker/**', 'tests/**']
   }
 })

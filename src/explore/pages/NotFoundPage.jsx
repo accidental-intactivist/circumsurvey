@@ -13,7 +13,7 @@ export default function NotFoundPage({ onOpenDocent }) {
       ...ex,
       ...ROUTE_META[ex.route],
       id: ex.route,
-      route: `/explore#/${ex.route}`,
+      route: `/${ex.route}`,
       icon: Icons[ex.icon] || Icons.Compass,
     }));
     // Shuffle

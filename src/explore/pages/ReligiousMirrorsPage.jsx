@@ -217,7 +217,9 @@ export default function ReligiousMirrorsPage({ navigate, setExhibitContext }) {
           {CULTURAL_QUESTIONS.map(qDef => (
             <UniversalRow key={qDef.id} qDef={qDef} questionsMap={questionsMap} />
           ))}
-        <SharedLegend q={questionsMap["culture_body_intervention_view"]} />
+        {questionsMap["culture_body_intervention_view"] && (
+          <SharedLegend q={questionsMap["culture_body_intervention_view"]} />
+        )}
         </div> {/* End right column */}
         </div> {/* End grid */}
 
@@ -610,6 +612,7 @@ function QuestionCard({ question, label, color, compact, cohort }) {
 // SHARED LEGEND (for long option labels)
 // ═══════════════════════════════════════════════════════════════════════════
 function SharedLegend({ q }) {
+  if (!q) return null;
   const opts = q.id === "culture_body_intervention_view" ? [
     "Balanced View: \"I believe in preserving the natural state but am also very open to preventative or elective medical procedures if they offer potential future benefits.\"",
     "Context-Dependent: \"My view depends entirely on the specific procedure or situation.\"",

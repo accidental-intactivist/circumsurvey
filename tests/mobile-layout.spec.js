@@ -31,4 +31,21 @@ test.describe('Mobile Layout Tests', () => {
     await expect(masthead.locator('.mobile-docent-text')).toBeHidden();
     await expect(masthead.locator('.mobile-findings-text')).toBeHidden();
   });
+
+  test.use({ viewport: { width: 375, height: 667 } });
+  
+  test('Guided Tour quotes grid does not break horizontal bounds on iPhone SE', async ({ page }) => {
+    await page.goto('/explore#/');
+    // Scroll down to where the Narrative Mirror is (usually station 04 or 06)
+    // We'll just evaluate if any elements in the DOM cause horizontal scrolling
+    await page.waitForTimeout(1000); // Wait for rendering
+    
+    const hasHorizontalScroll = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+    });
+    
+    // Some minor overflow might occur due to animations or padding, 
+    // but ideally we want no overflow on the main html document.
+    expect(hasHorizontalScroll).toBe(false);
+  });
 });

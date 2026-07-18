@@ -41,7 +41,7 @@ export default function ContactForm() {
       ...ex,
       ...ROUTE_META[ex.route],
       id: ex.route,
-      route: `/explore#/${ex.route}`,
+      route: `/${ex.route}`,
       icon: Icons[ex.icon] || Icons.Compass,
     }));
     for (let i = pool.length - 1; i > 0; i--) {
@@ -288,12 +288,32 @@ export default function ContactForm() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
             <div>
-              <Label htmlFor="subject" text="SUBJECT" required />
-              <input type="text" id="subject" name="subject" required className="tb-input" placeholder="What is this regarding?" />
+              <Label htmlFor="subject" text="INQUIRY TYPE" required />
+              <select id="subject" name="subject" required className="tb-input" defaultValue="">
+                <option value="" disabled>Select Inquiry Type</option>
+                <option value="General Inquiry / Comment">General Inquiry / Comment</option>
+                <option value="Media / Press Inquiry">Media / Press Inquiry</option>
+                <option value="Research / Academic Collaboration">Research / Academic Collaboration</option>
+                <option value="Data Access Request">Data Access Request</option>
+                <option value="Translation Volunteering">Translation / Localization Volunteering</option>
+                <option value="Bug Report / Feature Request">Bug Report / Feature Request</option>
+              </select>
             </div>
             <div>
               <Label htmlFor="source" text="WHERE DID YOU HEAR ABOUT US?" />
-              <input type="text" id="source" name="source" className="tb-input" placeholder="(Optional) Podcast, Twitter, etc." />
+              <select id="source" name="source" className="tb-input" defaultValue="">
+                <option value="" disabled>How did you hear about this project?</option>
+                <option value="Reddit">Reddit</option>
+                <option value="Twitter / X">Twitter / X</option>
+                <option value="TikTok / Instagram">TikTok / Instagram</option>
+                <option value="Intact Global">Intact Global</option>
+                <option value="Bloodstained Men">Bloodstained Men</option>
+                <option value="Other Advocacy Group">Another Intact Advocacy Group</option>
+                <option value="Word of Mouth">Word of Mouth / Friend</option>
+                <option value="Search Engine">Search Engine</option>
+                <option value="Podcast / Video">Podcast or Video</option>
+                <option value="Other">Other / Not Listed</option>
+              </select>
             </div>
           </div>
 

@@ -16,10 +16,8 @@ export default function App() {
           <Route path="/" element={<SpecialReportPage />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/explore/*" element={<ExplorePage />} />
-          <Route path="/about" element={<Navigate to="/explore#/about" replace />} />
-          <Route path="/faq" element={<Navigate to="/explore#/faq" replace />} />
           <Route path="/special-report" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<Navigate to="/explore#/not-found" replace />} />
+          <Route path="/*" element={<ExplorePage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

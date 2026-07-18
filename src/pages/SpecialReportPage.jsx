@@ -26,7 +26,7 @@ export default function SpecialReportPage() {
   }, []);
 
   const navigateToExplore = (route) => {
-    window.location.href = route === 'index' ? '/explore' : `/explore#/${route}`;
+    window.location.href = route === 'index' ? '/explore' : `/${route}`;
   };
   return (
     <ReportProvider>

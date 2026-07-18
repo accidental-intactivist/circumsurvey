@@ -671,7 +671,11 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
       </div>
 
       {/* Butterfly Chart Rows */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "1rem" }}>
+      <div 
+        role="figure"
+        aria-label="Comparison chart between intact and circumcised pathways"
+        style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "1rem" }}
+      >
         {sortedList.map((item, i) => {
           const isSignificant = item.diff > 15 && item.label !== "Other";
           

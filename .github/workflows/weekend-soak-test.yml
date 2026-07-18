@@ -1,0 +1,35 @@
+name: Weekend Soak Test
+
+on:
+  schedule:
+    # Run at 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 on Saturday and Sunday
+    - cron: '0 */4 * * 0,6'
+  workflow_dispatch:
+
+jobs:
+  soak-test:
+    name: Run Unit and Stress Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Unit Tests (Vitest)
+        run: npm run test -- --run
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Stress Tests (Playwright)
+        run: npx playwright test
+        env:
+          CI: true

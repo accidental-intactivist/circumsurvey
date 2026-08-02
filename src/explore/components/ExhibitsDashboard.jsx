@@ -2,6 +2,7 @@ import { useState } from "react";
 import { C, FONT, resolveCssColor } from "../styles/tokens";
 import { EXHIBIT_ROUTES, ROUTE_META } from "./ExploreMasthead";
 import * as Icons from "./Icons";
+import { hashLink } from "../lib/router";
 
 // ── Compact Exhibit Card (Gemstone Aesthetic) ────────────────────────────────
 
@@ -15,7 +16,7 @@ export function ExhibitCard({ exhibit, meta, href, onClick }) {
 
   return (
     <a
-      href={href || `#/${exhibit.route}`}
+      href={href || hashLink(exhibit.route)}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -174,12 +175,33 @@ export function ExhibitCard({ exhibit, meta, href, onClick }) {
           lineHeight: 1.45,
           textAlign: "center",
           display: "-webkit-box",
-          WebkitLineClamp: 4,
+          WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}>
           {meta.desc || exhibit.tagline || "Interactive data exhibit."}
         </p>
+
+        <div style={{
+          marginTop: "0.8rem",
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.25rem",
+          background: C.bgCard,
+          color: color,
+          padding: "0.3rem 0.8rem",
+          borderRadius: 999,
+          fontFamily: FONT.display,
+          fontSize: "0.7rem",
+          fontWeight: 800,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+          boxShadow: `0 2px 4px rgba(0,0,0,0.2)`,
+        }}>
+          Explore <Icons.ArrowRight size={12} />
+        </div>
       </div>
     </a>
   );

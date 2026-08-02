@@ -11,7 +11,7 @@ function parseLocation() {
   // Backwards compatibility: if a user visits a legacy hash URL (#/culture), 
   // immediately rewrite the URL to use the path API without reloading.
   if (typeof window !== "undefined" && window.location.hash && window.location.hash.startsWith("#/")) {
-    const newUrl = window.location.hash.replace(/^#/, "");
+    const newUrl = "/explore" + window.location.hash.replace(/^#/, "");
     try {
       window.history.replaceState(null, "", newUrl);
     } catch (e) {
@@ -24,61 +24,63 @@ function parseLocation() {
 
   // Parse path into route + params
   const segments = path.split("/").filter(Boolean);
+  const offset = segments[0] === "explore" ? 1 : 0;
+  
   let route = "index";
   let params = {};
-  if (segments[0] === "pathways") {
+  if (segments[offset] === "pathways") {
     route = "pathways";
-  } else if (segments[0] === "q" && segments[1]) {
+  } else if (segments[offset] === "q" && segments[offset + 1]) {
     route = "question";
-    params.id = segments[1];
-  } else if (segments[0] === "tools" && segments[1] === "cultural-alignment") {
+    params.id = segments[offset + 1];
+  } else if (segments[offset] === "tools" && segments[offset + 1] === "cultural-alignment") {
     route = "cultural-alignment";
-  } else if (segments[0] === "correlations") {
+  } else if (segments[offset] === "correlations") {
     route = "correlations";
-  } else if (segments[0] === "pairs") {
+  } else if (segments[offset] === "pairs") {
     route = "pairs";
-  } else if (segments[0] === "demographics") {
+  } else if (segments[offset] === "demographics") {
     route = "demographics";
-  } else if (segments[0] === "religious-mirrors") {
+  } else if (segments[offset] === "religious-mirrors") {
     route = "religious-mirrors";
-  } else if (segments[0] === "narrative-mirrors") {
+  } else if (segments[offset] === "narrative-mirrors") {
     route = "narrative-mirrors";
-  } else if (segments[0] === "observer-triad" || segments[0] === "observer-lens") {
+  } else if (segments[offset] === "observer-triad" || segments[offset] === "observer-lens") {
     route = "observer-lens";
-  } else if (segments[0] === "numbers") {
+  } else if (segments[offset] === "numbers") {
     route = "numbers";
-  } else if (segments[0] === "pleasure-gap") {
+  } else if (segments[offset] === "pleasure-gap") {
     route = "pleasure-gap";
-  } else if (segments[0] === "methodology") {
+  } else if (segments[offset] === "methodology") {
     route = "methodology";
-  } else if (segments[0] === "report") {
+  } else if (segments[offset] === "report") {
     route = "report";
-  } else if (segments[0] === "restoration-journey") {
+  } else if (segments[offset] === "restoration-journey") {
     route = "restoration-journey";
-  } else if (segments[0] === "culture") {
+  } else if (segments[offset] === "culture") {
     route = "culture";
-  } else if (segments[0] === "generational-faultlines") {
+  } else if (segments[offset] === "generational-faultlines") {
     route = "culture"; // redirect: merged into Culture & Generations
   } else if (
-    segments[0] === "the-decision" ||
-    segments[0] === "final-thoughts" ||
-    segments[0] === "trans-intersex"
+    segments[offset] === "the-decision" ||
+    segments[offset] === "final-thoughts" ||
+    segments[offset] === "trans-intersex"
   ) {
     // Phase 2 stubs: gated from the public until real content exists.
     route = "index";
-  } else if (segments[0] === "cognizant-alteration" || segments[0] === "adult-experience") {
+  } else if (segments[offset] === "cognizant-alteration" || segments[offset] === "adult-experience") {
     route = "adult-experience";
-  } else if (segments[0] === "for-parents") {
+  } else if (segments[offset] === "for-parents") {
     route = "for-parents";
-  } else if (segments[0] === "about") {
+  } else if (segments[offset] === "about") {
     route = "about";
-  } else if (segments[0] === "faq") {
+  } else if (segments[offset] === "faq") {
     route = "faq";
-  } else if (segments[0] === "contact") {
+  } else if (segments[offset] === "contact") {
     route = "contact";
-  } else if (segments[0] === "the-forward-view") {
+  } else if (segments[offset] === "the-forward-view") {
     route = "the-forward-view";
-  } else if (segments.length > 0 && segments[0] !== "index" && segments[0] !== "explore") {
+  } else if (segments.length > offset) {
     route = "not-found";
   }
 
@@ -112,32 +114,32 @@ function parseLocation() {
 
 function serializeState(route, params, state) {
   let path;
-  if (route === "pathways") path = "/pathways";
-  else if (route === "question") path = `/q/${params.id}`;
-  else if (route === "cultural-alignment") path = "/tools/cultural-alignment";
-  else if (route === "correlations") path = "/correlations";
-  else if (route === "pairs") path = "/pairs";
-  else if (route === "demographics") path = "/demographics";
-  else if (route === "pleasure-gap") path = "/pleasure-gap";
-  else if (route === "methodology") path = "/methodology";
-  else if (route === "report") path = "/report";
-  else if (route === "numbers") path = "/numbers";
-  else if (route === "restoration-journey") path = "/restoration-journey";
-  else if (route === "religious-mirrors") path = "/religious-mirrors";
-  else if (route === "narrative-mirrors") path = "/narrative-mirrors";
-  else if (route === "generational-faultlines") path = "/culture"; // redirect
-  else if (route === "observer-lens") path = "/observer-lens";
-  else if (route === "culture") path = "/culture";
-  else if (route === "the-decision") path = "/the-decision";
-  else if (route === "adult-experience") path = "/adult-experience";
-  else if (route === "final-thoughts") path = "/final-thoughts";
-  else if (route === "trans-intersex") path = "/trans-intersex";
-  else if (route === "for-parents") path = "/for-parents";
-  else if (route === "about") path = "/about";
-  else if (route === "faq") path = "/faq";
-  else if (route === "the-forward-view") path = "/the-forward-view";
-  else if (route === "not-found") path = "/404";
-  else path = "/";
+  if (route === "pathways") path = "/explore/pathways";
+  else if (route === "question") path = `/explore/q/${params.id}`;
+  else if (route === "cultural-alignment") path = "/explore/tools/cultural-alignment";
+  else if (route === "correlations") path = "/explore/correlations";
+  else if (route === "pairs") path = "/explore/pairs";
+  else if (route === "demographics") path = "/explore/demographics";
+  else if (route === "pleasure-gap") path = "/explore/pleasure-gap";
+  else if (route === "methodology") path = "/explore/methodology";
+  else if (route === "report") path = "/explore/report";
+  else if (route === "numbers") path = "/explore/numbers";
+  else if (route === "restoration-journey") path = "/explore/restoration-journey";
+  else if (route === "religious-mirrors") path = "/explore/religious-mirrors";
+  else if (route === "narrative-mirrors") path = "/explore/narrative-mirrors";
+  else if (route === "generational-faultlines") path = "/explore/culture"; // redirect
+  else if (route === "observer-lens") path = "/explore/observer-lens";
+  else if (route === "culture") path = "/explore/culture";
+  else if (route === "the-decision") path = "/explore/the-decision";
+  else if (route === "adult-experience") path = "/explore/adult-experience";
+  else if (route === "final-thoughts") path = "/explore/final-thoughts";
+  else if (route === "trans-intersex") path = "/explore/trans-intersex";
+  else if (route === "for-parents") path = "/explore/for-parents";
+  else if (route === "about") path = "/explore/about";
+  else if (route === "faq") path = "/explore/faq";
+  else if (route === "the-forward-view") path = "/explore/the-forward-view";
+  else if (route === "not-found") path = "/explore/404";
+  else path = "/explore";
 
   const q = new URLSearchParams();
   if (state.pathway) {

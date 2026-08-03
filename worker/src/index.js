@@ -298,6 +298,8 @@ export default {
       }
       
       if (request.method === "POST" && path === "/ai/embed_static") {
+        const auth = request.headers.get("Authorization");
+        if (!auth || auth !== `Bearer ${env.ADMIN_SECRET}`) return errorJson("Unauthorized", 401);
         return await handleEmbedStatic(env, request);
       }
       
@@ -326,6 +328,8 @@ export default {
       } else if (path === "/geo") {
         response = await handleGeo(env, url);
       } else if (path === "/ai/embed_batch") {
+        const auth = request.headers.get("Authorization");
+        if (!auth || auth !== `Bearer ${env.ADMIN_SECRET}`) return errorJson("Unauthorized", 401);
         response = await handleEmbedBatch(env, url);
       } else if (path === "/ai/embed_static") {
         response = await handleEmbedStatic(env, request);

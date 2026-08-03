@@ -24,7 +24,8 @@ export default function ThemeToggle() {
       }
     }
     if (isOpen) document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+ document.addEventListener('touchstart', handleClickOutside, { passive: true });
+    return () => { document.removeEventListener('mousedown', handleClickOutside); document.removeEventListener('touchstart', handleClickOutside); }
   }, [isOpen]);
 
   const toggleBtnStyle = {
@@ -94,7 +95,7 @@ export default function ThemeToggle() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
           overflow: "hidden",
           fontFamily: FONT.body,
-          maxHeight: window.innerWidth < 600 ? "calc(100vh - 4rem)" : "none",
+          maxHeight: window.innerWidth < 600 ? "calc(100dvh - 4rem)" : "none",
           overflowY: window.innerWidth < 600 ? "auto" : "visible",
         }}>
           <div style={{ padding: "1rem", borderBottom: "1px solid var(--c-ghost)" }}>
@@ -119,6 +120,7 @@ export default function ThemeToggle() {
             <div>
               <div style={sectionLabelStyle}>Color Mode</div>
               <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button onClick={() => setMode('system')} style={buttonStyle(mode === 'system')}>System</button>
                 <button onClick={() => setMode('dark')} style={buttonStyle(mode === 'dark')}>Dark</button>
                 <button onClick={() => setMode('light')} style={buttonStyle(mode === 'light')}>Light</button>
               </div>

@@ -134,12 +134,12 @@ export const TOUR = [
 
 // ── Exhibit 03: pleasure metrics (frozen snapshot; pooled mean is computed) ──
 export const PLEASURE_METRICS = [
-  { label: "Mobile skin", intact: 4.47, restoring: 2.85, circumcised: 1.96 },
-  { label: "Light touch", intact: 4.24, restoring: 2.49, circumcised: 2.24 },
-  { label: "Variety",     intact: 4.39, restoring: 2.68, circumcised: 2.46 },
-  { label: "Duration",    intact: 4.01, restoring: 2.66, circumcised: 2.65 },
-  { label: "Ease",        intact: 4.04, restoring: 2.79, circumcised: 2.60 },
-  { label: "Intensity",   intact: 4.25, restoring: 3.05, circumcised: 2.96 },
+  { label: "Mobile skin",  intact: 4.47, restoring: 2.85, circumcised: 1.96 },
+  { label: "Light touch",  intact: 4.24, restoring: 2.49, circumcised: 2.25 },
+  { label: "Variety",      intact: 4.39, restoring: 2.68, circumcised: 2.45 },
+  { label: "Duration",     intact: 4.01, restoring: 2.66, circumcised: 2.64 },
+  { label: "Ease",         intact: 4.04, restoring: 2.79, circumcised: 2.60 },
+  { label: "Intensity",    intact: 4.25, restoring: 3.05, circumcised: 2.95 },
 ];
 export function pooledMean(m) {
   const a = PATHS.intact.n, b = PATHS.restoring.n, c = PATHS.circumcised.n;

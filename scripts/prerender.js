@@ -76,10 +76,10 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const PORT = 8999;
 const HOST = '127.0.0.1';
 
-server.listen(PORT, HOST, async () => {
+server.listen(0, HOST, async () => {
+  const PORT = server.address().port;
   console.log(`Starting prerender on port ${PORT}...`);
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
@@ -91,7 +91,7 @@ server.listen(PORT, HOST, async () => {
   await page.setViewport({ width: 1280, height: 800 });
 
   for (const route of routes) {
-    const url = `http://127.0.0.1:${PORT}${route}`;
+    const url = `http://${HOST}:${PORT}${route}`;
     console.log(`Prerendering ${route}...`);
     
     // Go to page, wait until network is mostly idle

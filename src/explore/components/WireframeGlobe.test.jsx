@@ -49,12 +49,17 @@ global.fetch = vi.fn((url) => {
 });
 
 describe('WireframeGlobe', () => {
-  it('renders a canvas element', () => {
+  it('renders a canvas element', async () => {
     const dist = { distribution: [{ label: 'Canada', n: 10 }] };
     const { container } = render(<WireframeGlobe distribution={dist} />);
     
     const canvas = container.querySelector('canvas');
     expect(canvas).toBeTruthy();
+
+    // Await the fetch to resolve so state updates don't happen after test ends
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalled();
+    });
   });
 
   it('fetches topojson data on mount', async () => {

@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { Component, useEffect, useState, useRef, useMemo } from "react";
+import ReactMarkdown from "react-markdown";
 import { useReport } from "../contexts/ReportContext";
 import { C, FONT } from "../styles/tokens";
 import { getQuestions, getResponseDistribution, getNarratives, getAggregate } from "../lib/api";
@@ -7,6 +8,36 @@ import DistributionChart from "../components/DistributionChart";
 import GeographicHeatmap from "../components/GeographicHeatmap";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
+
+// Human-readable labels for exhibit blocks added from the interactive explorers.
+const EXHIBIT_LABELS = {
+  factor_grid: { title: "Factor Grid", route: "numbers", exhibit: "Exhibit 12 · By the Numbers" },
+  correlation_matrix: { title: "Correlation Matrix", route: "correlations", exhibit: "Exhibit 04 · Correlations Explorer" },
+};
+
+// A block that renders nothing must never take the whole report down with it.
+class BlockErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error) {
+    console.error("Report block failed to render:", error);
+  }
+  render() {
+    if (this.state.failed) {
+      return (
+        <div style={{ width: "100%", border: `1px dashed ${C.ghost}`, borderRadius: 8, padding: "1.25rem", color: C.dim, fontStyle: "italic" }}>
+          This block could not be displayed. Try removing and re-adding it.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function ReportBuilderPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { cohort } = routerState;
@@ -90,7 +121,7 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
   };
 
   const exportCSV = () => {
-    let csv = "Question ID,Prompt,Cohort,Theme,Data\\n";
+    let csv = "Question ID,Prompt,Cohort,Theme,Data\n";
     reportItems.filter(item => item.type === 'question').forEach(item => {
       const q = questions.find(q => q.id === item.refId);
       if (!q) return;
@@ -100,7 +131,7 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
       if (dist) {
         dataStr = dist.map(d => `${d.label}: ${d.n} (${d.pct.toFixed(1)}%)`).join(" | ");
       }
-      csv += `"${q.id}","${q.prompt.replace(/"/g, '""')}","${item.cohort || 'All'}","${q.section || ''}","${dataStr}"\\n`;
+      csv += `"${q.id}","${q.prompt.replace(/"/g, '""')}","${item.cohort || 'All'}","${q.section || ''}","${dataStr}"\n`;
     });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -111,32 +142,42 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
   };
 
   const exportText = () => {
-    let txt = "=== CIRCUMSURVEY CUSTOM REPORT ===\\n\\n";
-    txt += `${reportMeta.title}\\n${reportMeta.subtitle ? reportMeta.subtitle + '\\n' : ''}${reportMeta.author ? 'By ' + reportMeta.author + '\\n' : ''}\\n`;
-    
+    let txt = "=== CIRCUMSURVEY CUSTOM REPORT ===\n\n";
+    txt += `${reportMeta.title}\n${reportMeta.subtitle ? reportMeta.subtitle + '\n' : ''}${reportMeta.author ? 'By ' + reportMeta.author + '\n' : ''}\n`;
+
     reportItems.forEach((item, i) => {
       if (item.type === 'text') {
-        txt += `--- TEXT BLOCK ---\\n${item.content}\\n\\n`;
+        txt += `--- TEXT BLOCK ---\n${item.content}\n\n`;
       } else if (item.type === 'question') {
         const q = questions.find(q => q.id === item.refId);
         if (!q) return;
-        txt += `${i + 1}. ${q.prompt}\\n`;
-        txt += `ID: ${q.id} | Cohort: ${item.cohort || 'All'} | Section: ${q.section || 'N/A'}\\n`;
+        txt += `${i + 1}. ${q.prompt}\n`;
+        txt += `ID: ${q.id} | Cohort: ${item.cohort || 'All'} | Section: ${q.section || 'N/A'}\n`;
         const data = distributions[item.id];
         const dist = data?.distribution;
         if (dist) {
           dist.forEach(d => {
             const bars = "█".repeat(Math.round(d.pct / 5));
-            txt += `  ${d.label.padEnd(25)} | ${String(d.n).padStart(4)} | ${bars} ${d.pct.toFixed(1)}%\\n`;
+            txt += `  ${d.label.padEnd(25)} | ${String(d.n).padStart(4)} | ${bars} ${d.pct.toFixed(1)}%\n`;
           });
         }
-        txt += "\\n";
+        txt += "\n";
+      } else if (item.type === 'exhibit') {
+        const meta = EXHIBIT_LABELS[item.exhibitType] || { title: item.exhibitType };
+        txt += `--- EXHIBIT: ${meta.title} ---\n`;
+        if (item.cohort) txt += `Cohort: ${item.cohort}\n`;
+        if (item.config && Object.keys(item.config).length) {
+          txt += `Parameters: ${Object.entries(item.config).map(([k, v]) => `${k}=${v}`).join(", ")}\n`;
+        }
+        txt += "\n";
       } else if (item.type === 'ai_chat') {
-        txt += `--- AI RESEARCH ASSISTANT ---\\n`;
-        txt += `Q: ${item.query}\\n\\n`;
-        txt += `${item.answer}\\n\\n`;
+        txt += `--- AI RESEARCH ASSISTANT ---\n`;
+        txt += `Q: ${item.query}\n\n`;
+        txt += `${item.answer}\n\n`;
       }
     });
+    txt += `\n---\nSource: The Accidental Intactivist's Inquiry · circumsurvey.online\n`;
+    txt += `Self-selected online sample; figures describe respondents, not the general population.\n`;
     const blob = new Blob([txt], { type: "text/plain;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -149,9 +190,12 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
     if (!reportRef.current) return;
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(reportRef.current, { 
+      const dataUrl = await toPng(reportRef.current, {
         backgroundColor: C.bg,
-        style: { padding: "2rem" } 
+        style: { padding: "2rem" },
+        // Keep the editing chrome (move/remove arrows, "+ Add Text Block")
+        // out of the exported image — .no-print is otherwise print-only CSS.
+        filter: (node) => !(node.classList && node.classList.contains("no-print")),
       });
       const link = document.createElement('a');
       link.download = `circumsurvey-report.png`;
@@ -321,9 +365,11 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
               {reportItems.map((item, index) => {
                 const isText = item.type === 'text';
                 const isQuestion = item.type === 'question';
-                
+                const isAiChat = item.type === 'ai_chat';
+                const isExhibit = item.type === 'exhibit';
+
                 let contentNode = null;
-                
+
                 if (isText) {
                   contentNode = (
                     <div style={{ width: "100%" }}>
@@ -416,6 +462,44 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
                       </div>
                     </div>
                   );
+                } else if (isExhibit) {
+                  const meta = EXHIBIT_LABELS[item.exhibitType] || { title: item.exhibitType, route: null, exhibit: null };
+                  const params = item.config && Object.keys(item.config).length
+                    ? Object.entries(item.config).map(([k, v]) => `${k}: ${v}`)
+                    : [];
+                  contentNode = (
+                    <div style={{ width: "100%", border: `1px solid ${C.gold}`, borderRadius: 12, background: "rgba(40, 30, 0, 0.25)", overflow: "hidden" }}>
+                      <div style={{ padding: "1.5rem 1.8rem" }}>
+                        <span style={{ fontFamily: FONT.condensed, fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.4rem" }}>
+                          {meta.exhibit || "Interactive Exhibit"}{item.cohort ? ` | COHORT: ${item.cohort.toUpperCase()}` : ''}
+                        </span>
+                        <h2 style={{ fontFamily: FONT.display, fontSize: "1.35rem", color: C.textBright, lineHeight: 1.25, marginBottom: "0.75rem", letterSpacing: "-0.01em" }}>
+                          {meta.title}
+                        </h2>
+                        {params.length > 0 && (
+                          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 0.75rem", color: C.muted, fontFamily: FONT.mono, fontSize: "0.8rem" }}>
+                            {params.map((p) => <li key={p} style={{ marginBottom: "0.2rem" }}>{p}</li>)}
+                          </ul>
+                        )}
+                        {meta.route && (
+                          <a
+                            href={`#/${meta.route}`}
+                            className="no-print"
+                            style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.08em", textTransform: "uppercase", color: C.goldBright, textDecoration: "none" }}
+                          >
+                            View the interactive version →
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  );
+                } else {
+                  // Unknown/unsupported item type — render a note instead of crashing.
+                  contentNode = (
+                    <div style={{ width: "100%", border: `1px dashed ${C.ghost}`, borderRadius: 8, padding: "1.25rem", color: C.dim, fontStyle: "italic" }}>
+                      Unsupported report block.
+                    </div>
+                  );
                 }
 
                 return (
@@ -444,7 +528,9 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
                       
                       {/* Main Content */}
                       <div style={{ flex: 1 }}>
-                        {contentNode}
+                        <BlockErrorBoundary>
+                          {contentNode}
+                        </BlockErrorBoundary>
                       </div>
                     </div>
 
@@ -457,6 +543,29 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Attribution footer — captured in both the PNG and the printed PDF so
+              every exported artifact is self-citing. */}
+          {reportItems.length > 0 && (
+            <div style={{
+              marginTop: "3rem",
+              paddingTop: "1.25rem",
+              borderTop: `1px solid ${C.ghost}`,
+              fontFamily: FONT.condensed,
+              fontSize: "0.7rem",
+              lineHeight: 1.6,
+              color: C.dim,
+              letterSpacing: "0.03em",
+            }}>
+              <div style={{ color: C.muted }}>
+                The Accidental Intactivist's Inquiry · circumsurvey.online
+              </div>
+              <div>
+                Self-selected online survey; figures describe respondents to this survey, not the general population.
+                Generated {new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}.
+              </div>
             </div>
           )}
         </div>

@@ -3,264 +3,277 @@
     "intensity": {
       "label": "Intensity",
       "intact": {
-        "mean": 3.708,
-        "sd": 0.713,
-        "n": 48,
+        "mean": 4.25,
+        "sd": 0.922,
+        "n": 140,
         "ci95": [
-          3.501,
-          3.915
+          4.096,
+          4.404
         ]
       },
       "circumcised": {
-        "mean": 3.014,
-        "sd": 1.007,
-        "n": 73,
+        "mean": 2.946,
+        "sd": 1.314,
+        "n": 205,
         "ci95": [
-          2.779,
-          3.249
+          2.765,
+          3.127
         ]
       },
       "restoring": {
-        "mean": 2.933,
-        "sd": 1.009,
-        "n": 45,
+        "mean": 3.048,
+        "sd": 1.196,
+        "n": 105,
         "ci95": [
-          2.63,
-          3.236
+          2.816,
+          3.279
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 0.77,
-        "t_stat": 4.439,
-        "p_value": 2.0421469504119424e-05,
+        "cohens_d": 1.113,
+        "t_stat": 10.825,
+        "df": 342.7,
+        "p_value": 1.0973891346889768e-23,
         "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": -0.08,
-        "t_stat": -0.421,
-        "p_value": 0.6750313753119387,
+        "cohens_d": 0.079,
+        "t_stat": 0.682,
+        "df": 228.0,
+        "p_value": 0.4959039332575188,
         "stars": "ns"
       }
     },
     "duration": {
       "label": "Duration",
       "intact": {
-        "mean": 3.769,
-        "sd": 0.645,
-        "n": 52,
+        "mean": 4.007,
+        "sd": 0.948,
+        "n": 140,
         "ci95": [
-          3.59,
-          3.949
+          3.849,
+          4.166
         ]
       },
       "circumcised": {
-        "mean": 2.806,
-        "sd": 0.988,
-        "n": 72,
+        "mean": 2.644,
+        "sd": 1.3,
+        "n": 205,
         "ci95": [
-          2.573,
-          3.038
+          2.465,
+          2.823
         ]
       },
       "restoring": {
-        "mean": 2.654,
-        "sd": 0.947,
-        "n": 52,
+        "mean": 2.657,
+        "sd": 1.192,
+        "n": 105,
         "ci95": [
-          2.39,
-          2.918
+          2.427,
+          2.888
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 1.119,
-        "t_stat": 6.563,
-        "p_value": 1.3781422018223794e-09,
+        "cohens_d": 1.165,
+        "t_stat": 11.254,
+        "df": 341.5,
+        "p_value": 3.330050973164042e-25,
         "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": -0.156,
-        "t_stat": -0.864,
-        "p_value": 0.38926035453745883,
+        "cohens_d": 0.01,
+        "t_stat": 0.09,
+        "df": 226.6,
+        "p_value": 0.9285777319552281,
         "stars": "ns"
       }
     },
     "ease": {
       "label": "Ease",
       "intact": {
-        "mean": 3.462,
-        "sd": 0.896,
-        "n": 52,
+        "mean": 4.043,
+        "sd": 1.079,
+        "n": 140,
         "ci95": [
-          3.212,
-          3.711
+          3.863,
+          4.223
         ]
       },
       "circumcised": {
-        "mean": 2.918,
-        "sd": 1.003,
-        "n": 85,
+        "mean": 2.6,
+        "sd": 1.308,
+        "n": 205,
         "ci95": [
-          2.701,
-          3.134
+          2.42,
+          2.78
         ]
       },
       "restoring": {
-        "mean": 2.8,
-        "sd": 0.992,
-        "n": 40,
+        "mean": 2.792,
+        "sd": 1.263,
+        "n": 106,
         "ci95": [
-          2.483,
-          3.117
+          2.549,
+          3.036
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 0.564,
-        "t_stat": 3.294,
-        "p_value": 0.0013041418112345374,
-        "stars": "**"
+        "cohens_d": 1.182,
+        "t_stat": 11.178,
+        "df": 331.0,
+        "p_value": 7.957085174684762e-25,
+        "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": -0.118,
-        "t_stat": -0.616,
-        "p_value": 0.5395066770494749,
+        "cohens_d": 0.149,
+        "t_stat": 1.258,
+        "df": 219.2,
+        "p_value": 0.20963051928528809,
         "stars": "ns"
       }
     },
     "light_touch": {
-      "label": "Light Touch",
+      "label": "Light touch",
       "intact": {
-        "mean": 3.696,
-        "sd": 0.726,
-        "n": 46,
+        "mean": 4.236,
+        "sd": 0.918,
+        "n": 140,
         "ci95": [
-          3.48,
-          3.911
+          4.082,
+          4.389
         ]
       },
       "circumcised": {
-        "mean": 2.602,
-        "sd": 0.922,
-        "n": 93,
+        "mean": 2.248,
+        "sd": 1.225,
+        "n": 202,
         "ci95": [
-          2.412,
-          2.792
+          2.078,
+          2.417
         ]
       },
       "restoring": {
-        "mean": 2.667,
-        "sd": 0.954,
-        "n": 42,
+        "mean": 2.491,
+        "sd": 1.375,
+        "n": 106,
         "ci95": [
-          2.369,
-          2.964
+          2.226,
+          2.755
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 1.267,
-        "t_stat": 7.616,
-        "p_value": 9.399065888610175e-12,
+        "cohens_d": 1.791,
+        "t_stat": 17.142,
+        "df": 337.9,
+        "p_value": 7.769798206978198e-48,
         "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": 0.069,
-        "t_stat": 0.367,
-        "p_value": 0.7143013193201687,
+        "cohens_d": 0.19,
+        "t_stat": 1.529,
+        "df": 193.2,
+        "p_value": 0.12787108521338597,
         "stars": "ns"
       }
     },
     "mobile_skin": {
-      "label": "Mobile Skin",
+      "label": "Mobile skin",
       "intact": {
-        "mean": 3.889,
-        "sd": 0.465,
-        "n": 36,
+        "mean": 4.471,
+        "sd": 0.809,
+        "n": 140,
         "ci95": [
-          3.732,
-          4.046
+          4.336,
+          4.607
         ]
       },
       "circumcised": {
-        "mean": 2.506,
-        "sd": 0.875,
-        "n": 83,
+        "mean": 1.961,
+        "sd": 1.131,
+        "n": 204,
         "ci95": [
-          2.315,
-          2.697
+          1.805,
+          2.117
         ]
       },
       "restoring": {
-        "mean": 3.0,
-        "sd": 1.015,
-        "n": 34,
+        "mean": 2.849,
+        "sd": 1.433,
+        "n": 106,
         "ci95": [
-          2.646,
-          3.354
+          2.573,
+          3.125
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 1.784,
-        "t_stat": 11.211,
-        "p_value": 5.050714475418209e-20,
+        "cohens_d": 2.48,
+        "t_stat": 24.002,
+        "df": 341.4,
+        "p_value": 2.785569414602616e-75,
         "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": 0.539,
-        "t_stat": 2.485,
-        "p_value": 0.016087801280524436,
-        "stars": "*"
+        "cohens_d": 0.715,
+        "t_stat": 5.547,
+        "df": 174.5,
+        "p_value": 1.0597040608848174e-07,
+        "stars": "***"
       }
     },
     "variety": {
       "label": "Variety",
       "intact": {
-        "mean": 3.795,
-        "sd": 0.615,
-        "n": 39,
+        "mean": 4.393,
+        "sd": 0.837,
+        "n": 140,
         "ci95": [
-          3.596,
-          3.994
+          4.253,
+          4.533
         ]
       },
       "circumcised": {
-        "mean": 2.633,
-        "sd": 0.936,
-        "n": 79,
+        "mean": 2.449,
+        "sd": 1.304,
+        "n": 205,
         "ci95": [
-          2.423,
-          2.843
+          2.269,
+          2.628
         ]
       },
       "restoring": {
-        "mean": 2.652,
-        "sd": 0.948,
-        "n": 46,
+        "mean": 2.676,
+        "sd": 1.297,
+        "n": 105,
         "ci95": [
-          2.371,
-          2.934
+          2.425,
+          2.927
         ]
       },
       "intact_vs_circ": {
-        "cohens_d": 1.376,
-        "t_stat": 8.06,
-        "p_value": 1.1846785039242627e-12,
+        "cohens_d": 1.709,
+        "t_stat": 16.86,
+        "df": 341.8,
+        "p_value": 7.639406501144279e-47,
         "stars": "***"
       },
       "restoring_vs_circ": {
-        "cohens_d": 0.02,
-        "t_stat": 0.11,
-        "p_value": 0.9125914148951365,
+        "cohens_d": 0.175,
+        "t_stat": 1.458,
+        "df": 210.7,
+        "p_value": 0.14622620173450807,
         "stars": "ns"
       }
     }
   },
   "meta": {
-    "total_responses": 816,
+    "total_responses": 501,
     "pathway_counts": {
-      "intact": 146,
-      "restoring": 109,
-      "circumcised": 223,
-      "null": 338
+      "null": 37,
+      "circumcised": 213,
+      "intact": 142,
+      "restoring": 109
     },
-    "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American sample. All tests two-tailed Welch's t-test."
+    "rating_source": "text",
+    "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American sample; non-probability. Percentages and means describe this sample only. All tests two-tailed Welch's t-test."
   }
 }

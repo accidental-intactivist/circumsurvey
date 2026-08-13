@@ -539,7 +539,7 @@ const _demographics = {
           "pct_observer": 0.0
         },
         {
-          "category": "Xennial/Oregon Trail (born app",
+          "category": "Xennial/Oregon Trail (born approx. 1977-1983)",
           "total": 24,
           "intact": 14,
           "circumcised": 6,
@@ -926,7 +926,7 @@ const _demographics = {
     {
       "dimension_id": "generation",
       "dimension_label": "Generation",
-      "most_intact_category": "Xennial/Oregon Trail (born app",
+      "most_intact_category": "Xennial/Oregon Trail (born approx. 1977-1983)",
       "most_intact_pct": 58.3,
       "most_intact_n": 24,
       "least_intact_category": "Boomer (1946-1964)",

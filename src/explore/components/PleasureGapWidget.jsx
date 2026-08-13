@@ -225,13 +225,13 @@ export default function PleasureGapWidget() {
                 {activeCohortsList.map(c => {
                   const valObj = stats.matrix[c.id]?.[q.id] || { average: 0, n: 0 };
                   return (
-                    <td key={c.id} style={{ padding: "0.8rem 0.5rem", textAlign: "right" }}>
+                    <td key={c.id} style={{ padding: "0.8rem 0.5rem", textAlign: "right", whiteSpace: "nowrap" }}>
                       <span style={{ fontFamily: FONT.mono, fontWeight: 700, color: C.textBright, fontSize: "0.9rem" }}>{valObj.average.toFixed(2)}</span>
                       <span style={{ fontFamily: FONT.mono, fontSize: "0.7rem", color: C.muted, marginLeft: "0.4rem" }}>n={valObj.n}</span>
                     </td>
                   );
                 })}
-                <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", borderLeft: `1px solid rgba(255,255,255,0.05)` }}>
+                <td style={{ padding: "0.8rem 0.5rem", textAlign: "right", borderLeft: `1px solid rgba(255,255,255,0.05)`, whiteSpace: "nowrap" }}>
                   {(() => {
                     const intactAvg = stats.matrix["intact"]?.[q.id]?.average || 0;
                     const circAvg = stats.matrix["circumcised"]?.[q.id]?.average || 0;

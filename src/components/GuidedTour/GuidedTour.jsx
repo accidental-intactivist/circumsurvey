@@ -33,7 +33,8 @@ const GEO_URLS = {
 import {
   Reveal, Lens, TourCard, BarRows, ArrowNote, StatCallout,
   ChapterDivider, DocentMarker, ResearcherFootnote,
-  SectionKicker, PullStat, MethodPillars, EXPLORE_BASE,
+  ActFolio, ActHeader, PullQuote, TwoColumnAnalysis, MarginNote,
+  PullStat, MethodPillars, EXPLORE_BASE,
   EffectSizeRow, EffectBenchmarkChart, EffectSizeBadge,
 } from "./tourKit";
 import * as Icons from "../../explore/components/Icons";
@@ -358,33 +359,31 @@ export default function GuidedTour() {
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* ── THE HOOK & THE MISCONCEPTION ── */}
             <div id="ch-prologue" style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", scrollMarginTop: 100 }}>
-              <SectionKicker kicker="Prologue" title="The Accidental Intactivist's Inquiry" colorVar={C.goldBright} />
-          <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
-            <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.95rem", color: C.text, lineHeight: 1.75, maxWidth: 760 }}>
-              <p style={{ margin: "0 0 1rem" }}>
+              <ActHeader kicker="Prologue" title="The Accidental Intactivist's Inquiry" colorVar={C.goldBright} />
+            <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
+              <div style={{ fontFamily: FONT.body, fontWeight: 400, fontSize: "15.2px", lineHeight: 1.75, color: C.text, maxWidth: 680, margin: "2rem auto" }}>
+                <p style={{ marginBottom: "1.5rem" }}>
                 My name is Tone Pettit. If you are an American man reading this, there is a high probability your parents made a decision when you were an infant to remove a portion of your genital skin.
               </p>
-              <p style={{ margin: "0 0 1rem" }}>
+              <p style={{ marginBottom: "1.5rem" }}>
                 For most men, this was framed strictly as a prophylactic hygiene measure. It was so normalized that questioning it often feels taboo.
               </p>
-              <p style={{ margin: "0 0 1rem" }}>
+              <p style={{ marginBottom: "1.5rem" }}>
                 By a conscious choice of my parents in the 1970s, I grew up intact. I was an outlier in a culture where routine infant circumcision was the unquestioned, 90% norm. I became an "accidental intactivist," a witness to an alteration that nearly all my peers had undergone without a say.
               </p>
-              <blockquote style={{
-                margin: "1.4rem 0", padding: "0.9rem 1.2rem",
-                background: "color-mix(in srgb, var(--c-red) 6%, transparent)",
-                borderLeft: `3px solid ${C.red}`, borderRadius: "0 4px 4px 0",
-                fontFamily: FONT.display, fontStyle: "italic", fontWeight: 600,
-                fontSize: "1.1rem", color: C.textBright, lineHeight: 1.5,
-              }}>
-                If someone asked you honestly how you felt about your circumcision status, what would you say?
-              </blockquote>
-              <p style={{ margin: "0 0 1rem" }}>
+              
+              <PullQuote 
+                quote="If someone asked you honestly how you felt about your circumcision status, what would you say?" 
+                byline="THE LEAD RESEARCHER · PROLOGUE" 
+              />
+              
+              <p style={{ marginBottom: "1.5rem" }}>
                 That is the question I set out to ask when I built this anonymous survey. The biology of the foreskin is well understood. Its nerve density, mechanical function, and immunological role are documented in anatomy textbooks. Yet routine infant circumcision became standard practice in America during an era when self-pleasure was treated as a medical disorder. The procedure was designed to reduce sexual sensation.
               </p>
-              <p style={{ margin: "0 0 1rem" }}>
+              <p style={{ marginBottom: "1.5rem" }}>
                 Now the culture is shifting. Newborn circumcision rates in the United States have fallen below 50% for the first time in over a century. Parents are asking questions that went unasked a generation ago.
               </p>
+              
               <div style={{
                 float: "right", width: 220, marginLeft: "1.4rem", marginBottom: "0.8rem",
                 marginTop: "0.2rem",
@@ -400,19 +399,18 @@ export default function GuidedTour() {
                   Survey recruitment flyers, 2024
                 </div>
               </div>
-              <div style={{
-                fontFamily: FONT.display, fontWeight: 700, fontSize: "0.85rem",
-                color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.08em",
-                margin: "1.2rem 0 0.6rem", lineHeight: 1.2,
-              }}>
+              
+              <h4 style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "13.6px", color: C.goldBright, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "2rem", marginBottom: "0.5rem" }}>
                 Grassroots Outreach
-              </div>
-              <p style={{ margin: "0 0 1rem" }}>
+              </h4>
+              
+              <p style={{ marginBottom: "1.5rem" }}>
                 There was no advertising budget or clinical recruitment pipeline. The survey spread entirely through grassroots efforts. It was posted to forums, shared across social media, and passed hand to hand. Five hundred people showed up to answer anonymously.
               </p>
-              <p style={{ margin: 0 }}>
+              <p style={{ marginBottom: "1.5rem" }}>
                 This project exists to invite you to pay attention to what surfaces when people are given the space to share their experiences honestly. What follows is a guided tour through their answers, summarized and never argued. Where I editorialize, it is clearly labeled. Otherwise, we simply report what they said.
               </p>
+              
               <div style={{
                 display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.4rem",
                 paddingTop: "1.1rem", borderTop: `1px dashed ${C.ghost}`,
@@ -435,151 +433,210 @@ export default function GuidedTour() {
 
         {/* ── ACT I: THE MECHANICAL REALITY (THE B-PLOT) ── */}
         <section id="act-1-mechanics" style={{
-          position: "relative", overflow: "hidden", margin: "4rem 0",
+          position: "relative", overflow: "hidden", margin: "0",
+          paddingTop: "5.5rem", paddingBottom: "5rem",
           background: "color-mix(in srgb, var(--c-bgDeep) 72%, transparent)",
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "0 auto", padding: "4.5rem 1.6rem" }}>
-            <SectionKicker kicker="Act I" title="Physical & Mechanical Data" colorVar={st("03").colorVar} />
+          <ActFolio actNum="I" actTitle="Physical & Mechanical Data" count={1} total={4} />
+          
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
+            <ActHeader kicker="Act I" title="Physical & Mechanical Data" colorVar={st("03").colorVar} />
             
             <Lens>Anatomical Alteration and Sexual Mechanics</Lens>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, maxWidth: 800, margin: "0 auto 2rem", textAlign: "center" }}>
+            <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               To establish a baseline, we first examine the mechanics. We asked every respondent to rate their sexual experience across six key metrics. The data reveals a quantifiable variance in reported sensation between the cohorts, with intact men reporting higher average scores across all metrics.
             </div>
             
-            <TourCard id="sexual-experience-the-pleasure-gap" title="Cohort Comparison: Sensation Metrics" refText="EXHIBIT 03" stamp="Separated" exhibitStation={st("03")}>
+            <TourCard 
+              id="sexual-experience-the-pleasure-gap" 
+              title="Cohort Comparison: Sensation Metrics" 
+              plateNum="PLATE 03-A"
+              refText="EXHIBIT 03"
+              sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'RATE YOUR PLEASURE FROM MOBILE SKIN, 1-5' · EXHIBIT 03"
+            >
               <PleasureGapWidget stats={PLEASURE_GAP_STATS} />
-              
-              <div style={{
-                marginTop: "1.5rem", padding: "1rem 1.2rem",
-                background: "color-mix(in srgb, var(--c-gold) 6%, transparent)",
-                borderLeft: `3px solid ${C.gold}`, borderRadius: "0 4px 4px 0",
-                fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.6,
-              }}>
-                <strong style={{ color: C.goldBright, fontWeight: 600 }}>Mechanical Variance in Cohorts</strong><br/>
+            </TourCard>
+            
+            <TwoColumnAnalysis>
+              <MarginNote title="Margin Note">
+                The term "Mobile skin" refers to the gliding action pleasure — the question asked respondents to rate it from 1 to 5.
+              </MarginNote>
+              <p>
                 The intact penis functions as a self-lubricating system with a natural gliding mechanism. The removal of this tissue introduces a friction-based mechanic. The most statistically significant variance was observed in "Pleasure from Mobile Skin," where the circumcised cohort reported a 55% lower average satisfaction score.
-              </div>
-            </TourCard>
+              </p>
+              <p>
+                The gap is widest exactly where the removed tissue worked: gliding action first, fine-touch second. Restoring respondents recover part of the mechanical function — their mobile-skin mean rises 0.89 over the circumcised baseline — while the fine-touch gap barely moves, consistent with tissue that can be regrown and nerve endings that cannot.
+              </p>
+            </TwoColumnAnalysis>
 
-            <TourCard id="lubrication-dependency" title="Intact vs. Circumcised: Mechanical Friction" refText="FORM CS-058" stamp="Fig. 3">
-              <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.6, marginBottom: "1rem" }}>
-                These mechanical differences are reflected in daily routines. By comparing the self-reported frequencies of artificial lubrication use during intercourse or masturbation, we can observe the practical impact of the differing tissue structures.
-              </div>
-              
-              <TourButterflyChart
-                title="Lubrication Requirement Frequency"
-                rows={[
-                  { label: "Never", intactPct: 56.3, circPct: 6.3 },
-                  { label: "Rarely", intactPct: 17.6, circPct: 14.5 },
-                  { label: "Sometimes", intactPct: 19.7, circPct: 20.8 },
-                  { label: "Often", intactPct: 4.9, circPct: 18.4 },
-                  { label: "Always", intactPct: 1.4, circPct: 40.1 },
-                ]}
-                intactN={142}
-                circN={207}
-              />
-              <ArrowNote lines={[
-                <span key="lub">71% of intact men rarely or never need artificial lubrication. 65% of circumcised men always or almost always require it.</span>
-              ]} />
-            </TourCard>
+            <div style={{ marginTop: "3rem" }}>
+              <TourCard 
+                id="lubrication-dependency" 
+                title="Intact vs. Circumcised: Mechanical Friction" 
+                plateNum="PLATE 03-B"
+                refText="FORM CS-058"
+                sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 349 (INTACT+CIRC) · ASKED: 'HOW OFTEN DO YOU REQUIRE ARTIFICIAL LUBRICATION?' · FORM CS-058"
+                exhibitStation={st("03")}
+              >
+                <TourButterflyChart
+                  title="Lubrication Requirement Frequency"
+                  rows={[
+                    { label: "Never", intactPct: 56.3, circPct: 6.3 },
+                    { label: "Rarely", intactPct: 17.6, circPct: 14.5 },
+                    { label: "Sometimes", intactPct: 19.7, circPct: 20.8 },
+                    { label: "Often", intactPct: 4.9, circPct: 18.4 },
+                    { label: "Always", intactPct: 1.4, circPct: 40.1 },
+                  ]}
+                  intactN={142}
+                  circN={207}
+                />
+              </TourCard>
+            </div>
+            
+            <TwoColumnAnalysis>
+              <p>
+                These mechanical differences are reflected in daily routines. By comparing the self-reported frequencies of artificial lubrication use during intercourse or masturbation, we can observe the practical impact of the differing tissue structures. 71% of intact men rarely or never need artificial lubrication. 65% of circumcised men always or almost always require it.
+              </p>
+            </TwoColumnAnalysis>
+
           </div>
         </section>
 
         {/* ── ACT II: THE EMOTIONAL FALLOUT (THE A-PLOT) ── */}
-        <div id="act-2-emotion" style={{ maxWidth: 960, margin: "6rem auto", padding: "0 1.6rem", scrollMarginTop: 100 }}>
-          <SectionKicker kicker="Act II" title="Emotional & Psychological Data" colorVar={st("02").colorVar} />
-          
-          <Lens>Emotional Correlates of Bodily Autonomy</Lens>
-          <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.text, lineHeight: 1.6, maxWidth: 800, margin: "0 auto 2rem", textAlign: "center" }}>
-            A common assertion regarding infant circumcision is that performing the procedure at an early age prevents psychological impact. We provided respondents with an anonymous space to report their long-term feelings regarding their alteration.
-          </div>
+        <section id="act-2-emotion" style={{
+          position: "relative", overflow: "hidden", margin: "0",
+          paddingTop: "5.5rem", paddingBottom: "5rem",
+          scrollMarginTop: 100,
+        }}>
+          <ActFolio actNum="II" actTitle="Emotional & Psychological Data" count={2} total={4} />
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
+            <ActHeader kicker="Act II" title="Emotional & Psychological Data" colorVar={st("02").colorVar} />
+            
+            <Lens>Emotional Correlates of Bodily Autonomy</Lens>
+            <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
+              A common assertion regarding infant circumcision is that performing the procedure at an early age prevents psychological impact. We provided respondents with an anonymous space to report their long-term feelings regarding their alteration.
+            </div>
 
-          <TourCard id="gratitude-vs-regret" title="Cohort Comparison: Resentment vs. Regret" refText="EXHIBIT 02" stamp="Contrasts" exhibitStation={st("02")}>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.muted, lineHeight: 1.6, marginBottom: "1rem" }}>
-              The data indicates that over 86% of infant-circumcised respondents report experiencing feelings of resentment, loss, anger, or grief regarding the alteration of their bodies. This section measures the frequency of these sentiments within the cohort.
-            </div>
+            <TourCard 
+              id="gratitude-vs-regret" 
+              title="Cohort Comparison: Resentment vs. Regret" 
+              plateNum="PLATE 02-A"
+              refText="EXHIBIT 02" 
+              sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'HOW DO YOU FEEL ABOUT YOUR STATUS?' · EXHIBIT 02"
+              exhibitStation={st("02")}
+            >
+              <ResentmentMirror />
+            </TourCard>
             
-            <ResentmentMirror />
-            
-            <div style={{
-              marginTop: "1.5rem", padding: "1rem 1.2rem",
-              background: "color-mix(in srgb, var(--c-blue) 6%, transparent)",
-              borderLeft: `3px solid ${C.blue}`, borderRadius: "0 4px 4px 0",
-              fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.6,
-            }}>
-              Conversely, the intact cohort reports high levels of satisfaction regarding their status. Their responses indicate a near-unanimous sense of gratitude toward their parents for leaving their bodies unaltered.
+            <TwoColumnAnalysis>
+              <p>
+                The data indicates that over 86% of infant-circumcised respondents report experiencing feelings of resentment, loss, anger, or grief regarding the alteration of their bodies. This section measures the frequency of these sentiments within the cohort.
+              </p>
+              <p>
+                Conversely, the intact cohort reports high levels of satisfaction regarding their status. Their responses indicate a near-unanimous sense of gratitude toward their parents for leaving their bodies unaltered.
+              </p>
+            </TwoColumnAnalysis>
+
+            <div style={{ marginTop: "3rem" }}>
+              <TourCard 
+                id="the-raw-words" 
+                title="Intact vs. Circumcised: Narrative Testimonies" 
+                plateNum="PLATE 06-A"
+                refText="EXHIBIT 06" 
+                sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · QUALITATIVE · EXHIBIT 06"
+              >
+                <NarrativeMirrorToggle />
+              </TourCard>
             </div>
-          </TourCard>
-          
-          <TourCard id="the-raw-words" title="Intact vs. Circumcised: Narrative Testimonies" refText="EXHIBIT 06" stamp="Voices">
-            <NarrativeMirrorToggle />
-          </TourCard>
-        </div>
+          </div>
+        </section>
 
         {/* ── ACT III: THE JOURNEY OF RECLAMATION ── */}
         <section id="act-3-restoration" style={{
-          position: "relative", overflow: "hidden", margin: "4rem 0",
+          position: "relative", overflow: "hidden", margin: "0",
+          paddingTop: "5.5rem", paddingBottom: "5rem",
           background: "color-mix(in srgb, var(--c-bgDeep) 72%, transparent)",
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "0 auto", padding: "4.5rem 1.6rem" }}>
-            <SectionKicker kicker="Act III" title="Foreskin Restoration" colorVar={st("10").colorVar} />
+          <ActFolio actNum="III" actTitle="Foreskin Restoration" count={3} total={4} />
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
+            <ActHeader kicker="Act III" title="Foreskin Restoration" colorVar={st("10").colorVar} />
             
             <Lens>The Impact of Tissue Expansion</Lens>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, maxWidth: 800, margin: "0 auto 2rem", textAlign: "center" }}>
+            <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               A subset of the circumcised cohort engages in a process called "foreskin restoration," which involves years of non-surgical tissue expansion. Our data examines the self-reported outcomes of this practice.
             </div>
 
-            <TourCard id="the-restoring-cohort-in-numbers" title="The Restoring Cohort Data" refText="EXHIBIT 10" stamp="Restoring" exhibitStation={st("10")}>
+            <TourCard 
+              id="the-restoring-cohort-in-numbers" 
+              title="The Restoring Cohort Data" 
+              plateNum="PLATE 10-A"
+              refText="EXHIBIT 10" 
+              sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 71 (RESTORING) · SELF-SELECTED SAMPLE · EXHIBIT 10"
+              exhibitStation={st("10")}
+            >
               <TourRestorationPathway />
-              
-              <div style={{
-                marginTop: "1.5rem", padding: "1rem 1.2rem",
-                background: "color-mix(in srgb, var(--c-red) 6%, transparent)",
-                borderLeft: `3px solid ${C.red}`, borderRadius: "0 4px 4px 0",
-                fontFamily: FONT.body, fontSize: "0.85rem", color: C.text, lineHeight: 1.6,
-              }}>
-                Restoring men report statistically significant improvements in mobility, comfort, and a reduced need for artificial lubrication. However, the data also indicates limitations. While tissue expansion can simulate the mechanical gliding function, respondents note that it does not recover the specialized nerve endings removed during the initial procedure.
-              </div>
             </TourCard>
+            
+            <TwoColumnAnalysis>
+              <p>
+                Restoring men report statistically significant improvements in mobility, comfort, and a reduced need for artificial lubrication. However, the data also indicates limitations. While tissue expansion can simulate the mechanical gliding function, respondents note that it does not recover the specialized nerve endings removed during the initial procedure.
+              </p>
+            </TwoColumnAnalysis>
           </div>
         </section>
 
         {/* ── THE RESOLUTION: EMPOWERMENT & CONVERGENCE ── */}
-        <div id="act-4-resolution" style={{ maxWidth: 960, margin: "6rem auto", padding: "0 1.6rem", scrollMarginTop: 100 }}>
-          <SectionKicker kicker="Act IV" title="The Next Generation" colorVar={st("14").colorVar} />
-          
-          <Lens>Generational Trends in Intentions</Lens>
-          <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.text, lineHeight: 1.6, maxWidth: 800, margin: "0 auto 2rem", textAlign: "center" }}>
-            To gauge how these personal experiences might influence future generations, we asked our 500 respondents what they would do if they were to have a son today.
-          </div>
-
-          <TourCard id="the-convergence" title="Future Son Intentions & Convergence" refText="EXHIBIT 14" stamp="Future" exhibitStation={st("14")}>
-            <ConvergenceSankey />
-            <StatCallout big="433" colorVar={C.textBright}>
-              Of 500 respondents, 433 flow to "Keep Intact."
-            </StatCallout>
+        <section id="act-4-resolution" style={{
+          position: "relative", overflow: "hidden", margin: "0",
+          paddingTop: "5.5rem", paddingBottom: "5rem",
+          scrollMarginTop: 100,
+        }}>
+          <ActFolio actNum="IV" actTitle="The Next Generation" count={4} total={4} />
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
+            <ActHeader kicker="Act IV" title="The Next Generation" colorVar={st("14").colorVar} />
             
-            <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6, marginTop: "2rem", textAlign: "center", maxWidth: 700, margin: "2rem auto 0" }}>
-              <p style={{ marginBottom: "1rem" }}>
+            <Lens>Generational Trends in Intentions</Lens>
+            <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
+              To gauge how these personal experiences might influence future generations, we asked our 500 respondents what they would do if they were to have a son today.
+            </div>
+
+            <TourCard 
+              id="the-convergence" 
+              title="Future Son Intentions & Convergence" 
+              plateNum="PLATE 14-A"
+              refText="EXHIBIT 14" 
+              sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 500 · ASKED: 'IF YOU HAD A SON TODAY, WOULD YOU CIRCUMCISE HIM?' · EXHIBIT 14"
+              exhibitStation={st("14")}
+            >
+              <ConvergenceSankey />
+              <StatCallout big="433" colorVar={C.textBright}>
+                Of 500 respondents, 433 flow to "Keep Intact."
+              </StatCallout>
+              
+              <ArrowNote lines={[
+                <span key="conv">Follow the cohort pathways: <a href={EXPLORE_BASE + "the-forward-view"} style={{ color: C.blue }}>Exhibit 14</a></span>,
+              ]} />
+            </TourCard>
+            
+            <TwoColumnAnalysis>
+              <p>
                 The data reveals a strong convergence in intent. Across all demographics, including men who were circumcised themselves, the vast majority indicate they would choose to leave their sons intact.
               </p>
-              <p style={{ color: C.goldBright, fontWeight: 600 }}>
+              <p>
                 These findings suggest a significant generational shift in attitudes toward routine infant circumcision, driven by the firsthand experiences detailed in this report.
               </p>
-            </div>
-            <ArrowNote lines={[
-              <span key="conv">Follow the cohort pathways: <a href={EXPLORE_BASE + "the-forward-view"} style={{ color: C.blue }}>Exhibit 14</a></span>,
-            ]} />
-          </TourCard>
-        </div>
+            </TwoColumnAnalysis>
+          </div>
+        </section>
 
 
         {/* ── APPENDIX: FURTHER EXPLORATION ── */}
         <div id="appendix" style={{ maxWidth: 960, margin: "8rem auto 4rem", padding: "4rem 1.6rem 0", borderTop: `1px solid ${C.ghost}`, scrollMarginTop: 100 }}>
-          <SectionKicker kicker="Appendix" title="Methodology & Demographics" colorVar={C.dim} />
+          <ActHeader kicker="Appendix" title="Methodology & Demographics" colorVar={C.dim} />
           
           <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.dim, textAlign: "center", marginBottom: "3rem" }}>
             The narrative above captures the core findings of the Accidental Intactivist survey. For those interested in the underlying demographics, cultural factors, and survey architecture, we have preserved the following detailed exhibits.

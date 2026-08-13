@@ -154,14 +154,168 @@ export function ShareTools({ title }) {
   );
 }
 
-// ── Lens: the guide's wall text ────────────────────────────────────────────
-export function Lens({ children, center }) {
+// ── ActFolio: running act bar with position counter (Role H) ───────────────
+export function ActFolio({ actNum, actTitle, count, total }) {
+  return (
+    <div style={{
+      position: "sticky", top: 70, zIndex: 120,
+      background: C.bgDeep,
+      borderBottom: `1px solid ${C.ghost}`,
+      padding: "0.8rem 1.6rem",
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      fontFamily: FONT.mono, fontSize: "0.6rem", letterSpacing: "0.08em",
+      color: C.dim, textTransform: "uppercase"
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <span style={{ color: C.goldBright, fontWeight: 700 }}>ACT {actNum}</span>
+        <span style={{ color: C.ghost }}>|</span>
+        <span style={{ color: C.text }}>{actTitle}</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ display: "flex", gap: "3px" }}>
+          {Array.from({ length: total }).map((_, i) => (
+            <div key={i} style={{
+              width: 16, height: 3,
+              background: i < count ? C.goldBright : C.ghost,
+            }} />
+          ))}
+        </div>
+        <span>{String(count).padStart(2, '0')}/{String(total).padStart(2, '0')}</span>
+      </div>
+    </div>
+  );
+}
+
+// ── ActHeader: combining Role C Kicker and Role B Headline ─────────────────
+export function ActHeader({ kicker, title, colorVar }) {
+  return (
+    <div style={{ textAlign: "center", marginBottom: "3rem", position: "relative", zIndex: 2 }}>
+      <div style={{
+        fontFamily: FONT.condensed, fontWeight: 700, fontSize: "16px",
+        textTransform: "uppercase", letterSpacing: "0.26em", color: colorVar,
+        display: "inline-flex", alignItems: "center", gap: "0.6rem",
+        marginBottom: "1rem"
+      }}>
+        <div style={{ width: 12, height: 1, background: colorVar, opacity: 0.5 }} />
+        {kicker}
+        <div style={{ width: 12, height: 1, background: colorVar, opacity: 0.5 }} />
+      </div>
+      <h2 style={{
+        fontFamily: FONT.display, fontWeight: 800, fontSize: "44.8px",
+        lineHeight: 1.1, color: C.textBright, margin: 0,
+        textTransform: "uppercase"
+      }}>
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+// ── PullQuote: standalone quote with red rule ──────────────────────────────
+export function PullQuote({ quote, byline }) {
+  return (
+    <div style={{
+      borderTop: `2px solid ${C.red}`,
+      paddingTop: "1.5rem", margin: "4rem auto", maxWidth: 740,
+      textAlign: "center"
+    }}>
+      <div style={{
+        fontFamily: FONT.display, fontSize: "24px", fontStyle: "italic",
+        lineHeight: 1.4, color: C.textBright, marginBottom: "1rem"
+      }}>
+        {quote}
+      </div>
+      <div style={{
+        fontFamily: FONT.condensed, fontSize: "11px", letterSpacing: "0.15em",
+        textTransform: "uppercase", color: C.dim
+      }}>
+        — {byline}
+      </div>
+    </div>
+  );
+}
+
+// ── TwoColumnAnalysis & MarginNote ──────────────────────────────────────────
+export function TwoColumnAnalysis({ children }) {
+  return (
+    <div className="two-column-analysis" style={{
+      fontFamily: FONT.body, fontWeight: 400, fontSize: "15.2px", lineHeight: 1.75,
+      color: C.text, maxWidth: 960, margin: "2rem auto", position: "relative"
+    }}>
+      <style>
+        {`
+          .two-column-analysis {
+            column-count: 2;
+            column-gap: 3rem;
+            column-rule: 2px dotted ${C.ghost};
+          }
+          .two-column-analysis p { margin-top: 0; margin-bottom: 1.5rem; max-width: 68ch; }
+          .two-column-analysis h4 {
+            font-family: ${FONT.display};
+            font-weight: 700;
+            font-size: 13.6px;
+            color: ${C.goldBright};
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+          }
+          @media (max-width: 768px) {
+            .two-column-analysis { column-count: 1; column-rule: none; }
+          }
+        `}
+      </style>
+      {children}
+    </div>
+  );
+}
+
+export function MarginNote({ title, children }) {
+  return (
+    <div className="margin-note" style={{
+      borderTop: `2px solid ${C.gold}`,
+      paddingTop: "0.5rem",
+      fontFamily: FONT.body, fontSize: "12px", lineHeight: 1.5, color: C.muted
+    }}>
+      <style>
+        {`
+          .margin-note {
+            float: right;
+            width: 200px;
+            margin-right: -240px;
+            margin-top: 0.5rem;
+          }
+          @media (max-width: 1200px) {
+            .margin-note {
+              float: none;
+              width: 100%;
+              margin-right: 0;
+              margin-top: 2rem;
+              margin-bottom: 2rem;
+            }
+          }
+        `}
+      </style>
+      <div style={{
+        fontFamily: FONT.condensed, fontWeight: 700, fontSize: "10px",
+        letterSpacing: "0.15em", textTransform: "uppercase", color: C.goldBright,
+        marginBottom: "0.4rem"
+      }}>
+        {title}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Lens: the guide's wall text (Role D) ───────────────────────────────────
+export function Lens({ children, center = true }) {
   return (
     <Reveal>
       <p style={{
-        fontFamily: FONT.body, fontWeight: 300, fontSize: "1rem", color: C.muted,
-        lineHeight: 1.75, margin: center ? "0 auto 1.4rem" : "0 0 1.4rem 1.6rem",
-        maxWidth: 740, textAlign: center ? "center" : "left",
+        fontFamily: FONT.body, fontWeight: 300, fontSize: "19.2px", color: C.muted,
+        lineHeight: 1.6, margin: center ? "0 auto 2rem" : "0 0 2rem 1.6rem",
+        maxWidth: 620, textAlign: center ? "center" : "left",
       }}>
         {children}
       </p>
@@ -170,7 +324,7 @@ export function Lens({ children, center }) {
 }
 
 // ── TourCard: ruled data card (Bureau DNA on theme tokens) ─────────────────
-export function TourCard({ id, title, refText, children, style, exhibitStation }) {
+export function TourCard({ id, title, refText, plateNum, children, style, exhibitStation, sourceLine }) {
   const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
 
   return (
@@ -178,44 +332,54 @@ export function TourCard({ id, title, refText, children, style, exhibitStation }
       <div id={id || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} style={{
         position: "relative",
         background: C.bgCard, border: `1px solid ${C.ghost}`,
-        borderRadius: 12, marginBottom: "1.5rem",
+        marginBottom: "2rem",
         boxShadow: `0 8px 30px rgba(0,0,0,0.05)`,
-        scrollMarginTop: 90,
+        scrollMarginTop: 120,
         ...style
       }}>
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "center",
           gap: "0.75rem", flexWrap: "wrap", padding: "0.7rem 1.4rem",
           borderBottom: `1px solid ${C.ghost}`, background: "rgba(255,255,255,0.02)",
-          borderRadius: "12px 12px 0 0",
         }}>
           <div style={{
-            fontFamily: FONT.display, fontWeight: 700, fontSize: "0.74rem",
+            fontFamily: FONT.display, fontWeight: 700, fontSize: "12.5px",
             textTransform: "uppercase", letterSpacing: "0.14em", color: C.text,
             display: "flex", alignItems: "center", gap: "0.45rem",
           }}>
             <span style={{ color: C.red }}>★</span> {title}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            {refText && (
-              <div style={{ fontFamily: FONT.mono, fontSize: "0.52rem", color: C.dim, letterSpacing: "0.06em" }}>
-                {refText}
+            {plateNum && (
+              <div style={{ fontFamily: FONT.condensed, fontWeight: 600, fontSize: "10px", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                {plateNum} {refText ? `· ${refText}` : ''}
               </div>
             )}
             <ShareTools title={title} />
           </div>
         </div>
-        <div style={{ padding: "1.6rem 1.5rem" }}>{children}</div>
+        
+        <div style={{ padding: "2rem 1.5rem 1.5rem" }}>{children}</div>
+        
+        {sourceLine && (
+          <div style={{
+            padding: "0.8rem 1.5rem", borderTop: `1px solid ${C.ghost}`,
+            fontFamily: FONT.mono, fontSize: "9.6px", color: C.dim,
+            textTransform: "uppercase", letterSpacing: "0.05em",
+            fontVariantNumeric: "tabular-nums"
+          }}>
+            {sourceLine}
+          </div>
+        )}
+
         {exhibitStation && (
           <div className="exhibit-portal" style={{
             borderTop: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
             padding: "1.5rem",
             background: `linear-gradient(180deg, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 0%, color-mix(in srgb, ${exhibitStation.colorVar} 15%, var(--c-bgDeep)) 100%)`,
             boxShadow: `inset 0 4px 15px color-mix(in srgb, var(--c-text) 5%, transparent)`,
-            borderRadius: "0 0 12px 12px",
             position: "relative",
             overflow: "hidden",
-            marginTop: "1rem"
           }}>
             {PortalIcon && (
               <div style={{ position: "absolute", right: "-10%", bottom: "-40%", opacity: 0.1, pointerEvents: "none", transform: "rotate(-10deg)" }}>
@@ -238,16 +402,6 @@ export function TourCard({ id, title, refText, children, style, exhibitStation }
                 Enter Exhibit ➔
               </a>
             </div>
-            {exhibitStation.exhibitTeaser && (
-              <div style={{
-                fontFamily: FONT.body, fontSize: "0.95rem", color: "var(--c-text)",
-                lineHeight: 1.5, marginTop: "1rem", paddingTop: "0.8rem",
-                borderTop: `1px dashed color-mix(in srgb, ${exhibitStation.colorVar} 30%, transparent)`,
-                position: "relative", zIndex: 2
-              }}>
-                {exhibitStation.exhibitTeaser}
-              </div>
-            )}
             <div style={{
               position: "absolute", top: 0, left: 0, right: 0, height: "100%",
               background: `linear-gradient(0deg, transparent 0%, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 50%, transparent 100%)`,

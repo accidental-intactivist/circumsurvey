@@ -636,19 +636,29 @@ export default function SquishHeader() {
       </header>
 
       {/* ── Scroll Indicator (On the Canvas) ── */}
-      <div style={{
-        position: "absolute",
-        bottom: 0,
-        left: "50%",
-        transform: "translate(-50%, 150%)", // Pushes it down past the 85vh spacer onto the canvas
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "0.2rem",
-        color: "var(--c-gold)",
-        zIndex: 10,
-        pointerEvents: "none",
-      }}>
+      <div className="scroll-indicator-container">
+        <style>
+          {`
+            .scroll-indicator-container {
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translate(-50%, 150%);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.2rem;
+              color: var(--c-gold);
+              z-index: 10;
+              pointer-events: none;
+            }
+            @media (max-width: 1200px) {
+              .scroll-indicator-container {
+                transform: translate(-50%, calc(150% - 60px)); /* Push up above the 60px mobile nav bar */
+              }
+            }
+          `}
+        </style>
         <span style={{
           fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
           fontSize: "0.85rem",

@@ -429,7 +429,7 @@ export default function SquishHeader() {
                 zIndex: 20,
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 800,
-                fontSize: "clamp(1.8rem, 5vw, 4.5rem)",
+                fontSize: "clamp(1.6rem, min(5vw, 7vh), 4.5rem)",
                 color: "var(--c-textBright)",
                 lineHeight: 1.05,
                 letterSpacing: "-0.015em",
@@ -448,23 +448,23 @@ export default function SquishHeader() {
               width: "100%",
               maxWidth: 780,
               boxSizing: "border-box",
-              marginTop: "clamp(1rem, 3vh, 2rem)",
+              marginTop: "clamp(1rem, 2vh, 2rem)",
               background: "var(--c-bgCard)",
               borderRadius: 6,
-              padding: "clamp(10px, 2vh, 20px)",
+              padding: "clamp(10px, 1.5vh, 20px)",
             }}>
               {/* Gold frame (the band around the content) */}
               <div style={{
                 border: "2.5px solid var(--c-gold)",
                 borderRadius: 2,
-                padding: "clamp(1rem, 2vh, 2.2rem) clamp(1rem, 3vw, 3.5rem)",
+                padding: "clamp(0.8rem, 1.5vh, 2.2rem) clamp(1rem, 3vw, 3.5rem)",
               }}>
               {/* Line 1 */}
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 400,
                 fontStyle: "italic",
-                fontSize: "clamp(1rem, 1.8vw, 1.5rem)",
+                fontSize: "clamp(1rem, min(1.8vw, 2.5vh), 1.5rem)",
                 color: "var(--c-text)",
                 lineHeight: 1.4,
                 letterSpacing: "0.01em",
@@ -476,11 +476,11 @@ export default function SquishHeader() {
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 800,
-                fontSize: "clamp(1.5rem, 3.5vw, 3.2rem)",
+                fontSize: "clamp(1.5rem, min(3.5vw, 5vh), 3.2rem)",
                 lineHeight: 1.1,
                 letterSpacing: "-0.01em",
                 textTransform: "uppercase",
-                margin: "clamp(0.5rem, 2vh, 1rem) 0",
+                margin: "clamp(0.4rem, 1vh, 1rem) 0",
                 background: "linear-gradient(135deg, var(--c-goldBright), var(--c-gold), var(--c-orange))",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -493,7 +493,7 @@ export default function SquishHeader() {
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 700,
-                fontSize: "clamp(1.3rem, 3vw, 2.6rem)",
+                fontSize: "clamp(1.2rem, min(3vw, 4vh), 2.6rem)",
                 color: "var(--c-textBright)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.01em",
@@ -504,7 +504,7 @@ export default function SquishHeader() {
 
               {/* Divider rule */}
               <div style={{
-                width: 60, height: 2, margin: "1.4rem auto",
+                width: 60, height: 2, margin: "clamp(0.8rem, 1.5vh, 1.4rem) auto",
                 background: "linear-gradient(90deg, var(--c-gold), var(--c-orange))",
                 borderRadius: 1,
               }} />
@@ -519,7 +519,7 @@ export default function SquishHeader() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "0.4rem",
+                gap: "clamp(0.2rem, 1vh, 0.4rem)",
               }}>
                 <span style={{ color: "var(--c-muted)" }}>{PHASE1_TOTAL} people answered anonymously.</span>
                 <span style={{ color: "var(--c-goldBright)" }}>Here's what they chose to share.</span>
@@ -533,11 +533,11 @@ export default function SquishHeader() {
               width: "100%",
               maxWidth: 780,
               boxSizing: "border-box",
-              marginTop: "clamp(1.5rem, 3vh, 2.5rem)", // Increased margin to prevent collision (Pica Rule)
+              marginTop: "clamp(0.8rem, 2vh, 2.5rem)", // Responsive margin (Pica Rule on larger screens, tighter on cramped screens)
               background: "var(--c-bgCard)",
               border: "1px solid var(--c-ghost)",
               borderRadius: 6,
-              padding: "clamp(15px, 2.5vh, 24px)",
+              padding: "clamp(10px, 1.5vh, 24px)",
               textAlign: "center",
               zIndex: 10,
               pointerEvents: "none",

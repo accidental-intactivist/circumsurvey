@@ -681,10 +681,48 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button style={{ background: 'transparent', border: 'none', color: 'var(--c-textBright)', cursor: 'pointer', padding: '0.25rem 0.65rem' }}>Sign In</button>
+                  <button
+                    style={{
+                      fontFamily: FONT.condensed,
+                      fontWeight: 700,
+                      fontSize: "0.7rem",
+                      color: "var(--c-textBright)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                      padding: "0.25rem 0.65rem",
+                      border: "1px solid var(--c-ghost)",
+                      borderRadius: 100,
+                      background: "transparent",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--c-textBright)"}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--c-ghost)"}
+                  >
+                    Sign In
+                  </button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <button style={{ background: 'var(--c-purple)', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.25rem 0.65rem', borderRadius: 100 }}>Sign Up</button>
+                  <button
+                    style={{
+                      fontFamily: FONT.condensed,
+                      fontWeight: 700,
+                      fontSize: "0.7rem",
+                      color: "#fff",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                      padding: "0.25rem 0.65rem",
+                      border: "1px solid var(--c-purple)",
+                      borderRadius: 100,
+                      background: "var(--c-purple)",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.filter = "brightness(1.2)"}
+                    onMouseLeave={(e) => e.currentTarget.style.filter = "brightness(1)"}
+                  >
+                    Sign Up
+                  </button>
                 </SignUpButton>
               </SignedOut>
               <SignedIn>

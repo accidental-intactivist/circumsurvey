@@ -15,14 +15,15 @@ import PathwayChips from "../components/PathwayChips";
 import RelevanceToggle from "../components/RelevanceToggle";
 import QuestionRow from "../components/QuestionRow";
 
-import * as Icons from "../components/Icons";
 import IconifyEmoji from "../components/IconifyEmoji";
 import { QUESTION_EXHIBIT_MAP } from "../lib/coverage";
 import { EXHIBIT_ROUTES } from "../components/ExploreMasthead";
+import { useNarrativeConfig } from "../lib/narrativeConfig";
 
 export default function IndexPage({ routerState, navigate, updateState, setExhibitContext }) {
   const { pathway, view, search, section, cohort, observerRole, format } = routerState;
   const hasPathway = pathway && (Array.isArray(pathway) ? pathway.length > 0 : true);
+  const { config } = useNarrativeConfig();
 
   // ── Data fetch ──────────────────────────────────────────────────────────
   const [questions, setQuestions] = useState(null);
@@ -374,6 +375,33 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
                 </div>
               </div>
             </div>
+
+            {/* Trending Questions Banner */}
+            {config.featuredQuestions && config.featuredQuestions.length > 0 && !search && !section && !pathway && (
+              <div style={{
+                background: "rgba(212,160,48,0.05)",
+                border: `1px solid rgba(212,160,48,0.3)`,
+                borderRadius: 8,
+                padding: "1rem",
+                marginBottom: "1rem"
+              }}>
+                <h3 style={{ fontFamily: FONT.condensed, color: C.goldBright, margin: "0 0 0.8rem 0", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  🔥 Trending Questions
+                </h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.12rem" }}>
+                  {questions?.filter(q => config.featuredQuestions.includes(q.id)).map((q, i) => (
+                    <QuestionRow
+                      key={`trending-${q.id}`}
+                      q={q}
+                      index={i}
+                      distribution={distributions[q.id]}
+                      cohortDistribution={cohortDistributions[q.id]}
+                      onClick={() => navigate("question", { id: q.id })}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Instructive Guidance Banner */}
             {(!hasPathway && !section && !search && !cohort && !observerRole) && (

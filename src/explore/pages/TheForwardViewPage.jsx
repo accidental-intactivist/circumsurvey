@@ -153,7 +153,7 @@ export default function TheForwardViewPage({ routerState, navigate, setExhibitCo
           color={C.blueBright}
         />
 
-        <ResourcesCTA />
+
 
       </div>
     </div>

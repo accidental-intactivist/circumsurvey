@@ -16,6 +16,9 @@ import HarmonicCanvas from "../../components/HarmonicCanvas";
 import ThemeToggle from "./ThemeToggle";
 import { Sparkles } from "./Icons";
 import { Play, Pause } from "lucide-react";
+import { useTelemetry } from "../lib/telemetry";
+import { useNarrativeConfig } from "../lib/narrativeConfig";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 // ── Easy-to-adjust height constants ─────────────────────────────────────
 const HERO_HEIGHT = 240;   // px – hero / expanded state (adjust to taste)
@@ -193,11 +196,28 @@ export const EXHIBIT_ROUTES = [
 
 export default function ExploreMasthead({ route, navigate, customMeta, isDocentOpen, setDocentOpen }) {
   const { theme, mode, colorblind, typeface } = useTheme();
+  const { trackEvent } = useTelemetry();
+  const { config } = useNarrativeConfig();
   const [scrollY, setScrollY] = useState(0);
   const headerRef = useRef(null);
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  
+  const [isEditorialUnlocked, setIsEditorialUnlocked] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("cs_editorial_unlocked") === "true";
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setIsEditorialUnlocked(localStorage.getItem("cs_editorial_unlocked") === "true");
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
   
   const [loomPaused, setLoomPaused] = useState(() => {
     if (typeof window !== "undefined") {
@@ -303,6 +323,18 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             .mobile-findings-text { display: none !important; }
             .desktop-kicker { display: none !important; }
             .breadcrumb-explore { display: none !important; }
+            .mobile-dropdown-btn {
+              background: rgba(212, 160, 48, 0.1) !important;
+              border: 1px solid rgba(212, 160, 48, 0.3) !important;
+              padding: 0.4rem 0.75rem !important;
+              font-size: 0.85rem !important;
+              border-radius: 6px !important;
+            }
+            .mobile-dropdown-menu {
+              width: 90vw !important;
+              max-width: 320px !important;
+              left: -1rem !important;
+            }
           }
         `}
       </style>
@@ -443,6 +475,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                     return (
                       <div style={{ position: "relative" }}>
                         <button
+                          className="mobile-dropdown-btn"
                           onClick={() => setDropdownOpen(!dropdownOpen)}
                           style={{
                             background: "transparent",
@@ -470,7 +503,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                         </button>
                         
                         {dropdownOpen && (
-                          <div style={{
+                          <div className="mobile-dropdown-menu" style={{
                             position: "absolute",
                             top: "calc(100% + 0.4rem)",
                             left: 0,
@@ -483,13 +516,22 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                             zIndex: 200,
                             padding: "0.4rem 0",
                           }}>
-                            {EXHIBIT_ROUTES.map((ex) => {
+                            {[...EXHIBIT_ROUTES].sort((a, b) => {
+                              if (!config.exhibitOrder || config.exhibitOrder.length === 0) return 0;
+                              const idxA = config.exhibitOrder.indexOf(a.route);
+                              const idxB = config.exhibitOrder.indexOf(b.route);
+                              if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                              if (idxA !== -1) return -1;
+                              if (idxB !== -1) return 1;
+                              return 0;
+                            }).map((ex) => {
                               const isCurrent = ex.route === route;
                               return (
                                 <button
                                   key={ex.route}
                                   onClick={() => {
                                     setDropdownOpen(false);
+                                    trackEvent('explore_exhibit_clicked', { exhibit_id: ex.route, source: 'masthead_dropdown' });
                                     navigate(ex.route);
                                   }}
                                   style={{
@@ -516,6 +558,11 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                                     marginBottom: "0.1rem",
                                   }}>
                                     {ex.num}
+                                    {config.featuredExhibits && config.featuredExhibits[ex.route] && (
+                                      <span style={{ marginLeft: "0.4rem", color: "var(--c-gold)", fontSize: "0.5rem" }}>
+                                        ✦ {config.featuredExhibits[ex.route].badge}
+                                      </span>
+                                    )}
                                   </span>
                                   <span style={{
                                     fontFamily: FONT.body,
@@ -555,6 +602,21 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
 
           {/* Right: ThemeToggle + Findings link */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
+            {isEditorialUnlocked && (
+              <a href="#/editorial" className="mobile-hide" style={{
+                fontFamily: FONT.condensed,
+                fontWeight: 700,
+                fontSize: "0.7rem",
+                color: "var(--c-purple)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                textDecoration: "none",
+                transition: "color 0.2s"
+              }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-purpleBright)"}
+                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-purple)"}>
+                Editorial
+              </a>
+            )}
             <a href="#/about" className="mobile-hide" style={{
               fontFamily: FONT.condensed,
               fontWeight: 700,
@@ -613,6 +675,23 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               <span className="mobile-findings-text">← Findings</span>
               <span className="mobile-only">←</span>
             </a>
+
+            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5 }} />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <button style={{ background: 'transparent', border: 'none', color: 'var(--c-textBright)', cursor: 'pointer', padding: '0.25rem 0.65rem' }}>Sign In</button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button style={{ background: 'var(--c-purple)', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.25rem 0.65rem', borderRadius: 100 }}>Sign Up</button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+
             
             <button
               onClick={() => setDocentOpen(!isDocentOpen)}

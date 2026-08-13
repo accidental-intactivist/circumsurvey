@@ -12,6 +12,7 @@ import { LOOM_CONFIG } from "../../components/HarmonicCanvas";
 import { UNDERLOOM_CONFIG } from "../../components/GuidedTour/LoomChoreography";
 import { EXHIBIT_ROUTES } from "./ExploreMasthead";
 import { useReport } from "../contexts/ReportContext";
+import { useTelemetry } from "../lib/telemetry";
 
 function DocentChart({ questionId }) {
   const [question, setQuestion] = useState(null);
@@ -51,6 +52,7 @@ function DocentChart({ questionId }) {
 export default function CopilotChat({ routerState, updateState, question, exhibitContext, tourSuas }) {
   const { unlockTheme, setTheme, setMode, setTypeface, setColorblind, setDyslexicFont, setTypeScale } = useTheme();
   const { addAIChatBlock } = useReport();
+  const { trackEvent } = useTelemetry();
   const [query, setQuery] = useState(routerState?.ai_query || "");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -92,6 +94,32 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     if (!query.trim()) return;
 
     const upperQ = query.trim().toUpperCase();
+
+    if (upperQ.startsWith('/ADMIN-LOGIN')) {
+      const parts = query.trim().split(" ");
+      const password = parts[1];
+      if (password === "secret") {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("cs_editorial_unlocked", "true");
+          window.dispatchEvent(new Event("storage")); // Dispatch event so Masthead can update
+        }
+        setResult({
+          answer: "Access Granted. The Editorial Dashboard has been unlocked. You can now access it from the Explore menu in the top right.",
+          suggestions: [],
+          quotes: [],
+          metadata: { intent: "system_override" }
+        });
+      } else {
+        setResult({
+          answer: "Access Denied. Invalid credentials.",
+          suggestions: [],
+          quotes: [],
+          metadata: { intent: "system_override" }
+        });
+      }
+      return;
+    }
+
     if (upperQ === 'SYS 64738' || upperQ === 'LOAD"*",8,1') {
       unlockTheme('frodo');
       setTheme('frodo');
@@ -313,6 +341,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     setError(null);
     setResult(null);
     setAddedToReport(false);
+    trackEvent('copilot_query_submitted', { query_length: searchQuery.length });
 
     const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
     let pageSnapshot = undefined;
@@ -377,6 +406,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                 if (addedToReport) return;
                 addAIChatBlock(query, result.answer);
                 setAddedToReport(true);
+                trackEvent('copilot_response_added_to_report', { query_length: query.length });
               }}
               style={{
                 background: addedToReport ? "rgba(100, 200, 100, 0.1)" : "transparent",

@@ -170,12 +170,12 @@ export function Lens({ children, center }) {
 }
 
 // ── TourCard: ruled data card (Bureau DNA on theme tokens) ─────────────────
-export function TourCard({ title, refText, children, style, exhibitStation }) {
+export function TourCard({ id, title, refText, children, style, exhibitStation }) {
   const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
 
   return (
     <Reveal>
-      <div id={title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} style={{
+      <div id={id || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} style={{
         position: "relative",
         background: C.bgCard, border: `1px solid ${C.ghost}`,
         borderRadius: 12, marginBottom: "1.5rem",

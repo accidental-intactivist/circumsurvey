@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import posthog from 'posthog-js';
 
 let isInitialized = false;
@@ -22,7 +23,7 @@ export function initTelemetry() {
 }
 
 export function useTelemetry() {
-  const trackEvent = (eventName, properties = {}) => {
+  const trackEvent = useCallback((eventName, properties = {}) => {
     if (!isInitialized) initTelemetry();
 
     if (MOCK_TELEMETRY) {
@@ -30,19 +31,37 @@ export function useTelemetry() {
     } else {
       posthog.capture(eventName, properties);
     }
-  };
+  }, []);
 
-  const trackPageview = (url) => {
+  const trackPageview = useCallback((url) => {
     if (!isInitialized) initTelemetry();
     
-    if (MOCK_TELEMETRY) {
-      console.log(`[Telemetry Pageview] ${url}`);
-    } else {
-      posthog.capture('$pageview', { $current_url: url });
-    }
-  };
+    const utmParams = {};
+    try {
+      const parsedUrl = new URL(url);
+      const utms = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+      utms.forEach(utm => {
+        const val = parsedUrl.searchParams.get(utm);
+        if (val) {
+          utmParams[`$${utm}`] = val;
+        }
+      });
+    } catch(e) {}
 
-  const identifyUser = (distinctId, properties = {}) => {
+    const properties = { 
+      $current_url: url, 
+      ...utmParams,
+      ...(Object.keys(utmParams).length > 0 ? { $set_once: utmParams } : {})
+    };
+
+    if (MOCK_TELEMETRY) {
+      console.log(`[Telemetry Pageview] ${url}`, properties);
+    } else {
+      posthog.capture('$pageview', properties);
+    }
+  }, []);
+
+  const identifyUser = useCallback((distinctId, properties = {}) => {
     if (!isInitialized) initTelemetry();
 
     if (MOCK_TELEMETRY) {
@@ -50,7 +69,7 @@ export function useTelemetry() {
     } else {
       posthog.identify(distinctId, properties);
     }
-  };
+  }, []);
 
   return { trackEvent, trackPageview, identifyUser };
 }

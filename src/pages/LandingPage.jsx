@@ -855,10 +855,10 @@ function EditorsLetter() {
             The findings show that circumcised men are overwhelmingly dissatisfied and frequently require external lubrication for their entire lives.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of respondents across all pathways</strong> agree that the child should have the right to decide. Intact, circumcised, restoring, and observers alike — no other question in this survey produces a consensus this strong.
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>96% of intact respondents and over 81% of circumcised respondents</strong> agree that the child should have the right to decide. Intact, circumcised, restoring, and observers alike — no other question in this survey produces a consensus this strong.
           </p>
           <p style={{ marginBottom: "1rem" }}>
-            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>86% of circumcised respondents</strong> report experiencing resentment, loss, anger, or grief. Only 14% say they have never felt negative about it. The myth that "they don't remember, so they don't care" collapses under the weight of their own testimonies.
+            <strong style={{ fontFamily: "'Barlow', sans-serif", fontWeight: 700, color: C.paperInk }}>79% of circumcised respondents</strong> report experiencing resentment, loss, anger, or grief. Only 14% say they have never felt negative about it. The myth that "they don't remember, so they don't care" collapses under the weight of their own testimonies.
           </p>
           <p style={{ marginBottom: "1.5rem" }}>
             Our goal is to bring agnostic readers, expectant parents, and medical professionals over to the side of bodily autonomy. We want to let the raw data and verbatim voices speak for themselves.

@@ -7,6 +7,7 @@ import SmallSampleBadge from "../components/SmallSampleBadge";
 import { useTooltip, Tooltip } from "../components/Tooltip";
 import { PATHWAYS } from "../lib/pathways";
 import PleasureBarChart from "../components/PleasureBarChart";
+import PleasureHorizontalBarChart from "../components/PleasureHorizontalBarChart";
 import PleasureDumbbellChart from "../components/PleasureDumbbellChart";
 import ExhibitHero from "../components/ExhibitHero";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
@@ -300,6 +301,15 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
           </aside>
 
           {/* RIGHT: Main Chart Panel */}
+          <style>{`
+            @media (min-width: 768px) {
+              .mobile-only-inline { display: none !important; }
+              .desktop-hide { display: none !important; }
+            }
+            @media (max-width: 767px) {
+              .mobile-hide { display: none !important; }
+            }
+          `}</style>
           <main>
             <div className="crt-frame" style={{ borderRadius: 8, overflow: "hidden", marginBottom: "1.5rem" }}>
               <div className="corner tl"></div>
@@ -514,7 +524,18 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                 <div style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s", pointerEvents: loading ? "none" : "auto" }}>
                   <SmallSampleBadge n={stats.minN} label="one or more of the selected pathways">
                     {viewMode === "dumbbell" && <PleasureDumbbellChart stats={stats} activeCohortsList={activeCohortsList} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
-                    {viewMode === "columns" && <PleasureBarChart stats={stats} activeCohortsList={activeCohortsList} groupBy={groupBy} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />}
+                    {viewMode === "columns" && (
+                      <>
+                        <div className="mobile-hide" style={{ width: "100%", overflowX: "auto" }}>
+                          <div style={{ minWidth: 760 }}>
+                            <PleasureBarChart stats={stats} activeCohortsList={activeCohortsList} groupBy={groupBy} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+                          </div>
+                        </div>
+                        <div className="desktop-hide" style={{ width: "100%" }}>
+                          <PleasureHorizontalBarChart stats={stats} activeCohortsList={activeCohortsList} groupBy={groupBy} showGap={showGap} showTooltip={showTooltip} moveTooltip={moveTooltip} hideTooltip={hideTooltip} />
+                        </div>
+                      </>
+                    )}
                   </SmallSampleBadge>
                 </div>
               )}

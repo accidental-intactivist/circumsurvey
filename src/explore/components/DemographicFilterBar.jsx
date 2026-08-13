@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import { C, FONT } from "../styles/tokens";
+import { useTelemetry } from "../lib/telemetry";
 
 // Hardcoded option lists — these mirror the actual values in the D1 database.
 // Kept static because (a) they're small and (b) the alternative (API call)
@@ -139,6 +140,7 @@ export const DEMOGRAPHIC_DIMENSIONS = [
 
 export default function DemographicFilterBar({ cohort, onChange, compact = false }) {
   const [openDim, setOpenDim] = useState(null);
+  const { trackEvent } = useTelemetry();
 
   const toggleFilter = (dimId, value) => {
     const next = { ...(cohort || {}) };
@@ -152,10 +154,12 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
       current = current.filter(v => v !== value);
     } else {
       current = [...current, value];
+      trackEvent('filter_added', { dimension_id: dimId, value });
     }
     
     if (current.length === 0) {
       delete next[dimId];
+      trackEvent('filter_cleared', { dimension_id: dimId });
     } else {
       next[dimId] = current;
     }
@@ -165,10 +169,12 @@ export default function DemographicFilterBar({ cohort, onChange, compact = false
   const clearFilter = (dimId) => {
     const next = { ...(cohort || {}) };
     delete next[dimId];
+    trackEvent('filter_cleared', { dimension_id: dimId });
     onChange(Object.keys(next).length > 0 ? next : null);
   };
 
   const clearAll = () => {
+    trackEvent('filter_cleared_all');
     onChange(null);
     setOpenDim(null);
   };

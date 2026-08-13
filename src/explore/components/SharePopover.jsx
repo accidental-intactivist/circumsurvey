@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Share2 } from "lucide-react";
 import { C, FONT } from "../styles/tokens";
+import { useTelemetry } from "../lib/telemetry";
 
 export default function SharePopover({ url, questionId, questionPrompt, onExportImage }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const popoverRef = useRef(null);
+  const { trackEvent } = useTelemetry();
 
   // Close on outside click
   useEffect(() => {
@@ -18,11 +20,15 @@ export default function SharePopover({ url, questionId, questionPrompt, onExport
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
+  const toggleOpen = () => {
+    if (!isOpen) trackEvent('share_popover_opened', { question_id: questionId });
+    setIsOpen(!isOpen);
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(url);
     setCopied(true);
+    trackEvent('share_link_copied', { question_id: questionId });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -103,6 +109,7 @@ export default function SharePopover({ url, questionId, questionPrompt, onExport
             style={popoverButtonStyle} 
             onClick={() => {
               setIsOpen(false);
+              trackEvent('share_image_exported', { question_id: questionId });
               onExportImage();
             }}
             onMouseEnter={e => e.target.style.background = "rgba(255,255,255,0.05)"}

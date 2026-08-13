@@ -30,7 +30,7 @@ const MIRROR_PAIRS = [
   { id: "curiosity_aspects", concept: "Curiosity (Specifics)", intact: "intact_curiosity_about_circ_aspects", circ: "circ_curiosity_about_intact_aspects" },
   { id: "thought_level", concept: "Prior Thought Level", intact: "intact_prior_thought_level", circ: "circ_prior_thought_level" },
   { id: "ppp", concept: "Pearly Penile Papules (PPP)", intact: "intact_ppp_awareness", circ: "circ_ppp_awareness", intactImpact: "intact_ppp_impact", circImpact: "circ_ppp_impact" },
-
+  { id: "community_norm", concept: "Community Expectation", intact: "norm", circ: "norm" },
   
   // Perceptions of Society's Thoughts & Norms (Universal Questions)
   { id: "social_norm_perception", concept: "Social Norm Perception", universal: "final_social_norm_perception" },

@@ -1,0 +1,5475 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: rage-scroll.spec.js >> Rage Scroll Stress Test >> Guided tour can handle rapid scrolling without dropping frames to 0 or crashing
+- Location: tests\rage-scroll.spec.js:4:3
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+```
+Error: page.waitForTimeout: Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - button "Explore" [ref=e9] [cursor=pointer]
+      - generic [ref=e10]:
+        - button "Settings" [ref=e12] [cursor=pointer]:
+          - generic [ref=e13]: ⚙️
+        - link "←" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e15]: ←
+        - button [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+    - heading "Explore the Data" [level=1]
+    - generic:
+      - generic:
+        - generic: ★ The Accidental Intactivist's Inquiry ★
+    - button "Pause background animation":
+      - img
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e24]:
+          - heading "Explore All Exhibits" [level=3] [ref=e25]
+          - generic [ref=e26]:
+            - link "Exhibit 01 The Survey Map The Survey Map Interactive flowchart of the complete survey architecture — from universal questions through the pathway fork and into each cohort's unique question sets. Explore" [ref=e27] [cursor=pointer]:
+              - /url: /explore/pathways
+              - generic [ref=e29]: Exhibit 01
+              - img [ref=e31]
+              - heading "The Survey Map" [level=4] [ref=e35]
+              - generic [ref=e36]:
+                - img
+                - heading "The Survey Map" [level=4] [ref=e37]
+                - paragraph [ref=e38]: Interactive flowchart of the complete survey architecture — from universal questions through the pathway fork and into each cohort's unique question sets.
+                - generic [ref=e39]:
+                  - text: Explore
+                  - img [ref=e40]
+            - link "Exhibit 02 Mirror Pairs Mirror Pairs Explore parallel questions asked directly to intact and circumcised cohorts, as well as universal cultural and anatomical questions broken down side-by-side. This view highlights the striking divergence in cohort experience, expectation, and societal perception. Explore" [ref=e42] [cursor=pointer]:
+              - /url: /explore/pairs
+              - generic [ref=e44]: Exhibit 02
+              - img [ref=e46]
+              - heading "Mirror Pairs" [level=4] [ref=e51]
+              - generic [ref=e52]:
+                - img
+                - heading "Mirror Pairs" [level=4] [ref=e53]
+                - paragraph [ref=e54]: Explore parallel questions asked directly to intact and circumcised cohorts, as well as universal cultural and anatomical questions broken down side-by-side. This view highlights the striking divergence in cohort experience, expectation, and societal perception.
+                - generic [ref=e55]:
+                  - text: Explore
+                  - img [ref=e56]
+            - link "Exhibit 03 The Pleasure Gap The Pleasure Gap Clustered self-reported ratings comparing sensation, sensitivity, and orgasm across cohorts. What do the numbers reveal when people speak for themselves? Explore" [ref=e58] [cursor=pointer]:
+              - /url: /explore/pleasure-gap
+              - generic [ref=e60]: Exhibit 03
+              - img [ref=e62]
+              - heading "The Pleasure Gap" [level=4] [ref=e65]
+              - generic [ref=e66]:
+                - img
+                - heading "The Pleasure Gap" [level=4] [ref=e67]
+                - paragraph [ref=e68]: Clustered self-reported ratings comparing sensation, sensitivity, and orgasm across cohorts. What do the numbers reveal when people speak for themselves?
+                - generic [ref=e69]:
+                  - text: Explore
+                  - img [ref=e70]
+            - link "Exhibit 04 Correlations Explorer Correlations Explorer Cross-tabulate predictor variables against the respondent pathway to identify statistical correlations and predictive demographic factors. Explore" [ref=e72] [cursor=pointer]:
+              - /url: /explore/correlations
+              - generic [ref=e74]: Exhibit 04
+              - img [ref=e76]
+              - heading "Correlations Explorer" [level=4] [ref=e79]
+              - generic [ref=e80]:
+                - img
+                - heading "Correlations Explorer" [level=4] [ref=e81]
+                - paragraph [ref=e82]: Cross-tabulate predictor variables against the respondent pathway to identify statistical correlations and predictive demographic factors.
+                - generic [ref=e83]:
+                  - text: Explore
+                  - img [ref=e84]
+            - link "Exhibit 05 Demographic Explorer Demographic Explorer Explore the demographic composition of each cohort — age, generation, sexuality, education, religion, and geographic distribution. Explore" [ref=e86] [cursor=pointer]:
+              - /url: /explore/demographics
+              - generic [ref=e88]: Exhibit 05
+              - img [ref=e90]
+              - heading "Demographic Explorer" [level=4] [ref=e96]
+              - generic [ref=e97]:
+                - img
+                - heading "Demographic Explorer" [level=4] [ref=e98]
+                - paragraph [ref=e99]: Explore the demographic composition of each cohort — age, generation, sexuality, education, religion, and geographic distribution.
+                - generic [ref=e100]:
+                  - text: Explore
+                  - img [ref=e101]
+            - link "Exhibit 06 The Voices The Voices Side-by-side word clouds and full-text search across open-ended narratives. Hear the language each cohort uses in their own words. Explore" [ref=e103] [cursor=pointer]:
+              - /url: /explore/narrative-mirrors
+              - generic [ref=e105]: Exhibit 06
+              - img [ref=e107]
+              - heading "The Voices" [level=4] [ref=e110]
+              - generic [ref=e111]:
+                - img
+                - heading "The Voices" [level=4] [ref=e112]
+                - paragraph [ref=e113]: Side-by-side word clouds and full-text search across open-ended narratives. Hear the language each cohort uses in their own words.
+                - generic [ref=e114]:
+                  - text: Explore
+                  - img [ref=e115]
+            - link "Exhibit 07 Culture & Generations Culture & Generations Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z. Explore" [ref=e117] [cursor=pointer]:
+              - /url: /explore/culture
+              - generic [ref=e119]: Exhibit 07
+              - img [ref=e121]
+              - heading "Culture & Generations" [level=4] [ref=e125]
+              - generic [ref=e126]:
+                - img
+                - heading "Culture & Generations" [level=4] [ref=e127]
+                - paragraph [ref=e128]: Explore how cultural norms, stereotypes, and attitudes shift across cohorts and across generations — from the Silent Generation through Gen Z.
+                - generic [ref=e129]:
+                  - text: Explore
+                  - img [ref=e130]
+            - link "Exhibit 08 The Observer Lens The Observer Lens Expanded analysis of all Observer pathways including partners, parents, healthcare, researchers and advocates. Explore" [ref=e132] [cursor=pointer]:
+              - /url: /explore/observer-lens
+              - generic [ref=e134]: Exhibit 08
+              - img [ref=e136]
+              - heading "The Observer Lens" [level=4] [ref=e140]
+              - generic [ref=e141]:
+                - img
+                - heading "The Observer Lens" [level=4] [ref=e142]
+                - paragraph [ref=e143]: Expanded analysis of all Observer pathways including partners, parents, healthcare, researchers and advocates.
+                - generic [ref=e144]:
+                  - text: Explore
+                  - img [ref=e145]
+            - link "Exhibit 09 Religious Mirrors Religious Mirrors Compare attitudes across Jewish, Christian, and Islamic respondents. Where does faith intersect with — or diverge from — personal experience? Explore" [ref=e147] [cursor=pointer]:
+              - /url: /explore/religious-mirrors
+              - generic [ref=e149]: Exhibit 09
+              - img [ref=e151]
+              - heading "Religious Mirrors" [level=4] [ref=e154]
+              - generic [ref=e155]:
+                - img
+                - heading "Religious Mirrors" [level=4] [ref=e156]
+                - paragraph [ref=e157]: Compare attitudes across Jewish, Christian, and Islamic respondents. Where does faith intersect with — or diverge from — personal experience?
+                - generic [ref=e158]:
+                  - text: Explore
+                  - img [ref=e159]
+            - link "Exhibit 10 Restoration Journey Restoration Journey Track the methods, motivations, and physical/psychological progress (RCI scores, sensitivity gains, and orgasm quality) of the restoring cohort. Explore" [ref=e161] [cursor=pointer]:
+              - /url: /explore/restoration-journey
+              - generic [ref=e163]: Exhibit 10
+              - img [ref=e165]
+              - heading "Restoration Journey" [level=4] [ref=e171]
+              - generic [ref=e172]:
+                - img
+                - heading "Restoration Journey" [level=4] [ref=e173]
+                - paragraph [ref=e174]: Track the methods, motivations, and physical/psychological progress (RCI scores, sensitivity gains, and orgasm quality) of the restoring cohort.
+                - generic [ref=e175]:
+                  - text: Explore
+                  - img [ref=e176]
+            - 'link "Exhibit 11 Before & After: The Adult Experience Before & After: The Adult Experience Those who remember both states Explore" [ref=e178] [cursor=pointer]':
+              - /url: /explore/adult-experience
+              - generic [ref=e180]: Exhibit 11
+              - img [ref=e182]
+              - 'heading "Before & After: The Adult Experience" [level=4] [ref=e185]'
+              - generic [ref=e186]:
+                - img
+                - 'heading "Before & After: The Adult Experience" [level=4] [ref=e187]'
+                - paragraph [ref=e188]: Those who remember both states
+                - generic [ref=e189]:
+                  - text: Explore
+                  - img [ref=e190]
+            - link "Exhibit 12 By the Numbers By the Numbers The core findings of the study summarized in key outcome metrics. Use cohort filters to examine specific subgroups. Explore" [ref=e192] [cursor=pointer]:
+              - /url: /explore/numbers
+              - generic [ref=e194]: Exhibit 12
+              - img [ref=e196]
+              - heading "By the Numbers" [level=4] [ref=e198]
+              - generic [ref=e199]:
+                - img
+                - heading "By the Numbers" [level=4] [ref=e200]
+                - paragraph [ref=e201]: The core findings of the study summarized in key outcome metrics. Use cohort filters to examine specific subgroups.
+                - generic [ref=e202]:
+                  - text: Explore
+                  - img [ref=e203]
+            - link "Exhibit 13 For New & Expectant Parents For New & Expectant Parents A curated, shareable resource presenting what grown children, other parents, medical professionals, and faith communities say — so you can make the most informed decision. Explore" [ref=e205] [cursor=pointer]:
+              - /url: /explore/for-parents
+              - generic [ref=e207]: Exhibit 13
+              - img [ref=e209]
+              - heading "For New & Expectant Parents" [level=4] [ref=e212]
+              - generic [ref=e213]:
+                - img
+                - heading "For New & Expectant Parents" [level=4] [ref=e214]
+                - paragraph [ref=e215]: A curated, shareable resource presenting what grown children, other parents, medical professionals, and faith communities say — so you can make the most informed decision.
+                - generic [ref=e216]:
+                  - text: Explore
+                  - img [ref=e217]
+            - link "Exhibit 14 The Forward View The Forward View How lived experience informs the choices we make for the next generation. Explore" [ref=e219] [cursor=pointer]:
+              - /url: /explore/the-forward-view
+              - generic [ref=e221]: Exhibit 14
+              - img [ref=e223]
+              - heading "The Forward View" [level=4] [ref=e227]
+              - generic [ref=e228]:
+                - img
+                - heading "The Forward View" [level=4] [ref=e229]
+                - paragraph [ref=e230]: How lived experience informs the choices we make for the next generation.
+                - generic [ref=e231]:
+                  - text: Explore
+                  - img [ref=e232]
+        - generic [ref=e234]:
+          - complementary [ref=e235]:
+            - generic [ref=e236]:
+              - generic [ref=e237]:
+                - generic [ref=e238]:
+                  - generic [ref=e239]: ★
+                  - text: Map Navigation
+                - 'generic "Question Filter: Select a phase, section, or pathway branch to narrow down which questions are shown in the list." [ref=e240]': "?"
+              - navigation [ref=e241]:
+                - generic [ref=e244]: Universal
+                - generic [ref=e247] [cursor=pointer]:
+                  - generic [ref=e249]: Demographics
+                  - generic [ref=e250]: Country, age, generation, education, sexuality, gender
+                - generic [ref=e253] [cursor=pointer]:
+                  - generic [ref=e255]: Family
+                  - generic [ref=e256]: Parents, upbringing, politics, socioeconomic status
+                - generic [ref=e259] [cursor=pointer]:
+                  - generic [ref=e261]: Religion
+                  - generic [ref=e262]: Tradition, significance, denomination details
+                - generic [ref=e265] [cursor=pointer]:
+                  - generic [ref=e267]: Appearance
+                  - generic [ref=e268]: Body image
+                - generic [ref=e271] [cursor=pointer]:
+                  - generic [ref=e273]: Sexual Experience
+                  - generic [ref=e274]: Sensation, orgasm, lubrication, communication
+                - generic [ref=e277] [cursor=pointer]:
+                  - generic [ref=e279]: Experience
+                  - generic [ref=e280]: Pre-ejaculate, needs communication
+                - generic [ref=e283] [cursor=pointer]:
+                  - generic [ref=e285]: Pride & Regret
+                  - generic [ref=e286]: Overall satisfaction
+                - generic [ref=e289] [cursor=pointer]:
+                  - generic [ref=e291]: Pathway Routing
+                  - generic [ref=e292]: Circumcision state — determines branching
+                - generic [ref=e295]: ↓ Pathway Routing ↓
+                - generic [ref=e300] [cursor=pointer]:
+                  - generic [ref=e301]:
+                    - generic [ref=e302]: Intact
+                    - generic [ref=e303]: n=142
+                  - generic [ref=e304]: Never circumcised
+                - generic [ref=e305]:
+                  - generic [ref=e308] [cursor=pointer]:
+                    - generic [ref=e310]:
+                      - generic [ref=e311]: Circumcised
+                      - generic [ref=e312]: n=213
+                    - generic [ref=e313]: Circumcised as infants or later in life
+                  - generic [ref=e314]:
+                    - generic [ref=e318] [cursor=pointer]:
+                      - img [ref=e319]
+                      - generic [ref=e324]: Universal (all circumcised)
+                      - generic [ref=e325]: n=213
+                    - generic [ref=e329] [cursor=pointer]:
+                      - img [ref=e330]
+                      - generic [ref=e332]: Circumcised as Infant / Parent Decision
+                      - generic [ref=e333]: n=191
+                    - generic [ref=e337] [cursor=pointer]:
+                      - img [ref=e338]
+                      - generic [ref=e341]: Circumcised Later in Life / Teen & Adult
+                      - generic [ref=e342]: n=22
+                - generic [ref=e346] [cursor=pointer]:
+                  - generic [ref=e347]:
+                    - generic [ref=e348]: Restoring
+                    - generic [ref=e349]: n=109
+                  - generic [ref=e350]: Actively restoring foreskin
+                - generic [ref=e354] [cursor=pointer]:
+                  - generic [ref=e355]:
+                    - generic [ref=e356]: Observer
+                    - generic [ref=e357]: n=37
+                  - generic [ref=e358]: Partners, parents, providers, advocates
+                - generic [ref=e362] [cursor=pointer]:
+                  - generic [ref=e363]:
+                    - generic [ref=e364]: Transgender
+                    - generic [ref=e365]: n=0 ✦
+                  - generic [ref=e366]: Transgender respondents
+                - generic [ref=e370] [cursor=pointer]:
+                  - generic [ref=e371]:
+                    - generic [ref=e372]: Intersex
+                    - generic [ref=e373]: n=0 ✦
+                  - generic [ref=e374]: Intersex perspectives
+                - generic [ref=e377]: ↓ Reconvenes ↓
+                - generic [ref=e380]: Synthesis
+                - generic [ref=e383] [cursor=pointer]:
+                  - generic [ref=e385]: Culture & Attitudes
+                  - generic [ref=e386]: Norms, stereotypes, ethics, autonomy, media
+                - generic [ref=e389] [cursor=pointer]:
+                  - generic [ref=e391]: Follow-up
+                  - generic [ref=e392]: Contact consent, final reflections
+          - main [ref=e393]:
+            - generic [ref=e394]:
+              - generic [ref=e396]:
+                - generic [ref=e397]: ⌕
+                - textbox "Search questions…" [ref=e398]
+              - generic [ref=e399]:
+                - button "Cohort / Pathway All (501) ▼" [ref=e402] [cursor=pointer]:
+                  - generic [ref=e403]: Cohort / Pathway
+                  - generic [ref=e404]: All (501)
+                  - generic [ref=e405]: ▼
+                - button "Section All Sections ▼" [ref=e408] [cursor=pointer]:
+                  - generic [ref=e409]: Section
+                  - generic [ref=e410]: All Sections
+                  - generic [ref=e411]: ▼
+                - generic [ref=e413]:
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: ★
+                    - text: Cohort Filter
+                    - 'generic "Respondent Filter: Restricts charts and counts dynamically to show only responses from specific demographics (e.g., Millennials, USA). Updates sparklines and response percentages." [ref=e417]': "?"
+                  - button "+ Add Filter..." [ref=e419] [cursor=pointer]:
+                    - generic [ref=e420]: + Add Filter...
+            - generic [ref=e421]:
+              - generic [ref=e422]: 💡
+              - generic [ref=e423]:
+                - strong [ref=e424]: "How to explore:"
+                - text: Use the
+                - strong [ref=e425]: Cohort / Pathway
+                - text: dropdown above to isolate respondents (multiple selections allowed). Combine
+                - strong [ref=e426]: Map Navigation
+                - text: (which questions) and
+                - strong [ref=e427]: Cohort Filter
+                - text: (whose responses) on the left — they work in tandem to dynamically update all chart data.
+            - generic [ref=e428]:
+              - generic [ref=e429]:
+                - text: "337"
+                - generic [ref=e430]: of 347 questions
+              - generic [ref=e431]:
+                - generic [ref=e432]:
+                  - button "All Types" [ref=e433] [cursor=pointer]
+                  - button "Choices" [ref=e434] [cursor=pointer]
+                  - button "Narratives" [ref=e435] [cursor=pointer]
+                - generic [ref=e437]:
+                  - button "My Pathway Only" [ref=e438] [cursor=pointer]
+                  - button "Relevant" [ref=e439] [cursor=pointer]
+                  - button "All 347" [ref=e440] [cursor=pointer]
+                - generic [ref=e442] [cursor=pointer]:
+                  - checkbox "Unmapped" [ref=e443]
+                  - text: Unmapped
+            - generic [ref=e444]:
+              - generic [ref=e445]:
+                - generic [ref=e446] [cursor=pointer]:
+                  - heading "▶ Demographics" [level=3] [ref=e447]:
+                    - generic [ref=e448]: ▶
+                    - text: Demographics
+                  - generic [ref=e449]: "17"
+                - generic [ref=e450]:
+                  - generic [ref=e452] [cursor=pointer]:
+                    - generic [ref=e453]:
+                      - generic [ref=e454]: "217"
+                      - generic "Qualitative Open Response" [ref=e455]:
+                        - img [ref=e456]
+                    - generic [ref=e458]:
+                      - generic [ref=e461]: In which COUNTRY were you BORN?
+                      - generic [ref=e462]:
+                        - generic [ref=e463]:
+                          - generic [ref=e464]: demo_country_born
+                          - generic [ref=e465]: n=514
+                        - img "distribution" [ref=e468]
+                    - button "+" [ref=e524]
+                    - generic [ref=e525]: ›
+                  - generic [ref=e527] [cursor=pointer]:
+                    - generic [ref=e528]:
+                      - generic [ref=e529]: "218"
+                      - generic "Qualitative Open Response" [ref=e530]:
+                        - img [ref=e531]
+                    - generic [ref=e533]:
+                      - generic [ref=e536]: In which country are you primarily located now?
+                      - generic [ref=e537]:
+                        - generic [ref=e538]:
+                          - generic [ref=e539]: demo_country_current
+                          - generic [ref=e540]: n=392
+                        - img "distribution" [ref=e543]
+                    - button "+" [ref=e588]
+                    - generic [ref=e589]: ›
+                  - generic [ref=e591] [cursor=pointer]:
+                    - generic [ref=e592]:
+                      - generic [ref=e593]: "219"
+                      - generic "Qualitative Open Response" [ref=e594]:
+                        - img [ref=e595]
+                    - generic [ref=e597]:
+                      - generic [ref=e600]: Please select the US State or Territory in which you were BORN
+                      - generic [ref=e601]:
+                        - generic [ref=e602]:
+                          - generic [ref=e603]: demo_us_state_born
+                          - generic [ref=e604]: n=326
+                        - img "distribution" [ref=e607]
+                    - button "+" [ref=e662]
+                    - generic [ref=e663]: ›
+                  - generic [ref=e665] [cursor=pointer]:
+                    - generic [ref=e666]:
+                      - generic [ref=e667]: "220"
+                      - generic "Qualitative Open Response" [ref=e668]:
+                        - img [ref=e669]
+                    - generic [ref=e671]:
+                      - generic [ref=e674]: In which US STATE or TERRITORY do you live or primarily reside in NOW?
+                      - generic [ref=e675]:
+                        - generic [ref=e676]:
+                          - generic [ref=e677]: demo_us_state_current
+                          - generic [ref=e678]: n=208
+                        - img "distribution" [ref=e681]
+                    - button "+" [ref=e727]
+                    - generic [ref=e728]: ›
+                  - generic [ref=e730] [cursor=pointer]:
+                    - generic [ref=e731]:
+                      - generic [ref=e732]: "221"
+                      - generic "Qualitative Open Response" [ref=e733]:
+                        - img [ref=e734]
+                    - generic [ref=e736]:
+                      - generic [ref=e739]: How would you describe your race or ethnicity? (Please select all that apply, or specify if your identity is not listed)
+                      - generic [ref=e740]:
+                        - generic [ref=e741]:
+                          - generic [ref=e742]: demo_ethnicity
+                          - generic [ref=e743]: n=508
+                        - img "distribution" [ref=e746]
+                    - button "+" [ref=e780]
+                    - generic [ref=e781]: ›
+                  - generic [ref=e783] [cursor=pointer]:
+                    - generic [ref=e784]:
+                      - generic [ref=e785]: "20"
+                      - generic "Single Select Choice" [ref=e786]:
+                        - img [ref=e787]
+                    - generic [ref=e790]:
+                      - generic [ref=e793]: What is your approximate age?
+                      - generic [ref=e794]:
+                        - generic [ref=e795]:
+                          - generic [ref=e796]: demo_age
+                          - generic [ref=e797]: n=505
+                        - img "distribution" [ref=e800]
+                    - button "+" [ref=e812]
+                    - generic [ref=e813]: ›
+                  - generic [ref=e815] [cursor=pointer]:
+                    - generic [ref=e816]:
+                      - generic [ref=e817]: "21"
+                      - generic "Single Select Choice" [ref=e818]:
+                        - img [ref=e819]
+                    - generic [ref=e822]:
+                      - generic [ref=e825]: Which generation do you most identify with?
+                      - generic [ref=e826]:
+                        - generic [ref=e827]:
+                          - generic [ref=e828]: demo_generation
+                          - generic [ref=e829]: n=505
+                        - img "distribution" [ref=e832]
+                    - button "+" [ref=e843]
+                    - generic [ref=e844]: ›
+                  - generic [ref=e846] [cursor=pointer]:
+                    - generic [ref=e847]:
+                      - generic [ref=e848]: "22"
+                      - generic "Multiple Select Choices" [ref=e849]:
+                        - img [ref=e850]
+                    - generic [ref=e853]:
+                      - generic [ref=e856]: What is the highest level of education you have completed?
+                      - generic [ref=e857]:
+                        - generic [ref=e858]:
+                          - generic [ref=e859]: demo_education_self
+                          - generic [ref=e860]: n=505
+                        - img "distribution" [ref=e863]
+                    - button "+" [ref=e877]
+                    - generic [ref=e878]: ›
+                  - generic [ref=e880] [cursor=pointer]:
+                    - generic [ref=e881]:
+                      - generic [ref=e882]: "223"
+                      - generic "Qualitative Open Response" [ref=e883]:
+                        - img [ref=e884]
+                    - generic [ref=e886]:
+                      - generic [ref=e889]: How do you identify your SEXUALITY?
+                      - generic [ref=e890]:
+                        - generic [ref=e891]:
+                          - generic [ref=e892]: demo_sexuality
+                          - generic [ref=e893]: n=508
+                        - img "distribution" [ref=e896]
+                    - button "+" [ref=e936]
+                    - generic [ref=e937]: ›
+                  - generic [ref=e939] [cursor=pointer]:
+                    - generic [ref=e940]:
+                      - generic [ref=e941]: "224"
+                      - generic "Qualitative Open Response" [ref=e942]:
+                        - img [ref=e943]
+                    - generic [ref=e945]:
+                      - generic [ref=e948]: How do you currently describe your GENDER identity?
+                      - generic [ref=e949]:
+                        - generic [ref=e950]:
+                          - generic [ref=e951]: demo_gender_identity
+                          - generic [ref=e952]: n=508
+                        - img "distribution" [ref=e955]
+                    - button "+" [ref=e992]
+                    - generic [ref=e993]: ›
+                  - generic [ref=e995] [cursor=pointer]:
+                    - generic [ref=e996]:
+                      - generic [ref=e997]: "29"
+                      - generic "Single Select Choice" [ref=e998]:
+                        - img [ref=e999]
+                    - generic [ref=e1002]:
+                      - generic [ref=e1005]: What sex were you assigned at birth?
+                      - generic [ref=e1006]:
+                        - generic [ref=e1007]:
+                          - generic [ref=e1008]: demo_sex_assigned_at_birth
+                          - generic [ref=e1009]: n=503
+                        - img "distribution" [ref=e1012]
+                    - button "+" [ref=e1019]
+                    - generic [ref=e1020]: ›
+                  - generic [ref=e1022] [cursor=pointer]:
+                    - generic [ref=e1023]:
+                      - generic [ref=e1024]: "30"
+                      - generic "Single Select Choice" [ref=e1025]:
+                        - img [ref=e1026]
+                    - generic [ref=e1029]:
+                      - generic [ref=e1032]: In which CANADIAN PROVINCE were you BORN?
+                      - generic [ref=e1033]:
+                        - generic [ref=e1034]:
+                          - generic [ref=e1035]: demo_can_province_born
+                          - generic [ref=e1036]: n=43
+                        - img "distribution" [ref=e1039]
+                    - button "+" [ref=e1050]
+                    - generic [ref=e1051]: ›
+                  - generic [ref=e1053] [cursor=pointer]:
+                    - generic [ref=e1054]:
+                      - generic [ref=e1055]: "31"
+                      - generic "Single Select Choice" [ref=e1056]:
+                        - img [ref=e1057]
+                    - generic [ref=e1060]:
+                      - generic [ref=e1063]: In which CANADIAN PROVINCE do you live NOW?
+                      - generic [ref=e1064]:
+                        - generic [ref=e1065]:
+                          - generic [ref=e1066]: demo_can_province_current
+                          - generic [ref=e1067]: n=48
+                        - img "distribution" [ref=e1070]
+                    - button "+" [ref=e1080]
+                    - generic [ref=e1081]: ›
+                  - generic [ref=e1083] [cursor=pointer]:
+                    - generic [ref=e1084]:
+                      - generic [ref=e1085]: "271"
+                      - generic "Qualitative Open Response" [ref=e1086]:
+                        - img [ref=e1087]
+                    - generic [ref=e1089]:
+                      - generic [ref=e1092]: Please specify the country or territory in which you were born
+                      - generic [ref=e1093]:
+                        - generic [ref=e1094]:
+                          - generic [ref=e1095]: demo_country_born_specify
+                          - generic [ref=e1096]: n=93
+                        - img "distribution" [ref=e1099]
+                    - button "+" [ref=e1164]
+                    - generic [ref=e1165]: ›
+                  - generic [ref=e1167] [cursor=pointer]:
+                    - generic [ref=e1168]:
+                      - generic [ref=e1169]: "272"
+                      - generic "Qualitative Open Response" [ref=e1170]:
+                        - img [ref=e1171]
+                    - generic [ref=e1173]:
+                      - generic [ref=e1176]: Please specify the COUNTRY/REGION/TERRITORY where you primarily live now
+                      - generic [ref=e1177]:
+                        - generic [ref=e1178]:
+                          - generic [ref=e1179]: demo_country_current_specify
+                          - generic [ref=e1180]: n=87
+                        - img "distribution" [ref=e1183]
+                    - button "+" [ref=e1247]
+                    - generic [ref=e1248]: ›
+                  - generic [ref=e1250] [cursor=pointer]:
+                    - generic [ref=e1251]:
+                      - generic [ref=e1252]: "135"
+                      - generic "Single Select Choice" [ref=e1253]:
+                        - img [ref=e1254]
+                    - generic [ref=e1257]:
+                      - generic [ref=e1260]: In what type of location were you born?
+                      - generic [ref=e1261]:
+                        - generic [ref=e1262]:
+                          - generic [ref=e1263]: demo_birth_location
+                          - generic [ref=e1264]: n=274
+                        - img "distribution" [ref=e1267]
+                    - button "+" [ref=e1275]
+                    - generic [ref=e1276]: ›
+                  - generic [ref=e1278] [cursor=pointer]:
+                    - generic [ref=e1279]:
+                      - generic [ref=e1280]: "136"
+                      - generic "Single Select Choice" [ref=e1281]:
+                        - img [ref=e1282]
+                    - generic [ref=e1285]:
+                      - generic [ref=e1288]: Who was the primary medical attendant at your birth, to the best of your knowledge?
+                      - generic [ref=e1289]:
+                        - generic [ref=e1290]:
+                          - generic [ref=e1291]: demo_birth_attendant
+                          - generic [ref=e1292]: n=270
+                        - img "distribution" [ref=e1295]
+                    - button "+" [ref=e1307]
+                    - generic [ref=e1308]: ›
+              - generic [ref=e1309]:
+                - generic [ref=e1310] [cursor=pointer]:
+                  - heading "▶ Family" [level=3] [ref=e1311]:
+                    - generic [ref=e1312]: ▶
+                    - text: Family
+                  - generic [ref=e1313]: "7"
+                - generic [ref=e1314]:
+                  - generic [ref=e1316] [cursor=pointer]:
+                    - generic [ref=e1317]:
+                      - generic [ref=e1318]: "23"
+                      - generic "Single Select Choice" [ref=e1319]:
+                        - img [ref=e1320]
+                    - generic [ref=e1323]:
+                      - generic [ref=e1326]: Family Upbringing & Adoption Status
+                      - generic [ref=e1327]:
+                        - generic [ref=e1328]:
+                          - generic [ref=e1329]: family_upbringing_status
+                          - generic [ref=e1330]: n=506
+                        - img "distribution" [ref=e1333]
+                    - button "+" [ref=e1341]
+                    - generic [ref=e1342]: ›
+                  - generic [ref=e1344] [cursor=pointer]:
+                    - generic [ref=e1345]:
+                      - generic [ref=e1346]: "24"
+                      - generic "Single Select Choice" [ref=e1347]:
+                        - img [ref=e1348]
+                    - generic [ref=e1351]:
+                      - generic [ref=e1354]: Thinking about your MOTHER (or primary female/maternal guardian) during your upbringing, what was her highest level of education, to the best of your knowledge?
+                      - generic [ref=e1355]:
+                        - generic [ref=e1356]:
+                          - generic [ref=e1357]: family_mother_education
+                          - generic [ref=e1358]: n=504
+                        - img "distribution" [ref=e1361]
+                    - button "+" [ref=e1372]
+                    - generic [ref=e1373]: ›
+                  - generic [ref=e1375] [cursor=pointer]:
+                    - generic [ref=e1376]:
+                      - generic [ref=e1377]: "25"
+                      - generic "Multiple Select Choices" [ref=e1378]:
+                        - img [ref=e1379]
+                    - generic [ref=e1382]:
+                      - generic [ref=e1385]: What was the primary profession or field of work for your MOTHER (or primary female/maternal guardian) during your upbringing?
+                      - generic [ref=e1386]:
+                        - generic [ref=e1387]:
+                          - generic [ref=e1388]: family_mother_profession
+                          - generic [ref=e1389]: n=498
+                        - img "distribution" [ref=e1392]
+                    - button "+" [ref=e1478]
+                    - generic [ref=e1479]: ›
+                  - generic [ref=e1481] [cursor=pointer]:
+                    - generic [ref=e1482]:
+                      - generic [ref=e1483]: "26"
+                      - generic "Single Select Choice" [ref=e1484]:
+                        - img [ref=e1485]
+                    - generic [ref=e1488]:
+                      - generic [ref=e1491]: Thinking about your FATHER (or primary male/paternal guardian) during your upbringing, what was his highest level of education, to the best of your knowledge?
+                      - generic [ref=e1492]:
+                        - generic [ref=e1493]:
+                          - generic [ref=e1494]: family_father_education
+                          - generic [ref=e1495]: n=499
+                        - img "distribution" [ref=e1498]
+                    - button "+" [ref=e1509]
+                    - generic [ref=e1510]: ›
+                  - generic [ref=e1512] [cursor=pointer]:
+                    - generic [ref=e1513]:
+                      - generic [ref=e1514]: "222"
+                      - generic "Qualitative Open Response" [ref=e1515]:
+                        - img [ref=e1516]
+                    - generic [ref=e1518]:
+                      - generic [ref=e1521]: What was the primary profession or field of work for your FATHER (or primary male/paternal guardian) during your upbringing?
+                      - generic [ref=e1522]:
+                        - generic [ref=e1523]:
+                          - generic [ref=e1524]: family_father_profession
+                          - generic [ref=e1525]: n=496
+                        - img "distribution" [ref=e1528]
+                    - button "+" [ref=e1625]
+                    - generic [ref=e1626]: ›
+                  - generic [ref=e1628] [cursor=pointer]:
+                    - generic [ref=e1629]:
+                      - generic [ref=e1630]: "27"
+                      - generic "Single Select Choice" [ref=e1631]:
+                        - img [ref=e1632]
+                    - generic [ref=e1635]:
+                      - generic [ref=e1638]: How would you generally describe your family's socioeconomic status during your childhood?
+                      - generic [ref=e1639]:
+                        - generic [ref=e1640]:
+                          - generic [ref=e1641]: family_ses
+                          - generic [ref=e1642]: n=505
+                        - img "distribution" [ref=e1645]
+                    - button "+" [ref=e1654]
+                    - generic [ref=e1655]: ›
+                  - generic [ref=e1657] [cursor=pointer]:
+                    - generic [ref=e1658]:
+                      - generic [ref=e1659]: "28"
+                      - generic "Single Select Choice" [ref=e1660]:
+                        - img [ref=e1661]
+                    - generic [ref=e1664]:
+                      - generic [ref=e1667]: Politically, how would you generally describe your views or your family's views during your upbringing?
+                      - generic [ref=e1668]:
+                        - generic [ref=e1669]:
+                          - generic [ref=e1670]: family_politics
+                          - generic [ref=e1671]: n=502
+                        - img "distribution" [ref=e1674]
+                    - button "+" [ref=e1685]
+                    - generic [ref=e1686]: ›
+              - generic [ref=e1687]:
+                - generic [ref=e1688] [cursor=pointer]:
+                  - heading "▶ Religion" [level=3] [ref=e1689]:
+                    - generic [ref=e1690]: ▶
+                    - text: Religion
+                  - generic [ref=e1691]: "23"
+                - generic [ref=e1692]:
+                  - generic [ref=e1693]:
+                    - generic [ref=e1694]: Universal Religion
+                    - generic [ref=e1695]:
+                      - generic [ref=e1697] [cursor=pointer]:
+                        - generic [ref=e1698]:
+                          - generic [ref=e1699]: "32"
+                          - generic "Multiple Select Choices" [ref=e1700]:
+                            - img [ref=e1701]
+                        - generic [ref=e1704]:
+                          - generic [ref=e1707]: Was religion a significant part of your upbringing?
+                          - generic [ref=e1708]:
+                            - generic [ref=e1709]:
+                              - generic [ref=e1710]: religion_is_significant
+                              - generic [ref=e1711]: n=486
+                            - img "distribution" [ref=e1714]
+                        - button "+" [ref=e1724]
+                        - generic [ref=e1725]: ›
+                      - generic [ref=e1727] [cursor=pointer]:
+                        - generic [ref=e1728]:
+                          - generic [ref=e1729]: "33"
+                          - generic "Single Select Choice" [ref=e1730]:
+                            - img [ref=e1731]
+                        - generic [ref=e1734]:
+                          - generic [ref=e1736]:
+                            - generic [ref=e1737]: "PRIMARY TRADITION(S):"
+                            - generic [ref=e1738]: Which religious or spiritual tradition(s) were most significant in your family's upbringing (or are most significant to you now)?
+                          - generic [ref=e1739]:
+                            - generic [ref=e1740]:
+                              - generic [ref=e1741]: religion_primary_tradition
+                              - generic [ref=e1742]: n=257
+                            - img "distribution" [ref=e1745]
+                        - button "+" [ref=e1755]
+                        - generic [ref=e1756]: ›
+                  - generic [ref=e1757]:
+                    - generic [ref=e1758]: Jewish Perspectives
+                    - generic [ref=e1759]:
+                      - generic [ref=e1761] [cursor=pointer]:
+                        - generic [ref=e1762]:
+                          - generic [ref=e1763]: "36"
+                          - generic "Single Select Choice" [ref=e1764]:
+                            - img [ref=e1765]
+                        - generic [ref=e1768]:
+                          - generic [ref=e1771]: Which Jewish denomination or movement do you (or your family during your upbringing) most closely identify with?
+                          - generic [ref=e1772]:
+                            - generic [ref=e1773]:
+                              - generic [ref=e1774]: religion_jewish_denomination
+                              - generic [ref=e1775]: n=12
+                            - img "distribution" [ref=e1778]
+                        - button "+" [ref=e1786]
+                        - generic [ref=e1787]: ›
+                      - generic [ref=e1789] [cursor=pointer]:
+                        - generic [ref=e1790]:
+                          - generic [ref=e1791]: "37"
+                          - generic "Multiple Select Choices" [ref=e1792]:
+                            - img [ref=e1793]
+                        - generic [ref=e1796]:
+                          - generic:
+                            - generic:
+                              - generic: In your upbringing or current understanding within your Jewish context, how was/is Brit Milah (ritual circumcision) generally viewed?
+                          - generic [ref=e1797]:
+                            - generic [ref=e1798]:
+                              - generic [ref=e1799]: religion_jewish_brit_milah_view
+                              - generic [ref=e1800]: n=12
+                            - img "distribution" [ref=e1803]
+                        - button "+" [ref=e1811]
+                        - generic [ref=e1812]: ›
+                      - generic [ref=e1814] [cursor=pointer]:
+                        - generic [ref=e1815]:
+                          - generic [ref=e1816]: "38"
+                          - generic "Single Select Choice" [ref=e1817]:
+                            - img [ref=e1818]
+                        - generic [ref=e1821]:
+                          - generic:
+                            - generic:
+                              - generic: Were you aware of or taught about specific theological or historical reasons for Brit Milah?
+                          - generic [ref=e1822]:
+                            - generic [ref=e1823]:
+                              - generic [ref=e1824]: religion_jewish_theology_awareness
+                              - generic [ref=e1825]: n=12
+                            - img "distribution" [ref=e1828]
+                        - button "+" [ref=e1834]
+                        - generic [ref=e1835]: ›
+                      - generic [ref=e1837] [cursor=pointer]:
+                        - generic [ref=e1838]:
+                          - generic [ref=e1839]: "40"
+                          - generic "Single Select Choice" [ref=e1840]:
+                            - img [ref=e1841]
+                        - generic [ref=e1844]:
+                          - generic:
+                            - generic:
+                              - generic: How important is the act of Brit Milah to your personal sense of Jewish identity or connection to the Jewish people?
+                          - generic [ref=e1845]:
+                            - generic [ref=e1846]:
+                              - generic [ref=e1847]: religion_jewish_identity_importance
+                              - generic [ref=e1848]: n=12
+                            - img "distribution" [ref=e1851]
+                        - button "+" [ref=e1857]
+                        - generic [ref=e1858]: ›
+                      - generic [ref=e1860] [cursor=pointer]:
+                        - generic [ref=e1861]:
+                          - generic [ref=e1862]: "41"
+                          - generic "Multiple Select Choices" [ref=e1863]:
+                            - img [ref=e1864]
+                        - generic [ref=e1867]:
+                          - generic:
+                            - generic:
+                              - generic: Have you ever encountered or explored interpretations within Judaism that question the necessity of physical circumcision or offer alternative ways to express covenant or Jewish identity?
+                          - generic [ref=e1870]: religion_jewish_alternatives_awareness
+                        - button "+" [ref=e1872]
+                        - generic [ref=e1873]: ›
+                      - generic [ref=e1875] [cursor=pointer]:
+                        - generic [ref=e1876]:
+                          - generic [ref=e1877]: "42"
+                          - generic "Multiple Select Choices" [ref=e1878]:
+                            - img [ref=e1879]
+                        - generic [ref=e1882]:
+                          - generic:
+                            - generic:
+                              - generic: Any thoughts on these alternative interpretations?
+                          - generic [ref=e1885]: religion_jewish_alternatives_thoughts
+                        - button "+" [ref=e1887]
+                        - generic [ref=e1888]: ›
+                      - generic [ref=e1890] [cursor=pointer]:
+                        - generic [ref=e1891]:
+                          - generic [ref=e1892]: "43"
+                          - generic "Multiple Select Choices" [ref=e1893]:
+                            - img [ref=e1894]
+                        - generic [ref=e1897]:
+                          - generic [ref=e1900]: From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Brit Milah within contemporary Jewish life?
+                          - generic [ref=e1903]: religion_jewish_diversity_view
+                        - button "+" [ref=e1905]
+                        - generic [ref=e1906]: ›
+                      - generic [ref=e1908] [cursor=pointer]:
+                        - generic [ref=e1909]:
+                          - generic [ref=e1910]: "44"
+                          - generic "Multiple Select Choices" [ref=e1911]:
+                            - img [ref=e1912]
+                        - generic [ref=e1915]:
+                          - generic:
+                            - generic:
+                              - generic: Have you/your family participated in or considered alternative welcoming ceremonies, like a Brit Shalom (Covenant of Peace) or similar non-cutting ritual?
+                          - generic [ref=e1918]: religion_jewish_brit_shalom_awareness
+                        - button "+" [ref=e1920]
+                        - generic [ref=e1921]: ›
+                  - generic [ref=e1922]:
+                    - generic [ref=e1923]: Christian Perspectives
+                    - generic [ref=e1924]:
+                      - generic [ref=e1926] [cursor=pointer]:
+                        - generic [ref=e1927]:
+                          - generic [ref=e1928]: "34"
+                          - generic "Single Select Choice" [ref=e1929]:
+                            - img [ref=e1930]
+                        - generic [ref=e1933]:
+                          - generic:
+                            - generic:
+                              - generic: Christian Denominations/Traditions
+                          - generic [ref=e1934]:
+                            - generic [ref=e1935]:
+                              - generic [ref=e1936]: religion_christian_denomination
+                              - generic [ref=e1937]: n=215
+                            - img "distribution" [ref=e1940]
+                        - button "+" [ref=e1960]
+                        - generic [ref=e1961]: ›
+                      - generic [ref=e1963] [cursor=pointer]:
+                        - generic [ref=e1964]:
+                          - generic [ref=e1965]: "35"
+                          - generic "Multiple Select Choices" [ref=e1966]:
+                            - img [ref=e1967]
+                        - generic [ref=e1970]:
+                          - generic [ref=e1973]: Within your specific Christian tradition/upbringing, was infant circumcision generally viewed as
+                          - generic [ref=e1974]:
+                            - generic [ref=e1975]:
+                              - generic [ref=e1976]: religion_christian_circ_view
+                              - generic [ref=e1977]: n=222
+                            - img "distribution" [ref=e1980]
+                        - button "+" [ref=e1987]
+                        - generic [ref=e1988]: ›
+                      - generic [ref=e1990] [cursor=pointer]:
+                        - generic [ref=e1991]:
+                          - generic [ref=e1992]: "225"
+                          - generic "Qualitative Open Response" [ref=e1993]:
+                            - img [ref=e1994]
+                        - generic [ref=e1996]:
+                          - generic:
+                            - generic:
+                              - generic: Were you taught or did you understand there to be any specific theological basis for or against penile circumcision within your Christian context
+                          - generic [ref=e1997]:
+                            - generic [ref=e1998]:
+                              - generic [ref=e1999]: religion_christian_theology_basis
+                              - generic [ref=e2000]: n=184
+                            - img "distribution" [ref=e2003]
+                        - button "+" [ref=e2137]
+                        - generic [ref=e2138]: ›
+                      - generic [ref=e2140] [cursor=pointer]:
+                        - generic [ref=e2141]:
+                          - generic [ref=e2142]: "226"
+                          - generic "Qualitative Open Response" [ref=e2143]:
+                            - img [ref=e2144]
+                        - generic [ref=e2146]:
+                          - generic [ref=e2149]: Anything else you'd like to share about your perspective as a Christian?
+                          - generic [ref=e2150]:
+                            - generic [ref=e2151]:
+                              - generic [ref=e2152]: religion_christian_comments
+                              - generic [ref=e2153]: n=127
+                            - img "distribution" [ref=e2156]
+                        - button "+" [ref=e2274]
+                        - generic [ref=e2275]: ›
+                  - generic [ref=e2276]:
+                    - generic [ref=e2277]: Islamic Perspectives
+                    - generic [ref=e2278]:
+                      - generic [ref=e2280] [cursor=pointer]:
+                        - generic [ref=e2281]:
+                          - generic [ref=e2282]: "39"
+                          - generic "Single Select Choice" [ref=e2283]:
+                            - img [ref=e2284]
+                        - generic [ref=e2287]:
+                          - generic [ref=e2290]: If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?
+                          - generic [ref=e2293]: religion_islamic_theology_reasons
+                        - button "+" [ref=e2295]
+                        - generic [ref=e2296]: ›
+                      - generic [ref=e2298] [cursor=pointer]:
+                        - generic [ref=e2299]:
+                          - generic [ref=e2300]: "45"
+                          - generic "Multiple Select Choices" [ref=e2301]:
+                            - img [ref=e2302]
+                        - generic [ref=e2305]:
+                          - generic [ref=e2308]: Which school of Islamic thought (madhhab), theological branch, or cultural expression of Islam do you (or your family during your upbringing) most closely identify with, if any?
+                          - generic [ref=e2311]: religion_islamic_school
+                        - button "+" [ref=e2313]
+                        - generic [ref=e2314]: ›
+                      - generic [ref=e2316] [cursor=pointer]:
+                        - generic [ref=e2317]:
+                          - generic [ref=e2318]: "46"
+                          - generic "Single Select Choice" [ref=e2319]:
+                            - img [ref=e2320]
+                        - generic [ref=e2323]:
+                          - generic [ref=e2326]: In your upbringing or current understanding within your Islamic context, how was/is Khitan (penile circumcision, also sometimes known as Sunnet) generally viewed?
+                          - generic [ref=e2327]:
+                            - generic [ref=e2328]:
+                              - generic [ref=e2329]: religion_islamic_khitan_view
+                              - generic [ref=e2330]: n=9
+                            - img "distribution" [ref=e2333]
+                        - button "+" [ref=e2339]
+                        - generic [ref=e2340]: ›
+                      - generic [ref=e2342] [cursor=pointer]:
+                        - generic [ref=e2343]:
+                          - generic [ref=e2344]: "47"
+                          - generic "Single Select Choice" [ref=e2345]:
+                            - img [ref=e2346]
+                        - generic [ref=e2349]:
+                          - generic [ref=e2352]: Were you aware of or taught about specific religious reasons or justifications for Khitan?
+                          - generic [ref=e2355]: religion_islamic_theology_awareness
+                        - button "+" [ref=e2357]
+                        - generic [ref=e2358]: ›
+                      - generic [ref=e2360] [cursor=pointer]:
+                        - generic [ref=e2361]:
+                          - generic [ref=e2362]: "48"
+                          - generic "Single Select Choice" [ref=e2363]:
+                            - img [ref=e2364]
+                        - generic [ref=e2367]:
+                          - generic [ref=e2370]: In your understanding, is Khitan considered a direct commandment (Fard) from the Quran, or more of an emphasized Sunnah (prophetic tradition) and cultural norm?
+                          - generic [ref=e2373]: religion_islamic_fard_vs_sunnah
+                        - button "+" [ref=e2375]
+                        - generic [ref=e2376]: ›
+                      - generic [ref=e2378] [cursor=pointer]:
+                        - generic [ref=e2379]:
+                          - generic [ref=e2380]: "49"
+                          - generic "Single Select Choice" [ref=e2381]:
+                            - img [ref=e2382]
+                        - generic [ref=e2385]:
+                          - generic:
+                            - generic:
+                              - generic: How important is the act of Khitan to your personal sense of Muslim identity, adherence to Sunnah, or feeling of ritual purity?
+                          - generic [ref=e2386]:
+                            - generic [ref=e2387]:
+                              - generic [ref=e2388]: religion_islamic_identity_importance
+                              - generic [ref=e2389]: n=9
+                            - img "distribution" [ref=e2392]
+                        - button "+" [ref=e2398]
+                        - generic [ref=e2399]: ›
+                      - generic [ref=e2401] [cursor=pointer]:
+                        - generic [ref=e2402]:
+                          - generic [ref=e2403]: "50"
+                          - generic "Multiple Select Choices" [ref=e2404]:
+                            - img [ref=e2405]
+                        - generic [ref=e2408]:
+                          - generic:
+                            - generic:
+                              - generic: Have you ever encountered or explored interpretations within Islam that question the absolute necessity of Khitan, discuss potential harms, or emphasize the Quran's silence on the matter?
+                          - generic [ref=e2411]: religion_islamic_alternatives_awareness
+                        - button "+" [ref=e2413]
+                        - generic [ref=e2414]: ›
+                      - generic [ref=e2416] [cursor=pointer]:
+                        - generic [ref=e2417]:
+                          - generic [ref=e2418]: "51"
+                          - generic "Multiple Select Choices" [ref=e2419]:
+                            - img [ref=e2420]
+                        - generic [ref=e2423]:
+                          - generic:
+                            - generic:
+                              - generic: Any thoughts on these alternative interpretations or perspectives?
+                          - generic [ref=e2426]: religion_islamic_alternatives_thoughts
+                        - button "+" [ref=e2428]
+                        - generic [ref=e2429]: ›
+                      - generic [ref=e2431] [cursor=pointer]:
+                        - generic [ref=e2432]:
+                          - generic [ref=e2433]: "52"
+                          - generic "Multiple Select Choices" [ref=e2434]:
+                            - img [ref=e2435]
+                        - generic [ref=e2438]:
+                          - generic:
+                            - generic:
+                              - generic: How do you/your family reconcile the choice of intactness with the common practice of Khitan in many Muslim cultures?
+                          - generic [ref=e2441]: religion_islamic_intact_reconciliation
+                        - button "+" [ref=e2443]
+                        - generic [ref=e2444]: ›
+              - generic [ref=e2445]:
+                - generic [ref=e2446] [cursor=pointer]:
+                  - heading "▶ Anatomy & Appearance" [level=3] [ref=e2447]:
+                    - generic [ref=e2448]: ▶
+                    - text: Anatomy & Appearance
+                  - generic [ref=e2449]: "19"
+                - generic [ref=e2450]:
+                  - generic [ref=e2452] [cursor=pointer]:
+                    - generic [ref=e2453]:
+                      - generic [ref=e2454]: "01"
+                      - generic "Single Select Choice" [ref=e2455]:
+                        - img [ref=e2456]
+                    - generic [ref=e2459]:
+                      - generic [ref=e2460]:
+                        - generic [ref=e2461]:
+                          - generic [ref=e2462]: T1
+                          - generic [ref=e2464]: Anatomy & Appearance
+                        - generic [ref=e2466]: Thinking about your penis today, how do you generally FEEL about its physical appearance?
+                      - generic [ref=e2467]:
+                        - generic [ref=e2468]:
+                          - generic [ref=e2469]: exp_appearance_feeling
+                          - generic [ref=e2470]: n=484
+                        - img "distribution" [ref=e2473]
+                    - button "+" [ref=e2482]
+                    - generic [ref=e2483]: ›
+                  - generic [ref=e2485] [cursor=pointer]:
+                    - generic [ref=e2486]:
+                      - generic [ref=e2487]: "02"
+                      - generic "Single Select Choice" [ref=e2488]:
+                        - img [ref=e2489]
+                    - generic [ref=e2492]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2493]: T1
+                          - generic [ref=e2495]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Intensity of Orgasm]
+                      - generic [ref=e2496]:
+                        - generic [ref=e2497]:
+                          - generic [ref=e2498]: exp_sex_rating_orgasm_intensity
+                          - generic [ref=e2499]: n=477
+                        - img "distribution" [ref=e2502]
+                    - button "+" [ref=e2510]
+                    - generic [ref=e2511]: ›
+                  - generic [ref=e2513] [cursor=pointer]:
+                    - generic [ref=e2514]:
+                      - generic [ref=e2515]: "03"
+                      - generic "Single Select Choice" [ref=e2516]:
+                        - img [ref=e2517]
+                    - generic [ref=e2520]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2521]: T1
+                          - generic [ref=e2523]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Duration of Orgasm Sensation]
+                      - generic [ref=e2524]:
+                        - generic [ref=e2525]:
+                          - generic [ref=e2526]: exp_sex_rating_orgasm_duration
+                          - generic [ref=e2527]: n=476
+                        - img "distribution" [ref=e2530]
+                    - button "+" [ref=e2538]
+                    - generic [ref=e2539]: ›
+                  - generic [ref=e2541] [cursor=pointer]:
+                    - generic [ref=e2542]:
+                      - generic [ref=e2543]: "04"
+                      - generic "Single Select Choice" [ref=e2544]:
+                        - img [ref=e2545]
+                    - generic [ref=e2548]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2549]: T1
+                          - generic [ref=e2551]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Overall Ease of Reaching Orgasm]
+                      - generic [ref=e2552]:
+                        - generic [ref=e2553]:
+                          - generic [ref=e2554]: exp_sex_rating_ease_of_orgasm
+                          - generic [ref=e2555]: n=478
+                        - img "distribution" [ref=e2558]
+                    - button "+" [ref=e2566]
+                    - generic [ref=e2567]: ›
+                  - generic [ref=e2569] [cursor=pointer]:
+                    - generic [ref=e2570]:
+                      - generic [ref=e2571]: "05"
+                      - generic "Single Select Choice" [ref=e2572]:
+                        - img [ref=e2573]
+                    - generic [ref=e2576]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2577]: T1
+                          - generic [ref=e2579]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Sensitivity to Light Touch]
+                      - generic [ref=e2580]:
+                        - generic [ref=e2581]:
+                          - generic [ref=e2582]: exp_sex_rating_sensitivity_light_touch
+                          - generic [ref=e2583]: n=475
+                        - img "distribution" [ref=e2586]
+                    - button "+" [ref=e2594]
+                    - generic [ref=e2595]: ›
+                  - generic [ref=e2597] [cursor=pointer]:
+                    - generic [ref=e2598]:
+                      - generic [ref=e2599]: "06"
+                      - generic "Single Select Choice" [ref=e2600]:
+                        - img [ref=e2601]
+                    - generic [ref=e2604]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2605]: T1
+                          - generic [ref=e2607]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Pleasure from Mobile Skin]
+                      - generic [ref=e2608]:
+                        - generic [ref=e2609]:
+                          - generic [ref=e2610]: exp_sex_rating_pleasure_mobile_skin
+                          - generic [ref=e2611]: n=477
+                        - img "distribution" [ref=e2614]
+                    - button "+" [ref=e2622]
+                    - generic [ref=e2623]: ›
+                  - generic [ref=e2625] [cursor=pointer]:
+                    - generic [ref=e2626]:
+                      - generic [ref=e2627]: "07"
+                      - generic "Single Select Choice" [ref=e2628]:
+                        - img [ref=e2629]
+                    - generic [ref=e2632]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e2633]: T1
+                          - generic [ref=e2635]: Anatomy & Appearance
+                        - generic:
+                          - generic: Rating Sexual Experience Factors Please rate the following aspects of your own sexual experience on a scale of 1 to 5 [Variety of Pleasurable Sensations]
+                      - generic [ref=e2636]:
+                        - generic [ref=e2637]:
+                          - generic [ref=e2638]: exp_sex_rating_variety_of_sensation
+                          - generic [ref=e2639]: n=476
+                        - img "distribution" [ref=e2642]
+                    - button "+" [ref=e2650]
+                    - generic [ref=e2651]: ›
+                  - generic [ref=e2653] [cursor=pointer]:
+                    - generic [ref=e2654]:
+                      - generic [ref=e2655]: "227"
+                      - generic "Qualitative Open Response" [ref=e2656]:
+                        - img [ref=e2657]
+                    - generic [ref=e2659]:
+                      - generic [ref=e2660]:
+                        - generic [ref=e2663]: Anatomy & Appearance
+                        - generic [ref=e2665]: How would you describe the general sensitivity of your penis to various types of touch and stimulation?
+                      - generic [ref=e2667]:
+                        - generic [ref=e2668]: exp_sensitivity_desc
+                        - generic [ref=e2669]: n=384
+                    - button "+" [ref=e2671]
+                    - generic [ref=e2672]: ›
+                  - generic [ref=e2674] [cursor=pointer]:
+                    - generic [ref=e2675]:
+                      - generic [ref=e2676]: "228"
+                      - generic "Qualitative Open Response" [ref=e2677]:
+                        - img [ref=e2678]
+                    - generic [ref=e2680]:
+                      - generic [ref=e2681]:
+                        - generic [ref=e2684]: Anatomy & Appearance
+                        - generic [ref=e2686]: How would you describe your typical ORGASM experience in terms of its INTENSITY, BUILD-UP, and overall QUALITY of pleasure?
+                      - generic [ref=e2687]:
+                        - generic [ref=e2688]:
+                          - generic [ref=e2689]: exp_orgasm_desc
+                          - generic [ref=e2690]: n=377
+                        - img "distribution" [ref=e2693]
+                    - button "+" [ref=e3070]
+                    - generic [ref=e3071]: ›
+                  - generic [ref=e3073] [cursor=pointer]:
+                    - generic [ref=e3074]:
+                      - generic [ref=e3075]: "53"
+                      - generic "Single Select Choice" [ref=e3076]:
+                        - img [ref=e3077]
+                    - generic [ref=e3080]:
+                      - generic [ref=e3081]:
+                        - generic [ref=e3084]: Anatomy & Appearance
+                        - generic [ref=e3086]: "DURATION: How long do the primary pleasurable sensations of your typical orgasm last?"
+                      - generic [ref=e3087]:
+                        - generic [ref=e3088]:
+                          - generic [ref=e3089]: exp_orgasm_duration_desc
+                          - generic [ref=e3090]: n=476
+                        - img "distribution" [ref=e3093]
+                    - button "+" [ref=e3103]
+                    - generic [ref=e3104]: ›
+                  - generic [ref=e3106] [cursor=pointer]:
+                    - generic [ref=e3107]:
+                      - generic [ref=e3108]: "54"
+                      - generic "Multiple Select Choices" [ref=e3109]:
+                        - img [ref=e3110]
+                    - generic [ref=e3113]:
+                      - generic [ref=e3114]:
+                        - generic [ref=e3117]: Anatomy & Appearance
+                        - generic [ref=e3119]: And, if you're comfortable sharing, how would you rate your general confidence that your orgasms are as intense or fulfilling as possible?
+                      - generic [ref=e3120]:
+                        - generic [ref=e3121]:
+                          - generic [ref=e3122]: exp_orgasm_confidence_rating
+                          - generic [ref=e3123]: n=468
+                        - img "distribution" [ref=e3126]
+                    - button "+" [ref=e3134]
+                    - generic [ref=e3135]: ›
+                  - generic [ref=e3137] [cursor=pointer]:
+                    - generic [ref=e3138]:
+                      - generic [ref=e3139]: "55"
+                      - generic "Multiple Select Choices" [ref=e3140]:
+                        - img [ref=e3141]
+                    - generic [ref=e3144]:
+                      - generic [ref=e3145]:
+                        - generic [ref=e3148]: Anatomy & Appearance
+                        - generic [ref=e3150]: Do you generally need to use artificial LUBRICATION (e.g., store-bought lube, saliva, lotion) for comfortable and pleasurable masturbation or partnered sex?
+                      - generic [ref=e3151]:
+                        - generic [ref=e3152]:
+                          - generic [ref=e3153]: exp_lubrication_need
+                          - generic [ref=e3154]: n=475
+                        - img "distribution" [ref=e3157]
+                    - button "+" [ref=e3166]
+                    - generic [ref=e3167]: ›
+                  - generic [ref=e3169] [cursor=pointer]:
+                    - generic [ref=e3170]:
+                      - generic [ref=e3171]: "229"
+                      - generic "Qualitative Open Response" [ref=e3172]:
+                        - img [ref=e3173]
+                    - generic [ref=e3175]:
+                      - generic [ref=e3176]:
+                        - generic [ref=e3179]: Anatomy & Appearance
+                        - generic [ref=e3181]: Any additional comments on your experience with lubrication (or lack of need for it)?
+                      - generic [ref=e3182]:
+                        - generic [ref=e3183]:
+                          - generic [ref=e3184]: exp_lubrication_comments
+                          - generic [ref=e3185]: n=299
+                        - img "distribution" [ref=e3188]
+                    - button "+" [ref=e3487]
+                    - generic [ref=e3488]: ›
+                  - generic [ref=e3490] [cursor=pointer]:
+                    - generic [ref=e3491]:
+                      - generic [ref=e3492]: "56"
+                      - generic "Multiple Select Choices" [ref=e3493]:
+                        - img [ref=e3494]
+                    - generic [ref=e3497]:
+                      - generic [ref=e3498]:
+                        - generic [ref=e3501]: Anatomy & Appearance
+                        - generic [ref=e3503]: When it comes to partnered sex and intimacy, have you ever felt it was difficult to communicate what types of touch provide you with genuine pleasure?
+                      - generic [ref=e3504]:
+                        - generic [ref=e3505]:
+                          - generic [ref=e3506]: exp_pleasure_comm_difficulty
+                          - generic [ref=e3507]: n=475
+                        - img "distribution" [ref=e3510]
+                    - button "+" [ref=e3518]
+                    - generic [ref=e3519]: ›
+                  - generic [ref=e3521] [cursor=pointer]:
+                    - generic [ref=e3522]:
+                      - generic [ref=e3523]: "230"
+                      - generic "Qualitative Open Response" [ref=e3524]:
+                        - img [ref=e3525]
+                    - generic [ref=e3527]:
+                      - generic:
+                        - generic [ref=e3529]: Anatomy & Appearance
+                        - generic:
+                          - generic: If you have experienced this disconnect, could you briefly elaborate on what that's like or in what situations it occurs?
+                      - generic [ref=e3530]:
+                        - generic [ref=e3531]:
+                          - generic [ref=e3532]: exp_pleasure_comm_elaboration
+                          - generic [ref=e3533]: n=217
+                        - img "distribution" [ref=e3536]
+                    - button "+" [ref=e3744]
+                    - generic [ref=e3745]: ›
+                  - generic [ref=e3747] [cursor=pointer]:
+                    - generic [ref=e3748]:
+                      - generic [ref=e3749]: "57"
+                      - generic "Multiple Select Choices" [ref=e3750]:
+                        - img [ref=e3751]
+                    - generic [ref=e3754]:
+                      - generic [ref=e3755]:
+                        - generic [ref=e3758]: Anatomy & Appearance
+                        - generic [ref=e3760]: Thinking about your typical sexual arousal, do you notice the presence of pre-ejaculate fluid (sometimes called 'pre-cum' or Cowper's gland fluid – a clear fluid released from the penis before orgasm/ejaculation)?
+                      - generic [ref=e3761]:
+                        - generic [ref=e3762]:
+                          - generic [ref=e3763]: exp_pre_ejaculate_awareness
+                          - generic [ref=e3764]: n=476
+                        - img "distribution" [ref=e3767]
+                    - button "+" [ref=e3776]
+                    - generic [ref=e3777]: ›
+                  - generic [ref=e3779] [cursor=pointer]:
+                    - generic [ref=e3780]:
+                      - generic [ref=e3781]: "58"
+                      - generic "Single Select Choice" [ref=e3782]:
+                        - img [ref=e3783]
+                    - generic [ref=e3786]:
+                      - generic [ref=e3787]:
+                        - generic [ref=e3790]: Anatomy & Appearance
+                        - generic [ref=e3792]: How would you describe your ability to communicate your sexual needs and what provides you pleasure to a partner?
+                      - generic [ref=e3793]:
+                        - generic [ref=e3794]:
+                          - generic [ref=e3795]: exp_needs_comm_ability
+                          - generic [ref=e3796]: n=469
+                        - img "distribution" [ref=e3799]
+                    - button "+" [ref=e3807]
+                    - generic [ref=e3808]: ›
+                  - generic [ref=e3810] [cursor=pointer]:
+                    - generic [ref=e3811]:
+                      - generic [ref=e3812]: "08"
+                      - generic "Single Select Choice" [ref=e3813]:
+                        - img [ref=e3814]
+                    - generic [ref=e3817]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e3818]: T1
+                          - generic [ref=e3820]: Anatomy & Appearance
+                        - generic:
+                          - generic: Overall, how PROUD or satisfied are you with your penis, considering all aspects (appearance, how it functions, and the pleasure it provides)?
+                      - generic [ref=e3821]:
+                        - generic [ref=e3822]:
+                          - generic [ref=e3823]: exp_pride_satisfaction_rating
+                          - generic [ref=e3824]: n=482
+                        - img "distribution" [ref=e3827]
+                    - button "+" [ref=e3836]
+                    - generic [ref=e3837]: ›
+                  - generic [ref=e3839] [cursor=pointer]:
+                    - generic [ref=e3840]:
+                      - generic [ref=e3841]: "59"
+                      - generic "Single Select Choice" [ref=e3842]:
+                        - img [ref=e3843]
+                    - generic [ref=e3846]:
+                      - generic [ref=e3847]:
+                        - generic [ref=e3850]: Anatomy & Appearance
+                        - generic [ref=e3852]: What is your circumcision state?
+                      - generic [ref=e3854]:
+                        - generic [ref=e3855]: pathway_state
+                        - generic [ref=e3856]: n=478
+                    - button "+" [ref=e3858]
+                    - generic [ref=e3859]: ›
+              - generic [ref=e3860]:
+                - generic [ref=e3861] [cursor=pointer]:
+                  - heading "▶ Circumcised" [level=3] [ref=e3862]:
+                    - generic [ref=e3863]: ▶
+                    - text: Circumcised
+                  - generic [ref=e3864]: "52"
+                - generic [ref=e3865]:
+                  - generic [ref=e3867] [cursor=pointer]:
+                    - generic [ref=e3868]:
+                      - generic [ref=e3869]: "69"
+                      - generic "Single Select Choice" [ref=e3870]:
+                        - img [ref=e3871]
+                    - generic [ref=e3874]:
+                      - generic [ref=e3875]:
+                        - generic [ref=e3878]: Circumcised
+                        - generic [ref=e3880]: At what age were you circumcised, if you know?
+                      - generic [ref=e3881]:
+                        - generic [ref=e3882]:
+                          - generic [ref=e3883]: circ_age
+                          - generic [ref=e3884]: n=318
+                        - img "distribution" [ref=e3887]
+                    - button "+" [ref=e3895]
+                    - generic [ref=e3896]: ›
+                  - generic [ref=e3898] [cursor=pointer]:
+                    - generic [ref=e3899]:
+                      - generic [ref=e3900]: "70"
+                      - generic "Multiple Select Choices" [ref=e3901]:
+                        - img [ref=e3902]
+                    - generic [ref=e3905]:
+                      - generic [ref=e3906]:
+                        - generic [ref=e3909]: Circumcised
+                        - generic [ref=e3911]: Can you recall when you first understood what "being circumcised" actually meant in terms of a physical alteration to your body?
+                      - generic [ref=e3912]:
+                        - generic [ref=e3913]:
+                          - generic [ref=e3914]: circ_awareness_age
+                          - generic [ref=e3915]: n=320
+                        - img "distribution" [ref=e3918]
+                    - button "+" [ref=e3927]
+                    - generic [ref=e3928]: ›
+                  - generic [ref=e3930] [cursor=pointer]:
+                    - generic [ref=e3931]:
+                      - generic [ref=e3932]: "243"
+                      - generic "Qualitative Open Response" [ref=e3933]:
+                        - img [ref=e3934]
+                    - generic [ref=e3936]:
+                      - generic [ref=e3937]:
+                        - generic [ref=e3940]: Circumcised
+                        - generic [ref=e3942]: What do you consider the main ADVANTAGES of being circumcised?
+                      - generic [ref=e3943]:
+                        - generic [ref=e3944]:
+                          - generic [ref=e3945]: circ_advantages_desc
+                          - generic [ref=e3946]: n=288
+                        - img "distribution" [ref=e3949]
+                    - button "+" [ref=e4180]
+                    - generic [ref=e4181]: ›
+                  - generic [ref=e4183] [cursor=pointer]:
+                    - generic [ref=e4184]:
+                      - generic [ref=e4185]: "244"
+                      - generic "Qualitative Open Response" [ref=e4186]:
+                        - img [ref=e4187]
+                    - generic [ref=e4189]:
+                      - generic [ref=e4190]:
+                        - generic [ref=e4193]: Circumcised
+                        - generic [ref=e4195]: Have you experienced any DRAWBACKS or challenges related to being circumcised?
+                      - generic [ref=e4196]:
+                        - generic [ref=e4197]:
+                          - generic [ref=e4198]: circ_drawbacks_desc
+                          - generic [ref=e4199]: n=290
+                        - img "distribution" [ref=e4202]
+                    - button "+" [ref=e4484]
+                    - generic [ref=e4485]: ›
+                  - generic [ref=e4487] [cursor=pointer]:
+                    - generic [ref=e4488]:
+                      - generic [ref=e4489]: "71"
+                      - generic "Single Select Choice" [ref=e4490]:
+                        - img [ref=e4491]
+                    - generic [ref=e4494]:
+                      - generic [ref=e4495]:
+                        - generic [ref=e4498]: Circumcised
+                        - generic [ref=e4500]: If you had to speculate, who do you think was the PRIMARY DRIVER of the decision to have you circumcised in your family?
+                      - generic [ref=e4501]:
+                        - generic [ref=e4502]:
+                          - generic [ref=e4503]: circ_parents_driver
+                          - generic [ref=e4504]: n=291
+                        - img "distribution" [ref=e4507]
+                    - button "+" [ref=e4516]
+                    - generic [ref=e4517]: ›
+                  - generic [ref=e4519] [cursor=pointer]:
+                    - generic [ref=e4520]:
+                      - generic [ref=e4521]: "245"
+                      - generic "Qualitative Open Response" [ref=e4522]:
+                        - img [ref=e4523]
+                    - generic [ref=e4525]:
+                      - generic [ref=e4526]:
+                        - generic [ref=e4529]: Circumcised
+                        - generic [ref=e4531]: What was the reason(s) given for your circumcision, if you know/have learned?
+                      - generic [ref=e4533]:
+                        - generic [ref=e4534]: circ_parents_reason
+                        - generic [ref=e4535]: n=296
+                    - button "+" [ref=e4537]
+                    - generic [ref=e4538]: ›
+                  - generic [ref=e4540] [cursor=pointer]:
+                    - generic [ref=e4541]:
+                      - generic [ref=e4542]: "11"
+                      - generic "Multiple Select Choices" [ref=e4543]:
+                        - img [ref=e4544]
+                    - generic [ref=e4547]:
+                      - generic [ref=e4548]:
+                        - generic [ref=e4549]:
+                          - generic [ref=e4550]: T1
+                          - generic [ref=e4552]: Circumcised
+                        - generic [ref=e4554]: Based on your understanding of healthcare at the time, how do you believe the topic of circumcision was likely PRESENTED to your parents by the hospital or doctor?
+                      - generic [ref=e4555]:
+                        - generic [ref=e4556]:
+                          - generic [ref=e4557]: circ_presentation_by_medical
+                          - generic [ref=e4558]: n=291
+                        - img "distribution" [ref=e4561]
+                    - button "+" [ref=e4569]
+                    - generic [ref=e4570]: ›
+                  - generic [ref=e4572] [cursor=pointer]:
+                    - generic [ref=e4573]:
+                      - generic [ref=e4574]: "72"
+                      - generic "Multiple Select Choices" [ref=e4575]:
+                        - img [ref=e4576]
+                    - generic [ref=e4579]:
+                      - generic [ref=e4580]:
+                        - generic [ref=e4583]: Circumcised
+                        - generic [ref=e4585]: Thinking about the era in which you were born and what you know of your parents and their community, which of the following sources of information or influence do you believe were the MOST CRITICAL in their decision to circumcise you?
+                      - generic [ref=e4586]:
+                        - generic [ref=e4587]:
+                          - generic [ref=e4588]: circ_parents_influences
+                          - generic [ref=e4589]: n=286
+                        - img "distribution" [ref=e4592]
+                    - button "+" [ref=e4769]
+                    - generic [ref=e4770]: ›
+                  - generic [ref=e4772] [cursor=pointer]:
+                    - generic [ref=e4773]:
+                      - generic [ref=e4774]: "246"
+                      - generic "Qualitative Open Response" [ref=e4775]:
+                        - img [ref=e4776]
+                    - generic [ref=e4778]:
+                      - generic:
+                        - generic [ref=e4780]: Circumcised
+                        - generic:
+                          - generic: When you look at your penis, how would you describe the specific characteristics of your circumcision?
+                          - generic: (e.g., amount of shaft skin remaining, tightness during erection, scar visibility/texture, evenness of skin removal, glans exposure when flaccid/erect)
+                      - generic [ref=e4781]:
+                        - generic [ref=e4782]:
+                          - generic [ref=e4783]: circ_physical_characteristics_desc
+                          - generic [ref=e4784]: n=273
+                        - img "distribution" [ref=e4787]
+                    - button "+" [ref=e5063]
+                    - generic [ref=e5064]: ›
+                  - generic [ref=e5066] [cursor=pointer]:
+                    - generic [ref=e5067]:
+                      - generic [ref=e5068]: "73"
+                      - generic "Single Select Choice" [ref=e5069]:
+                        - img [ref=e5070]
+                    - generic [ref=e5073]:
+                      - generic [ref=e5074]:
+                        - generic [ref=e5077]: Circumcised
+                        - generic [ref=e5079]: How do you personally perceive your circumcision scar?
+                      - generic [ref=e5080]:
+                        - generic [ref=e5081]:
+                          - generic [ref=e5082]: circ_scar_perception
+                          - generic [ref=e5083]: n=318
+                        - img "distribution" [ref=e5086]
+                    - button "+" [ref=e5096]
+                    - generic [ref=e5097]: ›
+                  - generic [ref=e5099] [cursor=pointer]:
+                    - generic [ref=e5100]:
+                      - generic [ref=e5101]: "74"
+                      - generic "Multiple Select Choices" [ref=e5102]:
+                        - img [ref=e5103]
+                    - generic [ref=e5106]:
+                      - generic [ref=e5107]:
+                        - generic [ref=e5110]: Circumcised
+                        - generic [ref=e5112]: Have you ever wondered what it would be like to experience sex or masturbation with an intact penis (i.e., with a complete foreskin)?
+                      - generic [ref=e5113]:
+                        - generic [ref=e5114]:
+                          - generic [ref=e5115]: circ_curiosity_about_intact
+                          - generic [ref=e5116]: n=315
+                        - img "distribution" [ref=e5119]
+                    - button "+" [ref=e5128]
+                    - generic [ref=e5129]: ›
+                  - generic [ref=e5131] [cursor=pointer]:
+                    - generic [ref=e5132]:
+                      - generic [ref=e5133]: "247"
+                      - generic "Qualitative Open Response" [ref=e5134]:
+                        - img [ref=e5135]
+                    - generic [ref=e5137]:
+                      - generic:
+                        - generic [ref=e5139]: Circumcised
+                        - generic:
+                          - generic: If you have wondered, what aspects are you most curious about?
+                      - generic [ref=e5141]:
+                        - generic [ref=e5142]: circ_curiosity_about_intact_aspects
+                        - generic [ref=e5143]: n=253
+                    - button "+" [ref=e5145]
+                    - generic [ref=e5146]: ›
+                  - generic [ref=e5148] [cursor=pointer]:
+                    - generic [ref=e5149]:
+                      - generic [ref=e5150]: "75"
+                      - generic "Single Select Choice" [ref=e5151]:
+                        - img [ref=e5152]
+                    - generic [ref=e5155]:
+                      - generic [ref=e5156]:
+                        - generic [ref=e5159]: Circumcised
+                        - generic [ref=e5161]: After your initial circumcision, have you ever required or undergone any further medical interventions, treatments, or surgeries related to your penis or circumcision site?
+                      - generic [ref=e5162]:
+                        - generic [ref=e5163]:
+                          - generic [ref=e5164]: circ_medical_intervention
+                          - generic [ref=e5165]: n=321
+                        - img "distribution" [ref=e5168]
+                    - button "+" [ref=e5174]
+                    - generic [ref=e5175]: ›
+                  - generic [ref=e5177] [cursor=pointer]:
+                    - generic [ref=e5178]:
+                      - generic [ref=e5179]: "76"
+                      - generic "Multiple Select Choices" [ref=e5180]:
+                        - img [ref=e5181]
+                    - generic [ref=e5184]:
+                      - generic [ref=e5185]:
+                        - generic [ref=e5188]: Circumcised
+                        - generic [ref=e5190]: Have you ever experienced feelings that could be described as RESENTMENT, loss, anger, grief or regret in relation to your circumcision?
+                      - generic [ref=e5191]:
+                        - generic [ref=e5192]:
+                          - generic [ref=e5193]: circ_regret_feeling
+                          - generic [ref=e5194]: n=320
+                        - img "distribution" [ref=e5197]
+                    - button "+" [ref=e5204]
+                    - generic [ref=e5205]: ›
+                  - generic [ref=e5207] [cursor=pointer]:
+                    - generic [ref=e5208]:
+                      - generic [ref=e5209]: "248"
+                      - generic "Qualitative Open Response" [ref=e5210]:
+                        - img [ref=e5211]
+                    - generic [ref=e5213]:
+                      - generic [ref=e5214]:
+                        - generic [ref=e5217]: Circumcised
+                        - generic [ref=e5219]: If you have had such feelings (even if mild or infrequent), when did they first emerge, and what do you think primarily triggers them or what aspects of being circumcised contribute most to them?
+                      - generic [ref=e5220]:
+                        - generic [ref=e5221]:
+                          - generic [ref=e5222]: circ_regret_triggers
+                          - generic [ref=e5223]: n=239
+                        - img "distribution" [ref=e5226]
+                    - button "+" [ref=e5466]
+                    - generic [ref=e5467]: ›
+                  - generic [ref=e5469] [cursor=pointer]:
+                    - generic [ref=e5470]:
+                      - generic [ref=e5471]: "77"
+                      - generic "Single Select Choice" [ref=e5472]:
+                        - img [ref=e5473]
+                    - generic [ref=e5476]:
+                      - generic [ref=e5477]:
+                        - generic [ref=e5480]: Circumcised
+                        - generic [ref=e5482]: Separate from any formal interventions, have you personally experienced any ongoing physical SYMPTOMS or challenges you attribute to your circumcision?
+                      - generic [ref=e5483]:
+                        - generic [ref=e5484]:
+                          - generic [ref=e5485]: circ_physical_symptoms
+                          - generic [ref=e5486]: n=317
+                        - img "distribution" [ref=e5489]
+                    - button "+" [ref=e5495]
+                    - generic [ref=e5496]: ›
+                  - generic [ref=e5498] [cursor=pointer]:
+                    - generic [ref=e5499]:
+                      - generic [ref=e5500]: "249"
+                      - generic "Qualitative Open Response" [ref=e5501]:
+                        - img [ref=e5502]
+                    - generic [ref=e5504]:
+                      - generic [ref=e5505]:
+                        - generic [ref=e5508]: Circumcised
+                        - generic [ref=e5510]: If yes, please briefly describe the issue(s)
+                      - generic [ref=e5511]:
+                        - generic [ref=e5512]:
+                          - generic [ref=e5513]: circ_physical_symptoms_desc
+                          - generic [ref=e5514]: n=158
+                        - img "distribution" [ref=e5517]
+                    - button "+" [ref=e5672]
+                    - generic [ref=e5673]: ›
+                  - generic [ref=e5675] [cursor=pointer]:
+                    - generic [ref=e5676]:
+                      - generic [ref=e5677]: "78"
+                      - generic "Multiple Select Choices" [ref=e5678]:
+                        - img [ref=e5679]
+                    - generic [ref=e5682]:
+                      - generic [ref=e5683]:
+                        - generic [ref=e5686]: Circumcised
+                        - generic [ref=e5688]: Have you ever had a direct conversation with your parents (or guardians) about their decision to have you circumcised?
+                      - generic [ref=e5689]:
+                        - generic [ref=e5690]:
+                          - generic [ref=e5691]: circ_parents_convo
+                          - generic [ref=e5692]: n=298
+                        - img "distribution" [ref=e5695]
+                    - button "+" [ref=e5703]
+                    - generic [ref=e5704]: ›
+                  - generic [ref=e5706] [cursor=pointer]:
+                    - generic [ref=e5707]:
+                      - generic [ref=e5708]: "79"
+                      - generic "Single Select Choice" [ref=e5709]:
+                        - img [ref=e5710]
+                    - generic [ref=e5713]:
+                      - generic [ref=e5714]:
+                        - generic [ref=e5717]: Circumcised
+                        - generic [ref=e5719]: If you haven't asked them, could you share why?
+                      - generic [ref=e5720]:
+                        - generic [ref=e5721]:
+                          - generic [ref=e5722]: circ_parents_convo_why_not
+                          - generic [ref=e5723]: n=139
+                        - img "distribution" [ref=e5726]
+                    - button "+" [ref=e5734]
+                    - generic [ref=e5735]: ›
+                  - generic [ref=e5737] [cursor=pointer]:
+                    - generic [ref=e5738]:
+                      - generic [ref=e5739]: "250"
+                      - generic "Qualitative Open Response" [ref=e5740]:
+                        - img [ref=e5741]
+                    - generic [ref=e5743]:
+                      - generic [ref=e5744]:
+                        - generic [ref=e5747]: Circumcised
+                        - generic [ref=e5749]: If you could send a message to the parents who made the decision for you to be circumcised, what would it be?
+                      - generic [ref=e5750]:
+                        - generic [ref=e5751]:
+                          - generic [ref=e5752]: circ_message_to_parents
+                          - generic [ref=e5753]: n=233
+                        - img "distribution" [ref=e5756]
+                    - button "+" [ref=e5987]
+                    - generic [ref=e5988]: ›
+                  - generic [ref=e5990] [cursor=pointer]:
+                    - generic [ref=e5991]:
+                      - generic [ref=e5992]: "12"
+                      - generic "Multiple Select Choices" [ref=e5993]:
+                        - img [ref=e5994]
+                    - generic [ref=e5997]:
+                      - generic [ref=e5998]:
+                        - generic [ref=e5999]:
+                          - generic [ref=e6000]: T1
+                          - generic [ref=e6002]: Circumcised
+                        - generic [ref=e6004]: Have you ever considered or researched options like foreskin RESTORATION (using methods to gradually regrow skin for glans coverage) or foreskin REGENERATION (biomedical approaches to grow new foreskin tissue, like Foregen's research)?
+                      - generic [ref=e6005]:
+                        - generic [ref=e6006]:
+                          - generic [ref=e6007]: circ_restoration_awareness
+                          - generic [ref=e6008]: n=315
+                        - img "distribution" [ref=e6011]
+                    - button "+" [ref=e6020]
+                    - generic [ref=e6021]: ›
+                  - generic [ref=e6023] [cursor=pointer]:
+                    - generic [ref=e6024]:
+                      - generic [ref=e6025]: "80"
+                      - generic "Single Select Choice" [ref=e6026]:
+                        - img [ref=e6027]
+                    - generic [ref=e6030]:
+                      - generic [ref=e6031]:
+                        - generic [ref=e6034]: Circumcised
+                        - generic [ref=e6036]: Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are circumcised, or to the specifics of how/why your penis was surgically altered?
+                      - generic [ref=e6037]:
+                        - generic [ref=e6038]:
+                          - generic [ref=e6039]: circ_prior_thought_level
+                          - generic [ref=e6040]: n=320
+                        - img "distribution" [ref=e6043]
+                    - button "+" [ref=e6051]
+                    - generic [ref=e6052]: ›
+                  - generic [ref=e6054] [cursor=pointer]:
+                    - generic [ref=e6055]:
+                      - generic [ref=e6056]: "128"
+                      - generic "Single Select Choice" [ref=e6057]:
+                        - img [ref=e6058]
+                    - generic [ref=e6061]:
+                      - generic [ref=e6062]:
+                        - generic [ref=e6065]: Circumcised
+                        - generic [ref=e6067]: To what extent do you typically notice or pay attention to whether other men have the SAME circumcision state as you do?
+                      - generic [ref=e6068]:
+                        - generic [ref=e6069]:
+                          - generic [ref=e6070]: circ_notice_same_status
+                          - generic [ref=e6071]: n=314
+                        - img "distribution" [ref=e6074]
+                    - button "+" [ref=e6083]
+                    - generic [ref=e6084]: ›
+                  - generic [ref=e6086] [cursor=pointer]:
+                    - generic [ref=e6087]:
+                      - generic [ref=e6088]: "129"
+                      - generic "Single Select Choice" [ref=e6089]:
+                        - img [ref=e6090]
+                    - generic [ref=e6093]:
+                      - generic [ref=e6094]:
+                        - generic [ref=e6097]: Circumcised
+                        - generic [ref=e6099]: And to what extent do you typically notice or pay attention to whether other men have a DIFFERENT circumcision state than you do?
+                      - generic [ref=e6100]:
+                        - generic [ref=e6101]:
+                          - generic [ref=e6102]: intact_notice_diff_status
+                          - generic [ref=e6103]: n=451
+                        - img "distribution" [ref=e6106]
+                    - button "+" [ref=e6115]
+                    - generic [ref=e6116]: ›
+                  - generic [ref=e6118] [cursor=pointer]:
+                    - generic [ref=e6119]:
+                      - generic [ref=e6120]: "130"
+                      - generic "Single Select Choice" [ref=e6121]:
+                        - img [ref=e6122]
+                    - generic [ref=e6125]:
+                      - generic [ref=e6126]:
+                        - generic [ref=e6129]: Circumcised
+                        - generic [ref=e6131]: When you DO notice someone's circumcision state (whether same or different from yours), how significant or prominent is that observation for you compared to other physical characteristics you might notice about a person (e.g., height, build, hair color, tattoos, etc.)?
+                      - generic [ref=e6132]:
+                        - generic [ref=e6133]:
+                          - generic [ref=e6134]: intact_notice_significance
+                          - generic [ref=e6135]: n=453
+                        - img "distribution" [ref=e6138]
+                    - button "+" [ref=e6147]
+                    - generic [ref=e6148]: ›
+                  - generic [ref=e6150] [cursor=pointer]:
+                    - generic [ref=e6151]:
+                      - generic [ref=e6152]: "134"
+                      - generic "Single Select Choice" [ref=e6153]:
+                        - img [ref=e6154]
+                    - generic [ref=e6157]:
+                      - generic [ref=e6158]:
+                        - generic [ref=e6161]: Circumcised
+                        - generic [ref=e6163]: Are you aware of having Pearly Penile Papules (PPP) – the small, harmless bumps that can sometimes appear around the corona (the ridge of the glans)
+                      - generic [ref=e6164]:
+                        - generic [ref=e6165]:
+                          - generic [ref=e6166]: circ_ppp_awareness
+                          - generic [ref=e6167]: n=179
+                        - img "distribution" [ref=e6170]
+                    - button "+" [ref=e6180]
+                    - generic [ref=e6181]: ›
+                  - generic [ref=e6183] [cursor=pointer]:
+                    - generic [ref=e6184]:
+                      - generic [ref=e6185]: "275"
+                      - generic "Qualitative Open Response" [ref=e6186]:
+                        - img [ref=e6187]
+                    - generic [ref=e6189]:
+                      - generic [ref=e6190]:
+                        - generic [ref=e6193]: Circumcised
+                        - generic [ref=e6195]: If you have (or had) PPP, how has their presence factored into your overall feelings about your penis or its appearance?
+                      - generic [ref=e6196]:
+                        - generic [ref=e6197]:
+                          - generic [ref=e6198]: circ_ppp_impact
+                          - generic [ref=e6199]: n=65
+                        - img "distribution" [ref=e6202]
+                    - button "+" [ref=e6258]
+                    - generic [ref=e6259]: ›
+                  - generic [ref=e6261] [cursor=pointer]:
+                    - generic [ref=e6262]:
+                      - generic [ref=e6263]: "142"
+                      - generic "Single Select Choice" [ref=e6264]:
+                        - img [ref=e6265]
+                    - generic [ref=e6268]:
+                      - generic [ref=e6269]:
+                        - generic [ref=e6272]: Circumcised
+                        - generic [ref=e6274]: Reflecting on the information likely available to your parents at the time, how would you characterize the quality and balance of that information regarding circumcision?
+                      - generic [ref=e6275]:
+                        - generic [ref=e6276]:
+                          - generic [ref=e6277]: circ_parents_info_quality
+                          - generic [ref=e6278]: n=149
+                        - img "distribution" [ref=e6281]
+                    - button "+" [ref=e6289]
+                    - generic [ref=e6290]: ›
+                  - generic [ref=e6292] [cursor=pointer]:
+                    - generic [ref=e6293]:
+                      - generic [ref=e6294]: "143"
+                      - generic "Single Select Choice" [ref=e6295]:
+                        - img [ref=e6296]
+                    - generic [ref=e6299]:
+                      - generic [ref=e6300]:
+                        - generic [ref=e6303]: Circumcised
+                        - generic [ref=e6305]: When you think about your parents making this decision, which of these statements best captures the emotional or psychological state you believe they were in?
+                      - generic [ref=e6306]:
+                        - generic [ref=e6307]:
+                          - generic [ref=e6308]: circ_parents_emotional_state
+                          - generic [ref=e6309]: n=150
+                        - img "distribution" [ref=e6312]
+                    - button "+" [ref=e6321]
+                    - generic [ref=e6322]: ›
+                  - generic [ref=e6324] [cursor=pointer]:
+                    - generic [ref=e6325]:
+                      - generic [ref=e6326]: "144"
+                      - generic "Single Select Choice" [ref=e6327]:
+                        - img [ref=e6328]
+                    - generic [ref=e6331]:
+                      - generic [ref=e6332]:
+                        - generic [ref=e6335]: Circumcised
+                        - generic [ref=e6337]: Have you ever sensed or discussed whether your parents, in retrospect, had any second thoughts or regrets about their decision, especially as more information has become available over the years?
+                      - generic [ref=e6338]:
+                        - generic [ref=e6339]:
+                          - generic [ref=e6340]: circ_parents_regret
+                          - generic [ref=e6341]: n=149
+                        - img "distribution" [ref=e6344]
+                    - button "+" [ref=e6352]
+                    - generic [ref=e6353]: ›
+                  - generic [ref=e6355] [cursor=pointer]:
+                    - generic [ref=e6356]:
+                      - generic [ref=e6357]: "152"
+                      - generic "Single Select Choice" [ref=e6358]:
+                        - img [ref=e6359]
+                    - generic [ref=e6362]:
+                      - generic [ref=e6363]:
+                        - generic [ref=e6366]: Circumcised
+                        - generic [ref=e6368]: What was the primary nature of your circumcision?
+                      - generic [ref=e6369]:
+                        - generic [ref=e6370]:
+                          - generic [ref=e6371]: circ_adult_context
+                          - generic [ref=e6372]: n=24
+                        - img "distribution" [ref=e6375]
+                    - button "+" [ref=e6382]
+                    - generic [ref=e6383]: ›
+                  - generic [ref=e6385] [cursor=pointer]:
+                    - generic [ref=e6386]:
+                      - generic [ref=e6387]: "17"
+                      - generic "Qualitative Open Response" [ref=e6388]:
+                        - img [ref=e6389]
+                    - generic [ref=e6391]:
+                      - generic [ref=e6392]:
+                        - generic [ref=e6393]:
+                          - generic [ref=e6394]: T1
+                          - generic [ref=e6396]: Circumcised
+                        - generic [ref=e6398]: Was this procedure something you actively consented to and chose for yourself?
+                      - generic [ref=e6401]: circ_adult_consent_status
+                    - button "+" [ref=e6403]
+                    - generic [ref=e6404]: ›
+                  - generic [ref=e6406] [cursor=pointer]:
+                    - generic [ref=e6407]:
+                      - generic [ref=e6408]: "153"
+                      - generic "Single Select Choice" [ref=e6409]:
+                        - img [ref=e6410]
+                    - generic [ref=e6413]:
+                      - generic [ref=e6414]:
+                        - generic [ref=e6417]: Circumcised
+                        - generic [ref=e6419]: Reflecting on the information you received before the procedure, how well-informed did you feel about the potential changes to sensation, the full range of risks, and non-surgical alternatives (if applicable)?
+                      - generic [ref=e6420]:
+                        - generic [ref=e6421]:
+                          - generic [ref=e6422]: circ_adult_info_quality
+                          - generic [ref=e6423]: n=24
+                        - img "distribution" [ref=e6426]
+                    - button "+" [ref=e6432]
+                    - generic [ref=e6433]: ›
+                  - generic [ref=e6435] [cursor=pointer]:
+                    - generic [ref=e6436]:
+                      - generic [ref=e6437]: "154"
+                      - generic "Single Select Choice" [ref=e6438]:
+                        - img [ref=e6439]
+                    - generic [ref=e6442]:
+                      - generic [ref=e6443]:
+                        - generic [ref=e6446]: Circumcised
+                        - generic [ref=e6448]: How would you describe your role in the decision-making process?
+                      - generic [ref=e6449]:
+                        - generic [ref=e6450]:
+                          - generic [ref=e6451]: circ_adult_decision_role
+                          - generic [ref=e6452]: n=24
+                        - img "distribution" [ref=e6455]
+                    - button "+" [ref=e6462]
+                    - generic [ref=e6463]: ›
+                  - generic [ref=e6465] [cursor=pointer]:
+                    - generic [ref=e6466]:
+                      - generic [ref=e6467]: "155"
+                      - generic "Multiple Select Choices" [ref=e6468]:
+                        - img [ref=e6469]
+                    - generic [ref=e6472]:
+                      - generic:
+                        - generic [ref=e6474]: Circumcised
+                        - generic:
+                          - generic: What were the specific reasons or motivations that led to your circumcision?
+                      - generic [ref=e6475]:
+                        - generic [ref=e6476]:
+                          - generic [ref=e6477]: circ_adult_motivation_details
+                          - generic [ref=e6478]: n=122
+                        - img "distribution" [ref=e6481]
+                    - button "+" [ref=e6530]
+                    - generic [ref=e6531]: ›
+                  - generic [ref=e6533] [cursor=pointer]:
+                    - generic [ref=e6534]:
+                      - generic [ref=e6535]: "156"
+                      - generic "Single Select Choice" [ref=e6536]:
+                        - img [ref=e6537]
+                    - generic [ref=e6540]:
+                      - generic:
+                        - generic [ref=e6542]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[Overall satisfaction with the APPEARANCE of your penis]"
+                      - generic [ref=e6543]:
+                        - generic [ref=e6544]:
+                          - generic [ref=e6545]: circ_adult_before_rating_appearance
+                          - generic [ref=e6546]: n=24
+                        - img "distribution" [ref=e6549]
+                    - button "+" [ref=e6556]
+                    - generic [ref=e6557]: ›
+                  - generic [ref=e6559] [cursor=pointer]:
+                    - generic [ref=e6560]:
+                      - generic [ref=e6561]: "157"
+                      - generic "Single Select Choice" [ref=e6562]:
+                        - img [ref=e6563]
+                    - generic [ref=e6566]:
+                      - generic:
+                        - generic [ref=e6568]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[Overall satisfaction with the FUNCTION of your penis (e.g., gliding, natural lubrication)]"
+                      - generic [ref=e6569]:
+                        - generic [ref=e6570]:
+                          - generic [ref=e6571]: circ_adult_before_rating_function
+                          - generic [ref=e6572]: n=24
+                        - img "distribution" [ref=e6575]
+                    - button "+" [ref=e6583]
+                    - generic [ref=e6584]: ›
+                  - generic [ref=e6586] [cursor=pointer]:
+                    - generic [ref=e6587]:
+                      - generic [ref=e6588]: "158"
+                      - generic "Single Select Choice" [ref=e6589]:
+                        - img [ref=e6590]
+                    - generic [ref=e6593]:
+                      - generic:
+                        - generic [ref=e6595]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[INTENSITY of your orgasms]"
+                      - generic [ref=e6596]:
+                        - generic [ref=e6597]:
+                          - generic [ref=e6598]: circ_adult_before_rating_orgasm_intensity
+                          - generic [ref=e6599]: n=24
+                        - img "distribution" [ref=e6602]
+                    - button "+" [ref=e6609]
+                    - generic [ref=e6610]: ›
+                  - generic [ref=e6612] [cursor=pointer]:
+                    - generic [ref=e6613]:
+                      - generic [ref=e6614]: "159"
+                      - generic "Single Select Choice" [ref=e6615]:
+                        - img [ref=e6616]
+                    - generic [ref=e6619]:
+                      - generic:
+                        - generic [ref=e6621]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[EASE of reaching orgasm]"
+                      - generic [ref=e6622]:
+                        - generic [ref=e6623]:
+                          - generic [ref=e6624]: circ_adult_before_rating_ease_of_orgasm
+                          - generic [ref=e6625]: n=24
+                        - img "distribution" [ref=e6628]
+                    - button "+" [ref=e6636]
+                    - generic [ref=e6637]: ›
+                  - generic [ref=e6639] [cursor=pointer]:
+                    - generic [ref=e6640]:
+                      - generic [ref=e6641]: "160"
+                      - generic "Single Select Choice" [ref=e6642]:
+                        - img [ref=e6643]
+                    - generic [ref=e6646]:
+                      - generic:
+                        - generic [ref=e6648]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[General SENSITIVITY to light touch]"
+                      - generic [ref=e6650]:
+                        - generic [ref=e6651]: circ_adult_before_rating_sensitivity
+                        - generic [ref=e6652]: n=24
+                    - button "+" [ref=e6654]
+                    - generic [ref=e6655]: ›
+                  - generic [ref=e6657] [cursor=pointer]:
+                    - generic [ref=e6658]:
+                      - generic [ref=e6659]: "161"
+                      - generic "Single Select Choice" [ref=e6660]:
+                        - img [ref=e6661]
+                    - generic [ref=e6664]:
+                      - generic:
+                        - generic [ref=e6666]: Circumcised
+                        - generic:
+                          - generic: "Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:"
+                          - generic: "[Your sense of HYGIENE and ease of care]"
+                      - generic [ref=e6668]:
+                        - generic [ref=e6669]: circ_adult_before_rating_hygiene
+                        - generic [ref=e6670]: n=23
+                    - button "+" [ref=e6672]
+                    - generic [ref=e6673]: ›
+                  - generic [ref=e6675] [cursor=pointer]:
+                    - generic [ref=e6676]:
+                      - generic [ref=e6677]: "162"
+                      - generic "Single Select Choice" [ref=e6678]:
+                        - img [ref=e6679]
+                    - generic [ref=e6682]:
+                      - generic:
+                        - generic [ref=e6684]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Overall satisfaction with the APPEARANCE of your penis]
+                      - generic [ref=e6686]:
+                        - generic [ref=e6687]: circ_adult_after_change_appearance
+                        - generic [ref=e6688]: n=24
+                    - button "+" [ref=e6690]
+                    - generic [ref=e6691]: ›
+                  - generic [ref=e6693] [cursor=pointer]:
+                    - generic [ref=e6694]:
+                      - generic [ref=e6695]: "163"
+                      - generic "Single Select Choice" [ref=e6696]:
+                        - img [ref=e6697]
+                    - generic [ref=e6700]:
+                      - generic:
+                        - generic [ref=e6702]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Overall satisfaction with the FUNCTION of your penis (e.g., gliding, natural lubrication)]
+                      - generic [ref=e6704]:
+                        - generic [ref=e6705]: circ_adult_after_change_function
+                        - generic [ref=e6706]: n=24
+                    - button "+" [ref=e6708]
+                    - generic [ref=e6709]: ›
+                  - generic [ref=e6711] [cursor=pointer]:
+                    - generic [ref=e6712]:
+                      - generic [ref=e6713]: "164"
+                      - generic "Single Select Choice" [ref=e6714]:
+                        - img [ref=e6715]
+                    - generic [ref=e6718]:
+                      - generic:
+                        - generic [ref=e6720]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [INTENSITY of your orgasms]
+                      - generic [ref=e6722]:
+                        - generic [ref=e6723]: circ_adult_after_change_orgasm_intensity
+                        - generic [ref=e6724]: n=24
+                    - button "+" [ref=e6726]
+                    - generic [ref=e6727]: ›
+                  - generic [ref=e6729] [cursor=pointer]:
+                    - generic [ref=e6730]:
+                      - generic [ref=e6731]: "165"
+                      - generic "Single Select Choice" [ref=e6732]:
+                        - img [ref=e6733]
+                    - generic [ref=e6736]:
+                      - generic:
+                        - generic [ref=e6738]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [EASE of reaching orgasm]
+                      - generic [ref=e6740]:
+                        - generic [ref=e6741]: circ_adult_after_change_ease_of_orgasm
+                        - generic [ref=e6742]: n=24
+                    - button "+" [ref=e6744]
+                    - generic [ref=e6745]: ›
+                  - generic [ref=e6747] [cursor=pointer]:
+                    - generic [ref=e6748]:
+                      - generic [ref=e6749]: "166"
+                      - generic "Single Select Choice" [ref=e6750]:
+                        - img [ref=e6751]
+                    - generic [ref=e6754]:
+                      - generic:
+                        - generic [ref=e6756]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [General SENSITIVITY to light touch]
+                      - generic [ref=e6758]:
+                        - generic [ref=e6759]: circ_adult_after_change_sensitivity
+                        - generic [ref=e6760]: n=24
+                    - button "+" [ref=e6762]
+                    - generic [ref=e6763]: ›
+                  - generic [ref=e6765] [cursor=pointer]:
+                    - generic [ref=e6766]:
+                      - generic [ref=e6767]: "167"
+                      - generic "Single Select Choice" [ref=e6768]:
+                        - img [ref=e6769]
+                    - generic [ref=e6772]:
+                      - generic:
+                        - generic [ref=e6774]: Circumcised
+                        - generic:
+                          - generic: Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Your sense of HYGIENE and ease of care]
+                      - generic [ref=e6776]:
+                        - generic [ref=e6777]: circ_adult_after_change_hygiene
+                        - generic [ref=e6778]: n=24
+                    - button "+" [ref=e6780]
+                    - generic [ref=e6781]: ›
+                  - generic [ref=e6783] [cursor=pointer]:
+                    - generic [ref=e6784]:
+                      - generic [ref=e6785]: "168"
+                      - generic "Qualitative Open Response" [ref=e6786]:
+                        - img [ref=e6787]
+                    - generic [ref=e6789]:
+                      - generic [ref=e6790]:
+                        - generic [ref=e6793]: Circumcised
+                        - generic [ref=e6795]: In your own words, what has the transition to your "new normal" been like?
+                      - generic [ref=e6797]:
+                        - generic [ref=e6798]: circ_adult_new_normal_desc
+                        - generic [ref=e6799]: n=15
+                    - button "+" [ref=e6801]
+                    - generic [ref=e6802]: ›
+                  - generic [ref=e6804] [cursor=pointer]:
+                    - generic [ref=e6805]:
+                      - generic [ref=e6806]: "169"
+                      - generic "Single Select Choice" [ref=e6807]:
+                        - img [ref=e6808]
+                    - generic [ref=e6811]:
+                      - generic:
+                        - generic [ref=e6813]: Circumcised
+                        - generic:
+                          - generic: Overall, looking back, how do you feel about your choice to be circumcised (or the decision that was made for you)?
+                      - generic [ref=e6815]:
+                        - generic [ref=e6816]: circ_adult_retrospective_feeling
+                        - generic [ref=e6817]: n=24
+                    - button "+" [ref=e6819]
+                    - generic [ref=e6820]: ›
+                  - generic [ref=e6822] [cursor=pointer]:
+                    - generic [ref=e6823]:
+                      - generic [ref=e6824]: "281"
+                      - generic "Qualitative Open Response" [ref=e6825]:
+                        - img [ref=e6826]
+                    - generic [ref=e6828]:
+                      - generic [ref=e6829]:
+                        - generic [ref=e6832]: Circumcised
+                        - generic [ref=e6834]: What advice would you give to another intact adult who is considering circumcision today?
+                      - generic [ref=e6836]:
+                        - generic [ref=e6837]: circ_adult_advice_to_others
+                        - generic [ref=e6838]: n=15
+                    - button "+" [ref=e6840]
+                    - generic [ref=e6841]: ›
+                  - generic [ref=e6843] [cursor=pointer]:
+                    - generic [ref=e6844]:
+                      - generic [ref=e6845]: "282"
+                      - generic "Qualitative Open Response" [ref=e6846]:
+                        - img [ref=e6847]
+                    - generic [ref=e6849]:
+                      - generic [ref=e6850]:
+                        - generic [ref=e6853]: Circumcised
+                        - generic [ref=e6855]: Is there anything else you'd like to share about your experience being circumcised as a teen or adult?
+                      - generic [ref=e6857]:
+                        - generic [ref=e6858]: circ_adult_final_thoughts
+                        - generic [ref=e6859]: n=10
+                    - button "+" [ref=e6861]
+                    - generic [ref=e6862]: ›
+                  - generic [ref=e6864] [cursor=pointer]:
+                    - generic [ref=e6865]:
+                      - generic [ref=e6866]: "347"
+                      - generic "Qualitative Open Response" [ref=e6867]:
+                        - img [ref=e6868]
+                    - generic [ref=e6870]:
+                      - generic [ref=e6871]:
+                        - generic [ref=e6874]: Circumcised
+                        - generic [ref=e6876]: Now, thinking about your experience *after* you were fully healed from your circumcision, please rate the change you've experienced in those same areas
+                      - generic [ref=e6879]: circ_adult_after_change_v2
+                    - button "+" [ref=e6881]
+                    - generic [ref=e6882]: ›
+              - generic [ref=e6883]:
+                - generic [ref=e6884] [cursor=pointer]:
+                  - heading "▶ Intact" [level=3] [ref=e6885]:
+                    - generic [ref=e6886]: ▶
+                    - text: Intact
+                  - generic [ref=e6887]: "31"
+                - generic [ref=e6888]:
+                  - generic [ref=e6890] [cursor=pointer]:
+                    - generic [ref=e6891]:
+                      - generic [ref=e6892]: "231"
+                      - generic "Qualitative Open Response" [ref=e6893]:
+                        - img [ref=e6894]
+                    - generic [ref=e6896]:
+                      - generic [ref=e6897]:
+                        - generic [ref=e6900]: Intact
+                        - generic [ref=e6902]: What do you consider the main ADVANTAGES of being intact/having a foreskin?
+                      - generic [ref=e6904]:
+                        - generic [ref=e6905]: intact_advantages_desc
+                        - generic [ref=e6906]: n=125
+                    - button "+" [ref=e6908]
+                    - generic [ref=e6909]: ›
+                  - generic [ref=e6911] [cursor=pointer]:
+                    - generic [ref=e6912]:
+                      - generic [ref=e6913]: "232"
+                      - generic "Qualitative Open Response" [ref=e6914]:
+                        - img [ref=e6915]
+                    - generic [ref=e6917]:
+                      - generic [ref=e6918]:
+                        - generic [ref=e6921]: Intact
+                        - generic [ref=e6923]: Have you experienced any DRAWBACKS or challenges related to being intact/having a foreskin?
+                      - generic [ref=e6925]:
+                        - generic [ref=e6926]: intact_drawbacks_desc
+                        - generic [ref=e6927]: n=126
+                    - button "+" [ref=e6929]
+                    - generic [ref=e6930]: ›
+                  - generic [ref=e6932] [cursor=pointer]:
+                    - generic [ref=e6933]:
+                      - generic [ref=e6934]: "60"
+                      - generic "Single Select Choice" [ref=e6935]:
+                        - img [ref=e6936]
+                    - generic [ref=e6939]:
+                      - generic [ref=e6940]:
+                        - generic [ref=e6943]: Intact
+                        - generic [ref=e6945]: Can you recall when you first understood what "being circumcised" actually meant—not just that some boys were different, but the specifics of it being a surgical alteration of genitals?
+                      - generic [ref=e6947]:
+                        - generic [ref=e6948]: intact_circ_awareness_age
+                        - generic [ref=e6949]: n=144
+                    - button "+" [ref=e6951]
+                    - generic [ref=e6952]: ›
+                  - generic [ref=e6954] [cursor=pointer]:
+                    - generic [ref=e6955]:
+                      - generic [ref=e6956]: "233"
+                      - generic "Qualitative Open Response" [ref=e6957]:
+                        - img [ref=e6958]
+                    - generic [ref=e6960]:
+                      - generic [ref=e6961]:
+                        - generic [ref=e6964]: Intact
+                        - generic [ref=e6966]: Based on what you know or believe (or assume), what were the PRIMARY REASONS your parents chose for you to remain intact?
+                      - generic [ref=e6968]:
+                        - generic [ref=e6969]: intact_parents_reason
+                        - generic [ref=e6970]: n=142
+                    - button "+" [ref=e6972]
+                    - generic [ref=e6973]: ›
+                  - generic [ref=e6975] [cursor=pointer]:
+                    - generic [ref=e6976]:
+                      - generic [ref=e6977]: "61"
+                      - generic "Single Select Choice" [ref=e6978]:
+                        - img [ref=e6979]
+                    - generic [ref=e6982]:
+                      - generic [ref=e6983]:
+                        - generic [ref=e6986]: Intact
+                        - generic [ref=e6988]: Who do you believe was the PRIMARY DRIVER or key advocate for the decision to keep you intact within your family?
+                      - generic [ref=e6990]:
+                        - generic [ref=e6991]: intact_parents_driver
+                        - generic [ref=e6992]: n=138
+                    - button "+" [ref=e6994]
+                    - generic [ref=e6995]: ›
+                  - generic [ref=e6997] [cursor=pointer]:
+                    - generic [ref=e6998]:
+                      - generic [ref=e6999]: "62"
+                      - generic "Single Select Choice" [ref=e7000]:
+                        - img [ref=e7001]
+                    - generic [ref=e7004]:
+                      - generic:
+                        - generic [ref=e7006]: Intact
+                        - generic:
+                          - generic: Based on what you know, how was the topic of circumcision likely handled around the time of your birth? (If applicable)
+                      - generic [ref=e7008]:
+                        - generic [ref=e7009]: intact_parents_handling_of_topic
+                        - generic [ref=e7010]: n=134
+                    - button "+" [ref=e7012]
+                    - generic [ref=e7013]: ›
+                  - generic [ref=e7015] [cursor=pointer]:
+                    - generic [ref=e7016]:
+                      - generic [ref=e7017]: "09"
+                      - generic "Multiple Select Choices" [ref=e7018]:
+                        - img [ref=e7019]
+                    - generic [ref=e7022]:
+                      - generic [ref=e7023]:
+                        - generic [ref=e7024]:
+                          - generic [ref=e7025]: T1
+                          - generic [ref=e7027]: Intact
+                        - generic [ref=e7029]: Have you ever experienced feelings such as REGRET, embarrassment, resentment, anger, or a wish that you had been circumcised?
+                      - generic [ref=e7031]:
+                        - generic [ref=e7032]: intact_regret_feeling
+                        - generic [ref=e7033]: n=145
+                    - button "+" [ref=e7035]
+                    - generic [ref=e7036]: ›
+                  - generic [ref=e7038] [cursor=pointer]:
+                    - generic [ref=e7039]:
+                      - generic [ref=e7040]: "234"
+                      - generic "Qualitative Open Response" [ref=e7041]:
+                        - img [ref=e7042]
+                    - generic [ref=e7044]:
+                      - generic [ref=e7045]:
+                        - generic [ref=e7048]: Intact
+                        - generic [ref=e7050]: If you have had such feelings (even if mild or infrequent), when did they first emerge, and what do you think primarily triggers them or what aspects of being intact contribute most to them?
+                      - generic [ref=e7052]:
+                        - generic [ref=e7053]: intact_regret_triggers
+                        - generic [ref=e7054]: n=68
+                    - button "+" [ref=e7056]
+                    - generic [ref=e7057]: ›
+                  - generic [ref=e7059] [cursor=pointer]:
+                    - generic [ref=e7060]:
+                      - generic [ref=e7061]: "63"
+                      - generic "Multiple Select Choices" [ref=e7062]:
+                        - img [ref=e7063]
+                    - generic [ref=e7066]:
+                      - generic [ref=e7067]:
+                        - generic [ref=e7070]: Intact
+                        - generic [ref=e7072]: Have you ever had a direct conversation with your parents (or guardians) about their decision to LEAVE YOU INTACT?
+                      - generic [ref=e7074]:
+                        - generic [ref=e7075]: intact_parents_convo
+                        - generic [ref=e7076]: n=143
+                    - button "+" [ref=e7078]
+                    - generic [ref=e7079]: ›
+                  - generic [ref=e7081] [cursor=pointer]:
+                    - generic [ref=e7082]:
+                      - generic [ref=e7083]: "64"
+                      - generic "Single Select Choice" [ref=e7084]:
+                        - img [ref=e7085]
+                    - generic [ref=e7088]:
+                      - generic [ref=e7089]:
+                        - generic [ref=e7092]: Intact
+                        - generic [ref=e7094]: If you haven't asked them, will you share why?
+                      - generic [ref=e7096]:
+                        - generic [ref=e7097]: intact_parents_convo_why_not
+                        - generic [ref=e7098]: n=76
+                    - button "+" [ref=e7100]
+                    - generic [ref=e7101]: ›
+                  - generic [ref=e7103] [cursor=pointer]:
+                    - generic [ref=e7104]:
+                      - generic [ref=e7105]: "65"
+                      - generic "Single Select Choice" [ref=e7106]:
+                        - img [ref=e7107]
+                    - generic [ref=e7110]:
+                      - generic [ref=e7111]:
+                        - generic [ref=e7114]: Intact
+                        - generic [ref=e7116]: Have you ever experienced or required any medical interventions, procedures, or forced actions related to your foreskin or intact anatomy?
+                      - generic [ref=e7118]:
+                        - generic [ref=e7119]: intact_medical_intervention
+                        - generic [ref=e7120]: n=142
+                    - button "+" [ref=e7122]
+                    - generic [ref=e7123]: ›
+                  - generic [ref=e7125] [cursor=pointer]:
+                    - generic [ref=e7126]:
+                      - generic [ref=e7127]: "235"
+                      - generic "Qualitative Open Response" [ref=e7128]:
+                        - img [ref=e7129]
+                    - generic [ref=e7131]:
+                      - generic:
+                        - generic [ref=e7133]: Intact
+                        - generic:
+                          - generic: If yes, please briefly describe the intervention(s), your age at the time, who initiated it (e.g., parent, doctor, self), and any effects (physical or emotional) that you feel are significant
+                      - generic [ref=e7135]:
+                        - generic [ref=e7136]: circ_medical_intervention_desc
+                        - generic [ref=e7137]: n=115
+                    - button "+" [ref=e7139]
+                    - generic [ref=e7140]: ›
+                  - generic [ref=e7142] [cursor=pointer]:
+                    - generic [ref=e7143]:
+                      - generic [ref=e7144]: "236"
+                      - generic "Qualitative Open Response" [ref=e7145]:
+                        - img [ref=e7146]
+                    - generic [ref=e7148]:
+                      - generic [ref=e7149]:
+                        - generic [ref=e7152]: Intact
+                        - generic [ref=e7154]: Would you like to share anything about what it was like for you growing up intact?
+                      - generic [ref=e7156]:
+                        - generic [ref=e7157]: intact_growing_up_experience
+                        - generic [ref=e7158]: n=84
+                    - button "+" [ref=e7160]
+                    - generic [ref=e7161]: ›
+                  - generic [ref=e7163] [cursor=pointer]:
+                    - generic [ref=e7164]:
+                      - generic [ref=e7165]: "237"
+                      - generic "Qualitative Open Response" [ref=e7166]:
+                        - img [ref=e7167]
+                    - generic [ref=e7169]:
+                      - generic [ref=e7170]:
+                        - generic [ref=e7173]: Intact
+                        - generic [ref=e7175]: How would you describe your complete FORESKIN (the moveable sheath of skin) play in your sexual experiences (masturbation or partnered sex)?
+                      - generic [ref=e7177]:
+                        - generic [ref=e7178]: intact_foreskin_role_sex
+                        - generic [ref=e7179]: n=123
+                    - button "+" [ref=e7181]
+                    - generic [ref=e7182]: ›
+                  - generic [ref=e7184] [cursor=pointer]:
+                    - generic [ref=e7185]:
+                      - generic [ref=e7186]: "238"
+                      - generic "Qualitative Open Response" [ref=e7187]:
+                        - img [ref=e7188]
+                    - generic [ref=e7190]:
+                      - generic [ref=e7191]:
+                        - generic [ref=e7194]: Intact
+                        - generic [ref=e7195]:
+                          - generic [ref=e7196]: And what about the FRENULUM (the V-shaped band of tissue on the underside, connecting the foreskin to the glans)?
+                          - generic [ref=e7197]: How would you describe its contribution to your sexual pleasure, if you are specifically aware of it?
+                      - generic [ref=e7199]:
+                        - generic [ref=e7200]: intact_frenulum_role_sex
+                        - generic [ref=e7201]: n=124
+                    - button "+" [ref=e7203]
+                    - generic [ref=e7204]: ›
+                  - generic [ref=e7206] [cursor=pointer]:
+                    - generic [ref=e7207]:
+                      - generic [ref=e7208]: "66"
+                      - generic "Multiple Select Choices" [ref=e7209]:
+                        - img [ref=e7210]
+                    - generic [ref=e7213]:
+                      - generic [ref=e7214]:
+                        - generic [ref=e7217]: Intact
+                        - generic [ref=e7219]: Have you ever wondered what it would be like to experience sex or masturbation with a CIRCUMCISED penis?
+                      - generic [ref=e7221]:
+                        - generic [ref=e7222]: intact_curiosity_about_circ
+                        - generic [ref=e7223]: n=145
+                    - button "+" [ref=e7225]
+                    - generic [ref=e7226]: ›
+                  - generic [ref=e7228] [cursor=pointer]:
+                    - generic [ref=e7229]:
+                      - generic [ref=e7230]: "239"
+                      - generic "Qualitative Open Response" [ref=e7231]:
+                        - img [ref=e7232]
+                    - generic [ref=e7234]:
+                      - generic:
+                        - generic [ref=e7236]: Intact
+                        - generic:
+                          - generic: If you have wondered, what aspects are you most curious about (e.g., different sensations, the impact of constant glans exposure, different mechanics)?
+                      - generic [ref=e7238]:
+                        - generic [ref=e7239]: intact_curiosity_about_circ_aspects
+                        - generic [ref=e7240]: n=98
+                    - button "+" [ref=e7242]
+                    - generic [ref=e7243]: ›
+                  - generic [ref=e7245] [cursor=pointer]:
+                    - generic [ref=e7246]:
+                      - generic [ref=e7247]: "67"
+                      - generic "Multiple Select Choices" [ref=e7248]:
+                        - img [ref=e7249]
+                    - generic [ref=e7252]:
+                      - generic:
+                        - generic [ref=e7254]: Intact
+                        - generic:
+                          - generic: If you have had sexual experiences with circumcised partners, have you discussed with them or observed any differences in their reported sensitivity, sexual function, orgasm quality, or need for lubrication compared to your own experience as an intact person?
+                      - generic [ref=e7256]:
+                        - generic [ref=e7257]: intact_partner_comparison_observation
+                        - generic [ref=e7258]: n=134
+                    - button "+" [ref=e7260]
+                    - generic [ref=e7261]: ›
+                  - generic [ref=e7263] [cursor=pointer]:
+                    - generic [ref=e7264]:
+                      - generic [ref=e7265]: "240"
+                      - generic "Qualitative Open Response" [ref=e7266]:
+                        - img [ref=e7267]
+                    - generic [ref=e7269]:
+                      - generic:
+                        - generic [ref=e7271]: Intact
+                        - generic:
+                          - generic: If yes, can you briefly describe the types of differences you've noted?
+                      - generic [ref=e7273]:
+                        - generic [ref=e7274]: intact_partner_comparison_desc
+                        - generic [ref=e7275]: n=51
+                    - button "+" [ref=e7277]
+                    - generic [ref=e7278]: ›
+                  - generic [ref=e7280] [cursor=pointer]:
+                    - generic [ref=e7281]:
+                      - generic [ref=e7282]: "10"
+                      - generic "Multiple Select Choices" [ref=e7283]:
+                        - img [ref=e7284]
+                    - generic [ref=e7287]:
+                      - generic [ref=e7288]:
+                        - generic [ref=e7289]:
+                          - generic [ref=e7290]: T1
+                          - generic [ref=e7292]: Intact
+                        - generic [ref=e7294]: As an intact individual, have you ever felt pressure (social, cultural, from partners, or medical professionals) to consider circumcision for yourself, or have you ever personally researched or seriously contemplated getting circumcised?
+                      - generic [ref=e7296]:
+                        - generic [ref=e7297]: intact_pressure_to_circ
+                        - generic [ref=e7298]: n=139
+                    - button "+" [ref=e7300]
+                    - generic [ref=e7301]: ›
+                  - generic [ref=e7303] [cursor=pointer]:
+                    - generic [ref=e7304]:
+                      - generic [ref=e7305]: "68"
+                      - generic "Single Select Choice" [ref=e7306]:
+                        - img [ref=e7307]
+                    - generic [ref=e7310]:
+                      - generic [ref=e7311]:
+                        - generic [ref=e7314]: Intact
+                        - generic [ref=e7316]: Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are intact, or to the specifics of why your penis wasn't surgically altered?
+                      - generic [ref=e7318]:
+                        - generic [ref=e7319]: intact_prior_thought_level
+                        - generic [ref=e7320]: n=133
+                    - button "+" [ref=e7322]
+                    - generic [ref=e7323]: ›
+                  - generic [ref=e7325] [cursor=pointer]:
+                    - generic [ref=e7326]:
+                      - generic [ref=e7327]: "241"
+                      - generic "Qualitative Open Response" [ref=e7328]:
+                        - img [ref=e7329]
+                    - generic [ref=e7331]:
+                      - generic [ref=e7332]:
+                        - generic [ref=e7335]: Intact
+                        - generic [ref=e7337]: How do you feel about terms like "uncircumcised" or "uncut" to describe your natural state?
+                      - generic [ref=e7339]:
+                        - generic [ref=e7340]: intact_preferred_terminology
+                        - generic [ref=e7341]: n=131
+                    - button "+" [ref=e7343]
+                    - generic [ref=e7344]: ›
+                  - generic [ref=e7346] [cursor=pointer]:
+                    - generic [ref=e7347]:
+                      - generic [ref=e7348]: "242"
+                      - generic "Qualitative Open Response" [ref=e7349]:
+                        - img [ref=e7350]
+                    - generic [ref=e7352]:
+                      - generic [ref=e7353]:
+                        - generic [ref=e7356]: Intact
+                        - generic [ref=e7358]: What's one thing you wish individuals who are circumcised (or parents considering circumcision for their sons) truly understood about being intact?
+                      - generic [ref=e7360]:
+                        - generic [ref=e7361]: intact_message_to_others
+                        - generic [ref=e7362]: n=120
+                    - button "+" [ref=e7364]
+                    - generic [ref=e7365]: ›
+                  - generic [ref=e7367] [cursor=pointer]:
+                    - generic [ref=e7368]:
+                      - generic [ref=e7369]: "131"
+                      - generic "Single Select Choice" [ref=e7370]:
+                        - img [ref=e7371]
+                    - generic [ref=e7374]:
+                      - generic [ref=e7375]:
+                        - generic [ref=e7378]: Intact
+                        - generic [ref=e7380]: To what extent do you typically notice or pay attention to whether other men have the SAME intact status as you do?
+                      - generic [ref=e7382]:
+                        - generic [ref=e7383]: intact_notice_same_status
+                        - generic [ref=e7384]: n=140
+                    - button "+" [ref=e7386]
+                    - generic [ref=e7387]: ›
+                  - generic [ref=e7389] [cursor=pointer]:
+                    - generic [ref=e7390]:
+                      - generic [ref=e7391]: "132"
+                      - generic "Single Select Choice" [ref=e7392]:
+                        - img [ref=e7393]
+                    - generic [ref=e7396]:
+                      - generic [ref=e7397]:
+                        - generic [ref=e7400]: Intact
+                        - generic [ref=e7402]: Do you have Pearly Penile Papules (PPP) – the small, harmless, dome-shaped bumps often found in rows around the corona (the ridge of the glans)
+                      - generic [ref=e7404]:
+                        - generic [ref=e7405]: intact_ppp_awareness
+                        - generic [ref=e7406]: n=70
+                    - button "+" [ref=e7408]
+                    - generic [ref=e7409]: ›
+                  - generic [ref=e7411] [cursor=pointer]:
+                    - generic [ref=e7412]:
+                      - generic [ref=e7413]: "133"
+                      - generic "Qualitative Open Response" [ref=e7414]:
+                        - img [ref=e7415]
+                    - generic [ref=e7417]:
+                      - generic [ref=e7418]:
+                        - generic [ref=e7421]: Intact
+                        - generic [ref=e7422]:
+                          - generic [ref=e7423]: If you have (or had) PPP, has their presence ever impacted your self-consciousness, body image, or interactions with partners?
+                          - generic [ref=e7424]: Please share any relevant experiences
+                      - generic [ref=e7426]:
+                        - generic [ref=e7427]: intact_ppp_impact
+                        - generic [ref=e7428]: n=25
+                    - button "+" [ref=e7430]
+                    - generic [ref=e7431]: ›
+                  - generic [ref=e7433] [cursor=pointer]:
+                    - generic [ref=e7434]:
+                      - generic [ref=e7435]: "137"
+                      - generic "Single Select Choice" [ref=e7436]:
+                        - img [ref=e7437]
+                    - generic [ref=e7440]:
+                      - generic [ref=e7441]:
+                        - generic [ref=e7444]: Intact
+                        - generic [ref=e7446]: To the best of your knowledge, what was the circumcision norm within your parents' immediate social circle (close friends, family) at the time of your birth?
+                      - generic [ref=e7448]:
+                        - generic [ref=e7449]: circ_parents_social_norm
+                        - generic [ref=e7450]: n=207
+                    - button "+" [ref=e7452]
+                    - generic [ref=e7453]: ›
+                  - generic [ref=e7455] [cursor=pointer]:
+                    - generic [ref=e7456]:
+                      - generic [ref=e7457]: "138"
+                      - generic "Single Select Choice" [ref=e7458]:
+                        - img [ref=e7459]
+                    - generic [ref=e7462]:
+                      - generic [ref=e7463]:
+                        - generic [ref=e7466]: Intact
+                        - generic [ref=e7468]: Beyond general knowledge, do you know if your parents encountered any specific sources of information that influenced their decision to keep you intact?
+                      - generic [ref=e7470]:
+                        - generic [ref=e7471]: intact_parents_info_sources
+                        - generic [ref=e7472]: n=56
+                    - button "+" [ref=e7474]
+                    - generic [ref=e7475]: ›
+                  - generic [ref=e7477] [cursor=pointer]:
+                    - generic [ref=e7478]:
+                      - generic [ref=e7479]: "139"
+                      - generic "Single Select Choice" [ref=e7480]:
+                        - img [ref=e7481]
+                    - generic [ref=e7484]:
+                      - generic [ref=e7485]:
+                        - generic [ref=e7488]: Intact
+                        - generic [ref=e7490]: Do you have any reason to believe your parents' decision was influenced by a negative personal or observed experience with circumcision?
+                      - generic [ref=e7492]:
+                        - generic [ref=e7493]: intact_parents_neg_catalyst
+                        - generic [ref=e7494]: n=55
+                    - button "+" [ref=e7496]
+                    - generic [ref=e7497]: ›
+                  - generic [ref=e7499] [cursor=pointer]:
+                    - generic [ref=e7500]:
+                      - generic [ref=e7501]: "140"
+                      - generic "Single Select Choice" [ref=e7502]:
+                        - img [ref=e7503]
+                    - generic [ref=e7506]:
+                      - generic:
+                        - generic [ref=e7508]: Intact
+                        - generic:
+                          - generic: Based on what you've been told, did your parents encounter any pushback or questioning from medical staff, family, or friends when they made their decision to keep you intact?
+                      - generic [ref=e7510]:
+                        - generic [ref=e7511]: intact_parents_resistance_faced
+                        - generic [ref=e7512]: n=56
+                    - button "+" [ref=e7514]
+                    - generic [ref=e7515]: ›
+                  - generic [ref=e7517] [cursor=pointer]:
+                    - generic [ref=e7518]:
+                      - generic [ref=e7519]: "141"
+                      - generic "Multiple Select Choices" [ref=e7520]:
+                        - img [ref=e7521]
+                    - generic [ref=e7524]:
+                      - generic [ref=e7525]:
+                        - generic [ref=e7528]: Intact
+                        - generic [ref=e7530]: Based on your lifelong understanding of your parents, which of the following traits or values would you say strongly characterized them?
+                      - generic [ref=e7532]:
+                        - generic [ref=e7533]: intact_parents_traits_values
+                        - generic [ref=e7534]: n=55
+                    - button "+" [ref=e7536]
+                    - generic [ref=e7537]: ›
+              - generic [ref=e7538]:
+                - generic [ref=e7539] [cursor=pointer]:
+                  - heading "▶ Restoring" [level=3] [ref=e7540]:
+                    - generic [ref=e7541]: ▶
+                    - text: Restoring
+                  - generic [ref=e7542]: "27"
+                - generic [ref=e7543]:
+                  - generic [ref=e7545] [cursor=pointer]:
+                    - generic [ref=e7546]:
+                      - generic [ref=e7547]: "84"
+                      - generic "Multiple Select Choices" [ref=e7548]:
+                        - img [ref=e7549]
+                    - generic [ref=e7552]:
+                      - generic [ref=e7553]:
+                        - generic [ref=e7556]: Restoring
+                        - generic [ref=e7558]: Before you began (or seriously considered) foreskin restoration, how would you have described your feelings about being circumcised?
+                      - generic [ref=e7560]:
+                        - generic [ref=e7561]: restore_feelings_before
+                        - generic [ref=e7562]: n=108
+                    - button "+" [ref=e7564]
+                    - generic [ref=e7565]: ›
+                  - generic [ref=e7567] [cursor=pointer]:
+                    - generic [ref=e7568]:
+                      - generic [ref=e7569]: "85"
+                      - generic "Multiple Select Choices" [ref=e7570]:
+                        - img [ref=e7571]
+                    - generic [ref=e7574]:
+                      - generic [ref=e7575]:
+                        - generic [ref=e7578]: Restoring
+                        - generic [ref=e7580]: What were/are your PRIMARY motivations for pursuing foreskin restoration?
+                      - generic [ref=e7582]:
+                        - generic [ref=e7583]: restore_motivations
+                        - generic [ref=e7584]: n=108
+                    - button "+" [ref=e7586]
+                    - generic [ref=e7587]: ›
+                  - generic [ref=e7589] [cursor=pointer]:
+                    - generic [ref=e7590]:
+                      - generic [ref=e7591]: "86"
+                      - generic "Single Select Choice" [ref=e7592]:
+                        - img [ref=e7593]
+                    - generic [ref=e7596]:
+                      - generic [ref=e7597]:
+                        - generic [ref=e7600]: Restoring
+                        - generic [ref=e7602]: What was your approximate age when you began actively restoring or seriously researching restoration methods?
+                      - generic [ref=e7604]:
+                        - generic [ref=e7605]: restore_age_started
+                        - generic [ref=e7606]: n=108
+                    - button "+" [ref=e7608]
+                    - generic [ref=e7609]: ›
+                  - generic [ref=e7611] [cursor=pointer]:
+                    - generic [ref=e7612]:
+                      - generic [ref=e7613]: "251"
+                      - generic "Qualitative Open Response" [ref=e7614]:
+                        - img [ref=e7615]
+                    - generic [ref=e7617]:
+                      - generic [ref=e7618]:
+                        - generic [ref=e7621]: Restoring
+                        - generic [ref=e7623]: What methods of restoration have you primarily used or found most effective for you?
+                      - generic [ref=e7625]:
+                        - generic [ref=e7626]: restore_methods
+                        - generic [ref=e7627]: n=103
+                    - button "+" [ref=e7629]
+                    - generic [ref=e7630]: ›
+                  - generic [ref=e7632] [cursor=pointer]:
+                    - generic [ref=e7633]:
+                      - generic [ref=e7634]: "87"
+                      - generic "Single Select Choice" [ref=e7635]:
+                        - img [ref=e7636]
+                    - generic [ref=e7639]:
+                      - generic [ref=e7640]:
+                        - generic [ref=e7643]: Restoring
+                        - generic [ref=e7645]: How long have you been actively restoring?
+                      - generic [ref=e7647]:
+                        - generic [ref=e7648]: restore_duration
+                        - generic [ref=e7649]: n=107
+                    - button "+" [ref=e7651]
+                    - generic [ref=e7652]: ›
+                  - generic [ref=e7654] [cursor=pointer]:
+                    - generic [ref=e7655]:
+                      - generic [ref=e7656]: "252"
+                      - generic "Qualitative Open Response" [ref=e7657]:
+                        - img [ref=e7658]
+                    - generic [ref=e7660]:
+                      - generic [ref=e7661]:
+                        - generic [ref=e7664]: Restoring
+                        - generic [ref=e7666]: Have you been open with partners, friends, or family about your restoration journey?
+                      - generic [ref=e7668]:
+                        - generic [ref=e7669]: restore_openness
+                        - generic [ref=e7670]: n=98
+                    - button "+" [ref=e7672]
+                    - generic [ref=e7673]: ›
+                  - generic [ref=e7675] [cursor=pointer]:
+                    - generic [ref=e7676]:
+                      - generic [ref=e7677]: "88"
+                      - generic "Multiple Select Choices" [ref=e7678]:
+                        - img [ref=e7679]
+                    - generic [ref=e7682]:
+                      - generic [ref=e7683]:
+                        - generic [ref=e7686]: Restoring
+                        - generic [ref=e7688]: When you began your restoration journey, what was your approximate starting Real Coverage Index (RCI) score, if you know or can estimate?
+                      - generic [ref=e7690]:
+                        - generic [ref=e7691]: restore_rci_start
+                        - generic [ref=e7692]: n=107
+                    - button "+" [ref=e7694]
+                    - generic [ref=e7695]: ›
+                  - generic [ref=e7697] [cursor=pointer]:
+                    - generic [ref=e7698]:
+                      - generic [ref=e7699]: "89"
+                      - generic "Single Select Choice" [ref=e7700]:
+                        - img [ref=e7701]
+                    - generic [ref=e7704]:
+                      - generic [ref=e7705]:
+                        - generic [ref=e7708]: Restoring
+                        - generic [ref=e7709]:
+                          - generic [ref=e7710]: What is your approximate CURRENT Real Coverage Index (RCI) score, if you are still restoring?
+                          - generic [ref=e7711]: Or what was your final RCI score if you consider yourself 'done' or have achieved your primary coverage goals?
+                      - generic [ref=e7713]:
+                        - generic [ref=e7714]: restore_rci_current
+                        - generic [ref=e7715]: n=105
+                    - button "+" [ref=e7717]
+                    - generic [ref=e7718]: ›
+                  - generic [ref=e7720] [cursor=pointer]:
+                    - generic [ref=e7721]:
+                      - generic [ref=e7722]: "253"
+                      - generic "Qualitative Open Response" [ref=e7723]:
+                        - img [ref=e7724]
+                    - generic [ref=e7726]:
+                      - generic:
+                        - generic [ref=e7728]: Restoring
+                        - generic:
+                          - generic: Have you experienced noticeable changes in penile SENSITIVITY (general or specific, like in the frenular area) as a result of your restoration?
+                          - generic: Please describe
+                      - generic [ref=e7730]:
+                        - generic [ref=e7731]: restore_sensitivity_change_desc
+                        - generic [ref=e7732]: n=97
+                    - button "+" [ref=e7734]
+                    - generic [ref=e7735]: ›
+                  - generic [ref=e7737] [cursor=pointer]:
+                    - generic [ref=e7738]:
+                      - generic [ref=e7739]: "254"
+                      - generic "Qualitative Open Response" [ref=e7740]:
+                        - img [ref=e7741]
+                    - generic [ref=e7743]:
+                      - generic [ref=e7744]:
+                        - generic [ref=e7747]: Restoring
+                        - generic [ref=e7749]: Has restoration impacted the quality, intensity, or nature of your ORGASMS? If so, how?
+                      - generic [ref=e7751]:
+                        - generic [ref=e7752]: restore_orgasm_change_desc
+                        - generic [ref=e7753]: n=94
+                    - button "+" [ref=e7755]
+                    - generic [ref=e7756]: ›
+                  - generic [ref=e7758] [cursor=pointer]:
+                    - generic [ref=e7759]:
+                      - generic [ref=e7760]: "90"
+                      - generic "Single Select Choice" [ref=e7761]:
+                        - img [ref=e7762]
+                    - generic [ref=e7765]:
+                      - generic [ref=e7766]:
+                        - generic [ref=e7769]: Restoring
+                        - generic [ref=e7771]: How has restoration affected your need for LUBRICATION during masturbation or partnered sex?
+                      - generic [ref=e7773]:
+                        - generic [ref=e7774]: restore_lubrication_change
+                        - generic [ref=e7775]: n=107
+                    - button "+" [ref=e7777]
+                    - generic [ref=e7778]: ›
+                  - generic [ref=e7780] [cursor=pointer]:
+                    - generic [ref=e7781]:
+                      - generic [ref=e7782]: "255"
+                      - generic "Qualitative Open Response" [ref=e7783]:
+                        - img [ref=e7784]
+                    - generic [ref=e7786]:
+                      - generic [ref=e7787]:
+                        - generic [ref=e7790]: Restoring
+                        - generic [ref=e7792]: From your perspective, what does the term "uncircumcised" or "uncut" mean to you as someone who has restored?
+                      - generic [ref=e7794]:
+                        - generic [ref=e7795]: restore_terminology_view
+                        - generic [ref=e7796]: n=99
+                    - button "+" [ref=e7798]
+                    - generic [ref=e7799]: ›
+                  - generic [ref=e7801] [cursor=pointer]:
+                    - generic [ref=e7802]:
+                      - generic [ref=e7803]: "256"
+                      - generic "Qualitative Open Response" [ref=e7804]:
+                        - img [ref=e7805]
+                    - generic [ref=e7807]:
+                      - generic [ref=e7808]:
+                        - generic [ref=e7811]: Restoring
+                        - generic [ref=e7813]: What has been the most challenging aspect of your restoration journey? What has been the most rewarding?
+                      - generic [ref=e7815]:
+                        - generic [ref=e7816]: restore_challenge_reward
+                        - generic [ref=e7817]: n=95
+                    - button "+" [ref=e7819]
+                    - generic [ref=e7820]: ›
+                  - generic [ref=e7822] [cursor=pointer]:
+                    - generic [ref=e7823]:
+                      - generic [ref=e7824]: "257"
+                      - generic "Qualitative Open Response" [ref=e7825]:
+                        - img [ref=e7826]
+                    - generic [ref=e7828]:
+                      - generic [ref=e7829]:
+                        - generic [ref=e7832]: Restoring
+                        - generic [ref=e7834]: What advice would you offer to someone considering starting foreskin restoration?
+                      - generic [ref=e7836]:
+                        - generic [ref=e7837]: restore_advice_to_others
+                        - generic [ref=e7838]: n=96
+                    - button "+" [ref=e7840]
+                    - generic [ref=e7841]: ›
+                  - generic [ref=e7843] [cursor=pointer]:
+                    - generic [ref=e7844]:
+                      - generic [ref=e7845]: "91"
+                      - generic "Multiple Select Choices" [ref=e7846]:
+                        - img [ref=e7847]
+                    - generic [ref=e7850]:
+                      - generic [ref=e7851]:
+                        - generic [ref=e7854]: Restoring
+                        - generic [ref=e7856]: Are you aware of any scientific research focused on biologically regenerating or regrowing human foreskin tissue (e.g., using stem cells or tissue engineering)?
+                      - generic [ref=e7858]:
+                        - generic [ref=e7859]: restore_regen_tech_awareness
+                        - generic [ref=e7860]: n=108
+                    - button "+" [ref=e7862]
+                    - generic [ref=e7863]: ›
+                  - generic [ref=e7865] [cursor=pointer]:
+                    - generic [ref=e7866]:
+                      - generic [ref=e7867]: "92"
+                      - generic "Single Select Choice" [ref=e7868]:
+                        - img [ref=e7869]
+                    - generic [ref=e7872]:
+                      - generic [ref=e7873]:
+                        - generic [ref=e7876]: Restoring
+                        - generic [ref=e7877]:
+                          - generic [ref=e7878]: "Knowing this possibility exists:"
+                          - generic [ref=e7879]: How does it influence your feelings about your own circumcision state or restoration journey?
+                      - generic [ref=e7881]:
+                        - generic [ref=e7882]: restore_regen_tech_feelings
+                        - generic [ref=e7883]: n=106
+                    - button "+" [ref=e7885]
+                    - generic [ref=e7886]: ›
+                  - generic [ref=e7888] [cursor=pointer]:
+                    - generic [ref=e7889]:
+                      - generic [ref=e7890]: "258"
+                      - generic "Qualitative Open Response" [ref=e7891]:
+                        - img [ref=e7892]
+                    - generic [ref=e7894]:
+                      - generic [ref=e7895]:
+                        - generic [ref=e7898]: Restoring
+                        - generic [ref=e7900]: Anything else you'd like to say about biological Regenerative Technologies
+                      - generic [ref=e7902]:
+                        - generic [ref=e7903]: restore_regen_tech_comments
+                        - generic [ref=e7904]: n=72
+                    - button "+" [ref=e7906]
+                    - generic [ref=e7907]: ›
+                  - generic [ref=e7909] [cursor=pointer]:
+                    - generic [ref=e7910]:
+                      - generic [ref=e7911]: "276"
+                      - generic "Qualitative Open Response" [ref=e7912]:
+                        - img [ref=e7913]
+                    - generic [ref=e7915]:
+                      - generic [ref=e7916]:
+                        - generic [ref=e7919]: Restoring
+                        - generic [ref=e7921]: Was there a single piece of information, a specific experience, or a particular realization that acted as the "final straw" or tipping point, moving you from passive feelings about being circumcised to the active decision to begin restoring?
+                      - generic [ref=e7923]:
+                        - generic [ref=e7924]: restore_tipping_point
+                        - generic [ref=e7925]: n=48
+                    - button "+" [ref=e7927]
+                    - generic [ref=e7928]: ›
+                  - generic [ref=e7930] [cursor=pointer]:
+                    - generic [ref=e7931]:
+                      - generic [ref=e7932]: "277"
+                      - generic "Qualitative Open Response" [ref=e7933]:
+                        - img [ref=e7934]
+                    - generic [ref=e7936]:
+                      - generic [ref=e7937]:
+                        - generic [ref=e7940]: Restoring
+                        - generic [ref=e7942]: When you have chosen to disclose your restoration journey to others (partners, friends, family, medical professionals), what has the general reaction been?
+                      - generic [ref=e7944]:
+                        - generic [ref=e7945]: restore_disclosure_reaction
+                        - generic [ref=e7946]: n=51
+                    - button "+" [ref=e7948]
+                    - generic [ref=e7949]: ›
+                  - generic [ref=e7951] [cursor=pointer]:
+                    - generic [ref=e7952]:
+                      - generic [ref=e7953]: "278"
+                      - generic "Qualitative Open Response" [ref=e7954]:
+                        - img [ref=e7955]
+                    - generic [ref=e7957]:
+                      - generic [ref=e7958]:
+                        - generic [ref=e7961]: Restoring
+                        - generic [ref=e7963]: How has the act of restoring changed your relationship with your own genitals and your overall body image?
+                      - generic [ref=e7965]:
+                        - generic [ref=e7966]: restore_body_image_shift
+                        - generic [ref=e7967]: n=45
+                    - button "+" [ref=e7969]
+                    - generic [ref=e7970]: ›
+                  - generic [ref=e7972] [cursor=pointer]:
+                    - generic [ref=e7973]:
+                      - generic [ref=e7974]: "279"
+                      - generic "Qualitative Open Response" [ref=e7975]:
+                        - img [ref=e7976]
+                    - generic [ref=e7978]:
+                      - generic [ref=e7979]:
+                        - generic [ref=e7982]: Restoring
+                        - generic [ref=e7984]: What does "success" or "completion" look like for you in your restoration journey?
+                      - generic [ref=e7986]:
+                        - generic [ref=e7987]: restore_success_definition
+                        - generic [ref=e7988]: n=49
+                    - button "+" [ref=e7990]
+                    - generic [ref=e7991]: ›
+                  - generic [ref=e7993] [cursor=pointer]:
+                    - generic [ref=e7994]:
+                      - generic [ref=e7995]: "170"
+                      - generic "Single Select Choice" [ref=e7996]:
+                        - img [ref=e7997]
+                    - generic [ref=e8000]:
+                      - generic:
+                        - generic [ref=e8002]: Restoring
+                        - generic:
+                          - generic: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic: "[Overall Sensation & Pleasure]"
+                      - generic [ref=e8004]:
+                        - generic [ref=e8005]: restore_impact_rating_sensation
+                        - generic [ref=e8006]: n=49
+                    - button "+" [ref=e8008]
+                    - generic [ref=e8009]: ›
+                  - generic [ref=e8011] [cursor=pointer]:
+                    - generic [ref=e8012]:
+                      - generic [ref=e8013]: "171"
+                      - generic "Single Select Choice" [ref=e8014]:
+                        - img [ref=e8015]
+                    - generic [ref=e8018]:
+                      - generic [ref=e8019]:
+                        - generic [ref=e8022]: Restoring
+                        - generic [ref=e8023]:
+                          - generic [ref=e8024]: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic [ref=e8025]: "[Orgasm Quality & Intensity]"
+                      - generic [ref=e8027]:
+                        - generic [ref=e8028]: restore_impact_rating_orgasm
+                        - generic [ref=e8029]: n=49
+                    - button "+" [ref=e8031]
+                    - generic [ref=e8032]: ›
+                  - generic [ref=e8034] [cursor=pointer]:
+                    - generic [ref=e8035]:
+                      - generic [ref=e8036]: "172"
+                      - generic "Single Select Choice" [ref=e8037]:
+                        - img [ref=e8038]
+                    - generic [ref=e8041]:
+                      - generic:
+                        - generic [ref=e8043]: Restoring
+                        - generic:
+                          - generic: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic: "[Mechanical Function (e.g., gliding, natural lubrication)]"
+                      - generic [ref=e8045]:
+                        - generic [ref=e8046]: restore_impact_rating_function
+                        - generic [ref=e8047]: n=49
+                    - button "+" [ref=e8049]
+                    - generic [ref=e8050]: ›
+                  - generic [ref=e8052] [cursor=pointer]:
+                    - generic [ref=e8053]:
+                      - generic [ref=e8054]: "173"
+                      - generic "Single Select Choice" [ref=e8055]:
+                        - img [ref=e8056]
+                    - generic [ref=e8059]:
+                      - generic [ref=e8060]:
+                        - generic [ref=e8063]: Restoring
+                        - generic [ref=e8064]:
+                          - generic [ref=e8065]: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic [ref=e8066]: "[Physical Comfort (e.g., reduced tightness, chafing)]"
+                      - generic [ref=e8068]:
+                        - generic [ref=e8069]: restore_impact_rating_comfort
+                        - generic [ref=e8070]: n=50
+                    - button "+" [ref=e8072]
+                    - generic [ref=e8073]: ›
+                  - generic [ref=e8075] [cursor=pointer]:
+                    - generic [ref=e8076]:
+                      - generic [ref=e8077]: "18"
+                      - generic "Single Select Choice" [ref=e8078]:
+                        - img [ref=e8079]
+                    - generic [ref=e8082]:
+                      - generic:
+                        - generic:
+                          - generic [ref=e8083]: T1
+                          - generic [ref=e8085]: Restoring
+                        - generic:
+                          - generic: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic: "[Aesthetic Appearance & Body Image]"
+                      - generic [ref=e8087]:
+                        - generic [ref=e8088]: restore_impact_rating_aesthetics
+                        - generic [ref=e8089]: n=50
+                    - button "+" [ref=e8091]
+                    - generic [ref=e8092]: ›
+                  - generic [ref=e8094] [cursor=pointer]:
+                    - generic [ref=e8095]:
+                      - generic [ref=e8096]: "174"
+                      - generic "Single Select Choice" [ref=e8097]:
+                        - img [ref=e8098]
+                    - generic [ref=e8101]:
+                      - generic:
+                        - generic [ref=e8103]: Restoring
+                        - generic:
+                          - generic: Overall, how would you rate the impact of your restoration journey on the following aspects of your experience?
+                          - generic: "[Psychological Well-being & Sense of Wholeness]"
+                      - generic [ref=e8105]:
+                        - generic [ref=e8106]: restore_impact_rating_psychology
+                        - generic [ref=e8107]: n=50
+                    - button "+" [ref=e8109]
+                    - generic [ref=e8110]: ›
+              - generic [ref=e8111]:
+                - generic [ref=e8112] [cursor=pointer]:
+                  - heading "▶ Observer — Universal Observer" [level=3] [ref=e8113]:
+                    - generic [ref=e8114]: ▶
+                    - text: Observer — Universal Observer
+                  - generic [ref=e8115]: "6"
+                - generic [ref=e8116]:
+                  - generic [ref=e8118] [cursor=pointer]:
+                    - generic [ref=e8119]:
+                      - generic [ref=e8120]: "93"
+                      - generic "Multiple Select Choices" [ref=e8121]:
+                        - img [ref=e8122]
+                    - generic [ref=e8125]:
+                      - generic [ref=e8126]:
+                        - generic [ref=e8129]: Observer
+                        - generic [ref=e8131]: What primarily motivated you to take this survey and explore these topics?
+                      - generic [ref=e8133]:
+                        - generic [ref=e8134]: observe_motivation
+                        - generic [ref=e8135]: n=23
+                    - button "+" [ref=e8137]
+                    - generic [ref=e8138]: ›
+                  - generic [ref=e8140] [cursor=pointer]:
+                    - generic [ref=e8141]:
+                      - generic [ref=e8142]: "101"
+                      - generic "Qualitative Open Response" [ref=e8143]:
+                        - img [ref=e8144]
+                    - generic [ref=e8146]:
+                      - generic:
+                        - generic [ref=e8148]: Observer
+                        - generic:
+                          - generic: What was your personal "tipping point" that moved you from a passive observer to an active advocate?
+                      - generic [ref=e8150]:
+                        - generic [ref=e8151]: observe_barrier_to_recognition
+                        - generic [ref=e8152]: n=10
+                    - button "+" [ref=e8154]
+                    - generic [ref=e8155]: ›
+                  - generic [ref=e8157] [cursor=pointer]:
+                    - generic [ref=e8158]:
+                      - generic [ref=e8159]: "102"
+                      - generic "Qualitative Open Response" [ref=e8160]:
+                        - img [ref=e8161]
+                    - generic [ref=e8163]:
+                      - generic [ref=e8164]:
+                        - generic [ref=e8167]: Observer
+                        - generic [ref=e8169]: Conversely, what strategy or argument have you found to be the least effective or most likely to backfire and shut down a conversation?
+                      - generic [ref=e8171]:
+                        - generic [ref=e8172]: observe_effective_strategy
+                        - generic [ref=e8173]: n=7
+                    - button "+" [ref=e8175]
+                    - generic [ref=e8176]: ›
+                  - generic [ref=e8178] [cursor=pointer]:
+                    - generic [ref=e8179]:
+                      - generic [ref=e8180]: "146"
+                      - generic "Single Select Choice" [ref=e8181]:
+                        - img [ref=e8182]
+                    - generic [ref=e8185]:
+                      - generic:
+                        - generic [ref=e8187]: Observer
+                        - generic:
+                          - generic: In your personal experience and social circles, how is the topic of infant circumcision generally treated or discussed?
+                      - generic [ref=e8189]:
+                        - generic [ref=e8190]: observe_all_social_climate_discussion
+                        - generic [ref=e8191]: n=21
+                    - button "+" [ref=e8193]
+                    - generic [ref=e8194]: ›
+                  - generic [ref=e8196] [cursor=pointer]:
+                    - generic [ref=e8197]:
+                      - generic [ref=e8198]: "147"
+                      - generic "Single Select Choice" [ref=e8199]:
+                        - img [ref=e8200]
+                    - generic [ref=e8203]:
+                      - generic:
+                        - generic [ref=e8205]: Observer
+                        - generic:
+                          - generic: When you think about the decision to circumcise a newborn, how significant or impactful do you perceive that choice to be in the grand scheme of a person's life?
+                      - generic [ref=e8207]:
+                        - generic [ref=e8208]: observe_all_perceived_significance
+                        - generic [ref=e8209]: n=21
+                    - button "+" [ref=e8211]
+                    - generic [ref=e8212]: ›
+                  - generic [ref=e8214] [cursor=pointer]:
+                    - generic [ref=e8215]:
+                      - generic [ref=e8216]: "148"
+                      - generic "Single Select Choice" [ref=e8217]:
+                        - img [ref=e8218]
+                    - generic [ref=e8221]:
+                      - generic:
+                        - generic [ref=e8223]: Observer
+                        - generic:
+                          - generic: Imagine a close friend or family member was expecting a boy and asked for your thoughts on circumcision. How comfortable and prepared would you feel to discuss the pros and cons from different perspectives?
+                      - generic [ref=e8225]:
+                        - generic [ref=e8226]: observe_all_comfort_discussing
+                        - generic [ref=e8227]: n=21
+                    - button "+" [ref=e8229]
+                    - generic [ref=e8230]: ›
+              - generic [ref=e8231]:
+                - generic [ref=e8232] [cursor=pointer]:
+                  - heading "▶ Observer — Partners & Intimacy" [level=3] [ref=e8233]:
+                    - generic [ref=e8234]: ▶
+                    - text: Observer — Partners & Intimacy
+                  - generic [ref=e8235]: "11"
+                - generic [ref=e8236]:
+                  - generic [ref=e8238] [cursor=pointer]:
+                    - generic [ref=e8239]:
+                      - generic [ref=e8240]: "94"
+                      - generic "Qualitative Open Response" [ref=e8241]:
+                        - img [ref=e8242]
+                    - generic [ref=e8244]:
+                      - generic [ref=e8245]:
+                        - generic [ref=e8248]: Observer
+                        - generic [ref=e8250]: As a PARTNER, what have you observed or experienced regarding your partner's genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, their sexual pleasure, or their feelings about their body?
+                      - generic [ref=e8252]:
+                        - generic [ref=e8253]: observe_partner_experience
+                        - generic [ref=e8254]: n=6
+                    - button "+" [ref=e8256]
+                    - generic [ref=e8257]: ›
+                  - generic [ref=e8259] [cursor=pointer]:
+                    - generic [ref=e8260]:
+                      - generic [ref=e8261]: "95"
+                      - generic "Single Select Choice" [ref=e8262]:
+                        - img [ref=e8263]
+                    - generic [ref=e8266]:
+                      - generic [ref=e8267]:
+                        - generic [ref=e8270]: Observer
+                        - generic [ref=e8272]: If you are the PARTNER of someone whose circumcision status is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?
+                      - generic [ref=e8274]:
+                        - generic [ref=e8275]: observe_partner_cultural_diff
+                        - generic [ref=e8276]: n=2
+                    - button "+" [ref=e8278]
+                    - generic [ref=e8279]: ›
+                  - generic [ref=e8281] [cursor=pointer]:
+                    - generic [ref=e8282]:
+                      - generic [ref=e8283]: "284"
+                      - generic "Qualitative Open Response" [ref=e8284]:
+                        - img [ref=e8285]
+                    - generic [ref=e8287]:
+                      - generic [ref=e8288]:
+                        - generic [ref=e8291]: Observer
+                        - generic [ref=e8293]: As a PARTNER, what have you observed or experienced regarding his genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, his sexual pleasure, or his feelings about his body?
+                      - generic [ref=e8296]: observe_partner_observations
+                    - button "+" [ref=e8298]
+                    - generic [ref=e8299]: ›
+                  - generic [ref=e8301] [cursor=pointer]:
+                    - generic [ref=e8302]:
+                      - generic [ref=e8303]: "175"
+                      - generic "Qualitative Open Response" [ref=e8304]:
+                        - img [ref=e8305]
+                    - generic [ref=e8307]:
+                      - generic [ref=e8308]:
+                        - generic [ref=e8311]: Observer
+                        - generic [ref=e8313]: If your PARTNER'S circumcision state is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?
+                      - generic [ref=e8315]:
+                        - generic [ref=e8316]: q255
+                        - generic [ref=e8317]: n=3
+                    - button "+" [ref=e8319]
+                    - generic [ref=e8320]: ›
+                  - generic [ref=e8322] [cursor=pointer]:
+                    - generic [ref=e8323]:
+                      - generic [ref=e8324]: "178"
+                      - generic "Single Select Choice" [ref=e8325]:
+                        - img [ref=e8326]
+                    - generic [ref=e8329]:
+                      - generic [ref=e8330]:
+                        - generic [ref=e8333]: Observer
+                        - generic [ref=e8335]: What is/was the circumcision state of your CO-PARENT or PRIMARY PARTNER during this decision-making process?
+                      - generic [ref=e8337]:
+                        - generic [ref=e8338]: q269
+                        - generic [ref=e8339]: n=9
+                    - button "+" [ref=e8341]
+                    - generic [ref=e8342]: ›
+                  - generic [ref=e8344] [cursor=pointer]:
+                    - generic [ref=e8345]:
+                      - generic [ref=e8346]: "181"
+                      - generic "Single Select Choice" [ref=e8347]:
+                        - img [ref=e8348]
+                    - generic [ref=e8351]:
+                      - generic [ref=e8352]:
+                        - generic [ref=e8355]: Observer
+                        - generic [ref=e8357]: What is the circumcision state of your primary PARTNER, or the partner whose experience is most relevant to your answers here?
+                      - generic [ref=e8359]:
+                        - generic [ref=e8360]: q272
+                        - generic [ref=e8361]: n=4
+                    - button "+" [ref=e8363]
+                    - generic [ref=e8364]: ›
+                  - generic [ref=e8366] [cursor=pointer]:
+                    - generic [ref=e8367]:
+                      - generic [ref=e8368]: "193"
+                      - generic "Single Select Choice" [ref=e8369]:
+                        - img [ref=e8370]
+                    - generic [ref=e8373]:
+                      - generic [ref=e8374]:
+                        - generic [ref=e8377]: Observer
+                        - generic [ref=e8379]: Has your partner's circumcision state ever been a direct topic of conversation between you?
+                      - generic [ref=e8381]:
+                        - generic [ref=e8382]: q302
+                        - generic [ref=e8383]: n=4
+                    - button "+" [ref=e8385]
+                    - generic [ref=e8386]: ›
+                  - generic [ref=e8388] [cursor=pointer]:
+                    - generic [ref=e8389]:
+                      - generic [ref=e8390]: "194"
+                      - generic "Single Select Choice" [ref=e8391]:
+                        - img [ref=e8392]
+                    - generic [ref=e8395]:
+                      - generic:
+                        - generic [ref=e8397]: Observer
+                        - generic:
+                          - generic: From your perspective, which of the following statements best describes your partner's emotional relationship with his own genital anatomy and circumcision state?
+                      - generic [ref=e8399]:
+                        - generic [ref=e8400]: observe_partner_emotional_state
+                        - generic [ref=e8401]: n=4
+                    - button "+" [ref=e8403]
+                    - generic [ref=e8404]: ›
+                  - generic [ref=e8406] [cursor=pointer]:
+                    - generic [ref=e8407]:
+                      - generic [ref=e8408]: "195"
+                      - generic "Qualitative Open Response" [ref=e8409]:
+                        - img [ref=e8410]
+                    - generic [ref=e8412]:
+                      - generic [ref=e8413]:
+                        - generic [ref=e8416]: Observer
+                        - generic [ref=e8418]: What advice would you offer to other partners to foster a more empathetic and connected intimate relationship, considering the nuances of circumcision state?
+                      - generic [ref=e8420]:
+                        - generic [ref=e8421]: observe_partner_advice
+                        - generic [ref=e8422]: n=4
+                    - button "+" [ref=e8424]
+                    - generic [ref=e8425]: ›
+                  - generic [ref=e8427] [cursor=pointer]:
+                    - generic [ref=e8428]:
+                      - generic [ref=e8429]: "196"
+                      - generic "Single Select Choice" [ref=e8430]:
+                        - img [ref=e8431]
+                    - generic [ref=e8434]:
+                      - generic:
+                        - generic [ref=e8436]: Observer
+                        - generic:
+                          - generic: How has your partner's circumcision state impacted communication about sexual pleasure in your relationship?
+                      - generic [ref=e8438]:
+                        - generic [ref=e8439]: observe_partner_comm_challenges
+                        - generic [ref=e8440]: n=4
+                    - button "+" [ref=e8442]
+                    - generic [ref=e8443]: ›
+                  - generic [ref=e8445] [cursor=pointer]:
+                    - generic [ref=e8446]:
+                      - generic [ref=e8447]: "197"
+                      - generic "Qualitative Open Response" [ref=e8448]:
+                        - img [ref=e8449]
+                    - generic [ref=e8451]:
+                      - generic [ref=e8452]:
+                        - generic [ref=e8455]: Observer
+                        - generic [ref=e8457]: From your perspective, what is the most significant misconception the general public has about your partner's anatomical state (intact, circumcised, or restoring)?
+                      - generic [ref=e8459]:
+                        - generic [ref=e8460]: observe_partner_blind_spot_v2
+                        - generic [ref=e8461]: n=4
+                    - button "+" [ref=e8463]
+                    - generic [ref=e8464]: ›
+              - generic [ref=e8465]:
+                - generic [ref=e8466] [cursor=pointer]:
+                  - heading "▶ Observer — Parents & Guardians" [level=3] [ref=e8467]:
+                    - generic [ref=e8468]: ▶
+                    - text: Observer — Parents & Guardians
+                  - generic [ref=e8469]: "44"
+                - generic [ref=e8470]:
+                  - generic [ref=e8472] [cursor=pointer]:
+                    - generic [ref=e8473]:
+                      - generic [ref=e8474]: "96"
+                      - generic "Single Select Choice" [ref=e8475]:
+                        - img [ref=e8476]
+                    - generic [ref=e8479]:
+                      - generic:
+                        - generic [ref=e8481]: Observer
+                        - generic:
+                          - generic: As a PARENT or GUARDIAN What were/are the most significant factors influencing your decision (or your thought process if undecided) about circumcision for your child or children
+                      - generic [ref=e8483]:
+                        - generic [ref=e8484]: observe_parent_decision_factors
+                        - generic [ref=e8485]: n=1
+                    - button "+" [ref=e8487]
+                    - generic [ref=e8488]: ›
+                  - generic [ref=e8490] [cursor=pointer]:
+                    - generic [ref=e8491]:
+                      - generic [ref=e8492]: "97"
+                      - generic "Qualitative Open Response" [ref=e8493]:
+                        - img [ref=e8494]
+                    - generic [ref=e8496]:
+                      - generic [ref=e8497]:
+                        - generic [ref=e8500]: Observer
+                        - generic [ref=e8502]: As a PARENT or GUARDIAN, how adequate or biased did you find the information available to you from medical professionals or other sources when making this decision?
+                      - generic [ref=e8504]:
+                        - generic [ref=e8505]: observe_parent_info_quality
+                        - generic [ref=e8506]: n=9
+                    - button "+" [ref=e8508]
+                    - generic [ref=e8509]: ›
+                  - generic [ref=e8511] [cursor=pointer]:
+                    - generic [ref=e8512]:
+                      - generic [ref=e8513]: "98"
+                      - generic "Single Select Choice" [ref=e8514]:
+                        - img [ref=e8515]
+                    - generic [ref=e8518]:
+                      - generic:
+                        - generic [ref=e8520]: Observer
+                        - generic:
+                          - generic: As PARENTS/GUARDIANS which statement best captures the emotional state you (or your partner) are/were in regarding their whether to circumcise your child or children?
+                      - generic [ref=e8522]:
+                        - generic [ref=e8523]: observe_parent_emotional_state
+                        - generic [ref=e8524]: n=10
+                    - button "+" [ref=e8526]
+                    - generic [ref=e8527]: ›
+                  - generic [ref=e8529] [cursor=pointer]:
+                    - generic [ref=e8530]:
+                      - generic [ref=e8531]: "259"
+                      - generic "Qualitative Open Response" [ref=e8532]:
+                        - img [ref=e8533]
+                    - generic [ref=e8535]:
+                      - generic [ref=e8536]:
+                        - generic [ref=e8539]: Observer
+                        - generic [ref=e8541]: Have you ever experienced feelings of REGRET or reconsidered that decision based on information learned later or changes in your perspective?
+                      - generic [ref=e8544]: observe_parent_regret
+                    - button "+" [ref=e8546]
+                    - generic [ref=e8547]: ›
+                  - generic [ref=e8549] [cursor=pointer]:
+                    - generic [ref=e8550]:
+                      - generic [ref=e8551]: "283"
+                      - generic "Qualitative Open Response" [ref=e8552]:
+                        - img [ref=e8553]
+                    - generic [ref=e8555]:
+                      - generic [ref=e8556]:
+                        - generic [ref=e8559]: Observer
+                        - generic [ref=e8561]: What are the primary reasons you now feel regret or have second thoughts about your decision?
+                      - generic [ref=e8564]: observe_parent_circ_regret_reasons
+                    - button "+" [ref=e8566]
+                    - generic [ref=e8567]: ›
+                  - generic [ref=e8569] [cursor=pointer]:
+                    - generic [ref=e8570]:
+                      - generic [ref=e8571]: "176"
+                      - generic "Single Select Choice" [ref=e8572]:
+                        - img [ref=e8573]
+                    - generic [ref=e8576]:
+                      - generic:
+                        - generic [ref=e8578]: Observer
+                        - generic:
+                          - generic: Which of the following best describes your family's situation regarding the circumcision of your son(s) or AMAB children?
+                      - generic [ref=e8580]:
+                        - generic [ref=e8581]: observe_parent_multi_hat_selection
+                        - generic [ref=e8582]: n=9
+                    - button "+" [ref=e8584]
+                    - generic [ref=e8585]: ›
+                  - generic [ref=e8587] [cursor=pointer]:
+                    - generic [ref=e8588]:
+                      - generic [ref=e8589]: "291"
+                      - generic "Qualitative Open Response" [ref=e8590]:
+                        - img [ref=e8591]
+                    - generic [ref=e8593]:
+                      - generic:
+                        - generic [ref=e8595]: Observer
+                        - generic:
+                          - generic: Did your child require any follow-up medical interventions due to complications from being circumcised?
+                      - generic [ref=e8598]: observe_parent_circ_complications_exist
+                    - button "+" [ref=e8600]
+                    - generic [ref=e8601]: ›
+                  - generic [ref=e8603] [cursor=pointer]:
+                    - generic [ref=e8604]:
+                      - generic [ref=e8605]: "292"
+                      - generic "Qualitative Open Response" [ref=e8606]:
+                        - img [ref=e8607]
+                    - generic [ref=e8609]:
+                      - generic:
+                        - generic [ref=e8611]: Observer
+                        - generic:
+                          - generic: Knowing this, would you be open to confidentially learning more about what becoming a plaintiff in such a case might entail for your family?
+                      - generic [ref=e8614]: observe_parent_circ_lawsuit_cta_openness
+                    - button "+" [ref=e8616]
+                    - generic [ref=e8617]: ›
+                  - generic [ref=e8619] [cursor=pointer]:
+                    - generic [ref=e8620]:
+                      - generic [ref=e8621]: "293"
+                      - generic "Qualitative Open Response" [ref=e8622]:
+                        - img [ref=e8623]
+                    - generic [ref=e8625]:
+                      - generic:
+                        - generic [ref=e8627]: Observer
+                        - generic:
+                          - generic: If yes, is there anything you're willing to share about any complications or medical treatments your child required following their circumcision?
+                      - generic [ref=e8630]: observe_parent_circ_complications_desc
+                    - button "+" [ref=e8632]
+                    - generic [ref=e8633]: ›
+                  - generic [ref=e8635] [cursor=pointer]:
+                    - generic [ref=e8636]:
+                      - generic [ref=e8637]: "177"
+                      - generic "Single Select Choice" [ref=e8638]:
+                        - img [ref=e8639]
+                    - generic [ref=e8642]:
+                      - generic [ref=e8643]:
+                        - generic [ref=e8646]: Observer
+                        - generic [ref=e8648]: Thinking about the birth of your child or children, what was the primary type of location where they were/will be born?
+                      - generic [ref=e8650]:
+                        - generic [ref=e8651]: observe_parent_birth_location
+                        - generic [ref=e8652]: n=9
+                    - button "+" [ref=e8654]
+                    - generic [ref=e8655]: ›
+                  - generic [ref=e8657] [cursor=pointer]:
+                    - generic [ref=e8658]:
+                      - generic [ref=e8659]: "179"
+                      - generic "Single Select Choice" [ref=e8660]:
+                        - img [ref=e8661]
+                    - generic [ref=e8664]:
+                      - generic [ref=e8665]:
+                        - generic [ref=e8668]: Observer
+                        - generic [ref=e8670]: Before you gave birth to your child, had you ever had any direct, personal experience with an intact (uncircumcised) penis?
+                      - generic [ref=e8672]:
+                        - generic [ref=e8673]: observe_parent_intact_exposure
+                        - generic [ref=e8674]: n=9
+                    - button "+" [ref=e8676]
+                    - generic [ref=e8677]: ›
+                  - generic [ref=e8679] [cursor=pointer]:
+                    - generic [ref=e8680]:
+                      - generic [ref=e8681]: "180"
+                      - generic "Single Select Choice" [ref=e8682]:
+                        - img [ref=e8683]
+                    - generic [ref=e8686]:
+                      - generic:
+                        - generic [ref=e8688]: Observer
+                        - generic:
+                          - generic: In your immediate social circle (close friends, peers, family) at the time, what was the general expectation or norm for newborn boys?
+                      - generic [ref=e8690]:
+                        - generic [ref=e8691]: observe_parent_circ_social_norm
+                        - generic [ref=e8692]: n=9
+                    - button "+" [ref=e8694]
+                    - generic [ref=e8695]: ›
+                  - generic [ref=e8697] [cursor=pointer]:
+                    - generic [ref=e8698]:
+                      - generic [ref=e8699]: "182"
+                      - generic "Single Select Choice" [ref=e8700]:
+                        - img [ref=e8701]
+                    - generic [ref=e8704]:
+                      - generic:
+                        - generic [ref=e8706]: Observer
+                        - generic:
+                          - generic: To help us understand the time frame of you as a parent in what year was your youngest son/AMAB child born?
+                      - generic [ref=e8708]:
+                        - generic [ref=e8709]: observe_parent_son_youngest_yob
+                        - generic [ref=e8710]: n=8
+                    - button "+" [ref=e8712]
+                    - generic [ref=e8713]: ›
+                  - generic [ref=e8715] [cursor=pointer]:
+                    - generic [ref=e8716]:
+                      - generic [ref=e8717]: "294"
+                      - generic "Qualitative Open Response" [ref=e8718]:
+                        - img [ref=e8719]
+                    - generic [ref=e8721]:
+                      - generic [ref=e8722]:
+                        - generic [ref=e8725]: Observer
+                        - generic [ref=e8727]: In what year was your OLDEST son/AMAB child born?
+                      - generic [ref=e8730]: observe_parent_son_oldest_yob
+                    - button "+" [ref=e8732]
+                    - generic [ref=e8733]: ›
+                  - generic [ref=e8735] [cursor=pointer]:
+                    - generic [ref=e8736]:
+                      - generic [ref=e8737]: "295"
+                      - generic "Qualitative Open Response" [ref=e8738]:
+                        - img [ref=e8739]
+                    - generic [ref=e8741]:
+                      - generic [ref=e8742]:
+                        - generic [ref=e8745]: Observer
+                        - generic [ref=e8747]: Thinking about your YOUNGEST son/AMAB child, what was the decision you made regarding his circumcision?
+                      - generic [ref=e8750]: observe_parent_youngest_son_decision
+                    - button "+" [ref=e8752]
+                    - generic [ref=e8753]: ›
+                  - generic [ref=e8755] [cursor=pointer]:
+                    - generic [ref=e8756]:
+                      - generic [ref=e8757]: "183"
+                      - generic "Single Select Choice" [ref=e8758]:
+                        - img [ref=e8759]
+                    - generic [ref=e8762]:
+                      - generic [ref=e8763]:
+                        - generic [ref=e8766]: Observer
+                        - generic [ref=e8768]: To begin, which of the following best describes your primary parenting or guardianship role for the AMAB (Assigned Male at Birth) child(ren) relevant to your answers?
+                      - generic [ref=e8770]:
+                        - generic [ref=e8771]: observe_parent_primary_role
+                        - generic [ref=e8772]: n=8
+                    - button "+" [ref=e8774]
+                    - generic [ref=e8775]: ›
+                  - generic [ref=e8777] [cursor=pointer]:
+                    - generic [ref=e8778]:
+                      - generic [ref=e8779]: "296"
+                      - generic "Qualitative Open Response" [ref=e8780]:
+                        - img [ref=e8781]
+                    - generic [ref=e8783]:
+                      - generic [ref=e8784]:
+                        - generic [ref=e8787]: Observer
+                        - generic [ref=e8789]: Were you (and your spouse/partner if applicable,) the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through family blending or adoption)?
+                      - generic [ref=e8792]: observe_parent_circ_decision_maker
+                    - button "+" [ref=e8794]
+                    - generic [ref=e8795]: ›
+                  - generic [ref=e8797] [cursor=pointer]:
+                    - generic [ref=e8798]:
+                      - generic [ref=e8799]: "297"
+                      - generic "Qualitative Open Response" [ref=e8800]:
+                        - img [ref=e8801]
+                    - generic [ref=e8803]:
+                      - generic [ref=e8804]:
+                        - generic [ref=e8807]: Observer
+                        - generic [ref=e8809]: Between these children, something shifted in your decision-making process. What were the key factors that led you to make a DIFFERENT choice?
+                      - generic [ref=e8812]: observe_parent_mixed_shift_factors
+                    - button "+" [ref=e8814]
+                    - generic [ref=e8815]: ›
+                  - generic [ref=e8817] [cursor=pointer]:
+                    - generic [ref=e8818]:
+                      - generic [ref=e8819]: "298"
+                      - generic "Qualitative Open Response" [ref=e8820]:
+                        - img [ref=e8821]
+                    - generic [ref=e8823]:
+                      - generic [ref=e8824]:
+                        - generic [ref=e8827]: Observer
+                        - generic [ref=e8829]: If you're willing to share, could you tell us the story of that evolution in your own words?
+                      - generic [ref=e8832]: observe_parent_mixed_shift_story
+                    - button "+" [ref=e8834]
+                    - generic [ref=e8835]: ›
+                  - generic [ref=e8837] [cursor=pointer]:
+                    - generic [ref=e8838]:
+                      - generic [ref=e8839]: "299"
+                      - generic "Qualitative Open Response" [ref=e8840]:
+                        - img [ref=e8841]
+                    - generic [ref=e8843]:
+                      - generic:
+                        - generic [ref=e8845]: Observer
+                        - generic:
+                          - generic: What was the experience of making a different choice like for your family?
+                      - generic [ref=e8848]: observe_parent_mixed_family_experience
+                    - button "+" [ref=e8850]
+                    - generic [ref=e8851]: ›
+                  - generic [ref=e8853] [cursor=pointer]:
+                    - generic [ref=e8854]:
+                      - generic [ref=e8855]: "300"
+                      - generic "Qualitative Open Response" [ref=e8856]:
+                        - img [ref=e8857]
+                    - generic [ref=e8859]:
+                      - generic:
+                        - generic [ref=e8861]: Observer
+                        - generic:
+                          - generic: Looking back now, how do you feel about having children with different statuses?
+                      - generic [ref=e8864]: observe_parent_mixed_retrospective_feeling
+                    - button "+" [ref=e8866]
+                    - generic [ref=e8867]: ›
+                  - generic [ref=e8869] [cursor=pointer]:
+                    - generic [ref=e8870]:
+                      - generic [ref=e8871]: "301"
+                      - generic "Qualitative Open Response" [ref=e8872]:
+                        - img [ref=e8873]
+                    - generic [ref=e8875]:
+                      - generic [ref=e8876]:
+                        - generic [ref=e8879]: Observer
+                        - generic [ref=e8881]: Thinking about your OLDEST son/AMAB child, what was the decision you made regarding his circumcision?
+                      - generic [ref=e8884]: observe_parent_oldest_son_decision
+                    - button "+" [ref=e8886]
+                    - generic [ref=e8887]: ›
+                  - generic [ref=e8889] [cursor=pointer]:
+                    - generic [ref=e8890]:
+                      - generic [ref=e8891]: "184"
+                      - generic "Multiple Select Choices" [ref=e8892]:
+                        - img [ref=e8893]
+                    - generic [ref=e8896]:
+                      - generic [ref=e8897]:
+                        - generic [ref=e8900]: Observer
+                        - generic [ref=e8902]: As a PARENT or GUARDIAN, what were the most significant factors influencing your decision to keep your child or children intact?
+                      - generic [ref=e8904]:
+                        - generic [ref=e8905]: observe_parent_intact_factors
+                        - generic [ref=e8906]: n=8
+                    - button "+" [ref=e8908]
+                    - generic [ref=e8909]: ›
+                  - generic [ref=e8911] [cursor=pointer]:
+                    - generic [ref=e8912]:
+                      - generic [ref=e8913]: "185"
+                      - generic "Single Select Choice" [ref=e8914]:
+                        - img [ref=e8915]
+                    - generic [ref=e8918]:
+                      - generic:
+                        - generic [ref=e8920]: Observer
+                        - generic:
+                          - generic: To the best of your knowledge, what was the circumcision norm within your immediate social circle (close friends, family) at the time you made this choice?
+                      - generic [ref=e8922]:
+                        - generic [ref=e8923]: observe_parent_circ_social_norm_v2
+                        - generic [ref=e8924]: n=8
+                    - button "+" [ref=e8926]
+                    - generic [ref=e8927]: ›
+                  - generic [ref=e8929] [cursor=pointer]:
+                    - generic [ref=e8930]:
+                      - generic [ref=e8931]: "186"
+                      - generic "Single Select Choice" [ref=e8932]:
+                        - img [ref=e8933]
+                    - generic [ref=e8936]:
+                      - generic:
+                        - generic [ref=e8938]: Observer
+                        - generic:
+                          - generic: Did you encounter any pushback, questioning, or pressure from medical staff, family, or friends regarding your decision to keep your child or children intact?
+                      - generic [ref=e8940]:
+                        - generic [ref=e8941]: observe_parent_intact_resistance_faced
+                        - generic [ref=e8942]: n=8
+                    - button "+" [ref=e8944]
+                    - generic [ref=e8945]: ›
+                  - generic [ref=e8947] [cursor=pointer]:
+                    - generic [ref=e8948]:
+                      - generic [ref=e8949]: "187"
+                      - generic "Single Select Choice" [ref=e8950]:
+                        - img [ref=e8951]
+                    - generic [ref=e8954]:
+                      - generic:
+                        - generic [ref=e8956]: Observer
+                        - generic:
+                          - generic: Looking back, have you ever experienced feelings of REGRET or reconsidered that decision to keep your child or children intact?
+                      - generic [ref=e8958]:
+                        - generic [ref=e8959]: observe_parent_intact_regret_reconsider
+                        - generic [ref=e8960]: n=7
+                    - button "+" [ref=e8962]
+                    - generic [ref=e8963]: ›
+                  - generic [ref=e8965] [cursor=pointer]:
+                    - generic [ref=e8966]:
+                      - generic [ref=e8967]: "188"
+                      - generic "Qualitative Open Response" [ref=e8968]:
+                        - img [ref=e8969]
+                    - generic [ref=e8971]:
+                      - generic [ref=e8972]:
+                        - generic [ref=e8975]: Observer
+                        - generic [ref=e8977]: What advice would you give to a new parent who is undecided about circumcising their child?
+                      - generic [ref=e8979]:
+                        - generic [ref=e8980]: observe_parent_circ_advice
+                        - generic [ref=e8981]: n=8
+                    - button "+" [ref=e8983]
+                    - generic [ref=e8984]: ›
+                  - generic [ref=e8986] [cursor=pointer]:
+                    - generic [ref=e8987]:
+                      - generic [ref=e8988]: "189"
+                      - generic "Qualitative Open Response" [ref=e8989]:
+                        - img [ref=e8990]
+                    - generic [ref=e8992]:
+                      - generic:
+                        - generic [ref=e8994]: Observer
+                        - generic:
+                          - generic: Beyond the general factors you just selected, can you pinpoint any specific resources, events, or key pieces of information that acted as a "tipping point" for your decision?
+                      - generic [ref=e8996]:
+                        - generic [ref=e8997]: observe_parent_intact_tipping_point
+                        - generic [ref=e8998]: n=8
+                    - button "+" [ref=e9000]
+                    - generic [ref=e9001]: ›
+                  - generic [ref=e9003] [cursor=pointer]:
+                    - generic [ref=e9004]:
+                      - generic [ref=e9005]: "302"
+                      - generic "Qualitative Open Response" [ref=e9006]:
+                        - img [ref=e9007]
+                    - generic [ref=e9009]:
+                      - generic [ref=e9010]:
+                        - generic [ref=e9013]: Observer
+                        - generic [ref=e9015]: What were the most significant factors influencing your decision to have your child or children circumcised?
+                      - generic [ref=e9018]: observe_parent_circ_factors
+                    - button "+" [ref=e9020]
+                    - generic [ref=e9021]: ›
+                  - generic [ref=e9023] [cursor=pointer]:
+                    - generic [ref=e9024]:
+                      - generic [ref=e9025]: "190"
+                      - generic "Single Select Choice" [ref=e9026]:
+                        - img [ref=e9027]
+                    - generic [ref=e9030]:
+                      - generic:
+                        - generic [ref=e9032]: Observer
+                        - generic:
+                          - generic: Thinking about the timeline, when did you finalize your decision to keep your son intact?
+                      - generic [ref=e9034]:
+                        - generic [ref=e9035]: observe_parent_intact_decision_timeline
+                        - generic [ref=e9036]: n=8
+                    - button "+" [ref=e9038]
+                    - generic [ref=e9039]: ›
+                  - generic [ref=e9041] [cursor=pointer]:
+                    - generic [ref=e9042]:
+                      - generic [ref=e9043]: "303"
+                      - generic "Qualitative Open Response" [ref=e9044]:
+                        - img [ref=e9045]
+                    - generic [ref=e9047]:
+                      - generic:
+                        - generic [ref=e9049]: Observer
+                        - generic:
+                          - generic: Thinking about the timeline, when did you finalize your decision to have your (first) son circumcised?
+                      - generic [ref=e9052]: observe_parent_circ_decision_timeline
+                    - button "+" [ref=e9054]
+                    - generic [ref=e9055]: ›
+                  - generic [ref=e9057] [cursor=pointer]:
+                    - generic [ref=e9058]:
+                      - generic [ref=e9059]: "304"
+                      - generic "Qualitative Open Response" [ref=e9060]:
+                        - img [ref=e9061]
+                    - generic [ref=e9063]:
+                      - generic:
+                        - generic [ref=e9065]: Observer
+                        - generic:
+                          - generic: Before making your decision, were you ever exposed to information or perspectives that were critical of or advised against routine infant circumcision?
+                      - generic [ref=e9068]: observe_parent_circ_exposure_to_critique
+                    - button "+" [ref=e9070]
+                    - generic [ref=e9071]: ›
+                  - generic [ref=e9073] [cursor=pointer]:
+                    - generic [ref=e9074]:
+                      - generic [ref=e9075]: "305"
+                      - generic "Qualitative Open Response" [ref=e9076]:
+                        - img [ref=e9077]
+                    - generic [ref=e9079]:
+                      - generic [ref=e9080]:
+                        - generic [ref=e9083]: Observer
+                        - generic [ref=e9085]: Has your son ever given you any feedback or expressed feelings (positive, negative, or neutral) about his circumcision?
+                      - generic [ref=e9088]: observe_parent_circ_son_feedback
+                    - button "+" [ref=e9090]
+                    - generic [ref=e9091]: ›
+                  - generic [ref=e9093] [cursor=pointer]:
+                    - generic [ref=e9094]:
+                      - generic [ref=e9095]: "306"
+                      - generic "Qualitative Open Response" [ref=e9096]:
+                        - img [ref=e9097]
+                    - generic [ref=e9099]:
+                      - generic:
+                        - generic [ref=e9101]: Observer
+                        - generic:
+                          - generic: If your son did express feelings about it, what was your emotional experience as a parent during that conversation?
+                      - generic [ref=e9103]:
+                        - generic [ref=e9104]: observe_parent_intact_son_feedback_emotion
+                        - generic [ref=e9105]: n=5
+                    - button "+" [ref=e9107]
+                    - generic [ref=e9108]: ›
+                  - generic [ref=e9110] [cursor=pointer]:
+                    - generic [ref=e9111]:
+                      - generic [ref=e9112]: "191"
+                      - generic "Single Select Choice" [ref=e9113]:
+                        - img [ref=e9114]
+                    - generic [ref=e9117]:
+                      - generic:
+                        - generic [ref=e9119]: Observer
+                        - generic:
+                          - generic: Before making your decision, were you ever exposed to information or perspectives that were strongly in favor of routine infant circumcision?
+                      - generic [ref=e9121]:
+                        - generic [ref=e9122]: observe_parent_intact_exposure_to_pro
+                        - generic [ref=e9123]: n=8
+                    - button "+" [ref=e9125]
+                    - generic [ref=e9126]: ›
+                  - generic [ref=e9128] [cursor=pointer]:
+                    - generic [ref=e9129]:
+                      - generic [ref=e9130]: "192"
+                      - generic "Single Select Choice" [ref=e9131]:
+                        - img [ref=e9132]
+                    - generic [ref=e9135]:
+                      - generic:
+                        - generic [ref=e9137]: Observer
+                        - generic:
+                          - generic: Have any of your son(s)/AMAB children ever given you any feedback or expressed feelings (positive, negative, or neutral) about their intact status?
+                      - generic [ref=e9139]:
+                        - generic [ref=e9140]: observe_parent_intact_son_feedback
+                        - generic [ref=e9141]: n=8
+                    - button "+" [ref=e9143]
+                    - generic [ref=e9144]: ›
+                  - generic [ref=e9146] [cursor=pointer]:
+                    - generic [ref=e9147]:
+                      - generic [ref=e9148]: "316"
+                      - generic "Qualitative Open Response" [ref=e9149]:
+                        - img [ref=e9150]
+                    - generic [ref=e9152]:
+                      - generic [ref=e9153]:
+                        - generic [ref=e9156]: Observer
+                        - generic [ref=e9158]: As you navigate this decision, what are the primary sources of information you are relying on or have consulted so far?
+                      - generic [ref=e9161]: observe_undecided_info_sources_v2
+                    - button "+" [ref=e9163]
+                    - generic [ref=e9164]: ›
+                  - generic [ref=e9166] [cursor=pointer]:
+                    - generic [ref=e9167]:
+                      - generic [ref=e9168]: "317"
+                      - generic "Qualitative Open Response" [ref=e9169]:
+                        - img [ref=e9170]
+                    - generic [ref=e9172]:
+                      - generic [ref=e9173]:
+                        - generic [ref=e9176]: Observer
+                        - generic [ref=e9178]: What are the main arguments or reasons IN FAVOR of circumcision that you are currently weighing?
+                      - generic [ref=e9181]: observe_undecided_pros_v2
+                    - button "+" [ref=e9183]
+                    - generic [ref=e9184]: ›
+                  - generic [ref=e9186] [cursor=pointer]:
+                    - generic [ref=e9187]:
+                      - generic [ref=e9188]: "318"
+                      - generic "Qualitative Open Response" [ref=e9189]:
+                        - img [ref=e9190]
+                    - generic [ref=e9192]:
+                      - generic [ref=e9193]:
+                        - generic [ref=e9196]: Observer
+                        - generic [ref=e9198]: And what are the main arguments or reasons AGAINST circumcision (i.e., for leaving your son intact) that you are weighing?
+                      - generic [ref=e9201]: observe_undecided_cons_v2
+                    - button "+" [ref=e9203]
+                    - generic [ref=e9204]: ›
+                  - generic [ref=e9206] [cursor=pointer]:
+                    - generic [ref=e9207]:
+                      - generic [ref=e9208]: "319"
+                      - generic "Qualitative Open Response" [ref=e9209]:
+                        - img [ref=e9210]
+                    - generic [ref=e9212]:
+                      - generic [ref=e9213]:
+                        - generic [ref=e9216]: Observer
+                        - generic [ref=e9218]: How would you describe the emotional state you and your partner (if applicable) are in regarding this decision?
+                      - generic [ref=e9221]: observe_undecided_emotional_state_v2
+                    - button "+" [ref=e9223]
+                    - generic [ref=e9224]: ›
+                  - generic [ref=e9226] [cursor=pointer]:
+                    - generic [ref=e9227]:
+                      - generic [ref=e9228]: "320"
+                      - generic "Qualitative Open Response" [ref=e9229]:
+                        - img [ref=e9230]
+                    - generic [ref=e9232]:
+                      - generic [ref=e9233]:
+                        - generic [ref=e9236]: Observer
+                        - generic [ref=e9238]: What is the single most important question you have that, if answered, would help you make your final decision with more confidence?
+                      - generic [ref=e9241]: observe_undecided_key_question_v2
+                    - button "+" [ref=e9243]
+                    - generic [ref=e9244]: ›
+                  - generic [ref=e9246] [cursor=pointer]:
+                    - generic [ref=e9247]:
+                      - generic [ref=e9248]: "321"
+                      - generic "Qualitative Open Response" [ref=e9249]:
+                        - img [ref=e9250]
+                    - generic [ref=e9252]:
+                      - generic [ref=e9253]:
+                        - generic [ref=e9256]: Observer
+                        - generic [ref=e9258]: Thinking about the possibility of choosing circumcision, what is your biggest FEAR or ANXIETY about that potential outcome?
+                      - generic [ref=e9261]: observe_undecided_fear_circ_v2
+                    - button "+" [ref=e9263]
+                    - generic [ref=e9264]: ›
+                  - generic [ref=e9266] [cursor=pointer]:
+                    - generic [ref=e9267]:
+                      - generic [ref=e9268]: "322"
+                      - generic "Qualitative Open Response" [ref=e9269]:
+                        - img [ref=e9270]
+                    - generic [ref=e9272]:
+                      - generic [ref=e9273]:
+                        - generic [ref=e9276]: Observer
+                        - generic [ref=e9278]: Now, thinking about the possibility of leaving your son intact, what is your biggest FEAR or ANXIETY about that potential outcome?
+                      - generic [ref=e9281]: observe_undecided_fear_intact_v2
+                    - button "+" [ref=e9283]
+                    - generic [ref=e9284]: ›
+                  - generic [ref=e9286] [cursor=pointer]:
+                    - generic [ref=e9287]:
+                      - generic [ref=e9288]: "346"
+                      - generic "Qualitative Open Response" [ref=e9289]:
+                        - img [ref=e9290]
+                    - generic [ref=e9292]:
+                      - generic:
+                        - generic [ref=e9294]: Observer
+                        - generic:
+                          - generic: Were you the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through adoption)?
+                      - generic [ref=e9297]: observe_parent_circ_decision_maker_v2
+                    - button "+" [ref=e9299]
+                    - generic [ref=e9300]: ›
+              - generic [ref=e9301]:
+                - generic [ref=e9302] [cursor=pointer]:
+                  - heading "▶ Observer — Medical Professionals" [level=3] [ref=e9303]:
+                    - generic [ref=e9304]: ▶
+                    - text: Observer — Medical Professionals
+                  - generic [ref=e9305]: "18"
+                - generic [ref=e9306]:
+                  - generic [ref=e9308] [cursor=pointer]:
+                    - generic [ref=e9309]:
+                      - generic [ref=e9310]: "99"
+                      - generic "Single Select Choice" [ref=e9311]:
+                        - img [ref=e9312]
+                    - generic [ref=e9315]:
+                      - generic:
+                        - generic [ref=e9317]: Observer
+                        - generic:
+                          - generic: What is your general stance or approach when counseling parents about routine infant circumcision?
+                          - generic: "[With PARENTS in a clinical setting]"
+                      - generic [ref=e9319]:
+                        - generic [ref=e9320]: observe_professional_counseling_stance
+                        - generic [ref=e9321]: n=3
+                    - button "+" [ref=e9323]
+                    - generic [ref=e9324]: ›
+                  - generic [ref=e9326] [cursor=pointer]:
+                    - generic [ref=e9327]:
+                      - generic [ref=e9328]: "260"
+                      - generic "Qualitative Open Response" [ref=e9329]:
+                        - img [ref=e9330]
+                    - generic [ref=e9332]:
+                      - generic:
+                        - generic [ref=e9334]: Observer
+                        - generic:
+                          - generic: What training, guidelines, or protocols have most influenced how you present circumcision to parents?
+                      - generic [ref=e9336]:
+                        - generic [ref=e9337]: observe_professional_training_protocol
+                        - generic [ref=e9338]: n=3
+                    - button "+" [ref=e9340]
+                    - generic [ref=e9341]: ›
+                  - generic [ref=e9343] [cursor=pointer]:
+                    - generic [ref=e9344]:
+                      - generic [ref=e9345]: "100"
+                      - generic "Single Select Choice" [ref=e9346]:
+                        - img [ref=e9347]
+                    - generic [ref=e9350]:
+                      - generic:
+                        - generic [ref=e9352]: Observer
+                        - generic:
+                          - generic: In your practice, what are the most common questions or concerns you hear from parents regarding this procedure?
+                      - generic [ref=e9354]:
+                        - generic [ref=e9355]: observe_healthcare_parent_questions
+                        - generic [ref=e9356]: n=3
+                    - button "+" [ref=e9358]
+                    - generic [ref=e9359]: ›
+                  - generic [ref=e9361] [cursor=pointer]:
+                    - generic [ref=e9362]:
+                      - generic [ref=e9363]: "261"
+                      - generic "Qualitative Open Response" [ref=e9364]:
+                        - img [ref=e9365]
+                    - generic [ref=e9367]:
+                      - generic:
+                        - generic [ref=e9369]: Observer
+                        - generic:
+                          - generic: What, if any, changes have you observed in medical consensus or parental attitudes towards routine infant circumcision (RIC) over the course of your career?
+                      - generic [ref=e9371]:
+                        - generic [ref=e9372]: observe_professional_attitudes_change
+                        - generic [ref=e9373]: n=3
+                    - button "+" [ref=e9375]
+                    - generic [ref=e9376]: ›
+                  - generic [ref=e9378] [cursor=pointer]:
+                    - generic [ref=e9379]:
+                      - generic [ref=e9380]: "285"
+                      - generic "Qualitative Open Response" [ref=e9381]:
+                        - img [ref=e9382]
+                    - generic [ref=e9384]:
+                      - generic [ref=e9385]:
+                        - generic [ref=e9388]: Observer
+                        - generic [ref=e9390]: What is your general stance or approach when counseling parents about routine infant circumcision?
+                      - generic [ref=e9393]: observe_healthcare_counseling_stance
+                    - button "+" [ref=e9395]
+                    - generic [ref=e9396]: ›
+                  - generic [ref=e9398] [cursor=pointer]:
+                    - generic [ref=e9399]:
+                      - generic [ref=e9400]: "286"
+                      - generic "Qualitative Open Response" [ref=e9401]:
+                        - img [ref=e9402]
+                    - generic [ref=e9404]:
+                      - generic [ref=e9405]:
+                        - generic [ref=e9408]: Observer
+                        - generic [ref=e9409]:
+                          - generic [ref=e9410]: What training or protocols influenced how you present circumcision to parents?
+                          - generic [ref=e9411]: Have you noticed changes over your career?
+                      - generic [ref=e9414]: observe_healthcare_training_protocol
+                    - button "+" [ref=e9416]
+                    - generic [ref=e9417]: ›
+                  - generic [ref=e9419] [cursor=pointer]:
+                    - generic [ref=e9420]:
+                      - generic [ref=e9421]: "287"
+                      - generic "Qualitative Open Response" [ref=e9422]:
+                        - img [ref=e9423]
+                    - generic [ref=e9425]:
+                      - generic [ref=e9426]:
+                        - generic [ref=e9429]: Observer
+                        - generic [ref=e9431]: What, if any, changes have you observed in medical consensus or parental attitudes towards RIC over your career?
+                      - generic [ref=e9434]: observe_healthcare_attitudes_change
+                    - button "+" [ref=e9436]
+                    - generic [ref=e9437]: ›
+                  - generic [ref=e9439] [cursor=pointer]:
+                    - generic [ref=e9440]:
+                      - generic [ref=e9441]: "198"
+                      - generic "Single Select Choice" [ref=e9442]:
+                        - img [ref=e9443]
+                    - generic [ref=e9446]:
+                      - generic [ref=e9447]:
+                        - generic [ref=e9450]: Observer
+                        - generic [ref=e9452]: What is your PRIMARY MEDICAL ROLE or specialty?
+                      - generic [ref=e9454]:
+                        - generic [ref=e9455]: observe_healthcare_role_v2
+                        - generic [ref=e9456]: n=3
+                    - button "+" [ref=e9458]
+                    - generic [ref=e9459]: ›
+                  - generic [ref=e9461] [cursor=pointer]:
+                    - generic [ref=e9462]:
+                      - generic [ref=e9463]: "199"
+                      - generic "Single Select Choice" [ref=e9464]:
+                        - img [ref=e9465]
+                    - generic [ref=e9468]:
+                      - generic:
+                        - generic [ref=e9470]: Observer
+                        - generic:
+                          - generic: What is your general stance or approach when counseling parents about routine infant circumcision?
+                          - generic: "[With medical COLLEAGUES]"
+                      - generic [ref=e9472]:
+                        - generic [ref=e9473]: observe_healthcare_stance_colleagues
+                        - generic [ref=e9474]: n=2
+                    - button "+" [ref=e9476]
+                    - generic [ref=e9477]: ›
+                  - generic [ref=e9479] [cursor=pointer]:
+                    - generic [ref=e9480]:
+                      - generic [ref=e9481]: "200"
+                      - generic "Single Select Choice" [ref=e9482]:
+                        - img [ref=e9483]
+                    - generic [ref=e9486]:
+                      - generic:
+                        - generic [ref=e9488]: Observer
+                        - generic:
+                          - generic: What is your general stance or approach when counseling parents about routine infant circumcision?
+                          - generic: "[With FRIENDS or FAMILY in a personal setting]"
+                      - generic [ref=e9490]:
+                        - generic [ref=e9491]: observe_healthcare_stance_friends_family
+                        - generic [ref=e9492]: n=3
+                    - button "+" [ref=e9494]
+                    - generic [ref=e9495]: ›
+                  - generic [ref=e9497] [cursor=pointer]:
+                    - generic [ref=e9498]:
+                      - generic [ref=e9499]: "201"
+                      - generic "Single Select Choice" [ref=e9500]:
+                        - img [ref=e9501]
+                    - generic [ref=e9504]:
+                      - generic:
+                        - generic [ref=e9506]: Observer
+                        - generic:
+                          - generic: How often, in your experience, does the topic of foreskin function, gliding mechanics, or specific sensory structures come up during the informed consent process with parents?
+                      - generic [ref=e9508]:
+                        - generic [ref=e9509]: observe_healthcare_sensation_discussion_v2
+                        - generic [ref=e9510]: n=3
+                    - button "+" [ref=e9512]
+                    - generic [ref=e9513]: ›
+                  - generic [ref=e9515] [cursor=pointer]:
+                    - generic [ref=e9516]:
+                      - generic [ref=e9517]: "202"
+                      - generic "Single Select Choice" [ref=e9518]:
+                        - img [ref=e9519]
+                    - generic [ref=e9522]:
+                      - generic:
+                        - generic [ref=e9524]: Observer
+                        - generic:
+                          - generic: From your professional viewpoint, how adequate do you believe the typical informed consent process is for routine infant circumcision in your region?
+                      - generic [ref=e9526]:
+                        - generic [ref=e9527]: observe_healthcare_consent_quality_v2
+                        - generic [ref=e9528]: n=3
+                    - button "+" [ref=e9530]
+                    - generic [ref=e9531]: ›
+                  - generic [ref=e9533] [cursor=pointer]:
+                    - generic [ref=e9534]:
+                      - generic [ref=e9535]: "203"
+                      - generic "Single Select Choice" [ref=e9536]:
+                        - img [ref=e9537]
+                    - generic [ref=e9540]:
+                      - generic:
+                        - generic [ref=e9542]: Observer
+                        - generic:
+                          - generic: Have you personally seen or treated complications resulting from infant circumcision in your practice?
+                      - generic [ref=e9544]:
+                        - generic [ref=e9545]: observe_healthcare_complications_seen_v2
+                        - generic [ref=e9546]: n=3
+                    - button "+" [ref=e9548]
+                    - generic [ref=e9549]: ›
+                  - generic [ref=e9551] [cursor=pointer]:
+                    - generic [ref=e9552]:
+                      - generic [ref=e9553]: "307"
+                      - generic "Qualitative Open Response" [ref=e9554]:
+                        - img [ref=e9555]
+                    - generic [ref=e9557]:
+                      - generic:
+                        - generic [ref=e9559]: Observer
+                        - generic:
+                          - generic: If you're willing to share, what types of complications have you seen?
+                      - generic [ref=e9561]:
+                        - generic [ref=e9562]: observe_healthcare_complications_desc
+                        - generic [ref=e9563]: n=2
+                    - button "+" [ref=e9565]
+                    - generic [ref=e9566]: ›
+                  - generic [ref=e9568] [cursor=pointer]:
+                    - generic [ref=e9569]:
+                      - generic [ref=e9570]: "204"
+                      - generic "Single Select Choice" [ref=e9571]:
+                        - img [ref=e9572]
+                    - generic [ref=e9575]:
+                      - generic:
+                        - generic [ref=e9577]: Observer
+                        - generic:
+                          - generic: From your unique standpoint within the healthcare system, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT regarding male circumcision?
+                      - generic [ref=e9579]:
+                        - generic [ref=e9580]: observe_healthcare_blind_spot_v2
+                        - generic [ref=e9581]: n=3
+                    - button "+" [ref=e9583]
+                    - generic [ref=e9584]: ›
+                  - generic [ref=e9586] [cursor=pointer]:
+                    - generic [ref=e9587]:
+                      - generic [ref=e9588]: "205"
+                      - generic "Single Select Choice" [ref=e9589]:
+                        - img [ref=e9590]
+                    - generic [ref=e9593]:
+                      - generic:
+                        - generic [ref=e9595]: Observer
+                        - generic:
+                          - generic: In what type of facility or practice setting do you primarily work?
+                      - generic [ref=e9597]:
+                        - generic [ref=e9598]: observe_healthcare_facility_type
+                        - generic [ref=e9599]: n=3
+                    - button "+" [ref=e9601]
+                    - generic [ref=e9602]: ›
+                  - generic [ref=e9604] [cursor=pointer]:
+                    - generic [ref=e9605]:
+                      - generic [ref=e9606]: "206"
+                      - generic "Single Select Choice" [ref=e9607]:
+                        - img [ref=e9608]
+                    - generic [ref=e9611]:
+                      - generic [ref=e9612]:
+                        - generic [ref=e9615]: Observer
+                        - generic [ref=e9617]: If you are male/AMAB, what is your own circumcision state?
+                      - generic [ref=e9619]:
+                        - generic [ref=e9620]: observe_healthcare_self_status
+                        - generic [ref=e9621]: n=3
+                    - button "+" [ref=e9623]
+                    - generic [ref=e9624]: ›
+                  - generic [ref=e9626] [cursor=pointer]:
+                    - generic [ref=e9627]:
+                      - generic [ref=e9628]: "207"
+                      - generic "Single Select Choice" [ref=e9629]:
+                        - img [ref=e9630]
+                    - generic [ref=e9633]:
+                      - generic:
+                        - generic [ref=e9635]: Observer
+                        - generic:
+                          - generic: Looking ahead 10-20 years, where do you predict the practice of routine infant circumcision will be in your country?
+                      - generic [ref=e9637]:
+                        - generic [ref=e9638]: observe_healthcare_prediction_future_ric
+                        - generic [ref=e9639]: n=3
+                    - button "+" [ref=e9641]
+                    - generic [ref=e9642]: ›
+              - generic [ref=e9643]:
+                - generic [ref=e9644] [cursor=pointer]:
+                  - heading "▶ Observer — Advocates & Ethicists" [level=3] [ref=e9645]:
+                    - generic [ref=e9646]: ▶
+                    - text: Observer — Advocates & Ethicists
+                  - generic [ref=e9647]: "8"
+                - generic [ref=e9648]:
+                  - generic [ref=e9650] [cursor=pointer]:
+                    - generic [ref=e9651]:
+                      - generic [ref=e9652]: "262"
+                      - generic "Qualitative Open Response" [ref=e9653]:
+                        - img [ref=e9654]
+                    - generic [ref=e9656]:
+                      - generic:
+                        - generic [ref=e9658]: Observer
+                        - generic:
+                          - generic: Do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or FGM (female genital mutilation)?
+                      - generic [ref=e9660]:
+                        - generic [ref=e9661]: observe_advocate_fgm_mgm_parallel
+                        - generic [ref=e9662]: n=1
+                    - button "+" [ref=e9664]
+                    - generic [ref=e9665]: ›
+                  - generic [ref=e9667] [cursor=pointer]:
+                    - generic [ref=e9668]:
+                      - generic [ref=e9669]: "288"
+                      - generic "Qualitative Open Response" [ref=e9670]:
+                        - img [ref=e9671]
+                    - generic [ref=e9673]:
+                      - generic:
+                        - generic [ref=e9675]: Observer
+                        - generic:
+                          - generic: What do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?
+                      - generic [ref=e9678]: observe_advocate_barrier_to_recognition
+                    - button "+" [ref=e9680]
+                    - generic [ref=e9681]: ›
+                  - generic [ref=e9683] [cursor=pointer]:
+                    - generic [ref=e9684]:
+                      - generic [ref=e9685]: "289"
+                      - generic "Qualitative Open Response" [ref=e9686]:
+                        - img [ref=e9687]
+                    - generic [ref=e9689]:
+                      - generic [ref=e9690]:
+                        - generic [ref=e9693]: Observer
+                        - generic [ref=e9695]: What strategy or piece of information do you find most effective in engaging people in thoughtful conversation about this topic?
+                      - generic [ref=e9698]: observe_advocate_effective_strategy
+                    - button "+" [ref=e9700]
+                    - generic [ref=e9701]: ›
+                  - generic [ref=e9703] [cursor=pointer]:
+                    - generic [ref=e9704]:
+                      - generic [ref=e9705]: "290"
+                      - generic "Qualitative Open Response" [ref=e9706]:
+                        - img [ref=e9707]
+                    - generic [ref=e9709]:
+                      - generic [ref=e9710]:
+                        - generic [ref=e9713]: Observer
+                        - generic [ref=e9715]: As a WOMAN, do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or FGM (female genital mutilation)?
+                      - generic [ref=e9717]:
+                        - generic [ref=e9718]: q262
+                        - generic [ref=e9719]: n=2
+                    - button "+" [ref=e9721]
+                    - generic [ref=e9722]: ›
+                  - generic [ref=e9724] [cursor=pointer]:
+                    - generic [ref=e9725]:
+                      - generic [ref=e9726]: "208"
+                      - generic "Single Select Choice" [ref=e9727]:
+                        - img [ref=e9728]
+                    - generic [ref=e9731]:
+                      - generic [ref=e9732]:
+                        - generic [ref=e9735]: Observer
+                        - generic [ref=e9737]: How would you best describe your primary role or focus within the genital autonomy movement?
+                      - generic [ref=e9739]:
+                        - generic [ref=e9740]: observe_advocate_primary_role
+                        - generic [ref=e9741]: n=9
+                    - button "+" [ref=e9743]
+                    - generic [ref=e9744]: ›
+                  - generic [ref=e9746] [cursor=pointer]:
+                    - generic [ref=e9747]:
+                      - generic [ref=e9748]: "209"
+                      - generic "Single Select Choice" [ref=e9749]:
+                        - img [ref=e9750]
+                    - generic [ref=e9753]:
+                      - generic:
+                        - generic [ref=e9755]: Observer
+                        - generic:
+                          - generic: In your experience, what do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?
+                      - generic [ref=e9757]:
+                        - generic [ref=e9758]: observe_advocate_barrier_to_recognition_v2
+                        - generic [ref=e9759]: n=9
+                    - button "+" [ref=e9761]
+                    - generic [ref=e9762]: ›
+                  - generic [ref=e9764] [cursor=pointer]:
+                    - generic [ref=e9765]:
+                      - generic [ref=e9766]: "210"
+                      - generic "Single Select Choice" [ref=e9767]:
+                        - img [ref=e9768]
+                    - generic [ref=e9771]:
+                      - generic:
+                        - generic [ref=e9773]: Observer
+                        - generic:
+                          - generic: What strategy, argument, or piece of information do you find most effective in engaging people in a thoughtful, productive conversation about this topic?
+                      - generic [ref=e9775]:
+                        - generic [ref=e9776]: observe_advocate_effective_strategy_v2
+                        - generic [ref=e9777]: n=9
+                    - button "+" [ref=e9779]
+                    - generic [ref=e9780]: ›
+                  - generic [ref=e9782] [cursor=pointer]:
+                    - generic [ref=e9783]:
+                      - generic [ref=e9784]: "211"
+                      - generic "Multiple Select Choices" [ref=e9785]:
+                        - img [ref=e9786]
+                    - generic [ref=e9789]:
+                      - generic [ref=e9790]:
+                        - generic [ref=e9793]: Observer
+                        - generic [ref=e9795]: Looking forward, where do you believe the genital autonomy movement should be focusing its energy and resources for the greatest impact over the next 5 years?
+                      - generic [ref=e9797]:
+                        - generic [ref=e9798]: observe_advocate_future_focus
+                        - generic [ref=e9799]: n=9
+                    - button "+" [ref=e9801]
+                    - generic [ref=e9802]: ›
+              - generic [ref=e9803]:
+                - generic [ref=e9804] [cursor=pointer]:
+                  - heading "▶ Observer — Women" [level=3] [ref=e9805]:
+                    - generic [ref=e9806]: ▶
+                    - text: Observer — Women
+                  - generic [ref=e9807]: "2"
+                - generic [ref=e9808]:
+                  - generic [ref=e9810] [cursor=pointer]:
+                    - generic [ref=e9811]:
+                      - generic [ref=e9812]: "103"
+                      - generic "Qualitative Open Response" [ref=e9813]:
+                        - img [ref=e9814]
+                    - generic [ref=e9816]:
+                      - generic [ref=e9817]:
+                        - generic [ref=e9820]: Observer
+                        - generic [ref=e9822]: From your unique standpoint, what is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding male circumcision, intactness, or their lifelong impacts?
+                      - generic [ref=e9824]:
+                        - generic [ref=e9825]: observe_woman_blind_spot
+                        - generic [ref=e9826]: n=22
+                    - button "+" [ref=e9828]
+                    - generic [ref=e9829]: ›
+                  - generic [ref=e9831] [cursor=pointer]:
+                    - generic [ref=e9832]:
+                      - generic [ref=e9833]: "104"
+                      - generic "Qualitative Open Response" [ref=e9834]:
+                        - img [ref=e9835]
+                    - generic [ref=e9837]:
+                      - generic [ref=e9838]:
+                        - generic [ref=e9841]: Observer
+                        - generic [ref=e9843]: Is there anything else you'd like to share based on your observations, experiences, or your reasons for being interested in this topic?
+                      - generic [ref=e9845]:
+                        - generic [ref=e9846]: observe_woman_final_thoughts
+                        - generic [ref=e9847]: n=15
+                    - button "+" [ref=e9849]
+                    - generic [ref=e9850]: ›
+              - generic [ref=e9851]:
+                - generic [ref=e9852] [cursor=pointer]:
+                  - heading "▶ Observer — Researchers & Students" [level=3] [ref=e9853]:
+                    - generic [ref=e9854]: ▶
+                    - text: Observer — Researchers & Students
+                  - generic [ref=e9855]: "12"
+                - generic [ref=e9856]:
+                  - generic [ref=e9858] [cursor=pointer]:
+                    - generic [ref=e9859]:
+                      - generic [ref=e9860]: "145"
+                      - generic "Multiple Select Choices" [ref=e9861]:
+                        - img [ref=e9862]
+                    - generic [ref=e9865]:
+                      - generic:
+                        - generic [ref=e9867]: Observer
+                        - generic:
+                          - generic: What has most shaped your current understanding or opinion about penile circumcision?
+                      - generic [ref=e9869]:
+                        - generic [ref=e9870]: observe_curious_shaping_factors
+                        - generic [ref=e9871]: n=21
+                    - button "+" [ref=e9873]
+                    - generic [ref=e9874]: ›
+                  - generic [ref=e9876] [cursor=pointer]:
+                    - generic [ref=e9877]:
+                      - generic [ref=e9878]: "212"
+                      - generic "Single Select Choice" [ref=e9879]:
+                        - img [ref=e9880]
+                    - generic [ref=e9883]:
+                      - generic:
+                        - generic [ref=e9885]: Observer
+                        - generic:
+                          - generic: Before encountering this survey or similar discussions, what was your general understanding or awareness of the differences between an intact and a circumcised penis?
+                      - generic [ref=e9887]:
+                        - generic [ref=e9888]: observe_curious_initial_awareness
+                        - generic [ref=e9889]: n=2
+                    - button "+" [ref=e9891]
+                    - generic [ref=e9892]: ›
+                  - generic [ref=e9894] [cursor=pointer]:
+                    - generic [ref=e9895]:
+                      - generic [ref=e9896]: "213"
+                      - generic "Single Select Choice" [ref=e9897]:
+                        - img [ref=e9898]
+                    - generic [ref=e9901]:
+                      - generic:
+                        - generic [ref=e9903]: Observer
+                        - generic:
+                          - generic: Have you had direct, personal experience (e.g., through intimate partners) with both intact and circumcised male partners?
+                      - generic [ref=e9905]:
+                        - generic [ref=e9906]: observe_curious_partner_experience
+                        - generic [ref=e9907]: n=2
+                    - button "+" [ref=e9909]
+                    - generic [ref=e9910]: ›
+                  - generic [ref=e9912] [cursor=pointer]:
+                    - generic [ref=e9913]:
+                      - generic [ref=e9914]: "214"
+                      - generic "Single Select Choice" [ref=e9915]:
+                        - img [ref=e9916]
+                    - generic [ref=e9919]:
+                      - generic:
+                        - generic [ref=e9921]: Observer
+                        - generic:
+                          - generic: If you have experience with both, have you observed any noticeable differences in terms of intimacy, function, or your partner's experience?
+                      - generic [ref=e9923]:
+                        - generic [ref=e9924]: observe_curious_partner_experience_desc
+                        - generic [ref=e9925]: n=1
+                    - button "+" [ref=e9927]
+                    - generic [ref=e9928]: ›
+                  - generic [ref=e9930] [cursor=pointer]:
+                    - generic [ref=e9931]:
+                      - generic [ref=e9932]: "308"
+                      - generic "Qualitative Open Response" [ref=e9933]:
+                        - img [ref=e9934]
+                    - generic [ref=e9936]:
+                      - generic [ref=e9937]:
+                        - generic [ref=e9940]: Observer
+                        - generic [ref=e9942]: From your unique standpoint, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding this entire issue?
+                      - generic [ref=e9944]:
+                        - generic [ref=e9945]: observe_curious_blind_spot
+                        - generic [ref=e9946]: n=2
+                    - button "+" [ref=e9948]
+                    - generic [ref=e9949]: ›
+                  - generic [ref=e9951] [cursor=pointer]:
+                    - generic [ref=e9952]:
+                      - generic [ref=e9953]: "309"
+                      - generic "Qualitative Open Response" [ref=e9954]:
+                        - img [ref=e9955]
+                    - generic [ref=e9957]:
+                      - generic [ref=e9958]:
+                        - generic [ref=e9961]: Observer
+                        - generic [ref=e9963]: What is your primary field of study or research discipline?
+                      - generic [ref=e9966]: observe_student_field_v2
+                    - button "+" [ref=e9968]
+                    - generic [ref=e9969]: ›
+                  - generic [ref=e9971] [cursor=pointer]:
+                    - generic [ref=e9972]:
+                      - generic [ref=e9973]: "310"
+                      - generic "Qualitative Open Response" [ref=e9974]:
+                        - img [ref=e9975]
+                    - generic [ref=e9977]:
+                      - generic [ref=e9978]:
+                        - generic [ref=e9981]: Observer
+                        - generic [ref=e9983]: What is your current academic or professional status?
+                      - generic [ref=e9986]: observe_student_status_v2
+                    - button "+" [ref=e9988]
+                    - generic [ref=e9989]: ›
+                  - generic [ref=e9991] [cursor=pointer]:
+                    - generic [ref=e9992]:
+                      - generic [ref=e9993]: "311"
+                      - generic "Qualitative Open Response" [ref=e9994]:
+                        - img [ref=e9995]
+                    - generic [ref=e9997]:
+                      - generic [ref=e9998]:
+                        - generic [ref=e10001]: Observer
+                        - generic [ref=e10003]: What is your primary interest in the topic of genital cutting / circumcision?
+                      - generic [ref=e10006]: observe_student_primary_interest_v2
+                    - button "+" [ref=e10008]
+                    - generic [ref=e10009]: ›
+                  - generic [ref=e10011] [cursor=pointer]:
+                    - generic [ref=e10012]:
+                      - generic [ref=e10013]: "312"
+                      - generic "Qualitative Open Response" [ref=e10014]:
+                        - img [ref=e10015]
+                    - generic [ref=e10017]:
+                      - generic [ref=e10018]:
+                        - generic [ref=e10021]: Observer
+                        - generic [ref=e10023]: From your perspective as a researcher or student, how might a large, qualitative/quantitative dataset like the one we are building be useful for your own work or field of study?
+                      - generic [ref=e10026]: observe_student_dataset_utility_v2
+                    - button "+" [ref=e10028]
+                    - generic [ref=e10029]: ›
+                  - generic [ref=e10031] [cursor=pointer]:
+                    - generic [ref=e10032]:
+                      - generic [ref=e10033]: "313"
+                      - generic "Qualitative Open Response" [ref=e10034]:
+                        - img [ref=e10035]
+                    - generic [ref=e10037]:
+                      - generic [ref=e10038]:
+                        - generic [ref=e10041]: Observer
+                        - generic [ref=e10043]: What do you see as the biggest methodological challenge or limitation in conducting research on this topic?
+                      - generic [ref=e10046]: observe_student_method_challenge_v2
+                    - button "+" [ref=e10048]
+                    - generic [ref=e10049]: ›
+                  - generic [ref=e10051] [cursor=pointer]:
+                    - generic [ref=e10052]:
+                      - generic [ref=e10053]: "314"
+                      - generic "Qualitative Open Response" [ref=e10054]:
+                        - img [ref=e10055]
+                    - generic [ref=e10057]:
+                      - generic [ref=e10058]:
+                        - generic [ref=e10061]: Observer
+                        - generic [ref=e10063]: If you hold a pro-circumcision or skeptical viewpoint regarding intactivist messaging, what is the strongest piece of evidence or a key logical argument that underpins your perspective?
+                      - generic [ref=e10066]: observe_student_pro_circ_argument_v2
+                    - button "+" [ref=e10068]
+                    - generic [ref=e10069]: ›
+                  - generic [ref=e10071] [cursor=pointer]:
+                    - generic [ref=e10072]:
+                      - generic [ref=e10073]: "315"
+                      - generic "Qualitative Open Response" [ref=e10074]:
+                        - img [ref=e10075]
+                    - generic [ref=e10077]:
+                      - generic [ref=e10078]:
+                        - generic [ref=e10081]: Observer
+                        - generic [ref=e10083]: From your unique standpoint, what do you believe is the most significant gap in the current academic literature regarding genital cutting /circumcision?
+                      - generic [ref=e10086]: observe_student_literature_gap_v2
+                    - button "+" [ref=e10088]
+                    - generic [ref=e10089]: ›
+              - generic [ref=e10090]:
+                - generic [ref=e10091] [cursor=pointer]:
+                  - heading "▶ Observer — Skeptics & Critics" [level=3] [ref=e10092]:
+                    - generic [ref=e10093]: ▶
+                    - text: Observer — Skeptics & Critics
+                  - generic [ref=e10094]: "5"
+                - generic [ref=e10095]:
+                  - generic [ref=e10097] [cursor=pointer]:
+                    - generic [ref=e10098]:
+                      - generic [ref=e10099]: "323"
+                      - generic "Qualitative Open Response" [ref=e10100]:
+                        - img [ref=e10101]
+                    - generic [ref=e10103]:
+                      - generic [ref=e10104]:
+                        - generic [ref=e10107]: Observer
+                        - generic [ref=e10109]: In general, what is your primary reason for SKEPTICISM regarding the anti-circumcision or intactivist movement?
+                      - generic [ref=e10112]: observe_skeptic_primary_reason_v2
+                    - button "+" [ref=e10114]
+                    - generic [ref=e10115]: ›
+                  - generic [ref=e10117] [cursor=pointer]:
+                    - generic [ref=e10118]:
+                      - generic [ref=e10119]: "324"
+                      - generic "Qualitative Open Response" [ref=e10120]:
+                        - img [ref=e10121]
+                    - generic [ref=e10123]:
+                      - generic [ref=e10124]:
+                        - generic [ref=e10127]: Observer
+                        - generic [ref=e10129]: Which pro-circumcision argument do you find to be the most logically sound or compelling?
+                      - generic [ref=e10132]: observe_skeptic_strongest_pro_arg_v2
+                    - button "+" [ref=e10134]
+                    - generic [ref=e10135]: ›
+                  - generic [ref=e10137] [cursor=pointer]:
+                    - generic [ref=e10138]:
+                      - generic [ref=e10139]: "325"
+                      - generic "Qualitative Open Response" [ref=e10140]:
+                        - img [ref=e10141]
+                    - generic [ref=e10143]:
+                      - generic [ref=e10144]:
+                        - generic [ref=e10147]: Observer
+                        - generic [ref=e10149]: Conversely, which anti-circumcision (intactivist) argument do you find to be the weakest, least convincing, or most flawed?
+                      - generic [ref=e10152]: observe_skeptic_weakest_anti_arg_v2
+                    - button "+" [ref=e10154]
+                    - generic [ref=e10155]: ›
+                  - generic [ref=e10157] [cursor=pointer]:
+                    - generic [ref=e10158]:
+                      - generic [ref=e10159]: "326"
+                      - generic "Qualitative Open Response" [ref=e10160]:
+                        - img [ref=e10161]
+                    - generic [ref=e10163]:
+                      - generic:
+                        - generic [ref=e10165]: Observer
+                        - generic:
+                          - generic: What would it take for you to find the intactivist perspective more credible or persuasive?
+                      - generic [ref=e10168]: observe_skeptic_persuasion_factors_v2
+                    - button "+" [ref=e10170]
+                    - generic [ref=e10171]: ›
+                  - generic [ref=e10173] [cursor=pointer]:
+                    - generic [ref=e10174]:
+                      - generic [ref=e10175]: "327"
+                      - generic "Qualitative Open Response" [ref=e10176]:
+                        - img [ref=e10177]
+                    - generic [ref=e10179]:
+                      - generic [ref=e10180]:
+                        - generic [ref=e10183]: Observer
+                        - generic [ref=e10185]: Is there anything else you'd like to share about your perspective or the reasons for your skepticism?
+                      - generic [ref=e10188]: observe_skeptic_final_thoughts_v2
+                    - button "+" [ref=e10190]
+                    - generic [ref=e10191]: ›
+              - generic [ref=e10192]:
+                - generic [ref=e10193] [cursor=pointer]:
+                  - heading "▶ Transgender — Post-Vaginoplasty" [level=3] [ref=e10194]:
+                    - generic [ref=e10195]: ▶
+                    - text: Transgender — Post-Vaginoplasty
+                  - generic [ref=e10196]: "3"
+                - generic [ref=e10197]:
+                  - generic [ref=e10199] [cursor=pointer]:
+                    - generic [ref=e10200]:
+                      - generic [ref=e10201]: "328"
+                      - generic "Qualitative Open Response" [ref=e10202]:
+                        - img [ref=e10203]
+                    - generic [ref=e10205]:
+                      - generic [ref=e10206]:
+                        - generic [ref=e10209]: Transgender
+                        - generic [ref=e10211]: Before your gender-affirming surgery, what was the circumcision state of your penis?
+                      - generic [ref=e10214]: q346
+                    - button "+" [ref=e10216]
+                    - generic [ref=e10217]: ›
+                  - generic [ref=e10219] [cursor=pointer]:
+                    - generic [ref=e10220]:
+                      - generic [ref=e10221]: "329"
+                      - generic "Qualitative Open Response" [ref=e10222]:
+                        - img [ref=e10223]
+                    - generic [ref=e10225]:
+                      - generic [ref=e10226]:
+                        - generic [ref=e10229]: Transgender
+                        - generic [ref=e10231]: Did your pre-surgery circumcision state have any notable impact on your gender-affirming surgery?
+                      - generic [ref=e10234]: q348
+                    - button "+" [ref=e10236]
+                    - generic [ref=e10237]: ›
+                  - generic [ref=e10239] [cursor=pointer]:
+                    - generic [ref=e10240]:
+                      - generic [ref=e10241]: "330"
+                      - generic "Qualitative Open Response" [ref=e10242]:
+                        - img [ref=e10243]
+                    - generic [ref=e10245]:
+                      - generic [ref=e10246]:
+                        - generic [ref=e10249]: Transgender
+                        - generic [ref=e10251]: Would you be willing to reflect on your experience before your GRS?
+                      - generic [ref=e10254]: q350
+                    - button "+" [ref=e10256]
+                    - generic [ref=e10257]: ›
+              - generic [ref=e10258]:
+                - generic [ref=e10259] [cursor=pointer]:
+                  - heading "▶ Transgender — Post-Phalloplasty" [level=3] [ref=e10260]:
+                    - generic [ref=e10261]: ▶
+                    - text: Transgender — Post-Phalloplasty
+                  - generic [ref=e10262]: "6"
+                - generic [ref=e10263]:
+                  - generic [ref=e10265] [cursor=pointer]:
+                    - generic [ref=e10266]:
+                      - generic [ref=e10267]: "331"
+                      - generic "Qualitative Open Response" [ref=e10268]:
+                        - img [ref=e10269]
+                    - generic [ref=e10271]:
+                      - generic [ref=e10272]:
+                        - generic [ref=e10275]: Transgender
+                        - generic [ref=e10277]: Which type of masculinizing gender-affirming bottom surgery have you undergone?
+                      - generic [ref=e10280]: q351
+                    - button "+" [ref=e10282]
+                    - generic [ref=e10283]: ›
+                  - generic [ref=e10285] [cursor=pointer]:
+                    - generic [ref=e10286]:
+                      - generic [ref=e10287]: "332"
+                      - generic "Qualitative Open Response" [ref=e10288]:
+                        - img [ref=e10289]
+                    - generic [ref=e10291]:
+                      - generic [ref=e10292]:
+                        - generic [ref=e10295]: Transgender
+                        - generic [ref=e10297]: During your surgical process, was a "circumcised" or "intact" (with a constructed foreskin) appearance a choice you considered or discussed with your surgical team?
+                      - generic [ref=e10300]: q352
+                    - button "+" [ref=e10302]
+                    - generic [ref=e10303]: ›
+                  - generic [ref=e10305] [cursor=pointer]:
+                    - generic [ref=e10306]:
+                      - generic [ref=e10307]: "333"
+                      - generic "Qualitative Open Response" [ref=e10308]:
+                        - img [ref=e10309]
+                    - generic [ref=e10311]:
+                      - generic [ref=e10312]:
+                        - generic [ref=e10315]: Transgender
+                        - generic [ref=e10316]:
+                          - generic [ref=e10317]: How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?
+                          - generic [ref=e10318]: "[Aesthetic Appearance]"
+                      - generic [ref=e10321]: q353
+                    - button "+" [ref=e10323]
+                    - generic [ref=e10324]: ›
+                  - generic [ref=e10326] [cursor=pointer]:
+                    - generic [ref=e10327]:
+                      - generic [ref=e10328]: "334"
+                      - generic "Qualitative Open Response" [ref=e10329]:
+                        - img [ref=e10330]
+                    - generic [ref=e10332]:
+                      - generic [ref=e10333]:
+                        - generic [ref=e10336]: Transgender
+                        - generic [ref=e10337]:
+                          - generic [ref=e10338]: How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?
+                          - generic [ref=e10339]: "[Sensation (if applicable)]"
+                      - generic [ref=e10342]: q354
+                    - button "+" [ref=e10344]
+                    - generic [ref=e10345]: ›
+                  - generic [ref=e10347] [cursor=pointer]:
+                    - generic [ref=e10348]:
+                      - generic [ref=e10349]: "335"
+                      - generic "Qualitative Open Response" [ref=e10350]:
+                        - img [ref=e10351]
+                    - generic [ref=e10353]:
+                      - generic [ref=e10354]:
+                        - generic [ref=e10357]: Transgender
+                        - generic [ref=e10358]:
+                          - generic [ref=e10359]: How satisfied are you with the final outcome, specifically in relation to this aspect of its appearance and function?
+                          - generic [ref=e10360]: "[Overall sense of bodily congruence / feeling \"right\"]"
+                      - generic [ref=e10363]: q355
+                    - button "+" [ref=e10365]
+                    - generic [ref=e10366]: ›
+                  - generic [ref=e10368] [cursor=pointer]:
+                    - generic [ref=e10369]:
+                      - generic [ref=e10370]: "336"
+                      - generic "Qualitative Open Response" [ref=e10371]:
+                        - img [ref=e10372]
+                    - generic [ref=e10374]:
+                      - generic [ref=e10375]:
+                        - generic [ref=e10378]: Transgender
+                        - generic [ref=e10380]: From your unique perspective of having actively constructed an affirming body, what are your thoughts on performing non-consensual, non-therapeutic genital surgery on infants?
+                      - generic [ref=e10383]: q356
+                    - button "+" [ref=e10385]
+                    - generic [ref=e10386]: ›
+              - generic [ref=e10387]:
+                - generic [ref=e10388] [cursor=pointer]:
+                  - heading "▶ Intersex" [level=3] [ref=e10389]:
+                    - generic [ref=e10390]: ▶
+                    - text: Intersex
+                  - generic [ref=e10391]: "3"
+                - generic [ref=e10392]:
+                  - generic [ref=e10394] [cursor=pointer]:
+                    - generic [ref=e10395]:
+                      - generic [ref=e10396]: "337"
+                      - generic "Qualitative Open Response" [ref=e10397]:
+                        - img [ref=e10398]
+                    - generic [ref=e10400]:
+                      - generic [ref=e10401]:
+                        - generic [ref=e10404]: Intersex
+                        - generic [ref=e10406]: How has the topic of non-consensual or "normalizing" genital surgery intersected with your own life and body?
+                      - generic [ref=e10409]: q357
+                    - button "+" [ref=e10411]
+                    - generic [ref=e10412]: ›
+                  - generic [ref=e10414] [cursor=pointer]:
+                    - generic [ref=e10415]:
+                      - generic [ref=e10416]: "338"
+                      - generic "Qualitative Open Response" [ref=e10417]:
+                        - img [ref=e10418]
+                    - generic [ref=e10420]:
+                      - generic [ref=e10421]:
+                        - generic [ref=e10424]: Intersex
+                        - generic [ref=e10426]: From your unique perspective, how do you see the common practice of routine infant circumcision in relation to the broader issue of Intersex Genital Mutilation (IGM)?
+                      - generic [ref=e10429]: q358
+                    - button "+" [ref=e10431]
+                    - generic [ref=e10432]: ›
+                  - generic [ref=e10434] [cursor=pointer]:
+                    - generic [ref=e10435]:
+                      - generic [ref=e10436]: "339"
+                      - generic "Qualitative Open Response" [ref=e10437]:
+                        - img [ref=e10438]
+                    - generic [ref=e10440]:
+                      - generic [ref=e10441]:
+                        - generic [ref=e10444]: Intersex
+                        - generic [ref=e10446]: In addition to your experience as an intersex person, do you also have experiences that align with the Intact or Circumcised pathways?
+                      - generic [ref=e10449]: q359
+                    - button "+" [ref=e10451]
+                    - generic [ref=e10452]: ›
+              - generic [ref=e10453]:
+                - generic [ref=e10454] [cursor=pointer]:
+                  - heading "▶ Family" [level=3] [ref=e10455]:
+                    - generic [ref=e10456]: ▶
+                    - text: Family
+                  - generic [ref=e10457]: "5"
+                - generic [ref=e10458]:
+                  - generic [ref=e10460] [cursor=pointer]:
+                    - generic [ref=e10461]:
+                      - generic [ref=e10462]: "13"
+                      - generic "Single Select Choice" [ref=e10463]:
+                        - img [ref=e10464]
+                    - generic [ref=e10467]:
+                      - generic [ref=e10468]:
+                        - generic [ref=e10470]: T1
+                        - generic [ref=e10472]: What is your FATHER'S (or primary male guardian's) circumcision state, to the best of your knowledge?
+                      - generic [ref=e10474]:
+                        - generic [ref=e10475]: family_father_status
+                        - generic [ref=e10476]: n=381
+                    - button "+" [ref=e10478]
+                    - generic [ref=e10479]: ›
+                  - generic [ref=e10481] [cursor=pointer]:
+                    - generic [ref=e10482]:
+                      - generic [ref=e10483]: "81"
+                      - generic "Single Select Choice" [ref=e10484]:
+                        - img [ref=e10485]
+                    - generic [ref=e10488]:
+                      - generic [ref=e10491]: Do you have any male (AMAB) SIBLINGS (brothers, including half-brothers or step-brothers raised with you) and if so, how many
+                      - generic [ref=e10493]:
+                        - generic [ref=e10494]: family_sibling_count
+                        - generic [ref=e10495]: n=379
+                    - button "+" [ref=e10497]
+                    - generic [ref=e10498]: ›
+                  - generic [ref=e10500] [cursor=pointer]:
+                    - generic [ref=e10501]:
+                      - generic [ref=e10502]: "82"
+                      - generic "Single Select Choice" [ref=e10503]:
+                        - img [ref=e10504]
+                    - generic [ref=e10507]:
+                      - generic [ref=e10510]: What is your siblings' circumcision state?
+                      - generic [ref=e10512]:
+                        - generic [ref=e10513]: family_sibling_status
+                        - generic [ref=e10514]: n=221
+                    - button "+" [ref=e10516]
+                    - generic [ref=e10517]: ›
+                  - generic [ref=e10519] [cursor=pointer]:
+                    - generic [ref=e10520]:
+                      - generic [ref=e10521]: "83"
+                      - generic "Multiple Select Choices" [ref=e10522]:
+                        - img [ref=e10523]
+                    - generic [ref=e10526]:
+                      - generic:
+                        - generic:
+                          - generic: Since there is a mix of circumcision states among you and your siblings(s), do you know anything about why the decision was different for different children?
+                      - generic [ref=e10528]:
+                        - generic [ref=e10529]: family_sibling_status_mixed_reason
+                        - generic [ref=e10530]: n=28
+                    - button "+" [ref=e10532]
+                    - generic [ref=e10533]: ›
+                  - generic [ref=e10535] [cursor=pointer]:
+                    - generic [ref=e10536]:
+                      - generic [ref=e10537]: "273"
+                      - generic "Qualitative Open Response" [ref=e10538]:
+                        - img [ref=e10539]
+                    - generic [ref=e10541]:
+                      - generic [ref=e10543]:
+                        - generic [ref=e10544]: "CULTURAL BACKGROUND:"
+                        - generic [ref=e10545]: Which religious or spiritual tradition(s), if any, best describes the CULTURAL or ANCESTRAL background of your family?
+                      - generic [ref=e10547]:
+                        - generic [ref=e10548]: family_cultural_background
+                        - generic [ref=e10549]: n=67
+                    - button "+" [ref=e10551]
+                    - generic [ref=e10552]: ›
+              - generic [ref=e10553]:
+                - generic [ref=e10554] [cursor=pointer]:
+                  - heading "▶ Culture & Attitudes" [level=3] [ref=e10555]:
+                    - generic [ref=e10556]: ▶
+                    - text: Culture & Attitudes
+                  - generic [ref=e10557]: "38"
+                - generic [ref=e10558]:
+                  - generic [ref=e10560] [cursor=pointer]:
+                    - generic [ref=e10561]:
+                      - generic [ref=e10562]: "105"
+                      - generic "Single Select Choice" [ref=e10563]:
+                        - img [ref=e10564]
+                    - generic [ref=e10567]:
+                      - generic:
+                        - generic:
+                          - generic: In general, how do you view the relationship between the human body's natural state and medical interventions?
+                      - generic [ref=e10569]:
+                        - generic [ref=e10570]: culture_body_intervention_view
+                        - generic [ref=e10571]: n=499
+                    - button "+" [ref=e10573]
+                    - generic [ref=e10574]: ›
+                  - generic [ref=e10576] [cursor=pointer]:
+                    - generic [ref=e10577]:
+                      - generic [ref=e10578]: "106"
+                      - generic "Single Select Choice" [ref=e10579]:
+                        - img [ref=e10580]
+                    - generic [ref=e10583]:
+                      - generic:
+                        - generic:
+                          - generic: In your family or the community you grew up in, what was the general EXPECTATION for newborn boys regarding circumcision?
+                      - generic [ref=e10585]:
+                        - generic [ref=e10586]: culture_community_expectation
+                        - generic [ref=e10587]: n=499
+                    - button "+" [ref=e10589]
+                    - generic [ref=e10590]: ›
+                  - generic [ref=e10592] [cursor=pointer]:
+                    - generic [ref=e10593]:
+                      - generic [ref=e10594]: "107"
+                      - generic "Single Select Choice" [ref=e10595]:
+                        - img [ref=e10596]
+                    - generic [ref=e10599]:
+                      - generic [ref=e10602]: In your view, or based on what you understood from your upbringing/community, penile circumcision is primarily seen as
+                      - generic [ref=e10604]:
+                        - generic [ref=e10605]: culture_primary_view_of_circ
+                        - generic [ref=e10606]: n=502
+                    - button "+" [ref=e10608]
+                    - generic [ref=e10609]: ›
+                  - generic [ref=e10611] [cursor=pointer]:
+                    - generic [ref=e10612]:
+                      - generic [ref=e10613]: "263"
+                      - generic "Qualitative Open Response" [ref=e10614]:
+                        - img [ref=e10615]
+                    - generic [ref=e10617]:
+                      - generic [ref=e10619]:
+                        - generic [ref=e10620]: Additional Comments (Culture & Attitudes)
+                        - generic [ref=e10621]: Are there any other thoughts you'd like to share regarding societal attitudes, cultural expectations, or religious norms related to circumcision?
+                      - generic [ref=e10623]:
+                        - generic [ref=e10624]: culture_additional_comments
+                        - generic [ref=e10625]: n=238
+                    - button "+" [ref=e10627]
+                    - generic [ref=e10628]: ›
+                  - generic [ref=e10630] [cursor=pointer]:
+                    - generic [ref=e10631]:
+                      - generic [ref=e10632]: "264"
+                      - generic "Qualitative Open Response" [ref=e10633]:
+                        - img [ref=e10634]
+                    - generic [ref=e10636]:
+                      - generic [ref=e10639]: Thinking back to your upbringing or just general societal messages (from peers, media, family, health class), what was a common STEREOTYPE, assumption, or "fact" that 'everyone seemed to know' about INTACT (uncircumcised) penises?
+                      - generic [ref=e10641]:
+                        - generic [ref=e10642]: culture_stereotype_intact
+                        - generic [ref=e10643]: n=390
+                    - button "+" [ref=e10645]
+                    - generic [ref=e10646]: ›
+                  - generic [ref=e10648] [cursor=pointer]:
+                    - generic [ref=e10649]:
+                      - generic [ref=e10650]: "265"
+                      - generic "Qualitative Open Response" [ref=e10651]:
+                        - img [ref=e10652]
+                    - generic [ref=e10654]:
+                      - generic [ref=e10657]: Similarly, what was a common STEREOTYPE, assumption, or "fact" that 'everyone seemed to know' about CIRCUMCISED penises?
+                      - generic [ref=e10659]:
+                        - generic [ref=e10660]: culture_stereotype_circ
+                        - generic [ref=e10661]: n=378
+                    - button "+" [ref=e10663]
+                    - generic [ref=e10664]: ›
+                  - generic [ref=e10666] [cursor=pointer]:
+                    - generic [ref=e10667]:
+                      - generic [ref=e10668]: "108"
+                      - generic "Single Select Choice" [ref=e10669]:
+                        - img [ref=e10670]
+                    - generic [ref=e10673]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Medically Healthier]
+                      - generic [ref=e10675]:
+                        - generic [ref=e10676]: culture_assoc_medically_healthier
+                        - generic [ref=e10677]: n=485
+                    - button "+" [ref=e10679]
+                    - generic [ref=e10680]: ›
+                  - generic [ref=e10682] [cursor=pointer]:
+                    - generic [ref=e10683]:
+                      - generic [ref=e10684]: "109"
+                      - generic "Single Select Choice" [ref=e10685]:
+                        - img [ref=e10686]
+                    - generic [ref=e10689]:
+                      - generic [ref=e10692]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Hygienic / Cleaner]
+                      - generic [ref=e10694]:
+                        - generic [ref=e10695]: culture_assoc_more_hygienic
+                        - generic [ref=e10696]: n=483
+                    - button "+" [ref=e10698]
+                    - generic [ref=e10699]: ›
+                  - generic [ref=e10701] [cursor=pointer]:
+                    - generic [ref=e10702]:
+                      - generic [ref=e10703]: "110"
+                      - generic "Single Select Choice" [ref=e10704]:
+                        - img [ref=e10705]
+                    - generic [ref=e10708]:
+                      - generic [ref=e10711]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Natural' Looking]
+                      - generic [ref=e10713]:
+                        - generic [ref=e10714]: culture_assoc_more_natural
+                        - generic [ref=e10715]: n=486
+                    - button "+" [ref=e10717]
+                    - generic [ref=e10718]: ›
+                  - generic [ref=e10720] [cursor=pointer]:
+                    - generic [ref=e10721]:
+                      - generic [ref=e10722]: "14"
+                      - generic "Single Select Choice" [ref=e10723]:
+                        - img [ref=e10724]
+                    - generic [ref=e10727]:
+                      - generic [ref=e10728]:
+                        - generic [ref=e10730]: T1
+                        - generic [ref=e10732]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Aesthetically Pleasing / "Better" Looking]
+                      - generic [ref=e10734]:
+                        - generic [ref=e10735]: culture_assoc_more_aesthetic
+                        - generic [ref=e10736]: n=484
+                    - button "+" [ref=e10738]
+                    - generic [ref=e10739]: ›
+                  - generic [ref=e10741] [cursor=pointer]:
+                    - generic [ref=e10742]:
+                      - generic [ref=e10743]: "111"
+                      - generic "Single Select Choice" [ref=e10744]:
+                        - img [ref=e10745]
+                    - generic [ref=e10748]:
+                      - generic [ref=e10751]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Sensitive / Greater Pleasure Potential]
+                      - generic [ref=e10753]:
+                        - generic [ref=e10754]: culture_assoc_more_sensitive
+                        - generic [ref=e10755]: n=485
+                    - button "+" [ref=e10757]
+                    - generic [ref=e10758]: ›
+                  - generic [ref=e10760] [cursor=pointer]:
+                    - generic [ref=e10761]:
+                      - generic [ref=e10762]: "112"
+                      - generic "Single Select Choice" [ref=e10763]:
+                        - img [ref=e10764]
+                    - generic [ref=e10767]:
+                      - generic [ref=e10770]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Easier to Care For]
+                      - generic [ref=e10772]:
+                        - generic [ref=e10773]: culture_assoc_easier_care
+                        - generic [ref=e10774]: n=486
+                    - button "+" [ref=e10776]
+                    - generic [ref=e10777]: ›
+                  - generic [ref=e10779] [cursor=pointer]:
+                    - generic [ref=e10780]:
+                      - generic [ref=e10781]: "113"
+                      - generic "Single Select Choice" [ref=e10782]:
+                        - img [ref=e10783]
+                    - generic [ref=e10786]:
+                      - generic [ref=e10789]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More 'Manly' or 'Masculine']
+                      - generic [ref=e10791]:
+                        - generic [ref=e10792]: culture_assoc_more_masculine
+                        - generic [ref=e10793]: n=483
+                    - button "+" [ref=e10795]
+                    - generic [ref=e10796]: ›
+                  - generic [ref=e10798] [cursor=pointer]:
+                    - generic [ref=e10799]:
+                      - generic [ref=e10800]: "114"
+                      - generic "Single Select Choice" [ref=e10801]:
+                        - img [ref=e10802]
+                    - generic [ref=e10805]:
+                      - generic [ref=e10808]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Modern / Progressive]
+                      - generic [ref=e10810]:
+                        - generic [ref=e10811]: culture_assoc_more_modern
+                        - generic [ref=e10812]: n=481
+                    - button "+" [ref=e10814]
+                    - generic [ref=e10815]: ›
+                  - generic [ref=e10817] [cursor=pointer]:
+                    - generic [ref=e10818]:
+                      - generic [ref=e10819]: "115"
+                      - generic "Single Select Choice" [ref=e10820]:
+                        - img [ref=e10821]
+                    - generic [ref=e10824]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Traditional / Old-Fashioned]
+                      - generic [ref=e10826]:
+                        - generic [ref=e10827]: culture_assoc_more_traditional
+                        - generic [ref=e10828]: n=482
+                    - button "+" [ref=e10830]
+                    - generic [ref=e10831]: ›
+                  - generic [ref=e10833] [cursor=pointer]:
+                    - generic [ref=e10834]:
+                      - generic [ref=e10835]: "116"
+                      - generic "Single Select Choice" [ref=e10836]:
+                        - img [ref=e10837]
+                    - generic [ref=e10840]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [More Socially Acceptable (in your primary culture)]
+                      - generic [ref=e10842]:
+                        - generic [ref=e10843]: culture_assoc_more_socially_acceptable
+                        - generic [ref=e10844]: n=482
+                    - button "+" [ref=e10846]
+                    - generic [ref=e10847]: ›
+                  - generic [ref=e10849] [cursor=pointer]:
+                    - generic [ref=e10850]:
+                      - generic [ref=e10851]: "117"
+                      - generic "Single Select Choice" [ref=e10852]:
+                        - img [ref=e10853]
+                    - generic [ref=e10856]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Preferred by Sexual Partners (in general)]
+                      - generic [ref=e10858]:
+                        - generic [ref=e10859]: culture_assoc_partner_preference
+                        - generic [ref=e10860]: n=484
+                    - button "+" [ref=e10862]
+                    - generic [ref=e10863]: ›
+                  - generic [ref=e10865] [cursor=pointer]:
+                    - generic [ref=e10866]:
+                      - generic [ref=e10867]: "118"
+                      - generic "Single Select Choice" [ref=e10868]:
+                        - img [ref=e10869]
+                    - generic [ref=e10872]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Intelligence/Education (of parents who choose it)]
+                      - generic [ref=e10874]:
+                        - generic [ref=e10875]: culture_assoc_higher_education
+                        - generic [ref=e10876]: n=479
+                    - button "+" [ref=e10878]
+                    - generic [ref=e10879]: ›
+                  - generic [ref=e10881] [cursor=pointer]:
+                    - generic [ref=e10882]:
+                      - generic [ref=e10883]: "119"
+                      - generic "Single Select Choice" [ref=e10884]:
+                        - img [ref=e10885]
+                    - generic [ref=e10888]:
+                      - generic [ref=e10891]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Higher Socioeconomic Status (of parents who choose it)]
+                      - generic [ref=e10893]:
+                        - generic [ref=e10894]: culture_assoc_higher_ses
+                        - generic [ref=e10895]: n=481
+                    - button "+" [ref=e10897]
+                    - generic [ref=e10898]: ›
+                  - generic [ref=e10900] [cursor=pointer]:
+                    - generic [ref=e10901]:
+                      - generic [ref=e10902]: "120"
+                      - generic "Single Select Choice" [ref=e10903]:
+                        - img [ref=e10904]
+                    - generic [ref=e10907]:
+                      - generic [ref=e10910]: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Liberal/Progressive Values (of parents who choose it)]
+                      - generic [ref=e10912]:
+                        - generic [ref=e10913]: culture_assoc_liberal_values
+                        - generic [ref=e10914]: n=481
+                    - button "+" [ref=e10916]
+                    - generic [ref=e10917]: ›
+                  - generic [ref=e10919] [cursor=pointer]:
+                    - generic [ref=e10920]:
+                      - generic [ref=e10921]: "121"
+                      - generic "Single Select Choice" [ref=e10922]:
+                        - img [ref=e10923]
+                    - generic [ref=e10926]:
+                      - generic:
+                        - generic:
+                          - generic: Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. [Associated with Conservative/Traditional Values (of parents who choose it)]
+                      - generic [ref=e10928]:
+                        - generic [ref=e10929]: culture_assoc_conservative_values
+                        - generic [ref=e10930]: n=478
+                    - button "+" [ref=e10932]
+                    - generic [ref=e10933]: ›
+                  - generic [ref=e10935] [cursor=pointer]:
+                    - generic [ref=e10936]:
+                      - generic [ref=e10937]: "122"
+                      - generic "Single Select Choice" [ref=e10938]:
+                        - img [ref=e10939]
+                    - generic [ref=e10942]:
+                      - generic:
+                        - generic:
+                          - generic: Putting aside your personal satisfaction or feelings, which state do you generally believe to be MEDICALLY HEALTHIER or more HYGIENIC overall?
+                      - generic [ref=e10944]:
+                        - generic [ref=e10945]: final_healthier_hygienic_belief
+                        - generic [ref=e10946]: n=500
+                    - button "+" [ref=e10948]
+                    - generic [ref=e10949]: ›
+                  - generic [ref=e10951] [cursor=pointer]:
+                    - generic [ref=e10952]:
+                      - generic [ref=e10953]: "123"
+                      - generic "Single Select Choice" [ref=e10954]:
+                        - img [ref=e10955]
+                    - generic [ref=e10958]:
+                      - generic:
+                        - generic:
+                          - generic: Again, putting aside your own personal level of satisfaction, which state do you generally BELIEVE offers a greater POTENTIAL for physical sexual pleasure and sensation?
+                      - generic [ref=e10960]:
+                        - generic [ref=e10961]: final_pleasure_potential_belief
+                        - generic [ref=e10962]: n=498
+                    - button "+" [ref=e10964]
+                    - generic [ref=e10965]: ›
+                  - generic [ref=e10967] [cursor=pointer]:
+                    - generic [ref=e10968]:
+                      - generic [ref=e10969]: "124"
+                      - generic "Single Select Choice" [ref=e10970]:
+                        - img [ref=e10971]
+                    - generic [ref=e10974]:
+                      - generic:
+                        - generic:
+                          - generic: Based on your life experiences, conversations, and media consumption, what do you believe is the general preference of sexual partners (of any gender) regarding a partner's circumcision state (intact vs. circumcised) in your culture?
+                      - generic [ref=e10976]:
+                        - generic [ref=e10977]: final_partner_preference_belief
+                        - generic [ref=e10978]: n=493
+                    - button "+" [ref=e10980]
+                    - generic [ref=e10981]: ›
+                  - generic [ref=e10983] [cursor=pointer]:
+                    - generic [ref=e10984]:
+                      - generic [ref=e10985]: "266"
+                      - generic "Qualitative Open Response" [ref=e10986]:
+                        - img [ref=e10987]
+                    - generic [ref=e10989]:
+                      - generic:
+                        - generic:
+                          - generic: What do you believe has most shaped this perceived preference?
+                      - generic [ref=e10991]:
+                        - generic [ref=e10992]: final_partner_preference_reason
+                        - generic [ref=e10993]: n=334
+                    - button "+" [ref=e10995]
+                    - generic [ref=e10996]: ›
+                  - generic [ref=e10998] [cursor=pointer]:
+                    - generic [ref=e10999]:
+                      - generic [ref=e11000]: "15"
+                      - generic "Single Select Choice" [ref=e11001]:
+                        - img [ref=e11002]
+                    - generic [ref=e11005]:
+                      - generic [ref=e11006]:
+                        - generic [ref=e11008]: T1
+                        - generic [ref=e11010]: Purely in terms of AESTHETICS (visual appearance), which look do you personally find more appealing?
+                      - generic [ref=e11012]:
+                        - generic [ref=e11013]: final_aesthetic_preference
+                        - generic [ref=e11014]: n=501
+                    - button "+" [ref=e11016]
+                    - generic [ref=e11017]: ›
+                  - generic [ref=e11019] [cursor=pointer]:
+                    - generic [ref=e11020]:
+                      - generic [ref=e11021]: "125"
+                      - generic "Single Select Choice" [ref=e11022]:
+                        - img [ref=e11023]
+                    - generic [ref=e11026]:
+                      - generic [ref=e11029]: Based on your own experiences, observations, and everything you've heard or read, which group of men do you believe, on average, experiences more intense or fulfilling SEXUAL PLEASURE AND ORGASM?
+                      - generic [ref=e11031]:
+                        - generic [ref=e11032]: final_avg_pleasure_belief
+                        - generic [ref=e11033]: n=495
+                    - button "+" [ref=e11035]
+                    - generic [ref=e11036]: ›
+                  - generic [ref=e11038] [cursor=pointer]:
+                    - generic [ref=e11039]:
+                      - generic [ref=e11040]: "16"
+                      - generic "Single Select Choice" [ref=e11041]:
+                        - img [ref=e11042]
+                    - generic [ref=e11045]:
+                      - generic [ref=e11046]:
+                        - generic [ref=e11048]: T1
+                        - generic [ref=e11050]: In your specific cultural context (e.g., in the US, in Europe, in your community), which state do you believe is perceived as more SOCIALLY NORMAL and ACCEPTABLE?
+                      - generic [ref=e11052]:
+                        - generic [ref=e11053]: final_social_norm_perception
+                        - generic [ref=e11054]: n=493
+                    - button "+" [ref=e11056]
+                    - generic [ref=e11057]: ›
+                  - generic [ref=e11059] [cursor=pointer]:
+                    - generic [ref=e11060]:
+                      - generic [ref=e11061]: "126"
+                      - generic "Single Select Choice" [ref=e11062]:
+                        - img [ref=e11063]
+                    - generic [ref=e11066]:
+                      - generic [ref=e11069]: Based on everything you know and have experienced, if you were to have a child assigned male at birth today, what would your decision regarding circumcision be, and what is the single most important reason for that choice?
+                      - generic [ref=e11071]:
+                        - generic [ref=e11072]: final_child_decision_reason
+                        - generic [ref=e11073]: n=493
+                    - button "+" [ref=e11075]
+                    - generic [ref=e11076]: ›
+                  - generic [ref=e11078] [cursor=pointer]:
+                    - generic [ref=e11079]:
+                      - generic [ref=e11080]: "267"
+                      - generic "Qualitative Open Response" [ref=e11081]:
+                        - img [ref=e11082]
+                    - generic [ref=e11084]:
+                      - generic [ref=e11087]: When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant (meaning there is no existing disease to treat), which principle do you believe should be given more weight?
+                      - generic [ref=e11089]:
+                        - generic [ref=e11090]: final_core_principle_choice
+                        - generic [ref=e11091]: n=493
+                    - button "+" [ref=e11093]
+                    - generic [ref=e11094]: ›
+                  - generic [ref=e11096] [cursor=pointer]:
+                    - generic [ref=e11097]:
+                      - generic [ref=e11098]: "268"
+                      - generic "Qualitative Open Response" [ref=e11099]:
+                        - img [ref=e11100]
+                    - generic [ref=e11102]:
+                      - generic [ref=e11105]: What do you think is the single most important piece of information that people (especially expectant parents or young men) are MISSING when it comes to understanding male genital anatomy, intactness, and the lifelong impacts of circumcision?
+                      - generic [ref=e11107]:
+                        - generic [ref=e11108]: final_missing_info_opinion
+                        - generic [ref=e11109]: n=386
+                    - button "+" [ref=e11111]
+                    - generic [ref=e11112]: ›
+                  - generic [ref=e11114] [cursor=pointer]:
+                    - generic [ref=e11115]:
+                      - generic [ref=e11116]: "127"
+                      - generic "Single Select Choice" [ref=e11117]:
+                        - img [ref=e11118]
+                    - generic [ref=e11121]:
+                      - generic:
+                        - generic:
+                          - generic: The "Accidental Intactivist" (that's me, the survey author!) argues that routine infant circumcision is a "transparent monster" – a significant harm hiding in plain sight, normalized by culture. Does this metaphor resonate with your own observations or feelings?
+                          - generic: Why or why not?
+                      - generic [ref=e11123]:
+                        - generic [ref=e11124]: final_transparent_monster_resonance
+                        - generic [ref=e11125]: n=496
+                    - button "+" [ref=e11127]
+                    - generic [ref=e11128]: ›
+                  - generic [ref=e11130] [cursor=pointer]:
+                    - generic [ref=e11131]:
+                      - generic [ref=e11132]: "269"
+                      - generic "Qualitative Open Response" [ref=e11133]:
+                        - img [ref=e11134]
+                    - generic [ref=e11136]:
+                      - generic:
+                        - generic:
+                          - generic: Please feel free to briefly explain your answer. Why does (or doesn't) this metaphor feel accurate to you?
+                      - generic [ref=e11138]:
+                        - generic [ref=e11139]: final_transparent_monster_reason
+                        - generic [ref=e11140]: n=279
+                    - button "+" [ref=e11142]
+                    - generic [ref=e11143]: ›
+                  - generic [ref=e11145] [cursor=pointer]:
+                    - generic [ref=e11146]:
+                      - generic [ref=e11147]: "270"
+                      - generic "Qualitative Open Response" [ref=e11148]:
+                        - img [ref=e11149]
+                    - generic [ref=e11151]:
+                      - generic [ref=e11154]: Is there anything else you'd like to share about your experiences, observations, feelings about this topic, or anything this survey didn't cover that you feel is important?
+                      - generic [ref=e11156]:
+                        - generic [ref=e11157]: final_anything_else
+                        - generic [ref=e11158]: n=190
+                    - button "+" [ref=e11160]
+                    - generic [ref=e11161]: ›
+                  - generic [ref=e11163] [cursor=pointer]:
+                    - generic [ref=e11164]:
+                      - generic [ref=e11165]: "149"
+                      - generic "Single Select Choice" [ref=e11166]:
+                        - img [ref=e11167]
+                    - generic [ref=e11170]:
+                      - generic:
+                        - generic:
+                          - generic: Reflecting on media you've consumed throughout your life (e.g., movies, TV, pornography, health education), how do you believe it has shaped the cultural "default" or "ideal" for what a penis should look like?
+                      - generic [ref=e11172]:
+                        - generic [ref=e11173]: final_ethical_consideration_belief
+                        - generic [ref=e11174]: n=253
+                    - button "+" [ref=e11176]
+                    - generic [ref=e11177]: ›
+                  - generic [ref=e11179] [cursor=pointer]:
+                    - generic [ref=e11180]:
+                      - generic [ref=e11181]: "150"
+                      - generic "Single Select Choice" [ref=e11182]:
+                        - img [ref=e11183]
+                    - generic [ref=e11186]:
+                      - generic [ref=e11189]: How significant a role do you believe social pressures—like the fear of a child "looking different" in a locker room or to future partners—play in the continuation of routine infant circumcision in cultures where it's common?
+                      - generic [ref=e11191]:
+                        - generic [ref=e11192]: culture_social_pressure_role
+                        - generic [ref=e11193]: n=259
+                    - button "+" [ref=e11195]
+                    - generic [ref=e11196]: ›
+                  - generic [ref=e11198] [cursor=pointer]:
+                    - generic [ref=e11199]:
+                      - generic [ref=e11200]: "151"
+                      - generic "Single Select Choice" [ref=e11201]:
+                        - img [ref=e11202]
+                    - generic [ref=e11205]:
+                      - generic:
+                        - generic:
+                          - generic: "Broadening the lens for a moment:"
+                          - generic: What is your general stance on performing medically unnecessary, permanent cosmetic alterations on a minor who cannot consent?
+                      - generic [ref=e11207]:
+                        - generic [ref=e11208]: final_ethics_cosmetic_alteration_minor
+                        - generic [ref=e11209]: n=259
+                    - button "+" [ref=e11211]
+                    - generic [ref=e11212]: ›
+                  - generic [ref=e11214] [cursor=pointer]:
+                    - generic [ref=e11215]:
+                      - generic [ref=e11216]: "280"
+                      - generic "Qualitative Open Response" [ref=e11217]:
+                        - img [ref=e11218]
+                    - generic [ref=e11220]:
+                      - generic:
+                        - generic:
+                          - generic: Looking forward 20-30 years, where do you predict the practice of routine infant circumcision will be in your primary country/culture?
+                      - generic [ref=e11222]:
+                        - generic [ref=e11223]: final_prediction_future_of_ric
+                        - generic [ref=e11224]: n=260
+                    - button "+" [ref=e11226]
+                    - generic [ref=e11227]: ›
+      - generic [ref=e11231]:
+        - link "← Back to the Special Report" [ref=e11232] [cursor=pointer]:
+          - /url: https://findings.circumsurvey.online
+        - text: ·
+        - link "Methodology & Data Rigor" [ref=e11233] [cursor=pointer]:
+          - /url: "#/methodology"
+        - text: ·
+        - link "circumsurvey.online" [ref=e11234] [cursor=pointer]:
+          - /url: https://circumsurvey.online
+    - generic [ref=e11237]:
+      - generic [ref=e11240] [cursor=pointer]:
+        - generic:
+          - img
+        - generic [ref=e11241]:
+          - generic [ref=e11242]: Next Exhibit • Exhibit 01
+          - generic [ref=e11243]: The Survey Map
+          - generic [ref=e11244]: Interactive survey architecture flowchart
+        - img [ref=e11246]
+      - generic [ref=e11249]:
+        - generic [ref=e11250]:
+          - generic [ref=e11251]: The Accidental Intactivist's Inquiry
+          - generic [ref=e11252]: An open-source exploration into the lived experiences, perceptions, and pathways of 501 respondents.
+          - link "Take the Anonymous Survey" [ref=e11253] [cursor=pointer]:
+            - /url: https://forms.gle/FQ8o9g7j1yU3Cw7n7
+        - generic [ref=e11255]:
+          - generic [ref=e11256]: Featured Exhibits
+          - generic [ref=e11257]:
+            - generic [ref=e11258] [cursor=pointer]: Master Index
+            - generic [ref=e11259] [cursor=pointer]:
+              - generic [ref=e11260]: Exhibit 01
+              - generic [ref=e11262]: The Survey Map
+            - generic [ref=e11263] [cursor=pointer]:
+              - generic [ref=e11264]: Exhibit 02
+              - generic [ref=e11266]: Mirror Pairs
+            - generic [ref=e11267] [cursor=pointer]:
+              - generic [ref=e11268]: Exhibit 03
+              - generic [ref=e11270]: The Pleasure Gap
+            - generic [ref=e11271] [cursor=pointer]:
+              - generic [ref=e11272]: Exhibit 04
+              - generic [ref=e11274]: Correlations Explorer
+            - generic [ref=e11275] [cursor=pointer]:
+              - generic [ref=e11276]: Exhibit 05
+              - generic [ref=e11278]: Demographic Explorer
+            - generic [ref=e11279] [cursor=pointer]:
+              - generic [ref=e11280]: Exhibit 06
+              - generic [ref=e11282]: The Voices
+            - generic [ref=e11283] [cursor=pointer]:
+              - generic [ref=e11284]: Exhibit 07
+              - generic [ref=e11286]: Culture & Generations
+            - generic [ref=e11287] [cursor=pointer]:
+              - generic [ref=e11288]: Exhibit 08
+              - generic [ref=e11290]: The Observer Lens
+            - generic [ref=e11291] [cursor=pointer]:
+              - generic [ref=e11292]: Exhibit 09
+              - generic [ref=e11294]: Religious Mirrors
+            - generic [ref=e11295] [cursor=pointer]:
+              - generic [ref=e11296]: Exhibit 10
+              - generic [ref=e11298]: Restoration Journey
+            - generic [ref=e11299] [cursor=pointer]:
+              - generic [ref=e11300]: Exhibit 11
+              - generic [ref=e11302]: "Before & After: The Adult Experience"
+            - generic [ref=e11303] [cursor=pointer]:
+              - generic [ref=e11304]: Exhibit 12
+              - generic [ref=e11306]: By the Numbers
+            - generic [ref=e11307] [cursor=pointer]:
+              - generic [ref=e11308]: Exhibit 13
+              - generic [ref=e11310]: For New & Expectant Parents
+            - generic [ref=e11311] [cursor=pointer]:
+              - generic [ref=e11312]: Exhibit 14
+              - generic [ref=e11314]: The Forward View
+        - generic [ref=e11315]:
+          - generic [ref=e11316]: Project & Community
+          - generic [ref=e11317]:
+            - generic [ref=e11318] [cursor=pointer]: About the Project
+            - generic [ref=e11319] [cursor=pointer]: Survey Methodology
+            - generic [ref=e11320] [cursor=pointer]: Contact Us
+            - generic [ref=e11321] [cursor=pointer]: Get Involved
+            - generic [ref=e11322] [cursor=pointer]: FAQ
+        - generic [ref=e11323]:
+          - generic [ref=e11324]: Resources & Tools
+          - generic [ref=e11325]:
+            - generic [ref=e11326] [cursor=pointer]: For New Parents
+            - generic [ref=e11327] [cursor=pointer]: Demographic Profile
+            - generic [ref=e11328] [cursor=pointer]: Report Builder
+            - generic [ref=e11329] [cursor=pointer]: Downloads & External
+      - generic [ref=e11330]:
+        - generic [ref=e11331]: © 2026 The Accidental Intactivist
+        - generic [ref=e11333] [cursor=pointer]: ↑ Back to top
+  - generic:
+    - generic:
+      - generic:
+        - img
+        - generic: Research Assistant
+        - button:
+          - img
+      - button:
+        - img
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - heading [level=5]: Suggested Queries
+            - generic:
+              - button: What can I learn from this page?
+              - button: What surprised respondents most about this topic?
+              - button: What is the most unexpected demographic correlation in the data?
+        - generic:
+          - generic:
+            - textbox:
+              - /placeholder: Ask about the data… (Enter to send)
+            - button [disabled]: Submit
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from '@playwright/test';
+  2  | 
+  3  | test.describe('Rage Scroll Stress Test', () => {
+  4  |   test('Guided tour can handle rapid scrolling without dropping frames to 0 or crashing', async ({ page }) => {
+  5  |     // Navigate to the guided tour page
+  6  |     await page.goto('/explore#/');
+  7  | 
+  8  |     // Wait for the main app to mount and the canvas to initialize
+  9  |     await page.waitForSelector('canvas', { state: 'attached' });
+  10 | 
+  11 |     // Ensure there are no unhandled exceptions in the page console
+  12 |     let pageErrors = [];
+  13 |     page.on('pageerror', exception => {
+  14 |       pageErrors.push(exception);
+  15 |     });
+  16 |     
+  17 |     // Grab the document body handle to perform scrolling
+  18 |     const body = await page.locator('body');
+  19 | 
+  20 |     // Rage scroll down rapidly (increased intensity)
+  21 |     for (let i = 0; i < 40; i++) {
+  22 |       await page.mouse.wheel(0, 1500);
+> 23 |       await page.waitForTimeout(20); 
+     |                  ^ Error: page.waitForTimeout: Test timeout of 30000ms exceeded.
+  24 |     }
+  25 | 
+  26 |     // Wait a brief moment at the bottom to trigger intersection observers
+  27 |     await page.waitForTimeout(500);
+  28 | 
+  29 |     // Rage scroll up rapidly
+  30 |     for (let i = 0; i < 40; i++) {
+  31 |       await page.mouse.wheel(0, -1500);
+  32 |       await page.waitForTimeout(20);
+  33 |     }
+  34 |     
+  35 |     // Wait a brief moment at the top
+  36 |     await page.waitForTimeout(500);
+  37 |     
+  38 |     // Jerky scrolling (up and down rapidly)
+  39 |     for (let i = 0; i < 20; i++) {
+  40 |       await page.mouse.wheel(0, 800);
+  41 |       await page.waitForTimeout(30);
+  42 |       await page.mouse.wheel(0, -500);
+  43 |       await page.waitForTimeout(20);
+  44 |     }
+  45 | 
+  46 |     // Assert no unhandled JS errors occurred during the stress test
+  47 |     expect(pageErrors.length).toBe(0);
+  48 |   });
+  49 | });
+  50 | 
+```

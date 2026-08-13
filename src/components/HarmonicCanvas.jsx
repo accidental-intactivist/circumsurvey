@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { resolveCssColor } from '../explore/styles/tokens';
+import { useTelemetry } from '../explore/lib/telemetry';
 
 // ── The Harmonic Loom configuration ────────────────────────────────────────
 // Single source of truth for the masthead's motion + glisten. The component
@@ -38,6 +39,7 @@ export const LOOM_CONFIG = {
 export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '', paused = false }) {
   const canvasRef = useRef(null);
   const pausedRef = useRef(paused);
+  const { trackEvent } = useTelemetry();
 
   useEffect(() => {
     pausedRef.current = paused;
@@ -83,15 +85,24 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     resizeCanvas();
 
     let isVisible = true;
+    let startTime = null;
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         isVisible = entry.isIntersecting;
         if (isVisible && !animationFrameId) {
           lastFrameTime = performance.now();
           animationFrameId = requestAnimationFrame(render);
+          if (!startTime) {
+            startTime = Date.now();
+          }
         } else if (!isVisible && animationFrameId) {
           cancelAnimationFrame(animationFrameId);
           animationFrameId = null;
+          if (startTime) {
+            const dwellTime = Date.now() - startTime;
+            trackEvent('harmonic_canvas_dwelled', { dwell_time_ms: dwellTime });
+            startTime = null;
+          }
         }
       });
     }, { rootMargin: '100px' });
@@ -569,8 +580,12 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
+      if (startTime) {
+        const dwellTime = Date.now() - startTime;
+        trackEvent('harmonic_canvas_dwelled', { dwell_time_ms: dwellTime });
+      }
     };
-  }, [themeKey]);
+  }, [themeKey, trackEvent]);
 
   return (
     <canvas 

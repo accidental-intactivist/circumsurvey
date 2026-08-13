@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTelemetry } from '../lib/telemetry';
 import { FONT } from '../styles/tokens';
 
 export default function ThemeToggle() {
@@ -12,6 +13,8 @@ export default function ThemeToggle() {
     dyslexicFont, setDyslexicFont,
     typeScale, setTypeScale 
   } = useTheme();
+  
+  const { trackEvent } = useTelemetry();
   
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
@@ -71,7 +74,12 @@ export default function ThemeToggle() {
     <div ref={containerRef} style={{ position: "relative", zIndex: 100 }}>
       {/* ── GEAR ICON BUTTON ── */}
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) {
+            trackEvent('settings_opened');
+          }
+          setIsOpen(!isOpen);
+        }}
         style={toggleBtnStyle}
         aria-label="Settings"
         onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "var(--c-bgSoft)"; }}

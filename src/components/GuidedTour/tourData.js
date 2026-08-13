@@ -437,7 +437,7 @@ export const ATLAS_REGIONS = {
 
 // ── Rotating hero facts (masthead) ──
 export const HERO_FACTS = [
-  { big: "96%",   l1: "of intact respondents prioritize", l2: "the child's right to bodily autonomy.",
+  { big: "96%",   l1: "of intact respondents and 81% of circumcised", l2: "respondents prioritize the child's right to decide.",
     ctx: "Every pathway lands between 81% and 100%.", colorVar: "var(--c-blue)" },
   { big: "80%",   l1: "of restoring respondents report",  l2: "strong, frequent resentment.",
     ctx: "0% said they have never felt negative about their circumcision.", colorVar: "var(--c-red)" },

@@ -1043,109 +1043,110 @@ _demographics.dimensions.push({
   "short": "Mother's Occupation",
   "categories": [
     {
-      "category": "Healthcare/Medicine",
-      "total": 75,
-      "intact": 25,
-      "circumcised": 35,
-      "restoring": 15
-    },
-    {
-      "category": "Education",
-      "total": 85,
-      "intact": 30,
-      "circumcised": 40,
-      "restoring": 15
-    },
-    {
       "category": "Stay-at-Home Parent",
-      "total": 120,
-      "intact": 40,
-      "circumcised": 50,
-      "restoring": 30
-    },
-    {
-      "category": "Business/Finance",
-      "total": 60,
-      "intact": 15,
-      "circumcised": 30,
-      "restoring": 15
-    },
-    {
-      "category": "Science/Academia",
-      "total": 40,
-      "intact": 15,
-      "circumcised": 15,
-      "restoring": 10
-    },
-    {
-      "category": "Clerical/Admin",
-      "total": 60,
-      "intact": 10,
-      "circumcised": 30,
-      "restoring": 20
+      "total": 130,
+      "intact": 39,
+      "circumcised": 64,
+      "restoring": 27
     },
     {
       "category": "Other",
-      "total": 60,
-      "intact": 7,
-      "circumcised": 13,
-      "restoring": 4
+      "total": 114,
+      "intact": 35,
+      "circumcised": 54,
+      "restoring": 25
+    },
+    {
+      "category": "Education",
+      "total": 76,
+      "intact": 28,
+      "circumcised": 28,
+      "restoring": 20
+    },
+    {
+      "category": "Healthcare/Medicine",
+      "total": 55,
+      "intact": 12,
+      "circumcised": 26,
+      "restoring": 17
+    },
+    {
+      "category": "Clerical/Admin",
+      "total": 41,
+      "intact": 11,
+      "circumcised": 19,
+      "restoring": 11
+    },
+    {
+      "category": "Business/Finance",
+      "total": 36,
+      "intact": 11,
+      "circumcised": 17,
+      "restoring": 8
+    },
+    {
+      "category": "Science/Academia",
+      "total": 7,
+      "intact": 4,
+      "circumcised": 2,
+      "restoring": 1
     }
   ]
 });
+
 _demographics.dimensions.push({
   "id": "family_father_profession",
   "label": "Father's primary profession",
   "short": "Father's Occupation",
   "categories": [
     {
-      "category": "Healthcare/Medicine",
-      "total": 50,
-      "intact": 15,
-      "circumcised": 25,
-      "restoring": 10
-    },
-    {
-      "category": "Education",
-      "total": 50,
-      "intact": 15,
-      "circumcised": 25,
-      "restoring": 10
+      "category": "Other",
+      "total": 195,
+      "intact": 54,
+      "circumcised": 95,
+      "restoring": 46
     },
     {
       "category": "Skilled Trades",
-      "total": 100,
-      "intact": 20,
-      "circumcised": 60,
-      "restoring": 20
+      "total": 93,
+      "intact": 27,
+      "circumcised": 41,
+      "restoring": 25
     },
     {
       "category": "Business/Finance",
-      "total": 90,
-      "intact": 30,
-      "circumcised": 40,
-      "restoring": 20
+      "total": 93,
+      "intact": 33,
+      "circumcised": 38,
+      "restoring": 22
+    },
+    {
+      "category": "Education",
+      "total": 23,
+      "intact": 8,
+      "circumcised": 10,
+      "restoring": 5
+    },
+    {
+      "category": "Healthcare/Medicine",
+      "total": 20,
+      "intact": 7,
+      "circumcised": 9,
+      "restoring": 4
     },
     {
       "category": "Science/Academia",
-      "total": 60,
-      "intact": 25,
-      "circumcised": 25,
-      "restoring": 10
+      "total": 20,
+      "intact": 9,
+      "circumcised": 6,
+      "restoring": 5
     },
     {
       "category": "Military Service",
-      "total": 40,
-      "intact": 5,
-      "circumcised": 25,
-      "restoring": 10
-    },
-    {
-      "category": "Other",
-      "total": 110,
-      "intact": 32,
-      "circumcised": 13,
-      "restoring": 29
+      "total": 15,
+      "intact": 2,
+      "circumcised": 11,
+      "restoring": 2
     }
   ]
 });
@@ -1157,38 +1158,38 @@ _demographics.dimensions.push({
   "categories": [
     {
       "category": "Heterosexual/Straight",
-      "total": 290,
-      "intact": 80,
-      "circumcised": 150,
-      "restoring": 60
-    },
-    {
-      "category": "Bisexual / Pansexual",
-      "total": 95,
-      "intact": 35,
-      "circumcised": 40,
-      "restoring": 20
+      "total": 201,
+      "intact": 61,
+      "circumcised": 98,
+      "restoring": 42
     },
     {
       "category": "Gay / Lesbian",
-      "total": 45,
-      "intact": 15,
-      "circumcised": 20,
-      "restoring": 10
+      "total": 126,
+      "intact": 37,
+      "circumcised": 59,
+      "restoring": 30
     },
     {
-      "category": "Asexual / Aromantic",
-      "total": 15,
-      "intact": 5,
-      "circumcised": 5,
-      "restoring": 5
+      "category": "Bisexual / Pansexual",
+      "total": 108,
+      "intact": 38,
+      "circumcised": 44,
+      "restoring": 26
     },
     {
       "category": "Queer / Other",
-      "total": 14,
-      "intact": 5,
-      "circumcised": 4,
-      "restoring": 5
+      "total": 16,
+      "intact": 3,
+      "circumcised": 6,
+      "restoring": 7
+    },
+    {
+      "category": "Asexual / Aromantic",
+      "total": 8,
+      "intact": 1,
+      "circumcised": 3,
+      "restoring": 4
     }
   ]
 });

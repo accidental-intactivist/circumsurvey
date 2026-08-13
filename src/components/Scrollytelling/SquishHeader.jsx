@@ -533,11 +533,11 @@ export default function SquishHeader() {
               width: "100%",
               maxWidth: 780,
               boxSizing: "border-box",
-              marginTop: "clamp(0.5rem, 2vh, 2rem)",
+              marginTop: "clamp(1.5rem, 3vh, 2.5rem)", // Increased margin to prevent collision (Pica Rule)
               background: "var(--c-bgCard)",
               border: "1px solid var(--c-ghost)",
               borderRadius: 6,
-              padding: "clamp(10px, 2vh, 20px)",
+              padding: "clamp(15px, 2.5vh, 24px)",
               textAlign: "center",
               zIndex: 10,
               pointerEvents: "none",

@@ -95,7 +95,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           },
           socialButtonsIconButton__discord: { '&:hover': { background: 'var(--c-ghost)' } },
           socialButtonsIconButton__google: { '&:hover': { background: 'var(--c-ghost)' } },
-          socialButtonsIconButton__twitch: { '&:hover': { background: 'var(--c-ghost)' } },
           socialButtonsIconButton__facebook: { '&:hover': { background: 'var(--c-ghost)' } },
           dividerLine: {
             borderStyle: 'dotted',

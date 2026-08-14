@@ -24,6 +24,7 @@ export default function ScrollTracker() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isPastHeader, setIsPastHeader] = useState(false);
 
   useEffect(() => {
     let scrollTimeout;
@@ -33,6 +34,8 @@ export default function ScrollTracker() {
       scrollTimeout = setTimeout(() => {
         setIsScrolling(false);
       }, 1500);
+
+      setIsPastHeader(window.scrollY > window.innerHeight * 0.85);
 
       // Calculate overall scroll progress (0 to 1) for the background line
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -72,6 +75,8 @@ export default function ScrollTracker() {
           .mobile-tracker { display: none; }
           @media (max-width: 1200px) {
             .desktop-tracker { display: none !important; }
+          }
+          @media (max-width: 768px) {
             .mobile-tracker { display: flex; }
           }
         `}
@@ -205,12 +210,12 @@ export default function ScrollTracker() {
       </div>
 
       {/* Mobile Tracker */}
-      <MobileTracker activeId={activeId} />
+      <MobileTracker activeId={activeId} isPastHeader={isPastHeader} />
     </>
   );
 }
 
-function MobileTracker({ activeId }) {
+function MobileTracker({ activeId, isPastHeader }) {
   const [isOpen, setIsOpen] = useState(false);
   const activeItem = NARRATIVE_STRUCTURE.find(x => x.id === activeId) || NARRATIVE_STRUCTURE[0];
   const activeIndex = NARRATIVE_STRUCTURE.findIndex(x => x.id === activeId);
@@ -326,7 +331,9 @@ function MobileTracker({ activeId }) {
           justifyContent: 'center',
           padding: '0 1.5rem',
           cursor: 'pointer',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.1)'
+          boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
+          transform: isPastHeader ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
         }}
       >
         <div style={{

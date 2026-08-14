@@ -463,7 +463,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
                   padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
                   fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
                 }}>
-                  {label}
+                  {tabKey === "all" ? "All Pathways" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey)}
                 </button>
               );
             })}

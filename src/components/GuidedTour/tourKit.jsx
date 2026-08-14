@@ -280,14 +280,14 @@ export function MarginNote({ title, children }) {
       <style>
         {`
           .margin-note {
-            float: right;
+            position: absolute;
+            right: -240px;
             width: 200px;
-            margin-right: -240px;
             margin-top: 0.5rem;
           }
-          @media (max-width: 1200px) {
+          @media (max-width: 1300px) {
             .margin-note {
-              float: none;
+              position: static;
               width: 100%;
               margin-right: 0;
               margin-top: 2rem;

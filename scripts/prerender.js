@@ -36,11 +36,12 @@ const originalIndexHtml = fs.readFileSync(distIndexHtmlPath, 'utf8');
 
 // Simple static file server
 const server = http.createServer((req, res) => {
-  console.log("Incoming request:", req.url);
-  // Strip query string
-  const urlPath = req.url.split('?')[0];
-  const reqPath = urlPath === '/' ? '/index.html' : urlPath;
-  let filePath = path.join(distDir, reqPath);
+  try {
+    console.log("--> Incoming request:", req.url);
+    // Strip query string
+    const urlPath = req.url.split('?')[0];
+    const reqPath = urlPath === '/' ? '/index.html' : urlPath;
+    let filePath = path.join(distDir, reqPath);
   
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     // SPA fallback
@@ -74,9 +75,12 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(content, 'utf-8');
   });
+  } catch (err) {
+    console.error("Server exception:", err);
+  }
 });
 
-const HOST = '127.0.0.1';
+const HOST = 'localhost';
 
 server.listen(0, HOST, async () => {
   const PORT = server.address().port;
@@ -94,8 +98,8 @@ server.listen(0, HOST, async () => {
     const url = `http://${HOST}:${PORT}${route}`;
     console.log(`Prerendering ${route}...`);
     
-    // Go to page, wait until network is mostly idle
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+    // Go to page, wait until domcontentloaded
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     
     // Ensure React has mounted (wait for the root div to have children)
     await page.waitForFunction(() => document.querySelector('#root').children.length > 0);

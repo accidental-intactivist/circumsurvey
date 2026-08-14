@@ -154,15 +154,15 @@ export default function ContactForm() {
       <style>{`
         .tb-input {
           width: 100%;
-          padding: 1.1rem 1.25rem;
+          padding: 0.65rem 0.85rem;
           background: var(--c-bgDeep);
           border: 1px solid var(--c-ghost);
           border-bottom: 2px solid rgba(212,160,48,0.3);
-          border-radius: 8px;
+          border-radius: 6px;
           color: var(--c-textBright);
           font-family: ${FONT.body};
-          font-size: 1.05rem;
-          margin-top: 0.5rem;
+          font-size: 0.95rem;
+          margin-top: 0.35rem;
           box-sizing: border-box;
           transition: all 0.3s ease;
           outline: none;
@@ -177,18 +177,18 @@ export default function ContactForm() {
           box-shadow: 0 4px 20px rgba(212,160,48,0.1);
         }
         .tb-button {
-          margin-top: 2.5rem;
+          margin-top: 1.5rem;
           width: 100%;
           background: var(--c-goldBright);
           color: #000;
           border: none;
-          padding: 1.1rem;
-          border-radius: 8px;
+          padding: 0.75rem 1rem;
+          border-radius: 6px;
           font-family: ${FONT.condensed};
           font-weight: bold;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          font-size: 1.1rem;
+          font-size: 0.95rem;
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -209,10 +209,10 @@ export default function ContactForm() {
         @media (min-width: 860px) {
           .contact-container {
             flex-direction: row;
-            gap: 4rem;
+            gap: 3rem;
           }
           .contact-intro {
-            flex: 0 0 340px;
+            flex: 0 0 300px;
           }
           .contact-fields {
             flex: 1 1 auto;
@@ -223,7 +223,7 @@ export default function ContactForm() {
       <div style={{ 
         background: "var(--c-bgCard)", 
         border: `1px solid ${C.ghost}`, 
-        borderTop: `2px solid ${C.goldBright}`,
+        borderTop: `4px solid var(--c-redBright)`,
         borderRadius: 12, 
         padding: "3rem", 
         boxShadow: "0 12px 48px rgba(0,0,0,0.25)" 
@@ -318,9 +318,9 @@ export default function ContactForm() {
           </div>
 
           <Label htmlFor="message" text="MESSAGE" required />
-          <textarea id="message" name="message" required rows={6} className="tb-input" style={{ resize: "vertical" }} placeholder="Please enter your message or inquiry here."></textarea>
+          <textarea id="message" name="message" required rows={5} className="tb-input" style={{ resize: "vertical" }} placeholder="Please enter your message or inquiry here."></textarea>
 
-          <div style={{ marginTop: "2.5rem", display: "flex", gap: "1rem", alignItems: "flex-start", background: "rgba(255,255,255,0.02)", padding: "1.25rem", borderRadius: 8, border: `1px solid ${C.ghost}` }}>
+          <div style={{ marginTop: "1.5rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: 8, border: `1px solid ${C.ghost}` }}>
             <input type="checkbox" id="consent" name="consent" required style={{ marginTop: "0.25rem", cursor: "pointer", accentColor: C.goldBright }} />
             <label htmlFor="consent" style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, lineHeight: 1.5, cursor: "pointer" }}>
               <strong style={{ color: C.textBright }}>Privacy Disclaimer:</strong> By submitting this form, you consent to having your name, email address, and message securely transmitted for the purpose of reviewing and, if applicable, responding to your inquiry. Your personally identifiable information (PII) will never be shared, sold, or publicly displayed without explicit consent.

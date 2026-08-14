@@ -14,6 +14,7 @@ import { C, FONT, RAINBOW } from "../styles/tokens";
 import { useTheme } from "../contexts/ThemeContext";
 import HarmonicCanvas from "../../components/HarmonicCanvas";
 import ThemeToggle from "./ThemeToggle";
+import * as Icons from "./Icons";
 import { Sparkles } from "./Icons";
 import { Play, Pause } from "lucide-react";
 import { useTelemetry } from "../lib/telemetry";
@@ -172,6 +173,12 @@ export const ROUTE_META = {
     title: "Resources & Downloads",
     desc: "Dive deeper into the research, download the Manifesto, and access shareable materials.",
     navTitle: "Resources",
+  },
+  contact: {
+    kicker: "Correspondence",
+    title: "Contact",
+    desc: "Submit media inquiries, research proposals, collaboration requests, or general questions regarding the dataset.",
+    navTitle: "Contact",
   }
 };
 
@@ -203,6 +210,9 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
   
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  
+  const [rightMenuOpen, setRightMenuOpen] = useState(false);
+  const rightMenuRef = useRef(null);
   
   const [isEditorialUnlocked, setIsEditorialUnlocked] = useState(() => {
     if (typeof window !== "undefined") {
@@ -259,12 +269,15 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
+      if (rightMenuRef.current && !rightMenuRef.current.contains(e.target)) {
+        setRightMenuOpen(false);
+      }
     }
-    if (dropdownOpen) {
+    if (dropdownOpen || rightMenuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownOpen]);
+  }, [dropdownOpen, rightMenuOpen]);
 
   // ── Scroll listener & Custom Property ──────────────────────────────────
   useEffect(() => {
@@ -600,52 +613,8 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             </div>
           </div>
 
-          {/* Right: ThemeToggle + Findings link */}
+          {/* Right: Findings pill + Nav Menu */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
-            {isEditorialUnlocked && (
-              <a href="#/editorial" className="mobile-hide" style={{
-                fontFamily: FONT.condensed,
-                fontWeight: 700,
-                fontSize: "0.7rem",
-                color: "var(--c-purple)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                textDecoration: "none",
-                transition: "color 0.2s"
-              }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-purpleBright)"}
-                 onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-purple)"}>
-                Editorial
-              </a>
-            )}
-            <a href="#/about" className="mobile-hide" style={{
-              fontFamily: FONT.condensed,
-              fontWeight: 700,
-              fontSize: "0.7rem",
-              color: "var(--c-muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              textDecoration: "none",
-              transition: "color 0.2s"
-            }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-textBright)"}
-               onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-muted)"}>
-              About
-            </a>
-            <a href="#/faq" className="mobile-hide" style={{
-              fontFamily: FONT.condensed,
-              fontWeight: 700,
-              fontSize: "0.7rem",
-              color: "var(--c-muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              textDecoration: "none",
-              transition: "color 0.2s"
-            }} onMouseEnter={(e) => e.currentTarget.style.color = "var(--c-textBright)"}
-               onMouseLeave={(e) => e.currentTarget.style.color = "var(--c-muted)"}>
-              FAQ
-            </a>
-            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5, margin: "0 0.25rem" }} />
-            <ThemeToggle />
-            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5 }} />
             <a
               href="/"
               style={{
@@ -676,97 +645,181 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
               <span className="mobile-only">←</span>
             </a>
 
-            <div className="mobile-hide" style={{ width: 1, height: 18, background: "var(--c-ghost)", opacity: 0.5 }} />
+            {/* Hamburger Dropdown for Navigation */}
+            <div style={{ position: "relative" }} ref={rightMenuRef}>
+              <button
+                onClick={() => setRightMenuOpen(!rightMenuOpen)}
+                style={{
+                  background: rightMenuOpen ? "rgba(0,0,0,0.05)" : "transparent",
+                  border: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  color: rightMenuOpen ? "var(--c-textBright)" : "var(--c-muted)",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  if (!rightMenuOpen) e.currentTarget.style.color = "var(--c-textBright)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!rightMenuOpen) e.currentTarget.style.color = "var(--c-muted)";
+                }}
+                aria-label="Navigation Menu"
+              >
+                <Icons.Menu size={20} />
+              </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button
-                    style={{
+              {rightMenuOpen && (
+                <div style={{
+                  position: "absolute",
+                  top: "calc(100% + 0.5rem)",
+                  right: 0,
+                  background: "var(--c-bgCard)",
+                  border: `1px solid var(--c-ghost)`,
+                  borderRadius: 12,
+                  padding: "0.5rem",
+                  minWidth: "220px",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.2)",
+                  display: "flex",
+                  flexDirection: "column",
+                  zIndex: 100
+                }}>
+                  {/* Account */}
+                  <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid var(--c-ghost)", marginBottom: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Account</span>
+                    <SignedOut>
+                      <SignInButton mode="modal">
+                        <button style={{ background: "transparent", border: "none", color: "var(--c-textBright)", cursor: "pointer", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "underline", padding: 0 }}>Sign In</button>
+                      </SignInButton>
+                    </SignedOut>
+                    <SignedIn>
+                      <UserButton />
+                    </SignedIn>
+                  </div>
+
+                  {/* Actions */}
+                  <a href="#/report" onClick={() => setRightMenuOpen(false)} style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    color: "var(--c-blue)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 8,
+                    transition: "background 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem"
+                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0, 150, 200, 0.08)"}
+                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    <span>📋</span> Builder
+                  </a>
+                  
+                  <button onClick={() => { setRightMenuOpen(false); setDocentOpen(true); }} style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    color: "var(--c-goldBright)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 8,
+                    transition: "background 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "left"
+                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(212,160,48,0.08)"}
+                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    <Icons.Sparkles size={14} /> Research Assistant
+                  </button>
+                  
+                  <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
+
+                  {/* Links */}
+                  {isEditorialUnlocked && (
+                    <a href="#/editorial" onClick={() => setRightMenuOpen(false)} style={{
                       fontFamily: FONT.condensed,
                       fontWeight: 700,
-                      fontSize: "0.7rem",
-                      color: "var(--c-textBright)",
+                      fontSize: "0.75rem",
+                      color: "var(--c-purple)",
                       textTransform: "uppercase",
                       letterSpacing: "0.1em",
-                      padding: "0.25rem 0.65rem",
-                      border: "1px solid var(--c-ghost)",
-                      borderRadius: 100,
-                      background: "transparent",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--c-textBright)"}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--c-ghost)"}
-                  >
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button
-                    style={{
-                      fontFamily: FONT.condensed,
-                      fontWeight: 700,
-                      fontSize: "0.7rem",
-                      color: "#fff",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      padding: "0.25rem 0.65rem",
-                      border: "1px solid var(--c-purple)",
-                      borderRadius: 100,
-                      background: "var(--c-purple)",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.filter = "brightness(1.2)"}
-                    onMouseLeave={(e) => e.currentTarget.style.filter = "brightness(1)"}
-                  >
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
+                      textDecoration: "none",
+                      padding: "0.75rem 1rem",
+                      borderRadius: 8,
+                      transition: "background 0.2s"
+                    }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
+                       onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      Editorial
+                    </a>
+                  )}
+                  <a href="#/about" onClick={() => setRightMenuOpen(false)} style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    color: "var(--c-text)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 8,
+                    transition: "background 0.2s"
+                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
+                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    About
+                  </a>
+                  <a href="#/faq" onClick={() => setRightMenuOpen(false)} style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    color: "var(--c-text)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 8,
+                    transition: "background 0.2s"
+                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
+                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    FAQ
+                  </a>
+                  <a href="#/contact" onClick={() => setRightMenuOpen(false)} style={{
+                    fontFamily: FONT.condensed,
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    color: "var(--c-text)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.1em",
+                    textDecoration: "none",
+                    padding: "0.75rem 1rem",
+                    borderRadius: 8,
+                    transition: "background 0.2s"
+                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
+                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    Contact
+                  </a>
+                  
+                  <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
+                  
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 1rem" }}>
+                    <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Theme</span>
+                    <ThemeToggle />
+                  </div>
+                </div>
+              )}
             </div>
-
-            
-            <button
-              onClick={() => setDocentOpen(!isDocentOpen)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                fontFamily: FONT.condensed,
-                fontWeight: 700,
-                fontSize: "0.7rem",
-                color: isDocentOpen ? "var(--c-bg)" : "var(--c-goldBright)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                padding: "0.25rem 0.65rem",
-                border: "1px solid rgba(212,160,48,0.35)",
-                borderRadius: 100,
-                background: isDocentOpen ? "var(--c-goldBright)" : "rgba(212,160,48,0.08)",
-                whiteSpace: "nowrap",
-                transition: "all 0.2s",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                if (!isDocentOpen) {
-                  e.currentTarget.style.background = "rgba(212,160,48,0.18)";
-                  e.currentTarget.style.borderColor = "rgba(212,160,48,0.6)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isDocentOpen) {
-                  e.currentTarget.style.background = "rgba(212,160,48,0.08)";
-                  e.currentTarget.style.borderColor = "rgba(212,160,48,0.35)";
-                }
-              }}
-            >
-              <Sparkles size={12} color="currentColor" />
-              <span className="mobile-docent-text">Research Assistant</span>
-            </button>
           </div>
         </div>
 

@@ -113,6 +113,11 @@ export const ChevronRight = createThemedIcon(
   () => <path d="M 6,3 L 11,8 L 6,13" />
 );
 
+export const Menu = createThemedIcon(
+  Lucide.Menu,
+  () => <path d="M 2,4 H 14 M 2,8 H 14 M 2,12 H 14" />
+);
+
 export const Settings = createThemedIcon(
   Lucide.Settings,
   () => <path d="M 5,5 H 11 V 11 H 5 Z M 8,1 V 3 M 8,13 V 15 M 1,8 H 3 M 13,8 H 15 M 3,3 L 5,5 M 11,5 L 13,3 M 3,13 L 5,11 M 11,11 L 13,13" />

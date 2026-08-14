@@ -15,51 +15,120 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ClerkProvider 
       publishableKey={PUBLISHABLE_KEY}
+      localization={{
+        signIn: {
+          start: {
+            title: "Welcome Back",
+            subtitle: "Save your pathway and return to any exhibit.",
+          },
+          emailAddress__placeholder: "you@example.com"
+        },
+        signUp: {
+          start: {
+            title: "Create Your Account",
+            subtitle: "Save your pathway and return to any exhibit.",
+          },
+          emailAddress__placeholder: "you@example.com"
+        },
+        formFieldInputPlaceholder__emailAddress: "you@example.com",
+        formFieldInputPlaceholder__password: "••••••••••"
+      }}
       appearance={{
+        layout: {
+          socialButtonsVariant: 'iconButton',
+        },
         variables: {
-          colorPrimary: '#245b6c',
-          colorBackground: '#fdfbf7',
-          colorText: '#333333',
-          fontFamily: 'Barlow, sans-serif',
+          colorPrimary: 'var(--c-blue)',
+          colorBackground: 'var(--c-bgCard)',
+          colorText: 'var(--c-textBright)',
+          colorDanger: 'var(--c-red)',
+          fontFamily: 'var(--f-body)',
           borderRadius: '8px',
         },
         elements: {
+          modalBackdrop: {
+            backgroundColor: 'rgba(0, 0, 0, 0.55)'
+          },
           card: {
-            border: '1px solid rgba(212,160,48,0.3)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
+            border: '1px solid var(--c-ghost)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+            background: 'var(--c-bgCard)',
+            position: 'relative',
+            overflow: 'visible' /* to allow footer promise to sit correctly if needed */
           },
           headerTitle: {
-            fontFamily: "'Barlow Condensed', sans-serif",
+            fontFamily: 'var(--f-condensed)',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
             fontSize: '1.5rem',
-            color: '#245b6c',
+            color: 'var(--c-blue)',
+            textAlign: 'center',
+            width: '100%'
           },
           headerSubtitle: {
-            fontFamily: 'Lora, serif',
-            color: '#666666'
+            fontFamily: 'var(--f-body)',
+            color: 'var(--c-muted)',
+            textAlign: 'center',
+            width: '100%'
           },
-          socialButtonsBlockButton: {
-            border: '1px solid rgba(36,91,108,0.2)',
-            background: 'rgba(36,91,108,0.04)',
+          formFieldLabel: {
+            fontFamily: 'var(--f-body)',
+            fontWeight: 500,
+            color: 'var(--c-textBright)'
+          },
+          formFieldInput: {
+            minHeight: '44px',
+            background: 'var(--c-bgSoft)',
+            border: '1px solid var(--c-ghost)',
+            color: 'var(--c-textBright)'
+          },
+          formFieldInputFocus: {
+            boxShadow: '0 0 0 2px var(--c-blue)',
+            borderColor: 'var(--c-blue)'
+          },
+          socialButtonsIconButton: {
+            border: '1px solid var(--c-ghost)',
+            background: 'var(--c-bgSoft)',
             transition: 'all 0.2s',
-            '&:hover': {
-              background: 'rgba(36,91,108,0.08)',
-            }
+            flexGrow: 1,
+            color: 'var(--c-textBright)'
+          },
+          socialButtonsIconButton__discord: { '&:hover': { background: 'var(--c-ghost)' } },
+          socialButtonsIconButton__google: { '&:hover': { background: 'var(--c-ghost)' } },
+          socialButtonsIconButton__twitch: { '&:hover': { background: 'var(--c-ghost)' } },
+          socialButtonsIconButton__facebook: { '&:hover': { background: 'var(--c-ghost)' } },
+          dividerLine: {
+            borderStyle: 'dotted',
+            borderColor: 'var(--c-gold)'
+          },
+          dividerText: {
+            color: 'var(--c-dim)',
+            fontFamily: 'var(--f-body)',
+            textTransform: 'lowercase'
           },
           formButtonPrimary: {
-            fontFamily: "'Barlow Condensed', sans-serif",
+            minHeight: '44px',
+            fontFamily: 'var(--f-condensed)',
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
             fontWeight: 700,
-            transition: 'all 0.2s',
             boxShadow: 'none',
+            background: 'var(--c-blue)',
+            color: 'var(--c-bgCard)',
+            transition: 'all 0.2s',
             '&:hover': {
               filter: 'brightness(1.1)',
             }
           },
+          footerActionLink: {
+            color: 'var(--c-gold)',
+            fontWeight: 500
+          },
+          identityPreviewEditButton: {
+            color: 'var(--c-gold)'
+          },
           footer: {
-            display: 'none'
+            background: 'transparent'
           }
         }
       }}

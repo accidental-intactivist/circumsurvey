@@ -80,7 +80,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
-const HOST = 'localhost';
+const HOST = '127.0.0.1';
 
 server.listen(0, HOST, async () => {
   const PORT = server.address().port;

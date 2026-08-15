@@ -7,6 +7,7 @@ import { PATHWAYS } from "../lib/pathways";
 import { normalizeName, rollUpDistribution } from "../lib/formatters";
 import { useTheme } from "../contexts/ThemeContext";
 import L from 'leaflet';
+import { useTelemetry } from "../lib/telemetry";
 
 const WORLD_GEO_URL = "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json";
 const US_TOPO_URL = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
@@ -78,6 +79,7 @@ function FitBounds({ geojson, mapLevel }) {
 export default function GeographicHeatmap({ questionId, distribution, cohortDistribution, title, byCohort, splitBy, onRegionClick, selectedRegions, layout = "stack" }) {
   const themeContext = useTheme();
   const { theme, mode } = themeContext || { theme: "standard", mode: "dark" };
+  const { trackEvent } = useTelemetry();
   
   const selectedRegionNorms = useMemo(() => {
     if (!selectedRegions || selectedRegions.length === 0) return new Set();
@@ -297,6 +299,7 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
   const onEachFeature = (feature, layer) => {
     layer.on({
       click: () => {
+        trackEvent('heatmap_region_clicked', { region: feature.properties.name, question_id: questionId });
         if (onRegionClick) onRegionClick(feature.properties.name, isUS ? "us_state" : "country");
       },
       mouseover: (e) => {
@@ -448,17 +451,19 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
             {tabKeys.map(tabKey => {
               if (tabKey !== "all" && (!byCohort?.results?.[tabKey] || byCohort.results[tabKey].n === 0)) return null;
               const isActive = activeTab === tabKey;
-              const label = tabKey === "all" ? "All Participants" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey);
               const color = getCohortColor(tabKey);
               return (
-                <button key={tabKey} onClick={() => setActiveTab(tabKey)} style={{
+                <button key={tabKey} onClick={() => {
+                  trackEvent('heatmap_cohort_tab_changed', { tab: tabKey, question_id: questionId });
+                  setActiveTab(tabKey);
+                }} style={{
                   background: isActive ? `color-mix(in srgb, ${color} 18%, transparent)` : "transparent", 
                   border: `1px solid ${isActive ? color : `color-mix(in srgb, ${color} 30%, transparent)`}`,
                   color: isActive ? color : `color-mix(in srgb, ${color} 75%, transparent)`, 
                   padding: "0.25rem 0.6rem", borderRadius: 999, fontSize: "0.65rem", fontWeight: 600,
                   fontFamily: FONT.condensed, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", transition: "all 0.2s"
                 }}>
-                  {label}
+                  {tabKey === "all" ? "All Pathways" : (PATHWAYS[tabKey === "unclassified" ? "observer" : tabKey]?.label || tabKey)}
                 </button>
               );
             })}
@@ -469,14 +474,20 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
             marginLeft: "auto", display: "flex", background: "rgba(255, 255, 255, 0.03)",
             border: `1px solid ${C.ghost}`, borderRadius: 999, padding: "0.15rem"
           }}>
-            <button onClick={() => setVisType("bullseye")} style={{ 
+            <button onClick={() => {
+              trackEvent('heatmap_vistype_changed', { vis_type: 'bullseye', question_id: questionId });
+              setVisType("bullseye");
+            }} style={{ 
               background: visType === "bullseye" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
               color: visType === "bullseye" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
               cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
             }}>
               Bullseye Map
             </button>
-            <button onClick={() => setVisType("heatmap")} style={{ 
+            <button onClick={() => {
+              trackEvent('heatmap_vistype_changed', { vis_type: 'heatmap', question_id: questionId });
+              setVisType("heatmap");
+            }} style={{ 
               background: visType === "heatmap" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
               color: visType === "heatmap" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
               cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 
@@ -484,7 +495,10 @@ export default function GeographicHeatmap({ questionId, distribution, cohortDist
               Choropleth Density
             </button>
             {splitBy === "pathway" && (
-              <button onClick={() => setVisType("balance")} style={{ 
+              <button onClick={() => {
+                trackEvent('heatmap_vistype_changed', { vis_type: 'balance', question_id: questionId });
+                setVisType("balance");
+              }} style={{ 
                 background: visType === "balance" ? "rgba(255, 255, 255, 0.08)" : "transparent", border: "none", 
                 color: visType === "balance" ? C.textBright : C.muted, padding: "0.25rem 0.6rem", borderRadius: 999, 
                 cursor: "pointer", fontSize: "0.65rem", fontFamily: FONT.condensed, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" 

@@ -8,14 +8,20 @@
 import { useEffect, useState, useCallback } from "react";
 
 function parseLocation() {
-  // Backwards compatibility: if a user visits a legacy hash URL (#/culture), 
+  // Backwards compatibility: if a user visits a legacy hash URL (#/culture or #question/lube), 
   // immediately rewrite the URL to use the path API without reloading.
-  if (typeof window !== "undefined" && window.location.hash && window.location.hash.startsWith("#/")) {
-    const newUrl = "/explore" + window.location.hash.replace(/^#/, "");
-    try {
-      window.history.replaceState(null, "", newUrl);
-    } catch (e) {
-      console.warn("Ignored invalid legacy hash URL rewrite");
+  if (typeof window !== "undefined" && window.location.hash && window.location.hash.length > 1) {
+    const hashContent = window.location.hash.replace(/^#\/?/, "");
+    const firstSegment = hashContent.split("/")[0];
+    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "contact", "the-forward-view", "editorial"];
+    
+    if (knownRoutes.includes(firstSegment)) {
+      const newUrl = "/explore/" + hashContent + window.location.search;
+      try {
+        window.history.replaceState(null, "", newUrl);
+      } catch (e) {
+        console.warn("Ignored invalid legacy hash URL rewrite");
+      }
     }
   }
 
@@ -30,7 +36,7 @@ function parseLocation() {
   let params = {};
   if (segments[offset] === "pathways") {
     route = "pathways";
-  } else if (segments[offset] === "q" && segments[offset + 1]) {
+  } else if ((segments[offset] === "q" || segments[offset] === "question") && segments[offset + 1]) {
     route = "question";
     params.id = segments[offset + 1];
   } else if (segments[offset] === "tools" && segments[offset + 1] === "cultural-alignment") {
@@ -80,6 +86,8 @@ function parseLocation() {
     route = "contact";
   } else if (segments[offset] === "the-forward-view") {
     route = "the-forward-view";
+  } else if (segments[offset] === "editorial") {
+    route = "editorial";
   } else if (segments.length > offset) {
     route = "not-found";
   }
@@ -93,7 +101,7 @@ function parseLocation() {
     section: query.get("section") || null,
     observerRole: query.get("role") || null,
     format: query.get("format") || null,
-    ai_query: query.get("ai_query") || "",
+    ai_query: query.get("ai_query") || (typeof window !== "undefined" ? window.sessionStorage.getItem("ai_query") : null) || "",
     x: query.get("x") || null,
     y: query.get("y") || null,
     z: query.get("z") || null,
@@ -138,6 +146,7 @@ function serializeState(route, params, state) {
   else if (route === "about") path = "/explore/about";
   else if (route === "faq") path = "/explore/faq";
   else if (route === "the-forward-view") path = "/explore/the-forward-view";
+  else if (route === "editorial") path = "/explore/editorial";
   else if (route === "not-found") path = "/explore/404";
   else path = "/explore";
 
@@ -154,7 +163,7 @@ function serializeState(route, params, state) {
   if (state.section) q.set("section", state.section);
   if (state.observerRole) q.set("role", state.observerRole);
   if (state.format) q.set("format", state.format);
-  if (state.ai_query) q.set("ai_query", state.ai_query);
+  // ai_query intentionally omitted from URL for privacy; stored in sessionStorage
   if (state.x) q.set("x", state.x);
   if (state.y) q.set("y", state.y);
   if (state.z) q.set("z", state.z);
@@ -203,7 +212,7 @@ export function useRouter() {
       const url = new URL(anchor.href, window.location.origin);
       if (url.origin === window.location.origin) {
         e.preventDefault();
-        window.history.pushState(null, "", url.pathname + url.search);
+        window.history.pushState(null, "", url.pathname + url.search + url.hash);
         window.dispatchEvent(new Event("popstate"));
       }
     };
@@ -218,16 +227,25 @@ export function useRouter() {
 
   const navigate = useCallback((route, params = {}, stateOverrides = {}) => {
     const nextState = { ...current.state, ...stateOverrides };
+    if (stateOverrides.ai_query !== undefined && typeof window !== "undefined") {
+       if (stateOverrides.ai_query) window.sessionStorage.setItem("ai_query", stateOverrides.ai_query);
+       else window.sessionStorage.removeItem("ai_query");
+    }
     const nextUrl = serializeState(route, params, nextState);
     window.history.pushState(null, "", nextUrl);
     window.dispatchEvent(new Event("popstate"));
   }, [current]);
 
   const updateState = useCallback((overrides) => {
-    const nextUrl = serializeState(current.route, current.params, {
+    const nextState = {
       ...current.state,
       ...overrides,
-    });
+    };
+    if (overrides.ai_query !== undefined && typeof window !== "undefined") {
+       if (overrides.ai_query) window.sessionStorage.setItem("ai_query", overrides.ai_query);
+       else window.sessionStorage.removeItem("ai_query");
+    }
+    const nextUrl = serializeState(current.route, current.params, nextState);
     // Replace state instead of push so we don't spam history when tweaking filters
     window.history.replaceState(null, "", nextUrl);
     window.dispatchEvent(new Event("popstate"));

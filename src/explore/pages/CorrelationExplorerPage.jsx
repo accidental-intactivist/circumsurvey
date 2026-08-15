@@ -101,12 +101,12 @@ function toMatrixOptions(axisConfig) {
       };
     });
   } else if (axisConfig.type === "question") {
-    return (axisConfig.source.opts || []).map((opt, i) => ({
+    return (axisConfig.source?.opts || []).map((opt, i) => ({
       key: opt,
       match: opt,
       label: opt,
       short: opt,
-      color: axisConfig.source.colors?.[i] || getColor(i)
+      color: axisConfig.source?.colors?.[i] || getColor(i)
     }));
   }
   return [];

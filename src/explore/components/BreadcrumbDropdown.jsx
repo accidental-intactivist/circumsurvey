@@ -46,7 +46,6 @@ export default function BreadcrumbDropdown({ label, currentId, items, onSelect }
           gap: "0.2rem",
           borderRadius: "4px",
           transition: "background 0.15s, color 0.15s",
-          maxWidth: "100%",
         }}
         onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright; e.currentTarget.style.background = "var(--c-bgSoft)"; }}
         onMouseLeave={(e) => { e.currentTarget.style.color = "inherit"; e.currentTarget.style.background = "transparent"; }}
@@ -90,15 +89,16 @@ export default function BreadcrumbDropdown({ label, currentId, items, onSelect }
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
-                padding: "0.5rem 0.75rem",
+                padding: item.type === 'chapter' ? "0.4rem 0.75rem 0.4rem 1.5rem" : "0.5rem 0.75rem",
                 textDecoration: "none",
                 color: item.id === currentId ? C.goldBright : C.text,
                 background: item.id === currentId ? "var(--c-bgSoft)" : "transparent",
                 borderRadius: "4px",
-                fontSize: "0.8rem",
-                fontFamily: FONT.body,
-                textTransform: "none",
-                letterSpacing: "normal",
+                fontSize: item.type === 'act' ? "0.75rem" : "0.85rem",
+                fontFamily: item.type === 'act' ? FONT.condensed : FONT.body,
+                fontWeight: item.type === 'act' ? 700 : 400,
+                textTransform: item.type === 'act' ? "uppercase" : "none",
+                letterSpacing: item.type === 'act' ? "0.1em" : "normal",
                 transition: "background 0.15s, color 0.15s",
               }}
               onMouseEnter={(e) => {

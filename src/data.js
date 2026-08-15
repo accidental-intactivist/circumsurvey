@@ -170,9 +170,9 @@ const _data = {
     "q": "Please rate the INTENSITY of your orgasms.",
     "type": "avg",
     "data": {
-      "intact": 3.73,
-      "circumcised": 2.99,
-      "restoring": 2.93
+      "intact": 4.25,
+      "circumcised": 2.95,
+      "restoring": 3.05
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.1): 1 = Low/Poor, 5 = High/Excellent."
   },
@@ -182,9 +182,9 @@ const _data = {
     "q": "Please rate the DURATION of your orgasms.",
     "type": "avg",
     "data": {
-      "intact": 3.8,
-      "circumcised": 2.81,
-      "restoring": 2.65
+      "intact": 4.01,
+      "circumcised": 2.64,
+      "restoring": 2.66
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.2): 1 = Low/Poor, 5 = High/Excellent."
   },
@@ -194,9 +194,9 @@ const _data = {
     "q": "Please rate your OVERALL EASE of reaching orgasm.",
     "type": "avg",
     "data": {
-      "intact": 3.43,
-      "circumcised": 2.91,
-      "restoring": 2.8
+      "intact": 4.04,
+      "circumcised": 2.6,
+      "restoring": 2.79
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.3): 1 = Low/Poor, 5 = High/Excellent."
   },
@@ -206,9 +206,9 @@ const _data = {
     "q": "Please rate your SENSITIVITY to light touch.",
     "type": "avg",
     "data": {
-      "intact": 3.67,
-      "circumcised": 2.6,
-      "restoring": 2.67
+      "intact": 4.24,
+      "circumcised": 2.25,
+      "restoring": 2.49
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.4): 1 = Low/Poor, 5 = High/Excellent."
   },
@@ -218,9 +218,9 @@ const _data = {
     "q": "Please rate your PLEASURE from mobile skin.",
     "type": "avg",
     "data": {
-      "intact": 3.88,
-      "circumcised": 2.49,
-      "restoring": 3.0
+      "intact": 4.47,
+      "circumcised": 1.96,
+      "restoring": 2.85
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.5): 1 = Low/Poor, 5 = High/Excellent."
   },
@@ -230,9 +230,9 @@ const _data = {
     "q": "Please rate the VARIETY of pleasurable sensations you experience.",
     "type": "avg",
     "data": {
-      "intact": 3.78,
-      "circumcised": 2.58,
-      "restoring": 2.65
+      "intact": 4.39,
+      "circumcised": 2.45,
+      "restoring": 2.68
     },
     "sub": "On a 1–5 scale, from the Sexual Experience grid (Q27.6): 1 = Low/Poor, 5 = High/Excellent."
   },

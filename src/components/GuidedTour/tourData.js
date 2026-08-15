@@ -134,12 +134,12 @@ export const TOUR = [
 
 // ── Exhibit 03: pleasure metrics (frozen snapshot; pooled mean is computed) ──
 export const PLEASURE_METRICS = [
-  { label: "Mobile skin", intact: 4.47, restoring: 2.85, circumcised: 1.96 },
-  { label: "Light touch", intact: 4.24, restoring: 2.49, circumcised: 2.24 },
-  { label: "Variety",     intact: 4.39, restoring: 2.68, circumcised: 2.46 },
-  { label: "Duration",    intact: 4.01, restoring: 2.66, circumcised: 2.65 },
-  { label: "Ease",        intact: 4.04, restoring: 2.79, circumcised: 2.60 },
-  { label: "Intensity",   intact: 4.25, restoring: 3.05, circumcised: 2.96 },
+  { label: "Mobile skin",  intact: 4.47, restoring: 2.85, circumcised: 1.96 },
+  { label: "Light touch",  intact: 4.24, restoring: 2.49, circumcised: 2.25 },
+  { label: "Variety",      intact: 4.39, restoring: 2.68, circumcised: 2.45 },
+  { label: "Duration",     intact: 4.01, restoring: 2.66, circumcised: 2.64 },
+  { label: "Ease",         intact: 4.04, restoring: 2.79, circumcised: 2.60 },
+  { label: "Intensity",    intact: 4.25, restoring: 3.05, circumcised: 2.95 },
 ];
 export function pooledMean(m) {
   const a = PATHS.intact.n, b = PATHS.restoring.n, c = PATHS.circumcised.n;
@@ -437,7 +437,7 @@ export const ATLAS_REGIONS = {
 
 // ── Rotating hero facts (masthead) ──
 export const HERO_FACTS = [
-  { big: "96%",   l1: "of intact respondents prioritize", l2: "the child's right to bodily autonomy.",
+  { big: "96%",   l1: "of intact respondents and 81% of circumcised", l2: "respondents prioritize the child's right to decide.",
     ctx: "Every pathway lands between 81% and 100%.", colorVar: "var(--c-blue)" },
   { big: "80%",   l1: "of restoring respondents report",  l2: "strong, frequent resentment.",
     ctx: "0% said they have never felt negative about their circumcision.", colorVar: "var(--c-red)" },

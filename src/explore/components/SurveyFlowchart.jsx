@@ -12,6 +12,7 @@ import { getQuestions } from "../lib/api";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { useReport } from "../contexts/ReportContext";
 import * as Icons from "./Icons";
+import { useTelemetry } from "../lib/telemetry";
 
 // ── Global Animations ────────────────────────────────────────────────────────
 const FLOWCHART_STYLES = `
@@ -78,6 +79,7 @@ const BRANCH_CONFIGS = [
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export default function SurveyFlowchart({ navigate, pathwayId }) {
+  const { trackEvent } = useTelemetry();
   const [questions, setQuestions] = useState(null);
   const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -154,12 +156,20 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
     return BRANCH_CONFIGS.filter((b) => expanded[b.id]);
   }, [expanded]);
 
-  // Fetch questions
   useEffect(() => {
     getQuestions({ counts: true })
       .then((d) => setQuestions(d.questions || []))
       .catch((e) => setError(e.message || String(e)));
   }, []);
+
+  useEffect(() => {
+    if (effectiveQuery) {
+      const timer = setTimeout(() => {
+        trackEvent('flowchart_search_used', { query_length: effectiveQuery.length });
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [effectiveQuery, trackEvent]);
 
   const toggleNode = useCallback((nodeId) => {
     setExpanded((prev) => {
@@ -169,6 +179,7 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           setPinned(p => ({ ...p, [nodeId]: false }));
           return { ...prev, [nodeId]: false };
         } else {
+          trackEvent('flowchart_node_expanded', { node_id: nodeId });
           const next = { ...prev };
           for (const branch of BRANCH_CONFIGS) {
             if (branch.id !== nodeId && !pinned[branch.id]) {
@@ -179,15 +190,22 @@ export default function SurveyFlowchart({ navigate, pathwayId }) {
           return next;
         }
       }
+      if (!prev[nodeId]) {
+        trackEvent('flowchart_node_expanded', { node_id: nodeId });
+      }
       return { ...prev, [nodeId]: !prev[nodeId] };
     });
-  }, [pinned]);
+  }, [pinned, trackEvent]);
 
   const togglePin = useCallback((nodeId, e) => {
     e.stopPropagation();
-    setPinned(prev => ({ ...prev, [nodeId]: !prev[nodeId] }));
+    setPinned(prev => {
+      const nextPin = !prev[nodeId];
+      if (nextPin) trackEvent('flowchart_node_pinned', { node_id: nodeId });
+      return { ...prev, [nodeId]: nextPin };
+    });
     setExpanded(prev => ({ ...prev, [nodeId]: true }));
-  }, []);
+  }, [trackEvent]);
 
   const toggleSection = useCallback((sectionKey) => {
     setExpandedSections((prev) => {

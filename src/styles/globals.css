@@ -80,3 +80,74 @@ body { letter-spacing: 0.003em; }
   background: rgba(212, 160, 48, 0.3);
   color: #faf6f0;
 }
+
+/* ── Bureau Door (Clerk Overrides) ──────────────── */
+.cl-card {
+  padding-bottom: 0 !important; /* To fit the footer crossbar */
+}
+.cl-card::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--c-red), var(--c-orange), var(--c-yellow), var(--c-green), var(--c-blue));
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+.cl-header {
+  position: relative;
+}
+.cl-header::before {
+  content: "★ Tomorrow's Bureau · The Special Report";
+  display: block;
+  text-align: center;
+  font-family: var(--f-condensed);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: var(--c-muted);
+  margin-bottom: 1rem;
+}
+.cl-header::first-letter {
+  color: var(--c-red);
+}
+.cl-captchaWidget {
+  border: 1px solid var(--c-ghost);
+  border-radius: 4px;
+  background: var(--c-bgCard);
+  margin-top: 1rem;
+}
+.cl-card::after {
+  content: "Your account saves progress. It is never linked to survey answers.";
+  display: block;
+  font-family: var(--f-body);
+  font-size: 0.75rem;
+  color: var(--c-dim);
+  text-align: center;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--c-gold);
+  background: var(--c-bgSoft);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  /* extend negative margins to touch the edges if .cl-card has padding */
+  margin-left: -32px;
+  margin-right: -32px;
+  margin-bottom: 0;
+}
+@media (max-width: 480px) {
+  .cl-modalContent {
+    align-items: flex-end !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .cl-card {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+  }
+}

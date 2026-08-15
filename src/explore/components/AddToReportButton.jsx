@@ -1,15 +1,20 @@
 import React from "react";
 import { useReport } from "../contexts/ReportContext";
 import { C, FONT } from "../styles/tokens";
+import { useTelemetry } from "../lib/telemetry";
 
 export default function AddToReportButton({ questionId, cohort = null, iconOnly }) {
   const { isQuestionInReport, toggleInReport } = useReport();
+  const { trackEvent } = useTelemetry();
   const isInReport = isQuestionInReport(questionId, cohort);
 
   if (iconOnly) {
     return (
       <button
-        onClick={() => toggleInReport(questionId, cohort)}
+        onClick={() => {
+          if (!isInReport) trackEvent('added_to_report', { question_id: questionId });
+          toggleInReport(questionId, cohort);
+        }}
         title={isInReport ? "Remove from Custom Report" : "Add to Custom Report"}
         style={{
           background: isInReport ? "rgba(212,160,48,0.15)" : "transparent",
@@ -46,7 +51,10 @@ export default function AddToReportButton({ questionId, cohort = null, iconOnly 
 
   return (
     <button
-      onClick={() => toggleInReport(questionId, cohort)}
+      onClick={() => {
+        if (!isInReport) trackEvent('added_to_report', { question_id: questionId });
+        toggleInReport(questionId, cohort);
+      }}
       title={isInReport ? "Remove from Custom Report" : "Add to Custom Report"}
       style={{
         background: isInReport ? "rgba(212,160,48,0.15)" : "transparent",

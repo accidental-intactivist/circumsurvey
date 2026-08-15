@@ -7,6 +7,7 @@ import BreadcrumbDropdown from '../../explore/components/BreadcrumbDropdown';
 import HarmonicCanvas from '../../components/HarmonicCanvas';
 import { useTheme } from '../../explore/contexts/ThemeContext';
 import { TOUR } from '../GuidedTour/tourData';
+import { NARRATIVE_STRUCTURE } from '../GuidedTour/ScrollTracker';
 import { Play, Pause, ChevronDown } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -74,17 +75,6 @@ export default function SquishHeader() {
 
   // Scrollspy: which chapter is currently on screen. Drives the
   // Explore-style breadcrumb in the docked bar ("where am I" + jump anywhere).
-  const chapters = useMemo(() => ([
-    { id: 'ch-prologue', label: 'Prologue \u00B7 The Researcher\'s Letter' },
-    { id: 'ch-who-took', label: 'Chapter 1 \u00B7 Who Took This Survey?' },
-    { id: 'ch-what-feel', label: 'Chapter 2 \u00B7 What Does It Actually Feel Like?' },
-    { id: 'ch-how-feel', label: 'Chapter 3 \u00B7 What Is Their Experience?' },
-    { id: 'ch-world-told', label: 'Chapter 4 \u00B7 What Did The World Tell Them?' },
-    { id: 'ch-observers', label: 'Chapter 5 \u00B7 What Do The Observers Say?' },
-    { id: 'ch-undone', label: 'Chapter 6 \u00B7 Can It Be Undone?' },
-    { id: 'ch-future-son', label: 'Chapter 7 \u00B7 If You Had A Son Today?' },
-    { id: 'ch-epilogue', label: 'Epilogue \u00B7 The Evidence, Summarized' },
-  ]), []);
   const [currentId, setCurrentId] = useState('ch-prologue');
 
   useEffect(() => {
@@ -94,10 +84,23 @@ export default function SquishHeader() {
       raf = requestAnimationFrame(() => {
         raf = null;
         setScrolled(window.scrollY > 100);
-        let current = 'ch-prologue';
-        for (const s of chapters) {
+        
+        // Stitch the fixed header to the page content during macOS elastic overscroll
+        if (headerRef.current) {
+          if (window.scrollY < 0) {
+            headerRef.current.style.transform = `translateY(${-window.scrollY}px)`;
+          } else {
+            headerRef.current.style.transform = 'translateY(0px)';
+          }
+        }
+
+        const triggerPoint = window.innerHeight / 2;
+        let current = NARRATIVE_STRUCTURE[0].id;
+        for (const s of NARRATIVE_STRUCTURE) {
           const el = document.getElementById(s.id);
-          if (el && el.getBoundingClientRect().top <= 140) current = s.id;
+          if (el && el.getBoundingClientRect().top <= triggerPoint) {
+            current = s.id;
+          }
         }
         setCurrentId(current);
       });
@@ -105,9 +108,20 @@ export default function SquishHeader() {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, [chapters]);
+  }, []);
 
-  const currentChapter = chapters.find((s) => s.id === currentId) || chapters[0];
+  // Compute the label for the breadcrumb button
+  const currentItem = NARRATIVE_STRUCTURE.find((s) => s.id === currentId) || NARRATIVE_STRUCTURE[0];
+  let displayLabel = currentItem.label;
+  if (currentItem.type === 'chapter') {
+    const actIndex = NARRATIVE_STRUCTURE.findIndex((s) => s.id === currentId);
+    for (let i = actIndex - 1; i >= 0; i--) {
+      if (NARRATIVE_STRUCTURE[i].type === 'act') {
+        displayLabel = `${NARRATIVE_STRUCTURE[i].label} · ${currentItem.label}`;
+        break;
+      }
+    }
+  }
 
   useGSAP(() => {
     // Exact pixel measurement of the spacer's rendered 85vh to prevent scroll tearing
@@ -148,10 +162,10 @@ export default function SquishHeader() {
       ease: "none"
     }, 0);
 
-    // 2. The title group moves up and scales down into the center of the nav bar
+    // 2. The title group flexes into the center of the nav bar by animating away its padding
     tl.to(titleGroupRef.current, {
-      y: 0,
-      marginTop: "0px", // Align to center of the 70px bar
+      paddingTop: "0px",
+      paddingBottom: "0px",
       duration: 1,
       ease: "none"
     }, 0);
@@ -322,9 +336,9 @@ export default function SquishHeader() {
             <span className="mobile-hide" style={{ color: 'var(--c-dim)', flexShrink: 0 }}>/</span>
             <span style={{ color: 'var(--c-muted)', minWidth: 0, flexShrink: 1, display: 'inline-flex' }}>
               <BreadcrumbDropdown
-                label={currentChapter.label}
+                label={displayLabel}
                 currentId={currentId}
-                items={chapters.map((s) => ({ id: s.id, href: `#${s.id}`, label: s.label }))}
+                items={NARRATIVE_STRUCTURE.map((s) => ({ id: s.id, href: `#${s.id}`, label: s.label, type: s.type }))}
                 onSelect={(item) => {
                   const el = document.getElementById(item.id);
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -378,13 +392,17 @@ export default function SquishHeader() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               textAlign: 'center',
               position: 'absolute',
-              top: '50%',
+              top: 0,
+              bottom: 0,
               left: 0,
               right: 0,
-              transform: 'translateY(-50%)',
-              padding: '0 1rem',
+              paddingTop: '75px', // Reserve space for the 70px nav bar + user button
+              paddingBottom: '20px',
+              paddingLeft: '1rem',
+              paddingRight: '1rem',
               pointerEvents: 'auto',
             }}
           >
@@ -411,7 +429,7 @@ export default function SquishHeader() {
                 zIndex: 20,
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 800,
-                fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+                fontSize: "clamp(1.6rem, min(5vw, 7vh), 4.5rem)",
                 color: "var(--c-textBright)",
                 lineHeight: 1.05,
                 letterSpacing: "-0.015em",
@@ -430,23 +448,23 @@ export default function SquishHeader() {
               width: "100%",
               maxWidth: 780,
               boxSizing: "border-box",
-              marginTop: "clamp(1rem, 3vh, 2rem)",
+              marginTop: "clamp(1rem, 2vh, 2rem)",
               background: "var(--c-bgCard)",
               borderRadius: 6,
-              padding: "clamp(10px, 2vh, 20px)",
+              padding: "clamp(10px, 1.5vh, 20px)",
             }}>
               {/* Gold frame (the band around the content) */}
               <div style={{
                 border: "2.5px solid var(--c-gold)",
                 borderRadius: 2,
-                padding: "clamp(1.5rem, 3vh, 2.2rem) clamp(1.5rem, 4vw, 3.5rem)",
+                padding: "clamp(0.8rem, 1.5vh, 2.2rem) clamp(1rem, 3vw, 3.5rem)",
               }}>
               {/* Line 1 */}
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 400,
                 fontStyle: "italic",
-                fontSize: "clamp(1.1rem, 2vw, 1.5rem)",
+                fontSize: "clamp(1rem, min(1.8vw, 2.5vh), 1.5rem)",
                 color: "var(--c-text)",
                 lineHeight: 1.4,
                 letterSpacing: "0.01em",
@@ -458,11 +476,11 @@ export default function SquishHeader() {
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 800,
-                fontSize: "clamp(1.8rem, 4vw, 3.2rem)",
+                fontSize: "clamp(1.5rem, min(3.5vw, 5vh), 3.2rem)",
                 lineHeight: 1.1,
                 letterSpacing: "-0.01em",
                 textTransform: "uppercase",
-                margin: "clamp(0.5rem, 2vh, 1rem) 0",
+                margin: "clamp(0.4rem, 1vh, 1rem) 0",
                 background: "linear-gradient(135deg, var(--c-goldBright), var(--c-gold), var(--c-orange))",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -475,7 +493,7 @@ export default function SquishHeader() {
               <div style={{
                 fontFamily: "var(--f-display, 'Playfair Display', serif)",
                 fontWeight: 700,
-                fontSize: "clamp(1.6rem, 3.5vw, 2.6rem)",
+                fontSize: "clamp(1.2rem, min(3vw, 4vh), 2.6rem)",
                 color: "var(--c-textBright)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.01em",
@@ -486,7 +504,7 @@ export default function SquishHeader() {
 
               {/* Divider rule */}
               <div style={{
-                width: 60, height: 2, margin: "1.4rem auto",
+                width: 60, height: 2, margin: "clamp(0.8rem, 1.5vh, 1.4rem) auto",
                 background: "linear-gradient(90deg, var(--c-gold), var(--c-orange))",
                 borderRadius: 1,
               }} />
@@ -501,7 +519,7 @@ export default function SquishHeader() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "0.4rem",
+                gap: "clamp(0.2rem, 1vh, 0.4rem)",
               }}>
                 <span style={{ color: "var(--c-muted)" }}>{PHASE1_TOTAL} people answered anonymously.</span>
                 <span style={{ color: "var(--c-goldBright)" }}>Here's what they chose to share.</span>
@@ -515,11 +533,11 @@ export default function SquishHeader() {
               width: "100%",
               maxWidth: 780,
               boxSizing: "border-box",
-              marginTop: "clamp(1rem, 3vh, 2rem)",
+              marginTop: "clamp(0.8rem, 2vh, 2.5rem)", // Responsive margin (Pica Rule on larger screens, tighter on cramped screens)
               background: "var(--c-bgCard)",
               border: "1px solid var(--c-ghost)",
               borderRadius: 6,
-              padding: "clamp(10px, 2vh, 20px)",
+              padding: "clamp(10px, 1.5vh, 24px)",
               textAlign: "center",
               zIndex: 10,
               pointerEvents: "none",
@@ -546,7 +564,7 @@ export default function SquishHeader() {
                   }}>
                   <div style={{
                     fontFamily: "var(--f-display, 'Playfair Display', serif)",
-                    fontSize: "clamp(1rem, 2vw, 1.15rem)",
+                    fontSize: "clamp(0.9rem, 1.8vw, 1.15rem)",
                     fontStyle: "italic",
                     color: "var(--c-goldBright)",
                     lineHeight: 1.4,
@@ -618,19 +636,29 @@ export default function SquishHeader() {
       </header>
 
       {/* ── Scroll Indicator (On the Canvas) ── */}
-      <div style={{
-        position: "absolute",
-        bottom: 0,
-        left: "50%",
-        transform: "translate(-50%, 150%)", // Pushes it down past the 85vh spacer onto the canvas
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "0.2rem",
-        color: "var(--c-gold)",
-        zIndex: 10,
-        pointerEvents: "none",
-      }}>
+      <div className="scroll-indicator-container">
+        <style>
+          {`
+            .scroll-indicator-container {
+              position: absolute;
+              bottom: 0;
+              left: 50%;
+              transform: translate(-50%, 150%);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.2rem;
+              color: var(--c-gold);
+              z-index: 10;
+              pointer-events: none;
+            }
+            @media (max-width: 1200px) {
+              .scroll-indicator-container {
+                transform: translate(-50%, calc(150% - 60px)); /* Push up above the 60px mobile nav bar */
+              }
+            }
+          `}
+        </style>
         <span style={{
           fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
           fontSize: "0.85rem",

@@ -62,49 +62,105 @@ export default function ExhibitSidebarNav({ sections }) {
   if (!sections || sections.length === 0) return null;
 
   return (
-    <aside className="explore-nav" style={{
-      position: "sticky",
-      top: "calc(var(--header-height, 56px) + 1.5rem)",
-      maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
-      overflowY: "auto",
-      display: "flex", flexDirection: "column", gap: "0.5rem",
-      zIndex: 100,
-    }}>
-      <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.text, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
-        Sections
-      </div>
-      {sections.map(s => (
-        <div
-          key={s.id}
-          onClick={() => {
-            setActiveSection(s.id);
-            document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          style={{
-            cursor: "pointer", fontFamily: FONT.body, fontSize: "0.85rem",
-            color: activeSection === s.id ? resolveCssColor(C.goldBright) : C.text,
-            padding: "0.45rem 0.75rem", borderRadius: 6,
-            background: activeSection === s.id ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
-            border: `1px solid ${activeSection === s.id ? resolveCssColor(C.gold) : C.ghost}`,
-            transition: "all 0.2s",
-            display: "flex", alignItems: "center", gap: "0.5rem",
-          }}
-          onMouseEnter={e => {
-            if (activeSection !== s.id) {
-              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-              e.currentTarget.style.borderColor = resolveCssColor(C.gold);
-            }
-          }}
-          onMouseLeave={e => {
-            if (activeSection !== s.id) {
-              e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-              e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
-            }
-          }}
-        >
-          {s.label}
+    <>
+      <style>{`
+        .desktop-sidebar-nav { display: flex; }
+        .mobile-scroll-nav { display: none; }
+        @media (max-width: 768px) {
+          .desktop-sidebar-nav { display: none !important; }
+          .mobile-scroll-nav { display: flex !important; }
+        }
+      `}</style>
+
+      {/* Desktop Sidebar */}
+      <aside className="explore-nav desktop-sidebar-nav" style={{
+        position: "sticky",
+        top: "calc(var(--header-height, 56px) + 1.5rem)",
+        maxHeight: "calc(100vh - var(--header-height, 56px) - 3rem)",
+        overflowY: "auto",
+        flexDirection: "column", gap: "0.5rem",
+        zIndex: 100,
+      }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.text, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "1rem" }}>
+          Sections
         </div>
-      ))}
-    </aside>
+        {sections.map(s => (
+          <div
+            key={s.id}
+            onClick={() => {
+              setActiveSection(s.id);
+              document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            style={{
+              cursor: "pointer", fontFamily: FONT.body, fontSize: "0.85rem",
+              color: activeSection === s.id ? resolveCssColor(C.goldBright) : C.text,
+              padding: "0.45rem 0.75rem", borderRadius: 6,
+              background: activeSection === s.id ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+              border: `1px solid ${activeSection === s.id ? resolveCssColor(C.gold) : C.ghost}`,
+              transition: "all 0.2s",
+              display: "flex", alignItems: "center", gap: "0.5rem",
+            }}
+            onMouseEnter={e => {
+              if (activeSection !== s.id) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                e.currentTarget.style.borderColor = resolveCssColor(C.gold);
+              }
+            }}
+            onMouseLeave={e => {
+              if (activeSection !== s.id) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+                e.currentTarget.style.borderColor = resolveCssColor(C.ghost);
+              }
+            }}
+          >
+            {s.label}
+          </div>
+        ))}
+      </aside>
+
+      {/* Mobile Dot and Line Nav */}
+      <div className="mobile-scroll-nav" style={{
+        position: "fixed",
+        top: "50%",
+        left: "0.6rem",
+        transform: "translateY(-50%)",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "0.3rem",
+        zIndex: 150,
+      }}>
+        {sections.map((s, idx) => (
+          <div key={s.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.3rem" }}>
+            {/* The Dot */}
+            <div
+              onClick={() => {
+                setActiveSection(s.id);
+                document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              style={{
+                width: activeSection === s.id ? 12 : 6,
+                height: activeSection === s.id ? 12 : 6,
+                borderRadius: "50%",
+                background: activeSection === s.id ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                boxShadow: activeSection === s.id ? `0 0 10px ${resolveCssColor(C.gold)}` : "none",
+                opacity: activeSection === s.id ? 1 : 0.4
+              }}
+              title={s.label}
+            />
+            {/* The Line (don't render after last item) */}
+            {idx < sections.length - 1 && (
+              <div style={{
+                width: 2,
+                height: 12,
+                background: resolveCssColor(C.ghost),
+                opacity: 0.15
+              }} />
+            )}
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

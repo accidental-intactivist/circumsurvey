@@ -75,10 +75,10 @@ Thumbs.db
 .vscode/
 .idea/
 *.sql
-t e s t - r e s u l t s /  
- p l a y w r i g h t - r e p o r t /  
- 
+test-results/
+playwright-report/ 
 # Raw data exclusions (SEC-1)
 *.sqlite
 *.pdf
 output*.json
+.env.local

@@ -24,7 +24,7 @@ export function DemographicGrids() {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem", margin: "1.4rem 0" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1rem", margin: "1.4rem 0" }}>
       {dimensionsToRender.map(({ id, type, titleColor }) => {
         const dim = DEMOGRAPHIC_DIMENSIONS.find(d => d.id === id);
         if (!dim) return null;
@@ -63,7 +63,8 @@ export function DemographicGrids() {
               paddingBottom: "0.5rem",
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem"
+              gap: "0.5rem",
+              flexWrap: "wrap"
             }}>
               <span 
                 title={TOOLTIPS[dim.id]}
@@ -122,8 +123,8 @@ export function DemographicGrids() {
                     return (
                       <div key={c.category} style={{ display: "flex", alignItems: "center", gap: "0.4rem" }} title={`${c.category}: ${pct.toFixed(1)}% (${c.total} respondents)`}>
                         <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: segmentColor, flexShrink: 0 }} />
-                        <span style={{ fontFamily: FONT.body, fontSize: "0.68rem", color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1, cursor: "default" }}>{c.category.split(" /")[0]}</span>
-                        <span style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.muted, cursor: "default" }}>{pct.toFixed(0)}%</span>
+                        <span style={{ fontFamily: FONT.body, fontSize: "0.68rem", color: C.text, flex: 1, cursor: "default", lineHeight: 1.2 }}>{c.category.split(" /")[0]}</span>
+                        <span style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.muted, cursor: "default", flexShrink: 0 }}>{pct.toFixed(0)}%</span>
                       </div>
                     );
                   })}
@@ -136,9 +137,9 @@ export function DemographicGrids() {
                   const segmentColor = PALETTE[i % PALETTE.length];
                   return (
                     <div key={c.category} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }} title={`${c.category}: ${pct.toFixed(1)}% (${c.total} respondents)`}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontFamily: FONT.body, fontSize: "0.72rem", color: C.text, lineHeight: 1.1 }}>
-                        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingRight: "0.5rem", cursor: "default" }}>{c.category.split(" /")[0]}</span>
-                        <span style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.muted, fontWeight: 600, cursor: "default" }}>{pct.toFixed(0)}%</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontFamily: FONT.body, fontSize: "0.72rem", color: C.text, lineHeight: 1.2, gap: "0.5rem" }}>
+                        <span style={{ cursor: "default" }}>{c.category.split(" /")[0]}</span>
+                        <span style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.muted, fontWeight: 600, cursor: "default", flexShrink: 0 }}>{pct.toFixed(0)}%</span>
                       </div>
                       <div style={{ width: "100%", height: 4, background: "rgba(255,255,255,0.04)", borderRadius: 2, overflow: "hidden" }}>
                         <div style={{ width: `${pct}%`, height: "100%", background: segmentColor, borderRadius: 2, opacity: 0.85 }} />

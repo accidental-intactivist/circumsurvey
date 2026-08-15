@@ -3,6 +3,8 @@ import { C, FONT, resolveCssColor } from "../styles/tokens";
 import { EXHIBIT_ROUTES, ROUTE_META } from "./ExploreMasthead";
 import * as Icons from "./Icons";
 import { hashLink } from "../lib/router";
+import { useTelemetry } from "../lib/telemetry";
+import { useNarrativeConfig } from "../lib/narrativeConfig";
 
 // ── Compact Exhibit Card (Gemstone Aesthetic) ────────────────────────────────
 
@@ -13,11 +15,15 @@ export function ExhibitCard({ exhibit, meta, href, onClick }) {
   const [hovered, setHovered] = useState(false);
   const color = resolveCssColor(exhibit.colorVar || "var(--c-gold)");
   const CardIcon = Icons[exhibit.icon] || Icons.Compass;
+  const { trackEvent } = useTelemetry();
 
   return (
     <a
       href={href || hashLink(exhibit.route)}
-      onClick={onClick}
+      onClick={(e) => {
+        trackEvent('explore_exhibit_clicked', { exhibit_id: exhibit.route, source: 'dashboard_card' });
+        if (onClick) onClick(e);
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -116,6 +122,24 @@ export function ExhibitCard({ exhibit, meta, href, onClick }) {
         }}>
           {exhibit.label}
         </h4>
+        {exhibit.badge && (
+          <div style={{
+            position: "absolute",
+            top: "-0.5rem",
+            right: "-0.5rem",
+            background: C.goldBright,
+            color: C.bg,
+            fontFamily: FONT.condensed,
+            fontSize: "0.6rem",
+            fontWeight: 800,
+            padding: "0.15rem 0.4rem",
+            borderRadius: 4,
+            textTransform: "uppercase",
+            boxShadow: `0 2px 4px rgba(0,0,0,0.3)`
+          }}>
+            {exhibit.badge}
+          </div>
+        )}
       </div>
 
       {/* Overlay: Description (Option A: Slide up glassmorphism) */}
@@ -210,32 +234,60 @@ export function ExhibitCard({ exhibit, meta, href, onClick }) {
 // ── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function ExhibitsDashboard() {
+  const { config } = useNarrativeConfig();
+
+  // Apply narrative config order and badges
+  let sortedExhibits = [...EXHIBIT_ROUTES];
+  
+  if (config.exhibitOrder && config.exhibitOrder.length > 0) {
+    sortedExhibits.sort((a, b) => {
+      const idxA = config.exhibitOrder.indexOf(a.route);
+      const idxB = config.exhibitOrder.indexOf(b.route);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return 0;
+    });
+  }
+
+  const exhibitsWithBadges = sortedExhibits.map(ex => {
+    if (config.featuredExhibits && config.featuredExhibits[ex.route]) {
+      return { ...ex, badge: config.featuredExhibits[ex.route].badge };
+    }
+    return ex;
+  });
+
   return (
     <div style={{ marginBottom: "3rem" }}>
-      <h3 style={{
-        fontFamily: FONT.condensed,
-        fontSize: "0.85rem",
-        fontWeight: 700,
-        letterSpacing: "0.15em",
-        textTransform: "uppercase",
-        color: C.gold,
-        marginBottom: "1.2rem",
-        marginTop: 0,
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        borderBottom: `1px solid ${C.ghost}`,
-        paddingBottom: "0.5rem",
-      }}>
-        Explore All Exhibits
-      </h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem", marginBottom: "1.2rem" }}>
+        <h3 style={{
+          fontFamily: FONT.condensed,
+          fontSize: "0.85rem",
+          fontWeight: 700,
+          letterSpacing: "0.15em",
+          textTransform: "uppercase",
+          color: C.gold,
+          margin: 0,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}>
+          Explore All Exhibits
+        </h3>
+        
+        {config.exhibitOrder && config.exhibitOrder.length > 0 && (
+          <span style={{ fontFamily: FONT.mono, fontSize: "0.6rem", color: C.goldBright, opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            ✨ Dynamically Ordered
+          </span>
+        )}
+      </div>
 
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", // 6 columns on wide screens!
         gap: "1rem",
       }}>
-        {EXHIBIT_ROUTES.map(ex => {
+        {exhibitsWithBadges.map(ex => {
           const meta = ROUTE_META[ex.route] || {};
           return <ExhibitCard key={ex.route} exhibit={ex} meta={meta} />;
         })}

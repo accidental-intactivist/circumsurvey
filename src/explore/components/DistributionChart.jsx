@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { C, FONT } from "../styles/tokens";
 import { colorForLabel } from "./MiniSparkline";
 import { useTooltip, Tooltip } from "./Tooltip";
@@ -8,6 +8,7 @@ import { sortDistribution, applyLikert, shortLabel, getHarveyBallScore } from ".
 import HarveyBall from "./HarveyBall";
 
 import { useTheme } from "../contexts/ThemeContext";
+import { useTelemetry } from "../lib/telemetry";
 
 export default function DistributionChart({ title, distribution, cohortDistribution, question, cohort, hideHeader, shortenLabels, hideLegend, forceChartType, customColorMap, bare }) {
   const { colorblind, theme } = useTheme();
@@ -16,6 +17,38 @@ export default function DistributionChart({ title, distribution, cohortDistribut
   const [isExpanded, setIsExpanded] = useState(false);
   const [chartType, setChartType] = useState("auto");
   const chartRef = useRef(null);
+  const { trackEvent } = useTelemetry();
+
+  useEffect(() => {
+    if (!chartRef.current || !question?.id) return;
+    
+    let startTime = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          startTime = Date.now();
+          trackEvent('chart_dwell_time_started', { question_id: question.id });
+        } else {
+          if (startTime) {
+            const dwellTime = Date.now() - startTime;
+            trackEvent('chart_dwell_time_ended', { question_id: question.id, dwell_time_ms: dwellTime });
+            startTime = null;
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    observer.observe(chartRef.current);
+
+    return () => {
+      if (startTime) {
+        const dwellTime = Date.now() - startTime;
+        trackEvent('chart_dwell_time_ended', { question_id: question.id, dwell_time_ms: dwellTime });
+      }
+      observer.disconnect();
+    };
+  }, [question?.id, trackEvent]);
 
   const handleDownload = async () => {
     if (!chartRef.current) return;

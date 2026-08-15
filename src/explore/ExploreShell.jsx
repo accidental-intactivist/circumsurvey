@@ -40,6 +40,7 @@ import ResourcesPage from "./pages/ResourcesPage";
 import GlobalFooter from "./components/GlobalFooter";
 import ErrorBoundary from "./ErrorBoundary";
 import NotFoundPage from "./pages/NotFoundPage";
+import EditorialDashboardPage from "./pages/EditorialDashboardPage";
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -174,6 +175,8 @@ export default function ExploreShell() {
     page = <ContactPage />;
   } else if (route === "resources") {
     page = <ResourcesPage />;
+  } else if (route === "editorial") {
+    page = <EditorialDashboardPage />;
   } else if (route === "not-found") {
     page = <NotFoundPage onOpenDocent={() => setDocentOpen(true)} />;
   } else {

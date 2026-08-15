@@ -19,6 +19,11 @@ function PageviewTracker() {
   return null;
 }
 
+function RedirectToHome() {
+  const { search } = useLocation();
+  return <Navigate to={`/${search}`} replace />;
+}
+
 export default function App() {
   // Initialize PostHog once on mount
   useEffect(() => { initTelemetry(); }, []);
@@ -34,7 +39,7 @@ export default function App() {
           <Route path="/" element={<SpecialReportPage />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/explore/*" element={<ExplorePage />} />
-          <Route path="/special-report" element={<Navigate to="/" replace />} />
+          <Route path="/special-report" element={<RedirectToHome />} />
           <Route path="/*" element={<ExplorePage />} />
         </Routes>
       </BrowserRouter>

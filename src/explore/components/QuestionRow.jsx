@@ -10,6 +10,7 @@ import { MessageSquareText, CheckCircle2, ListChecks } from "./Icons";
 import AddToReportButton from "./AddToReportButton";
 import IconifyEmoji from "./IconifyEmoji";
 import { QUESTION_EXHIBIT_MAP } from "../lib/coverage";
+import { useTelemetry } from "../lib/telemetry";
 
 const COMPONENT_TO_EXHIBIT = {
   Pathway: "01",
@@ -28,6 +29,7 @@ const COMPONENT_TO_EXHIBIT = {
 };
 
 export default function QuestionRow({ q, index, distribution, cohortDistribution, cohort, onClick, searchTerm = "" }) {
+  const { trackEvent } = useTelemetry();
   // Pathway tag (for non-"all" questions)
   const pathwayObj = q.pathway && q.pathway !== "all" ? PATHWAYS[q.pathway] : null;
 
@@ -45,7 +47,10 @@ export default function QuestionRow({ q, index, distribution, cohortDistribution
 
   return (
     <div
-      onClick={onClick}
+      onClick={(e) => {
+        trackEvent('question_clicked', { question_id: q.id });
+        if (onClick) onClick(e);
+      }}
       style={{
         display: "flex",
         gap: "0.7rem",

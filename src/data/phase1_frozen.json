@@ -1,0 +1,79 @@
+{
+  "generated_from": "local_db.sqlite",
+  "rating_source": "text",
+  "total_respondents": 501,
+  "pathway_counts": {
+    "null": 37,
+    "circumcised": 213,
+    "intact": 142,
+    "restoring": 109
+  },
+  "pleasure_metrics": [
+    {
+      "label": "Intensity",
+      "intact": 4.25,
+      "restoring": 3.048,
+      "circumcised": 2.946,
+      "n": {
+        "intact": 140,
+        "circumcised": 205,
+        "restoring": 105
+      }
+    },
+    {
+      "label": "Duration",
+      "intact": 4.007,
+      "restoring": 2.657,
+      "circumcised": 2.644,
+      "n": {
+        "intact": 140,
+        "circumcised": 205,
+        "restoring": 105
+      }
+    },
+    {
+      "label": "Ease",
+      "intact": 4.043,
+      "restoring": 2.792,
+      "circumcised": 2.6,
+      "n": {
+        "intact": 140,
+        "circumcised": 205,
+        "restoring": 106
+      }
+    },
+    {
+      "label": "Light touch",
+      "intact": 4.236,
+      "restoring": 2.491,
+      "circumcised": 2.248,
+      "n": {
+        "intact": 140,
+        "circumcised": 202,
+        "restoring": 106
+      }
+    },
+    {
+      "label": "Mobile skin",
+      "intact": 4.471,
+      "restoring": 2.849,
+      "circumcised": 1.961,
+      "n": {
+        "intact": 140,
+        "circumcised": 204,
+        "restoring": 106
+      }
+    },
+    {
+      "label": "Variety",
+      "intact": 4.393,
+      "restoring": 2.676,
+      "circumcised": 2.449,
+      "n": {
+        "intact": 140,
+        "circumcised": 205,
+        "restoring": 105
+      }
+    }
+  ]
+}

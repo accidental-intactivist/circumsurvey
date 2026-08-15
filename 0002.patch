@@ -1,0 +1,1148 @@
+From 976671b2acd7a60d72d2570e096f4529633ff924 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Tue, 4 Aug 2026 00:37:14 +0000
+Subject: [PATCH 2/3] Reconstruct Phase 1 stats provenance scripts
+
+Add the two scripts the data-file headers reference but that were never
+committed:
+
+- scripts/compute_stats.py: reads the raw response DB and emits tourStats.json
+  (means, SD, n, 95% CI, Welch's t / df / p, Cohen's d for the six pleasure
+  metrics) plus src/data/phase1_frozen.json (canonical headline table).
+  Parses the 1-5 rating from responses.value_text (full sample) instead of the
+  sparsely populated value_num column (~30% subset) -- the root cause of the
+  contradictory published means. Stdlib only; self-contained Student-t.
+- scripts/freeze_phase1.js: --check (CI-safe) verifies tourData.js PLEASURE_METRICS
+  and data.js avg objects match the computed snapshot, --write stamps them.
+
+Regenerates tourStats.json from the 501-respondent snapshot, replacing the
+stale 816-row artifact whose t/df/p did not match the displayed means.
+Does not modify tourData.js or data.js (canonical-dataset choice left to the
+author); run `node scripts/freeze_phase1.js --write` to apply.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01R5KRGTuQddQkUdyoTpsKih
+---
+ scripts/compute_stats.py                 | 379 +++++++++++++++++++++++
+ scripts/freeze_phase1.js                 | 216 +++++++++++++
+ src/components/GuidedTour/tourStats.json | 287 +++++++++--------
+ src/data/phase1_frozen.json              |  79 +++++
+ 4 files changed, 824 insertions(+), 137 deletions(-)
+ create mode 100644 scripts/compute_stats.py
+ create mode 100644 scripts/freeze_phase1.js
+ create mode 100644 src/data/phase1_frozen.json
+
+diff --git a/scripts/compute_stats.py b/scripts/compute_stats.py
+new file mode 100644
+index 0000000..7e0e34e
+--- /dev/null
++++ b/scripts/compute_stats.py
+@@ -0,0 +1,379 @@
++#!/usr/bin/env python3
++"""
++compute_stats.py — Phase 1 statistics from the raw response database.
++
++Reads the local SQLite database (the raw individual-level responses that never
++leave your machine) and emits two artifacts:
++
++  1. src/components/GuidedTour/tourStats.json  — per-metric means, SD, n, 95% CI,
++     and Welch's t-test / Cohen's d for the six sexual-experience ("pleasure gap")
++     ratings. This is the file the Guided Tour's ResearcherFootnote cites.
++
++  2. src/data/phase1_frozen.json — a compact canonical table of the frozen
++     headline numbers (pleasure-metric means + pathway n's). scripts/freeze_phase1.js
++     reads THIS file to stamp/verify the values baked into tourData.js and data.js,
++     so every surface reads from one computed source of truth.
++
++Provenance note (important — this is what the peer review flagged):
++  The 1–5 rating for each metric is stored in `responses.value_text`
++  (e.g. "3 (Medium/Average)"). The `responses.value_num` column is only
++  sparsely back-filled (~30% of rows). Computing off value_num alone silently
++  drops ~two-thirds of respondents and biases every mean (that is how the site
++  ended up with two different "pleasure gap" numbers). This script parses the
++  leading 1–5 digit out of value_text and falls back to value_num, so it uses
++  the COMPLETE set of responses. Use --rating-source to compare strategies.
++
++Stdlib only — no numpy/scipy (matches the rest of scripts/). Welch's t-test,
++the Student-t CDF (regularized incomplete beta) and the t critical value used
++for the confidence interval are implemented below.
++
++Usage:
++  python3 scripts/compute_stats.py                         # writes both artifacts
++  python3 scripts/compute_stats.py --db local_db.sqlite    # explicit DB path
++  python3 scripts/compute_stats.py --check                 # compute + print, write nothing
++  python3 scripts/compute_stats.py --rating-source value_num   # legacy (biased) subset
++
++Exit code is 0 on success, non-zero on error (missing DB, empty metric, etc.).
++"""
++
++import argparse
++import json
++import math
++import os
++import re
++import sqlite3
++import sys
++
++# ── The six sexual-experience ("pleasure gap") ratings ─────────────────────────
++# question_id in the `questions`/`responses` tables → display label.
++# Order here is the order written to tourStats.json.
++METRICS = [
++    ("exp_sex_rating_orgasm_intensity",        "Intensity"),
++    ("exp_sex_rating_orgasm_duration",         "Duration"),
++    ("exp_sex_rating_ease_of_orgasm",          "Ease"),
++    ("exp_sex_rating_sensitivity_light_touch", "Light touch"),
++    ("exp_sex_rating_pleasure_mobile_skin",    "Mobile skin"),
++    ("exp_sex_rating_variety_of_sensation",    "Variety"),
++]
++
++PATHWAYS = ("intact", "circumcised", "restoring")
++
++# Pairwise comparisons emitted per metric (name → (group_a, group_b)).
++COMPARISONS = {
++    "intact_vs_circ":    ("intact", "circumcised"),
++    "restoring_vs_circ": ("restoring", "circumcised"),
++}
++
++HERE = os.path.dirname(os.path.abspath(__file__))
++REPO = os.path.dirname(HERE)
++DEFAULT_DB = os.path.join(REPO, "local_db.sqlite")
++TOURSTATS_OUT = os.path.join(REPO, "src", "components", "GuidedTour", "tourStats.json")
++FROZEN_OUT = os.path.join(REPO, "src", "data", "phase1_frozen.json")
++
++
++# ── Rating extraction ─────────────────────────────────────────────────────────
++_LEAD = re.compile(r"\s*([1-5])")
++
++
++def parse_rating(value_num, value_text, source):
++    """Return an int 1–5 for a rating cell, or None if unusable.
++
++    source="text"     : parse leading digit from value_text, fall back to value_num.
++                        This is the canonical path — it uses every answered cell.
++    source="value_num": use value_num only (legacy; biased ~30% subset).
++    """
++    if source == "value_num":
++        if value_num is None:
++            return None
++        v = int(round(value_num))
++        return v if 1 <= v <= 5 else None
++    # source == "text"
++    if value_text is not None:
++        m = _LEAD.match(str(value_text))
++        if m:
++            return int(m.group(1))
++    if value_num is not None:
++        v = int(round(value_num))
++        if 1 <= v <= 5:
++            return v
++    return None
++
++
++def collect(cur, question_id, pathway, source):
++    rows = cur.execute(
++        """SELECT r.value_num, r.value_text
++             FROM responses r
++             JOIN respondents resp ON resp.id = r.respondent_id
++            WHERE r.question_id = ? AND resp.pathway = ?""",
++        (question_id, pathway),
++    ).fetchall()
++    out = []
++    for value_num, value_text in rows:
++        v = parse_rating(value_num, value_text, source)
++        if v is not None:
++            out.append(float(v))
++    return out
++
++
++# ── Descriptive statistics ────────────────────────────────────────────────────
++def mean(xs):
++    return sum(xs) / len(xs)
++
++
++def sample_variance(xs, m):
++    if len(xs) < 2:
++        return 0.0
++    return sum((x - m) ** 2 for x in xs) / (len(xs) - 1)
++
++
++def describe(xs):
++    m = mean(xs)
++    var = sample_variance(xs, m)
++    sd = math.sqrt(var)
++    df = len(xs) - 1
++    if df >= 1 and sd > 0:
++        tcrit = t_critical_two_sided(0.95, df)
++        half = tcrit * sd / math.sqrt(len(xs))
++    else:
++        half = 0.0
++    return {
++        "mean": round(m, 3),
++        "sd": round(sd, 3),
++        "n": len(xs),
++        "ci95": [round(m - half, 3), round(m + half, 3)],
++        "_mean": m, "_var": var, "_n": len(xs),  # unrounded, for downstream tests
++    }
++
++
++# ── Student-t distribution (stdlib only) ──────────────────────────────────────
++def _betacf(a, b, x):
++    """Continued fraction for the incomplete beta function (Numerical Recipes)."""
++    MAXIT, EPS, FPMIN = 200, 3.0e-12, 1.0e-300
++    qab, qap, qam = a + b, a + 1.0, a - 1.0
++    c = 1.0
++    d = 1.0 - qab * x / qap
++    if abs(d) < FPMIN:
++        d = FPMIN
++    d = 1.0 / d
++    h = d
++    for m in range(1, MAXIT + 1):
++        m2 = 2 * m
++        aa = m * (b - m) * x / ((qam + m2) * (a + m2))
++        d = 1.0 + aa * d
++        if abs(d) < FPMIN:
++            d = FPMIN
++        c = 1.0 + aa / c
++        if abs(c) < FPMIN:
++            c = FPMIN
++        d = 1.0 / d
++        h *= d * c
++        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2))
++        d = 1.0 + aa * d
++        if abs(d) < FPMIN:
++            d = FPMIN
++        c = 1.0 + aa / c
++        if abs(c) < FPMIN:
++            c = FPMIN
++        d = 1.0 / d
++        de = d * c
++        h *= de
++        if abs(de - 1.0) < EPS:
++            break
++    return h
++
++
++def betai(a, b, x):
++    """Regularized incomplete beta function I_x(a, b)."""
++    if x <= 0.0:
++        return 0.0
++    if x >= 1.0:
++        return 1.0
++    lbeta = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b)
++    bt = math.exp(lbeta + a * math.log(x) + b * math.log(1.0 - x))
++    if x < (a + 1.0) / (a + b + 2.0):
++        return bt * _betacf(a, b, x) / a
++    return 1.0 - bt * _betacf(b, a, 1.0 - x) / b
++
++
++def t_sf_two_sided(t, df):
++    """Two-tailed p-value P(|T| >= |t|) for Student-t with df degrees of freedom."""
++    if df <= 0:
++        return float("nan")
++    x = df / (df + t * t)
++    return betai(df / 2.0, 0.5, x)
++
++
++def t_cdf(t, df):
++    """CDF of Student-t at t."""
++    p_tail = 0.5 * t_sf_two_sided(t, df)  # one tail area beyond |t|
++    return 1.0 - p_tail if t > 0 else p_tail
++
++
++def t_critical_two_sided(conf, df):
++    """t value such that P(-t < T < t) = conf, via bisection on the CDF."""
++    target = 1.0 - (1.0 - conf) / 2.0  # upper-tail cumulative probability
++    lo, hi = 0.0, 1000.0
++    for _ in range(200):
++        mid = (lo + hi) / 2.0
++        if t_cdf(mid, df) < target:
++            lo = mid
++        else:
++            hi = mid
++    return (lo + hi) / 2.0
++
++
++# ── Welch's t-test + Cohen's d ────────────────────────────────────────────────
++def stars(p):
++    if p < 0.001:
++        return "***"
++    if p < 0.01:
++        return "**"
++    if p < 0.05:
++        return "*"
++    return "ns"
++
++
++def welch(a, b):
++    """Welch's t-test between describe() dicts a and b. Returns t, df, p, d, stars."""
++    na, nb = a["_n"], b["_n"]
++    ma, mb = a["_mean"], b["_mean"]
++    va, vb = a["_var"], b["_var"]
++    if na < 2 or nb < 2 or (va == 0 and vb == 0):
++        return {"cohens_d": 0.0, "t_stat": 0.0, "df": 0.0, "p_value": float("nan"), "stars": "ns"}
++    se = math.sqrt(va / na + vb / nb)
++    t = (ma - mb) / se if se > 0 else 0.0
++    # Welch–Satterthwaite degrees of freedom
++    num = (va / na + vb / nb) ** 2
++    den = (va / na) ** 2 / (na - 1) + (vb / nb) ** 2 / (nb - 1)
++    df = num / den if den > 0 else 0.0
++    p = t_sf_two_sided(t, df)
++    # Cohen's d with pooled SD
++    pooled = math.sqrt(((na - 1) * va + (nb - 1) * vb) / (na + nb - 2))
++    d = (ma - mb) / pooled if pooled > 0 else 0.0
++    return {
++        "cohens_d": round(d, 3),
++        "t_stat": round(t, 3),
++        "df": round(df, 1),
++        "p_value": p,
++        "stars": stars(p),
++    }
++
++
++# ── Main ──────────────────────────────────────────────────────────────────────
++def main():
++    ap = argparse.ArgumentParser(description="Compute Phase 1 pleasure-gap statistics from the raw DB.")
++    ap.add_argument("--db", default=DEFAULT_DB, help="Path to the SQLite response DB (default: local_db.sqlite)")
++    ap.add_argument("--rating-source", choices=["text", "value_num"], default="text",
++                    help="How to read the 1-5 rating. 'text' (default, canonical, full sample) "
++                         "or 'value_num' (legacy, biased ~30%% subset).")
++    ap.add_argument("--check", action="store_true", help="Compute and print a summary; do not write files.")
++    ap.add_argument("--tourstats-out", default=TOURSTATS_OUT)
++    ap.add_argument("--frozen-out", default=FROZEN_OUT)
++    args = ap.parse_args()
++
++    if not os.path.exists(args.db):
++        sys.exit(f"ERROR: database not found: {args.db}\n"
++                 f"       This script needs the raw local response DB (never committed).")
++
++    con = sqlite3.connect(args.db)
++    cur = con.cursor()
++
++    pathway_counts = dict(cur.execute(
++        "SELECT COALESCE(pathway,'null'), COUNT(*) FROM respondents GROUP BY pathway").fetchall())
++    total = cur.execute("SELECT COUNT(*) FROM respondents").fetchone()[0]
++
++    pleasure_gap = {}
++    frozen_metrics = []
++    print(f"Rating source: {args.rating_source}   DB: {os.path.relpath(args.db, REPO)}   total respondents: {total}")
++    print(f"{'metric':12} {'intact':>18} {'circumcised':>18} {'restoring':>18}   {'d(I-C)':>7} {'p(I-C)':>10}")
++
++    for qid, label in METRICS:
++        stat = {"label": label}
++        groups = {}
++        for p in PATHWAYS:
++            xs = collect(cur, qid, p, args.rating_source)
++            if not xs:
++                sys.exit(f"ERROR: no usable ratings for {qid} / {p}")
++            groups[p] = describe(xs)
++            stat[p] = {k: v for k, v in groups[p].items() if not k.startswith("_")}
++        for name, (ga, gb) in COMPARISONS.items():
++            stat[name] = welch(groups[ga], groups[gb])
++        pleasure_gap[qid_short(qid)] = strip_private(stat)
++
++        ic = stat["intact_vs_circ"]
++        print(f"{label:12} "
++              f"{groups['intact']['mean']:>7.2f} (n={groups['intact']['n']:>3}) "
++              f"{groups['circumcised']['mean']:>7.2f} (n={groups['circumcised']['n']:>3}) "
++              f"{groups['restoring']['mean']:>7.2f} (n={groups['restoring']['n']:>3})   "
++              f"{ic['cohens_d']:>7.2f} {ic['p_value']:>10.2e}")
++
++        frozen_metrics.append({
++            "label": label,
++            "intact": groups["intact"]["mean"],
++            "restoring": groups["restoring"]["mean"],
++            "circumcised": groups["circumcised"]["mean"],
++            "n": {p: groups[p]["n"] for p in PATHWAYS},
++        })
++
++    tourstats = {
++        "pleasure_gap": pleasure_gap,
++        "meta": {
++            "total_responses": total,
++            "pathway_counts": pathway_counts,
++            "rating_source": args.rating_source,
++            "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American "
++                    "sample; non-probability. Percentages and means describe this sample only. "
++                    "All tests two-tailed Welch's t-test.",
++        },
++    }
++    frozen = {
++        "generated_from": os.path.basename(args.db),
++        "rating_source": args.rating_source,
++        "total_respondents": total,
++        "pathway_counts": pathway_counts,
++        "pleasure_metrics": frozen_metrics,
++    }
++
++    if args.check:
++        print("\n--check: no files written.")
++        return
++
++    write_json(args.tourstats_out, tourstats)
++    write_json(args.frozen_out, frozen)
++    print(f"\nWrote {os.path.relpath(args.tourstats_out, REPO)}")
++    print(f"Wrote {os.path.relpath(args.frozen_out, REPO)}")
++    print("Next: `node scripts/freeze_phase1.js --check` to verify tourData.js / data.js match.")
++
++
++def qid_short(qid):
++    """Map the DB question_id to the short key used in tourStats.json."""
++    return {
++        "exp_sex_rating_orgasm_intensity": "intensity",
++        "exp_sex_rating_orgasm_duration": "duration",
++        "exp_sex_rating_ease_of_orgasm": "ease",
++        "exp_sex_rating_sensitivity_light_touch": "light_touch",
++        "exp_sex_rating_pleasure_mobile_skin": "mobile_skin",
++        "exp_sex_rating_variety_of_sensation": "variety",
++    }[qid]
++
++
++def strip_private(stat):
++    """Drop the unrounded helper keys (_mean/_var/_n) before serialization."""
++    clean = {}
++    for k, v in stat.items():
++        if isinstance(v, dict):
++            clean[k] = {kk: vv for kk, vv in v.items() if not kk.startswith("_")}
++        else:
++            clean[k] = v
++    return clean
++
++
++def write_json(path, obj):
++    os.makedirs(os.path.dirname(path), exist_ok=True)
++    with open(path, "w", encoding="utf-8") as f:
++        json.dump(obj, f, indent=2, ensure_ascii=False)
++        f.write("\n")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/freeze_phase1.js b/scripts/freeze_phase1.js
+new file mode 100644
+index 0000000..6f9699d
+--- /dev/null
++++ b/scripts/freeze_phase1.js
+@@ -0,0 +1,216 @@
++#!/usr/bin/env node
++/**
++ * freeze_phase1.js — stamp / verify the Phase 1 frozen headline numbers.
++ *
++ * Reads the canonical table produced by scripts/compute_stats.py
++ * (src/data/phase1_frozen.json) and reconciles the pleasure-gap means that are
++ * hand-baked into two source files so every surface reads from one computed run:
++ *
++ *   - src/components/GuidedTour/tourData.js   → the PLEASURE_METRICS array
++ *   - src/data.js                             → the six "type":"avg" rating objects
++ *
++ * Modes:
++ *   node scripts/freeze_phase1.js            # --check (default): report drift, exit 1 if any
++ *   node scripts/freeze_phase1.js --check    # same, explicit
++ *   node scripts/freeze_phase1.js --write    # rewrite the numbers in place, then re-verify
++ *
++ * The --check mode is safe to run in CI: it fails the build if the displayed
++ * numbers ever drift from the computed snapshot again (the bug the peer review
++ * found — the tour showing 4.47 while data.js showed 3.88).
++ *
++ * Values are compared/stamped at 2 decimal places, matching how the site
++ * displays them. Node built-ins only; no dependencies.
++ */
++
++import fs from "node:fs";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const REPO = path.resolve(__dirname, "..");
++const FROZEN = path.join(REPO, "src", "data", "phase1_frozen.json");
++const TOURDATA = path.join(REPO, "src", "components", "GuidedTour", "tourData.js");
++const DATAJS = path.join(REPO, "src", "data.js");
++
++// Canonical metric label → the "id" used in src/data.js avg objects.
++const LABEL_TO_DATAJS_ID = {
++  Intensity: "intensity",
++  Duration: "duration_r",
++  Ease: "ease",
++  "Light touch": "light",
++  "Mobile skin": "mobile",
++  Variety: "variety",
++};
++
++const round2 = (x) => Math.round(x * 100) / 100;
++
++function loadFrozen() {
++  if (!fs.existsSync(FROZEN)) {
++    fail(
++      `Missing ${rel(FROZEN)}.\n` +
++        `Run:  python3 scripts/compute_stats.py   (needs the raw local DB)`
++    );
++  }
++  const frozen = JSON.parse(fs.readFileSync(FROZEN, "utf8"));
++  const byLabel = new Map();
++  for (const m of frozen.pleasure_metrics) {
++    byLabel.set(m.label, {
++      intact: round2(m.intact),
++      restoring: round2(m.restoring),
++      circumcised: round2(m.circumcised),
++    });
++  }
++  return { frozen, byLabel };
++}
++
++// ── Render the canonical PLEASURE_METRICS array (tourData.js) ──────────────────
++function renderPleasureMetricsArray(byLabel) {
++  const order = ["Mobile skin", "Light touch", "Variety", "Duration", "Ease", "Intensity"];
++  const lines = order.map((label) => {
++    const m = byLabel.get(label);
++    const pad = `"${label}",`.padEnd(15, " ");
++    return `  { label: ${pad} intact: ${m.intact.toFixed(2)}, restoring: ${m.restoring.toFixed(
++      2
++    )}, circumcised: ${m.circumcised.toFixed(2)} },`;
++  });
++  return "export const PLEASURE_METRICS = [\n" + lines.join("\n") + "\n];";
++}
++
++// ── tourData.js: check / write the PLEASURE_METRICS block ──────────────────────
++const PM_BLOCK = /export const PLEASURE_METRICS = \[[\s\S]*?\n\];/;
++const PM_ROW = /\{\s*label:\s*"([^"]+)",\s*intact:\s*([\d.]+),\s*restoring:\s*([\d.]+),\s*circumcised:\s*([\d.]+)\s*\}/g;
++
++function checkTourData(byLabel, drifts) {
++  const src = fs.readFileSync(TOURDATA, "utf8");
++  const block = src.match(PM_BLOCK);
++  if (!block) fail(`Could not locate PLEASURE_METRICS array in ${rel(TOURDATA)}`);
++  let m;
++  PM_ROW.lastIndex = 0;
++  while ((m = PM_ROW.exec(block[0])) !== null) {
++    const [, label, intact, restoring, circ] = m;
++    const want = byLabel.get(label);
++    if (!want) {
++      drifts.push(`tourData.js: unexpected metric "${label}" (not in frozen table)`);
++      continue;
++    }
++    compare(drifts, `tourData.js PLEASURE_METRICS "${label}"`, want, {
++      intact: parseFloat(intact),
++      restoring: parseFloat(restoring),
++      circumcised: parseFloat(circ),
++    });
++  }
++}
++
++function writeTourData(byLabel) {
++  const src = fs.readFileSync(TOURDATA, "utf8");
++  if (!PM_BLOCK.test(src)) fail(`Could not locate PLEASURE_METRICS array in ${rel(TOURDATA)}`);
++  const next = src.replace(PM_BLOCK, renderPleasureMetricsArray(byLabel));
++  if (next !== src) {
++    fs.writeFileSync(TOURDATA, next);
++    return true;
++  }
++  return false;
++}
++
++// ── data.js: check / write each avg object's `data` block ──────────────────────
++function dataObjRegex(id) {
++  // Matches the `data: { intact, circumcised, restoring }` inside the object whose id is `id`.
++  return new RegExp(
++    `("id":\\s*"${id}"[\\s\\S]*?"data":\\s*\\{)\\s*` +
++      `"intact":\\s*([\\d.]+),\\s*` +
++      `"circumcised":\\s*([\\d.]+),\\s*` +
++      `"restoring":\\s*([\\d.]+)\\s*(\\})`
++  );
++}
++
++function checkDataJs(byLabel, drifts) {
++  const src = fs.readFileSync(DATAJS, "utf8");
++  for (const [label, id] of Object.entries(LABEL_TO_DATAJS_ID)) {
++    const re = dataObjRegex(id);
++    const m = src.match(re);
++    if (!m) {
++      drifts.push(`data.js: could not find avg object id="${id}" (${label})`);
++      continue;
++    }
++    const want = byLabel.get(label);
++    compare(drifts, `data.js "${id}" (${label})`, want, {
++      intact: parseFloat(m[2]),
++      circumcised: parseFloat(m[3]),
++      restoring: parseFloat(m[4]),
++    });
++  }
++}
++
++function writeDataJs(byLabel) {
++  let src = fs.readFileSync(DATAJS, "utf8");
++  let changed = false;
++  for (const [label, id] of Object.entries(LABEL_TO_DATAJS_ID)) {
++    const re = dataObjRegex(id);
++    const want = byLabel.get(label);
++    const next = src.replace(
++      re,
++      (_full, head, _i, _c, _r, tail) =>
++        `${head}\n      "intact": ${want.intact},\n      "circumcised": ${want.circumcised},\n` +
++        `      "restoring": ${want.restoring}\n    ${tail}`
++    );
++    if (next !== src) {
++      changed = true;
++      src = next;
++    }
++  }
++  if (changed) fs.writeFileSync(DATAJS, src);
++  return changed;
++}
++
++// ── Comparison helpers ────────────────────────────────────────────────────────
++function compare(drifts, where, want, got) {
++  for (const k of ["intact", "circumcised", "restoring"]) {
++    if (round2(want[k]) !== round2(got[k])) {
++      drifts.push(`${where}: ${k} is ${got[k]} but should be ${round2(want[k])}`);
++    }
++  }
++}
++
++function rel(p) {
++  return path.relative(REPO, p);
++}
++function fail(msg) {
++  console.error("ERROR: " + msg);
++  process.exit(2);
++}
++
++// ── Main ──────────────────────────────────────────────────────────────────────
++function main() {
++  const write = process.argv.includes("--write");
++  const { frozen, byLabel } = loadFrozen();
++
++  console.log(
++    `Frozen snapshot: ${frozen.total_respondents} respondents, source=${frozen.rating_source} ` +
++      `(${rel(FROZEN)})`
++  );
++
++  if (write) {
++    const a = writeTourData(byLabel);
++    const b = writeDataJs(byLabel);
++    console.log(
++      `Stamped: tourData.js ${a ? "updated" : "unchanged"}, data.js ${b ? "updated" : "unchanged"}.`
++    );
++  }
++
++  const drifts = [];
++  checkTourData(byLabel, drifts);
++  checkDataJs(byLabel, drifts);
++
++  if (drifts.length === 0) {
++    console.log("OK — all displayed pleasure-gap numbers match the computed snapshot.");
++    process.exit(0);
++  }
++  console.error(`\nDRIFT (${drifts.length}):`);
++  for (const d of drifts) console.error("  - " + d);
++  if (!write) {
++    console.error(`\nRun \`node scripts/freeze_phase1.js --write\` to stamp the canonical values.`);
++  }
++  process.exit(1);
++}
++
++main();
+diff --git a/src/components/GuidedTour/tourStats.json b/src/components/GuidedTour/tourStats.json
+index 5b904af..dd7fbed 100644
+--- a/src/components/GuidedTour/tourStats.json
++++ b/src/components/GuidedTour/tourStats.json
+@@ -3,264 +3,277 @@
+     "intensity": {
+       "label": "Intensity",
+       "intact": {
+-        "mean": 3.708,
+-        "sd": 0.713,
+-        "n": 48,
++        "mean": 4.25,
++        "sd": 0.922,
++        "n": 140,
+         "ci95": [
+-          3.501,
+-          3.915
++          4.096,
++          4.404
+         ]
+       },
+       "circumcised": {
+-        "mean": 3.014,
+-        "sd": 1.007,
+-        "n": 73,
++        "mean": 2.946,
++        "sd": 1.314,
++        "n": 205,
+         "ci95": [
+-          2.779,
+-          3.249
++          2.765,
++          3.127
+         ]
+       },
+       "restoring": {
+-        "mean": 2.933,
+-        "sd": 1.009,
+-        "n": 45,
++        "mean": 3.048,
++        "sd": 1.196,
++        "n": 105,
+         "ci95": [
+-          2.63,
+-          3.236
++          2.816,
++          3.279
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 0.77,
+-        "t_stat": 4.439,
+-        "p_value": 2.0421469504119424e-05,
++        "cohens_d": 1.113,
++        "t_stat": 10.825,
++        "df": 342.7,
++        "p_value": 1.0973891346889768e-23,
+         "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": -0.08,
+-        "t_stat": -0.421,
+-        "p_value": 0.6750313753119387,
++        "cohens_d": 0.079,
++        "t_stat": 0.682,
++        "df": 228.0,
++        "p_value": 0.4959039332575188,
+         "stars": "ns"
+       }
+     },
+     "duration": {
+       "label": "Duration",
+       "intact": {
+-        "mean": 3.769,
+-        "sd": 0.645,
+-        "n": 52,
++        "mean": 4.007,
++        "sd": 0.948,
++        "n": 140,
+         "ci95": [
+-          3.59,
+-          3.949
++          3.849,
++          4.166
+         ]
+       },
+       "circumcised": {
+-        "mean": 2.806,
+-        "sd": 0.988,
+-        "n": 72,
++        "mean": 2.644,
++        "sd": 1.3,
++        "n": 205,
+         "ci95": [
+-          2.573,
+-          3.038
++          2.465,
++          2.823
+         ]
+       },
+       "restoring": {
+-        "mean": 2.654,
+-        "sd": 0.947,
+-        "n": 52,
++        "mean": 2.657,
++        "sd": 1.192,
++        "n": 105,
+         "ci95": [
+-          2.39,
+-          2.918
++          2.427,
++          2.888
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 1.119,
+-        "t_stat": 6.563,
+-        "p_value": 1.3781422018223794e-09,
++        "cohens_d": 1.165,
++        "t_stat": 11.254,
++        "df": 341.5,
++        "p_value": 3.330050973164042e-25,
+         "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": -0.156,
+-        "t_stat": -0.864,
+-        "p_value": 0.38926035453745883,
++        "cohens_d": 0.01,
++        "t_stat": 0.09,
++        "df": 226.6,
++        "p_value": 0.9285777319552281,
+         "stars": "ns"
+       }
+     },
+     "ease": {
+       "label": "Ease",
+       "intact": {
+-        "mean": 3.462,
+-        "sd": 0.896,
+-        "n": 52,
++        "mean": 4.043,
++        "sd": 1.079,
++        "n": 140,
+         "ci95": [
+-          3.212,
+-          3.711
++          3.863,
++          4.223
+         ]
+       },
+       "circumcised": {
+-        "mean": 2.918,
+-        "sd": 1.003,
+-        "n": 85,
++        "mean": 2.6,
++        "sd": 1.308,
++        "n": 205,
+         "ci95": [
+-          2.701,
+-          3.134
++          2.42,
++          2.78
+         ]
+       },
+       "restoring": {
+-        "mean": 2.8,
+-        "sd": 0.992,
+-        "n": 40,
++        "mean": 2.792,
++        "sd": 1.263,
++        "n": 106,
+         "ci95": [
+-          2.483,
+-          3.117
++          2.549,
++          3.036
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 0.564,
+-        "t_stat": 3.294,
+-        "p_value": 0.0013041418112345374,
+-        "stars": "**"
++        "cohens_d": 1.182,
++        "t_stat": 11.178,
++        "df": 331.0,
++        "p_value": 7.957085174684762e-25,
++        "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": -0.118,
+-        "t_stat": -0.616,
+-        "p_value": 0.5395066770494749,
++        "cohens_d": 0.149,
++        "t_stat": 1.258,
++        "df": 219.2,
++        "p_value": 0.20963051928528809,
+         "stars": "ns"
+       }
+     },
+     "light_touch": {
+-      "label": "Light Touch",
++      "label": "Light touch",
+       "intact": {
+-        "mean": 3.696,
+-        "sd": 0.726,
+-        "n": 46,
++        "mean": 4.236,
++        "sd": 0.918,
++        "n": 140,
+         "ci95": [
+-          3.48,
+-          3.911
++          4.082,
++          4.389
+         ]
+       },
+       "circumcised": {
+-        "mean": 2.602,
+-        "sd": 0.922,
+-        "n": 93,
++        "mean": 2.248,
++        "sd": 1.225,
++        "n": 202,
+         "ci95": [
+-          2.412,
+-          2.792
++          2.078,
++          2.417
+         ]
+       },
+       "restoring": {
+-        "mean": 2.667,
+-        "sd": 0.954,
+-        "n": 42,
++        "mean": 2.491,
++        "sd": 1.375,
++        "n": 106,
+         "ci95": [
+-          2.369,
+-          2.964
++          2.226,
++          2.755
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 1.267,
+-        "t_stat": 7.616,
+-        "p_value": 9.399065888610175e-12,
++        "cohens_d": 1.791,
++        "t_stat": 17.142,
++        "df": 337.9,
++        "p_value": 7.769798206978198e-48,
+         "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": 0.069,
+-        "t_stat": 0.367,
+-        "p_value": 0.7143013193201687,
++        "cohens_d": 0.19,
++        "t_stat": 1.529,
++        "df": 193.2,
++        "p_value": 0.12787108521338597,
+         "stars": "ns"
+       }
+     },
+     "mobile_skin": {
+-      "label": "Mobile Skin",
++      "label": "Mobile skin",
+       "intact": {
+-        "mean": 3.889,
+-        "sd": 0.465,
+-        "n": 36,
++        "mean": 4.471,
++        "sd": 0.809,
++        "n": 140,
+         "ci95": [
+-          3.732,
+-          4.046
++          4.336,
++          4.607
+         ]
+       },
+       "circumcised": {
+-        "mean": 2.506,
+-        "sd": 0.875,
+-        "n": 83,
++        "mean": 1.961,
++        "sd": 1.131,
++        "n": 204,
+         "ci95": [
+-          2.315,
+-          2.697
++          1.805,
++          2.117
+         ]
+       },
+       "restoring": {
+-        "mean": 3.0,
+-        "sd": 1.015,
+-        "n": 34,
++        "mean": 2.849,
++        "sd": 1.433,
++        "n": 106,
+         "ci95": [
+-          2.646,
+-          3.354
++          2.573,
++          3.125
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 1.784,
+-        "t_stat": 11.211,
+-        "p_value": 5.050714475418209e-20,
++        "cohens_d": 2.48,
++        "t_stat": 24.002,
++        "df": 341.4,
++        "p_value": 2.785569414602616e-75,
+         "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": 0.539,
+-        "t_stat": 2.485,
+-        "p_value": 0.016087801280524436,
+-        "stars": "*"
++        "cohens_d": 0.715,
++        "t_stat": 5.547,
++        "df": 174.5,
++        "p_value": 1.0597040608848174e-07,
++        "stars": "***"
+       }
+     },
+     "variety": {
+       "label": "Variety",
+       "intact": {
+-        "mean": 3.795,
+-        "sd": 0.615,
+-        "n": 39,
++        "mean": 4.393,
++        "sd": 0.837,
++        "n": 140,
+         "ci95": [
+-          3.596,
+-          3.994
++          4.253,
++          4.533
+         ]
+       },
+       "circumcised": {
+-        "mean": 2.633,
+-        "sd": 0.936,
+-        "n": 79,
++        "mean": 2.449,
++        "sd": 1.304,
++        "n": 205,
+         "ci95": [
+-          2.423,
+-          2.843
++          2.269,
++          2.628
+         ]
+       },
+       "restoring": {
+-        "mean": 2.652,
+-        "sd": 0.948,
+-        "n": 46,
++        "mean": 2.676,
++        "sd": 1.297,
++        "n": 105,
+         "ci95": [
+-          2.371,
+-          2.934
++          2.425,
++          2.927
+         ]
+       },
+       "intact_vs_circ": {
+-        "cohens_d": 1.376,
+-        "t_stat": 8.06,
+-        "p_value": 1.1846785039242627e-12,
++        "cohens_d": 1.709,
++        "t_stat": 16.86,
++        "df": 341.8,
++        "p_value": 7.639406501144279e-47,
+         "stars": "***"
+       },
+       "restoring_vs_circ": {
+-        "cohens_d": 0.02,
+-        "t_stat": 0.11,
+-        "p_value": 0.9125914148951365,
++        "cohens_d": 0.175,
++        "t_stat": 1.458,
++        "df": 210.7,
++        "p_value": 0.14622620173450807,
+         "stars": "ns"
+       }
+     }
+   },
+   "meta": {
+-    "total_responses": 816,
++    "total_responses": 501,
+     "pathway_counts": {
+-      "intact": 146,
+-      "restoring": 109,
+-      "circumcised": 223,
+-      "null": 338
++      "null": 37,
++      "circumcised": 213,
++      "intact": 142,
++      "restoring": 109
+     },
+-    "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American sample. All tests two-tailed Welch's t-test."
++    "rating_source": "text",
++    "note": "Phase 1 frozen snapshot. Self-selected, predominantly North American sample; non-probability. Percentages and means describe this sample only. All tests two-tailed Welch's t-test."
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/src/data/phase1_frozen.json b/src/data/phase1_frozen.json
+new file mode 100644
+index 0000000..9c30c44
+--- /dev/null
++++ b/src/data/phase1_frozen.json
+@@ -0,0 +1,79 @@
++{
++  "generated_from": "local_db.sqlite",
++  "rating_source": "text",
++  "total_respondents": 501,
++  "pathway_counts": {
++    "null": 37,
++    "circumcised": 213,
++    "intact": 142,
++    "restoring": 109
++  },
++  "pleasure_metrics": [
++    {
++      "label": "Intensity",
++      "intact": 4.25,
++      "restoring": 3.048,
++      "circumcised": 2.946,
++      "n": {
++        "intact": 140,
++        "circumcised": 205,
++        "restoring": 105
++      }
++    },
++    {
++      "label": "Duration",
++      "intact": 4.007,
++      "restoring": 2.657,
++      "circumcised": 2.644,
++      "n": {
++        "intact": 140,
++        "circumcised": 205,
++        "restoring": 105
++      }
++    },
++    {
++      "label": "Ease",
++      "intact": 4.043,
++      "restoring": 2.792,
++      "circumcised": 2.6,
++      "n": {
++        "intact": 140,
++        "circumcised": 205,
++        "restoring": 106
++      }
++    },
++    {
++      "label": "Light touch",
++      "intact": 4.236,
++      "restoring": 2.491,
++      "circumcised": 2.248,
++      "n": {
++        "intact": 140,
++        "circumcised": 202,
++        "restoring": 106
++      }
++    },
++    {
++      "label": "Mobile skin",
++      "intact": 4.471,
++      "restoring": 2.849,
++      "circumcised": 1.961,
++      "n": {
++        "intact": 140,
++        "circumcised": 204,
++        "restoring": 106
++      }
++    },
++    {
++      "label": "Variety",
++      "intact": 4.393,
++      "restoring": 2.676,
++      "circumcised": 2.449,
++      "n": {
++        "intact": 140,
++        "circumcised": 205,
++        "restoring": 105
++      }
++    }
++  ]
++}
+-- 
+2.43.0

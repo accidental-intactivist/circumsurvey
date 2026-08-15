@@ -19,7 +19,7 @@ import { Sparkles } from "./Icons";
 import { Play, Pause } from "lucide-react";
 import { useTelemetry } from "../lib/telemetry";
 import { useNarrativeConfig } from "../lib/narrativeConfig";
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { SignInButton, SignOutButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 // ── Easy-to-adjust height constants ─────────────────────────────────────
 const HERO_HEIGHT = 240;   // px – hero / expanded state (adjust to taste)
@@ -697,7 +697,12 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
                       </SignInButton>
                     </SignedOut>
                     <SignedIn>
-                      <UserButton />
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+                        <SignOutButton>
+                          <button style={{ background: "transparent", border: "none", color: "var(--c-red)", cursor: "pointer", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "underline", padding: 0 }}>Sign Out</button>
+                        </SignOutButton>
+                        <UserButton />
+                      </div>
                     </SignedIn>
                   </div>
 

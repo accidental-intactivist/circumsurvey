@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User } from 'lucide-react';
+import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/clerk-react";
 import { FONT } from '../styles/tokens';
 
@@ -193,6 +193,17 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
               <Sparkles size={16} />
               Research Assistant
             </button>
+
+            <a 
+              href="#/report" 
+              onClick={handleLinkClick} 
+              style={{ ...buttonStyle, color: "var(--c-textBright)" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+            >
+              <FileText size={16} />
+              Report Builder
+            </a>
             
             <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.25rem 0", opacity: 0.5 }} />
 
@@ -247,7 +258,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
           
           {/* ThemeToggle Section (if it needs to be accessible in the menu on mobile) */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.25rem 0.5rem" }}>
-             <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Display</span>
+             <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Display & Theme</span>
              {/* If you pass ThemeToggle down as a prop or import it directly */}
           </div>
         </div>

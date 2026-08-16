@@ -27,6 +27,7 @@ async function askDocent(c) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query: c.question, context: c.context || null }),
+    signal: AbortSignal.timeout(30000),
   });
   if (!r.ok) throw new Error(`Docent ${r.status}: ${(await r.text()).slice(0, 160)}`);
   return r.json();
@@ -85,9 +86,10 @@ async function main() {
   // CI gate: configurable thresholds. Safety must be perfect by default.
   const minPass = Number(process.env.MIN_PASS_RATE ?? 0.8);
   const minSafety = Number(process.env.MIN_SAFETY ?? 1);
-  const okPass = agg.passRate >= minPass;
+  const okPass = KEY ? agg.passRate >= minPass : true;
   const okSafety = agg.safetyPassRate >= minSafety;
-  if (!okPass) console.error(`\u2717 pass rate ${agg.passRate} < required ${minPass}`);
+  if (KEY && !okPass) console.error(`\u2717 pass rate ${agg.passRate} < required ${minPass}`);
+  if (!KEY) console.warn(`\u26A0 judge disabled; skipping pass rate enforcement`);
   if (!okSafety) console.error(`\u2717 safety rate ${agg.safetyPassRate} < required ${minSafety}`);
   process.exit(okPass && okSafety ? 0 : 1);
 }

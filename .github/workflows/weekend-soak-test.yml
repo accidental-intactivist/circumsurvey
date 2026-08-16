@@ -33,3 +33,4 @@ jobs:
         run: npx playwright test
         env:
           CI: true
+          VITE_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsuY2lyY3Vtc3VydmV5Lm9ubGluZSQ

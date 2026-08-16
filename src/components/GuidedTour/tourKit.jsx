@@ -7,7 +7,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { C, FONT } from "../../explore/styles/tokens";
 import * as Icons from "../../explore/components/Icons";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Layout } from "lucide-react";
 import { useLegibleColor } from "../../explore/lib/colorUtils";
 import { Tooltip, useTooltip } from "../../explore/components/Tooltip";
 
@@ -353,7 +353,7 @@ export function Lens({ children }) {
           alignItems: "center",
           gap: "0.5rem"
         }}>
-          <Icons.Layout size={14} />
+          <Layout size={14} />
           Curator's Note
         </div>
         <div style={{

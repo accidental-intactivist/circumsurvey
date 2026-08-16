@@ -16,6 +16,7 @@ import HarmonicCanvas from "../../components/HarmonicCanvas";
 import ThemeToggle from "./ThemeToggle";
 import * as Icons from "./Icons";
 import { Sparkles } from "./Icons";
+import GlobalHamburgerMenu from "./GlobalHamburgerMenu";
 import { Play, Pause } from "lucide-react";
 import { useTelemetry } from "../lib/telemetry";
 import { useNarrativeConfig } from "../lib/narrativeConfig";
@@ -211,9 +212,6 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   
-  const [rightMenuOpen, setRightMenuOpen] = useState(false);
-  const rightMenuRef = useRef(null);
-  
   const [isEditorialUnlocked, setIsEditorialUnlocked] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("cs_editorial_unlocked") === "true";
@@ -269,15 +267,12 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
-      if (rightMenuRef.current && !rightMenuRef.current.contains(e.target)) {
-        setRightMenuOpen(false);
-      }
     }
-    if (dropdownOpen || rightMenuOpen) {
+    if (dropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownOpen, rightMenuOpen]);
+  }, [dropdownOpen]);
 
   // ── Scroll listener & Custom Property ──────────────────────────────────
   useEffect(() => {
@@ -646,185 +641,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             </a>
 
             {/* Hamburger Dropdown for Navigation */}
-            <div style={{ position: "relative" }} ref={rightMenuRef}>
-              <button
-                onClick={() => setRightMenuOpen(!rightMenuOpen)}
-                style={{
-                  background: rightMenuOpen ? "rgba(0,0,0,0.05)" : "transparent",
-                  border: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                  color: rightMenuOpen ? "var(--c-textBright)" : "var(--c-muted)",
-                  transition: "all 0.2s"
-                }}
-                onMouseEnter={(e) => {
-                  if (!rightMenuOpen) e.currentTarget.style.color = "var(--c-textBright)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!rightMenuOpen) e.currentTarget.style.color = "var(--c-muted)";
-                }}
-                aria-label="Navigation Menu"
-              >
-                <Icons.Menu size={20} />
-              </button>
-
-              {rightMenuOpen && (
-                <div style={{
-                  position: "absolute",
-                  top: "calc(100% + 0.5rem)",
-                  right: 0,
-                  background: "var(--c-bgCard)",
-                  border: `1px solid var(--c-ghost)`,
-                  borderRadius: 12,
-                  padding: "0.5rem",
-                  minWidth: "220px",
-                  boxShadow: "0 12px 32px rgba(0,0,0,0.2)",
-                  display: "flex",
-                  flexDirection: "column",
-                  zIndex: 100
-                }}>
-                  {/* Account */}
-                  <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid var(--c-ghost)", marginBottom: "0.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Account</span>
-                    <SignedOut>
-                      <SignInButton mode="modal">
-                        <button style={{ background: "transparent", border: "none", color: "var(--c-textBright)", cursor: "pointer", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "underline", padding: 0 }}>Sign In</button>
-                      </SignInButton>
-                    </SignedOut>
-                    <SignedIn>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-                        <SignOutButton>
-                          <button style={{ background: "transparent", border: "none", color: "var(--c-red)", cursor: "pointer", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", textDecoration: "underline", padding: 0 }}>Sign Out</button>
-                        </SignOutButton>
-                        <UserButton />
-                      </div>
-                    </SignedIn>
-                  </div>
-
-                  {/* Actions */}
-                  <a href="#/report" onClick={() => setRightMenuOpen(false)} style={{
-                    fontFamily: FONT.condensed,
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    color: "var(--c-blue)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    textDecoration: "none",
-                    padding: "0.75rem 1rem",
-                    borderRadius: 8,
-                    transition: "background 0.2s",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem"
-                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0, 150, 200, 0.08)"}
-                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    <span>📋</span> Builder
-                  </a>
-                  
-                  <button onClick={() => { setRightMenuOpen(false); setDocentOpen(true); }} style={{
-                    fontFamily: FONT.condensed,
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    color: "var(--c-goldBright)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    textDecoration: "none",
-                    padding: "0.75rem 1rem",
-                    borderRadius: 8,
-                    transition: "background 0.2s",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    width: "100%",
-                    textAlign: "left"
-                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(212,160,48,0.08)"}
-                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    <Icons.Sparkles size={14} /> Research Assistant
-                  </button>
-                  
-                  <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
-
-                  {/* Links */}
-                  {isEditorialUnlocked && (
-                    <a href="#/editorial" onClick={() => setRightMenuOpen(false)} style={{
-                      fontFamily: FONT.condensed,
-                      fontWeight: 700,
-                      fontSize: "0.75rem",
-                      color: "var(--c-purple)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      textDecoration: "none",
-                      padding: "0.75rem 1rem",
-                      borderRadius: 8,
-                      transition: "background 0.2s"
-                    }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
-                       onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                      Editorial
-                    </a>
-                  )}
-                  <a href="#/about" onClick={() => setRightMenuOpen(false)} style={{
-                    fontFamily: FONT.condensed,
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    color: "var(--c-text)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    textDecoration: "none",
-                    padding: "0.75rem 1rem",
-                    borderRadius: 8,
-                    transition: "background 0.2s"
-                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
-                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    About
-                  </a>
-                  <a href="#/faq" onClick={() => setRightMenuOpen(false)} style={{
-                    fontFamily: FONT.condensed,
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    color: "var(--c-text)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    textDecoration: "none",
-                    padding: "0.75rem 1rem",
-                    borderRadius: 8,
-                    transition: "background 0.2s"
-                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
-                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    FAQ
-                  </a>
-                  <a href="#/contact" onClick={() => setRightMenuOpen(false)} style={{
-                    fontFamily: FONT.condensed,
-                    fontWeight: 700,
-                    fontSize: "0.75rem",
-                    color: "var(--c-text)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.1em",
-                    textDecoration: "none",
-                    padding: "0.75rem 1rem",
-                    borderRadius: 8,
-                    transition: "background 0.2s"
-                  }} onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.04)"}
-                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    Contact
-                  </a>
-                  
-                  <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
-                  
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.5rem 1rem" }}>
-                    <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Theme</span>
-                    <ThemeToggle />
-                  </div>
-                </div>
-              )}
-            </div>
+            <GlobalHamburgerMenu onOpenDocent={() => setDocentOpen(true)} />
           </div>
         </div>
 

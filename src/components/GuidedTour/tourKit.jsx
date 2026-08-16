@@ -154,56 +154,75 @@ export function ShareTools({ title }) {
   );
 }
 
-// ── ActFolio: running act bar with position counter (Role H) ───────────────
-export function ActFolio({ actNum, actTitle, count, total }) {
+// ── ActMarker: cinematic section divider ───────────────────────────────────
+export function ActMarker({ actNum, kicker, title, count, total, colorVar }) {
   return (
-    <div style={{
-      position: "sticky", top: 70, zIndex: 120,
-      background: C.bgDeep,
-      borderBottom: `1px solid ${C.ghost}`,
-      padding: "0.8rem 1.6rem",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      fontFamily: FONT.mono, fontSize: "0.6rem", letterSpacing: "0.08em",
-      color: C.dim, textTransform: "uppercase"
+    <div style={{ 
+      position: "relative", 
+      textAlign: "center", 
+      padding: "6rem 1rem 4rem",
+      marginBottom: "2rem",
+      zIndex: 2 
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <span style={{ color: C.goldBright, fontWeight: 700 }}>ACT {actNum}</span>
-        <span style={{ color: C.ghost }}>|</span>
-        <span style={{ color: C.text }}>{actTitle}</span>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <div style={{ display: "flex", gap: "3px" }}>
-          {Array.from({ length: total }).map((_, i) => (
-            <div key={i} style={{
-              width: 16, height: 3,
-              background: i < count ? C.goldBright : C.ghost,
-            }} />
-          ))}
-        </div>
-        <span>{String(count).padStart(2, '0')}/{String(total).padStart(2, '0')}</span>
-      </div>
-    </div>
-  );
-}
-
-// ── ActHeader: combining Role C Kicker and Role B Headline ─────────────────
-export function ActHeader({ kicker, title, colorVar }) {
-  return (
-    <div style={{ textAlign: "center", marginBottom: "3rem", position: "relative", zIndex: 2 }}>
+      {/* Massive Background Numeral */}
       <div style={{
-        fontFamily: FONT.condensed, fontWeight: 700, fontSize: "16px",
-        textTransform: "uppercase", letterSpacing: "0.26em", color: colorVar,
-        display: "inline-flex", alignItems: "center", gap: "0.6rem",
-        marginBottom: "1rem"
+        position: "absolute",
+        top: "40%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        fontFamily: FONT.display,
+        fontWeight: 800,
+        fontSize: "clamp(8rem, 20vw, 16rem)",
+        lineHeight: 1,
+        color: colorVar || C.goldBright,
+        opacity: 0.04,
+        zIndex: -1,
+        pointerEvents: "none",
+        whiteSpace: "nowrap"
       }}>
-        <div style={{ width: 12, height: 1, background: colorVar, opacity: 0.5 }} />
-        {kicker}
-        <div style={{ width: 12, height: 1, background: colorVar, opacity: 0.5 }} />
+        {String(count).padStart(2, '0')}
       </div>
+
+      {/* Kicker & Progress Dots */}
+      <div style={{
+        display: "flex", 
+        flexDirection: "column",
+        alignItems: "center", 
+        gap: "1.2rem",
+        marginBottom: "1.5rem"
+      }}>
+        <div style={{
+          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "16px",
+          textTransform: "uppercase", letterSpacing: "0.26em", color: colorVar || C.goldBright,
+          display: "inline-flex", alignItems: "center", gap: "0.8rem",
+        }}>
+          <div style={{ width: 24, height: 1, background: colorVar || C.goldBright, opacity: 0.5 }} />
+          {kicker || `Act ${actNum}`}
+          <div style={{ width: 24, height: 1, background: colorVar || C.goldBright, opacity: 0.5 }} />
+        </div>
+
+        {/* Cinematic Progress Tracker */}
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ display: "flex", gap: "4px" }}>
+            {Array.from({ length: total }).map((_, i) => (
+              <div key={i} style={{
+                width: i === count - 1 ? 24 : 12, 
+                height: 3,
+                background: i < count ? (colorVar || C.goldBright) : C.ghost,
+                transition: "all 0.3s ease",
+                opacity: i < count ? 1 : 0.4
+              }} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Title */}
       <h2 style={{
-        fontFamily: FONT.display, fontWeight: 800, fontSize: "44.8px",
+        fontFamily: FONT.display, fontWeight: 800, fontSize: "clamp(2.5rem, 5vw, 3.2rem)",
         lineHeight: 1.1, color: C.textBright, margin: 0,
-        textTransform: "uppercase"
+        textTransform: "uppercase",
+        letterSpacing: "-0.02em"
       }}>
         {title}
       </h2>
@@ -309,16 +328,46 @@ export function MarginNote({ title, children }) {
 }
 
 // ── Lens: the guide's wall text (Role D) ───────────────────────────────────
-export function Lens({ children, center = true }) {
+export function Lens({ children }) {
   return (
     <Reveal>
-      <p style={{
-        fontFamily: FONT.body, fontWeight: 300, fontSize: "19.2px", color: C.muted,
-        lineHeight: 1.6, margin: center ? "0 auto 2rem" : "0 0 2rem 1.6rem",
-        maxWidth: 620, textAlign: center ? "center" : "left",
+      <div style={{
+        maxWidth: 720,
+        margin: "2rem auto 4rem",
+        padding: "1.5rem 2rem",
+        background: "var(--c-bgCard)",
+        border: "1px solid var(--c-ghost)",
+        borderLeft: `4px solid ${C.gold}`,
+        borderRadius: "4px 8px 8px 4px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.15)"
       }}>
-        {children}
-      </p>
+        <div style={{
+          fontFamily: FONT.condensed,
+          fontWeight: 700,
+          fontSize: "0.75rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.15em",
+          color: C.goldBright,
+          marginBottom: "0.8rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem"
+        }}>
+          <Icons.Layout size={14} />
+          Curator's Note
+        </div>
+        <div style={{
+          fontFamily: FONT.body, 
+          fontWeight: 400, 
+          fontSize: "17.6px", 
+          color: C.textBright,
+          lineHeight: 1.6, 
+          margin: 0, 
+          textAlign: "left",
+        }}>
+          {children}
+        </div>
+      </div>
     </Reveal>
   );
 }

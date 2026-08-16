@@ -36,6 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       appearance={{
         layout: {
           socialButtonsVariant: 'iconButton',
+          logoImageUrl: '/favicon.png',
         },
         variables: {
           colorPrimary: 'var(--c-blue)',

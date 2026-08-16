@@ -3,7 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTelemetry } from '../lib/telemetry';
 import { FONT } from '../styles/tokens';
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ renderTrigger }) {
   const { 
     theme, setTheme, 
     unlockedThemes,
@@ -72,21 +72,29 @@ export default function ThemeToggle() {
 
   return (
     <div ref={containerRef} style={{ position: "relative", zIndex: 100 }}>
-      {/* ── GEAR ICON BUTTON ── */}
-      <button 
-        onClick={() => {
-          if (!isOpen) {
-            trackEvent('settings_opened');
+      {/* ── TRIGGER ── */}
+      {renderTrigger ? (
+        renderTrigger({ 
+          isOpen, 
+          toggle: () => {
+            if (!isOpen) trackEvent('settings_opened');
+            setIsOpen(!isOpen);
           }
-          setIsOpen(!isOpen);
-        }}
-        style={toggleBtnStyle}
-        aria-label="Settings"
-        onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "var(--c-bgSoft)"; }}
-        onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.background = "transparent"; }}
-      >
-        <span style={{ fontSize: "1.1rem" }}>⚙️</span>
-      </button>
+        })
+      ) : (
+        <button 
+          onClick={() => {
+            if (!isOpen) trackEvent('settings_opened');
+            setIsOpen(!isOpen);
+          }}
+          style={toggleBtnStyle}
+          aria-label="Settings"
+          onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "var(--c-bgSoft)"; }}
+          onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.background = "transparent"; }}
+        >
+          <span style={{ fontSize: "1.1rem" }}>⚙️</span>
+        </button>
+      )}
 
       {/* ── POPOVER MENU ── */}
       {isOpen && (

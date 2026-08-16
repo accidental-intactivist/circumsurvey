@@ -33,7 +33,7 @@ const GEO_URLS = {
 import {
   Reveal, Lens, TourCard, BarRows, ArrowNote, StatCallout,
   ChapterDivider, DocentMarker, ResearcherFootnote,
-  ActFolio, ActHeader, PullQuote, TwoColumnAnalysis, MarginNote,
+  ActMarker, PullQuote, TwoColumnAnalysis, MarginNote,
   PullStat, MethodPillars, EXPLORE_BASE,
   EffectSizeRow, EffectBenchmarkChart, EffectSizeBadge,
 } from "./tourKit";
@@ -359,7 +359,7 @@ export default function GuidedTour() {
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* ── THE HOOK & THE MISCONCEPTION ── */}
             <div id="ch-prologue" style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", scrollMarginTop: 100 }}>
-              <ActHeader kicker="Prologue" title="The Accidental Intactivist's Inquiry" colorVar={C.goldBright} />
+              <ActMarker actNum="00" kicker="Prologue" title="The Accidental Intactivist's Inquiry" count={0} total={4} colorVar={C.goldBright} />
             <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
               <div style={{ fontFamily: FONT.body, fontWeight: 400, fontSize: "15.2px", lineHeight: 1.75, color: C.text, maxWidth: 680, margin: "2rem auto" }}>
                 <p style={{ marginBottom: "1.5rem" }}>
@@ -439,10 +439,9 @@ export default function GuidedTour() {
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <ActFolio actNum="I" actTitle="Physical & Mechanical Data" count={1} total={4} />
+          <ActMarker actNum="I" kicker="Act I" title="Physical & Mechanical Data" count={1} total={4} colorVar={st("03").colorVar} />
           
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
-            <ActHeader kicker="Act I" title="Physical & Mechanical Data" colorVar={st("03").colorVar} />
             
             <Lens>Anatomical Alteration and Sexual Mechanics</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -510,9 +509,8 @@ export default function GuidedTour() {
           paddingTop: "5.5rem", paddingBottom: "5rem",
           scrollMarginTop: 100,
         }}>
-          <ActFolio actNum="II" actTitle="Emotional & Psychological Data" count={2} total={4} />
+          <ActMarker actNum="II" kicker="Act II" title="Emotional & Psychological Data" count={2} total={4} colorVar={st("02").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
-            <ActHeader kicker="Act II" title="Emotional & Psychological Data" colorVar={st("02").colorVar} />
             
             <Lens>Emotional Correlates of Bodily Autonomy</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -561,9 +559,8 @@ export default function GuidedTour() {
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <ActFolio actNum="III" actTitle="Foreskin Restoration" count={3} total={4} />
+          <ActMarker actNum="III" kicker="Act III" title="Foreskin Restoration" count={3} total={4} colorVar={st("10").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
-            <ActHeader kicker="Act III" title="Foreskin Restoration" colorVar={st("10").colorVar} />
             
             <Lens>The Impact of Tissue Expansion</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -595,9 +592,8 @@ export default function GuidedTour() {
           paddingTop: "5.5rem", paddingBottom: "5rem",
           scrollMarginTop: 100,
         }}>
-          <ActFolio actNum="IV" actTitle="The Next Generation" count={4} total={4} />
+          <ActMarker actNum="IV" kicker="Act IV" title="The Next Generation" count={4} total={4} colorVar={st("14").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
-            <ActHeader kicker="Act IV" title="The Next Generation" colorVar={st("14").colorVar} />
             
             <Lens>Generational Trends in Intentions</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -636,7 +632,7 @@ export default function GuidedTour() {
 
         {/* ── APPENDIX: FURTHER EXPLORATION ── */}
         <div id="appendix" style={{ maxWidth: 960, margin: "8rem auto 4rem", padding: "4rem 1.6rem 0", borderTop: `1px solid ${C.ghost}`, scrollMarginTop: 100 }}>
-          <ActHeader kicker="Appendix" title="Methodology & Demographics" colorVar={C.dim} />
+          <ActMarker actNum="V" kicker="Appendix" title="Methodology & Demographics" count={5} total={5} colorVar={C.dim} />
           
           <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.dim, textAlign: "center", marginBottom: "3rem" }}>
             The narrative above captures the core findings of the Accidental Intactivist survey. For those interested in the underlying demographics, cultural factors, and survey architecture, we have preserved the following detailed exhibits.

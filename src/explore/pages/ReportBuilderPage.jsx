@@ -521,24 +521,34 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
             <textarea 
               value={reportMeta.subtitle}
               onChange={(e) => updateReportMeta({ subtitle: e.target.value })}
-              placeholder="Optional standfirst — one or two sentences introducing your sequence..."
+              placeholder="Add an optional introduction or description for your report..."
               rows={2}
               onInput={(e) => {
                 e.target.style.height = "auto";
                 e.target.style.height = e.target.scrollHeight + "px";
               }}
+              onFocus={(e) => {
+                e.target.style.border = `1px solid var(--c-gold)`;
+                e.target.style.background = "var(--c-bgCard)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px dashed var(--c-ghost)";
+                e.target.style.background = "var(--c-bgSoft)";
+              }}
               style={{
                 fontFamily: FONT.body,
                 fontSize: "1rem",
-                fontStyle: "italic",
-                color: C.dim,
-                background: "transparent",
-                border: "none",
+                color: C.text,
+                background: "var(--c-bgSoft)",
+                border: "1px dashed var(--c-ghost)",
+                borderRadius: "6px",
+                padding: "1rem",
                 outline: "none",
                 width: "100%",
                 resize: "none",
                 overflow: "hidden",
-                textAlign: "center"
+                textAlign: "center",
+                transition: "all 0.2s ease"
               }}
             />
           </div>

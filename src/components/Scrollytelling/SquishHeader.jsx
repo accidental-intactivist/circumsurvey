@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import ThemeToggle from '../../explore/components/ThemeToggle';
+import GlobalHamburgerMenu from '../../explore/components/GlobalHamburgerMenu';
 import BreadcrumbDropdown from '../../explore/components/BreadcrumbDropdown';
 import HarmonicCanvas from '../../components/HarmonicCanvas';
 import { useTheme } from '../../explore/contexts/ThemeContext';
@@ -363,7 +363,7 @@ export default function SquishHeader() {
           zIndex: 110,
           pointerEvents: 'auto',
         }}>
-          <ThemeToggle />
+          <GlobalHamburgerMenu />
           <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
           <a href="/explore" style={{
             fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",

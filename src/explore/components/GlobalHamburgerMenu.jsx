@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2 } from 'lucide-react';
-import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/clerk-react";
-import ThemeToggle from './ThemeToggle';
+import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2, ArrowLeft, Loader2 } from 'lucide-react';
+import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton, ClerkLoading } from "@clerk/clerk-react";
+import ThemeToggle, { ThemeSettingsPanel } from './ThemeToggle';
 import { FONT } from '../styles/tokens';
 
 export default function GlobalHamburgerMenu({ onOpenDocent }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('main'); // 'main' | 'theme'
   const [isEditorialUnlocked, setIsEditorialUnlocked] = useState(false);
   const menuRef = useRef(null);
 
@@ -25,7 +26,10 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLinkClick = () => setIsOpen(false);
+  const handleLinkClick = () => {
+    setIsOpen(false);
+    setTimeout(() => setCurrentView('main'), 300);
+  };
 
   const buttonStyle = {
     fontFamily: FONT.condensed,
@@ -88,14 +92,34 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
           background: "var(--c-bgCard)",
           border: `1px solid var(--c-ghost)`,
           borderRadius: 12,
-          padding: "0.75rem",
           minWidth: "260px",
           boxShadow: "0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02) inset",
           display: "flex",
           flexDirection: "column",
           zIndex: 9999,
-          backdropFilter: "blur(20px)"
+          backdropFilter: "blur(20px)",
+          overflow: "hidden"
         }}>
+          <style>{`
+            @keyframes slideInRight {
+              from { transform: translateX(20px); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideInLeft {
+              from { transform: translateX(-20px); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+            .animate-spin {
+              animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+          
+          {currentView === 'main' ? (
+            <div style={{ padding: "0.75rem", animation: "slideInLeft 0.2s ease-out" }}>
           {/* Account Section */}
           <div style={{ 
             padding: "0.5rem 0.5rem 1rem", 
@@ -115,6 +139,12 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             }}>
               Account
             </span>
+
+            <ClerkLoading>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0.5rem", color: "var(--c-dim)" }}>
+                <Loader2 className="animate-spin" size={16} />
+              </div>
+            </ClerkLoading>
 
             <SignedOut>
               <SignInButton mode="modal">
@@ -257,21 +287,56 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
 
           <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
           
-          <ThemeToggle renderTrigger={({ isOpen, toggle }) => (
-            <button 
-              onClick={toggle}
-              style={{ 
-                ...buttonStyle, 
-                color: "var(--c-muted)", 
-                background: isOpen ? "rgba(255,255,255,0.04)" : "transparent" 
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-              onMouseLeave={(e) => e.currentTarget.style.background = isOpen ? "rgba(255,255,255,0.04)" : "transparent"}
-            >
-              <Settings2 size={16} />
-              Theme & Display
-            </button>
-          )} />
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setCurrentView('theme');
+            }}
+            style={{ 
+              ...buttonStyle, 
+              color: "var(--c-muted)", 
+              background: "transparent" 
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+          >
+            <Settings2 size={16} />
+            Theme & Display
+          </button>
+            </div>
+          ) : (
+            <div style={{ animation: "slideInRight 0.2s ease-out", display: "flex", flexDirection: "column" }}>
+              <div style={{ padding: "0.5rem", borderBottom: "1px solid var(--c-ghost)", display: "flex", alignItems: "center" }}>
+                <button 
+                  onClick={(e) => {
+                     e.stopPropagation();
+                     setCurrentView('main');
+                  }}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--c-textBright)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                    fontFamily: FONT.condensed,
+                    fontSize: "0.85rem",
+                    padding: "0.5rem",
+                    borderRadius: 4
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                >
+                  <ArrowLeft size={16} />
+                  Back to Menu
+                </button>
+              </div>
+              <div style={{ maxHeight: "calc(100dvh - 8rem)", overflowY: "auto", overflowX: "hidden" }}>
+                <ThemeSettingsPanel />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

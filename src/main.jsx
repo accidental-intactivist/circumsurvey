@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       localization={{
         signIn: {
           start: {
-            title: "Welcome Back",
+            title: "Access Your Account",
             subtitle: "Save your pathway and return to any exhibit.",
           },
           emailAddress__placeholder: "you@example.com"
@@ -31,7 +31,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           emailAddress__placeholder: "you@example.com"
         },
         formFieldInputPlaceholder__emailAddress: "you@example.com",
-        formFieldInputPlaceholder__password: "••••••••••"
+        formFieldInputPlaceholder__password: "••••••••••",
+        dividerText: "✦"
       }}
       appearance={{
         layout: {
@@ -98,13 +99,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           socialButtonsIconButton__google: { '&:hover': { background: 'var(--c-ghost)' } },
           socialButtonsIconButton__facebook: { '&:hover': { background: 'var(--c-ghost)' } },
           dividerLine: {
-            borderStyle: 'dotted',
-            borderColor: 'var(--c-gold)'
+            background: 'var(--c-gold)',
+            height: '1px'
           },
           dividerText: {
-            color: 'var(--c-dim)',
-            fontFamily: 'var(--f-body)',
-            textTransform: 'lowercase'
+            color: 'var(--c-goldBright)',
+            fontFamily: 'var(--f-condensed)',
+            fontSize: '16px'
           },
           formButtonPrimary: {
             minHeight: '44px',

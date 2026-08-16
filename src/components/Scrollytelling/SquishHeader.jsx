@@ -363,8 +363,6 @@ export default function SquishHeader() {
           zIndex: 110,
           pointerEvents: 'auto',
         }}>
-          <GlobalHamburgerMenu />
-          <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
           <a href="/explore" style={{
             fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
             fontWeight: 700,
@@ -382,6 +380,8 @@ export default function SquishHeader() {
           }}>
             <span className="mobile-hide">Interactive </span>Explorer ➔
           </a>
+          <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
+          <GlobalHamburgerMenu />
         </div>
 
         {/* Clipping layer for the title group — squishes with the header */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText } from 'lucide-react';
+import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2 } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/clerk-react";
+import ThemeToggle from './ThemeToggle';
 import { FONT } from '../styles/tokens';
 
 export default function GlobalHamburgerMenu({ onOpenDocent }) {
@@ -195,7 +196,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             </button>
 
             <a 
-              href="#/report" 
+              href="/explore/report" 
               onClick={handleLinkClick} 
               style={{ ...buttonStyle, color: "var(--c-textBright)" }}
               onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -209,7 +210,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
 
             {isEditorialUnlocked && (
               <a 
-                href="#/editorial" 
+                href="/explore/editorial" 
                 onClick={handleLinkClick} 
                 style={{ ...buttonStyle, color: "var(--c-purple)" }}
                 onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -221,7 +222,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             )}
             
             <a 
-              href="#/about" 
+              href="/explore/about" 
               onClick={handleLinkClick} 
               style={buttonStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -232,7 +233,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             </a>
             
             <a 
-              href="#/faq" 
+              href="/explore/faq" 
               onClick={handleLinkClick} 
               style={buttonStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -243,7 +244,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             </a>
             
             <a 
-              href="#/contact" 
+              href="/explore/contact" 
               onClick={handleLinkClick} 
               style={buttonStyle}
               onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -256,11 +257,21 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
 
           <div style={{ height: 1, background: "var(--c-ghost)", margin: "0.5rem 0", opacity: 0.5 }} />
           
-          {/* ThemeToggle Section (if it needs to be accessible in the menu on mobile) */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.25rem 0.5rem" }}>
-             <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: "var(--c-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Display & Theme</span>
-             {/* If you pass ThemeToggle down as a prop or import it directly */}
-          </div>
+          <ThemeToggle renderTrigger={({ isOpen, toggle }) => (
+            <button 
+              onClick={toggle}
+              style={{ 
+                ...buttonStyle, 
+                color: "var(--c-muted)", 
+                background: isOpen ? "rgba(255,255,255,0.04)" : "transparent" 
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = isOpen ? "rgba(255,255,255,0.04)" : "transparent"}
+            >
+              <Settings2 size={16} />
+              Theme & Display
+            </button>
+          )} />
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTelemetry } from '../lib/telemetry';
 import { FONT } from '../styles/tokens';
+import { Settings2 } from 'lucide-react';
 
 export default function ThemeToggle({ renderTrigger }) {
   const { 
@@ -92,7 +93,7 @@ export default function ThemeToggle({ renderTrigger }) {
           onMouseEnter={(e) => { if (!isOpen) e.currentTarget.style.background = "var(--c-bgSoft)"; }}
           onMouseLeave={(e) => { if (!isOpen) e.currentTarget.style.background = "transparent"; }}
         >
-          <span style={{ fontSize: "1.1rem" }}>⚙️</span>
+          <Settings2 size={18} />
         </button>
       )}
 

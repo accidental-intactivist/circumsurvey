@@ -259,7 +259,7 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
               onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             >
               <User size={16} />
-              About the Author
+              About the Project
             </a>
             
             <a 

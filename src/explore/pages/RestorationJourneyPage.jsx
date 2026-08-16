@@ -437,7 +437,7 @@ export default function RestorationJourneyPage({ routerState, navigate, updateSt
           </div>
           
           {/* RCI Legend */}
-          <div style={{ marginTop: "2rem", ...glassStyle, padding: "1.5rem 2rem", maxWidth: 800, margin: "2rem auto 0" }}>
+          <div style={{ marginTop: "2rem", ...glassStyle, padding: "1.5rem", maxWidth: 800, margin: "2rem auto 0" }}>
             <h3 style={{ fontFamily: FONT.condensed, color: C.textBright, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1.2rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
               <IconifyEmoji emoji="🟣" /> Coverage Index Reference
             </h3>

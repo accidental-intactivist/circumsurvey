@@ -876,8 +876,9 @@ export function TourRestorationPathway() {
   }
 
   return (
-    <div style={{ marginTop: "1.5rem", background: "rgba(0,0,0,0.15)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem", overflowX: "auto" }}>
-      <div style={{ minWidth: 600 }}>
+    <div style={{ marginTop: "1.5rem", display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <div className="mobile-scroll-hint" style={{ background: "rgba(0,0,0,0.15)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1rem", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ minWidth: 600 }}>
         <MultiSankeyChart
           pathQuestions={[
             questionsMap["restore_rci_start"],
@@ -909,9 +910,11 @@ export function TourRestorationPathway() {
           customColorMap={RESTORATION_COLOR_MAP}
           height={400}
         />
+      </div>
+      </div>
         
-        {/* RCI Legend */}
-        <div style={{ marginTop: "2rem", background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem 2rem", maxWidth: 800, margin: "2rem auto 0" }}>
+      {/* RCI Legend */}
+      <div style={{ background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 12, padding: "1.5rem", maxWidth: 800, margin: "0 auto", width: "100%" }}>
           <h3 style={{ fontFamily: FONT.condensed, color: C.textBright, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1.2rem", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem" }}>
             <span style={{ marginRight: "0.5rem" }}>🟣</span> Coverage Index Reference
           </h3>
@@ -935,9 +938,7 @@ export function TourRestorationPathway() {
                 </div>
               </div>
             ))}
-          </div>
         </div>
-
       </div>
     </div>
   );

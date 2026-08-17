@@ -73,8 +73,10 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
   }, [routerState?.route]);
 
   // Auto-run if URL has ai_query
+  const lastAutoQuery = useRef(null);
   useEffect(() => {
-    if (routerState?.ai_query && !initialRunDone.current) {
+    if (routerState?.ai_query && routerState.ai_query !== lastAutoQuery.current) {
+      lastAutoQuery.current = routerState.ai_query;
       initialRunDone.current = true;
       setQuery(routerState.ai_query);
       executeSearch(routerState.ai_query);

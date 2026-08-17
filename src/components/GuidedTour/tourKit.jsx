@@ -299,7 +299,7 @@ export function AskDocentCard({ context, suas }) {
         {suas?.map((sua, i) => (
           <button
             key={i}
-            onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context, tourSuas: suas } }))}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context, tourSuas: suas, query: sua } }))}
             style={{
               background: "rgba(0,0,0,0.2)",
               border: `1px solid ${C.ghost}`,

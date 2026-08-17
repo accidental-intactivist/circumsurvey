@@ -1450,19 +1450,18 @@ export function LubeTaxCalculator() {
 
 export function PartnersEcho() {
   const [page, setPage] = useState(0);
-  
   const quotes = [
     {
-      text: "I didn't realize what was missing until I was with an intact partner. The mechanical difference is night and day. There's a natural gliding action that you just don't get with circumcised men.",
-      author: "Female Partner · Age 34"
+      text: "My partner is intact. It causes less vaginal chafing issues during sex.",
+      author: "Survey Respondent · Partner"
     },
     {
-      text: "My husband is circumcised and we have always needed lubrication. When I finally learned how the foreskin works mechanically, it made perfect sense why sex was often uncomfortable for both of us.",
-      author: "Wife · Age 42"
+      text: "Not as much lubrication [is] needed. He seems to get more pleasure during intimate time.",
+      author: "Survey Respondent · Partner"
     },
     {
-      text: "I've been with both. The intact penis is softer, more sensitive, and the mechanics work beautifully without needing to constantly stop and reapply lube. It's just a completely different experience.",
-      author: "Female Partner · Age 29"
+      text: "...There was some communication needed in the beginning because I had never been with someone who was intact but he was very knowledgeable and just kind of told me the differences between the two. It was never an issue.",
+      author: "Survey Respondent · Partner"
     }
   ];
   

@@ -115,7 +115,14 @@ export const TOUR = [
     exhibitTeaser: "Read what grown sons — both circumcised and intact — say directly to parents facing this choice. See the data, parent hindsight, and professional counseling stances.",
     lens: "This station speaks directly to parents. Below, adult men describe what they wish their parents had known — followed by the data on how that original choice was actually made.",
     docentContext: "The user is looking at testimonies from grown men to parents, plus the choice-environment data. Emphasize that 97.3% of circumcised respondents received the procedure without a neutral pros-and-cons choice. The exhibit is designed for parents facing the choice right now.",
-    tourSuas: ["What do circumcised men say to parents?", "What do intact men say to parents?", "How is the choice typically presented in hospitals?"] },
+    tourSuas: [
+      "What do circumcised men say to parents?", 
+      "What do intact men say to parents?", 
+      "How is the choice typically presented in hospitals?",
+      "What factors most influence parents to leave their sons intact?",
+      "Do parents of intact children regret their decision?",
+      "How does the pleasure gap data inform the decision?"
+    ] },
   { num: "14", route: "the-forward-view",    icon: "ArrowRight",        colorVar: "var(--c-blue)",
     chapter: "ch-future-son",
     title: "The Forward View",  tagline: "Future-son intentions & convergence",

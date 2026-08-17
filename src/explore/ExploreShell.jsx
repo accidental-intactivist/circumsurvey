@@ -65,6 +65,9 @@ export default function ExploreShell() {
       if (e.detail?.tourSuas) {
         setDocentTourSuas(e.detail.tourSuas);
       }
+      if (e.detail?.query && updateState) {
+        updateState({ ai_query: e.detail.query });
+      }
       setDocentOpen(true);
     };
     window.addEventListener('open-docent', handleOpenDocent);

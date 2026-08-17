@@ -9,7 +9,7 @@ const FINAL_QUOTES = [
   { path: "intact", label: "— Intact Respondent", text: "“A natural penis is just as healthy and clean as a circumcised one.”" },
   { path: "circumcised", label: "— Circumcised Respondent", text: "“I wish my parents had given me the choice. I have to live with the physical and emotional consequences.”" },
   { path: "restoring", label: "— Restoring Respondent", text: "“Restoring has given me back some sensitivity, but I can never get back the specialized nerve endings that were taken.”" },
-  { path: "observer", label: "— Partner & Observer", text: "“Having been with both, there is a clear mechanical difference. The gliding action of an intact penis is completely lost.”" },
+  { path: "observer", label: "— Partner & Observer", text: "“Not as much lubrication is needed. He seems to get more pleasure during intimate time.”" },
   { path: "circumcised", label: "— Circumcised Respondent", text: "“We are the only country in the developed world that still does this routinely to infants. It needs to stop.”" },
   { path: "intact", label: "— Intact Respondent", text: "“I am so grateful my parents left me whole. I have never had a single issue with cleanliness or function.”" },
   { path: "circumcised", label: "— Circumcised Respondent", text: "“The foreskin is not a birth defect. It serves a very specific and highly sensitive function.”" },

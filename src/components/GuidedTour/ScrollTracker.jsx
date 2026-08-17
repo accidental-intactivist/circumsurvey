@@ -72,12 +72,12 @@ export default function ScrollTracker() {
       <style>
         {`
           .desktop-tracker { display: flex; }
-          .mobile-tracker { display: none; }
+          .mobile-tracker { display: none !important; }
           @media (max-width: 1200px) {
             .desktop-tracker { display: none !important; }
           }
           @media (max-width: 768px) {
-            .mobile-tracker { display: flex; }
+            .mobile-tracker { display: flex !important; }
           }
         `}
       </style>
@@ -336,6 +336,10 @@ function MobileTracker({ activeId, isPastHeader }) {
           transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
         }}
       >
+        <div style={{ 
+          position: 'absolute', top: 0, left: 0, right: 0, height: 2, 
+          background: "var(--c-rainbow, linear-gradient(90deg, #d4a030, #d94f4f, #5b93c7, #64c896))" 
+        }} />
         <div style={{
           display: 'flex',
           flexDirection: 'column',

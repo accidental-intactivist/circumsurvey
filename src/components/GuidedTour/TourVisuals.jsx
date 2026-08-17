@@ -1202,3 +1202,377 @@ export function ParentInsightCharts() {
     </div>
   );
 }
+
+export function AsymmetryOfChoice() {
+  return (
+    <div style={{ marginTop: "4rem", marginBottom: "4rem" }}>
+      <div style={{
+        textAlign: "center",
+        marginBottom: "2.5rem"
+      }}>
+        <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", letterSpacing: "0.05em", color: C.textBright, margin: "0 0 0.5rem" }}>
+          The Asymmetry of Regret
+        </h3>
+        <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.muted, maxWidth: 700, margin: "0 auto", lineHeight: 1.6 }}>
+          When parents are on the fence, the decision is often framed as a 50/50 choice between two equal, valid options. Our dataset reveals that this is a statistical illusion. The outcomes of these two choices are fundamentally asymmetrical.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
+        {/* Column A: Intact */}
+        <div style={{
+          background: "color-mix(in srgb, var(--path-intact) 8%, transparent)",
+          border: `1px solid color-mix(in srgb, var(--path-intact) 25%, transparent)`,
+          borderRadius: 8,
+          padding: "2rem",
+          display: "flex", flexDirection: "column", gap: "1.5rem"
+        }}>
+          <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-intact)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-intact) 20%, transparent)`, paddingBottom: "0.5rem" }}>
+            The Intact Choice
+            <span style={{ display: "block", fontSize: "0.8rem", color: C.muted, marginTop: "0.2rem" }}>(The Reversible Path)</span>
+          </h4>
+          
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Data</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5 }}>
+              <strong style={{ color: C.textBright }}>0%</strong> of intact men in our study reported frequent or strong regret about being left whole.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Future Option</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5 }}>
+              If a male reaches 18 and decides he prefers a circumcised aesthetic or encounters a rare, unmanageable medical issue, he can walk into a clinic and consent to the surgery himself.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Risk Factor</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: "var(--path-intact)", lineHeight: 1.5, fontWeight: 600 }}>
+              Near zero. The decision preserves 100% of his anatomy and 100% of his future agency.
+            </div>
+          </div>
+        </div>
+
+        {/* Column B: Circumcised */}
+        <div style={{
+          background: "color-mix(in srgb, var(--path-circumcised) 8%, transparent)",
+          border: `1px solid color-mix(in srgb, var(--path-circumcised) 25%, transparent)`,
+          borderRadius: 8,
+          padding: "2rem",
+          display: "flex", flexDirection: "column", gap: "1.5rem"
+        }}>
+          <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-circumcised)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-circumcised) 20%, transparent)`, paddingBottom: "0.5rem" }}>
+            The Circumcision Choice
+            <span style={{ display: "block", fontSize: "0.8rem", color: C.muted, marginTop: "0.2rem" }}>(The Irreversible Path)</span>
+          </h4>
+          
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Data</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5 }}>
+              Over <strong style={{ color: C.textBright }}>60%</strong> of circumcised men in our engaged cohort report frequent and strong feelings of resentment, loss, or grief.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Future Option</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5 }}>
+              If a male reaches adulthood and wishes he was intact, the highly innervated tissue is permanently gone. He faces a lifetime of diminished sensation, or years of painful "restoration" to simulate a fraction of what was taken.
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Risk Factor</div>
+            <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: "var(--path-circumcised)", lineHeight: 1.5, fontWeight: 600 }}>
+              Massive. The decision permanently removes functional tissue and completely overrides his future agency.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        marginTop: "2.5rem",
+        padding: "1.5rem",
+        background: "rgba(255,255,255,0.03)",
+        borderLeft: `4px solid ${C.goldBright}`,
+        borderRadius: 4
+      }}>
+        <p style={{ fontFamily: FONT.body, fontSize: "1.05rem", color: C.textBright, margin: 0, lineHeight: 1.6 }}>
+          You do not have to guess what your son will want. If you leave him intact, you leave the choice to him. If you circumcise him, you are placing a permanent, high-risk bet on his future body using a scalpel. The data shows that a vast number of men deeply resent losing that gamble.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export function ExitInterview() {
+  const [choice, setChoice] = useState(null);
+
+  return (
+    <div style={{ marginTop: "4rem", marginBottom: "4rem", padding: "3rem 1.5rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 12, textAlign: "center" }}>
+      <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "2rem", textTransform: "uppercase", letterSpacing: "0.05em", color: C.textBright, margin: "0 0 1rem" }}>
+        The Final Question
+      </h3>
+      <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.muted, maxWidth: 600, margin: "0 auto 2.5rem", lineHeight: 1.6 }}>
+        You have seen the data. You have read the stories. You have examined the mechanics and the historical intent. If you were faced with the decision today, what would you choose for your son?
+      </p>
+
+      {!choice ? (
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <button
+            onClick={() => setChoice("intact")}
+            style={{
+              padding: "1rem 2.5rem",
+              background: "color-mix(in srgb, var(--path-intact) 15%, transparent)",
+              border: `2px solid var(--path-intact)`,
+              borderRadius: 8,
+              color: C.textBright,
+              fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", textTransform: "uppercase", letterSpacing: "0.05em",
+              cursor: "pointer", transition: "all 0.2s ease"
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "color-mix(in srgb, var(--path-intact) 25%, transparent)"}
+            onMouseLeave={e => e.currentTarget.style.background = "color-mix(in srgb, var(--path-intact) 15%, transparent)"}
+          >
+            Leave Intact
+          </button>
+          <button
+            onClick={() => setChoice("circ")}
+            style={{
+              padding: "1rem 2.5rem",
+              background: "rgba(255,255,255,0.05)",
+              border: `2px solid ${C.ghost}`,
+              borderRadius: 8,
+              color: C.muted,
+              fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", textTransform: "uppercase", letterSpacing: "0.05em",
+              cursor: "pointer", transition: "all 0.2s ease"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.color = C.textBright;
+              e.currentTarget.style.borderColor = C.text;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+              e.currentTarget.style.color = C.muted;
+              e.currentTarget.style.borderColor = C.ghost;
+            }}
+          >
+            Circumcise
+          </button>
+        </div>
+      ) : (
+        <div style={{ animation: "fadeSlideIn 0.5s ease" }}>
+          <div style={{ padding: "1.5rem", background: choice === "intact" ? "color-mix(in srgb, var(--path-intact) 10%, transparent)" : "color-mix(in srgb, var(--path-circumcised) 10%, transparent)", border: `1px solid ${choice === "intact" ? "var(--path-intact)" : "var(--path-circumcised)"}`, borderRadius: 8, display: "inline-block", textAlign: "left", maxWidth: 500 }}>
+            <p style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.5rem" }}>
+              Thank You for Reviewing the Evidence.
+            </p>
+            <p style={{ fontFamily: FONT.body, fontSize: "1rem", color: C.muted, margin: "0 0 1.5rem", lineHeight: 1.5 }}>
+              {choice === "intact" 
+                ? "Your choice aligns with 86.6% of the 500 respondents in this study. The paradigm is shifting, but it only changes when people share the truth." 
+                : "While the data leads many to a different conclusion, we appreciate you taking the time to review the findings and participate in the inquiry."}
+            </p>
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({ title: "The Accidental Intactivist's Inquiry", url: window.location.href });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Link copied to clipboard!");
+                }
+              }}
+              style={{
+                background: C.goldBright, color: "var(--c-bgDeep)", border: "none", padding: "0.6rem 1.2rem", borderRadius: 100,
+                fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.05em",
+                cursor: "pointer", transition: "all 0.2s ease"
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = C.gold}
+              onMouseLeave={e => e.currentTarget.style.background = C.goldBright}
+            >
+              Share This Report
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function LubeTaxCalculator() {
+  const [cost, setCost] = useState(12);
+  const [bottlesPerYear, setBottlesPerYear] = useState(4);
+  const [years, setYears] = useState(50); // adult active years
+
+  const lifetimeCost = cost * bottlesPerYear * years;
+
+  return (
+    <div style={{ marginTop: "3rem", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8 }}>
+      <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem" }}>
+        The Lifetime Lube Tax
+      </h4>
+      <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, marginBottom: "2rem", lineHeight: 1.6 }}>
+        The intact penis is a naturally self-lubricating system. When the specialized tissue responsible for this is surgically removed, it must often be replaced by artificial means for the rest of a man's life.
+      </p>
+      
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+        <div>
+          <label style={{ display: "block", fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.85rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+            Avg. Bottle Cost ($)
+          </label>
+          <input 
+            type="range" min="5" max="30" value={cost} onChange={e => setCost(Number(e.target.value))}
+            style={{ width: "100%", accentColor: C.goldBright }}
+          />
+          <div style={{ fontFamily: FONT.mono, fontWeight: 700, color: C.textBright, marginTop: "0.5rem" }}>${cost}</div>
+        </div>
+        <div>
+          <label style={{ display: "block", fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.85rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+            Bottles Per Year
+          </label>
+          <input 
+            type="range" min="1" max="12" value={bottlesPerYear} onChange={e => setBottlesPerYear(Number(e.target.value))}
+            style={{ width: "100%", accentColor: C.goldBright }}
+          />
+          <div style={{ fontFamily: FONT.mono, fontWeight: 700, color: C.textBright, marginTop: "0.5rem" }}>{bottlesPerYear}</div>
+        </div>
+      </div>
+
+      <div style={{ borderTop: `1px solid ${C.ghost}`, paddingTop: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          Estimated Lifetime Cost:
+        </div>
+        <div style={{ fontFamily: FONT.display, fontWeight: 800, fontSize: "2.5rem", color: C.red, lineHeight: 1 }}>
+          ${lifetimeCost.toLocaleString()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PartnersEcho() {
+  const [page, setPage] = useState(0);
+  
+  const quotes = [
+    {
+      text: "I didn't realize what was missing until I was with an intact partner. The mechanical difference is night and day. There's a natural gliding action that you just don't get with circumcised men.",
+      author: "Female Partner · Age 34"
+    },
+    {
+      text: "My husband is circumcised and we have always needed lubrication. When I finally learned how the foreskin works mechanically, it made perfect sense why sex was often uncomfortable for both of us.",
+      author: "Wife · Age 42"
+    },
+    {
+      text: "I've been with both. The intact penis is softer, more sensitive, and the mechanics work beautifully without needing to constantly stop and reapply lube. It's just a completely different experience.",
+      author: "Female Partner · Age 29"
+    }
+  ];
+  
+  const quote = quotes[page];
+
+  return (
+    <div style={{ marginTop: "3rem", padding: "2.5rem", background: "rgba(91, 147, 199, 0.05)", borderLeft: `4px solid ${PATHS.observer.color}`, borderRadius: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: PATHS.observer.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          The Partner's Echo
+        </div>
+        <div style={{ height: 1, flex: 1, background: `color-mix(in srgb, ${PATHS.observer.color} 30%, transparent)` }} />
+      </div>
+      
+      <div style={{ fontFamily: FONT.display, fontSize: "1.2rem", fontStyle: "italic", color: C.textBright, lineHeight: 1.5, marginBottom: "1rem" }}>
+        “{quote.text}”
+      </div>
+      
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ fontFamily: FONT.mono, fontSize: "0.8rem", color: C.dim }}>
+          — {quote.author}
+        </div>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {quotes.map((_, i) => (
+            <div 
+              key={i} 
+              onClick={() => setPage(i)}
+              style={{ width: 8, height: 8, borderRadius: "50%", background: page === i ? PATHS.observer.color : C.ghost, cursor: "pointer", transition: "background 0.2s ease" }} 
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function HistoricalIntentReveal() {
+  const [revealed, setRevealed] = useState(false);
+
+  return (
+    <div style={{ margin: "2rem 0", padding: "1.5rem", background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 8, position: "relative", overflow: "hidden" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+        <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
+          Archival Evidence: 1888
+        </h4>
+        <button 
+          onClick={() => setRevealed(!revealed)}
+          style={{ background: revealed ? "transparent" : C.goldBright, color: revealed ? C.goldBright : C.bgDeep, border: `1px solid ${C.goldBright}`, padding: "0.4rem 1rem", borderRadius: 4, fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", textTransform: "uppercase", cursor: "pointer", transition: "all 0.3s ease" }}
+        >
+          {revealed ? "Hide Document" : "Declassify"}
+        </button>
+      </div>
+
+      <div style={{ position: "relative", filter: revealed ? "none" : "blur(4px)", opacity: revealed ? 1 : 0.4, transition: "all 0.8s ease", fontFamily: "'Courier New', Courier, monospace", fontSize: "1.05rem", lineHeight: 1.6, color: C.textBright, background: "rgba(255,255,255,0.03)", padding: "1.5rem", borderRadius: 4, borderLeft: `3px solid ${C.red}` }}>
+        "A remedy which is almost always successful in small boys is circumcision... The operation should be performed by a surgeon without administering an anaesthetic, as the brief pain attending the operation will have a salutary effect upon the mind, especially if it be connected with the idea of punishment."
+        <div style={{ marginTop: "1rem", fontSize: "0.85rem", color: C.dim, fontStyle: "italic" }}>
+          — Dr. John Harvey Kellogg, "Treatment for Self-Abuse and its Effects" (1888)
+        </div>
+      </div>
+
+      {!revealed && (
+        <div style={{ position: "absolute", top: "60%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none" }}>
+          <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.5rem", color: C.red, textTransform: "uppercase", letterSpacing: "0.2em", border: `2px solid ${C.red}`, padding: "0.5rem 1rem", transform: "rotate(-5deg)", display: "inline-block", background: "rgba(0,0,0,0.8)", boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}>
+            Redacted
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function RestorationGradient() {
+  const [active, setActive] = useState(false);
+
+  return (
+    <div 
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      style={{ margin: "3rem 0", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, cursor: "crosshair", overflow: "hidden", position: "relative" }}
+    >
+      <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem", textAlign: "center" }}>
+        The Mechanical Recovery Gradient
+      </h4>
+      <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.dim, textAlign: "center", marginBottom: "2rem" }}>
+        Hover to simulate the mechanical recovery of tissue expansion over 5+ years.
+      </p>
+
+      {/* The Gradient Bar */}
+      <div style={{ height: 40, width: "100%", borderRadius: 20, background: "var(--c-bgDeep)", position: "relative", border: `1px solid ${C.ghost}`, overflow: "hidden" }}>
+        
+        {/* Circumcised Baseline (Red) */}
+        <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "100%", background: "color-mix(in srgb, var(--path-circumcised) 40%, transparent)", zIndex: 1 }} />
+        
+        {/* Restoration Growth (Blue/Purple moving towards Green) */}
+        <div style={{ 
+          position: "absolute", top: 0, left: 0, bottom: 0, width: active ? "75%" : "25%", 
+          background: "linear-gradient(90deg, var(--path-circumcised), var(--path-restoring) 50%, color-mix(in srgb, var(--path-intact) 60%, var(--path-restoring)))", 
+          transition: "width 3s cubic-bezier(0.2, 0.8, 0.2, 1)", zIndex: 2,
+          boxShadow: active ? "5px 0 15px rgba(255,255,255,0.1)" : "none"
+        }} />
+
+        {/* Intact Target (Green) - never reached */}
+        <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: "15%", background: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(100, 200, 150, 0.2) 5px, rgba(100, 200, 150, 0.2) 10px)", borderLeft: `2px dashed ${C.dim}`, zIndex: 3 }} />
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.dim, textTransform: "uppercase" }}>
+        <div style={{ color: "var(--path-circumcised)" }}>Baseline (CI-1)</div>
+        <div style={{ color: active ? "var(--path-restoring)" : C.dim, transition: "color 1s" }}>Mechanical Gliding Restored (CI-6+)</div>
+        <div style={{ color: "var(--path-intact)", opacity: 0.5 }}>Full Innervation (Unreachable)</div>
+      </div>
+    </div>
+  );
+}

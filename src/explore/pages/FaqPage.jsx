@@ -1,30 +1,39 @@
 import { useState } from "react";
-import { FONT } from "../styles/tokens";
+import { useNavigate } from "react-router-dom";
+import { C, FONT } from "../styles/tokens";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+import ExhibitHero from "../components/ExhibitHero";
+import { HelpCircle } from "lucide-react";
 
-const FaqCategory = ({ title, children }) => (
-  <div style={{ marginBottom: "3rem" }}>
-    <h2 style={{
-      fontFamily: FONT.condensed,
-      fontSize: "1.4rem",
-      color: "var(--c-goldBright)",
-      textTransform: "uppercase",
-      letterSpacing: "0.1em",
-      borderBottom: `1px solid var(--c-ghost)`,
-      paddingBottom: "0.5rem",
-      marginBottom: "1.5rem"
-    }}>
-      {title}
-    </h2>
-    <div>{children}</div>
-  </div>
-);
+// Inline SectionHeader matching Tomorrow's Bureau style
+function SectionHeader({ id, title, subtitle }) {
+  return (
+    <div id={id} style={{ marginBottom: "3rem", marginTop: "3.5rem" }}>
+      <h2 style={{
+        fontFamily: FONT.display, fontSize: "2.4rem", fontWeight: 700,
+        color: C.textBright, margin: 0, lineHeight: 1.2, letterSpacing: "-0.015em",
+        borderBottom: `2px solid ${C.ghost}`, paddingBottom: "1rem"
+      }}>
+        {title}
+        {subtitle && <span style={{ color: C.muted, fontWeight: 300 }}>: {subtitle}</span>}
+      </h2>
+    </div>
+  );
+}
+
+const SECTIONS = [
+  { id: "project", label: "About the Project" },
+  { id: "survey", label: "Taking the Survey" },
+  { id: "big", label: "The Big Questions" },
+  { id: "feelings", label: "General Thoughts" }
+];
 
 const FaqItem = ({ q, a }) => {
   const [open, setOpen] = useState(false);
   return (
     <div style={{
-      background: "var(--c-bgCard)",
-      border: "1px solid var(--c-ghost)",
+      background: C.bgCard,
+      border: `1px solid ${C.ghost}`,
       borderRadius: 8,
       marginBottom: "1rem",
       overflow: "hidden",
@@ -41,14 +50,14 @@ const FaqItem = ({ q, a }) => {
           cursor: "pointer",
           fontFamily: FONT.display,
           fontSize: "1.2rem",
-          color: "var(--c-textBright)",
+          color: C.textBright,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}
       >
         <span style={{ paddingRight: "2rem", lineHeight: 1.3 }}>{q}</span>
-        <span style={{ color: "var(--c-gold)", fontSize: "1.5rem" }}>{open ? "−" : "+"}</span>
+        <span style={{ color: C.gold, fontSize: "1.5rem" }}>{open ? "−" : "+"}</span>
       </button>
       
       {open && (
@@ -57,8 +66,8 @@ const FaqItem = ({ q, a }) => {
           fontFamily: FONT.body,
           fontSize: "1.05rem",
           lineHeight: 1.6,
-          color: "var(--c-dim)",
-          borderTop: `1px solid var(--c-ghost)`,
+          color: C.dim,
+          borderTop: `1px solid ${C.ghost}`,
           paddingTop: "1.5rem"
         }}>
           {a}
@@ -224,36 +233,59 @@ export default function FaqPage() {
     ]
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div style={{ minHeight: "100vh", padding: "2rem 1.5rem 6rem" }}>
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.textBright, fontFamily: FONT.body, paddingBottom: "6rem" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "1.5rem 2rem 4rem" }}>
         
-        <p style={{
-          textAlign: "center",
-          fontFamily: FONT.condensed,
-          fontSize: "1.2rem",
-          color: "var(--c-muted)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          marginBottom: "4rem"
-        }}>Your Questions, Our Answers</p>
+        {/* Breadcrumb */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
+          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, textDecoration: "none", padding: 0 }}>← Master Index</button>
+          <span style={{ color: C.dim }}>/</span>
+          <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: C.gold }}>Project</span>
+          <span style={{ color: C.dim }}>/</span>
+          <span style={{ fontFamily: FONT.condensed, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: C.textBright, padding: 0 }}>Frequently Asked Questions</span>
+        </div>
 
-        <FaqCategory title="About the Survey & This Project">
-          {faqs.aboutProject.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
-        </FaqCategory>
-        
-        <FaqCategory title="Taking the Survey">
-          {faqs.takingSurvey.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
-        </FaqCategory>
+        <ExhibitHero
+          title="Frequently Asked Questions"
+          color={C.goldBright}
+          gradientColor={C.gold}
+          BackgroundIcon={HelpCircle}
+          description="Straight answers about our methodology, the reasoning behind our questions, and how we handle the sensitive topics at the heart of this inquiry."
+        />
 
-        <FaqCategory title="The Big Questions: Health, Hygiene & Why It Matters">
-          {faqs.bigQuestions.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
-        </FaqCategory>
+        <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", marginTop: "3rem" }}>
+          
+          {/* LEFT: Nav sidebar */}
+          <ExhibitSidebarNav sections={SECTIONS} />
 
-        <FaqCategory title="General Thoughts & Feelings">
-          {faqs.feelings.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
-        </FaqCategory>
+          {/* RIGHT: Content */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0rem", maxWidth: 900 }}>
+            
+            <SectionHeader id="project" title="About the Survey & This Project" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {faqs.aboutProject.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+            </div>
 
+            <SectionHeader id="survey" title="Taking the Survey" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {faqs.takingSurvey.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+            </div>
+
+            <SectionHeader id="big" title="The Big Questions" subtitle="Health, Hygiene & Why It Matters" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {faqs.bigQuestions.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+            </div>
+
+            <SectionHeader id="feelings" title="General Thoughts & Feelings" />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {faqs.feelings.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
   );

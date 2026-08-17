@@ -34,8 +34,8 @@ export function Reveal({ children, style }) {
   const [ref, seen] = useInView();
   return (
     <div ref={ref} style={{
-      opacity: seen ? 1 : 0,
-      transform: seen ? "none" : "translateY(14px)",
+      opacity: seen ? 1 : 0.35,
+      transform: seen ? "none" : "translateY(8px)",
       transition: "opacity .8s ease, transform .8s ease",
       ...style,
     }}>
@@ -160,29 +160,10 @@ export function ActMarker({ actNum, kicker, title, count, total, colorVar }) {
     <div style={{ 
       position: "relative", 
       textAlign: "center", 
-      padding: "6rem 1rem 4rem",
-      marginBottom: "2rem",
+      padding: "3rem 1rem 2rem",
+      marginBottom: "1rem",
       zIndex: 2 
     }}>
-      {/* Massive Background Numeral */}
-      <div style={{
-        position: "absolute",
-        top: "40%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        fontFamily: FONT.display,
-        fontWeight: 800,
-        fontSize: "clamp(8rem, 20vw, 16rem)",
-        lineHeight: 1,
-        color: colorVar || C.goldBright,
-        opacity: 0.04,
-        zIndex: -1,
-        pointerEvents: "none",
-        whiteSpace: "nowrap"
-      }}>
-        {String(count).padStart(2, '0')}
-      </div>
-
       {/* Kicker & Progress Dots */}
       <div style={{
         display: "flex", 
@@ -289,40 +270,60 @@ export function TwoColumnAnalysis({ children }) {
   );
 }
 
-export function MarginNote({ title, children }) {
+export function AskDocentCard({ context, suas }) {
   return (
-    <div className="margin-note" style={{
-      borderTop: `2px solid ${C.gold}`,
-      paddingTop: "0.5rem",
-      fontFamily: FONT.body, fontSize: "12px", lineHeight: 1.5, color: C.muted
+    <div style={{
+      marginTop: "3rem",
+      marginBottom: "3rem",
+      padding: "1.5rem",
+      background: "rgba(212, 160, 48, 0.08)",
+      border: "1px solid rgba(212, 160, 48, 0.3)",
+      borderRadius: 12,
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+      breakInside: "avoid"
     }}>
-      <style>
-        {`
-          .margin-note {
-            position: absolute;
-            right: -240px;
-            width: 200px;
-            margin-top: 0.5rem;
-          }
-          @media (max-width: 1300px) {
-            .margin-note {
-              position: static;
-              width: 100%;
-              margin-right: 0;
-              margin-top: 2rem;
-              margin-bottom: 2rem;
-            }
-          }
-        `}
-      </style>
-      <div style={{
-        fontFamily: FONT.condensed, fontWeight: 700, fontSize: "10px",
-        letterSpacing: "0.15em", textTransform: "uppercase", color: C.goldBright,
-        marginBottom: "0.4rem"
-      }}>
-        {title}
+      <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        <div style={{ color: "var(--c-goldBright)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icons.Sparkles size={24} />
+        </div>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.05em", color: C.textBright }}>
+          Ask the Research Assistant
+        </div>
       </div>
-      {children}
+      <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5, maxWidth: 600 }}>
+        Curious about this finding? Choose a question below or ask your own.
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
+        {suas?.map((sua, i) => (
+          <button
+            key={i}
+            onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context, tourSuas: suas } }))}
+            style={{
+              background: "rgba(0,0,0,0.2)",
+              border: `1px solid ${C.ghost}`,
+              borderRadius: 100,
+              padding: "0.5rem 1rem",
+              fontFamily: FONT.body,
+              fontSize: "0.85rem",
+              color: C.textBright,
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = C.goldBright;
+              e.currentTarget.style.color = C.goldBright;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = C.ghost;
+              e.currentTarget.style.color = C.textBright;
+            }}
+          >
+            {sua}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -815,31 +816,7 @@ export function ChapterDivider({ id, act, title, children }) {
   );
 }
 
-export function DocentMarker({ topic, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      title={`Ask the Docent about ${topic}`}
-      style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        background: "transparent", border: "none",
-        color: C.goldBright, cursor: "pointer", verticalAlign: "middle",
-        marginLeft: "0.4rem", transition: "all 0.2s ease",
-        padding: 0,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.color = C.textBright;
-        e.currentTarget.style.transform = "scale(1.15)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.color = C.goldBright;
-        e.currentTarget.style.transform = "scale(1)";
-      }}
-    >
-      <Icons.Info size={16} style={{ verticalAlign: "middle", pointerEvents: "none" }} />
-    </button>
-  );
-}
+// Removed DocentMarker
 
 export function ResearcherFootnote({ children }) {
   const [open, setOpen] = useState(false);

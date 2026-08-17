@@ -32,8 +32,8 @@ const GEO_URLS = {
 };
 import {
   Reveal, Lens, TourCard, BarRows, ArrowNote, StatCallout,
-  ChapterDivider, DocentMarker, ResearcherFootnote,
-  ActMarker, PullQuote, TwoColumnAnalysis, MarginNote,
+  ChapterDivider, ResearcherFootnote, AskDocentCard,
+  ActMarker, PullQuote, TwoColumnAnalysis,
   PullStat, MethodPillars, EXPLORE_BASE,
   EffectSizeRow, EffectBenchmarkChart, EffectSizeBadge,
 } from "./tourKit";
@@ -44,7 +44,9 @@ import {
   PunchCardAtlas, ConvergenceSankey,
   WordMirrors, ResentmentMirror, MirrorPairToggle, ProjectionGate,
   TourButterflyChart, GenerationalShiftChart, TourObserverBreakdown, CuratedInsightsToggle,
-  TourRestorationPathway, TestimonyRotator, ParentInsightCharts
+  TourRestorationPathway, TestimonyRotator, ParentInsightCharts,
+  AsymmetryOfChoice, ExitInterview, LubeTaxCalculator, PartnersEcho,
+  HistoricalIntentReveal, RestorationGradient
 } from "./TourVisuals";
 import { DemographicGrids } from "./DemographicGrids";
 import PleasureGapWidget from "../../explore/components/PleasureGapWidget";
@@ -249,8 +251,9 @@ function Station({ num, children }) {
   const s = st(num);
   return (
     <div id={`st${s.num}`} style={{ scrollMarginTop: 90 }}>
-      <Lens>{s.lens} <DocentMarker topic={s.title} onClick={() => window.dispatchEvent(new CustomEvent('open-docent', { detail: { context: s.docentContext, tourSuas: s.tourSuas } }))} /></Lens>
+      <Lens>{s.lens}</Lens>
       {children}
+      <AskDocentCard context={s.docentContext} suas={s.tourSuas} />
     </div>
   );
 }
@@ -376,12 +379,17 @@ export default function GuidedTour() {
                 quote="If someone asked you honestly how you felt about your circumcision status, what would you say?" 
                 byline="THE LEAD RESEARCHER · PROLOGUE" 
               />
-              
+
               <p style={{ marginBottom: "1.5rem" }}>
-                That is the question I set out to ask when I built this anonymous survey. The biology of the foreskin is well understood. Its nerve density, mechanical function, and immunological role are documented in anatomy textbooks. Yet routine infant circumcision became standard practice in America during an era when self-pleasure was treated as a medical disorder. The procedure was designed to reduce sexual sensation.
+                That is the question I set out to ask when I built this anonymous survey. The biology of the foreskin is well understood—its nerve density, mechanical function, and immunological role are documented in anatomy textbooks. Yet routine infant circumcision became standard practice in America during an era when self-pleasure was treated as a medical disorder, intentionally designed to reduce sexual sensation.
+              </p>
+
+              <HistoricalIntentReveal />
+              <p style={{ marginBottom: "1.5rem" }}>
+                Over time, the cultural justifications evolved, but the mechanical reality of the procedure remained exactly the same: the surgical removal of healthy, erogenous tissue from a child. Because this surgery requires no specialized training and has no standardized outcome, it is often an aesthetic lottery. Some men are left with brown, jagged scars, while others are stripped completely tight.
               </p>
               <p style={{ marginBottom: "1.5rem" }}>
-                Now the culture is shifting. Newborn circumcision rates in the United States have fallen below 50% for the first time in over a century. Parents are asking questions that went unasked a generation ago.
+                Now the culture is shifting. Newborn circumcision rates in the United States have fallen below 50% for the first time in over a century. Parents are asking questions that went unasked a generation ago, seeking to understand the lifelong impact of an irreversible choice.
               </p>
               
               <div style={{
@@ -459,11 +467,8 @@ export default function GuidedTour() {
             </TourCard>
             
             <TwoColumnAnalysis>
-              <MarginNote title="Margin Note">
-                The term "Mobile skin" refers to the gliding action pleasure — the question asked respondents to rate it from 1 to 5.
-              </MarginNote>
               <p>
-                The intact penis functions as a self-lubricating system with a natural gliding mechanism. The removal of this tissue introduces a friction-based mechanic. The most statistically significant variance was observed in "Pleasure from Mobile Skin," where the circumcised cohort reported a 55% lower average satisfaction score.
+                The intact penis functions as a self-lubricating system with a natural gliding mechanism. The removal of this tissue introduces a friction-based mechanic. The most statistically significant variance was observed in "Pleasure from Mobile Skin" (the gliding action pleasure, rated 1 to 5), where the circumcised cohort reported a 55% lower average satisfaction score.
               </p>
               <p>
                 The gap is widest exactly where the removed tissue worked: gliding action first, fine-touch second. Restoring respondents recover part of the mechanical function — their mobile-skin mean rises 0.89 over the circumcised baseline — while the fine-touch gap barely moves, consistent with tissue that can be regrown and nerve endings that cannot.
@@ -499,6 +504,9 @@ export default function GuidedTour() {
                 These mechanical differences are reflected in daily routines. By comparing the self-reported frequencies of artificial lubrication use during intercourse or masturbation, we can observe the practical impact of the differing tissue structures. 71% of intact men rarely or never need artificial lubrication. 65% of circumcised men always or almost always require it.
               </p>
             </TwoColumnAnalysis>
+
+            <LubeTaxCalculator />
+            <PartnersEcho />
 
           </div>
         </section>
@@ -583,6 +591,8 @@ export default function GuidedTour() {
                 Restoring men report statistically significant improvements in mobility, comfort, and a reduced need for artificial lubrication. However, the data also indicates limitations. While tissue expansion can simulate the mechanical gliding function, respondents note that it does not recover the specialized nerve endings removed during the initial procedure.
               </p>
             </TwoColumnAnalysis>
+
+            <RestorationGradient />
           </div>
         </section>
 
@@ -626,6 +636,9 @@ export default function GuidedTour() {
                 These findings suggest a significant generational shift in attitudes toward routine infant circumcision, driven by the firsthand experiences detailed in this report.
               </p>
             </TwoColumnAnalysis>
+            
+            <AsymmetryOfChoice />
+            <ExitInterview />
           </div>
         </section>
 
@@ -644,6 +657,12 @@ export default function GuidedTour() {
                 <p style={{ margin: 0 }}>The survey was engineered with a single constraint: core experience questions were answered blind, before the instrument forked into separate cohort pathways.</p>
               </div>
               <ExhibitSurveyFlowchart />
+              <div style={{ padding: "1.5rem", background: "rgba(212, 160, 48, 0.08)", border: `1px solid rgba(212, 160, 48, 0.3)`, margin: "2rem 0 0", borderRadius: 8 }}>
+                <p style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1rem", letterSpacing: "0.05em", color: C.textBright, textTransform: "uppercase", marginBottom: "0.5rem" }}>A Note on Self-Selection and Population Prevalence</p>
+                <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, margin: 0, lineHeight: 1.6 }}>
+                  This survey (n=501) utilizes purposive, self-selected sampling. It is not designed to measure the prevalence of circumcision regret in the general public. Instead, it is designed to measure the intensity and characteristics of the lived experience among men who are actively engaged with their anatomical status. We do not claim 60% of all men are resentful; we demonstrate that when men do reflect on their circumcision, the resulting resentment and sensory loss are profound and measurable.
+                </p>
+              </div>
             </TourCard>
           </Station>
 

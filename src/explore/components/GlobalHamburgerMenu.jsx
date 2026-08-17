@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2, ArrowLeft, Loader2 } from 'lucide-react';
+import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2, ArrowLeft, Loader2, Compass } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton, ClerkLoading } from "@clerk/clerk-react";
 import ThemeToggle, { ThemeSettingsPanel } from './ThemeToggle';
 import { FONT } from '../styles/tokens';
@@ -271,6 +271,17 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             >
               <HelpCircle size={16} />
               FAQ & Methodology
+            </a>
+
+            <a 
+              href="/explore/resources" 
+              onClick={handleLinkClick} 
+              style={{ ...buttonStyle, color: "var(--c-gold)" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(212, 160, 48, 0.08)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+            >
+              <Compass size={16} />
+              Get Involved & Resources
             </a>
             
             <a 

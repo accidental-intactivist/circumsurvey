@@ -328,51 +328,6 @@ export function AskDocentCard({ context, suas }) {
   );
 }
 
-// ── Lens: the guide's wall text (Role D) ───────────────────────────────────
-export function Lens({ children }) {
-  return (
-    <Reveal>
-      <div style={{
-        maxWidth: 720,
-        margin: "2rem auto 4rem",
-        padding: "1.5rem 2rem",
-        background: "var(--c-bgCard)",
-        border: "1px solid var(--c-ghost)",
-        borderLeft: `4px solid ${C.gold}`,
-        borderRadius: "4px 8px 8px 4px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.15)"
-      }}>
-        <div style={{
-          fontFamily: FONT.condensed,
-          fontWeight: 700,
-          fontSize: "0.75rem",
-          textTransform: "uppercase",
-          letterSpacing: "0.15em",
-          color: C.goldBright,
-          marginBottom: "0.8rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem"
-        }}>
-          <Layout size={14} />
-          Curator's Note
-        </div>
-        <div style={{
-          fontFamily: FONT.body, 
-          fontWeight: 400, 
-          fontSize: "17.6px", 
-          color: C.textBright,
-          lineHeight: 1.6, 
-          margin: 0, 
-          textAlign: "left",
-        }}>
-          {children}
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
 // ── TourCard: ruled data card (Bureau DNA on theme tokens) ─────────────────
 export function TourCard({ id, title, refText, plateNum, children, style, exhibitStation, sourceLine }) {
   const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
@@ -422,46 +377,53 @@ export function TourCard({ id, title, refText, plateNum, children, style, exhibi
           </div>
         )}
 
-        {exhibitStation && (
-          <div className="exhibit-portal" style={{
-            borderTop: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
-            padding: "1.5rem",
-            background: `linear-gradient(180deg, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 0%, color-mix(in srgb, ${exhibitStation.colorVar} 15%, var(--c-bgDeep)) 100%)`,
-            boxShadow: `inset 0 4px 15px color-mix(in srgb, var(--c-text) 5%, transparent)`,
-            position: "relative",
-            overflow: "hidden",
-          }}>
-            {PortalIcon && (
-              <div style={{ position: "absolute", right: "-10%", bottom: "-40%", opacity: 0.1, pointerEvents: "none", transform: "rotate(-10deg)" }}>
-                <PortalIcon size={240} color={exhibitStation.colorVar} />
-              </div>
-            )}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", position: "relative", zIndex: 2 }}>
-              <ExhibitBadge station={exhibitStation} size="md" showLabel />
-              <a href={EXPLORE_BASE + exhibitStation.route} 
-                 className="insert-coin-btn"
-                 style={{
-                  fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.85rem",
-                  letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none",
-                  color: "var(--c-bg)", display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                  background: exhibitStation.colorVar,
-                  padding: "0.4rem 1.2rem", borderRadius: 999,
-                  border: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 80%, var(--c-textBright))`,
-                  whiteSpace: "nowrap", transition: "all 0.2s ease"
-              }}>
-                Enter Exhibit ➔
-              </a>
-            </div>
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: "100%",
-              background: `linear-gradient(0deg, transparent 0%, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 50%, transparent 100%)`,
-              opacity: 0.5, pointerEvents: "none", zIndex: 1
-            }} />
-          </div>
-        )}
-
+        {exhibitStation && <ExhibitPortal exhibitStation={exhibitStation} />}
       </div>
     </Reveal>
+  );
+}
+
+export function ExhibitPortal({ exhibitStation }) {
+  const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
+  if (!exhibitStation) return null;
+
+  return (
+    <div className="exhibit-portal" style={{
+      borderTop: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
+      padding: "1.5rem",
+      background: `linear-gradient(180deg, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 0%, color-mix(in srgb, ${exhibitStation.colorVar} 15%, var(--c-bgDeep)) 100%)`,
+      boxShadow: `inset 0 4px 15px color-mix(in srgb, var(--c-text) 5%, transparent)`,
+      position: "relative",
+      overflow: "hidden",
+      borderRadius: "0 0 8px 8px"
+    }}>
+      {PortalIcon && (
+        <div style={{ position: "absolute", right: "-10%", bottom: "-40%", opacity: 0.1, pointerEvents: "none", transform: "rotate(-10deg)" }}>
+          <PortalIcon size={240} color={exhibitStation.colorVar} />
+        </div>
+      )}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", position: "relative", zIndex: 2 }}>
+        <ExhibitBadge station={exhibitStation} size="md" showLabel />
+        <a href={EXPLORE_BASE + exhibitStation.route} 
+           className="insert-coin-btn"
+           style={{
+            fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.85rem",
+            letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none",
+            color: "var(--c-bg)", display: "inline-flex", alignItems: "center", gap: "0.5rem",
+            background: exhibitStation.colorVar,
+            padding: "0.4rem 1.2rem", borderRadius: 999,
+            border: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 80%, var(--c-textBright))`,
+            whiteSpace: "nowrap", transition: "all 0.2s ease"
+        }}>
+          Enter Exhibit ➔
+        </a>
+      </div>
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: "100%",
+        background: `linear-gradient(0deg, transparent 0%, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 50%, transparent 100%)`,
+        opacity: 0.5, pointerEvents: "none", zIndex: 1
+      }} />
+    </div>
   );
 }
 

@@ -72,7 +72,7 @@ export default function ExploreShell() {
     };
     window.addEventListener('open-docent', handleOpenDocent);
     return () => window.removeEventListener('open-docent', handleOpenDocent);
-  }, []);
+  }, [updateState]);
 
   // Reset custom page metadata and context whenever the route or active question ID changes
   useEffect(() => {

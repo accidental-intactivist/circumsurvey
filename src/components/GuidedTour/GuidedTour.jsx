@@ -31,14 +31,13 @@ const GEO_URLS = {
   canada: CANADA_GEO_URL
 };
 import {
-  Reveal, Lens, TourCard, BarRows, ArrowNote, StatCallout,
+  Reveal, TourCard, BarRows, ArrowNote, StatCallout,
   ChapterDivider, ResearcherFootnote, AskDocentCard,
-  ActMarker, PullQuote, TwoColumnAnalysis,
+  ActMarker, PullQuote, TwoColumnAnalysis, ExhibitPortal,
   PullStat, MethodPillars, EXPLORE_BASE,
   EffectSizeRow, EffectBenchmarkChart, EffectSizeBadge,
 } from "./tourKit";
 import * as Icons from "../../explore/components/Icons";
-import TableOfContents from './TableOfContents';
 import ScrollTracker from './ScrollTracker';
 import {
   PunchCardAtlas, ConvergenceSankey,
@@ -251,7 +250,6 @@ function Station({ num, children }) {
   const s = st(num);
   return (
     <div id={`st${s.num}`} style={{ scrollMarginTop: 90 }}>
-      <Lens>{s.lens}</Lens>
       {children}
       <AskDocentCard context={s.docentContext} suas={s.tourSuas} />
     </div>
@@ -434,10 +432,16 @@ export default function GuidedTour() {
               </div>
             </div>
           </TourCard>
-        </div>
 
-        {/* ── TABLE OF CONTENTS ── */}
-        <TableOfContents />
+          <AskDocentCard 
+            context="The user has just finished the Prologue and is about to start the main Guided Tour. Introduce yourself as the Research Assistant. Explain that you have direct access to the entire anonymous survey dataset and can help them parse statistics, find specific quotes, or break down mechanical differences." 
+            suas={[
+              "Who are you and how can you help me read this report?",
+              "What kind of data do you have access to?",
+              "Where did this survey data come from?"
+            ]} 
+          />
+        </div>
 
         {/* ── ACT I: THE MECHANICAL REALITY (THE B-PLOT) ── */}
         <section id="act-1-mechanics" style={{
@@ -451,7 +455,6 @@ export default function GuidedTour() {
           
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
-            <Lens>Anatomical Alteration and Sexual Mechanics</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               To establish a baseline, we first examine the mechanics. We asked every respondent to rate their sexual experience across six key metrics. The data reveals a quantifiable variance in reported sensation between the cohorts, with intact men reporting higher average scores across all metrics.
             </div>
@@ -508,6 +511,16 @@ export default function GuidedTour() {
             <LubeTaxCalculator />
             <PartnersEcho />
 
+            <div style={{ marginTop: "4rem" }}>
+              <AskDocentCard 
+                context="The user has just finished Act I: Physical & Mechanical Data. Maintain an objective, data-driven tone. Answer questions by citing specific statistics and qualitative trends regarding sensation and lubrication without editorializing." 
+                suas={[
+                  "Can you show me the data on fine-touch sensitivity?",
+                  "What patterns emerge in the responses regarding artificial lubrication?",
+                  "Are there notable demographic variances in this mechanical data?"
+                ]} 
+              />
+            </div>
           </div>
         </section>
 
@@ -520,7 +533,6 @@ export default function GuidedTour() {
           <ActMarker actNum="II" kicker="Act II" title="Emotional & Psychological Data" count={2} total={4} colorVar={st("02").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
-            <Lens>Emotional Correlates of Bodily Autonomy</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               A common assertion regarding infant circumcision is that performing the procedure at an early age prevents psychological impact. We provided respondents with an anonymous space to report their long-term feelings regarding their alteration.
             </div>
@@ -556,6 +568,17 @@ export default function GuidedTour() {
                 <NarrativeMirrorToggle />
               </TourCard>
             </div>
+
+            <div style={{ marginTop: "4rem" }}>
+              <AskDocentCard 
+                context="The user has just finished Act II: Emotional & Psychological Data. Maintain an objective, neutral tone. When discussing emotional outcomes, cite the data and use direct respondent quotes rather than synthesizing an opinion." 
+                suas={[
+                  "How do circumcised men describe their emotional experiences?",
+                  "At what age do most respondents report becoming aware of their status?",
+                  "What themes are most common in the qualitative responses of intact men?"
+                ]} 
+              />
+            </div>
           </div>
         </section>
 
@@ -570,7 +593,6 @@ export default function GuidedTour() {
           <ActMarker actNum="III" kicker="Act III" title="Foreskin Restoration" count={3} total={4} colorVar={st("10").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
-            <Lens>The Impact of Tissue Expansion</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               A subset of the circumcised cohort engages in a process called "foreskin restoration," which involves years of non-surgical tissue expansion. Our data examines the self-reported outcomes of this practice.
             </div>
@@ -581,7 +603,6 @@ export default function GuidedTour() {
               plateNum="PLATE 10-A"
               refText="EXHIBIT 10" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 71 (RESTORING) · SELF-SELECTED SAMPLE · EXHIBIT 10"
-              exhibitStation={st("10")}
             >
               <TourRestorationPathway />
             </TourCard>
@@ -593,6 +614,20 @@ export default function GuidedTour() {
             </TwoColumnAnalysis>
 
             <RestorationGradient />
+            <div style={{ marginTop: "2rem" }}>
+              <ExhibitPortal exhibitStation={st("10")} />
+            </div>
+
+            <div style={{ marginTop: "4rem" }}>
+              <AskDocentCard 
+                context="The user has just finished Act III: Foreskin Restoration. Answer questions regarding restoration objectively, citing self-reported mechanical outcomes and limitations from the dataset." 
+                suas={[
+                  "What motives do respondents give for starting restoration?",
+                  "How do restoring men describe the changes in physical sensation?",
+                  "Can you show me quotes from men regarding their restoration process?"
+                ]} 
+              />
+            </div>
           </div>
         </section>
 
@@ -605,7 +640,6 @@ export default function GuidedTour() {
           <ActMarker actNum="IV" kicker="Act IV" title="The Next Generation" count={4} total={4} colorVar={st("14").colorVar} />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
-            <Lens>Generational Trends in Intentions</Lens>
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
               To gauge how these personal experiences might influence future generations, we asked our 500 respondents what they would do if they were to have a son today.
             </div>
@@ -639,6 +673,17 @@ export default function GuidedTour() {
             
             <AsymmetryOfChoice />
             <ExitInterview />
+
+            <div style={{ marginTop: "4rem" }}>
+              <AskDocentCard 
+                context="The user has just finished Act IV: The Next Generation. When discussing respondents' intentions for their future sons, rely strictly on the data distribution and quoted rationale. Avoid leading or prescriptive language." 
+                suas={[
+                  "What reasons do circumcised respondents give for their choices regarding future sons?",
+                  "What rationale is provided by respondents who choose to circumcise their sons?",
+                  "How do expectant parents describe the influence of this data?"
+                ]} 
+              />
+            </div>
           </div>
         </section>
 

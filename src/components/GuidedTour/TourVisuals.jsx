@@ -1314,7 +1314,7 @@ export function ExitInterview() {
         The Final Question
       </h3>
       <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: C.muted, maxWidth: 600, margin: "0 auto 2.5rem", lineHeight: 1.6 }}>
-        You have seen the data. You have read the stories. You have examined the mechanics and the historical intent. If you were faced with the decision today, what would you choose for your son?
+        Having weighed the mechanics, the history, and the lived experiences of hundreds of men—what choice will you make for the next generation?
       </p>
 
       {!choice ? (
@@ -1371,25 +1371,48 @@ export function ExitInterview() {
                 ? "Your choice aligns with 86.6% of the 500 respondents in this study. The paradigm is shifting, but it only changes when people share the truth." 
                 : "While the data leads many to a different conclusion, we appreciate you taking the time to review the findings and participate in the inquiry."}
             </p>
-            <button
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({ title: "The Accidental Intactivist's Inquiry", url: window.location.href });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert("Link copied to clipboard!");
-                }
-              }}
-              style={{
-                background: C.goldBright, color: "var(--c-bgDeep)", border: "none", padding: "0.6rem 1.2rem", borderRadius: 100,
-                fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.05em",
-                cursor: "pointer", transition: "all 0.2s ease"
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = C.gold}
-              onMouseLeave={e => e.currentTarget.style.background = C.goldBright}
-            >
-              Share This Report
-            </button>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <button
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({ title: "The Accidental Intactivist's Inquiry", url: window.location.href });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Link copied to clipboard!");
+                  }
+                }}
+                style={{
+                  background: C.goldBright, color: "var(--c-bgDeep)", border: "none", padding: "0.6rem 1.2rem", borderRadius: 100,
+                  fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.05em",
+                  cursor: "pointer", transition: "all 0.2s ease"
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = C.gold}
+                onMouseLeave={e => e.currentTarget.style.background = C.goldBright}
+              >
+                Share This Report
+              </button>
+              
+              <a
+                href="/explore/resources"
+                style={{
+                  display: "inline-block",
+                  background: "transparent", color: C.goldBright, border: `1px solid ${C.goldBright}`, padding: "0.6rem 1.2rem", borderRadius: 100,
+                  fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.05em",
+                  cursor: "pointer", transition: "all 0.2s ease", textDecoration: "none", textAlign: "center"
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = "rgba(212, 160, 48, 0.1)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = "transparent";
+                }}
+              >
+                Get Involved & Learn More
+              </a>
+            </div>
+            <p style={{ fontFamily: FONT.body, fontSize: "0.85rem", color: C.dim, margin: "1.5rem 0 0", lineHeight: 1.5 }}>
+              Explore advocacy organizations, support networks, and foundational literature to continue the work.
+            </p>
           </div>
         </div>
       )}
@@ -1534,43 +1557,155 @@ export function HistoricalIntentReveal() {
 }
 
 export function RestorationGradient() {
-  const [active, setActive] = useState(false);
+  const [activeStage, setActiveStage] = useState(0);
+
+  const STAGES = [
+    {
+      title: "Baseline (CI-1)",
+      duration: "Year 0",
+      mechanics: "High skin tension, immobility. Glans is exposed and keratinized (callused) to protect against friction.",
+      functionDesc: "No gliding action. Friction is borne directly by the keratinized glans and remaining shaft skin.",
+      color: "var(--path-circumcised)",
+      progress: 0
+    },
+    {
+      title: "Mitosis & Expansion",
+      duration: "Months 1-12",
+      mechanics: "Applied mechanical tension triggers mitosis (cell division). Both inner mucosa and outer skin begin to lengthen.",
+      functionDesc: "Slack skin bunches behind the corona, but no functional change yet.",
+      color: "#d97706",
+      progress: 20
+    },
+    {
+      title: "\"The Hump\" (CI-4)",
+      duration: "Years 1-2",
+      mechanics: "A notoriously slow phase. Significant tissue volume is required to physically push the skin tube over the wide ridge of the corona.",
+      functionDesc: "Intermittent rollover when seated or cold. Highly variable day-to-day.",
+      color: "#ca8a04",
+      progress: 40
+    },
+    {
+      title: "Dekeratinization",
+      duration: "Years 3-4",
+      mechanics: "The glans is consistently covered while flaccid. The trapped mucosal environment causes dekeratinization—the shedding of the callused layer.",
+      functionDesc: "Dramatic increase in mucosal sensitivity. The glans returns to an internal organ state.",
+      color: "var(--path-restoring)",
+      progress: 60
+    },
+    {
+      title: "Mechanical Gliding",
+      duration: "Years 5+",
+      mechanics: "The skin tube is now long enough to accommodate an erection. Mitosis continues to create sufficient slack.",
+      functionDesc: "The skin glides over the glans during intercourse. The need for artificial lubrication drops significantly.",
+      color: "#10b981",
+      progress: 80
+    },
+    {
+      title: "The Future / Foregen",
+      duration: "Biological Limit",
+      mechanics: "Mitosis cannot recreate specialized anatomical structures. However, regenerative medicine projects (e.g., Foregen) are working to decellularize and repopulate intact donor tissue matrices using stem cells.",
+      functionDesc: "Currently, the ridged band and specialized nerve networks are permanently lost. Future therapies aim to graft and restore full innervation and original structures.",
+      color: "var(--path-intact)",
+      progress: 100,
+      isLimit: true
+    }
+  ];
+
+  const current = STAGES[activeStage];
 
   return (
-    <div 
-      onMouseEnter={() => setActive(true)}
-      onMouseLeave={() => setActive(false)}
-      style={{ margin: "3rem 0", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, cursor: "crosshair", overflow: "hidden", position: "relative" }}
-    >
+    <div style={{ margin: "3rem 0", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, position: "relative" }}>
       <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem", textAlign: "center" }}>
         The Mechanical Recovery Gradient
       </h4>
       <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.dim, textAlign: "center", marginBottom: "2rem" }}>
-        Hover to simulate the mechanical recovery of tissue expansion over 5+ years.
+        Select a stage below to explore the biological mechanics and functional limits of tissue expansion over a 5+ year timeline.
       </p>
 
-      {/* The Gradient Bar */}
-      <div style={{ height: 40, width: "100%", borderRadius: 20, background: "var(--c-bgDeep)", position: "relative", border: `1px solid ${C.ghost}`, overflow: "hidden" }}>
+      {/* Stepper / Timeline */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", marginBottom: "5rem", marginTop: "4rem" }}>
+        {/* Background Track */}
+        <div style={{ position: "absolute", top: "50%", left: "2%", right: "2%", height: 4, background: C.bgDeep, zIndex: 0, borderRadius: 2, transform: "translateY(-50%)" }} />
         
-        {/* Circumcised Baseline (Red) */}
-        <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "100%", background: "color-mix(in srgb, var(--path-circumcised) 40%, transparent)", zIndex: 1 }} />
+        {/* Progress Fill */}
+        <div style={{ position: "absolute", top: "50%", left: "2%", width: `${current.progress * 0.96}%`, height: 4, background: current.color, zIndex: 1, transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)", borderRadius: 2, transform: "translateY(-50%)" }} />
         
-        {/* Restoration Growth (Blue/Purple moving towards Green) */}
-        <div style={{ 
-          position: "absolute", top: 0, left: 0, bottom: 0, width: active ? "75%" : "25%", 
-          background: "linear-gradient(90deg, var(--path-circumcised), var(--path-restoring) 50%, color-mix(in srgb, var(--path-intact) 60%, var(--path-restoring)))", 
-          transition: "width 3s cubic-bezier(0.2, 0.8, 0.2, 1)", zIndex: 2,
-          boxShadow: active ? "5px 0 15px rgba(255,255,255,0.1)" : "none"
-        }} />
+        {/* Unreachable dotted line */}
+        <div style={{ position: "absolute", top: "50%", left: "78.8%", right: "2%", height: 4, background: "repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(100, 200, 150, 0.3) 4px, rgba(100, 200, 150, 0.3) 8px)", zIndex: 2, transform: "translateY(-50%)" }} />
 
-        {/* Intact Target (Green) - never reached */}
-        <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: "15%", background: "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(100, 200, 150, 0.2) 5px, rgba(100, 200, 150, 0.2) 10px)", borderLeft: `2px dashed ${C.dim}`, zIndex: 3 }} />
+        {STAGES.map((stage, i) => {
+          const isActive = i === activeStage;
+          const isPast = i <= activeStage;
+          const isNext = i === activeStage + 1;
+          
+          return (
+            <div 
+              key={i}
+              onClick={() => setActiveStage(i)}
+              style={{ 
+                position: "relative", display: "flex", justifyContent: "center", alignItems: "center",
+                cursor: "pointer", zIndex: 3, flex: 1, opacity: isPast || isActive || isNext ? 1 : 0.65,
+                transition: "opacity 0.3s"
+              }}
+            >
+              {/* Duration Text (Top) */}
+              <div style={{ position: "absolute", bottom: "100%", paddingBottom: "1.4rem", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.65rem", color: stage.isLimit ? C.red : stage.color, textTransform: "uppercase", textAlign: "center", width: "120%", opacity: 0.8, pointerEvents: "none" }}>
+                {stage.duration}
+              </div>
+
+              {/* Circle Node */}
+              <div style={{ 
+                width: isActive ? 20 : 12, height: isActive ? 20 : 12, 
+                borderRadius: "50%", 
+                background: stage.isLimit ? "transparent" : (isPast ? stage.color : C.bgDeep),
+                border: stage.isLimit ? `2px dashed ${stage.color}` : `2px solid ${isPast ? stage.color : C.muted}`,
+                transition: "all 0.3s",
+                boxShadow: isActive && !stage.isLimit ? `0 0 10px ${stage.color}` : "none",
+                animation: isNext ? "gentlePulse 2s infinite" : "none"
+              }} />
+
+              {/* Title Text (Bottom) */}
+              <div style={{ position: "absolute", top: "100%", paddingTop: "1.4rem", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem", color: isActive ? C.textBright : C.muted, textTransform: "uppercase", textAlign: "center", width: "100%", padding: "1.4rem 0.2rem 0", wordWrap: "break-word", lineHeight: 1.2, pointerEvents: "none" }}>
+                {stage.title}
+              </div>
+            </div>
+          );
+        })}
       </div>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes gentlePulse {
+          0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); transform: scale(1); }
+          50% { box-shadow: 0 0 0 8px rgba(255,255,255,0); transform: scale(1.15); }
+          100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); transform: scale(1); }
+        }
+      `}} />
 
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.dim, textTransform: "uppercase" }}>
-        <div style={{ color: "var(--path-circumcised)" }}>Baseline (CI-1)</div>
-        <div style={{ color: active ? "var(--path-restoring)" : C.dim, transition: "color 1s" }}>Mechanical Gliding Restored (CI-6+)</div>
-        <div style={{ color: "var(--path-intact)", opacity: 0.5 }}>Full Innervation (Unreachable)</div>
+      {/* Info Panel */}
+      <div style={{ 
+        background: `color-mix(in srgb, ${current.isLimit ? C.red : current.color} 6%, ${C.bgDeep})`, 
+        border: `1px solid ${current.isLimit ? C.red : current.color}`, 
+        borderRadius: 8, padding: "1.5rem", minHeight: 140, transition: "all 0.5s ease",
+        boxShadow: `inset 0 0 30px color-mix(in srgb, ${current.isLimit ? C.red : current.color} 10%, transparent)`
+      }}>
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <div style={{ flex: 1 }}>
+            <h5 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: current.isLimit ? C.red : current.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", transition: "color 0.5s" }}>
+              Mechanics
+            </h5>
+            <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.textBright, lineHeight: 1.5, margin: 0 }}>
+              {current.mechanics}
+            </p>
+          </div>
+          <div style={{ width: 1, background: C.ghost }} />
+          <div style={{ flex: 1 }}>
+            <h5 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: current.isLimit ? C.red : current.color, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", transition: "color 0.5s" }}>
+              Functional Impact
+            </h5>
+            <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.textBright, lineHeight: 1.5, margin: 0 }}>
+              {current.functionDesc}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -251,7 +251,6 @@ function Station({ num, children }) {
   return (
     <div id={`st${s.num}`} style={{ scrollMarginTop: 90 }}>
       {children}
-      <AskDocentCard context={s.docentContext} suas={s.tourSuas} />
     </div>
   );
 }
@@ -488,7 +487,6 @@ export default function GuidedTour() {
                 plateNum="PLATE 03-B"
                 refText="FORM CS-058"
                 sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 349 (INTACT+CIRC) · ASKED: 'HOW OFTEN DO YOU REQUIRE ARTIFICIAL LUBRICATION?' · FORM CS-058"
-                exhibitStation={st("03")}
               >
                 <TourButterflyChart
                   title="Lubrication Requirement Frequency"
@@ -514,15 +512,8 @@ export default function GuidedTour() {
             <LubeTaxCalculator />
             <PartnersEcho />
 
-            <div style={{ marginTop: "4rem" }}>
-              <AskDocentCard 
-                context="The user has just finished Act I: Physical & Mechanical Data. Maintain an objective, data-driven tone. Answer questions by citing specific statistics and qualitative trends regarding sensation and lubrication without editorializing." 
-                suas={[
-                  "Can you show me the data on fine-touch sensitivity?",
-                  "What patterns emerge in the responses regarding artificial lubrication?",
-                  "Are there notable demographic variances in this mechanical data?"
-                ]} 
-              />
+            <div style={{ marginTop: "3rem" }}>
+              <ExhibitPortal exhibitStation={st("03")} />
             </div>
           </div>
         </section>
@@ -546,7 +537,6 @@ export default function GuidedTour() {
               plateNum="PLATE 02-A"
               refText="EXHIBIT 02" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'HOW DO YOU FEEL ABOUT YOUR STATUS?' · EXHIBIT 02"
-              exhibitStation={st("02")}
             >
               <ResentmentMirror />
             </TourCard>
@@ -560,6 +550,10 @@ export default function GuidedTour() {
               </p>
             </TwoColumnAnalysis>
 
+            <div style={{ marginTop: "2rem" }}>
+              <ExhibitPortal exhibitStation={st("02")} />
+            </div>
+
             <div style={{ marginTop: "3rem" }}>
               <TourCard 
                 id="the-raw-words" 
@@ -567,20 +561,10 @@ export default function GuidedTour() {
                 plateNum="PLATE 06-A"
                 refText="EXHIBIT 06" 
                 sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · QUALITATIVE · EXHIBIT 06"
+                exhibitStation={st("06")}
               >
                 <NarrativeMirrorToggle />
               </TourCard>
-            </div>
-
-            <div style={{ marginTop: "4rem" }}>
-              <AskDocentCard 
-                context="The user has just finished Act II: Emotional & Psychological Data. Maintain an objective, neutral tone. When discussing emotional outcomes, cite the data and use direct respondent quotes rather than synthesizing an opinion." 
-                suas={[
-                  "How do circumcised men describe their emotional experiences?",
-                  "At what age do most respondents report becoming aware of their status?",
-                  "What themes are most common in the qualitative responses of intact men?"
-                ]} 
-              />
             </div>
           </div>
         </section>
@@ -621,16 +605,6 @@ export default function GuidedTour() {
               <ExhibitPortal exhibitStation={st("10")} />
             </div>
 
-            <div style={{ marginTop: "4rem" }}>
-              <AskDocentCard 
-                context="The user has just finished Act III: Foreskin Restoration. Answer questions regarding restoration objectively, citing self-reported mechanical outcomes and limitations from the dataset." 
-                suas={[
-                  "What motives do respondents give for starting restoration?",
-                  "How do restoring men describe the changes in physical sensation?",
-                  "Can you show me quotes from men regarding their restoration process?"
-                ]} 
-              />
-            </div>
           </div>
         </section>
 
@@ -653,7 +627,6 @@ export default function GuidedTour() {
               plateNum="PLATE 14-A"
               refText="EXHIBIT 14" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 500 · ASKED: 'IF YOU HAD A SON TODAY, WOULD YOU CIRCUMCISE HIM?' · EXHIBIT 14"
-              exhibitStation={st("14")}
             >
               <ConvergenceSankey />
               <StatCallout big="433" colorVar={C.textBright}>
@@ -677,15 +650,8 @@ export default function GuidedTour() {
             <AsymmetryOfChoice />
             <ExitInterview />
 
-            <div style={{ marginTop: "4rem" }}>
-              <AskDocentCard 
-                context="The user has just finished Act IV: The Next Generation. When discussing respondents' intentions for their future sons, rely strictly on the data distribution and quoted rationale. Avoid leading or prescriptive language." 
-                suas={[
-                  "What reasons do circumcised respondents give for their choices regarding future sons?",
-                  "What rationale is provided by respondents who choose to circumcise their sons?",
-                  "How do expectant parents describe the influence of this data?"
-                ]} 
-              />
+            <div style={{ marginTop: "3rem" }}>
+              <ExhibitPortal exhibitStation={st("14")} />
             </div>
           </div>
         </section>
@@ -702,9 +668,14 @@ export default function GuidedTour() {
           <Station num="01">
             <TourCard id="the-survey-architecture" title="Survey Architecture" refText="EXHIBIT 01" stamp="Map" exhibitStation={st("01")}>
               <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.6, marginBottom: "1.2rem" }}>
-                <p style={{ margin: 0 }}>The survey was engineered with a single constraint: core experience questions were answered blind, before the instrument forked into separate cohort pathways.</p>
+                <p style={{ margin: "0 0 0.8rem" }}>The survey was engineered with a single, critical constraint: every respondent answered the same core experience questions — <em style={{ color: C.textBright }}>how things feel, how things work, how satisfied they are</em> — before the survey ever asked about their circumcision status.</p>
+                <p style={{ margin: 0 }}>Only after those ratings were sealed did the instrument fork into separate pathways. This means the pleasure data you are about to see was collected blind.</p>
               </div>
               <ExhibitSurveyFlowchart />
+              <ArrowNote lines={[
+                "A respondent is completely blind to the other pathways until the survey is submitted",
+                <span key="a">Interact with the map: <a href={EXPLORE_BASE + "pathways"} style={{ color: C.blue }}>Exhibit 01</a></span>,
+              ]} />
               <div style={{ padding: "1.5rem", background: "rgba(212, 160, 48, 0.08)", border: `1px solid rgba(212, 160, 48, 0.3)`, margin: "2rem 0 0", borderRadius: 8 }}>
                 <p style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1rem", letterSpacing: "0.05em", color: C.textBright, textTransform: "uppercase", marginBottom: "0.5rem" }}>A Note on Self-Selection and Population Prevalence</p>
                 <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, margin: 0, lineHeight: 1.6 }}>

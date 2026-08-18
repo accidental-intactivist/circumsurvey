@@ -363,14 +363,8 @@ export default function GuidedTour() {
               <ActMarker actNum="00" kicker="Prologue" title="The Accidental Intactivist's Inquiry" count={0} total={4} colorVar={C.goldBright} />
             <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
               <div style={{ fontFamily: FONT.body, fontWeight: 400, fontSize: "15.2px", lineHeight: 1.75, color: C.text, maxWidth: 680, margin: "2rem auto" }}>
-                <p style={{ marginBottom: "1.5rem" }}>
-                My name is Tone Pettit. If you are an American man reading this, there is a high probability your parents made a decision when you were an infant to remove a portion of your genital skin.
-              </p>
               <p style={{ marginBottom: "1.5rem" }}>
-                For most men, this was framed strictly as a prophylactic hygiene measure. It was so normalized that questioning it often feels taboo.
-              </p>
-              <p style={{ marginBottom: "1.5rem" }}>
-                By a conscious choice of my parents in the 1970s, I grew up intact. I was an outlier in a culture where routine infant circumcision was the unquestioned, 90% norm. I became an "accidental intactivist," a witness to an alteration that nearly all my peers had undergone without a say.
+                My name is Tone Pettit. Because my parents made an unusual choice in the 1970s, I grew up intact in America. That made me a statistical accident. But it also gave me a unique lens. I grew up outside the cultural spell, looking at a "routine" procedure and wondering: <em>Why isn't this weird to more of us?</em>
               </p>
               
               <PullQuote 
@@ -414,7 +408,16 @@ export default function GuidedTour() {
                 There was no advertising budget or clinical recruitment pipeline. The survey spread entirely through grassroots efforts. It was posted to forums, shared across social media, and passed hand to hand. Five hundred people showed up to answer anonymously.
               </p>
               <p style={{ marginBottom: "1.5rem" }}>
-                This project exists to invite you to pay attention to what surfaces when people are given the space to share their experiences honestly. What follows is a guided tour through their answers, summarized and never argued. Where I editorialize, it is clearly labeled. Otherwise, we simply report what they said.
+                Before you scroll down and look at the data, I want to invite you to borrow that lens. For the next ten minutes, I am asking you to suspend the cultural conditioning that tells us removing a functional part of a child's anatomy is just a "harmless, hygienic snip." Step into the shoes of an outsider. Look at the anatomical mechanics. Read the unvarnished words of the 500 men who actually live in these bodies.
+              </p>
+              <p style={{ marginBottom: "1.5rem", fontWeight: 600, color: C.textBright }}>
+                Do not look at this data to defend a past choice. Look at it with a simple, radical curiosity.
+              </p>
+              <p style={{ marginBottom: "1.5rem" }}>
+                I started this journey as an accidental observer trying to make sense of a practice so invisibly normalized we've forgotten why we ever started doing it. I invite you to explore this data and take the step from unquestioning acceptance to intentional awareness.
+              </p>
+              <p style={{ marginBottom: "1.5rem", fontStyle: "italic", fontFamily: FONT.display, fontSize: "1.1rem", color: C.goldBright }}>
+                Let the data show you what is actually going on down there.
               </p>
               
               <div style={{

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { GLOBAL_CSS } from '../styles/tokens';
-import { getContrastRatio } from './colorUtils';
+import { getContrastRatio, ensureLegibleHex } from './colorUtils';
 
 /**
  * Parses the GLOBAL_CSS string to extract all theme blocks and their color variables.
@@ -83,11 +83,10 @@ describe('Theme Contrast Legibility', () => {
           // (Actually, the user asked for a failsafe algorithm at runtime because they might not want to change the brand tokens.)
           // We rely on the ensureLegible utility to bump it to 4.5 at runtime.
           
-          // We won't strictly enforce 4.5 in the test right now because we know some brand colors (like purple on dark) will fail,
-          // and we are solving it via the runtime ensureLegible failsafe. 
-          // But we'll test for at least 1.0 to catch egregious invisible text, 
-          // while relying on ensureLegible to bump it to 4.5 at runtime.
-          expect(ratio).toBeGreaterThanOrEqual(1.0); 
+          // Enforce that our dynamic utility can fix it to 4.5 contrast ratio for legibility
+          const safeColor = ensureLegibleHex(finalTextColor, bgCard);
+          const safeRatio = getContrastRatio(safeColor, bgCard);
+          expect(safeRatio).toBeGreaterThanOrEqual(4.5); 
         });
       });
     });

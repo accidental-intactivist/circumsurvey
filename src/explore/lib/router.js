@@ -13,7 +13,7 @@ function parseLocation() {
   if (typeof window !== "undefined" && window.location.hash && window.location.hash.length > 1) {
     const hashContent = window.location.hash.replace(/^#\/?/, "");
     const firstSegment = hashContent.split("/")[0];
-    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "contact", "the-forward-view", "editorial"];
+    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "contact", "the-forward-view", "editorial", "resources"];
     
     if (knownRoutes.includes(firstSegment)) {
       const newUrl = "/explore/" + hashContent + window.location.search;
@@ -88,6 +88,8 @@ function parseLocation() {
     route = "the-forward-view";
   } else if (segments[offset] === "editorial") {
     route = "editorial";
+  } else if (segments[offset] === "resources") {
+    route = "resources";
   } else if (segments.length > offset) {
     route = "not-found";
   }
@@ -147,6 +149,7 @@ function serializeState(route, params, state) {
   else if (route === "faq") path = "/explore/faq";
   else if (route === "the-forward-view") path = "/explore/the-forward-view";
   else if (route === "editorial") path = "/explore/editorial";
+  else if (route === "resources") path = "/explore/resources";
   else if (route === "not-found") path = "/explore/404";
   else path = "/explore";
 

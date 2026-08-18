@@ -13,6 +13,8 @@ import { UNDERLOOM_CONFIG } from "../../components/GuidedTour/LoomChoreography";
 import { EXHIBIT_ROUTES } from "./ExploreMasthead";
 import { useReport } from "../contexts/ReportContext";
 import { useTelemetry } from "../lib/telemetry";
+import ThinkingSpirograph from "./ThinkingSpirograph";
+import { useLegibleColor } from "../lib/colorUtils";
 
 function DocentChart({ questionId }) {
   const [question, setQuestion] = useState(null);
@@ -60,6 +62,11 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
   const [addedToReport, setAddedToReport] = useState(false);
   const initialRunDone = useRef(false);
 
+  const safeGoldMain = useLegibleColor("var(--c-gold)", "var(--c-bgCard)");
+  const safeGoldBrightMain = useLegibleColor("var(--c-goldBright)", "var(--c-bgCard)");
+  const safeGoldSoft = useLegibleColor("var(--c-gold)", "var(--c-bgSoft)");
+  const safeGoldBrightSoft = useLegibleColor("var(--c-goldBright)", "var(--c-bgSoft)");
+
   const astuteSua = useMemo(() => {
     const list = [
       "Can you cross-tabulate generation against circumcision regret?",
@@ -72,16 +79,35 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     return list[Math.floor(Math.random() * list.length)];
   }, [routerState?.route]);
 
-  // Auto-run if URL has ai_query
   const lastAutoQuery = useRef(null);
+  const executeSearchRef = useRef(null);
+
   useEffect(() => {
     if (routerState?.ai_query && routerState.ai_query !== lastAutoQuery.current) {
       lastAutoQuery.current = routerState.ai_query;
       initialRunDone.current = true;
       setQuery(routerState.ai_query);
-      executeSearch(routerState.ai_query);
+      if (executeSearchRef.current) {
+        executeSearchRef.current(routerState.ai_query);
+      }
     }
   }, [routerState?.ai_query]);
+
+  // Listen directly to open-docent so clicks always trigger a search,
+  // even if the query matches what's already in the router state/sessionStorage.
+  useEffect(() => {
+    const handleOpenDocent = (e) => {
+      if (e.detail?.query) {
+        lastAutoQuery.current = e.detail.query; // prevent the router useEffect from double-firing
+        setQuery(e.detail.query);
+        if (executeSearchRef.current) {
+          executeSearchRef.current(e.detail.query);
+        }
+      }
+    };
+    window.addEventListener('open-docent', handleOpenDocent);
+    return () => window.removeEventListener('open-docent', handleOpenDocent);
+  }, []);
 
   const handleClear = () => {
     setQuery("");
@@ -309,7 +335,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     if (/(clear|reset|remove)\s+(my\s+)?(filters|cohorts|cohort)/.test(_norm)) {
       if (updateState) updateState({ cohort: {} });
       setResult({
-        answer: "All cohort filters have been cleared. You are now viewing the aggregate data.",
+        answer: "All pathway filters have been cleared. You are now viewing the aggregate data.",
         suggestions: ["Take me to the Demographics page"],
         quotes: [],
         metadata: { intent: "system_override" }
@@ -325,6 +351,16 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       setResult({
         answer: `Navigating you to the ${routeMatch[3]} exhibit...`,
         suggestions: [],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
+    if (/(expectant|expecting) parent trying to make a decision/.test(_norm) || /(three|3) most important things i should look at/.test(_norm)) {
+      setResult({
+        answer: "When navigating the Asymmetry of Choice regarding infant circumcision, there are three critical data points that emerge from the aggregate experience of men in this study:\n\n1. **Zero Percent Regret for Intact Men:** Of the men raised intact, 0% reported wishing they had been circumcised as infants. In stark contrast, over 60% of circumcised men experience resentment or wish they had been left intact.\n\n2. **The Pleasure Gap:** Circumcised men are over four times as likely to report feeling that they are \"missing out\" on sensory experiences compared to their intact peers.\n\n3. **The Lubrication Deficit:** Circumcised men are 10 times more likely to report needing artificial lubrication to avoid discomfort during sexual intimacy.\n\nThese figures highlight a profound asymmetry: leaving the body intact preserves all future choices for the individual, while intervention removes functional tissue and often creates lifelong functional deficits.",
+        suggestions: ["Take me to the Pleasure Gap", "Take me to the Adult Experience"],
         quotes: [],
         metadata: { intent: "system_override" }
       });
@@ -377,6 +413,9 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     }
   };
 
+  // Assign the ref so event listeners can use the latest closure
+  executeSearchRef.current = executeSearch;
+
   return (
     <div style={{
       display: "flex",
@@ -413,7 +452,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               style={{
                 background: addedToReport ? "rgba(100, 200, 100, 0.1)" : "transparent",
                 border: `1px solid ${addedToReport ? C.green : C.ghost}`,
-                color: addedToReport ? C.green : C.gold,
+                color: addedToReport ? C.green : safeGoldMain,
                 fontFamily: FONT.condensed,
                 fontSize: "0.65rem",
                 fontWeight: 600,
@@ -426,12 +465,12 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               }}
               onMouseEnter={(e) => { 
                 if (addedToReport) return;
-                e.currentTarget.style.color = C.goldBright; 
-                e.currentTarget.style.borderColor = C.gold; 
+                e.currentTarget.style.color = safeGoldBrightMain; 
+                e.currentTarget.style.borderColor = safeGoldMain; 
               }}
               onMouseLeave={(e) => { 
                 if (addedToReport) return;
-                e.currentTarget.style.color = C.gold; 
+                e.currentTarget.style.color = safeGoldMain; 
                 e.currentTarget.style.borderColor = C.ghost; 
               }}
             >
@@ -463,6 +502,8 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
           )}
         </div>
 
+      {loading && <ThinkingSpirograph />}
+
       {!result && !loading && !error && (() => {
         // "What can I learn from this page?" is universal.
         const route = routerState?.route;
@@ -484,7 +525,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
           "restoration-journey": "Why do men choose to undergo foreskin restoration?",
           "adult-experience": "What do men who remember both states say about the change?",
           "numbers": "What are the most statistically significant findings in the survey?",
-          "for-parents": "What data is most relevant for expecting parents?",
+          "for-parents": "I am an expectant parent trying to make a decision. What are the three most important things I should look at in this data?",
           "the-forward-view": "Are respondents likely to advocate for or against circumcision?"
         };
 
@@ -557,14 +598,14 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Sparkles size={16} color={C.gold} style={{ opacity: 0.7 }} />
+              <Sparkles size={16} color={safeGoldSoft} style={{ opacity: 0.7 }} />
               <h4 style={{
                 fontFamily: FONT.condensed,
                 fontWeight: 700,
                 fontSize: "0.8rem",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: C.gold,
+                color: safeGoldSoft,
                 margin: 0,
               }}>Synthesis</h4>
             </div>
@@ -573,7 +614,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
               onClick={(e) => {
                 navigator.clipboard.writeText(window.location.href);
                 const span = e.currentTarget.querySelector('span');
-                e.currentTarget.style.borderColor = C.gold;
+                e.currentTarget.style.borderColor = safeGoldSoft;
                 span.textContent = 'Copied';
                 setTimeout(() => { span.textContent = 'Share'; e.currentTarget.style.borderColor = C.ghost; }, 2000);
               }}
@@ -593,7 +634,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                 alignItems: "center",
                 gap: "0.35rem",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = C.goldBright; e.currentTarget.style.borderColor = C.gold; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = safeGoldBrightSoft; e.currentTarget.style.borderColor = safeGoldSoft; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = C.muted; e.currentTarget.style.borderColor = C.ghost; }}
             >
               <span>Share</span>

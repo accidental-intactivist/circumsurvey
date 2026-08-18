@@ -422,7 +422,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                               transition: "all 0.2s"
                             }}
                           >
-                            By Cohort
+                            By Pathway
                           </button>
                         </div>
                       )}
@@ -495,13 +495,13 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                         animation: "fadeIn 0.2s ease-out"
                       }}>
                         <p style={{ margin: "0 0 0.8rem 0" }}>
-                          <strong>The Dumbbell Plot</strong> visualizes the "gap" in self-reported physical pleasure and sensitivity across cohorts. 
+                          <strong>The Dumbbell Plot</strong> visualizes the "gap" in self-reported physical pleasure and sensitivity across pathways. 
                         </p>
                         <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
                           <li style={{ marginBottom: "0.5rem" }}>Each row represents a specific aspect of the sexual experience.</li>
-                          <li style={{ marginBottom: "0.5rem" }}>The <strong>Circles</strong> represent the average score (out of 5) for a given cohort.</li>
+                          <li style={{ marginBottom: "0.5rem" }}>The <strong>Circles</strong> represent the average score (out of 5) for a given pathway.</li>
                           <li style={{ marginBottom: "0.5rem" }}>The <strong>Connecting Line</strong> illustrates the <em>spread</em> or <em>gap</em> between those averages.</li>
-                          <li>Toggle <strong>Show Gap</strong> to explicitly highlight the numerical deficit or advantage between the lowest and highest scoring cohorts in each category.</li>
+                          <li>Toggle <strong>Show Gap</strong> to explicitly highlight the numerical deficit or advantage between the lowest and highest scoring pathways in each category.</li>
                         </ul>
                       </div>
                     )}

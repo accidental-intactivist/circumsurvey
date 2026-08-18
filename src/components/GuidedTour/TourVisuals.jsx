@@ -1521,35 +1521,104 @@ export function PartnersEcho() {
   );
 }
 
+const HISTORICAL_QUOTES = [
+  {
+    year: "1190",
+    author: "Moses Maimonides",
+    source: "The Guide for the Perplexed",
+    text: "As regards circumcision, I think that one of its objects is to limit sexual intercourse, and to weaken the organ of generation as far as possible... The bodily pain caused to that member is the real purpose of circumcision... [it] gives to the organ exactly that amount of weakening which is desired."
+  },
+  {
+    year: "1888",
+    author: "Dr. John Harvey Kellogg",
+    source: "Treatment for Self-Abuse and its Effects",
+    text: "A remedy which is almost always successful in small boys is circumcision... The operation should be performed by a surgeon without administering an anaesthetic, as the brief pain attending the operation will have a salutary effect upon the mind, especially if it be connected with the idea of punishment."
+  },
+  {
+    year: "1891",
+    author: "Dr. Peter Charles Remondino",
+    source: "History of Circumcision from the Earliest Times to the Present",
+    text: "As a preventative of masturbation, circumcision is a prophylactic measure that should be generally adopted... A completely denuded glans is not near so apt to be played with by a child as one with a long, retractable prepuce."
+  },
+  {
+    year: "1890",
+    author: "Sir Jonathan Hutchinson",
+    source: "On Circumcision as Preventive of Masturbation",
+    text: "I should like to see the practice of circumcision universally adopted. The foreskin is a harbour for dirt... and its removal is a great preventative of masturbation, which is the source of many nervous and physical ailments."
+  }
+];
+
 export function HistoricalIntentReveal() {
   const [revealed, setRevealed] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    if (!revealed) return;
+    const t = setInterval(() => {
+      setQuoteIndex(prev => (prev + 1) % HISTORICAL_QUOTES.length);
+    }, 12000);
+    return () => clearInterval(t);
+  }, [revealed, quoteIndex]);
+
+  const quote = HISTORICAL_QUOTES[quoteIndex];
 
   return (
     <div style={{ margin: "2rem 0", padding: "1.5rem", background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 8, position: "relative", overflow: "hidden" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
         <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
-          Archival Evidence: 1888
+          Original Documented Intent
         </h4>
-        <button 
-          onClick={() => setRevealed(!revealed)}
-          style={{ background: revealed ? "transparent" : C.goldBright, color: revealed ? C.goldBright : C.bgDeep, border: `1px solid ${C.goldBright}`, padding: "0.4rem 1rem", borderRadius: 4, fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", textTransform: "uppercase", cursor: "pointer", transition: "all 0.3s ease" }}
-        >
-          {revealed ? "Hide Document" : "Declassify"}
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {revealed && (
+            <button 
+              onClick={() => setRevealed(false)}
+              style={{ background: "transparent", color: C.goldBright, border: `1px solid ${C.goldBright}`, padding: "0.4rem 1rem", borderRadius: 4, fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", textTransform: "uppercase", cursor: "pointer", transition: "all 0.3s ease" }}
+            >
+              Hide Quote
+            </button>
+          )}
+          <div style={{ display: "flex", gap: "0.2rem" }}>
+            <button 
+              onClick={() => setQuoteIndex((prev) => (prev - 1 + HISTORICAL_QUOTES.length) % HISTORICAL_QUOTES.length)}
+              style={{ background: "transparent", color: C.muted, border: `1px solid ${C.dim}`, padding: "0.4rem 0.8rem", borderRadius: 4, fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", transition: "all 0.3s ease" }}
+              onMouseEnter={e => { e.target.style.borderColor = C.gold; e.target.style.color = C.textBright; }}
+              onMouseLeave={e => { e.target.style.borderColor = C.dim; e.target.style.color = C.muted; }}
+              title="Previous Quote"
+            >
+              ←
+            </button>
+            <button 
+              onClick={() => setQuoteIndex((prev) => (prev + 1) % HISTORICAL_QUOTES.length)}
+              style={{ background: "transparent", color: C.muted, border: `1px solid ${C.dim}`, padding: "0.4rem 0.8rem", borderRadius: 4, fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", cursor: "pointer", transition: "all 0.3s ease" }}
+              onMouseEnter={e => { e.target.style.borderColor = C.gold; e.target.style.color = C.textBright; }}
+              onMouseLeave={e => { e.target.style.borderColor = C.dim; e.target.style.color = C.muted; }}
+              title="Next Quote"
+            >
+              →
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style={{ position: "relative", filter: revealed ? "none" : "blur(4px)", opacity: revealed ? 1 : 0.4, transition: "all 0.8s ease", fontFamily: "'Courier New', Courier, monospace", fontSize: "1.05rem", lineHeight: 1.6, color: C.textBright, background: "rgba(255,255,255,0.03)", padding: "1.5rem", borderRadius: 4, borderLeft: `3px solid ${C.red}` }}>
-        "A remedy which is almost always successful in small boys is circumcision... The operation should be performed by a surgeon without administering an anaesthetic, as the brief pain attending the operation will have a salutary effect upon the mind, especially if it be connected with the idea of punishment."
-        <div style={{ marginTop: "1rem", fontSize: "0.85rem", color: C.dim, fontStyle: "italic" }}>
-          — Dr. John Harvey Kellogg, "Treatment for Self-Abuse and its Effects" (1888)
+      <div style={{ position: "relative", filter: revealed ? "none" : "blur(5px)", opacity: revealed ? 1 : 0.6, transition: "all 0.8s ease", fontFamily: FONT.body, fontSize: "1.1rem", fontStyle: "italic", lineHeight: 1.6, color: C.textBright, background: "rgba(255,255,255,0.03)", padding: "1.5rem", borderRadius: 4, borderLeft: `3px solid ${C.gold}` }}>
+        <div key={quoteIndex} style={{ animation: "fadeSlideIn 0.5s ease" }}>
+          "{quote.text}"
+          <div style={{ marginTop: "1rem", fontSize: "0.85rem", color: C.dim, fontStyle: "normal" }}>
+            — {quote.author}, <span style={{ fontStyle: "italic" }}>"{quote.source}"</span> ({quote.year})
+          </div>
         </div>
       </div>
 
       {!revealed && (
-        <div style={{ position: "absolute", top: "60%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none" }}>
-          <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.5rem", color: C.red, textTransform: "uppercase", letterSpacing: "0.2em", border: `2px solid ${C.red}`, padding: "0.5rem 1rem", transform: "rotate(-5deg)", display: "inline-block", background: "rgba(0,0,0,0.8)", boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}>
-            Redacted
-          </div>
+        <div style={{ position: "absolute", top: "0", left: "0", right: "0", bottom: "0", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 10 }}>
+          <button 
+            onClick={() => setRevealed(true)}
+            style={{ background: "rgba(0,0,0,0.6)", border: `1px solid ${C.dim}`, color: C.textBright, padding: "0.75rem 1.5rem", borderRadius: 100, fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.15em", cursor: "pointer", transition: "all 0.3s ease", boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }}
+            onMouseEnter={e => { e.target.style.borderColor = C.gold; e.target.style.color = C.goldBright; e.target.style.background = "rgba(0,0,0,0.8)"; }}
+            onMouseLeave={e => { e.target.style.borderColor = C.dim; e.target.style.color = C.textBright; e.target.style.background = "rgba(0,0,0,0.6)"; }}
+          >
+            Reveal Historical Quote
+          </button>
         </div>
       )}
     </div>

@@ -58,7 +58,7 @@ const UNIVERSAL_SECTIONS = [
   { name: "Appearance", icon: Icons.Eye, desc: "Body image and self-perception" },
   { name: "Sexual Experience", icon: Icons.Zap, desc: "Sensation, orgasm, lubrication, communication" },
   { name: "Experience", icon: Icons.FileText, desc: "Pre-ejaculate, needs, partner communication" },
-  { name: "Pride & Regret", icon: Icons.Award, desc: "Overall satisfaction and emotional impact" },
+  { name: "Pride & Resentment", icon: Icons.Award, desc: "Overall satisfaction and emotional impact" },
   { name: "Pathway Routing", icon: Icons.GitBranch, desc: "Circumcision state — determines branching" },
 ];
 

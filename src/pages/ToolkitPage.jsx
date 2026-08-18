@@ -57,7 +57,7 @@ export default function ToolkitPage() {
               </div>
               <div style={{ padding: "1.5rem" }}>
                 <h3 style={{ fontFamily: FONT.display, color: C.textBright, marginBottom: "0.5rem" }}>The 6-for-6 Pleasure Gap</h3>
-                <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1rem" }}>Our most striking physiological finding: the intact cohort scores higher across all 6 pleasure metrics.</p>
+                <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1rem" }}>Our most striking physiological finding: the intact pathway scores higher across all 6 pleasure metrics.</p>
                 <button 
                   onClick={() => window.open('/og-images/pleasure-gap.png', '_blank')}
                   style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(255,255,255,0.05)", border: `1px solid ${C.ghost}`, color: C.textBright, padding: "0.5rem 1rem", borderRadius: 4, cursor: "pointer", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.75rem" }}
@@ -73,7 +73,7 @@ export default function ToolkitPage() {
               </div>
               <div style={{ padding: "1.5rem" }}>
                 <h3 style={{ fontFamily: FONT.display, color: C.textBright, marginBottom: "0.5rem" }}>The Future Son Convergence</h3>
-                <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1rem" }}>433 out of 500 respondents—including 78% of the circumcised cohort—would keep a future son intact.</p>
+                <p style={{ fontSize: "0.85rem", color: C.muted, marginBottom: "1rem" }}>433 out of 500 respondents—including 78% of the circumcised pathway—would keep a future son intact.</p>
                 <button 
                   onClick={() => window.open('/og-images/convergence.png', '_blank')}
                   style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(255,255,255,0.05)", border: `1px solid ${C.ghost}`, color: C.textBright, padding: "0.5rem 1rem", borderRadius: 4, cursor: "pointer", fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.75rem" }}
@@ -103,7 +103,7 @@ export default function ToolkitPage() {
               },
               {
                 title: "The Physiological Gap",
-                text: "A new 500-person survey separated respondents by circumcision status. Across all six measures of sexual pleasure, sensitivity, and function, the intact cohort scored higher. See the breakdown: https://findings.circumsurvey.online/explore#/pleasure-gap"
+                text: "A new 500-person survey separated respondents by circumcision status. Across all six measures of sexual pleasure, sensitivity, and function, the intact pathway scored higher. See the breakdown: https://findings.circumsurvey.online/explore#/pleasure-gap"
               }
             ].map((snippet, i) => (
               <div key={i} style={{ background: "var(--c-bgCard)", border: `1px solid ${C.ghost}`, borderRadius: 8, padding: "1.5rem" }}>

@@ -35,7 +35,7 @@ const FINAL_DECISION_QUESTION = {
 
 const COHORT_QUESTION = {
   id: "pathway",
-  label: "Respondent Cohort",
+  label: "Respondent Pathway",
   type: "single_select"
 };
 

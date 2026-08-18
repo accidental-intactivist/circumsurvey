@@ -325,7 +325,12 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          .print-only { display: block !important; }
+          .print-only { 
+            display: block !important; 
+            position: static !important;
+            width: auto !important;
+            opacity: 1 !important;
+          }
           body { background: white !important; color: black !important; }
           .print-container { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
           * { text-shadow: none !important; box-shadow: none !important; }
@@ -335,7 +340,14 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
           input { color: black !important; border: none !important; background: transparent !important; }
         }
         @media screen {
-          .print-only { display: none !important; }
+          .print-only { 
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            width: 1000px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+          }
         }
         .report-pill {
           display: flex;
@@ -736,14 +748,17 @@ export default function ReportBuilderPage({ routerState, navigate, updateState, 
             <button className="issue-btn issue-btn-primary" onClick={exportText}>
               ★ SAVE NOTEBOOK ★
             </button>
-            <button className="issue-btn issue-btn-secondary" onClick={() => alert("Share Link functionality requires backend storage. Export options are available.")}>
-              SHARE LINK...
+            <button className="issue-btn issue-btn-secondary" onClick={exportImage}>
+              EXPORT IMAGE
             </button>
             <button className="issue-btn issue-btn-secondary" onClick={() => window.print()}>
               PRINT / PDF
             </button>
             <button className="issue-btn issue-btn-secondary" onClick={exportCSV} style={{ marginTop: "1.5rem" }}>
               EXPORT CSV
+            </button>
+            <button className="issue-btn issue-btn-secondary" disabled style={{ opacity: 0.5, cursor: "not-allowed", marginTop: "0.5rem" }} title="Requires backend storage">
+              SHARE LINK...
             </button>
 
             <div style={{ 

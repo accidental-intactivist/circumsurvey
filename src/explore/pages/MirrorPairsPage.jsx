@@ -485,12 +485,12 @@ export default function MirrorPairsPage({ routerState, navigate, setExhibitConte
             animation: "fadeIn 0.2s ease-out"
           }}>
             <p style={{ margin: "0 0 0.8rem 0" }}>
-              <strong>The Butterfly Chart</strong> directly compares how the Intact and Circumcised cohorts answered structurally identical questions. 
+              <strong>The Butterfly Chart</strong> directly compares how the Intact and Circumcised pathways answered structurally identical questions. 
             </p>
             <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
               <li style={{ marginBottom: "0.5rem" }}>The <strong>Green Bars (Left)</strong> represent responses from Intact respondents.</li>
               <li style={{ marginBottom: "0.5rem" }}>The <strong>Blue Bars (Right)</strong> represent responses from Circumcised respondents.</li>
-              <li style={{ marginBottom: "0.5rem" }}>The length of each bar represents the <em>percentage</em> of the cohort that selected that option.</li>
+              <li style={{ marginBottom: "0.5rem" }}>The length of each bar represents the <em>percentage</em> of the pathway that selected that option.</li>
               <li>You can sort the responses by the largest absolute difference between the two groups.</li>
             </ul>
           </div>
@@ -598,7 +598,7 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
   }, [mergedList, sortBy]);
 
   return (
-    <SmallSampleBadge n={Math.min(intactTotal, circTotal)} label="the compared cohorts">
+    <SmallSampleBadge n={Math.min(intactTotal, circTotal)} label="the compared pathways">
     <div className="mobile-scroll-hint" style={{ overflowX: "auto" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem", minWidth: "600px" }}>
       {/* Pathway Headers */}

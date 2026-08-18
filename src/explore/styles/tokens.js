@@ -80,14 +80,14 @@ export const GLOBAL_CSS = `
     --c-ghost: #2a2a30;
     --c-gold: #d4a030;
     --c-goldBright: #e8b840;
-    --c-red: #d94f4f;
+    --c-red: #dd6161;
     --c-orange: #e8a44a;
     --c-yellow: #e8c868;
     --c-green: #68b878;
     --c-ltBlue: #8bb8d9;
     --c-blue: #5b93c7;
     --c-grey: #a0a0a0;
-    --c-purple: #7868b8;
+    --c-purple: #8677bf;
 
     /* Map cartography tokens — Cerulean & Gold (default dark) */
     --map-ocean: #003049;
@@ -148,7 +148,7 @@ export const GLOBAL_CSS = `
     --c-dim: #8a8680;
     --c-ghost: #d4cfc4;
     --c-gold: #a87e18;
-    --c-goldBright: #d4a030;
+    --c-goldBright: #8c6920;
     /* Map: Deep Navy & White */
     --map-ocean: #1a2a3a;
     --map-land: #FFFFFF;
@@ -172,12 +172,12 @@ export const GLOBAL_CSS = `
     --c-ghost: #3c126d;
     --c-gold: #fcee09;
     --c-goldBright: #ffffff;
-    --c-red: #ff003c;
+    --c-red: #ff1a50;
     --c-orange: #ff5e00;
     --c-yellow: #fcee09;
     --c-green: #00ff41;
     --c-ltBlue: #00f0ff;
-    --c-blue: #1a53ff;
+    --c-blue: #5982ff;
     --c-grey: #5a3982;
     --c-purple: #9d00ff;
     /* Map: Neon Purple & Hot Pink */
@@ -200,13 +200,13 @@ export const GLOBAL_CSS = `
     --c-dim: #00838f;
     --c-ghost: #ce93d8;
     --c-gold: #ffca28;
-    --c-goldBright: #ff8f00;
+    --c-goldBright: #a75e00;
     --c-red: #ff4081;
     --c-orange: #ff6e40;
     --c-yellow: #ffeb3b;
     --c-green: #1de9b6;
     --c-ltBlue: #84ffff;
-    --c-blue: #00e5ff;
+    --c-blue: #007a87;
     --c-grey: #b39ddb;
     --c-purple: #d500f9;
     /* Map: Deep Violet & White */
@@ -231,14 +231,14 @@ export const GLOBAL_CSS = `
     --c-ghost: #1c4535;
     --c-gold: #f59e0b;
     --c-goldBright: #fbbf24;
-    --c-red: #ef4444;
+    --c-red: #f26868;
     --c-orange: #f97316;
     --c-yellow: #fcd34d;
     --c-green: #10b981;
     --c-ltBlue: #6ee7b7;
     --c-blue: #0ea5e9;
     --c-grey: #1e3b2d;
-    --c-purple: #8b5cf6;
+    --c-purple: #a17bf8;
     /* Map: Emerald & Gold */
     --map-ocean: #043927;
     --map-land: #D4AF37;
@@ -268,13 +268,13 @@ export const GLOBAL_CSS = `
     --c-dim: #8fb39f;
     --c-ghost: #c0d1c7;
     --c-gold: #a87e18;
-    --c-goldBright: #d4a030;
+    --c-goldBright: #8c6920;
     --c-red: #a83a2c;
     --c-orange: #a87e18;
     --c-yellow: #d4a030;
     --c-green: #5c7a6a;
     --c-ltBlue: #c0d1c7;
-    --c-blue: #8fb39f;
+    --c-blue: #5e7668;
     --c-grey: #d4e3d9;
     --c-purple: #8e50b8;
     /* Map: Deep Forest & White */
@@ -308,12 +308,12 @@ export const GLOBAL_CSS = `
     --c-ghost: #476f84;
     --c-gold: #fed789;
     --c-goldBright: #ffebbc;
-    --c-red: #ef476f;
+    --c-red: #f37996;
     --c-orange: #f7b267;
     --c-yellow: #fed789;
     --c-green: #72874e;
     --c-ltBlue: #a4bed5;
-    --c-blue: #476f84;
+    --c-blue: #92aab6;
     --c-grey: #453947;
     --c-purple: #9b72aa;
     /* Map: Deep Cerulean & Pearl */
@@ -345,13 +345,13 @@ export const GLOBAL_CSS = `
     --c-dim: #0284c7;
     --c-ghost: #7dd3fc;
     --c-gold: #0284c7;
-    --c-goldBright: #0ea5e9;
+    --c-goldBright: #0b79aa;
     --c-red: #e11d48;
     --c-orange: #d97706;
     --c-yellow: #06b6d4;
     --c-green: #059669;
     --c-ltBlue: #bae6fd;
-    --c-blue: #0284c7;
+    --c-blue: #0277b3;
     --c-grey: #e0f2fe;
     --c-purple: #7c3aed;
     /* Map: Deep Ocean & White */
@@ -385,12 +385,12 @@ export const GLOBAL_CSS = `
     --c-ghost: #4a3227;
     --c-gold: #ceb175;
     --c-goldBright: #e5cc98;
-    --c-red: #e54e21;
+    --c-red: #ec7e5d;
     --c-orange: #c18748;
     --c-yellow: #ceb175;
     --c-green: #6c8645;
     --c-ltBlue: #5bc4c2;
-    --c-blue: #0a9f9d;
+    --c-blue: #23a9a7;
     --c-grey: #8d7a64;
     --c-purple: #9c6c84;
     /* Map: Antiqued Bronze & Gold */
@@ -413,13 +413,13 @@ export const GLOBAL_CSS = `
     --c-dim: #8b5b2c;
     --c-ghost: #ceb175;
     --c-gold: #c18748;
-    --c-goldBright: #e54e21;
+    --c-goldBright: #ce461e;
     --c-red: #e54e21;
     --c-orange: #c18748;
     --c-yellow: #ceb175;
     --c-green: #6c8645;
     --c-ltBlue: #5bc4c2;
-    --c-blue: #0a9f9d;
+    --c-blue: #08817f;
     --c-grey: #e8dcc4;
     --c-purple: #9c6c84;
     /* Map: Deep Amber & White */
@@ -444,13 +444,13 @@ export const GLOBAL_CSS = `
     --c-dim: #9f5630;
     --c-ghost: #79716c;
     --c-gold: #c38961;
-    --c-goldBright: #e04b28;
+    --c-goldBright: #e97c62;
     --c-red: #950404;
     --c-orange: #e04b28;
     --c-yellow: #c38961;
     --c-green: #388f30;
     --c-ltBlue: #00c1c8;
-    --c-blue: #007d82;
+    --c-blue: #59aaad;
     --c-grey: #4a3b32;
     --c-purple: #004042;
     /* Map: Sepia & Parchment */
@@ -473,7 +473,7 @@ export const GLOBAL_CSS = `
     --c-dim: #9f5630;
     --c-ghost: #dccbc1;
     --c-gold: #c38961;
-    --c-goldBright: #e04b28;
+    --c-goldBright: #ca4424;
     --c-red: #950404;
     --c-orange: #e04b28;
     --c-yellow: #c38961;
@@ -505,12 +505,12 @@ export const GLOBAL_CSS = `
     --c-ghost: #8d4019;
     --c-gold: #ff8c00;
     --c-goldBright: #ffb347;
-    --c-red: #e64a19;
+    --c-red: #ed7b58;
     --c-orange: #ff5722;
     --c-yellow: #ffb300;
     --c-green: #00897b;
     --c-ltBlue: #4db6ac;
-    --c-blue: #00695c;
+    --c-blue: #6aa79f;
     --c-grey: #8d6e63;
     --c-purple: #6d4c41;
     /* Map: Terracotta & Turquoise */
@@ -533,8 +533,8 @@ export const GLOBAL_CSS = `
     --c-dim: #e64a19;
     --c-ghost: #ffb380;
     --c-gold: #ff8c00;
-    --c-goldBright: #ff5722;
-    --c-red: #e64a19;
+    --c-goldBright: #cf461c;
+    --c-red: #cf4317;
     --c-orange: #ff5722;
     --c-yellow: #ffb300;
     --c-green: #00897b;
@@ -565,12 +565,12 @@ export const GLOBAL_CSS = `
     --c-ghost: #5c1c1c;
     --c-gold: #d32f2f;
     --c-goldBright: #ff5252;
-    --c-red: #b71c1c;
+    --c-red: #d06a6a;
     --c-orange: #e53935;
     --c-yellow: #ef5350;
     --c-green: #455a64;
     --c-ltBlue: #78909c;
-    --c-blue: #263238;
+    --c-blue: #80868a;
     --c-grey: #546e7a;
     --c-purple: #880e4f;
     /* Map: Obsidian & Silver */

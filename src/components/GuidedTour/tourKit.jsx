@@ -293,7 +293,12 @@ export function AskDocentCard({ context, suas }) {
         </div>
       </div>
       <div style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, lineHeight: 1.5, maxWidth: 600 }}>
-        Curious about this finding? Choose a question below or ask your own.
+        <div style={{ marginBottom: "0.5rem" }}>
+          Look for the Research Assistant throughout the report.
+        </div>
+        <div>
+          If you have a question about a finding, want to dig deeper into the data, or need clarification on our methodology, the assistant is here to help. Choose a prompt below to get started, or type your own.
+        </div>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
         {suas?.map((sua, i) => (

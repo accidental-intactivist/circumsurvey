@@ -1,5 +1,6 @@
 import React from "react";
 import { FONT, C, RAINBOW } from "../styles/tokens";
+import { useLegibleColor } from "../lib/colorUtils";
 
 const SectionBlock = ({ title, children, accentColor = "var(--c-ghost)" }) => (
   <section style={{
@@ -31,43 +32,49 @@ const SectionBlock = ({ title, children, accentColor = "var(--c-ghost)" }) => (
   </section>
 );
 
-const LinkButton = ({ href, children, primary }) => (
-  <a href={href} target="_blank" rel="noreferrer" style={{
-    display: "inline-block",
-    background: primary ? "var(--c-gold)" : "transparent",
-    color: primary ? "var(--c-bgDeep)" : "var(--c-textBright)",
-    border: `1px solid ${primary ? "var(--c-gold)" : "var(--c-ghost)"}`,
-    padding: "0.75rem 1.5rem",
-    borderRadius: "100px",
-    fontFamily: FONT.condensed,
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.1em",
-    textDecoration: "none",
-    marginTop: "1rem",
-    transition: "all 0.2s ease",
-  }}
-  onMouseEnter={e => {
-    if (primary) {
-      e.target.style.background = "var(--c-goldBright)";
-    } else {
-      e.target.style.background = "var(--c-bgGlass)";
-      e.target.style.borderColor = "var(--c-gold)";
-      e.target.style.color = "var(--c-gold)";
-    }
-  }}
-  onMouseLeave={e => {
-    if (primary) {
-      e.target.style.background = "var(--c-gold)";
-    } else {
-      e.target.style.background = "transparent";
-      e.target.style.borderColor = "var(--c-ghost)";
-      e.target.style.color = "var(--c-textBright)";
-    }
-  }}>
-    {children}
-  </a>
-);
+const LinkButton = ({ href, children, primary }) => {
+  const safeColor = useLegibleColor(
+    primary ? "var(--c-bgDeep)" : "var(--c-textBright)",
+    primary ? "var(--c-gold)" : "transparent"
+  );
+  return (
+    <a href={href} target="_blank" rel="noreferrer" style={{
+      display: "inline-block",
+      background: primary ? "var(--c-gold)" : "transparent",
+      color: safeColor,
+      border: `1px solid ${primary ? "var(--c-gold)" : "var(--c-ghost)"}`,
+      padding: "0.75rem 1.5rem",
+      borderRadius: "100px",
+      fontFamily: FONT.condensed,
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: "0.1em",
+      textDecoration: "none",
+      marginTop: "1rem",
+      transition: "all 0.2s ease",
+    }}
+    onMouseEnter={e => {
+      if (primary) {
+        e.target.style.background = "var(--c-goldBright)";
+      } else {
+        e.target.style.background = "var(--c-bgGlass)";
+        e.target.style.borderColor = "var(--c-gold)";
+        e.target.style.color = "var(--c-gold)";
+      }
+    }}
+    onMouseLeave={e => {
+      if (primary) {
+        e.target.style.background = "var(--c-gold)";
+      } else {
+        e.target.style.background = "transparent";
+        e.target.style.borderColor = "var(--c-ghost)";
+        e.target.style.color = safeColor;
+      }
+    }}>
+      {children}
+    </a>
+  );
+};
 
 export default function GetInvolvedPage() {
   return (

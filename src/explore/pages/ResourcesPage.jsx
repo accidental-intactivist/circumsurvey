@@ -1,5 +1,6 @@
 import React from "react";
 import { FONT, C } from "../styles/tokens";
+import { useLegibleColor } from "../lib/colorUtils";
 
 const SectionBlock = ({ title, children, accentColor = "var(--c-ghost)" }) => (
   <section style={{
@@ -31,44 +32,50 @@ const SectionBlock = ({ title, children, accentColor = "var(--c-ghost)" }) => (
   </section>
 );
 
-const LinkButton = ({ href, children, primary }) => (
-  <a href={href} target="_blank" rel="noreferrer" style={{
-    display: "inline-block",
-    background: primary ? "var(--c-gold)" : "transparent",
-    color: primary ? "var(--c-bgDeep)" : "var(--c-textBright)",
-    border: `1px solid ${primary ? "var(--c-gold)" : "var(--c-ghost)"}`,
-    padding: "0.75rem 1.5rem",
-    borderRadius: "100px",
-    fontFamily: FONT.condensed,
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.1em",
-    textDecoration: "none",
-    marginTop: "1rem",
-    marginRight: "1rem",
-    transition: "all 0.2s ease",
-  }}
-  onMouseEnter={e => {
-    if (primary) {
-      e.target.style.background = "var(--c-goldBright)";
-    } else {
-      e.target.style.background = "var(--c-bgGlass)";
-      e.target.style.borderColor = "var(--c-gold)";
-      e.target.style.color = "var(--c-gold)";
-    }
-  }}
-  onMouseLeave={e => {
-    if (primary) {
-      e.target.style.background = "var(--c-gold)";
-    } else {
-      e.target.style.background = "transparent";
-      e.target.style.borderColor = "var(--c-ghost)";
-      e.target.style.color = "var(--c-textBright)";
-    }
-  }}>
-    {children}
-  </a>
-);
+const LinkButton = ({ href, children, primary }) => {
+  const safeColor = useLegibleColor(
+    primary ? "var(--c-bgDeep)" : "var(--c-textBright)",
+    primary ? "var(--c-gold)" : "transparent"
+  );
+  return (
+    <a href={href} target="_blank" rel="noreferrer" style={{
+      display: "inline-block",
+      background: primary ? "var(--c-gold)" : "transparent",
+      color: safeColor,
+      border: `1px solid ${primary ? "var(--c-gold)" : "var(--c-ghost)"}`,
+      padding: "0.75rem 1.5rem",
+      borderRadius: "100px",
+      fontFamily: FONT.condensed,
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: "0.1em",
+      textDecoration: "none",
+      marginTop: "1rem",
+      marginRight: "1rem",
+      transition: "all 0.2s ease",
+    }}
+    onMouseEnter={e => {
+      if (primary) {
+        e.target.style.background = "var(--c-goldBright)";
+      } else {
+        e.target.style.background = "var(--c-bgGlass)";
+        e.target.style.borderColor = "var(--c-gold)";
+        e.target.style.color = "var(--c-gold)";
+      }
+    }}
+    onMouseLeave={e => {
+      if (primary) {
+        e.target.style.background = "var(--c-gold)";
+      } else {
+        e.target.style.background = "transparent";
+        e.target.style.borderColor = "var(--c-ghost)";
+        e.target.style.color = safeColor;
+      }
+    }}>
+      {children}
+    </a>
+  );
+};
 
 export default function ResourcesPage() {
   return (
@@ -125,10 +132,6 @@ export default function ResourcesPage() {
           <p>Organizations focusing on legal challenges, human rights perspectives, and direct public action.</p>
           <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
             <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://bloodstainedmen.com" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Bloodstained Men & Their Friends</a></strong>
-              <br />A highly visible US-based activist group known for striking public protests across the country, using powerful visuals to raise awareness about the harms of circumcision.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
               <strong><a href="https://www.galdef.org/" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>GALDEF (Genital Autonomy Legal Defense and Education Fund)</a></strong>
               <br />Headed by human rights activist Tim Hammond, GALDEF focuses on educating and supporting attorneys in impact litigation to expand the US legal landscape to protect all children from forced genital cutting.
             </li>
@@ -139,6 +142,10 @@ export default function ResourcesPage() {
             <li style={{ marginBottom: "1rem" }}>
               <strong><a href="https://15square.org.uk/" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>15 Square</a></strong>
               <br />A UK-based charity providing support, information, and a sense of community for individuals affected by circumcision issues, including those dealing with complications or seeking restoration.
+            </li>
+            <li style={{ marginBottom: "1rem" }}>
+              <strong><a href="https://bloodstainedmen.com" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Bloodstained Men & Their Friends</a></strong>
+              <br />A highly visible US-based activist group known for striking public protests across the country, using powerful visuals to raise awareness about the harms of circumcision.
             </li>
           </ul>
         </SectionBlock>
@@ -158,13 +165,20 @@ export default function ResourcesPage() {
         </SectionBlock>
 
         <SectionBlock title="The Accidental Intactivist Manifesto" accentColor="var(--c-gold)">
-          <p>The perspective and research that inspired this survey are detailed in this comprehensive manifesto. It weaves together personal insight, scientific inquiry, and cultural critique into a bold, eye-opening call to action.</p>
-          <p>Whether you're new to this issue or deep in the fight for genital autonomy, this 117-page manifesto delivers the history, ethics, anatomy, and emotional truth that so often go unspoken.</p>
-          
-          <div style={{ marginTop: "2rem" }}>
-            <LinkButton primary href="https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing">Download Full Manifesto (PDF)</LinkButton>
-            <LinkButton href="https://medium.com/@ambp/the-accidental-intactivist-manifesto-exposing-the-monster-we-agree-not-to-see-e96e86490bc0">Read on Medium</LinkButton>
-            <LinkButton href="https://substack.com/@c4charkey">Read on Substack</LinkButton>
+          <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flex: "0 0 auto", width: "100%", maxWidth: "220px", alignSelf: "flex-start", margin: "0 auto" }}>
+              <img src="/manifesto-cover.jpg" alt="The Accidental Intactivist Manifesto Cover" style={{ width: "100%", height: "auto", borderRadius: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }} />
+            </div>
+            <div style={{ flex: "1 1 300px" }}>
+              <p style={{ marginTop: 0, marginBottom: "1.5rem" }}>The perspective and research that inspired this survey are detailed in this comprehensive manifesto. It weaves together personal insight, scientific inquiry, and cultural critique into a bold, eye-opening call to action.</p>
+              <p>Whether you're new to this issue or deep in the fight for genital autonomy, this 117-page manifesto delivers the history, ethics, anatomy, and emotional truth that so often go unspoken.</p>
+              
+              <div style={{ marginTop: "2rem" }}>
+                <LinkButton primary href="https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing">Download Full Manifesto (PDF)</LinkButton>
+                <LinkButton href="https://medium.com/@ambp/the-accidental-intactivist-manifesto-exposing-the-monster-we-agree-not-to-see-e96e86490bc0">Read on Medium</LinkButton>
+                <LinkButton href="https://substack.com/@c4charkey">Read on Substack</LinkButton>
+              </div>
+            </div>
           </div>
         </SectionBlock>
 

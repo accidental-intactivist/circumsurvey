@@ -33,7 +33,7 @@ const SECTION_ITEMS = [
   { id: "Anatomy & Appearance", label: "Anatomy & Appearance", href: "#/index?section=Anatomy%20%26%20Appearance" },
   { id: "Sexual Experience", label: "Sexual Experience", href: "#/index?section=Sexual%20Experience" },
   { id: "Experience", label: "Experience", href: "#/index?section=Experience" },
-  { id: "Pride & Regret", label: "Pride & Regret", href: "#/index?section=Pride%20%26%20Regret" },
+  { id: "Pride & Regret", label: "Pride & Resentment", href: "#/index?section=Pride%20%26%20Regret" },
   { id: "Parents & Guardians", label: "Parents & Guardians", href: "#/index?section=Parents%20%26%20Guardians" },
   { id: "Partners & Intimacy", label: "Partners & Intimacy", href: "#/index?section=Partners%20%26%20Intimacy" },
   { id: "Medical Professionals", label: "Medical Professionals", href: "#/index?section=Medical%20Professionals" },
@@ -494,7 +494,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   {[
                     { id: "circ_message_to_parents", text: "💬 Message to Parents (from Circumcised respondents)", emoji: "⚖️" },
                     { id: "intact_message_to_others", text: "💬 Message to Others / Future Parents (from Intact respondents)", emoji: "⚖️" },
-                    { id: "exp_sex_rating_orgasm_intensity", text: "📊 Orgasm Intensity comparison across cohorts", emoji: "⚖️" },
+                    { id: "exp_sex_rating_orgasm_intensity", text: "➡️ Orgasm Intensity comparison across pathways", emoji: "⚡" },
                     { id: "demo_sexuality", text: "📊 Sexual Orientation demographic profile", emoji: "📊" },
                     { id: "exp_sensitivity_desc", text: "💬 Physical sensation in respondents' own words", emoji: "💬" },
                   ].map(rec => (
@@ -570,7 +570,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     textTransform: "uppercase",
                     color: C.muted,
                     marginBottom: "0.35rem",
-                  }}>Cohort size</div>
+                  }}>Pathway size</div>
                   <div style={{
                     fontFamily: FONT.mono,
                     fontSize: "1.35rem",
@@ -631,7 +631,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       color: "#76b7b2",
                       marginBottom: "0.4rem",
                       fontWeight: 700,
-                    }}>Cohort B Filter</div>
+                    }}>Pathway B Filter</div>
                     <DemographicFilterBar
                       cohort={cohortB}
                       onChange={(c) => setCohortB(c)}
@@ -652,7 +652,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                           textTransform: "uppercase",
                           color: C.muted,
                           marginBottom: "0.2rem",
-                        }}>Cohort B size</div>
+                        }}>Pathway B size</div>
                         <div style={{
                           fontFamily: FONT.mono,
                           fontSize: "1.1rem",
@@ -950,7 +950,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                               color: "#76b7b2",
                               letterSpacing: "-0.01em",
                               margin: 0,
-                            }}>Cohort B Distribution</h3>
+                            }}>Pathway B Distribution</h3>
                             <span style={{
                               fontFamily: FONT.mono,
                               fontSize: "0.72rem",

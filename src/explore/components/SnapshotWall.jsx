@@ -50,7 +50,7 @@ const SNAPSHOT_DEFINITIONS = [
     }),
   },
   {
-    id: "resentment_restoring", qid: "circ_regret_feeling", label: "of restoring men report strong, frequent resentment ΓÇö the highest of any group", span: 2, color: C.red, attribution: "Q: Feelings of Regret/Resentment",
+    id: "restoring_resentment", qid: "circ_regret_feeling", label: "of restoring men report strong, frequent resentment — the highest of any group", span: 2, color: C.red, attribution: "Q: Feelings of Regret/Resentment",
     fetch: () => getResponseDistribution("circ_regret_feeling", { pathway: "restoring" }).then(d => {
       const strong = d.distribution?.find(x => x.label?.includes("strong and frequent"));
       return { value: strong ? `${strong.pct.toFixed(0)}%` : "ΓÇö", n: d.n };

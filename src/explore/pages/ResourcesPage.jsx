@@ -196,6 +196,7 @@ export default function ResourcesPage() {
           </div>
         </SectionBlock>
 
+        </div>
       </div>
     </div>
   );

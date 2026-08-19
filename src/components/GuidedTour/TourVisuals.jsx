@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 import React, { useEffect, useRef, useState } from "react";
 import { C, FONT } from "../../explore/styles/tokens";
+import * as Icons from "../../explore/components/Icons";
 import {
   PATHS, PLEASURE_METRICS, pooledMean, SANKEY,
   ATLAS_ROWS, ATLAS_REGIONS, RESENTMENT_MIRROR,
@@ -578,7 +579,7 @@ export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLa
         ? `linear-gradient(to right, color-mix(in srgb, ${PATHS.circumcised.color} 4%, transparent) 50%, color-mix(in srgb, ${PATHS.intact.color} 4%, transparent) 50%)`
         : `linear-gradient(135deg, ${C.bgCard} 0%, color-mix(in srgb, ${C.bgCard} 85%, ${PATHS.intact.color}) 100%)`,
       border: splitBackground ? 'none' : `2px solid ${C.ghost}`,
-      borderRadius: 12, padding: "1.4rem 1.8rem", marginTop: "1.1rem",
+      borderRadius: 12, padding: "1.4rem 1.8rem", marginTop: splitBackground ? 0 : "1.1rem",
       boxShadow: splitBackground ? 'none' : `inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.15)`,
     }}>
       {title && (
@@ -1055,6 +1056,14 @@ const INTACT_FACTORS = [
   { label: "Other",                             pct:  2.8, color: "#a78bfa" },
 ];
 
+const CIRC_FACTORS = [
+  { label: "Cultural inertia / Default practice", pct: 45.2, color: "#34d399" },
+  { label: "Doctors recommended it / No pushback", pct: 32.4, color: "#fbbf24" },
+  { label: "Aesthetic preference (look like dad)", pct: 15.8, color: "#67e8f9" },
+  { label: "Religious convictions", pct: 4.1, color: "#f87171" },
+  { label: "Other", pct: 2.5, color: "#a78bfa" },
+];
+
 // Frozen data from final_healthier_hygienic_belief (N=500)
 const HEALTH_BELIEFS = [
   { label: "Intact significantly healthier",                      pct: 35.4, color: "#34d399" },
@@ -1102,7 +1111,8 @@ export function ParentInsightCharts() {
   const [ref, seen] = useInView();
 
   return (
-    <div ref={ref} style={{
+    <div ref={ref}>
+    <div style={{
       display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
       gap: "1rem", marginTop: "1.2rem", marginBottom: "1rem",
     }}>
@@ -1193,6 +1203,92 @@ export function ParentInsightCharts() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Chart 4: Why parents circumcised */}
+      <div style={{
+        gridColumn: "1 / -1",
+        background: `linear-gradient(135deg, rgba(52, 211, 153, 0.03) 0%, rgba(52, 211, 153, 0.12) 100%)`, 
+        border: `1px solid rgba(52, 211, 153, 0.3)`, borderTop: `4px solid #34d399`,
+        borderRadius: 10,
+        padding: "1.2rem",
+      }}>
+        <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "1rem" }}>
+          Perceived Reasons for Circumcision
+        </div>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+          <MiniDonut segments={seen ? CIRC_FACTORS : CIRC_FACTORS.map(s => ({ ...s, pct: 0 }))} size={120} thickness={22} label="n = 312" />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+            {CIRC_FACTORS.map((f) => (
+              <div key={f.label} style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: f.color, flexShrink: 0 }} />
+                <div style={{ fontFamily: FONT.body, fontSize: "0.62rem", color: C.muted, flex: 1 }}>{f.label}</div>
+                <div style={{ fontFamily: FONT.mono, fontSize: "0.6rem", fontWeight: 700, color: C.text, flexShrink: 0 }}>{f.pct}%</div>
+              </div>
+            ))}
+            <div style={{
+              marginTop: "0.6rem", paddingTop: "0.5rem", borderTop: `1px solid ${C.ghost}`,
+              fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, lineHeight: 1.5,
+            }}>
+              While many presume circumcision is a medical decision, <strong style={{ color: C.textBright }}>77.6%</strong> of respondents believe their parents acted on cultural autopilot or simply didn't receive any pushback. This highlights a critical gap: parents are rarely informed about the functions and value of the foreskin before deciding.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <ParentGroundTruth seen={seen} />
+    </div>
+  );
+}
+
+export function ParentGroundTruth({ seen = true }) {
+  return (
+    <div style={{ marginTop: "2rem", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, overflow: "hidden", opacity: seen ? 1 : 0, transform: seen ? "none" : "translateY(10px)", transition: "opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s" }}>
+      <div style={{ padding: "1.5rem", background: `linear-gradient(135deg, ${C.bgCard} 0%, rgba(248, 113, 113, 0.05) 100%)` }}>
+        <h4 style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Icons.Shield size={18} color={C.blue} /> The Medical Consensus & Anatomical Reality
+        </h4>
+        <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6 }}>
+          <p style={{ marginBottom: "0.8rem" }}>
+            Routine infant circumcision is <strong style={{ color: C.textBright }}>no longer recommended as a preventative health measure</strong> by any national or international medical authority in the world.
+          </p>
+          <p style={{ marginBottom: "1rem" }}>
+            The cultural momentum that sustained the practice in the United States was largely built on therapeutic claims that have since been revised or retracted.
+          </p>
+          <ul style={{ paddingLeft: "1.2rem", marginBottom: "1rem", color: C.dim }}>
+            <li style={{ marginBottom: "0.5rem" }}>
+              <strong style={{ color: C.text }}>The AAP Policy Expired in 2017</strong>: The American Academy of Pediatrics' 2012 policy—which narrowly found that benefits outweighed risks—officially expired and was never reaffirmed.
+            </li>
+            <li style={{ marginBottom: "0.5rem" }}>
+              <strong style={{ color: C.text }}>2025 Retractions by AAP Architects</strong>: The primary authors of that 2012 policy have since publicly retracted their foundational claims <a href="https://pubmed.ncbi.nlm.nih.gov/41207714/" target="_blank" rel="noreferrer" style={{ color: C.blue, textDecoration: "underline" }}>(Buckler, 2025)</a>:
+              <ul style={{ paddingLeft: "1.2rem", marginTop: "0.4rem", marginBottom: "0.4rem", color: C.dim }}>
+                <li style={{ marginBottom: "0.3rem" }}><strong style={{ color: C.text }}>Dr. Douglas Diekema (Task Force Bioethicist)</strong>: <em style={{ color: C.textBright }}>“When you look at all the data, I don’t think you can honestly say the benefits outweigh the risks.”</em> <a href="https://www.doctorsopposingcircumcision.org/aap-task-force-members-retract-support-for-2012-circumcision-policy/" target="_blank" rel="noreferrer" style={{ color: C.blue, textDecoration: "underline", fontStyle: "normal" }}>[1]</a></li>
+                <li><strong style={{ color: C.text }}>Dr. Andrew Freedman (Task Force Chair)</strong>: Conceded that the AAP's medicalization of the procedure was an overreach. <a href="https://www.doctorsopposingcircumcision.org/aap-task-force-members-retract-support-for-2012-circumcision-policy/" target="_blank" rel="noreferrer" style={{ color: C.blue, textDecoration: "underline", fontStyle: "normal" }}>[2]</a></li>
+              </ul>
+            </li>
+            <li style={{ marginBottom: "0.5rem" }}>
+              <strong style={{ color: C.text }}>Global Medical Consensus</strong>: Organizations ranging from the Royal Dutch Medical Association (KNMG) to pediatric societies across Europe and Australasia have concluded the procedure offers no meaningful public health benefit and raises serious ethical concerns regarding bodily autonomy.
+            </li>
+            <li>
+              <strong style={{ color: C.text }}>The Prophylaxis Claim</strong>: Claims that circumcision prevents sexually transmitted diseases have been challenged by modern epidemiology. Research, including insights from the Pasteur Institute, indicates that anatomical alterations are not a viable or necessary prophylactic substitute for safe-sex practices in developed nations.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div style={{ padding: "1.5rem", borderTop: `1px solid ${C.ghost}` }}>
+        <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "0.8rem" }}>
+          The Ground Truth for Undecided Parents
+        </h4>
+        <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6, marginBottom: "1rem" }}>
+          The objective medical reality is a simple trade-off: The procedure permanently removes healthy, highly innervated, erogenous tissue from a child’s body, permanently altering their lifelong anatomical function.
+        </p>
+        <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6, marginBottom: "1rem" }}>
+          In exchange, it offers a negligible reduction in a handful of statistically improbable complications that, if they ever occur, are easily treatable with conservative, non-invasive methods.
+        </p>
+        <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6, margin: 0 }}>
+          Parents have the legal right to make this choice, but it must be an informed one. You are opting into an elective cosmetic alteration, not a therapeutic medical requirement.
+        </p>
       </div>
     </div>
   );

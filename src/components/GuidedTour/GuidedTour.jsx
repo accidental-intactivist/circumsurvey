@@ -377,7 +377,7 @@ export default function GuidedTour() {
 
               <HistoricalIntentReveal />
               <p style={{ marginBottom: "1.5rem" }}>
-                Over time, the cultural justifications evolved, but the mechanical reality of the procedure remained exactly the same: the surgical removal of healthy, erogenous tissue from a child. Because this surgery requires no specialized training and has no standardized outcome, it is often an aesthetic lottery. Some men are left with brown, jagged scars, while others are stripped completely tight.
+                Over the last 150 years, the cultural justifications have functioned as a rotating "Disease of the Decade"—shifting from masturbation and epilepsy, to syphilis, to cervical cancer, to UTIs, and eventually HIV. Yet despite the constantly moving goalposts, the proposed "cure" magically always remains exactly the same: the surgical removal of healthy, erogenous tissue from a child. Because this surgery requires no specialized training and has no standardized outcome, it is often an aesthetic lottery. Some men are left with prominent scarring, while others are stripped completely tight.
               </p>
               <p style={{ marginBottom: "1.5rem" }}>
                 Now the culture is shifting. Newborn circumcision rates in the United States have fallen below 50% for the first time in over a century. Parents are asking questions that went unasked a generation ago, seeking to understand the lifelong impact of an irreversible choice.
@@ -410,7 +410,7 @@ export default function GuidedTour() {
                 Before you scroll down and look at the data, I want to invite you to borrow that lens. For the next ten minutes, I am asking you to suspend the cultural conditioning that tells us removing a functional part of a child's anatomy is just a "harmless, hygienic snip." Step into the shoes of an outsider. Look at the anatomical mechanics. Read the unvarnished words of the 500 men who actually live in these bodies.
               </p>
               <p style={{ marginBottom: "1.5rem", fontWeight: 600, color: C.textBright }}>
-                Do not look at this data to defend a past choice. Look at it with a simple, radical curiosity.
+                Do not look at this data to defend a past choice. Look at it with a simple, radical curiosity. And if you are an expectant parent navigating this decision for a child, look at it as the objective, unvarnished ground truth you deserve to have.
               </p>
               <p style={{ marginBottom: "1.5rem" }}>
                 I started this journey as an accidental observer trying to make sense of a practice so invisibly normalized we've forgotten why we ever started doing it. I invite you to explore this data and take the step from unquestioning acceptance to intentional awareness.
@@ -696,6 +696,10 @@ export default function GuidedTour() {
 
           <Station num="13">
             <TourCard id="for-new-expectant-parents" title="Data for Expectant Parents" refText="EXHIBIT 13" stamp="Parents" exhibitStation={st("13")}>
+              <div style={{ fontFamily: FONT.body, fontSize: "1.05rem", color: C.text, lineHeight: 1.6, marginBottom: "2.5rem" }}>
+                <p style={{ marginBottom: "1rem" }}>When expectant parents consider routine infant circumcision, they are often flooded with conflicting cultural narratives and outdated medical folklore. This section serves as a self-contained resource, curating direct testimonies from adults living in these bodies and contrasting them against the data.</p>
+                <p style={{ marginBottom: 0 }}>We present the undeniable objective realities of the procedure—its sexual impacts, the hindsight of other parents, and the medical consensus—so you can make a truly informed choice.</p>
+              </div>
               <TestimonyRotator />
               <ParentInsightCharts />
             </TourCard>

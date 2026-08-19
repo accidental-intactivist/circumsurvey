@@ -143,9 +143,11 @@ export function ShareTools({ title, targetId, exhibitStation }) {
     toPng(el, { cacheBust: true, backgroundColor: 'var(--c-bgDeep)' })
       .then((dataUrl) => {
         const link = document.createElement('a');
-        link.download = `${targetId}.png`;
+        link.download = `CircumSurvey_Findings_${title.replace(/[^a-zA-Z0-9]+/g, '_')}.png`;
         link.href = dataUrl;
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
       })
       .catch((err) => {
         console.error('Failed to download image', err);
@@ -193,7 +195,7 @@ export function ShareTools({ title, targetId, exhibitStation }) {
         onMouseEnter={e => e.currentTarget.style.color = C.blue} 
         onMouseLeave={e => e.currentTarget.style.color = C.dim}
       >
-        <Icons.Bot size={14} /> AI Context
+        <Icons.Sparkles size={14} />
       </button>
       <button 
         onClick={handleDownload} 

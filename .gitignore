@@ -81,4 +81,4 @@ playwright-report/
 *.sqlite
 *.pdf
 output*.json
-.env.local
+.env.local.env

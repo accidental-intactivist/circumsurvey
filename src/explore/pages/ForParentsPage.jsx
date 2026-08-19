@@ -9,6 +9,7 @@ import SankeyChart from "../components/SankeyChart";
 import { MessageSquareText, BarChart2, Activity, Scale } from "../components/Icons";
 import PleasureGapWidget from "../components/PleasureGapWidget";
 import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+import { ParentGroundTruth } from "../../components/GuidedTour/TourVisuals";
 
 const PARENT_SECTIONS = [
   { id: "section-testimonies", label: "Testimonies" },
@@ -224,6 +225,8 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
             <ExhibitDataLoader question={questionsMap["observe_healthcare_counseling_stance"]} />
           ) : null}
         </div>
+
+        <ParentGroundTruth seen={true} />
 
       </div>
 

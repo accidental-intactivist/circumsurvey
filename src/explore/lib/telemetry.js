@@ -17,6 +17,9 @@ export function initTelemetry() {
       person_profiles: 'always', // or 'identified_only'
       capture_pageview: false, // We'll handle this manually via React Router
       autocapture: false, // Opt-out of generic autocapture to respect privacy
+      session_recording: {
+        recordCanvas: false // Prevents rrweb willReadFrequently warnings
+      }
     });
   }
   isInitialized = true;

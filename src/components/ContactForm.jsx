@@ -291,6 +291,7 @@ export default function ContactForm() {
               <Label htmlFor="subject" text="INQUIRY TYPE" required />
               <select id="subject" name="subject" required className="tb-input" defaultValue="">
                 <option value="" disabled>Select Inquiry Type</option>
+                <option value="Feedback / Reactions">Feedback / Reactions</option>
                 <option value="General Inquiry / Comment">General Inquiry / Comment</option>
                 <option value="Media / Press Inquiry">Media / Press Inquiry</option>
                 <option value="Research / Academic Collaboration">Research / Academic Collaboration</option>

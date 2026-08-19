@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>CircumSurvey: Early Access to our Interactive Findings Report</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    supported-color-schemes: light dark;
+  }
+  
+  /* Reset and base */
+  body, table, td, p, a, div, span {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  /* Light mode default classes */
+  .bg-body { background-color: #efe8dc !important; }
+  .bg-card { background-color: #faf6f0 !important; }
+  .bg-card-inner { background-color: #fffdf9 !important; }
+  .bg-numbers { background-color: #f7efe0 !important; }
+  .bg-footer { background-color: #18181c !important; }
+  
+  .text-main { color: #2e2c27 !important; }
+  .text-heading { color: #1f1e1a !important; }
+  .text-muted { color: #6f6b62 !important; }
+  .text-gold { color: #8c6920 !important; }
+  
+  .border-gold { border-color: #c9a24a !important; }
+  .border-numbers { border-color: #e2d3ae !important; }
+  
+  /* Mobile responsive */
+  @media (max-width:620px){
+    .px { padding-left: 24px !important; padding-right: 24px !important; }
+    .stat { display: block !important; width: 100% !important; border-left: 0 !important; border-right: 0 !important; border-bottom: 1px solid #e2d3ae !important; padding: 16px 0 !important; }
+    .stat:last-child { border-bottom: 0 !important; }
+    .h1 { font-size: 22px !important; line-height: 28px !important; }
+  }
+
+  /* Dark mode overrides (Paper Theme) */
+  @media (prefers-color-scheme: dark){
+    body, .bg-body { background-color: #12110f !important; }
+    .bg-card { background-color: #1a1815 !important; }
+    .bg-card-inner { background-color: #22201c !important; }
+    .bg-numbers { background-color: #22201c !important; }
+    .bg-footer { background-color: #0d0c0a !important; }
+    
+    .text-main { color: #d4d3cf !important; }
+    .text-heading { color: #f5f0e6 !important; }
+    .text-muted { color: #9c9990 !important; }
+    .text-gold { color: #d4a030 !important; }
+    
+    .border-gold { border-color: #d4a030 !important; }
+    .border-numbers { border-color: #4a463e !important; }
+    
+    .stat { border-color: #4a463e !important; }
+    
+    /* Graphic elements tuning */
+    .btn-primary { background-color: #d4a030 !important; color: #12110f !important; }
+    .btn-secondary { color: #d4a030 !important; border-color: #d4a030 !important; }
+    
+    /* Image swapping */
+    .light-img { display: none !important; }
+    .dark-img { display: block !important; }
+  }
+</style>
+</head>
+<body class="bg-body" style="margin:0; padding:0; background-color:#efe8dc;" bgcolor="#efe8dc">
+  <!-- Preheader -->
+  <span style="display:none; font-size:1px; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden; color:#efe8dc;">We asked 500 men how they honestly felt about their circumcision status. The answers shatter the story we’ve been told.&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌</span>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="bg-body" bgcolor="#efe8dc" style="background-color:#efe8dc;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px; width:100%; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+
+          <!-- Masthead: Harmonic Loom -->
+          <tr>
+            <td bgcolor="#12110f" style="background-color:#12110f; padding:0; font-size:0; line-height:0;">
+              <!-- Light Mode Image -->
+              <img class="light-img" src="./header-graphic.png" width="600" alt="CircumSurvey.Online Harmonic Loom" style="display:block; width:100%; max-width:600px; height:auto;">
+              <!-- Dark Mode Image (swapped via CSS) -->
+              <!--[if !mso]><! -->
+              <img class="dark-img" src="./header-graphic-dark.png" width="600" alt="CircumSurvey.Online Harmonic Loom" style="display:none; width:100%; max-width:600px; height:auto;">
+              <!-- <![endif]-->
+            </td>
+          </tr>
+          <tr>
+            <td class="bg-card" align="center" bgcolor="#f4eddd" style="background-color:#f4eddd; padding:10px 40px 32px;">
+              <div class="text-gold" style="font-family:Arial, Helvetica, sans-serif; font-size:10px; line-height:14px; font-weight:bold; letter-spacing:3px; color:#8c6920; text-transform:uppercase; mso-line-height-rule:exactly;">★&nbsp; Special Report &nbsp;★</div>
+              <div class="h1 text-heading" style="font-family:Arial, Helvetica, sans-serif; font-size:28px; line-height:34px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; color:#1f1e1a; padding-top:12px; mso-line-height-rule:exactly;">The Accidental Intactivist's Inquiry</div>
+            </td>
+          </tr>
+
+          <!-- Rainbow rule -->
+          <tr>
+            <td style="padding:0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td width="20%" bgcolor="#d94f4f" style="height:3px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#e8a44a" style="height:3px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#e8c868" style="height:3px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#68b878" style="height:3px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#5b93c7" style="height:3px; font-size:0; line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Letter -->
+          <tr>
+            <td class="px bg-card" bgcolor="#faf6f0" style="background-color:#faf6f0; padding:44px 44px 0;">
+              <p class="text-main" style="margin:0 0 18px; font-size:16px; line-height:26px; color:#2e2c27;">Hi [First Name],</p>
+              <p class="text-main" style="margin:0 0 28px; font-size:16px; line-height:26px; color:#2e2c27;">A year ago, you saw an invitation with a question that is almost never asked in America:</p>
+
+              <!-- The Original Invite Graphic Representation -->
+              <div style="text-align: center; margin: 0 0 32px;">
+                <img src="./original-invite.jpg" width="400" alt="Anonymous Survey - All Perspectives Welcome" style="display:inline-block; width:100%; max-width:400px; height:auto; border-radius:8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+              </div>
+
+              <p class="text-main" style="margin:0 0 18px; font-size:16px; line-height:26px; color:#2e2c27;">We are raised with a very specific story about infant circumcision. We are told it is a minor, harmless hygiene upgrade. We are assured that it doesn't negatively impact sexual pleasure. Above all, we are told that because it happens to a baby, they won’t remember it—and therefore, they won’t care.</p>
+              <p class="text-main" style="margin:0 0 24px; font-size:16px; line-height:26px; color:#2e2c27;">Because that story is repeated so often, most people think the issue is settled.</p>
+              
+              <div class="border-gold" style="border-left: 3px solid #c9a24a; padding-left: 18px; margin: 0 0 24px;">
+                <p class="text-heading" style="margin:0; font-family:Georgia, 'Times New Roman', serif; font-size:19px; line-height:30px; font-style:italic; color:#1f1e1a;">But what happens when you bypass the medical establishment, bypass the cultural noise, and simply ask the adult men living in these bodies what actually goes on down there?</p>
+              </div>
+
+              <p class="text-main" style="margin:0 0 18px; font-size:16px; line-height:26px; color:#2e2c27;">We didn't have an advertising budget. We didn't have a clinical recruitment pipeline. But something incredible happened: <strong>500 of you showed up.</strong></p>
+              
+              <p class="text-main" style="margin:0 0 28px; font-size:16px; line-height:26px; color:#2e2c27;">Now, the data is finally compiled. And the answers you provided completely shatter the story we’ve been told.</p>
+              
+              <!-- Report Access Pass CTA (Graphic Element with Harmonic Watermark) -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="bg-card-inner border-gold" style="background-color:#fffdf9; background-image: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNjAwIDI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBzdHlsZT0iZGlzcGxheTpibG9jazsgd2lkdGg6MTAwJTsgbWF4LXdpZHRoOjYwMHB4OyBoZWlnaHQ6YXV0bzsgYmFja2dyb3VuZC1jb2xvcjp0cmFuc3BhcmVudDsiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkSW50YWN0IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyODYyOTkiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiMyYjZlM2YiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZDRhMDMwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkQ2lyYyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZDkyYjE4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZThhMTFjIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2Q0YTAzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHBhdGggZD0iTSAtNTAsMjAwIEMgMTUwLC0yMCA0NTAsMjYwIDY1MCw0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxODkuNzk1NDYwMTg3OTA5OSBDIDE1MCwtMTAuMzEyMDU0Mjc0NjE3MTE2IDQ1MCwyNTAuMzEyMDU0Mjc0NjE3MTQgNjUwLDUwLjIwNDUzOTgxMjA5MDEwNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxODAuMDY1OTg5MzAwMTA4OTUgQyAxNTAsLTEuMzAzMjg3NTQ0NjEyMTcxNCA0NTAsMjQxLjMwMzI4NzU0NDYxMjE3IDY1MCw1OS45MzQwMTA2OTk4OTEwNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxNzAuODM2MDI4NTYxOTQzIEMgMTUwLDcuMTMyODg0NjI1ODI1MjI3IDQ1MCwyMzIuODY3MTE1Mzc0MTc0NzcgNjUwLDY5LjE2Mzk3MTQzODA1Njk5IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDE2Mi4xMzQyMzU4MTMyNDc3NiBDIDE1MCwxNS4wOTAwNTAzMjQ2OTA0NDggNDUwLDIyNC45MDk5NDk2NzUzMDk1NSA2NTAsNzcuODY1NzY0MTg2NzUyMjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTUzLjk4ODA4MTY5OTk0MyBDIDE1MCwyMi42NTE3MTc4NzcyMjY0ODcgNDUwLDIxNy4zNDgyODIxMjI3NzM1IDY1MCw4Ni4wMTE5MTgzMDAwNTciIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTQ2LjQyNTEyMTQwNjU2MDQgQyAxNTAsMjkuODkxMzk4ODYzNjQwMjQzIDQ1MCwyMTAuMTA4NjAxMTM2MzU5NzYgNjUwLDkzLjU3NDg3ODU5MzQzOTU4IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDEzOS40NzM1NTAzMDIzODEgQyAxNTAsMzYuODczMjE1Mjg2NDE5NzMgNDUwLDIwMy4xMjY3ODQ3MTM1ODAyNyA2NTAsMTAwLjUyNjQ0OTY5NzYxOTAxIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDEzMy4xNjIwOTQyMDA0NDU2IEMgMTUwLDQzLjY1MjE3MTEyMDAxNTUyNSA0NTAsMTk2LjM0NzgyODg3OTk4NDQ4IDY1MCwxMDYuODM3OTA1Nzk5NTU0NDEiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTI3LjUyMDQ0ODEwNjE3MzAzIEMgMTUwLDUwLjI3NTE4NDcxMzYzNzggNDUwLDE4OS43MjQ4MTUyODYzNjIyIDY1MCwxMTIuNDc5NTUxODkzODI2OTciIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTIyLjU3ODY1MjA3NzUzMjMgQyAxNTAsNTYuNzgyMDUyNDQ1ODUxNDEgNDUwLDE4My4yMTc5NDc1NTQxNDg1NiA2NTAsMTE3LjQyMTM0NzkyMjQ2NzciIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTE4LjM2NzgwNzc1ODM2MjYyIEMgMTUwLDYzLjIwNjMwNzMwNzkyMzcgNDUwLDE3Ni43OTM2OTI2OTIwNzYzIDY1MCwxMjEuNjMyMTkyMjQxNjM3MzgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTIxLjYzMjE5MjI0MTYzNzM4IEMgMTUwLDE3Ni43OTM2OTI2OTIwNzYzIDQ1MCw2My4yMDYzMDczMDc5MjM3IDY1MCwxMTguMzY3ODA3NzU4MzYyNjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTE3LjQyMTM0NzkyMjQ2NzcgQyAxNTAsMTgzLjIxNzk0NzU1NDE0ODU2IDQ1MCw1Ni43ODIwNTI0NDU4NTE0MSA2NTAsMTIyLjU3ODY1MjA3NzUzMjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTEyLjQ3OTU1MTg5MzgyNjk3IEMgMTUwLDE4OS43MjQ4MTUyODYzNjIyIDQ1MCw1MC4yNzUxODQ3MTM2Mzc4IDY1MCwxMjcuNTIwNDQ4MTA2MTczMDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTA2LjgzNzkwNTc5OTU1NDQxIEMgMTUwLDE5Ni4zNDc4Mjg4Nzk5ODQ0OCA0NTAsNDMuNjUyMTcxMTIwMDE1NTI1IDY1MCwxMzMuMTYyMDk0MjAwNDQ1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxMDAuNTI2NDQ5Njk3NjE5MDEgQyAxNTAsMjAzLjEyNjc4NDcxMzU4MDI3IDQ1MCwzNi44NzMyMTUyODY0MTk3MyA2NTAsMTM5LjQ3MzU1MDMwMjM4MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCw5My41NzQ4Nzg1OTM0Mzk1OCBDIDE1MCwyMTAuMTA4NjAxMTM2MzU5NzYgNDUwLDI5Ljg5MTM5ODg2MzY0MDI0MyA2NTAsMTQ2LjQyNTEyMTQwNjU2MDQiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsODYuMDExOTE4MzAwMDU3IEMgMTUwLDIxNy4zNDgyODIxMjI3NzM1IDQ1MCwyMi42NTE3MTc4NzcyMjY0ODcgNjUwLDE1My45ODgwODE2OTk5NDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsNzcuODY1NzY0MTg2NzUyMjYgQyAxNTAsMjI0LjkwOTk0OTY3NTMwOTU1IDQ1MCwxNS4wOTAwNTAzMjQ2OTA0NDggNjUwLDE2Mi4xMzQyMzU4MTMyNDc3NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRJbnRhY3QpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCw2OS4xNjM5NzE0MzgwNTY5OSBDIDE1MCwyMzIuODY3MTE1Mzc0MTc0NzcgNDUwLDcuMTMyODg0NjI1ODI1MjI3IDY1MCwxNzAuODM2MDI4NTYxOTQzIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDU5LjkzNDAxMDY5OTg5MTA0IEMgMTUwLDI0MS4zMDMyODc1NDQ2MTIxNyA0NTAsLTEuMzAzMjg3NTQ0NjEyMTcxNCA2NTAsMTgwLjA2NTk4OTMwMDEwODk1IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDUwLjIwNDUzOTgxMjA5MDEwNCA/IDE1MCwyNTAuMzEyMDU0Mjc0NjE3MTQgNDUwLC0xMC4zMTIwNTQyNzQ2MTcxMTYgNjUwLDE4OS43OTU0NjAxODc5MDk5IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZEludGFjdCkiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDQwIEMgMTUwLDI2MCA0NTAsLTIwIDY1MCwyMDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkSW50YWN0KSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTgwIEMgMTUwLDEwIDQ1MCwyMzAgNjUwLDYwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxNjkuODE0ODY2NTk1MjMwMzQgQyAxNTAsMzYuMDY3NzM1NzgyNzQyNzQ0IDQ1MCwyMDMuOTMyMjY0MjE3MjU3MjYgNjUwLDcwLjE4NTEzMzQwNDc2OTY3IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxNjAuMDkwNjUwNjE2Nzc2NjMgQyAxNTAsNTguNzY4ODcxMjM3MzkyMzUgNDUwLDE4MS4yMzExMjg3NjI2MDc2NSA2NTAsNzkuOTA5MzQ5MzgzMjIzMzciIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDE1MC44ODUwMTkyMTU5ODc0MyBDIDE1MCw3OC4wOTA3OTg0NzYxMTQyNiA0NTAsMTYxLjkwOTIwMTUyMzg4NTc0IDY1MCw4OS4xMTQ5ODA3ODQwMTI1OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRDaXJjKSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTQyLjI3NzE3MjM5MDc1MDMgQyAxNTAsOTQuMDUwNzM3Mjc1OTQyMTQgNDUwLDE0NS45NDkyNjI3MjQwNTc4NiA2NTAsOTcuNzIyODI3NjA5MjQ5NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRDaXJjKSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTM0LjM4NDQ2MTg2NjQ5NzMgQyAxNTAsMTA2LjY0MTQzNTAyMjY3MzkgNDUwLDEzMy4zNTg1NjQ5NzczMjYxIDY1MCwxMDUuNjE1NTM4MTMzNTAyNzEiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDEyNy40MDQ0MDYzNTI2NDAxMSBDIDE1MCwxMTUuNzA1NzY2MTExNzA3MDggNDUwLDEyNC4yOTQyMzM4ODgyOTI5MiA2NTAsMTEyLjU5NTU5MzY0NzM1OTg5IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCwxMjEuNzc1MTQwMDEzNzI2NyBDIDE1MCwxMjAuNDkyNzE2NDYwMTExNDggNDUwLDExOS41MDcyODM1Mzk4ODg1MiA2NTAsMTE4LjIyNDg1OTk4NjI3MzMiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDExOC4yMjQ4NTk5ODYyNzMzIEMgMTUwLDExOS41MDcyODM1Mzk4ODg1MyA0NTAsMTIwLjQ5MjcxNjQ2MDExMTQ3IDY1MCwxMjEuNzc1MTQwMDEzNzI2NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRDaXJjKSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsMTEyLjU5NTU5MzY0NzM1OTg5IEMgMTUwLDEyNC4yOTQyMzM4ODgyOTI5NCA0NTAsMTE1LjcwNTc2NjExMTcwNzA2IDY1MCwxMjcuNDA0NDA2MzUyNjQwMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDEwNS42MTU1MzgxMzM1MDI3MiBDIDE1MCwxMzMuMzU4NTY0OTc3MzI2MDcgNDUwLDEwNi42NDE0MzUwMjI2NzM5IDY1MCwxMzQuMzg0NDYxODY2NDk3MjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgogIDxwYXRoIGQ9Ik0gLTUwLDk3LjcyMjgyNzYwOTI0OTcyIEMgMTUwLDE0NS45NDkyNjI3MjQwNTc4NiA0NTAsOTQuMDUwNzM3Mjc1OTQyMTMgNjUwLDE0Mi4yNzcxNzIzOTA3NTAyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRDaXJjKSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMDUiIC8+CiAgPHBhdGggZD0iTSAtNTAsODkuMTE0OTgwNzg0MDEyNTcgQyAxNTAsMTYxLjkwOTIwMTUyMzg4NTc3IDQ1MCw3OC4wOTA3OTg0NzYxMTQyMyA2NTAsMTUwLjg4NTAxOTIxNTk4NzQzIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCw3OS45MDkzNDkzODMyMjMzNyBDIDE1MCwxODEuMjMxMTI4NzYyNjA3NjUgNDUwLDU4Ljc2ODg3MTIzNzM5MjM1NCA2NTAsMTYwLjA5MDY1MDYxNjc3NjYzIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCw3MC4xODUxMzM0MDQ3Njk2NyBDIDE1MCwyMDMuOTMyMjY0MjE3MjU3MjYgNDUwLDM2LjA2NzczNTc4Mjc0Mjc0NCA2NTAsMTY5LjgxNDg2NjU5NTIzMDM0IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZENpcmMpIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4wNSIgLz4KICA8cGF0aCBkPSJNIC01MCw2MCBDIDE1MCwyMzAgNDUwLDEwIDY1MCwxODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNncmFkQ2lyYykiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjA1IiAvPgo8L3N2Zz4='); background-size: cover; background-position: center; border:2px dashed #c9a24a; border-radius: 12px; margin: 0 0 32px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <tr>
+                  <td align="center" style="padding: 34px 24px;">
+                    <div class="text-gold" style="font-family: 'Courier New', Courier, monospace; font-size: 13px; font-weight: bold; letter-spacing: 3px; color: #8c6920; text-transform: uppercase;">CONFIDENTIAL DATA UNLOCKED</div>
+                    <div class="text-heading" style="font-family: Arial, Helvetica, sans-serif; font-size: 26px; font-weight: bold; color: #1f1e1a; margin: 14px 0 24px; letter-spacing: 0.5px;">The Phase 1 Findings Hub</div>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="btn-primary" bgcolor="#d4a030" style="background-color:#d4a030; border-radius:999px; box-shadow: 0 4px 10px rgba(212, 160, 48, 0.3);">
+                          <a href="https://findings.circumsurvey.online" style="display:block; padding:16px 36px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:18px; font-weight:bold; letter-spacing:1px; color:#18181c; text-decoration:none; border-radius:999px;">ENTER THE REPORT &nbsp;&nbsp;→</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="text-main" style="margin:0 0 24px; font-size:16px; line-height:26px; color:#2e2c27;">When you enter the Special Report, you will see two very different realities unfold:</p>
+              
+              <div class="text-heading" style="font-family:Georgia, 'Times New Roman', serif; font-size:20px; line-height:28px; font-weight:bold; color:#1f1e1a; padding:0 0 10px; mso-line-height-rule:exactly;"><span class="text-gold" style="font-family:'Courier New', Courier, monospace; color:#8c6920;">1.</span>&nbsp; The Mechanical Reality</div>
+              <p class="text-main" style="margin:0 0 28px; font-size:15px; line-height:25px; color:#2e2c27;">We are told it's just "extra skin." But when we quantified the physical mechanics of sex, a massive "Pleasure Gap" emerged. The data reveals that altered men are 10-to-1 more likely to require artificial lubrication. It proves visually and mathematically that this procedure acts as a targeted sensory amputation, converting a self-lubricating sensory organ into a friction-based tool.</p>
+              
+              <div class="text-heading" style="font-family:Georgia, 'Times New Roman', serif; font-size:20px; line-height:28px; font-weight:bold; color:#1f1e1a; padding:0 0 10px; mso-line-height-rule:exactly;"><span class="text-gold" style="font-family:'Courier New', Courier, monospace; color:#8c6920;">2.</span>&nbsp; The Psychological Reality</div>
+              <p class="text-main" style="margin:0 0 28px; font-size:15px; line-height:25px; color:#2e2c27;">We are told they won't care. But when we asked men if they experienced resentment, loss, anger, or grief regarding their alteration, the silence broke. While intact men reported a 0% regret rate regarding their status, over 60% of circumcised respondents reported frequent negative feelings—standing in stark contrast to the near-unanimous gratitude of the intact cohort.</p>
+              
+              <div class="text-heading" style="font-family:Georgia, 'Times New Roman', serif; font-size:20px; line-height:28px; font-weight:bold; color:#1f1e1a; padding:0 0 10px; mso-line-height-rule:exactly;">The Final Question</div>
+              <p class="text-main" style="margin:0 0 18px; font-size:15px; line-height:25px; color:#2e2c27;">If the mechanics are compromised, and the resentment is this high, what happens when these men become parents themselves? Do they perpetuate the cycle?</p>
+              <p class="text-main" style="margin:0 0 26px; font-size:15px; line-height:25px; color:#2e2c27;">We asked all 500 respondents what they would do if they had a son today. 433 of them gave the exact same answer.</p>
+
+              <!-- Graph / Data Visualization -->
+              <div style="text-align: center; margin: 0 0 32px; background-color:#fffdf9; border-radius:12px; padding:2px; border:1px solid #e2d3ae; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);">
+                <img src="./chart.png" width="500" alt="Cohort Comparison: Resentment vs. Regret" style="display:inline-block; width:100%; max-width:500px; height:auto; border-radius:10px;">
+              </div>
+
+              <p class="text-heading" style="margin:0 0 16px; font-size:17px; line-height:26px; font-weight:bold; color:#1f1e1a;">I want you to see the data for yourself.</p>
+              <p class="text-main" style="margin:0 0 24px; font-size:16px; line-height:26px; color:#2e2c27;">Because you built this dataset with us, I invite you to be the first to explore the interactive hub. Read the guided report, and then jump into the <strong>Interactive Explorer</strong> where you can cross-tabulate the data and read the unvarnished stories in the respondents' own words.</p>
+              
+              <!-- Secondary CTA -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;">
+                <tr>
+                  <td class="border-gold" style="border:2px solid #d4a030; border-radius:999px;">
+                    <a class="text-gold btn-secondary" href="https://findings.circumsurvey.online/explore" style="display:block; padding:12px 30px; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:18px; font-weight:bold; letter-spacing:0.5px; color:#8c6920; text-decoration:none; border-radius:999px;">JUMP INTO THE EXPLORER&nbsp;&nbsp;→</a>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="text-main" style="margin:0 0 18px; font-size:16px; line-height:26px; color:#2e2c27;">My parents made an unusual choice in the 1970s, leaving me intact. It gave me a lens to look at a routine procedure and ask: <em class="text-heading" style="font-family:Georgia, 'Times New Roman', serif; color:#1f1e1a;">Why isn't this weird to more of us?</em></p>
+              <p class="text-main" style="margin:0 0 18px; font-size:16px; line-height:26px; color:#2e2c27;">Before you click the link, I invite you to borrow that lens. Do not look at this data to defend a past choice. Look at it with simple, radical curiosity.</p>
+              <p class="text-heading" style="margin:0 0 32px; font-size:17px; line-height:26px; font-weight:bold; color:#1f1e1a; font-style:italic;">Let the data show you what is actually happening.</p>
+            </td>
+          </tr>
+
+          <!-- Sign-off -->
+          <tr>
+            <td class="px bg-card" bgcolor="#faf6f0" style="background-color:#faf6f0; padding:0 44px 44px;">
+              <div class="text-gold" style="text-align:center; margin:0 0 24px; color:#c9a24a; font-size:10px; letter-spacing:10px;">
+                •&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•&nbsp;•
+              </div>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td width="72" valign="middle" style="padding-right:16px;">
+                    <img src="./logo.png" width="72" height="72" alt="CircumSurvey Logo" style="display:block; width:72px; height:72px; border-radius:50%;">
+                  </td>
+                  <td valign="middle">
+                    <p class="text-main" style="margin:0 0 6px; font-size:16px; line-height:24px; color:#2e2c27;">In solidarity,</p>
+                    <div class="text-heading" style="font-family:Georgia, 'Times New Roman', serif; font-size:22px; line-height:28px; font-weight:bold; font-style:italic; color:#1f1e1a;">Tone Pettit</div>
+                    <div class="text-muted" style="font-size:13px; line-height:19px; color:#6f6b62; padding-top:4px;">Lead Researcher, The Accidental Intactivist's Inquiry</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Rainbow rule -->
+          <tr>
+            <td style="padding:0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td width="20%" bgcolor="#d94f4f" style="height:4px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#e8a44a" style="height:4px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#e8c868" style="height:4px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#68b878" style="height:4px; font-size:0; line-height:0;">&nbsp;</td>
+                  <td width="20%" bgcolor="#5b93c7" style="height:4px; font-size:0; line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="bg-footer" align="center" bgcolor="#18181c" style="background-color:#18181c; padding:32px 40px 36px;">
+              <div style="font-family:'Courier New', Courier, monospace; font-size:11px; line-height:17px; letter-spacing:2px; color:#8f8c94; text-transform:uppercase;">INDEPENDENT RESEARCH • ANONYMOUS DATA • N=500</div>
+              <div style="font-size:11px; line-height:18px; color:#a5a1aa; padding-top:16px; max-width:400px; margin:0 auto;">
+                This early-access briefing is provided exclusively to participants of The Accidental Intactivist's Inquiry.
+              </div>
+              <!-- Replace unsubscribe URL with your ESP's merge tags before sending -->
+              <div style="font-size:11px; line-height:18px; color:#6f6b62; padding-top:4px;">
+                © CircumSurvey | Independent Data Initiative
+              </div>
+              <div style="font-size:11px; line-height:17px; padding-top:16px;">
+                <a href="https://circumsurvey.online/unsubscribe" style="color:#e8b840; text-decoration:underline;">Unsubscribe</a>
+                <span style="color:#55525c;">&nbsp;·&nbsp;</span>
+                <a href="https://findings.circumsurvey.online" style="color:#e8b840; text-decoration:underline;">View the findings</a>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -292,46 +292,35 @@ export function WordMirrors({ wordsCirc, wordsIntact }) {
   );
 }
 
-// ── Exhibit 02: resentment/regret mirror ───────────────────────────────────
 export function ResentmentMirror() {
   const [ref, seen] = useInView();
-  const Side = ({ data, pathway }) => (
-    <div style={{
-      flex: 1, minWidth: 250, padding: "1.4rem",
-      background: `color-mix(in srgb, ${PATHS[pathway].color} 4%, transparent)`,
-    }}>
-      <div style={{
-        fontFamily: FONT.display, fontWeight: 700, fontSize: "0.78rem", marginBottom: "0.15rem",
-        color: PATHS[pathway].color, display: "flex", alignItems: "center", gap: "0.4rem",
-      }}>
-        <i style={{ width: 9, height: 9, borderRadius: "50%", background: PATHS[pathway].color, display: "inline-block" }} />
-        The {PATHS[pathway].label} Pathway
-      </div>
-      <div style={{ fontFamily: FONT.body, fontWeight: 300, fontSize: "0.74rem", color: C.muted, fontStyle: "italic", margin: "0 0 0.7rem", lineHeight: 1.45 }}>
-        {data.question}
-      </div>
-      {data.rows.map((r) => (
-        <div key={r.label} style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.32rem" }}>
-          <div style={{ flex: 1, height: 14, background: "rgba(255,255,255,.06)", borderRadius: 3, overflow: "hidden" }}>
-            <div style={{
-              height: "100%", borderRadius: 3, background: r.colorVar,
-              width: seen ? `${r.pct}%` : 0, transition: "width .9s cubic-bezier(.25,.8,.3,1)",
-              display: "flex", alignItems: "center", paddingLeft: 4,
-              fontFamily: FONT.mono, fontSize: "0.48rem", fontWeight: 700, color: "rgba(0,0,0,.55)",
-            }}>
-              {r.pct > 40 ? `${Math.round(r.pct)}%` : ""}
-            </div>
-          </div>
-          <div style={{ fontFamily: FONT.body, fontSize: "0.62rem", color: C.muted, width: 92, flexShrink: 0 }}>{r.label}</div>
-          <div style={{ fontFamily: FONT.mono, fontSize: "0.62rem", fontWeight: 700, color: C.text, width: 40, textAlign: "right", flexShrink: 0 }}>{r.pct}%</div>
-        </div>
-      ))}
-    </div>
-  );
+  
+  // Combine data into rows for TourButterflyChart
+  const rows = RESENTMENT_MIRROR.circumcised.rows.map((cRow, i) => {
+    const iRow = RESENTMENT_MIRROR.intact.rows[i];
+    return {
+      label: cRow.label,
+      circPct: cRow.pct,
+      intactPct: iRow.pct,
+      circColorVar: cRow.colorVar,
+      intactColorVar: iRow.colorVar
+    };
+  });
+
   return (
-    <div ref={ref} style={{ display: "flex", flexWrap: "wrap" }}>
-      <Side data={RESENTMENT_MIRROR.circumcised} pathway="circumcised" />
-      <Side data={RESENTMENT_MIRROR.intact} pathway="intact" />
+    <div ref={ref}>
+      <TourButterflyChart 
+        rows={rows}
+        circN={501} 
+        intactN={501}
+        circLabel="The Circumcised Pathway"
+        intactLabel="The Intact Pathway"
+        splitBackground={true}
+        subtitles={{
+          circumcised: RESENTMENT_MIRROR.circumcised.question,
+          intact: RESENTMENT_MIRROR.intact.question
+        }}
+      />
     </div>
   );
 }
@@ -581,14 +570,16 @@ export function CuratedInsightsToggle() {
 }
 
 // ── Compact butterfly chart for the tour ──────────────────────────────────
-export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLabel = "Circumcised", intactN, circN, subtitles }) {
+export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLabel = "Circumcised", intactN, circN, subtitles, splitBackground = false }) {
   const maxPct = Math.max(...rows.flatMap(r => [r.intactPct, r.circPct]), 1);
   return (
     <div style={{
-      background: `linear-gradient(135deg, ${C.bgCard} 0%, color-mix(in srgb, ${C.bgCard} 85%, ${PATHS.intact.color}) 100%)`,
-      border: `2px solid ${C.ghost}`,
+      background: splitBackground 
+        ? `linear-gradient(to right, color-mix(in srgb, ${PATHS.circumcised.color} 4%, transparent) 50%, color-mix(in srgb, ${PATHS.intact.color} 4%, transparent) 50%)`
+        : `linear-gradient(135deg, ${C.bgCard} 0%, color-mix(in srgb, ${C.bgCard} 85%, ${PATHS.intact.color}) 100%)`,
+      border: splitBackground ? 'none' : `2px solid ${C.ghost}`,
       borderRadius: 12, padding: "1.4rem 1.8rem", marginTop: "1.1rem",
-      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.15)`,
+      boxShadow: splitBackground ? 'none' : `inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.15)`,
     }}>
       {title && (
         <div style={{ fontFamily: FONT.condensed, fontWeight: 800, fontSize: "1rem", color: C.textBright,
@@ -598,23 +589,23 @@ export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLa
       )}
       {subtitles && (
         <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1.2rem", flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 180, textAlign: "right" }}>
-            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.intact.color, display: "flex", alignItems: "center", gap: "0.35rem", justifyContent: "flex-end", marginBottom: "0.15rem" }}>
-              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.intact.color, display: "inline-block" }} />
-              Intact
+          <div style={{ flex: 1, minWidth: 180, textAlign: "left" }}>
+            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.circumcised.color, display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.15rem" }}>
+              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.circumcised.color, display: "inline-block" }} />
+              {circLabel}
             </div>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, fontStyle: "italic", lineHeight: 1.4 }}>
-              "{subtitles.intact}"
+            <div style={{ fontFamily: FONT.body, fontSize: "0.74rem", color: C.muted, fontStyle: "italic", lineHeight: 1.45 }}>
+              {splitBackground ? subtitles.circumcised : `"${subtitles.circumcised}"`}
             </div>
           </div>
           <div style={{ width: 150, flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 180, textAlign: "left" }}>
-            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.circumcised.color, display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.15rem" }}>
-              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.circumcised.color, display: "inline-block" }} />
-              Circumcised
+            <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.72rem", color: PATHS.intact.color, display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.15rem" }}>
+              <i style={{ width: 8, height: 8, borderRadius: "50%", background: PATHS.intact.color, display: "inline-block" }} />
+              {intactLabel}
             </div>
-            <div style={{ fontFamily: FONT.body, fontSize: "0.7rem", color: C.muted, fontStyle: "italic", lineHeight: 1.4 }}>
-              "{subtitles.circumcised}"
+            <div style={{ fontFamily: FONT.body, fontSize: "0.74rem", color: C.muted, fontStyle: "italic", lineHeight: 1.45 }}>
+              {splitBackground ? subtitles.intact : `"${subtitles.intact}"`}
             </div>
           </div>
         </div>
@@ -622,47 +613,51 @@ export function TourButterflyChart({ rows, title, intactLabel = "Intact", circLa
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
         <div style={{ flex: 1, textAlign: "right", fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.8rem",
-          color: PATHS.intact.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-          {intactLabel}{intactN ? ` (N=${intactN})` : ""}
+          color: PATHS.circumcised.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          {circLabel}{circN ? ` (N=${circN})` : ""}
         </div>
         <div style={{ width: 150, textAlign: "center", fontFamily: FONT.mono, fontSize: "0.65rem", color: C.muted, fontWeight: 700 }}>
           ← vs →
         </div>
         <div style={{ flex: 1, textAlign: "left", fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.8rem",
-          color: PATHS.circumcised.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-          {circLabel}{circN ? ` (N=${circN})` : ""}
+          color: PATHS.intact.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          {intactLabel}{intactN ? ` (N=${intactN})` : ""}
         </div>
       </div>
       {/* Data rows */}
       {rows.map((row) => (
         <div key={row.label} style={{ display: "flex", alignItems: "center", marginBottom: "0.45rem", minHeight: 30 }}>
-          {/* Intact bar (grows right-to-left) */}
-          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.5rem" }}>
-            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: PATHS.intact.color, flexShrink: 0 }}>
-              {row.intactPct.toFixed(1)}%
+          {/* Circumcised bar (grows right-to-left) */}
+          <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: C.text, flexShrink: 0 }}>
+              {row.circPct.toFixed(1)}%
             </span>
-            <div style={{ width: `${(row.intactPct / maxPct) * 100}%`, height: 22, borderRadius: "4px 0 0 4px",
-              background: PATHS.intact.color,
-              boxShadow: `0 2px 6px color-mix(in srgb, ${PATHS.intact.color} 40%, transparent)`,
-              transition: "width 0.6s ease", minWidth: row.intactPct > 0 ? 4 : 0,
-            }} />
+            <div style={{ width: "80%", height: 18, background: "rgba(255,255,255,0.03)", borderRadius: "4px 0 0 4px", display: "flex", justifyContent: "flex-end" }}>
+              <div style={{ width: `${(row.circPct / maxPct) * 100}%`, height: "100%", borderRadius: "4px 0 0 4px",
+                background: row.circColorVar || PATHS.circumcised.color,
+                boxShadow: `0 2px 6px color-mix(in srgb, ${row.circColorVar || PATHS.circumcised.color} 40%, transparent)`,
+                transition: "width 0.6s ease", minWidth: row.circPct > 0 ? 4 : 0,
+              }} />
+            </div>
           </div>
           {/* Center label */}
           <div style={{ width: 150, textAlign: "center", fontFamily: FONT.condensed, fontWeight: 700,
-            fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.04em",
+            fontSize: "0.75rem", color: C.muted, letterSpacing: "0.02em",
             lineHeight: 1.2, flexShrink: 0, padding: "0 0.2rem",
           }}>
             {row.label}
           </div>
-          {/* Circumcised bar (grows left-to-right) */}
-          <div style={{ flex: 1, display: "flex", justifyContent: "flex-start", alignItems: "center", gap: "0.5rem" }}>
-            <div style={{ width: `${(row.circPct / maxPct) * 100}%`, height: 22, borderRadius: "0 4px 4px 0",
-              background: PATHS.circumcised.color,
-              boxShadow: `0 2px 6px color-mix(in srgb, ${PATHS.circumcised.color} 40%, transparent)`,
-              transition: "width 0.6s ease", minWidth: row.circPct > 0 ? 4 : 0,
-            }} />
-            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: PATHS.circumcised.color, flexShrink: 0 }}>
-              {row.circPct.toFixed(1)}%
+          {/* Intact bar (grows left-to-right) */}
+          <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+            <div style={{ width: "80%", height: 18, background: "rgba(255,255,255,0.03)", borderRadius: "0 4px 4px 0", display: "flex", justifyContent: "flex-start" }}>
+              <div style={{ width: `${(row.intactPct / maxPct) * 100}%`, height: "100%", borderRadius: "0 4px 4px 0",
+                background: row.intactColorVar || PATHS.intact.color,
+                boxShadow: `0 2px 6px color-mix(in srgb, ${row.intactColorVar || PATHS.intact.color} 40%, transparent)`,
+                transition: "width 0.6s ease", minWidth: row.intactPct > 0 ? 4 : 0,
+              }} />
+            </div>
+            <span style={{ fontFamily: FONT.mono, fontSize: "0.8rem", fontWeight: 700, color: C.text, flexShrink: 0 }}>
+              {row.intactPct.toFixed(1)}%
             </span>
           </div>
         </div>

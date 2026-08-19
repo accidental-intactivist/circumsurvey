@@ -603,31 +603,31 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1.5rem", minWidth: "600px" }}>
       {/* Pathway Headers */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
-        {/* Intact Header */}
-        <div style={{ flex: 1, minWidth: 200 }}>
-          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
-            <IconifyEmoji emoji="🟢" style={{ color: PATH_COLORS.intact }} />
-            <span>Intact Pathway</span>
-          </h3>
-          <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
-            {intactQ ? intactQ.prompt : "No matching question."}
-          </p>
-          <div style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginTop: "0.3rem" }}>
-            {hasCohort && aligned.intactCohortTotal > 0 ? `n = ${aligned.intactCohortTotal} / ${aligned.intactTotal}` : `n = ${aligned.intactTotal}`}
-          </div>
-        </div>
-
         {/* Circ Header */}
-        <div style={{ flex: 1, minWidth: 200, textAlign: "right" }}>
-          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", justifyContent: "flex-end" }}>
-            <span>Circumcised Pathway</span>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.circumcised, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
             <IconifyEmoji emoji="🔵" style={{ color: PATH_COLORS.circumcised }} />
+            <span>Circumcised Pathway</span>
           </h3>
           <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
             {circQ ? circQ.prompt : "No matching question."}
           </p>
           <div style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginTop: "0.3rem" }}>
             {hasCohort && aligned.circCohortTotal > 0 ? `n = ${aligned.circCohortTotal} / ${aligned.circTotal}` : `n = ${aligned.circTotal}`}
+          </div>
+        </div>
+
+        {/* Intact Header */}
+        <div style={{ flex: 1, minWidth: 200, textAlign: "right" }}>
+          <h3 style={{ fontFamily: FONT.condensed, color: PATH_COLORS.intact, fontSize: "0.95rem", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.5rem", display: "inline-flex", alignItems: "center", gap: "0.4rem", justifyContent: "flex-end" }}>
+            <span>Intact Pathway</span>
+            <IconifyEmoji emoji="🟢" style={{ color: PATH_COLORS.intact }} />
+          </h3>
+          <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", lineHeight: 1.4, color: C.textBright, margin: 0 }}>
+            {intactQ ? intactQ.prompt : "No matching question."}
+          </p>
+          <div style={{ fontFamily: FONT.mono, fontSize: "0.72rem", color: C.muted, marginTop: "0.3rem" }}>
+            {hasCohort && aligned.intactCohortTotal > 0 ? `n = ${aligned.intactCohortTotal} / ${aligned.intactTotal}` : `n = ${aligned.intactTotal}`}
           </div>
         </div>
       </div>
@@ -681,21 +681,21 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
           
           return (
              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                {/* Intact Left Side */}
-                <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.6rem" }}>
-                   <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.intactPct.toFixed(1)}%</span>
+                {/* Circ Left Side */}
+                <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.6rem" }}>
+                   <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.circPct.toFixed(1)}%</span>
                    <div 
-                      style={{ width: "70%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", justifyContent: "flex-end", overflow: "hidden", cursor: "pointer" }}
+                      style={{ width: "80%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", justifyContent: "flex-end", overflow: "hidden", cursor: "pointer" }}
                       onMouseEnter={(e) => {
                         const tooltipText = hasCohort
-                          ? `${item.intactRawLabel}: ${item.intactPct.toFixed(1)}% (n=${item.intactN}) vs overall ${item.intactOverallPct.toFixed(1)}% (n=${item.intactOverallN})`
-                          : `${item.intactRawLabel}: ${item.intactPct.toFixed(1)}% (n=${item.intactN})`;
+                          ? `${item.circRawLabel}: ${item.circPct.toFixed(1)}% (n=${item.circN}) vs overall ${item.circOverallPct.toFixed(1)}% (n=${item.circOverallN})`
+                          : `${item.circRawLabel}: ${item.circPct.toFixed(1)}% (n=${item.circN})`;
                         showTooltip(e, tooltipText);
                       }}
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}
                    >
-                     <div style={{ width: `${item.intactPct}%`, height: "100%", background: PATH_COLORS.intact, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
+                     <div style={{ width: `${item.circPct}%`, height: "100%", background: PATH_COLORS.circumcised, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
                    </div>
                 </div>
 
@@ -711,22 +711,22 @@ function ButterflyChart({ aligned, intactQ, circQ, hasCohort }) {
                   </span>
                 </div>
 
-                {/* Circ Right Side */}
-                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                {/* Intact Right Side */}
+                <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.6rem" }}>
                    <div 
-                      style={{ width: "70%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", overflow: "hidden", cursor: "pointer" }}
+                      style={{ width: "80%", height: 16, background: C.ghost, borderRadius: 4, display: "flex", overflow: "hidden", cursor: "pointer" }}
                       onMouseEnter={(e) => {
                         const tooltipText = hasCohort
-                          ? `${item.circRawLabel}: ${item.circPct.toFixed(1)}% (n=${item.circN}) vs overall ${item.circOverallPct.toFixed(1)}% (n=${item.circOverallN})`
-                          : `${item.circRawLabel}: ${item.circPct.toFixed(1)}% (n=${item.circN})`;
+                          ? `${item.intactRawLabel}: ${item.intactPct.toFixed(1)}% (n=${item.intactN}) vs overall ${item.intactOverallPct.toFixed(1)}% (n=${item.intactOverallN})`
+                          : `${item.intactRawLabel}: ${item.intactPct.toFixed(1)}% (n=${item.intactN})`;
                         showTooltip(e, tooltipText);
                       }}
                       onMouseMove={moveTooltip}
                       onMouseLeave={hideTooltip}
                    >
-                     <div style={{ width: `${item.circPct}%`, height: "100%", background: PATH_COLORS.circumcised, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
+                     <div style={{ width: `${item.intactPct}%`, height: "100%", background: PATH_COLORS.intact, borderRadius: 4, transition: "width 0.6s ease-in-out" }} />
                    </div>
-                   <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.circPct.toFixed(1)}%</span>
+                   <span style={{ fontFamily: FONT.mono, fontSize: "0.76rem", color: C.textBright }}>{item.intactPct.toFixed(1)}%</span>
                 </div>
              </div>
           );

@@ -464,7 +464,6 @@ export default function GuidedTour() {
             <TourCard 
               id="sexual-experience-the-pleasure-gap" 
               title="Cohort Comparison: Sensation Metrics" 
-              plateNum="PLATE 03-A"
               refText="EXHIBIT 03"
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'RATE YOUR PLEASURE FROM MOBILE SKIN, 1-5' · EXHIBIT 03"
             >
@@ -484,7 +483,6 @@ export default function GuidedTour() {
               <TourCard 
                 id="lubrication-dependency" 
                 title="Intact vs. Circumcised: Mechanical Friction" 
-                plateNum="PLATE 03-B"
                 refText="FORM CS-058"
                 sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 349 (INTACT+CIRC) · ASKED: 'HOW OFTEN DO YOU REQUIRE ARTIFICIAL LUBRICATION?' · FORM CS-058"
               >
@@ -534,7 +532,6 @@ export default function GuidedTour() {
             <TourCard 
               id="gratitude-vs-regret" 
               title="Cohort Comparison: Resentment vs. Regret" 
-              plateNum="PLATE 02-A"
               refText="EXHIBIT 02" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'HOW DO YOU FEEL ABOUT YOUR STATUS?' · EXHIBIT 02"
             >
@@ -558,7 +555,6 @@ export default function GuidedTour() {
               <TourCard 
                 id="the-raw-words" 
                 title="Intact vs. Circumcised: Narrative Testimonies" 
-                plateNum="PLATE 06-A"
                 refText="EXHIBIT 06" 
                 sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · QUALITATIVE · EXHIBIT 06"
                 exhibitStation={st("06")}
@@ -587,7 +583,6 @@ export default function GuidedTour() {
             <TourCard 
               id="the-restoring-cohort-in-numbers" 
               title="The Restoring Cohort Data" 
-              plateNum="PLATE 10-A"
               refText="EXHIBIT 10" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 71 (RESTORING) · SELF-SELECTED SAMPLE · EXHIBIT 10"
             >
@@ -624,7 +619,6 @@ export default function GuidedTour() {
             <TourCard 
               id="the-convergence" 
               title="Future Son Intentions & Convergence" 
-              plateNum="PLATE 14-A"
               refText="EXHIBIT 14" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 500 · ASKED: 'IF YOU HAD A SON TODAY, WOULD YOU CIRCUMCISE HIM?' · EXHIBIT 14"
             >

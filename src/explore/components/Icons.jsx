@@ -278,3 +278,13 @@ export const Mail = createThemedIcon(
   Lucide.Mail,
   () => <path d="M 2,4 H 14 V 12 H 2 Z M 2,4 L 8,9 L 14,4" />
 );
+
+export const Download = createThemedIcon(
+  Lucide.Download,
+  () => <path d="M 8,2 V 10 M 5,7 L 8,10 L 11,7 M 3,13 H 13" />
+);
+
+export const Bot = createThemedIcon(
+  Lucide.Bot,
+  () => <path d="M 4,4 H 12 M 2,6 H 14 V 14 H 2 Z M 6,9 H 6.01 M 10,9 H 10.01 M 5,12 H 11 M 8,2 V 4" />
+);

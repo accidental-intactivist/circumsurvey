@@ -10,6 +10,7 @@ import * as Icons from "../../explore/components/Icons";
 import { ChevronDown, Layout } from "lucide-react";
 import { useLegibleColor } from "../../explore/lib/colorUtils";
 import { Tooltip, useTooltip } from "../../explore/components/Tooltip";
+import { toPng } from "html-to-image";
 
 export const EXPLORE_BASE = "/";
 
@@ -114,12 +115,13 @@ export function ExhibitBadge({ station, size = "md", showLabel = false }) {
 }
 
 // ── ShareTools: subtle share icons for deep-linking ────────────────────────
-export function ShareTools({ title }) {
+export function ShareTools({ title, targetId, exhibitStation }) {
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const handleCopy = (e) => {
     e.preventDefault();
-    const anchorId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const anchorId = targetId || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${anchorId}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
@@ -127,28 +129,89 @@ export function ShareTools({ title }) {
     });
   };
 
+  const handleDownload = (e) => {
+    e.preventDefault();
+    if (!targetId || downloading) return;
+    setDownloading(true);
+    const el = document.getElementById(targetId);
+    if (!el) { setDownloading(false); return; }
+    
+    // Hide the ShareTools momentarily so they aren't in the screenshot
+    const toolsEl = el.querySelector('[data-share-tools]');
+    if (toolsEl) toolsEl.style.opacity = '0';
+    
+    toPng(el, { cacheBust: true, backgroundColor: 'var(--c-bgDeep)' })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = `${targetId}.png`;
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.error('Failed to download image', err);
+      })
+      .finally(() => {
+        if (toolsEl) toolsEl.style.opacity = '1';
+        setDownloading(false);
+      });
+  };
+
+  const handleDocent = (e) => {
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent('open-docent', { 
+      detail: { 
+        context: exhibitStation ? exhibitStation.docentContext : `The user is looking at the ${title} exhibit.`, 
+        tourSuas: exhibitStation ? exhibitStation.tourSuas : [`Tell me more about ${title}`] 
+      } 
+    }));
+  };
+
+  const btnStyle = {
+    background: "transparent",
+    border: "none",
+    color: C.dim,
+    cursor: "pointer",
+    padding: "4px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.3rem",
+    transition: "color 0.2s",
+    fontFamily: FONT.condensed,
+    fontSize: "0.6rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    fontWeight: 600
+  };
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+    <div data-share-tools style={{ display: "flex", alignItems: "center", gap: "1rem", transition: 'opacity 0.2s' }}>
       <button 
-        onClick={handleCopy}
-        title="Copy link to this finding"
-        style={{
-          background: "transparent",
-          border: "none",
-          color: copied ? C.green : C.dim,
-          cursor: "pointer",
-          padding: "4px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "color 0.2s",
-          fontFamily: FONT.mono,
-          fontSize: "0.6rem",
-          textTransform: "uppercase",
-          letterSpacing: "0.05em",
-        }}
+        onClick={handleDocent} 
+        title="Ask Research Assistant" 
+        style={btnStyle} 
+        onMouseEnter={e => e.currentTarget.style.color = C.blue} 
+        onMouseLeave={e => e.currentTarget.style.color = C.dim}
       >
-        {copied ? "Copied!" : <Icons.Share2 size={14} />}
+        <Icons.Bot size={14} /> AI Context
+      </button>
+      <button 
+        onClick={handleDownload} 
+        title="Download as PNG" 
+        style={btnStyle} 
+        onMouseEnter={e => e.currentTarget.style.color = C.green} 
+        onMouseLeave={e => e.currentTarget.style.color = C.dim}
+      >
+        <Icons.Download size={14} /> {downloading ? "..." : "Save"}
+      </button>
+      <button 
+        onClick={handleCopy} 
+        title="Copy link to this finding" 
+        style={{...btnStyle, color: copied ? C.green : C.dim}} 
+        onMouseEnter={e => e.currentTarget.style.color = copied ? C.green : C.textBright} 
+        onMouseLeave={e => e.currentTarget.style.color = copied ? C.green : C.dim}
+      >
+        <Icons.Share2 size={14} /> {copied ? "Copied" : "Link"}
       </button>
     </div>
   );
@@ -360,12 +423,12 @@ export function TourCard({ id, title, refText, plateNum, children, style, exhibi
             <span style={{ color: C.red }}>★</span> {title}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            {plateNum && (
+            {(plateNum || refText) && (
               <div style={{ fontFamily: FONT.condensed, fontWeight: 600, fontSize: "10px", color: C.dim, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                {plateNum} {refText ? `· ${refText}` : ''}
+                {plateNum && refText ? `${plateNum} · ${refText}` : plateNum || refText}
               </div>
             )}
-            <ShareTools title={title} />
+            <ShareTools title={title} targetId={id || title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} exhibitStation={exhibitStation} />
           </div>
         </div>
         

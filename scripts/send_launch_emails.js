@@ -71,9 +71,9 @@ async function run() {
     const email = contacts[i];
 
     const mailOptions = {
-      from: '"Tone (The Accidental Intactivist)" <tone@circumsurvey.online>',
+      from: '"The Accidental Intactivist" <tone@circumsurvey.online>',
       to: email,
-      subject: 'The Phase 1 Data is Ready.',
+      subject: 'Circumsurvey: Phase 1 Survey Results are Now Live!',
       html: htmlTemplate
     };
 

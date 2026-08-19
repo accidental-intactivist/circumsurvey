@@ -1,9 +1,17 @@
 import React from "react";
 import { FONT, C } from "../styles/tokens";
 import { useLegibleColor } from "../lib/colorUtils";
+import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
 
-const SectionBlock = ({ title, children, accentColor = "var(--c-ghost)" }) => (
-  <section style={{
+const SECTIONS = [
+  { id: "advocacy", label: "Advocacy & Education" },
+  { id: "legal", label: "Legal & Direct Action" },
+  { id: "faith", label: "Community & Faith" },
+  { id: "manifesto", label: "The Manifesto" }
+];
+
+const SectionBlock = ({ id, title, children, accentColor = "var(--c-ghost)" }) => (
+  <section id={id} style={{
     background: "var(--c-bgCard)",
     color: "var(--c-text)",
     borderRadius: 8,
@@ -83,9 +91,15 @@ export default function ResourcesPage() {
       minHeight: "100vh", 
       padding: "2rem 1.5rem 6rem",
     }}>
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", maxWidth: 1200, margin: "0 auto" }}>
         
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        {/* LEFT: Nav sidebar */}
+        <ExhibitSidebarNav sections={SECTIONS} />
+
+        {/* RIGHT: Content */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0rem", maxWidth: 900 }}>
+          
+          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
           <p style={{
             fontSize: "1.1rem",
             lineHeight: 1.6,
@@ -98,7 +112,7 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        <SectionBlock title="Core Advocacy & Education" accentColor="var(--path-intact)">
+        <SectionBlock id="advocacy" title="Core Advocacy & Education" accentColor="var(--path-intact)">
           <p>These organizations are central hubs for information, advocacy, parental support, and community.</p>
           <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
             <li style={{ marginBottom: "1rem" }}>
@@ -128,7 +142,7 @@ export default function ResourcesPage() {
           </ul>
         </SectionBlock>
 
-        <SectionBlock title="Direct Action & Legal Defense" accentColor="var(--c-red)">
+        <SectionBlock id="legal" title="Direct Action & Legal Defense" accentColor="var(--c-red)">
           <p>Organizations focusing on legal challenges, human rights perspectives, and direct public action.</p>
           <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
             <li style={{ marginBottom: "1rem" }}>
@@ -150,7 +164,7 @@ export default function ResourcesPage() {
           </ul>
         </SectionBlock>
 
-        <SectionBlock title="Community & Faith-Based" accentColor="var(--c-purple)">
+        <SectionBlock id="faith" title="Community & Faith-Based" accentColor="var(--c-purple)">
           <p>Resources addressing religious dimensions of genital cutting and promoting alternative, non-cutting practices consistent with bodily integrity and faith traditions.</p>
           <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
             <li style={{ marginBottom: "1rem" }}>
@@ -164,7 +178,7 @@ export default function ResourcesPage() {
           </ul>
         </SectionBlock>
 
-        <SectionBlock title="The Accidental Intactivist Manifesto" accentColor="var(--c-gold)">
+        <SectionBlock id="manifesto" title="The Accidental Intactivist Manifesto" accentColor="var(--c-gold)">
           <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
             <div style={{ flex: "0 0 auto", width: "100%", maxWidth: "220px", alignSelf: "flex-start", margin: "0 auto" }}>
               <img src="/manifesto-cover.jpg" alt="The Accidental Intactivist Manifesto Cover" style={{ width: "100%", height: "auto", borderRadius: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }} />

@@ -9,7 +9,14 @@ export function ThemeProvider({ children }) {
 
   const [theme, setTheme] = useState(() => {
     try {
-      return localStorage.getItem('cs_theme_name') || 'standard';
+      let saved = localStorage.getItem('cs_theme_name');
+      if (!saved) {
+        const themes = ['standard', 'ocean', 'paper', 'evergreen'];
+        saved = themes[Math.floor(Math.random() * themes.length)];
+        localStorage.setItem('cs_theme_name', saved);
+        window.__cs_ab_test_theme = saved;
+      }
+      return saved;
     } catch {
       return 'standard';
     }
@@ -61,6 +68,10 @@ export function ThemeProvider({ children }) {
     if (window.__cs_ab_test_assignment) {
       trackEvent('ab_test_assigned', { test_name: 'font_choice', variant: window.__cs_ab_test_assignment });
       delete window.__cs_ab_test_assignment;
+    }
+    if (window.__cs_ab_test_theme) {
+      trackEvent('ab_test_assigned', { test_name: 'theme_choice', variant: window.__cs_ab_test_theme });
+      delete window.__cs_ab_test_theme;
     }
   }, [trackEvent]);
 

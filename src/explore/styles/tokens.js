@@ -69,15 +69,15 @@ export const GLOBAL_CSS = `
   
   :root {
     /* BASE FALLBACK: Standard Deep Space (Dark Theme) */
-    --c-bg: #0a0a0c;
+    --c-bg: #09090b;
     --c-bgSoft: #131316;
     --c-bgCard: #18181c;
     --c-bgDeep: #050506;
-    --c-text: #eee;
-    --c-textBright: #fff;
-    --c-muted: #999;
-    --c-dim: #555;
-    --c-ghost: #2a2a30;
+    --c-text: #f1f1f1;
+    --c-textBright: #ffffff;
+    --c-muted: #a1a1aa;
+    --c-dim: #71717a;
+    --c-ghost: #3f3f46;
     --c-gold: #d4a030;
     --c-goldBright: #e8b840;
     --c-red: #dd6161;

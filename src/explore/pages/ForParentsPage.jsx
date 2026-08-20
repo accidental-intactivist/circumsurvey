@@ -6,15 +6,18 @@ import ExhibitSectionHeading from "../components/ExhibitSectionHeading";
 import ExhibitDataLoader from "../components/ExhibitDataLoader";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import SankeyChart from "../components/SankeyChart";
-import { MessageSquareText, BarChart2, Activity, Scale } from "../components/Icons";
+import { MessageSquareText, BarChart2, Activity, Scale, Users } from "../components/Icons";
 import PleasureGapWidget from "../components/PleasureGapWidget";
 import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
-import { ParentGroundTruth } from "../../components/GuidedTour/TourVisuals";
+import DemographicsExplorer from "../components/DemographicsExplorer";
+import { ParentGroundTruth, TestimonyRotator, ParentInsightCharts, AsymmetryOfChoice, ResentmentMirror } from "../../components/GuidedTour/TourVisuals";
 
 const PARENT_SECTIONS = [
   { id: "section-testimonies", label: "Testimonies" },
+  { id: "section-demographics", label: "Outlier Demographics" },
   { id: "section-reality", label: "Reality of the Procedure" },
   { id: "section-hindsight", label: "Hindsight & Professionals" },
+  { id: "section-asymmetry", label: "The Asymmetry of Regret" },
   { id: "section-regret", label: "Regret & Resentment" },
 ];
 
@@ -33,7 +36,7 @@ const QUESTIONS = [
   "observe_parent_intact_regret_reconsider",
   "observe_healthcare_counseling_stance",
   "final_child_decision_reason",
-  "aggregate_regret"
+  "circ_regret_feeling"
 ];
 
 // Color mapping for consistent pathways
@@ -115,6 +118,10 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         hideDivider={true}
       />
 
+      <div style={{ marginBottom: "2.5rem" }}>
+        <TestimonyRotator />
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", marginBottom: "4rem" }}>
         {/* Circumcised Men's Message */}
         <div style={{ background: C.bgCard, borderRadius: 8, padding: "1.5rem", border: `1px solid ${C.ghost}`, borderTop: `4px solid ${COLOR_MAP.circumcised}` }}>
@@ -147,6 +154,19 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
         </div>
       </div>
 
+      {/* ── SECTION 1B: Demographics ────────────────────────────── */}
+      <ExhibitSectionHeading
+        id="section-demographics"
+        Icon={Users}
+        title="Demographics: The Outlier Parent"
+        description="Who are the parents that choose to leave their sons intact? Explore the demographic dimensions that most distinguish households that kept their boys intact."
+        color="var(--c-orange)"
+      />
+
+      <div style={{ background: C.bgCard, borderRadius: 8, border: `1px solid ${C.ghost}`, marginBottom: "4rem", overflow: "hidden" }}>
+        <DemographicsExplorer isBureauCard={false} />
+      </div>
+
       {/* ── SECTION 2: The Data Behind The Choice ────────────────────────────── */}
       <ExhibitSectionHeading
         id="section-reality"
@@ -158,6 +178,10 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       <div style={{ marginBottom: "2rem" }}>
         <PleasureGapWidget />
+      </div>
+
+      <div style={{ marginBottom: "2rem" }}>
+        <ParentInsightCharts />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.5rem", marginBottom: "4rem" }}>
@@ -230,23 +254,40 @@ export default function ForParentsPage({ routerState, navigate, setExhibitContex
 
       </div>
 
-      {/* ── SECTION 4: Regret & Resentment Sankey ────────────────────────────── */}
+      {/* ── SECTION 4: The Asymmetry of Regret ────────────────────────────── */}
+      <ExhibitSectionHeading
+        id="section-asymmetry"
+        Icon={Scale}
+        title="The Asymmetry of Regret"
+        description="The decision is often framed as a 50/50 choice. The data reveals that the two outcomes are fundamentally asymmetrical."
+        color="var(--c-gold)"
+      />
+
+      <div style={{ marginBottom: "4rem" }}>
+        <AsymmetryOfChoice />
+      </div>
+
+      {/* ── SECTION 5: Regret & Resentment Sankey ────────────────────────────── */}
       <ExhibitSectionHeading
         id="section-regret"
-        Icon={Scale}
+        Icon={Activity}
         title="Regret & Resentment: The Outcome"
         description="A flow mapping of how an individual's pathway corresponds with eventual feelings of regret or resentment regarding their circumcision status."
         color="var(--c-purple)"
       />
       
+      <div style={{ marginBottom: "2rem" }}>
+        <ResentmentMirror />
+      </div>
+
       <div style={{ background: C.bgCard, borderRadius: 8, padding: "1.5rem", border: `1px solid ${C.ghost}`, marginBottom: "4rem" }}>
-        {questionsMap["aggregate_regret"] ? (
+        {questionsMap["circ_regret_feeling"] ? (
           <SankeyChart
             beforeQuestion={{ id: "pathway", prompt: "Current Pathway" }}
-            afterQuestion={questionsMap["aggregate_regret"]}
+            afterQuestion={questionsMap["circ_regret_feeling"]}
             height={550}
           />
-        ) : <span style={{ color: C.dim }}>Loading...</span>}
+        ) : <span style={{ color: C.dim }}>Loading regret flow...</span>}
       </div>
 
           </div> {/* End right column */}

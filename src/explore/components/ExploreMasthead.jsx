@@ -610,8 +610,33 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
 
           {/* Right: Findings pill + Nav Menu */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0 }}>
+            {/* On mobile, if we are inside an exhibit, show a BACK button instead of Findings */}
+            {!isIndex && (
+              <button
+                className="mobile-only"
+                onClick={() => navigate("index")}
+                style={{
+                  fontFamily: FONT.condensed,
+                  fontWeight: 700,
+                  fontSize: "0.7rem",
+                  color: "var(--c-goldBright)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  border: "1px solid rgba(212,160,48,0.35)",
+                  borderRadius: 100,
+                  background: "rgba(212,160,48,0.08)",
+                  padding: "0.25rem 0.65rem",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                ← Back
+              </button>
+            )}
+
             <a
               href="/"
+              className={!isIndex ? "mobile-hide" : ""}
               style={{
                 fontFamily: FONT.condensed,
                 fontWeight: 700,

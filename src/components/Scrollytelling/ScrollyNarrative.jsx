@@ -106,7 +106,7 @@ export default function ScrollyNarrative({
         trigger: stepRef.current,
         start: "top 80%",
         end: "bottom 20%",
-        toggleActions: "play reverse play reverse",
+        toggleActions: "play none none none",
       },
       opacity: 0,
       y: 40,

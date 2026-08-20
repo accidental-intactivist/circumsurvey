@@ -118,20 +118,21 @@ export default function ExhibitSidebarNav({ sections }) {
         ))}
       </aside>
 
-      {/* Mobile Dot and Line Nav */}
+      {/* Mobile Dot Nav (Bottom) */}
       <div className="mobile-scroll-nav" style={{
         position: "fixed",
-        bottom: "1rem",
-        left: "50%",
-        transform: "translateX(-50%)",
+        bottom: "0",
+        left: "0",
+        right: "0",
         flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
         gap: "0.5rem",
+        padding: "0.8rem",
+        background: "var(--c-bgDeep)",
+        borderTop: "1px solid var(--c-ghost)",
         zIndex: 150,
-        background: "rgba(0,0,0,0.4)",
-        padding: "0.5rem 1rem",
-        borderRadius: "999px",
-        backdropFilter: "blur(4px)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.4)"
       }}>
         {sections.map((s, idx) => (
           <div key={s.id} style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
@@ -142,18 +143,26 @@ export default function ExhibitSidebarNav({ sections }) {
                 document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
               style={{
-                width: activeSection === s.id ? 10 : 6,
-                height: activeSection === s.id ? 10 : 6,
+                width: activeSection === s.id ? 12 : 8,
+                height: activeSection === s.id ? 12 : 8,
                 borderRadius: "50%",
                 background: activeSection === s.id ? resolveCssColor(C.goldBright) : resolveCssColor(C.ghost),
                 cursor: "pointer",
                 transition: "all 0.3s ease",
-                boxShadow: activeSection === s.id ? `0 0 8px ${resolveCssColor(C.gold)}` : "none",
-                opacity: activeSection === s.id ? 1 : 0.6
+                boxShadow: activeSection === s.id ? `0 0 10px ${resolveCssColor(C.gold)}` : "none",
+                opacity: activeSection === s.id ? 1 : 0.4
               }}
               title={s.label}
             />
-            {/* Removed the line between dots for cleaner bottom nav */}
+            {/* The Line */}
+            {idx < sections.length - 1 && (
+              <div style={{
+                width: 12,
+                height: 2,
+                background: resolveCssColor(C.ghost),
+                opacity: 0.15
+              }} />
+            )}
           </div>
         ))}
       </div>

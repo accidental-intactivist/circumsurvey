@@ -234,19 +234,19 @@ export default function SquishHeader() {
     <div ref={containerRef} style={{ position: 'relative', zIndex: 100 }}>
       <style>
         {`
+          :root { --squish-start-h: 85vh; }
           @media (max-width: 768px) {
+            :root { --squish-start-h: 70vh; }
             .mobile-hide { display: none !important; }
             .squish-title.scrolled { opacity: 0 !important; pointer-events: none !important; }
             .squish-nav-left { max-width: calc(100% - 130px); }
             .squish-nav-right { padding: 0 0.5rem !important; gap: 0.5rem !important; }
             .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
-            .squish-spacer { height: 70vh !important; }
-            .squish-header-el { height: 70vh !important; }
           }
         `}
       </style>
       {/* Spacer to push content down initially since header is fixed */}
-      <div ref={spacerRef} className="squish-spacer" style={{ height: '85vh' }} />
+      <div ref={spacerRef} className="squish-spacer" style={{ height: 'var(--squish-start-h)' }} />
 
       <header 
         ref={headerRef}
@@ -256,7 +256,7 @@ export default function SquishHeader() {
           top: 0,
           left: 0,
           width: '100%',
-          height: '85vh',
+          height: 'var(--squish-start-h)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

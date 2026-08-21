@@ -28,7 +28,7 @@ import { DEMOGRAPHIC_DIMENSIONS } from "../components/DemographicFilterBar";
 import AddToReportButton from "../components/AddToReportButton";
 import SharePopover from "../components/SharePopover";
 import { useTooltip, Tooltip } from "../components/Tooltip";
-import GeographicHeatmap from "../components/GeographicHeatmap";
+import GeographicHeatmap from "../components/LazyGeographicHeatmap";
 import DemographicSankey from "../components/DemographicSankey";
 import InlineBreadcrumb from "../components/InlineBreadcrumb";
 import IconifyEmoji from "../components/IconifyEmoji";
@@ -330,6 +330,7 @@ export default function DemographicsDashboardPage({ navigate, updateState, setEx
                         {stageLabel}
                       </span>
                       <select
+                        aria-label={`Select ${stageLabel} dimension`}
                         value={sankeyDims[idx].id}
                         onChange={(e) => {
                           const newDims = [...sankeyDims];
@@ -733,6 +734,7 @@ function DivergenceRadar({ cohort, tooltip }) {
             Compare Across:
           </label>
           <select
+            aria-label="Compare across demographic dimension"
             value={activeDimensionId}
             onChange={handleDimensionChange}
             style={{

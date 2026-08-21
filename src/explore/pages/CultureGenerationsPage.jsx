@@ -421,6 +421,7 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
 
                     <div style={{ marginTop: "1.5rem" }}>
                       <select
+                        aria-label="Select belief association to compare"
                         value={activeAssoc}
                         onChange={(e) => setActiveAssoc(e.target.value)}
                         style={{
@@ -495,6 +496,7 @@ export default function CultureGenerationsPage({ navigate, setExhibitContext }) 
                   Map flow for:
                 </span>
                 <select
+                  aria-label="Select Sankey flow target"
                   value={activeSankeyTarget}
                   onChange={(e) => setActiveSankeyTarget(e.target.value)}
                   style={{

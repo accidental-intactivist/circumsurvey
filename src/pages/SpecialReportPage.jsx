@@ -38,11 +38,11 @@ export default function SpecialReportPage() {
         transition: 'background 0.3s ease, color 0.3s ease',
         position: 'relative',
       }}>
-        <div style={{ position: 'relative', zIndex: 1 }} className={isDocentOpen ? 'docent-open' : ''}>
+        <main style={{ position: 'relative', zIndex: 1 }} className={isDocentOpen ? 'docent-open' : ''}>
           <SquishHeader />
           <GuidedTour />
           <GlobalFooter route="special-report" navigate={navigateToExplore} />
-        </div>
+        </main>
         <GlobalDocentDrawer 
           isOpen={isDocentOpen} 
           onClose={() => setDocentOpen(false)}

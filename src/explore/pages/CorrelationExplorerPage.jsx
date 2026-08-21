@@ -720,7 +720,7 @@ export default function CorrelationExplorerPage({ routerState = {}, navigate, up
           )}
 
           {/* RIGHT: Main Matrix Engine */}
-          <main style={{ height: inlineMode ? "100%" : "auto", display: "flex", flexDirection: "column" }}>
+          <section style={{ height: inlineMode ? "100%" : "auto", display: "flex", flexDirection: "column" }}>
             <div style={{ display: inlineMode ? "none" : "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               {/* Mode Toggle */}
               <ModeToggle mode={mode} setMode={setMode} />
@@ -1031,7 +1031,7 @@ export default function CorrelationExplorerPage({ routerState = {}, navigate, up
                 </div>
               )}
             </div>
-          </main>
+          </section>
         </div>
       </div>
     </div>
@@ -1147,6 +1147,7 @@ function AxisPicker({ label, value, onChange, questions, demographicsOnly = fals
         {label}
       </div>
       <select
+        aria-label={label}
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
         style={{

@@ -17,7 +17,7 @@ import { VOICES_THEMES } from '../../voices.js';
 
 // Interactive components from the Explore dashboard
 import GenerationalTrendChart from '../../explore/components/GenerationalTrendChart';
-import GeographicHeatmap from '../../explore/components/GeographicHeatmap';
+import GeographicHeatmap from '../../explore/components/LazyGeographicHeatmap';
 import WordCloud from '../../explore/components/WordCloud';
 import NarrativeList from '../../explore/components/NarrativeList';
 
@@ -936,10 +936,12 @@ export default function ScrollyEngine() {
 
                 <div style={{ margin: '2rem 0', background: 'var(--c-bgSoft)', border: '1px solid var(--c-ghost)', borderRadius: 12, padding: '1.5rem' }}>
                   <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <label style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
+                    <label htmlFor="gen-faultlines-select" style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
                       Interactive Generational Faultlines:
                     </label>
                     <select
+                      id="gen-faultlines-select"
+                      aria-label="Select generational faultline question"
                       value={selectedGenQuestion}
                       onChange={(e) => setSelectedGenQuestion(e.target.value)}
                       style={{
@@ -1284,10 +1286,12 @@ export default function ScrollyEngine() {
 
           <div style={{ margin: '2rem 0', background: 'var(--c-bgSoft)', border: '1px solid var(--c-ghost)', borderRadius: 12, padding: '1.5rem' }}>
             <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <label style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
+              <label htmlFor="pleasure-gen-select" style={{ fontFamily: "var(--f-condensed)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--c-goldBright)', letterSpacing: '0.05em' }}>
                 Filter Pleasure Gap by Generation:
               </label>
               <select
+                id="pleasure-gen-select"
+                aria-label="Filter pleasure gap by generation"
                 value={selectedPleasureGen}
                 onChange={(e) => setSelectedPleasureGen(e.target.value)}
                 style={{

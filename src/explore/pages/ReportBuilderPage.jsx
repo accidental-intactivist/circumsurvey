@@ -5,7 +5,7 @@ import { C, FONT } from "../styles/tokens";
 import { getQuestions, getResponseDistribution, getNarratives, getAggregate } from "../lib/api";
 import { applyLikert } from "../lib/formatters";
 import DistributionChart from "../components/DistributionChart";
-import GeographicHeatmap from "../components/GeographicHeatmap";
+import GeographicHeatmap from "../components/LazyGeographicHeatmap";
 import NarrativeList from "../components/NarrativeList";
 import WordCloud from "../components/WordCloud";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';

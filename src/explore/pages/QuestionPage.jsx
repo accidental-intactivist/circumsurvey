@@ -10,7 +10,7 @@ import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 import { getQuestions, getResponseDistribution, getAggregate, getNarratives } from "../lib/api";
 import { colorForLabel } from "../components/MiniSparkline";
 import DemographicFilterBar from "../components/DemographicFilterBar";
-import GeographicHeatmap from "../components/GeographicHeatmap";
+import GeographicHeatmap from "../components/LazyGeographicHeatmap";
 import GenerationalTrendChart from "../components/GenerationalTrendChart";
 import NarrativeList from "../components/NarrativeList";
 import { useTooltip, Tooltip } from "../components/Tooltip";
@@ -313,7 +313,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
             }}
           >
             {/* LEFT: Not Found UI */}
-            <main style={{
+            <section style={{
               background: C.bgCard,
               border: `1px solid ${C.ghost}`,
               borderRadius: 8,
@@ -525,7 +525,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                 </div>
               </div>
 
-            </main>
+            </section>
           </div>
         )}
 
@@ -667,7 +667,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
             </aside>
 
             {/* CENTER: content */}
-            <main>
+            <section>
               <div ref={captureRef}>
                 {/* Combined Breadcrumb */}
                 <div style={{
@@ -1011,7 +1011,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   </>
                 )}
               </div>
-            </main>
+            </section>
           </div>
         )}
 

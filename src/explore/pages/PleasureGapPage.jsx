@@ -310,7 +310,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
               .mobile-hide { display: none !important; }
             }
           `}</style>
-          <main>
+          <section>
             <div className="crt-frame" style={{ borderRadius: 8, overflow: "hidden", marginBottom: "1.5rem" }}>
               <div className="corner tl"></div>
               <div className="corner tr"></div>
@@ -748,7 +748,7 @@ export default function PleasureGapPage({ routerState, navigate, updateState, se
                 </div>
               </div>
             )}
-          </main>
+          </section>
         </div>
       </div>
       <Tooltip {...tooltip} />

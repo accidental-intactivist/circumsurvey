@@ -6,41 +6,69 @@
 // Architecture: ExplorePage wraps this shell. The outer React Router handles
 // the path /explore; inside, hash routing handles sub-views so the URL stays
 // shareable (e.g., findings.circumsurvey.online/explore#/q/exp_appearance_feeling).
+//
+// Performance: All exhibit pages except IndexPage are lazy-loaded via
+// React.lazy() so the initial bundle only includes the shell + index.
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useRouter } from "./lib/router";
 import ExploreMasthead from "./components/ExploreMasthead";
 import GlobalDocentDrawer from "./components/GlobalDocentDrawer";
-import IndexPage from "./pages/IndexPage";
-import PathwayPage from "./pages/PathwayPage";
-import QuestionPage from "./pages/QuestionPage";
-import CorrelationExplorerPage from "./pages/CorrelationExplorerPage";
-import MirrorPairsPage from "./pages/MirrorPairsPage";
-import DemographicsDashboardPage from "./pages/DemographicsDashboardPage";
-import PleasureGapPage from "./pages/PleasureGapPage";
-import ReligiousMirrorsPage from "./pages/ReligiousMirrorsPage";
-import NarrativeMirrorsPage from "./pages/NarrativeMirrorsPage";
-import ObserverLensPage from "./pages/ObserverLensPage";
-import MethodologyPage from "./pages/MethodologyPage";
-import ReportBuilderPage from "./pages/ReportBuilderPage";
-import ByTheNumbersPage from "./pages/ByTheNumbersPage";
-import RestorationJourneyPage from "./pages/RestorationJourneyPage";
-import CultureGenerationsPage from "./pages/CultureGenerationsPage";
-import TheDecisionPage from "./pages/TheDecisionPage";
-import AdultExperiencePage from "./pages/AdultExperiencePage"; // Trigger HMR
-import TransIntersexPage from "./pages/TransIntersexPage";
-import TheForwardViewPage from "./pages/TheForwardViewPage";
-import ForParentsPage from "./pages/ForParentsPage";
-import AboutPage from "./pages/AboutPage";
-import FaqPage from "./pages/FaqPage";
-import GetInvolvedPage from "./pages/GetInvolvedPage";
-import ContactPage from "./pages/ContactPage";
-import ResourcesPage from "./pages/ResourcesPage";
+import IndexPage from "./pages/IndexPage"; // Static — default landing page
 import GlobalFooter from "./components/GlobalFooter";
 import ErrorBoundary from "./ErrorBoundary";
-import NotFoundPage from "./pages/NotFoundPage";
-import EditorialDashboardPage from "./pages/EditorialDashboardPage";
+
+// ── Lazy-loaded exhibit pages ──────────────────────────────────────────────
+const PathwayPage = lazy(() => import("./pages/PathwayPage"));
+const QuestionPage = lazy(() => import("./pages/QuestionPage"));
+const CorrelationExplorerPage = lazy(() => import("./pages/CorrelationExplorerPage"));
+const MirrorPairsPage = lazy(() => import("./pages/MirrorPairsPage"));
+const DemographicsDashboardPage = lazy(() => import("./pages/DemographicsDashboardPage"));
+const PleasureGapPage = lazy(() => import("./pages/PleasureGapPage"));
+const ReligiousMirrorsPage = lazy(() => import("./pages/ReligiousMirrorsPage"));
+const NarrativeMirrorsPage = lazy(() => import("./pages/NarrativeMirrorsPage"));
+const ObserverLensPage = lazy(() => import("./pages/ObserverLensPage"));
+const MethodologyPage = lazy(() => import("./pages/MethodologyPage"));
+const ReportBuilderPage = lazy(() => import("./pages/ReportBuilderPage"));
+const ByTheNumbersPage = lazy(() => import("./pages/ByTheNumbersPage"));
+const RestorationJourneyPage = lazy(() => import("./pages/RestorationJourneyPage"));
+const CultureGenerationsPage = lazy(() => import("./pages/CultureGenerationsPage"));
+const TheDecisionPage = lazy(() => import("./pages/TheDecisionPage"));
+const AdultExperiencePage = lazy(() => import("./pages/AdultExperiencePage"));
+const TransIntersexPage = lazy(() => import("./pages/TransIntersexPage"));
+const TheForwardViewPage = lazy(() => import("./pages/TheForwardViewPage"));
+const ForParentsPage = lazy(() => import("./pages/ForParentsPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const FaqPage = lazy(() => import("./pages/FaqPage"));
+const GetInvolvedPage = lazy(() => import("./pages/GetInvolvedPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const ResourcesPage = lazy(() => import("./pages/ResourcesPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const EditorialDashboardPage = lazy(() => import("./pages/EditorialDashboardPage"));
+
+// ── Loading spinner for Suspense boundaries ────────────────────────────────
+function ExhibitSpinner() {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "center",
+      minHeight: "60vh", flexDirection: "column", gap: "1rem",
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: "50%",
+        border: "3px solid var(--c-ghost, #333)",
+        borderTopColor: "var(--c-gold, #c8a959)",
+        animation: "exhibit-spin 0.8s linear infinite",
+      }} />
+      <span style={{
+        fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+        fontSize: "0.75rem", letterSpacing: "0.15em",
+        textTransform: "uppercase", color: "var(--c-muted, #888)",
+      }}>Loading exhibit…</span>
+      <style>{`@keyframes exhibit-spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 export default function ExploreShell() {
   const router = useRouter();
@@ -211,7 +239,9 @@ export default function ExploreShell() {
       />
       <main className={`explore-page-container ${isDocentOpen ? 'docent-open' : ''}`} style={{ minHeight: "80vh" }}>
         <ErrorBoundary>
-          {page}
+          <Suspense fallback={<ExhibitSpinner />}>
+            {page}
+          </Suspense>
         </ErrorBoundary>
         <GlobalFooter currentRoute={route} navigate={navigate} />
       </main>

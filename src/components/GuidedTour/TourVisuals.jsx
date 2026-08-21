@@ -16,7 +16,7 @@ import { useLegibleColor } from "../../explore/lib/colorUtils";
 import { Heart, Circle, Activity, Users, HelpCircle, BookOpen, ArrowRight, AlertTriangle, Grid } from "lucide-react";
 import CorrelationExplorerPage from "../../explore/pages/CorrelationExplorerPage";
 import MultiSankeyChart from "../../explore/components/MultiSankeyChart";
-import { RESTORATION_COLOR_MAP, RATING_QUESTIONS, RCI_DEFINITIONS } from "../../explore/pages/RestorationJourneyPage";
+import { RESTORATION_COLOR_MAP, RATING_QUESTIONS, RCI_DEFINITIONS } from "../../explore/lib/restorationConstants";
 import { getQuestions } from "../../explore/lib/api";
 
 const ICON_MAP = { Heart, Circle, Activity, Users, HelpCircle, BookOpen, AlertTriangle };
@@ -888,6 +888,7 @@ export function TourRestorationPathway() {
             <div key="dropdown" style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
               <span style={{ fontFamily: FONT.condensed, color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em" }}>Outcome:</span>
               <select
+                aria-label="Select restoration outcome metric"
                 value={outcomeId}
                 onChange={(e) => setOutcomeId(e.target.value)}
                 style={{

@@ -78,7 +78,7 @@ export default function ExhibitHero({
         </div>
       )}
 
-      <h1 style={{
+      <h2 style={{
         fontFamily: FONT.display,
         fontWeight: 800,
         fontSize: "clamp(1.75rem, 6vw, 2.5rem)",
@@ -89,7 +89,7 @@ export default function ExhibitHero({
         wordBreak: "break-word"
       }}>
         {title}
-      </h1>
+      </h2>
 
       {description && (
         <p style={{

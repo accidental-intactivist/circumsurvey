@@ -49,7 +49,7 @@ import {
 } from "./TourVisuals";
 import { DemographicGrids } from "./DemographicGrids";
 import PleasureGapWidget from "../../explore/components/PleasureGapWidget";
-import GeographicHeatmap from "../../explore/components/GeographicHeatmap";
+import GeographicHeatmap from "../../explore/components/LazyGeographicHeatmap";
 import DemographicSankey from "../../explore/components/DemographicSankey";
 import WireframeGlobe from "../../explore/components/WireframeGlobe";
 import GenerationalTrendChart from "../../explore/components/GenerationalTrendChart";

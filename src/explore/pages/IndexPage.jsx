@@ -331,7 +331,7 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
           </aside>
 
           {/* CENTER: question list */}
-          <main style={{ minWidth: 0 }}>
+          <section style={{ minWidth: 0 }}>
             {/* ── Core Filter Controls ─────────────────────────────────────────── */}
             <div style={{
               display: "flex",
@@ -532,7 +532,7 @@ export default function IndexPage({ routerState, navigate, updateState, setExhib
                 ))}
               </div>
             )}
-          </main>
+          </section>
 
           {/* Filter Tool: Unsurfaced Toggle (Moved to left sidebar) */}
           {/* Wait, the left sidebar is at the top of the grid. Let's fix the syntax first. */}

@@ -177,6 +177,7 @@ export default function NarrativeMirrorsPage({ navigate, setExhibitContext }) {
         <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "1rem" }}>
           <span style={{ fontFamily: FONT.condensed, color: C.gold, fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>Filter by Generation:</span>
           <select 
+            aria-label="Filter by generation"
             value={cohort?.generation?.[0] || ""} 
             onChange={e => {
               const val = e.target.value;

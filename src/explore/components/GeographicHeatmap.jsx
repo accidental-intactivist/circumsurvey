@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css";
 import { useMemo, useState, useEffect, Fragment } from "react";
 import { MapContainer, GeoJSON, CircleMarker, Tooltip, useMap } from "react-leaflet";
 import { scaleLinear } from "d3-scale";

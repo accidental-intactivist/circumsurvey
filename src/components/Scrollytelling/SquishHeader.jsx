@@ -124,8 +124,10 @@ export default function SquishHeader() {
   }
 
   useGSAP(() => {
-    // Exact pixel measurement of the spacer's rendered 85vh to prevent scroll tearing
-    const startHeight = spacerRef.current ? spacerRef.current.offsetHeight : Math.round(window.innerHeight * 0.85);
+    // Use a CSS-variable-driven height so mobile gets a shorter masthead
+    const isMobile = window.innerWidth <= 768;
+    const startVh = isMobile ? 70 : 85;
+    const startHeight = spacerRef.current ? spacerRef.current.offsetHeight : Math.round(window.innerHeight * (startVh / 100));
     const scrollDistance = Math.max(200, startHeight - 70);
 
     // Cascading glow animation for the arrow trail
@@ -170,55 +172,53 @@ export default function SquishHeader() {
       ease: "none"
     }, 0);
 
-    // Interior settles FAST (first ~30% of the squish), so that for most of
-    // the scroll there is only ONE visible motion: the header's bottom edge
-    // gliding up with the content glued to it. Multiple elements collapsing
-    // at different rates over the full distance is what made the squish feel
-    // like the masthead and page were scrolling at different speeds.
+    // ALL interior elements collapse at the SAME linear rate as the header
+    // height. This welds the rainbow accent line to the top of the report
+    // content so there is zero parallax disconnect ("nictitation").
     tl.to(eyebrowRef.current, {
-      fontSize: "0px", // Disappears
+      fontSize: "0px",
       opacity: 0,
       height: 0,
       margin: 0,
-      duration: 0.3,
-      ease: "power2.out"
+      duration: 1,
+      ease: "none"
     }, 0);
 
     tl.to(titleRef.current, {
       fontSize: "1.2rem", // Nav bar size
       letterSpacing: "0.02em",
       y: isTomorrow ? -3 : 0,
-      duration: 0.55,
-      ease: "power1.out"
+      duration: 1,
+      ease: "none"
     }, 0);
 
     tl.to(subRef.current, {
-      fontSize: "0px", // Disappears
+      fontSize: "0px",
       opacity: 0,
       height: 0,
       margin: 0,
-      duration: 0.3,
-      ease: "power2.out"
+      duration: 1,
+      ease: "none"
     }, 0);
 
     tl.to(factsRef.current, {
       opacity: 0,
-      y: -100, // Slides up behind the title
+      y: -100,
       height: 0,
       margin: 0,
       padding: 0,
-      duration: 0.35,
-      ease: "power2.out"
+      duration: 1,
+      ease: "none"
     }, 0);
 
     tl.to(teaserRef.current, {
       opacity: 0,
-      y: -120, // Slides up faster for parallax
+      y: -120,
       height: 0,
       margin: 0,
       padding: 0,
-      duration: 0.3, 
-      ease: "power2.out"
+      duration: 1,
+      ease: "none"
     }, 0);
 
     // 3. Fade in the navigation items (left and right) once it docks
@@ -240,14 +240,17 @@ export default function SquishHeader() {
             .squish-nav-left { max-width: calc(100% - 130px); }
             .squish-nav-right { padding: 0 0.5rem !important; gap: 0.5rem !important; }
             .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
+            .squish-spacer { height: 70vh !important; }
+            .squish-header-el { height: 70vh !important; }
           }
         `}
       </style>
       {/* Spacer to push content down initially since header is fixed */}
-      <div ref={spacerRef} style={{ height: '85vh' }} />
+      <div ref={spacerRef} className="squish-spacer" style={{ height: '85vh' }} />
 
       <header 
         ref={headerRef}
+        className="squish-header-el"
         style={{ 
           position: 'fixed',
           top: 0,

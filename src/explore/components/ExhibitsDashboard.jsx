@@ -259,6 +259,13 @@ export default function ExhibitsDashboard() {
 
   return (
     <div style={{ marginBottom: "3rem" }}>
+      <style>
+        {`
+          @media (max-width: 360px) {
+            .exhibits-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.6rem !important; }
+          }
+        `}
+      </style>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", borderBottom: `1px solid ${C.ghost}`, paddingBottom: "0.5rem", marginBottom: "1.2rem" }}>
         <h3 style={{
           fontFamily: FONT.condensed,
@@ -282,9 +289,9 @@ export default function ExhibitsDashboard() {
         )}
       </div>
 
-      <div style={{
+      <div className="exhibits-grid" style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", // 6 columns on wide screens!
+        gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
         gap: "1rem",
       }}>
         {exhibitsWithBadges.map(ex => {

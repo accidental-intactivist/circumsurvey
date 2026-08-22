@@ -124,9 +124,11 @@ export default function SquishHeader() {
   }
 
   useGSAP(() => {
-    // Use a CSS-variable-driven height so mobile gets a shorter masthead
     const isMobile = window.innerWidth <= 768;
-    const startVh = isMobile ? 70 : 85;
+    if (isMobile) return; // Completely disable GSAP timeline on mobile to prevent scrub lag
+
+    // Use a CSS-variable-driven height so mobile gets a shorter masthead
+    const startVh = 85;
     const startHeight = spacerRef.current ? spacerRef.current.offsetHeight : Math.round(window.innerHeight * (startVh / 100));
     const scrollDistance = Math.max(200, startHeight - 70);
 
@@ -236,9 +238,36 @@ export default function SquishHeader() {
         {`
           :root { --squish-start-h: 85vh; }
           @media (max-width: 768px) {
-            :root { --squish-start-h: 70vh; }
             .mobile-hide { display: none !important; }
-            .squish-title.scrolled { opacity: 0 !important; pointer-events: none !important; }
+            .squish-spacer { display: none !important; }
+            .squish-header-el {
+              position: static !important;
+              height: auto !important;
+              background: transparent !important;
+              box-shadow: none !important;
+              border: none !important;
+              display: block !important;
+            }
+            .squish-nav-container {
+              position: sticky !important;
+              top: 0 !important;
+              height: 70px !important;
+              background: var(--c-bgDeep) !important;
+              border-bottom: 1px solid var(--c-ghost) !important;
+              z-index: 1000 !important;
+              opacity: 1 !important;
+            }
+            .squish-title-group {
+              position: relative !important;
+              padding-top: 3rem !important;
+              padding-bottom: 4rem !important;
+              height: auto !important;
+            }
+            .squish-canvas-wrapper {
+              position: absolute !important;
+              top: 0 !important;
+              height: 100% !important;
+            }
             .squish-nav-left { max-width: calc(100% - 130px); }
             .squish-nav-right { padding: 0 0.5rem !important; gap: 0.5rem !important; }
             .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
@@ -275,7 +304,7 @@ export default function SquishHeader() {
       >
         {/* Clipping wrapper so the Loom crops with the header height without
             clipping UI (the ThemeToggle panel must escape the header). */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
+        <div className="squish-canvas-wrapper" style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
           {/* Harmonic background canvas that squishes (crops) with the header height */}
           <div 
             ref={canvasRef}
@@ -308,6 +337,7 @@ export default function SquishHeader() {
         {/* Navigation contents (Left and Right sides) that fade in when docked */}
         <div 
           ref={navContentRef}
+          className="squish-nav-container"
           style={{
             position: 'absolute',
             top: 0, left: 0, right: 0, bottom: 0,
@@ -390,7 +420,7 @@ export default function SquishHeader() {
         </div>
 
         {/* Clipping layer for the title group — squishes with the header */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 10, pointerEvents: 'none' }}>
+        <div className="squish-title-group" style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 10, pointerEvents: 'none' }}>
           <div 
             ref={titleGroupRef}
             style={{

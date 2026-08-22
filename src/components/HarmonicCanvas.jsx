@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { resolveCssColor } from '../explore/styles/tokens';
 import { useTelemetry } from '../explore/lib/telemetry';
 
@@ -40,12 +40,20 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
   const canvasRef = useRef(null);
   const pausedRef = useRef(paused);
   const { trackEvent } = useTelemetry();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Yield the main thread for FCP before spinning up heavy canvases
+    const timer = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     pausedRef.current = paused;
   }, [paused]);
 
   useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');

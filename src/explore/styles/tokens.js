@@ -76,7 +76,7 @@ export const GLOBAL_CSS = `
     --c-text: #f1f1f1;
     --c-textBright: #ffffff;
     --c-muted: #a1a1aa;
-    --c-dim: #71717a;
+    --c-dim: #8b8b94;
     --c-ghost: #3f3f46;
     --c-gold: #d4a030;
     --c-goldBright: #e8b840;

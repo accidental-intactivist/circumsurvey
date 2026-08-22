@@ -1247,9 +1247,9 @@ export function ParentGroundTruth({ seen = true }) {
   return (
     <div style={{ marginTop: "2rem", background: C.bgCard, border: `1px solid ${C.ghost}`, borderRadius: 12, overflow: "hidden", opacity: seen ? 1 : 0, transform: seen ? "none" : "translateY(10px)", transition: "opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s" }}>
       <div style={{ padding: "1.5rem", background: `linear-gradient(135deg, ${C.bgCard} 0%, rgba(248, 113, 113, 0.05) 100%)` }}>
-        <h4 style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <h3 style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Icons.Shield size={18} color={C.blue} /> The Medical Consensus & Anatomical Reality
-        </h4>
+        </h3>
         <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6 }}>
           <p style={{ marginBottom: "0.8rem" }}>
             Routine infant circumcision is <strong style={{ color: C.textBright }}>no longer recommended as a preventative health measure</strong> by any national or international medical authority in the world.
@@ -1278,9 +1278,9 @@ export function ParentGroundTruth({ seen = true }) {
         </div>
       </div>
       <div style={{ padding: "1.5rem", borderTop: `1px solid ${C.ghost}` }}>
-        <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "0.8rem" }}>
+        <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.08em", color: C.textBright, marginBottom: "0.8rem" }}>
           The Ground Truth for Undecided Parents
-        </h4>
+        </h3>
         <p style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.text, lineHeight: 1.6, marginBottom: "1rem" }}>
           The objective medical reality is a simple trade-off: The procedure permanently removes healthy, highly innervated, erogenous tissue from a child’s body, permanently altering their lifelong anatomical function.
         </p>
@@ -1319,10 +1319,10 @@ export function AsymmetryOfChoice() {
           padding: "2rem",
           display: "flex", flexDirection: "column", gap: "1.5rem"
         }}>
-          <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-intact)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-intact) 20%, transparent)`, paddingBottom: "0.5rem" }}>
+          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-intact)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-intact) 20%, transparent)`, paddingBottom: "0.5rem" }}>
             The Intact Choice
             <span style={{ display: "block", fontSize: "0.8rem", color: C.muted, marginTop: "0.2rem" }}>(The Reversible Path)</span>
-          </h4>
+          </h3>
           
           <div>
             <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Data</div>
@@ -1354,10 +1354,10 @@ export function AsymmetryOfChoice() {
           padding: "2rem",
           display: "flex", flexDirection: "column", gap: "1.5rem"
         }}>
-          <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-circumcised)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-circumcised) 20%, transparent)`, paddingBottom: "0.5rem" }}>
+          <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: "var(--path-circumcised)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0, borderBottom: `1px solid color-mix(in srgb, var(--path-circumcised) 20%, transparent)`, paddingBottom: "0.5rem" }}>
             The Circumcision Choice
             <span style={{ display: "block", fontSize: "0.8rem", color: C.muted, marginTop: "0.2rem" }}>(The Irreversible Path)</span>
-          </h4>
+          </h3>
           
           <div>
             <div style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.85rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>The Data</div>
@@ -1521,9 +1521,9 @@ export function LubeTaxCalculator() {
 
   return (
     <div style={{ marginTop: "3rem", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8 }}>
-      <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem" }}>
+      <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.2rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem" }}>
         The Lifetime Lube Tax
-      </h4>
+      </h3>
       <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.muted, marginBottom: "2rem", lineHeight: 1.6 }}>
         The intact penis is a naturally self-lubricating system. When the specialized tissue responsible for this is surgically removed, it must often be replaced by artificial means for the rest of a man's life.
       </p>
@@ -1534,6 +1534,7 @@ export function LubeTaxCalculator() {
             Avg. Bottle Cost ($)
           </label>
           <input 
+            id="tour-lube-cost"
             type="range" min="5" max="30" value={cost} onChange={e => setCost(Number(e.target.value))}
             style={{ width: "100%", accentColor: C.goldBright }}
           />
@@ -1544,6 +1545,7 @@ export function LubeTaxCalculator() {
             Bottles Per Year
           </label>
           <input 
+            id="tour-bottles-per-year"
             type="range" min="1" max="12" value={bottlesPerYear} onChange={e => setBottlesPerYear(Number(e.target.value))}
             style={{ width: "100%", accentColor: C.goldBright }}
           />
@@ -1657,9 +1659,9 @@ export function HistoricalIntentReveal() {
   return (
     <div style={{ margin: "2rem 0", padding: "1.5rem", background: "rgba(0,0,0,0.2)", border: `1px solid ${C.ghost}`, borderRadius: 8, position: "relative", overflow: "hidden" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
+        <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
           Original Documented Intent
-        </h4>
+        </h3>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           {revealed && (
             <button 
@@ -1776,9 +1778,9 @@ export function RestorationGradient() {
 
   return (
     <div style={{ margin: "3rem 0", padding: "2rem", background: "rgba(255,255,255,0.02)", border: `1px solid ${C.ghost}`, borderRadius: 8, position: "relative" }}>
-      <h4 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem", textAlign: "center" }}>
+      <h3 style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: "1.1rem", color: C.textBright, textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 1.5rem", textAlign: "center" }}>
         The Mechanical Recovery Gradient
-      </h4>
+      </h3>
       <p style={{ fontFamily: FONT.body, fontSize: "0.95rem", color: C.dim, textAlign: "center", marginBottom: "2rem" }}>
         Select a stage below to explore the biological mechanics and functional limits of tissue expansion over a 5+ year timeline.
       </p>

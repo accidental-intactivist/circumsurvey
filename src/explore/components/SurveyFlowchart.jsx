@@ -1253,7 +1253,7 @@ function SectionBlock({ section, questions, color, isExpanded, onToggle, navigat
         onClick={staticOpen ? undefined : onToggle}
         role={staticOpen ? undefined : "button"}
         tabIndex={staticOpen ? undefined : 0}
-        aria-expanded={showExpanded}
+        aria-expanded={staticOpen ? undefined : showExpanded}
         onKeyDown={(e) => {
           if (!staticOpen && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import SquishHeader from '../components/Scrollytelling/SquishHeader';
-import GuidedTour from '../components/GuidedTour/GuidedTour';
+const GuidedTour = lazy(() => import('../components/GuidedTour/GuidedTour'));
 import GlobalFooter from '../explore/components/GlobalFooter';
 import GlobalDocentDrawer from '../explore/components/GlobalDocentDrawer';
 import { ReportProvider } from '../explore/contexts/ReportContext';
@@ -40,7 +40,9 @@ export default function SpecialReportPage() {
       }}>
         <main style={{ position: 'relative', zIndex: 1 }} className={isDocentOpen ? 'docent-open' : ''}>
           <SquishHeader />
-          <GuidedTour />
+          <Suspense fallback={<div style={{ height: '100vh' }}></div>}>
+            <GuidedTour />
+          </Suspense>
           <GlobalFooter route="special-report" navigate={navigateToExplore} />
         </main>
         <GlobalDocentDrawer 

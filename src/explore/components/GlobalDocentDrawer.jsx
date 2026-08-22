@@ -11,7 +11,7 @@ export default function GlobalDocentDrawer({ isOpen, onClose, routerState, updat
   return (
     <>
       {/* Slide-out Drawer */}
-      <div aria-hidden={!isOpen} style={{
+      <div inert={!isOpen ? true : undefined} style={{
         position: "fixed",
         top: 0,
         right: 0,

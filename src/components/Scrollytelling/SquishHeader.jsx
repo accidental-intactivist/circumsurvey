@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import GlobalHamburgerMenu from '../../explore/components/GlobalHamburgerMenu';
 import BreadcrumbDropdown from '../../explore/components/BreadcrumbDropdown';
-import HarmonicCanvas from '../../components/HarmonicCanvas';
+const HarmonicCanvas = lazy(() => import('../../components/HarmonicCanvas'));
 import { useTheme } from '../../explore/contexts/ThemeContext';
 import { TOUR } from '../GuidedTour/tourData';
 import { NARRATIVE_STRUCTURE } from '../GuidedTour/ScrollTracker';
@@ -290,7 +290,9 @@ export default function SquishHeader() {
               opacity: 0.8,
             }}
           >
-            <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} paused={loomPaused} />
+            <Suspense fallback={null}>
+              <HarmonicCanvas themeKey={`${theme}-${mode}-${colorblind}`} opacity={1} paused={loomPaused} />
+            </Suspense>
           </div>
         </div>
 

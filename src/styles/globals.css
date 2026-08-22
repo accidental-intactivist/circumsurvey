@@ -81,6 +81,25 @@ body { letter-spacing: 0.003em; }
   color: #faf6f0;
 }
 
+/* ── Link distinguishability ────────────── */
+/* Links must be visually distinct without relying solely on color (WCAG 1.4.1) */
+a[href] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: currentColor;
+  text-decoration-skip-ink: auto;
+}
+a[href]:hover, a[href]:focus-visible {
+  text-decoration-thickness: 2px;
+}
+/* Navigation, buttons, and card links that are already visually distinct */
+nav a[href],
+a[href][role="button"],
+a[href].no-underline {
+  text-decoration: none;
+}
+
 /* ── Bureau Door (Clerk Overrides) ──────────────── */
 .cl-card {
   padding-bottom: 0 !important; /* To fit the footer crossbar */

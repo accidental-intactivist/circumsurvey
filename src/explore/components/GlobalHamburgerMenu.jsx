@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2, ArrowLeft, Loader2, Compass } from 'lucide-react';
+import { Menu, Layout, Sparkles, BookOpen, HelpCircle, LogIn, LogOut, User, FileText, Settings2, ArrowLeft, Loader2, Compass, Download } from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton, ClerkLoading } from "@clerk/clerk-react";
 import ThemeToggle, { ThemeSettingsPanel } from './ThemeToggle';
 import { FONT } from '../styles/tokens';
@@ -282,6 +282,19 @@ export default function GlobalHamburgerMenu({ onOpenDocent }) {
             >
               <Compass size={16} />
               Get Involved & Resources
+            </a>
+            
+            <a 
+              href="/Phase_1_Findings_Report.pdf" 
+              target="_blank"
+              rel="noreferrer"
+              onClick={handleLinkClick} 
+              style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(212, 160, 48, 0.08)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+            >
+              <Download size={16} />
+              Download PDF Report
             </a>
             
             <a 

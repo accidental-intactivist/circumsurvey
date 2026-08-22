@@ -357,6 +357,16 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
       return;
     }
 
+    if (/(download|get|view|pdf|print|offline) (the )?(report|findings|document|pdf)/.test(_norm)) {
+      setResult({
+        answer: "The complete Phase 1 Findings Report is available as a 38-page PDF print companion. It distills this interactive experience into a fixed format that you can download, print, read offline, and cite.\n\n[Download the Phase 1 Findings Report (PDF)](/Phase_1_Findings_Report.pdf)\n\nYou can also find this link in the **Resources & Downloads** area or the main navigation menu at any time.",
+        suggestions: ["Take me to the Adult Experience"],
+        quotes: [],
+        metadata: { intent: "system_override" }
+      });
+      return;
+    }
+
     if (/(expectant|expecting) parent trying to make a decision/.test(_norm) || /(three|3) most important things i should look at/.test(_norm)) {
       setResult({
         answer: "When navigating the Asymmetry of Choice regarding infant circumcision, there are three critical data points that emerge from the aggregate experience of men in this study:\n\n1. **Zero Percent Regret for Intact Men:** Of the men raised intact, 0% reported wishing they had been circumcised as infants. In stark contrast, over 60% of circumcised men experience resentment or wish they had been left intact.\n\n2. **The Pleasure Gap:** Circumcised men are over four times as likely to report feeling that they are \"missing out\" on sensory experiences compared to their intact peers.\n\n3. **The Lubrication Deficit:** Circumcised men are 10 times more likely to report needing artificial lubrication to avoid discomfort during sexual intimacy.\n\nThese figures highlight a profound asymmetry: leaving the body intact preserves all future choices for the individual, while intervention removes functional tissue and often creates lifelong functional deficits.",

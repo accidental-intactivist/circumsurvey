@@ -454,45 +454,46 @@ export function TourCard({ id, title, refText, plateNum, children, style, exhibi
 }
 
 export function ExhibitPortal({ exhibitStation }) {
-  const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
   if (!exhibitStation) return null;
 
   return (
-    <div className="exhibit-portal" style={{
-      borderTop: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
-      padding: "1.5rem",
-      background: `linear-gradient(180deg, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 0%, color-mix(in srgb, ${exhibitStation.colorVar} 15%, var(--c-bgDeep)) 100%)`,
-      boxShadow: `inset 0 4px 15px color-mix(in srgb, var(--c-text) 5%, transparent)`,
-      position: "relative",
-      overflow: "hidden",
-      borderRadius: "0 0 8px 8px"
+    <div className="exhibit-portal-subtle" style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "1rem 1.5rem",
+      margin: "1rem 0",
+      borderTop: `1px dashed var(--c-ghost)`,
+      borderBottom: `1px dashed var(--c-ghost)`,
+      background: `color-mix(in srgb, ${exhibitStation.colorVar} 3%, transparent)`
     }}>
-      {PortalIcon && (
-        <div style={{ position: "absolute", right: "-10%", bottom: "-40%", opacity: 0.1, pointerEvents: "none", transform: "rotate(-10deg)" }}>
-          <PortalIcon size={240} color={exhibitStation.colorVar} />
-        </div>
-      )}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", position: "relative", zIndex: 2 }}>
-        <ExhibitBadge station={exhibitStation} size="md" showLabel />
-        <a href={EXPLORE_BASE + exhibitStation.route} 
-           className="insert-coin-btn"
-           style={{
-            fontFamily: FONT.condensed, fontWeight: 800, fontSize: "0.85rem",
-            letterSpacing: "0.15em", textTransform: "uppercase", textDecoration: "none",
-            color: "var(--c-bg)", display: "inline-flex", alignItems: "center", gap: "0.5rem",
-            background: exhibitStation.colorVar,
-            padding: "0.4rem 1.2rem", borderRadius: 999,
-            border: `2px solid color-mix(in srgb, ${exhibitStation.colorVar} 80%, var(--c-textBright))`,
-            whiteSpace: "nowrap", transition: "all 0.2s ease"
-        }}>
-          Enter Exhibit ➔
-        </a>
-      </div>
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "100%",
-        background: `linear-gradient(0deg, transparent 0%, color-mix(in srgb, ${exhibitStation.colorVar} 5%, transparent) 50%, transparent 100%)`,
-        opacity: 0.5, pointerEvents: "none", zIndex: 1
-      }} />
+        fontFamily: FONT.body,
+        fontSize: "0.9rem",
+        color: "var(--c-muted)",
+        fontStyle: "italic"
+      }}>
+        Explore the raw data and interactive charts for this section in <strong>{exhibitStation.title}</strong>
+      </div>
+      <a href={EXPLORE_BASE + exhibitStation.route} 
+         style={{
+          fontFamily: FONT.condensed, fontWeight: 700, fontSize: "0.75rem",
+          letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none",
+          color: exhibitStation.colorVar, display: "inline-flex", alignItems: "center", gap: "0.5rem",
+          padding: "0.3rem 0.8rem", borderRadius: 999,
+          border: `1px solid color-mix(in srgb, ${exhibitStation.colorVar} 40%, transparent)`,
+          whiteSpace: "nowrap", transition: "all 0.2s ease"
+      }}
+      onMouseEnter={e => {
+        e.target.style.background = `color-mix(in srgb, ${exhibitStation.colorVar} 10%, transparent)`;
+        e.target.style.color = "var(--c-textBright)";
+      }}
+      onMouseLeave={e => {
+        e.target.style.background = "transparent";
+        e.target.style.color = exhibitStation.colorVar;
+      }}>
+        Exhibit {exhibitStation.num} ➔
+      </a>
     </div>
   );
 }

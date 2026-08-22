@@ -593,7 +593,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
         trackEvent('harmonic_canvas_dwelled', { dwell_time_ms: dwellTime });
       }
     };
-  }, [themeKey, trackEvent]);
+  }, [themeKey, trackEvent, mounted]);
 
   return (
     <canvas 

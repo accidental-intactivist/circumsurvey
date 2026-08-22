@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useTelemetry } from '../../explore/lib/telemetry';
 
 export const NARRATIVE_STRUCTURE = [
   { id: 'ch-prologue', type: 'act', label: 'Prologue' },
@@ -26,6 +27,10 @@ export default function ScrollTracker() {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isPastHeader, setIsPastHeader] = useState(false);
 
+  const { trackEvent } = useTelemetry();
+  const loggedMilestones = useRef(new Set(['ch-prologue']));
+  const loggedDepths = useRef(new Set());
+
   useEffect(() => {
     let scrollTimeout;
     const handleScroll = () => {
@@ -39,9 +44,20 @@ export default function ScrollTracker() {
 
       // Calculate overall scroll progress (0 to 1) for the background line
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      let progress = 0;
       if (totalHeight > 0) {
-        setScrollProgress(Math.min(1, Math.max(0, window.scrollY / totalHeight)));
+        progress = Math.min(1, Math.max(0, window.scrollY / totalHeight));
+        setScrollProgress(progress);
       }
+
+      // Telemetry: track scroll depth thresholds
+      const thresholds = [0.25, 0.50, 0.75, 0.90];
+      thresholds.forEach(threshold => {
+        if (progress >= threshold && !loggedDepths.current.has(threshold)) {
+          loggedDepths.current.add(threshold);
+          trackEvent('tour_scroll_depth', { depth_pct: threshold * 100 });
+        }
+      });
 
       // Determine the currently active section
       const triggerPoint = window.innerHeight / 2; // Middle of the screen
@@ -53,7 +69,14 @@ export default function ScrollTracker() {
           current = item.id;
         }
       }
-      setActiveId(current);
+      
+      if (current !== activeId) {
+        setActiveId(current);
+        if (!loggedMilestones.current.has(current)) {
+          loggedMilestones.current.add(current);
+          trackEvent('tour_milestone_reached', { milestone_id: current });
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -63,7 +86,7 @@ export default function ScrollTracker() {
       window.removeEventListener('scroll', handleScroll);
       clearTimeout(scrollTimeout);
     };
-  }, []);
+  }, [activeId, trackEvent]);
 
   const activeIndex = NARRATIVE_STRUCTURE.findIndex(x => x.id === activeId);
 

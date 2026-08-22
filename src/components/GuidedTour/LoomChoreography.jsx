@@ -31,25 +31,22 @@ import { LOOM_CONFIG } from "../HarmonicCanvas";
 // Region → formation map. Anchors are the tour's own station/chapter ids;
 // missing anchors are skipped, and regions are sorted by document position.
 const REGIONS = [
-  ["#ch-prologue", "tartan"], // researcher's letter — woven sett, NOT ribbon:
-                              // right under the masthead, the ribbon read as
-                              // a HarmonicCanvas duplicate (Tone's call)
-  ["#st05", "tron"],          // demographics — grid floor, racing beams
-  ["#st01", "flow"],          // survey map — every stream feeds the branching board
-  ["#demonstration-band", "canyon"], // lights down — the flight begins here
-  ["#st03", "canyon"],        // pleasure gap — flying the data terrain
-  ["#st02", "moire"],         // mirror pairs — interference is the point
-  ["#st06", "pulsar"],        // narrative mirrors — the voices as signal (breaks the moiré run)
-  ["#st07", "pendulum"],      // culture & generations — the slow swing of eras (SPIROGRAPH)
-  ["#st09", "moire"],         // religious mirrors
-  ["#st08", "quiet"],         // observer lens — restraint for the witnesses
-  ["#st04", "tartan"],        // correlations — crossed bands for cross-tabulation
-  ["#st10", "pendulum"],      // restoration journey — rings patiently retraced (SPIROGRAPH)
-  ["#st11", "moire"],         // before & after — two states, slight offset
-  ["#st13", "quiet"],         // for parents — sober decision environment
-  ["#st12", "pulsar"],        // by the numbers — the CP 1919 stack, pure signal
-  ["#st14", "flow"],          // forward view — every stream converges
-  ["#ch-epilogue", "quiet"],
+  ["#ch-prologue", "tartan"], // researcher's letter
+  ["#act-1-mechanics", "canyon"], // lights down — the flight begins here
+  ["#sexual-experience-the-pleasure-gap", "canyon"], // pleasure gap
+  ["#lubrication-dependency", "canyon"], // lube dependency
+  ["#act-2-emotion", "moire"], // transition to emotions
+  ["#gratitude-vs-regret", "moire"], // mirror pairs
+  ["#the-raw-words", "pulsar"], // narrative mirrors
+  ["#act-3-restoration", "pendulum"], // restoration journey
+  ["#the-restoring-cohort-in-numbers", "pendulum"], // restoration numbers
+  ["#act-4-resolution", "flow"], // convergence
+  ["#the-convergence", "flow"], // forward view
+  ["#appendix", "quiet"], // sober appendix
+  ["#the-survey-architecture", "flow"], // survey architecture
+  ["#respondent-census-origins", "tron"], // demographics
+  ["#the-generational-faultline", "pendulum"], // culture & generations
+  ["#for-new-expectant-parents", "quiet"] // for parents
 ];
 
 // Tuned in the standalone draft's ⚙ Tune panel; stamp new values from there.

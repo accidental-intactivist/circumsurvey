@@ -274,39 +274,55 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownOpen]);
 
+  const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
+
   // ── Scroll listener & Custom Property ──────────────────────────────────
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    let ticking = false;
+    const isTomorrow = typeface === "tomorrow";
+
+    const updateDOM = () => {
+      const sy = window.scrollY;
+      const h = Math.max(NAV_HEIGHT, HERO_HEIGHT - sy);
+      const prog = Math.min(1, Math.max(0, sy / (HERO_HEIGHT - NAV_HEIGHT)));
+      
+      const root = document.documentElement;
+      root.style.setProperty("--masthead-h", `${h}px`);
+      root.style.setProperty("--masthead-prog", prog);
+      root.style.setProperty("--header-height", `${h}px`); // keep for global compatibility
+      
+      const isScrolled = sy > SCROLL_THRESHOLD;
+      if (isScrolled !== scrolledRef.current) {
+        scrolledRef.current = isScrolled;
+        setScrolled(isScrolled);
+      }
+      ticking = false;
     };
-    handleScroll();
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateDOM);
+        ticking = true;
+      }
+    };
+    
+    // Initial paint setup
+    updateDOM();
+    
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      const root = document.documentElement;
+      root.style.removeProperty("--masthead-h");
+      root.style.removeProperty("--masthead-prog");
+      root.style.removeProperty("--header-height");
+    };
+  }, [typeface]);
 
   const meta = customMeta || ROUTE_META[route] || ROUTE_META.index;
   const isIndex = route === "index" || !route;
-
-  const currentHeight = Math.max(NAV_HEIGHT, HERO_HEIGHT - scrollY);
-  const scrolled = scrollY > SCROLL_THRESHOLD;
-
-  useEffect(() => {
-    document.documentElement.style.setProperty("--header-height", `${currentHeight}px`);
-    return () => {
-      document.documentElement.style.removeProperty("--header-height");
-    };
-  }, [currentHeight]);
-
-  // Calculate smooth 1:1 scroll progress for the title scaling and movement
-  // Completion point is when the header is fully collapsed (184px scroll)
-  const progress = Math.min(1, Math.max(0, scrollY / (HERO_HEIGHT - NAV_HEIGHT)));
-  const translateY = -108 * progress; // Moves center from 136px to 28px (vertical center of 56px navbar)
-  const scale = 1 - 0.6 * progress; // squishes down to 40% of its expanded size
-
-  // Josefin Sans (Tomorrow font) has high ascenders, making uppercase text sit visually low.
-  // We apply a vertical offset (-4.5px when expanded, -2.5px when collapsed) to center it.
   const isTomorrow = typeface === "tomorrow";
-  const tomorrowOffset = isTomorrow ? -4.5 + 2 * progress : 0;
 
   return (
     <>
@@ -358,7 +374,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           top: 0,
           left: 0,
           right: 0, // Fallback, will be overridden by CSS
-          height: currentHeight,
+          height: "var(--masthead-h, 240px)",
           zIndex: 1000,
           overflow: "visible", // Allowed to be visible so dropdowns/popovers don't get truncated
           display: "flex",
@@ -677,9 +693,9 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
             position: "absolute",
             left: "50%",
             top: 136, // Center of the hero area (56px + 184px/2) shifted up slightly
-            transform: `translate(-50%, calc(-50% + ${translateY + tomorrowOffset}px)) scale(${scale})`,
+            transform: `translate(-50%, calc(-50% + calc(-108px * var(--masthead-prog, 0)) + ${isTomorrow ? 'calc(-4.5px + 2px * var(--masthead-prog, 0))' : '0px'})) scale(calc(1 - 0.6 * var(--masthead-prog, 0)))`,
             transformOrigin: "center",
-            transition: "transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.35s ease, font-size 0.35s ease, opacity 0.25s ease",
+            transition: "color 0.35s ease, font-size 0.35s ease, opacity 0.25s ease",
             fontFamily: FONT.display,
             fontWeight: 800,
             fontSize: isIndex
@@ -703,7 +719,7 @@ export default function ExploreMasthead({ route, navigate, customMeta, isDocentO
           style={{
             position: "relative",
             zIndex: 5,
-            height: Math.max(0, currentHeight - NAV_HEIGHT),
+            height: "calc(var(--masthead-h, 240px) - 56px)",
             overflow: "hidden",
             opacity: scrolled ? 0 : 1,
             pointerEvents: scrolled ? "none" : "auto",

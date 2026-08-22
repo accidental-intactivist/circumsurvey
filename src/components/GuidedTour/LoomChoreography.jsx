@@ -893,6 +893,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
   return (
     <canvas
       ref={canvasRef}
+      className="ph-no-capture"
       aria-hidden="true"
       style={{
         position: "fixed",

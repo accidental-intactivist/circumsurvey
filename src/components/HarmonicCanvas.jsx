@@ -598,6 +598,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
   return (
     <canvas 
       ref={canvasRef} 
+      className="ph-no-capture"
       style={{
         position,
         top: 0,
@@ -612,3 +613,4 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     />
   );
 }
+

@@ -219,8 +219,40 @@ export function ShareTools({ title, targetId, exhibitStation }) {
   );
 }
 
+
+export function HeadingTooltip({ text }) {
+  const { tooltip, showTooltip, moveTooltip, hideTooltip } = useTooltip();
+  if (!text) return null;
+
+  return (
+    <>
+      <span
+        onMouseEnter={(e) => showTooltip(e, <div style={{ maxWidth: 280, lineHeight: 1.4, fontFamily: FONT.body, fontSize: "0.9rem", color: C.textBright, whiteSpace: "normal" }}>{text}</div>)}
+        onMouseMove={moveTooltip}
+        onMouseLeave={hideTooltip}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginLeft: "0.5rem",
+          verticalAlign: "middle",
+          color: C.dim,
+          cursor: "help",
+          transition: "color 0.2s ease"
+        }}
+        onMouseOver={(e) => e.currentTarget.style.color = C.goldBright}
+        onMouseOut={(e) => e.currentTarget.style.color = C.dim}
+      >
+        <Icons.Info size={Math.max(20, 0.45 * parseFloat(getComputedStyle(document.documentElement).fontSize || 16))} strokeWidth={2.5} style={{ width: "0.7em", height: "0.7em", marginBottom: "0.1em" }} />
+      </span>
+      <Tooltip {...tooltip} />
+    </>
+  );
+}
+
 // ── ActMarker: cinematic section divider ───────────────────────────────────
-export function ActMarker({ actNum, kicker, title, count, total, colorVar }) {
+// ── ActMarker: cinematic section divider ───────────────────────────────────
+export function ActMarker({ actNum, kicker, title, count, total, colorVar, tooltipText }) {
   return (
     <div style={{ 
       position: "relative", 
@@ -268,9 +300,13 @@ export function ActMarker({ actNum, kicker, title, count, total, colorVar }) {
         fontFamily: FONT.display, fontWeight: 800, fontSize: "clamp(2.5rem, 5vw, 3.2rem)",
         lineHeight: 1.1, color: C.textBright, margin: 0,
         textTransform: "uppercase",
-        letterSpacing: "-0.02em"
+        letterSpacing: "-0.02em",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center"
       }}>
         {title}
+        <HeadingTooltip text={tooltipText} />
       </h2>
     </div>
   );
@@ -399,7 +435,7 @@ export function AskDocentCard({ context, suas }) {
 }
 
 // ── TourCard: ruled data card (Bureau DNA on theme tokens) ─────────────────
-export function TourCard({ id, title, refText, plateNum, children, style, exhibitStation, sourceLine }) {
+export function TourCard({ id, title, refText, plateNum, children, style, exhibitStation, sourceLine, tooltipText }) {
   const PortalIcon = exhibitStation ? Icons[exhibitStation.icon] : null;
 
   return (
@@ -423,6 +459,7 @@ export function TourCard({ id, title, refText, plateNum, children, style, exhibi
             display: "flex", alignItems: "center", gap: "0.45rem",
           }}>
             <span style={{ color: C.red }}>★</span> {title}
+            <HeadingTooltip text={tooltipText} />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {(plateNum || refText) && (

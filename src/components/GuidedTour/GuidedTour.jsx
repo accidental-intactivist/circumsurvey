@@ -359,7 +359,15 @@ export default function GuidedTour() {
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* ── THE HOOK & THE MISCONCEPTION ── */}
             <div id="ch-prologue" style={{ maxWidth: 960, margin: "0 auto", padding: "0 1.6rem", scrollMarginTop: 100 }}>
-              <ActMarker actNum="00" kicker="Prologue" title="The Accidental Intactivist's Inquiry" count={0} total={4} colorVar={C.goldBright} />
+              <ActMarker 
+                actNum="00" 
+                kicker="Prologue" 
+                title="The Accidental Intactivist's Inquiry" 
+                count={0} 
+                total={4} 
+                colorVar={C.goldBright}
+                tooltipText="An introduction to the research, methodology, and the overarching intent behind the data collection." 
+              />
             <TourCard title="From the Lead Researcher" refText="A LETTER · READ FIRST" stamp="Signed">
               <div style={{ fontFamily: FONT.body, fontWeight: 400, fontSize: "15.2px", lineHeight: 1.75, color: C.text, maxWidth: 680, margin: "2rem auto" }}>
               <p style={{ marginBottom: "1.5rem" }}>
@@ -453,7 +461,15 @@ export default function GuidedTour() {
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <ActMarker actNum="I" kicker="Act I" title="Physical & Mechanical Data" count={1} total={4} colorVar={st("03").colorVar} />
+          <ActMarker 
+            actNum="I" 
+            kicker="Act I" 
+            title="Physical & Mechanical Data" 
+            count={1} 
+            total={4} 
+            colorVar={st("03").colorVar}
+            tooltipText="Analysis of the sexual mechanics, sensitivity ratings, and lubrication requirements reported across cohorts." 
+          />
           
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
@@ -466,6 +482,7 @@ export default function GuidedTour() {
               title="Cohort Comparison: Sensation Metrics" 
               refText="EXHIBIT 03"
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'RATE YOUR PLEASURE FROM MOBILE SKIN, 1-5' · EXHIBIT 03"
+              tooltipText="The statistical difference in self-reported sexual sensation, sensitivity, and lubrication requirements between cohorts (The Pleasure Gap)."
             >
               <PleasureGapWidget stats={PLEASURE_GAP_STATS} />
             </TourCard>
@@ -522,7 +539,15 @@ export default function GuidedTour() {
           paddingTop: "5.5rem", paddingBottom: "5rem",
           scrollMarginTop: 100,
         }}>
-          <ActMarker actNum="II" kicker="Act II" title="Emotional & Psychological Data" count={2} total={4} colorVar={st("02").colorVar} />
+          <ActMarker 
+            actNum="II" 
+            kicker="Act II" 
+            title="Emotional & Psychological Data" 
+            count={2} 
+            total={4} 
+            colorVar={st("02").colorVar}
+            tooltipText="Exploration of the psychological impact, feelings of resentment versus gratitude, and long-term emotional reflections." 
+          />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -534,6 +559,7 @@ export default function GuidedTour() {
               title="Cohort Comparison: Resentment vs. Regret" 
               refText="EXHIBIT 02" 
               sourceLine="SOURCE: PHASE 1 FROZEN SNAPSHOT · N = 501 · SELF-SELECTED SAMPLE · ASKED: 'HOW DO YOU FEEL ABOUT YOUR STATUS?' · EXHIBIT 02"
+              tooltipText="Questions asked identically to both intact and circumcised respondents to highlight divergent experiences (Mirror Pairs)."
             >
               <ResentmentMirror />
             </TourCard>
@@ -573,7 +599,15 @@ export default function GuidedTour() {
           borderTop: `1px solid ${C.ghost}`, borderBottom: `1px solid ${C.ghost}`,
           scrollMarginTop: 100,
         }}>
-          <ActMarker actNum="III" kicker="Act III" title="Foreskin Restoration" count={3} total={4} colorVar={st("10").colorVar} />
+          <ActMarker 
+            actNum="III" 
+            kicker="Act III" 
+            title="Foreskin Restoration" 
+            count={3} 
+            total={4} 
+            colorVar={st("10").colorVar}
+            tooltipText="Data from men undergoing non-surgical tissue expansion to recover mechanical function and sensitivity." 
+          />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.muted, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -609,7 +643,15 @@ export default function GuidedTour() {
           paddingTop: "5.5rem", paddingBottom: "5rem",
           scrollMarginTop: 100,
         }}>
-          <ActMarker actNum="IV" kicker="Act IV" title="The Next Generation" count={4} total={4} colorVar={st("14").colorVar} />
+          <ActMarker 
+            actNum="IV" 
+            kicker="Act IV" 
+            title="The Next Generation" 
+            count={4} 
+            total={4} 
+            colorVar={st("14").colorVar}
+            tooltipText="Generational trends, shifting cultural attitudes, and how respondents plan to approach the circumcision decision for their own children." 
+          />
           <div style={{ position: "relative", zIndex: 2, maxWidth: 960, margin: "3rem auto 0", padding: "0 1.6rem" }}>
             
             <div style={{ fontFamily: FONT.body, fontSize: "19.2px", color: C.text, lineHeight: 1.6, maxWidth: 620, margin: "0 auto 3rem", textAlign: "center" }}>
@@ -653,7 +695,15 @@ export default function GuidedTour() {
 
         {/* ── APPENDIX: FURTHER EXPLORATION ── */}
         <div id="appendix" style={{ maxWidth: 960, margin: "8rem auto 4rem", padding: "4rem 1.6rem 0", borderTop: `1px solid ${C.ghost}`, scrollMarginTop: 100 }}>
-          <ActMarker actNum="V" kicker="Appendix" title="Methodology & Demographics" count={5} total={5} colorVar={C.dim} />
+          <ActMarker 
+            actNum="V" 
+            kicker="Appendix" 
+            title="Methodology & Demographics" 
+            count={5} 
+            total={5} 
+            colorVar={C.dim}
+            tooltipText="A breakdown of the respondent pool, geographic distribution, and the methodology used to collect and verify this dataset." 
+          />
           
           <div style={{ fontFamily: FONT.body, fontSize: "0.9rem", color: C.dim, textAlign: "center", marginBottom: "3rem" }}>
             The narrative above captures the core findings of the Accidental Intactivist survey. For those interested in the underlying demographics, cultural factors, and survey architecture, we have preserved the following detailed exhibits.

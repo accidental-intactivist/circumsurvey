@@ -109,8 +109,13 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
     const coarsePointer = typeof window.matchMedia === "function"
       && window.matchMedia("(pointer: coarse)").matches;
     const fewCores = (navigator.hardwareConcurrency || 8) <= 4;
+    const lowRam = navigator.deviceMemory && navigator.deviceMemory < 4;
     const smallScreen = Math.min(window.innerWidth || 9999, window.innerHeight || 9999) < 700;
     const lowPower = prefersReduced || coarsePointer || fewCores || smallScreen;
+
+    // Freeze animations on low-end mobile hardware to save CPU
+    const isLowEndHardware = fewCores || lowRam;
+    const forcePause = prefersReduced || (isLowEndHardware && coarsePointer);
 
     // Background canvas: fill-rate is the enemy — cap DPR aggressively.
     // (The masthead HarmonicCanvas keeps its higher fidelity; this layer is
@@ -122,7 +127,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
 
     let W = window.innerWidth, H = window.innerHeight;
     let sizeScale = 1;
-    let T = prefersReduced ? 7 : 0; // reduced motion: freeze at a settled pose
+    let T = forcePause ? 7 : 0; // reduced motion or low-end: freeze at a settled pose
 
     const { RIB, TAR, TRON, CAN, MO, PEN, PUL, FL, GLN, ENG } = UNDERLOOM_CONFIG;
 
@@ -792,7 +797,8 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
       // freeze, but we re-render a single static frame whenever scroll or
       // viewport changes, so a paused page still shows the right formation
       // at every station — for ~zero CPU at rest.
-      if (loomPaused) {
+      // at every station — for ~zero CPU at rest.
+      if (loomPaused || forcePause) {
         const sig = window.scrollY + "|" + W + "|" + H;
         if (pausedSig === sig) return;
         pausedSig = sig;
@@ -813,10 +819,10 @@ export default function LoomChoreography({ themeKey = "", opacity = 1 }) {
       idleCleared = false;
 
       const dt = delta / 1000;
-      if (!loomPaused) glintT += dt; // the glisten keeps its own clock, like the masthead's
+      if (!loomPaused && !forcePause) glintT += dt; // the glisten keeps its own clock, like the masthead's
       const scrolling = (now - lastScrollT) < 200;
       damp += ((scrolling ? 1 : ENG.idleFloor) - damp) * 0.04;
-      if (!prefersReduced && !loomPaused) T += dt * (0.35 + 0.65 * damp);
+      if (!forcePause && !loomPaused) T += dt * (0.35 + 0.65 * damp);
 
       ctx.clearRect(0, 0, W, H); // TRANSPARENT — the theme's background rules
 

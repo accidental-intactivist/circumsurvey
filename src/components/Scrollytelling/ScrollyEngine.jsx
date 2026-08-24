@@ -750,8 +750,10 @@ export default function ScrollyEngine() {
               borderTop: '1px dashed var(--c-ghost)',
             }}>
               <img
-                src="/tone-headshot.jpg"
-                alt="Tone Pettit"
+                src="/tone-headshot.webp"
+                loading="lazy"
+                decoding="async"
+                alt="Tone Pettit headshot"
                 width="60"
                 height="60"
                 style={{

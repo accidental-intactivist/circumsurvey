@@ -876,8 +876,10 @@ function EditorsLetter() {
           borderTop: `1px dashed ${C.paperRuleDash}`,
         }}>
           <img
-            src="/tone-headshot.jpg"
-            alt="Tone Pettit"
+            src="/tone-headshot.webp"
+            loading="lazy"
+            decoding="async"
+            alt="Tone Pettit headshot"
             width="76"
             height="76"
             style={{

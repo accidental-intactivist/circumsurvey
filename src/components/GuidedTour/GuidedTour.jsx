@@ -397,10 +397,10 @@ export default function GuidedTour() {
               }}>
                 <div style={{ position: "relative", width: 220, height: 175 }}>
                   <div style={{ position: "absolute", left: 55, top: 0, width: 130, height: 165, borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.3)", transform: "rotate(6deg)", zIndex: 1, overflow: "hidden" }}>
-                    <img src="/flyers/recruitment-3.jpg" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "23% 45%", transform: "scale(2.5)", transformOrigin: "23% 45%" }} alt="Street pole covered in grassroots survey posters" />
+                    <img src="/flyers/recruitment-3.webp" loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "23% 45%", transform: "scale(2.5)", transformOrigin: "23% 45%" }} alt="Street pole covered in grassroots survey posters" />
                   </div>
-                  <img src="/flyers/recruitment-1.png" style={{ position: "absolute", left: 0, top: 10, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(-5deg)", zIndex: 2 }} alt="Survey recruitment flyer" />
-                  <img src="/flyers/recruitment-2.png" style={{ position: "absolute", right: 5, top: 35, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(3deg)", zIndex: 3 }} alt="Survey recruitment flyer" />
+                  <img src="/flyers/recruitment-1.webp" loading="lazy" decoding="async" style={{ position: "absolute", left: 0, top: 10, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(-5deg)", zIndex: 2 }} alt="Survey recruitment flyer" />
+                  <img src="/flyers/recruitment-2.webp" loading="lazy" decoding="async" style={{ position: "absolute", right: 5, top: 35, width: 100, height: "auto", borderRadius: 4, border: `2px solid ${C.ghost}`, boxShadow: "0 6px 14px rgba(0,0,0,0.4)", transform: "rotate(3deg)", zIndex: 3 }} alt="Survey recruitment flyer" />
                 </div>
                 <div style={{ fontFamily: FONT.condensed, fontWeight: 600, fontSize: "0.5rem", color: C.dim, textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "0.4rem", textAlign: "center" }}>
                   Survey recruitment flyers, 2024
@@ -431,7 +431,7 @@ export default function GuidedTour() {
                 display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.4rem",
                 paddingTop: "1.1rem", borderTop: `1px dashed ${C.ghost}`,
               }}>
-                <img src="/tone-headshot.jpg" alt="Tone Pettit" width="52" height="52"
+                <img src="/tone-headshot.webp" loading="lazy" decoding="async" alt="Tone Pettit" width="52" height="52"
                   style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", border: `2px solid ${C.ghost}`, flexShrink: 0 }} />
                 <div>
                   <div style={{ fontFamily: FONT.display, fontWeight: 700, fontSize: "0.9rem", color: C.textBright }}>Tone Pettit</div>

@@ -17,6 +17,8 @@ export function initTelemetry() {
       person_profiles: 'always', // or 'identified_only'
       capture_pageview: false, // We'll handle this manually via React Router
       autocapture: false, // Opt-out of generic autocapture to respect privacy
+      disable_session_recording: true, // Disable to save payload/execution time on mobile
+      disable_surveys: true, // Disable to save payload/execution time
       session_recording: {
         recordCanvas: false // Prevents rrweb willReadFrequently warnings
       }

@@ -33,18 +33,26 @@ circumsurvey/
 ├── data/
 │   └── raw/               ← Raw CSV (LOCAL ONLY, never committed)
 ├── scripts/               ← Python data aggregation scripts
-├── src/
+├── src/                   ← React Frontend (Cloudflare Pages)
 │   ├── components/        ← React components
-│   ├── data/              ← Aggregated JSON data (committed)
 │   └── styles/            ← CSS / design system
+├── worker/                ← Backend API (Cloudflare Workers + D1)
+│   ├── src/               ← API routes, AI Docent logic, Sankey queries
+│   └── eval/              ← ACRUE AI Safety & Quality Evaluation Suite
 ├── public/                ← Static assets
 └── reference/             ← Design motif references
 ```
 
-## 🔐 Data Security
+## 🔐 Architecture & Data Security
+
+This project utilizes a modern serverless edge architecture:
+- **Frontend**: React application hosted on Cloudflare Pages.
+- **Backend**: Cloudflare Worker API providing dynamic query aggregations.
+- **Database**: Cloudflare D1 SQL database serving distributions and cohorts.
+- **AI Copilot**: Cloudflare Workers AI + Vectorize powering the "Docent" research assistant.
+- **Safety Guards**: Automated ACRUE evaluation suite guards against PII leakage, prompt injection, and causal overreach.
 
 - Raw survey CSV is **never committed** to this repository
-- Only pre-computed aggregate statistics are deployed
 - Qualitative quotes are individually curated and reviewed
 - No personally identifiable information exists in the dataset by design
 

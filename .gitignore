@@ -82,3 +82,8 @@ playwright-report/
 *.pdf
 output*.json
 .env.local.env
+
+# Local Dev & Scratch
+.env
+.env.*
+scratch/

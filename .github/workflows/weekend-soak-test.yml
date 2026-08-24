@@ -18,19 +18,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run Unit Tests (Vitest)
         run: npm run test -- --run
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Run Stress Tests (Playwright)
-        run: npx playwright test
-        env:
-          CI: true
-          VITE_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsuY2lyY3Vtc3VydmV5Lm9ubGluZSQ

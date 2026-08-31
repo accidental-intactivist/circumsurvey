@@ -389,7 +389,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     setError(null);
     setResult(null);
     setAddedToReport(false);
-    trackEvent('copilot_query_submitted', { query_length: searchQuery.length });
+    trackEvent('copilot_query_submitted', { query_length: searchQuery.length, query_text: searchQuery });
 
     const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
     let pageSnapshot = undefined;

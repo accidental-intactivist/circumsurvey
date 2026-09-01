@@ -13,12 +13,14 @@
 import ExploreShell from "../explore/ExploreShell";
 import { ReportProvider } from "../explore/contexts/ReportContext";
 import ReportBadge from "../explore/components/ReportBadge";
+import WelcomeModal from "../explore/components/WelcomeModal";
 
 export default function ExplorePage() {
   return (
     <ReportProvider>
       <ExploreShell />
       <ReportBadge />
+      <WelcomeModal />
     </ReportProvider>
   );
 }

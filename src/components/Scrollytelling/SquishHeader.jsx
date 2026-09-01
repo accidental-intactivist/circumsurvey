@@ -259,8 +259,12 @@ export default function SquishHeader() {
             }
             .squish-title-group {
               position: relative !important;
-              padding-top: 3rem !important;
+              padding-top: 5rem !important;
               padding-bottom: 4rem !important;
+              min-height: var(--squish-start-h) !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: center !important;
               height: auto !important;
             }
             .squish-canvas-wrapper {
@@ -269,8 +273,17 @@ export default function SquishHeader() {
               height: 100% !important;
             }
             .squish-nav-left { max-width: calc(100% - 130px); }
-            .squish-nav-right { padding: 0 0.5rem !important; gap: 0.5rem !important; }
+            .squish-nav-right { 
+              padding: 0 0.5rem !important; 
+              gap: 0.5rem !important; 
+              z-index: 1001 !important;
+            }
             .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
+            #tour-start-target {
+              top: 80px !important; /* Move down on mobile so it doesn't overlap header elements */
+              left: 50% !important;
+              transform: translateX(-50%);
+            }
           }
         `}
       </style>
@@ -302,6 +315,9 @@ export default function SquishHeader() {
           // settings panel. The canvas gets its own clipping wrapper below.
         }}
       >
+        {/* Invisible target for the Joyride Onboarding Tour to anchor to the top-left */}
+        <div id="tour-start-target" style={{ position: 'absolute', top: '24px', left: '24px', width: '1px', height: '1px', pointerEvents: 'none' }} />
+
         {/* Clipping wrapper so the Loom crops with the header height without
             clipping UI (the ThemeToggle panel must escape the header). */}
         <div className="squish-canvas-wrapper" style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
@@ -369,7 +385,7 @@ export default function SquishHeader() {
               Findings
             </a>
             <span className="mobile-hide" style={{ color: 'var(--c-dim)', flexShrink: 0 }}>/</span>
-            <span style={{ color: 'var(--c-muted)', minWidth: 0, flexShrink: 1, display: 'inline-flex' }}>
+            <span id="tour-chapters" style={{ color: 'var(--c-muted)', minWidth: 0, flexShrink: 1, display: 'inline-flex' }}>
               <BreadcrumbDropdown
                 label={displayLabel}
                 currentId={currentId}
@@ -398,7 +414,7 @@ export default function SquishHeader() {
           zIndex: 110,
           pointerEvents: 'auto',
         }}>
-          <a href="/explore" style={{
+          <a id="tour-explore" href="/explore" style={{
             fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
             fontWeight: 700,
             fontSize: '0.75rem',
@@ -416,7 +432,9 @@ export default function SquishHeader() {
             <span className="mobile-hide">Interactive </span>Explorer ➔
           </a>
           <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
-          <GlobalHamburgerMenu />
+          <span id="tour-hamburger" style={{ display: 'flex', alignItems: 'center' }}>
+            <GlobalHamburgerMenu />
+          </span>
         </div>
 
         {/* Clipping layer for the title group — squishes with the header */}
@@ -629,6 +647,8 @@ export default function SquishHeader() {
 
         {/* ── Pause Button for Harmonic Loom ── */}
         <button
+          id="tour-animation-toggle"
+          className="mobile-hide"
           onClick={toggleLoom}
           title={loomPaused ? "Play background animation" : "Pause background animation"}
           style={{

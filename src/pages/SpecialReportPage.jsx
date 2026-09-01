@@ -4,6 +4,7 @@ const GuidedTour = lazy(() => import('../components/GuidedTour/GuidedTour'));
 import GlobalFooter from '../explore/components/GlobalFooter';
 import GlobalDocentDrawer from '../explore/components/GlobalDocentDrawer';
 import { ReportProvider } from '../explore/contexts/ReportContext';
+import OnboardingTour from '../components/GuidedTour/OnboardingTour';
 
 // The Special Report — a guided tour through all fourteen exhibits of the
 // exhibition, in the Accidental Intactivist's reporting voice. Fully
@@ -44,6 +45,7 @@ export default function SpecialReportPage() {
             <GuidedTour />
           </Suspense>
           <GlobalFooter route="special-report" navigate={navigateToExplore} />
+          <OnboardingTour />
         </main>
         <GlobalDocentDrawer 
           isOpen={isDocentOpen} 

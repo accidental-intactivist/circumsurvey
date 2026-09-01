@@ -76,5 +76,17 @@ export function useTelemetry() {
     }
   }, []);
 
-  return { trackEvent, trackPageview, identifyUser };
+  const getFeatureFlag = useCallback((flagName, defaultValue = false) => {
+    if (!isInitialized) initTelemetry();
+    
+    if (MOCK_TELEMETRY) {
+      console.log(`[Telemetry Feature Flag Check] ${flagName} (returning defaultValue: ${defaultValue})`);
+      return defaultValue;
+    }
+    
+    // Feature flags might not be loaded immediately, so we just return current state
+    return posthog.getFeatureFlag(flagName) ?? defaultValue;
+  }, []);
+
+  return { trackEvent, trackPageview, identifyUser, getFeatureFlag };
 }

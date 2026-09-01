@@ -7,8 +7,6 @@ import { ThemeProvider } from './explore/contexts/ThemeContext';
 import { GLOBAL_CSS } from './explore/styles/tokens';
 import { initTelemetry, useTelemetry } from './explore/lib/telemetry';
 import FeedbackWidget from './explore/components/FeedbackWidget';
-import WelcomeModal from './explore/components/WelcomeModal';
-
 /** Track pageviews on every route change so PostHog captures UTM params */
 function PageviewTracker() {
   const location = useLocation();
@@ -45,7 +43,6 @@ export default function App() {
           <Route path="/*" element={<ExplorePage />} />
         </Routes>
         <FeedbackWidget />
-        <WelcomeModal />
       </BrowserRouter>
     </ThemeProvider>
   );

@@ -249,13 +249,7 @@ export default function SquishHeader() {
               display: block !important;
             }
             .squish-nav-container {
-              position: sticky !important;
-              top: 0 !important;
-              height: 70px !important;
-              background: var(--c-bgDeep) !important;
-              border-bottom: 1px solid var(--c-ghost) !important;
-              z-index: 1000 !important;
-              opacity: 1 !important;
+              display: none !important;
             }
             .squish-title-group {
               position: relative !important;

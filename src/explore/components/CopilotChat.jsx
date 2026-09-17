@@ -109,6 +109,24 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     return () => window.removeEventListener('open-docent', handleOpenDocent);
   }, []);
 
+  const lastRoute = useRef(routerState?.route);
+  const lastTourSuas = useRef(JSON.stringify(tourSuas || []));
+  
+  useEffect(() => {
+    const currentTourSuasStr = JSON.stringify(tourSuas || []);
+    const routeChanged = routerState?.route && routerState.route !== lastRoute.current;
+    const suasChanged = currentTourSuasStr !== lastTourSuas.current;
+
+    if (routeChanged || suasChanged) {
+      lastRoute.current = routerState?.route;
+      lastTourSuas.current = currentTourSuasStr;
+      
+      // Auto-clear the chat when the user navigates to a new section or scrolls 
+      // to a new part of the tour, so they can see the new suggested queries.
+      handleClear();
+    }
+  }, [routerState?.route, tourSuas]);
+
   const handleClear = () => {
     setQuery("");
     setResult(null);
@@ -389,7 +407,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
     setError(null);
     setResult(null);
     setAddedToReport(false);
-    trackEvent('copilot_query_submitted', { query_length: searchQuery.length, query_text: searchQuery });
+    trackEvent('copilot_query_submitted', { query_length: searchQuery.length, query_text: searchQuery, search_term: searchQuery });
 
     const isSnapshotRequested = /this page|this exhibit|\{this_page\}/i.test(searchQuery);
     let pageSnapshot = undefined;
@@ -457,7 +475,7 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                 if (addedToReport) return;
                 addAIChatBlock(query, result.answer);
                 setAddedToReport(true);
-                trackEvent('copilot_response_added_to_report', { query_length: query.length });
+                trackEvent('copilot_response_added_to_report', { query_length: query.length, search_term: query });
               }}
               style={{
                 background: addedToReport ? "rgba(100, 200, 100, 0.1)" : "transparent",

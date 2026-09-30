@@ -1,0 +1,109 @@
+{
+  "input": "examples/piano_theme.mid",
+  "output": "examples/out/piano_theme",
+  "video": "pal",
+  "fps": 50.1245,
+  "parts": [
+    {
+      "index": 0,
+      "name": "Piano",
+      "program": 0,
+      "notes": 877,
+      "drums": false
+    },
+    {
+      "index": 1,
+      "name": "Piano #2",
+      "program": 0,
+      "notes": 590,
+      "drums": false
+    }
+  ],
+  "transpose": 0,
+  "tuning_cents": 0.0,
+  "sid_starts_at_midi_s": 0.0,
+  "roles": {
+    "Piano": {
+      "role": "melody",
+      "weight": 1.5
+    },
+    "Piano #2": {
+      "role": "bass",
+      "weight": 1.3
+    }
+  },
+  "instruments": [
+    {
+      "name": "piano:Piano",
+      "wave": 64,
+      "ad": 10,
+      "sr": 73,
+      "pw": 1536,
+      "pw_speed": 24,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": [
+        [
+          64,
+          12
+        ]
+      ]
+    },
+    {
+      "name": "piano:Piano #2",
+      "wave": 64,
+      "ad": 10,
+      "sr": 73,
+      "pw": 1536,
+      "pw_speed": 24,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": [
+        [
+          64,
+          12
+        ]
+      ]
+    }
+  ],
+  "arrangement": {
+    "midi_notes": 1467,
+    "unique_onsets": 1447,
+    "onsets_played": 1176,
+    "onset_coverage_pct": 81.3,
+    "arpeggio_seconds": 72.88,
+    "pitch_onsets_heard_pct": 81.3,
+    "note_time_heard_pct": 85.8
+  },
+  "frames": 6751,
+  "duration_s": 134.685,
+  "dynamics": "velocity",
+  "memory": {
+    "load": "$1000",
+    "end": "$29F1",
+    "total_bytes": 6642,
+    "player_bytes": 1012,
+    "song_bytes": 5300,
+    "song_bytes_uncompressed": 5674,
+    "init": "$1000",
+    "play": "$1003",
+    "frame_counter": "$1006",
+    "zero_page": "$FB-$FC"
+  },
+  "cpu": {
+    "max_cycles_per_frame": 2157,
+    "avg_cycles_per_frame": 855,
+    "max_rasterlines": 34.2
+  },
+  "verification": {
+    "attacks_expected": 1005,
+    "attack_timing_mismatches": 0,
+    "ok": true
+  }
+}

@@ -109,7 +109,7 @@ def load_midi(path: str) -> Song:
         for msg in tr:
             tick += msg.time
             if msg.type == "track_name":
-                name = msg.name.strip()
+                name = msg.name.replace("\x00", "").strip()
             elif msg.type == "program_change":
                 program[msg.channel] = msg.program
             elif msg.type == "note_on" and msg.velocity > 0:
@@ -145,6 +145,12 @@ def load_midi(path: str) -> Song:
                 p.notes.append(n)
 
     song.parts = sorted(parts.values(), key=lambda p: p.index)
+    # duplicate track names (e.g. two "Piano" hands) -> "Piano", "Piano #2"
+    seen = {}
+    for p in song.parts:
+        seen[p.name] = seen.get(p.name, 0) + 1
+        if seen[p.name] > 1:
+            p.name = f"{p.name} #{seen[p.name]}"
     song.notes = sorted((n for p in song.parts for n in p.notes), key=lambda n: (n.start, -n.pitch))
     song.length = max((n.end for n in song.notes), default=0.0)
     return song

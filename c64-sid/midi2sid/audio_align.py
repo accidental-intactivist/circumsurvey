@@ -313,7 +313,7 @@ def onset_score(notes, tm, flux):
     return float(np.mean(f[idx])) if idx else 0.0
 
 
-def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5):
+def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5, smooth_s=0.0):
     """Returns (TimeMap, features, info). transpose=None -> auto-detect."""
     y = decode_audio(audio_path)
     feat = audio_features(y)
@@ -382,6 +382,17 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
             am.append(float(np.median(mt[sel])))
             aa.append(float(np.median(at[sel])))
     am, aa = np.array(am), np.array(aa)
+    # smooth the map: keeps phrase-level rubato but removes the beat-to-beat
+    # jitter that would make evenly spaced notes come out uneven
+    if smooth_s > 0 and len(aa) > 3:
+        w = max(1, int(round(smooth_s / anchor_s / 2)))
+        k = np.ones(2 * w + 1)
+        pad_m = np.pad(am, w, mode="reflect", reflect_type="odd")
+        pad_a = np.pad(aa, w, mode="reflect", reflect_type="odd")
+        # smooth the offset from a straight line, not the raw times
+        lin = np.polyfit(am, aa, 1)
+        resid = pad_a - np.polyval(lin, pad_m)
+        aa = np.polyval(lin, am) + np.convolve(resid, k / k.sum(), mode="valid")
     # enforce monotone, plausible slopes (0.5x..2x)
     for i in range(1, len(aa)):
         dm = am[i] - am[i - 1]

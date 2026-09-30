@@ -47,8 +47,8 @@
       "vib_speed": 0,
       "table": [
         [
-          64,
-          12
+          32,
+          0
         ]
       ]
     },
@@ -66,8 +66,8 @@
       "vib_speed": 0,
       "table": [
         [
-          64,
-          12
+          32,
+          0
         ]
       ]
     }
@@ -75,22 +75,22 @@
   "arrangement": {
     "midi_notes": 1467,
     "unique_onsets": 1447,
-    "onsets_played": 1176,
-    "onset_coverage_pct": 81.3,
-    "arpeggio_seconds": 72.88,
-    "pitch_onsets_heard_pct": 81.3,
-    "note_time_heard_pct": 85.8
+    "onsets_played": 1305,
+    "onset_coverage_pct": 90.2,
+    "arpeggio_seconds": 73.28,
+    "pitch_onsets_heard_pct": 90.2,
+    "note_time_heard_pct": 86.1
   },
   "frames": 6751,
   "duration_s": 134.685,
   "dynamics": "velocity",
   "memory": {
     "load": "$1000",
-    "end": "$29F1",
-    "total_bytes": 6642,
+    "end": "$2BE6",
+    "total_bytes": 7143,
     "player_bytes": 1012,
-    "song_bytes": 5300,
-    "song_bytes_uncompressed": 5674,
+    "song_bytes": 5801,
+    "song_bytes_uncompressed": 6252,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -98,11 +98,11 @@
   },
   "cpu": {
     "max_cycles_per_frame": 2157,
-    "avg_cycles_per_frame": 855,
+    "avg_cycles_per_frame": 863,
     "max_rasterlines": 34.2
   },
   "verification": {
-    "attacks_expected": 1005,
+    "attacks_expected": 1125,
     "attack_timing_mismatches": 0,
     "ok": true
   }

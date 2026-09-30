@@ -86,6 +86,13 @@ candidate assignments and keeps the best:
 
 Unison doublings across parts are merged.
 
+**Struck and plucked notes fade.** For piano, harp, guitar, mallets,
+timpani and pizzicato, a held note's claim on its voice decays over about
+0.4–0.8 s. Without this, a chord held for a bar would keep all three voices
+while the left hand's moving bass line (usually what the listener follows)
+was dropped. Sustained instruments (strings, winds, organ) keep their full
+weight.
+
 ### 3. Instruments and envelopes
 
 Each part gets a SID instrument, chosen from its track name ("pizz",
@@ -182,10 +189,10 @@ flutes and horns, with up to 8 simultaneous notes.
 
 | | MIDI timing | synced to the MP3 |
 |---|---|---|
-| note onsets audible on 3 voices | 84.8 % | 84.1 % |
-| note-time audible | 90.2 % | 89.7 % |
-| size (player + song) | 3,335 bytes | 4,379 bytes |
-| 6502 verification | 560/560 attacks on the exact frame | 558/558 |
+| note onsets audible on 3 voices | 85.1 % | 84.3 % |
+| note-time audible | 90.0 % | 89.6 % |
+| size (player + song) | 3,345 bytes | 4,393 bytes |
+| 6502 verification | 564/564 attacks on the exact frame | 561/561 |
 
 The reference MP3 is a **different performance** from the MIDI:
 * it is in B♭ (the MIDI is in C) and 10 cents sharp
@@ -201,6 +208,30 @@ musically, no alignment can make them agree. A MIDI transcribed from that
 exact recording will sync much more tightly.
 
 ![comparison](examples/out/huckleberry_finn_synced.compare.png)
+
+## Example: Grofé, *Mississippi Suite*, mvt. 3 (piano reduction)
+
+`examples/piano_theme.mid` is a two-hand piano reduction: E♭, 6/8, with
+tempo changes and velocity dynamics. `piano_theme_synced` follows an
+orchestral recording of the movement:
+* same key, +8 cents
+* about 7% slower overall, with strong rubato
+* onset match rises from 0.00 to 0.51
+
+| | MIDI timing | synced to the recording |
+|---|---|---|
+| note onsets audible on 3 voices | 90.2 % | 90.2 % |
+| size (player + song) | 7,143 bytes | 7,321 bytes |
+| 6502 verification | 1125/1125 | 1116/1116 |
+
+**Wrong-note audit.** Each MIDI note was checked against the recording's
+chroma at the aligned time, looking for its pitch class being weak while a
+neighbouring semitone is strong.
+* No note met that test (0 of 1,467). The MIDI's notes agree with the
+  recording.
+* The audible differences came from the arrangement (the dropped bass
+  lines described above) and from the piano preset's old one-frame
+  octave-up attack. That preset now uses a same-pitch sawtooth burst.
 
 ## Verification
 

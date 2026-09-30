@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import itertools
+import math
 
 ARP_WEIGHT = 0.6
 CUT_PENALTY = 0.7
@@ -38,6 +39,7 @@ class FNote:
     sal: float = 1.0
     is_drum: bool = False
     vel: int = 64
+    decay: int = 0       # frames for a held note to fade (0 = sustained instrument)
 
 
 @dataclass
@@ -252,6 +254,16 @@ def _chord_group(notes, used, by_id, max_arp):
     return tuple(n.id for n in sorted(grp, key=lambda n: n.pitch))
 
 
+def _value(n, f):
+    """What a note is worth at frame f. Struck/plucked notes (piano, harp,
+    pizzicato...) fade, so a chord held for bars matters less than a fresh
+    note in another line; sustained instruments keep their full value."""
+    if not n.decay:
+        return n.sal
+    age = max(0, f - n.f0)
+    return n.sal * (0.25 + 0.75 * math.exp(-age / n.decay))
+
+
 def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part):
     sc = 0.0
     placed = {}
@@ -263,10 +275,10 @@ def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part):
         attack = not (set(c) <= prev and not (set(c) & new_ids))
         for i in c:
             n = by_id[i]
-            sc += n.sal * w
+            sc += _value(n, f) * w
             placed[i] = v
             if attack and i not in new_ids:
-                sc -= RESUME_PENALTY * n.sal       # re-attacking a note mid-way
+                sc -= RESUME_PENALTY * _value(n, f)   # re-attacking a note mid-way
         if len(c) > 1:
             ps = [by_id[i].pitch for i in c]
             if max(ps) - min(ps) > 19:
@@ -283,7 +295,7 @@ def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part):
             if placed.get(i) != v:
                 n = by_id[i]
                 remain = (n.f1 - f) / max(1, n.f1 - n.f0)
-                sc -= CUT_PENALTY * n.sal * remain
+                sc -= CUT_PENALTY * _value(n, f) * remain
     c0, c1, c2 = cfg
     if c0 and c1:
         if by_id[c0[0]].pitch > by_id[c1[0]].pitch:

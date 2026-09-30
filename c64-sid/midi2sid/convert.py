@@ -13,6 +13,10 @@ from .arranger import FNote, arrange, part_roles, salience
 from .midi_in import load_midi
 from .player import build_player, PAL_CLOCK, NTSC_CLOCK
 
+# struck/plucked presets: seconds for a held note to fade (arranger weighting)
+DECAYING = {"piano": 0.8, "pizzicato": 0.4, "harp": 0.8, "guitar": 0.8, "mallet": 0.6,
+            "timpani": 0.8}
+
 FPS = {"pal": 985248 / 19656, "ntsc": 1022727 / 17095}
 
 
@@ -120,6 +124,7 @@ def convert(midi_path, out_base, opt: Options):
             inst = part_inst[n.track]
             pitch = n.pitch + transpose
         fn = FNote(n.id, f0, f1, pitch, n.track, inst, is_drum=n.is_drum, vel=n.velocity)
+        fn.decay = int(DECAYING.get(insts[inst].name.split(":")[0], 0) * fps)
         fn.sal = (salience(fn, roles.get(n.track, ("", 1.0))[1], fps) * (0.85 + 0.3 * n.velocity / 127)
                   * motion[n.id])
         fnotes.append(fn)

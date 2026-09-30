@@ -56,7 +56,8 @@ def ms_to_decay(ms):
 # triangle for flutes, noise-burst attacks for plucked sounds.
 # ---------------------------------------------------------------------------
 PRESETS = {
-    "piano":      Instrument("piano", PULSE, 0x0A, 0x49, 0x0600, 24, table=[(PULSE, 12)]),
+    # bright one-frame saw "hammer" at the same pitch (an octave blip reads as a wrong note)
+    "piano":      Instrument("piano", PULSE, 0x0A, 0x49, 0x0600, 24, table=[(SAW, 0)]),
     "mallet":     Instrument("mallet", TRI, 0x09, 0x00, table=[(PULSE, 12), (TRI, 0)]),
     "organ":      Instrument("organ", PULSE, 0x03, 0xC5, 0x0400, 16, 0x0300, 0x0C00),
     "guitar":     Instrument("guitar", PULSE, 0x09, 0x55, 0x0500, 20, table=[(NOISE, 24)]),

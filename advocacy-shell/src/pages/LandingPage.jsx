@@ -9,6 +9,8 @@ import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishH
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import NewsAggregator from '../components/NewsAggregator';
 import { ExhibitCard } from '../explore/components/ExhibitsDashboard';
+import BentoBox from '../components/BentoBox';
+import LiveStatsBar from '../components/LiveStatsBar';
 
 const RAINBOW = "linear-gradient(90deg, var(--c-red), var(--c-orange, #e8a44a), var(--c-yellow, #e8c868), var(--c-green, #68b878), var(--c-blue))";
 const PHASE1_TOTAL = 500;
@@ -243,23 +245,10 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Core Zones rendered as chicklets */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: '1.25rem',
-          marginBottom: '5rem'
-        }}>
-          {CORE_ZONES.map(zone => (
-            <ExhibitCard 
-              key={zone.num} 
-              exhibit={zone} 
-              meta={{ desc: zone.tagline }} 
-              href={zone.route}
-              onClick={zone.external ? undefined : (e) => { e.preventDefault(); navigate(zone.route); }}
-            />
-          ))}
-        </div>
+        <LiveStatsBar />
+
+        {/* Core Zones rendered as a premium Bento Box */}
+        <BentoBox />
 
         {/* ── Rainbow divider ── */}
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.4, marginBottom: '4rem' }} />

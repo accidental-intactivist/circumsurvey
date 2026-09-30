@@ -45,11 +45,27 @@ With `--audio`, the recording is analysed first:
 * **Key**: MIDI arrangements are often in a different key from the
   recording. The best transposition is chosen by DTW cost among the most
   likely keys.
-* **Tempo curve**: chroma + onset **dynamic time warping**. A coarse pass
-  at 10 fps is followed by a banded 50 fps pass, and every step pays for the
-  frames it skips so that silence or mismatched material is never "free".
-  The result is a smooth, monotone MIDI-time → recording-time map, so
-  rubato, fermatas and tempo drift in the performance are followed.
+* **Tempo curve**, in four steps:
+  1. **Audio-to-audio DTW.** The MIDI is rendered to audio internally and
+     analysed exactly like the recording, so their analysis delays cancel.
+     Comparing audio with audio proved far less ambiguous on orchestral
+     recordings than comparing audio with symbolic note features. A coarse
+     pass at 10 fps is followed by a banded pass at 50 fps. Every step pays
+     for the frames it skips, so skipping silence or mismatched material is
+     never "free". Both ends are pinned to where the recording's music
+     starts and stops.
+  2. **Closed-loop correction.** The MIDI is re-rendered at the current
+     sync and its delay against the recording is measured in 3 s windows
+     (median of neighbours, low-confidence windows ignored). The map is then
+     shifted by that delay, repeating until the average error is under
+     20 ms. This fixes stretches where repetitive music let the DTW latch
+     onto the neighbouring repetition, a beat or a bar off.
+  3. **Onset snapping.** Each MIDI chord or note onset is pulled onto the
+     nearest strong onset in the recording (within ±0.35 s). The correction
+     is median-smoothed across neighbouring onsets, so one bad match can't
+     cause a glitch.
+  4. The result is a monotone MIDI-time → recording-time map that follows
+     rubato, ritardandos and fermatas.
 * **Dynamics**: the recording's loudness drives the SID master volume
   (`$D418`), smoothed and hysteresis-limited to avoid the 6581 volume click.
   Use `--dynamics none` to turn this off.
@@ -217,6 +233,10 @@ orchestral recording of the movement:
 * same key, +8 cents
 * about 7% slower overall, with strong rubato
 * onset match rises from 0.00 to 0.51
+* checked by rendering the SID and measuring its delay against the
+  recording in 1.5 s steps: the median offset is 60 ms (about 3 frames).
+  The broad ending (five closing chords, final hit at 143.3 s) lands
+  within 30 ms.
 
 | | MIDI timing | synced to the recording |
 |---|---|---|

@@ -226,7 +226,7 @@ def dtw_path(M, A, start_range, end_range):
     return np.array(path[::-1], float), end_cost
 
 
-def banded_dtw(M, A, centre, half, start_slack=None):
+def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     """DTW restricted to |col - centre[row]| <= half. Returns path (row, col)."""
     n, m = len(M), len(A)
     W = 2 * half + 1
@@ -262,7 +262,10 @@ def banded_dtw(M, A, centre, half, start_slack=None):
         kk = np.argmin(cand, axis=0)
         D[i] = cand[kk, ar] + c
         P[i] = kk
-    j = int(np.argmin(D[-1]))
+    last = D[-1].copy()
+    if end_slack is not None:
+        last[np.abs(starts[-1] + np.arange(W) - centre[-1]) > end_slack] = INF
+    j = int(np.argmin(last))
     i = n - 1
     path = [(i, starts[i] + j)]
     while i > 0:
@@ -276,6 +279,70 @@ def banded_dtw(M, A, centre, half, start_slack=None):
             break
         path.append((i, col))
     return np.array(path[::-1], float)
+
+
+def onset_peaks(flux):
+    """Onset times (s) and strengths from the (latency-aligned) flux curve."""
+    f = _smooth_env(flux, 1.0)
+    base = np.convolve(np.pad(f, 25, mode="edge"), np.ones(51) / 51, mode="valid")
+    thr = base + 0.5 * f.std()
+    idx = np.where((f[1:-1] > f[:-2]) & (f[1:-1] >= f[2:]) & (f[1:-1] > thr[1:-1]))[0] + 1
+    a, b, c = f[idx - 1], f[idx], f[idx + 1]
+    den = a - 2 * b + c
+    frac = np.where(np.abs(den) > 1e-12, 0.5 * (a - c) / np.where(den == 0, 1, den), 0.0)
+    times = (idx + frac) / FPS + NFFT / 2 / SR
+    return times, (b - base[idx]) / (f.std() + 1e-9)
+
+
+def snap_onsets(notes, am, aa, flux, reach=0.35, sigma=0.15):
+    """Pull the time map onto the recording's actual onsets.
+
+    Each MIDI onset cluster (notes starting together) is matched to the
+    strongest nearby recording onset.  The per-cluster corrections are
+    median-smoothed over neighbouring clusters and outliers rejected, so a
+    single wrong match cannot create a glitch; the result also removes any
+    constant latency left by the feature-based alignment."""
+    ptimes, pstr = onset_peaks(flux)
+    starts = sorted(n.start for n in notes)
+    clusters = []
+    for t in starts:
+        if clusters and t - clusters[-1][-1] < 0.03:
+            clusters[-1].append(t)
+        else:
+            clusters.append([t])
+    ct = np.array([c[0] for c in clusters])
+    cw = np.array([len(c) for c in clusters], float)
+    m = np.interp(ct, am, aa)
+    delta = np.full(len(ct), np.nan)
+    for i, (t, mm) in enumerate(zip(ct, m)):
+        sel = np.where(np.abs(ptimes - mm) <= reach)[0]
+        if len(sel):
+            sc = pstr[sel] * np.exp(-0.5 * ((ptimes[sel] - mm) / sigma) ** 2)
+            j = sel[int(np.argmax(sc))]
+            if sc.max() > 0.3:
+                delta[i] = ptimes[j] - mm
+    ok = ~np.isnan(delta)
+    if ok.sum() < 8:
+        return am, aa, {"onset_snap_matched_pct": round(100 * ok.mean(), 1)}
+    # robust local consensus: median of the 9 nearest matched clusters
+    idx = np.where(ok)[0]
+    med = np.empty(len(ct))
+    for i in range(len(ct)):
+        near = idx[np.argsort(np.abs(idx - i))[:9]]
+        med[i] = np.median(delta[near])
+    use = ok & (np.abs(delta - med) < 0.08)
+    corr = np.where(use, delta, med)
+    new_a = m + corr
+    # keep original anchors outside the clustered span, monotone overall
+    before, after = am < ct[0] - 0.25, am > ct[-1] + 0.25
+    am2 = np.concatenate([am[before], ct, am[after]])
+    aa2 = np.concatenate([aa[before] + corr[0], new_a, aa[after] + corr[-1]])
+    order = np.argsort(am2, kind="stable")
+    am2, aa2 = am2[order], aa2[order]
+    for i in range(1, len(aa2)):
+        aa2[i] = max(aa2[i], aa2[i - 1] + 0.3 * (am2[i] - am2[i - 1]))
+    return am2, aa2, {"onset_snap_matched_pct": round(100 * use.mean(), 1),
+                      "onset_snap_median_correction_ms": round(1000 * float(np.median(corr)), 1)}
 
 
 class TimeMap:
@@ -313,7 +380,104 @@ def onset_score(notes, tm, flux):
     return float(np.mean(f[idx])) if idx else 0.0
 
 
-def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5, smooth_s=0.0):
+def render_midi(notes, length, sr=SR):
+    """Plain additive render of the MIDI (MIDI time) used as the alignment
+    reference: comparing audio with audio through the same analysis is far
+    less ambiguous than comparing audio with symbolic note features, and the
+    analysis latencies of both sides cancel."""
+    y = np.zeros(int((length + 1.0) * sr), np.float32)
+    for n in notes:
+        s0 = int(n.start * sr)
+        dur = max(0.05, n.end - n.start)
+        m = int(min(dur + 0.15, 4.0) * sr)
+        t = np.arange(m) / sr
+        f0 = 440.0 * 2 ** ((n.pitch - 69) / 12)
+        env = np.exp(-t / 0.9) * np.minimum(1, t / 0.004)
+        rel = t > dur
+        env[rel] *= np.exp(-(t[rel] - dur) / 0.05)
+        sig = np.zeros(m, np.float32)
+        for h, a in ((1, 1.0), (2, 0.5), (3, 0.3), (4, 0.2)):
+            if f0 * h < sr / 2:
+                sig += a * np.sin(2 * np.pi * f0 * h * t)
+        y[s0:s0 + m] += (n.velocity / 127) * env * sig[:len(y) - s0]
+    return y / (np.abs(y).max() + 1e-9)
+
+
+def _mapped(notes, am, aa):
+    class N:
+        __slots__ = ("start", "end", "pitch", "velocity")
+    out = []
+    for n in notes:
+        m = N()
+        m.start, m.end = float(np.interp(n.start, am, aa)), float(np.interp(n.end, am, aa))
+        m.end = max(m.end, m.start + 0.03)
+        m.pitch, m.velocity = n.pitch, n.velocity
+        out.append(m)
+    return out
+
+
+def _centred(ch):
+    ch = ch - ch.mean(axis=1, keepdims=True)
+    return ch / (np.linalg.norm(ch, axis=1, keepdims=True) + 1e-9)
+
+
+def lag_curve(A, Ao, B, Bo, win_s=3.0, hop_s=0.75, max_lag_s=1.2):
+    """Local lag (s) of B relative to A: B[t + lag] matches A[t].
+    Returns window centres (s), lags (s), confidence."""
+    W, L = int(win_s * FPS), int(max_lag_s * FPS)
+    n = min(len(A), len(B))
+    cs, ls, cf = [], [], []
+    for c in range(W, n - W, int(hop_s * FPS)):
+        a, ao = A[c - W:c + W], Ao[c - W:c + W]
+        best, bl, scores = -9.0, 0, []
+        for lag in range(-L, L + 1):
+            if c - W + lag < 0 or c + W + lag > n:
+                scores.append(-9.0)
+                continue
+            v = float((a * B[c - W + lag:c + W + lag]).sum(1).mean())
+            v += 0.15 * float(np.dot(ao, Bo[c - W + lag:c + W + lag]) / len(ao))
+            scores.append(v)
+            if v > best:
+                best, bl = v, lag
+        sc = np.array(scores)
+        cs.append(c / FPS)
+        ls.append(bl / FPS)
+        cf.append(best - np.median(sc[sc > -9]))
+    return np.array(cs), np.array(ls), np.array(cf)
+
+
+def refine_by_lag(notes, am, aa, rec_chroma, rec_flux, transpose=0, iters=4):
+    """Closed-loop correction: render the MIDI at the current map, measure
+    where it runs early/late against the recording, shift, repeat."""
+    A = _centred(rec_chroma)
+    Ao = _smooth_env(rec_flux, 1.5)
+    Ao = (Ao - Ao.mean()) / (Ao.std() + 1e-9)
+    hist = []
+    for it in range(iters):
+        ry = render_midi(_mapped(notes, am, aa), float(aa[-1]) + 2.0)
+        rf = audio_features(ry)
+        B = _centred(np.roll(tuned_chroma(ry, 0.0, len(rf["flux"])), transpose, axis=1))
+        Bo = _smooth_env(rf["flux"], 1.5)
+        Bo = (Bo - Bo.mean()) / (Bo.std() + 1e-9)
+        cs, ls, cf = lag_curve(A, Ao, B, Bo)
+        good = cf > np.percentile(cf, 20)
+        if good.sum() < 3:
+            break
+        # median over neighbouring windows: one ambiguous window cannot jump
+        gc, gl = cs[good], ls[good]
+        lg_good = np.array([np.median(gl[np.abs(gc - c) <= 1.6]) for c in gc])
+        lg = np.interp(cs, gc, lg_good)
+        hist.append(round(float(np.mean(np.abs(lg))) * 1000, 1))
+        if np.mean(np.abs(lg)) < 0.02:
+            break
+        aa = aa - np.interp(aa, cs, lg)
+        for i in range(1, len(aa)):
+            aa[i] = max(aa[i], aa[i - 1] + 0.3 * (am[i] - am[i - 1]))
+    return am, aa, {"lag_refine_mean_abs_ms_per_pass": hist}
+
+
+def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5, smooth_s=0.0,
+          snap=True):
     """Returns (TimeMap, features, info). transpose=None -> auto-detect."""
     y = decode_audio(audio_path)
     feat = audio_features(y)
@@ -325,7 +489,10 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
     # --- coarse DTW at 10 fps ------------------------------------------
     POOL = 5
     fps_pool = FPS / POOL
-    mf = midi_features(notes_k, length)
+    # reference: the MIDI rendered to audio, analysed exactly like the recording
+    ry = render_midi(notes_k, length)
+    rfeat = audio_features(ry)
+    mf = {"chroma": tuned_chroma(ry, 0.0, len(rfeat["flux"])), "onset": rfeat["flux"]}
     onset_weight = 0.25
 
     def feats(ch, on, silent):
@@ -339,7 +506,8 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
     nf = len(feat["flux"])
     db = 20 * np.log10(feat["rms"][:nf] + 1e-9)
     a_sil = db < np.percentile(db, 95) - 45
-    m_sil = mf["chroma"].sum(axis=1) < 1e-6
+    rdb = 20 * np.log10(rfeat["rms"][:len(rfeat["flux"])] + 1e-9)
+    m_sil = rdb < np.percentile(rdb, 95) - 45
     A = feats(chroma[:nf], feat["flux"], a_sil)
     # choose the transposition by DTW cost among the best key candidates
     # music start/end in the recording (first/last non-silent frame)
@@ -371,9 +539,10 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
     Mf = fine(np.roll(mf["chroma"], k, axis=1), _smooth_env(mf["onset"], 1.0), m_sil)
     Af = fine(chroma[:nf], _smooth_env(feat["flux"], 1.0), a_sil)
     centre = np.interp(np.arange(len(Mf)) / FPS, mt, at) * FPS
-    fpath = banded_dtw(Mf, Af, centre.astype(int), int(band_s * FPS), start_slack=int(0.3 * FPS))
-    # audio feature frame i is centred NFFT/2 samples after i*HOP
-    mt, at = fpath[:, 0] / FPS, fpath[:, 1] / FPS + NFFT / 2 / SR
+    fpath = banded_dtw(Mf, Af, centre.astype(int), int(band_s * FPS), start_slack=int(0.3 * FPS),
+                       end_slack=int(0.5 * FPS))
+    # both sides share the analysis latency, so it cancels
+    mt, at = fpath[:, 0] / FPS, fpath[:, 1] / FPS
 
     am, aa = [], []
     for t in np.arange(0, mt.max() + 1e-9, anchor_s):
@@ -386,17 +555,22 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
     # jitter that would make evenly spaced notes come out uneven
     if smooth_s > 0 and len(aa) > 3:
         w = max(1, int(round(smooth_s / anchor_s / 2)))
-        k = np.ones(2 * w + 1)
+        kern = np.ones(2 * w + 1)
         pad_m = np.pad(am, w, mode="reflect", reflect_type="odd")
         pad_a = np.pad(aa, w, mode="reflect", reflect_type="odd")
         # smooth the offset from a straight line, not the raw times
         lin = np.polyfit(am, aa, 1)
         resid = pad_a - np.polyval(lin, pad_m)
-        aa = np.polyval(lin, am) + np.convolve(resid, k / k.sum(), mode="valid")
+        aa = np.polyval(lin, am) + np.convolve(resid, kern / kern.sum(), mode="valid")
     # enforce monotone, plausible slopes (0.5x..2x)
     for i in range(1, len(aa)):
         dm = am[i] - am[i - 1]
         aa[i] = min(max(aa[i], aa[i - 1] + 0.5 * dm), aa[i - 1] + 2.0 * dm)
+    am, aa, lag_info = refine_by_lag(notes_k, am, aa, chroma[:nf], feat["flux"], transpose=k)
+    if snap:
+        am, aa, snap_info = snap_onsets(notes_k, am, aa, feat["flux"])
+    else:
+        snap_info = {}
     scale, offset = np.polyfit(am, aa, 1)
     lin = TimeMap(float(scale), float(offset))
     tm = TimeMap(float(scale), float(offset), (am, aa) if use_dtw else None)
@@ -411,6 +585,8 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
         "onset_score_unaligned": round(onset_score(notes_k, TimeMap(), feat["flux"]), 3),
         "onset_score_linear": round(onset_score(notes_k, lin, feat["flux"]), 3),
         "onset_score_final": round(onset_score(notes_k, tm, feat["flux"]), 3),
+        **lag_info,
+        **snap_info,
         **tm.describe(),
     }
     return tm, feat, info, {"tuning": tuning, "transpose": k}

@@ -1,11 +1,14 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SignupForm from '../components/SignupForm';
 import HarmonicCanvas from '../components/HarmonicCanvas';
-import ThemeToggle from '../components/ThemeToggle';
 import { useTheme } from '../contexts/ThemeContext';
-import { Database, ShieldAlert, Binary, Sparkles, ExternalLink, ArrowRight, ClipboardPen, Play, Pause, HeartHandshake, Scale, Mail, Coffee, BookOpen, Building2 } from 'lucide-react';
+import { Database, ShieldAlert, Binary, Sparkles, ExternalLink, ArrowRight, ClipboardPen, Play, Pause, HeartHandshake, Scale, Mail, Coffee, BookOpen, Building2, Archive, BarChart2, Users, Newspaper } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
+import UniversalSquishHeader from '../../../circumsurvey/src/components/Scrollytelling/UniversalSquishHeader';
+import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
+import NewsAggregator from '../components/NewsAggregator';
+import { ExhibitCard } from '../explore/components/ExhibitsDashboard';
 
 const RAINBOW = "linear-gradient(90deg, var(--c-red), var(--c-orange, #e8a44a), var(--c-yellow, #e8c868), var(--c-green, #68b878), var(--c-blue))";
 const PHASE1_TOTAL = 500;
@@ -58,32 +61,63 @@ const STRATEGIC_PARTNERS = [
   }
 ];
 
+const CORE_ZONES = [
+  {
+    route: '/report',
+    num: 'ZONE 01',
+    label: 'The Special Report',
+    tagline: 'A deep-dive investigation exploring empirical findings.',
+    icon: Sparkles,
+    colorVar: 'var(--c-goldBright)'
+  },
+  {
+    route: '/explore',
+    num: 'ZONE 02',
+    label: 'Data Explorer',
+    tagline: 'Interactive visualizations and living cross-tabs.',
+    icon: BarChart2,
+    colorVar: 'var(--c-blue)'
+  },
+  {
+    route: '/library',
+    num: 'ZONE 03',
+    label: 'Digital Library',
+    tagline: 'Searchable repository & AI Research Assistant.',
+    icon: BookOpen,
+    colorVar: 'var(--c-purple)'
+  },
+
+  {
+    route: '/entities',
+    num: 'ZONE 04',
+    label: 'Key Figures & Organizations',
+    tagline: 'Encyclopedic directory of the movement\'s people and institutions.',
+    icon: Users,
+    colorVar: 'var(--c-red)'
+  },
+  {
+    route: 'https://forms.gle/FQ8o9g7j1yU3Cw7n7',
+    num: 'ZONE 05',
+    label: 'Take the Survey',
+    tagline: 'Share your experience anonymously.',
+    icon: ClipboardPen,
+    colorVar: 'var(--c-orange)',
+    external: true
+  },
+  {
+    route: '/news',
+    num: 'ZONE 06',
+    label: 'Field Notes',
+    tagline: 'Updates, analysis, and dispatches from the frontlines.',
+    icon: Newspaper,
+    colorVar: 'var(--c-teal, #20c997)'
+  }
+];
+
 export default function LandingPage() {
   const { theme, mode } = useTheme();
+  const navigate = useNavigate();
   const themeKey = `${theme}-${mode}`;
-
-  // Detect domain lens dynamically
-  const lensInfo = useMemo(() => {
-    const host = typeof window !== 'undefined' ? window.location.hostname : '';
-    if (host.includes('info')) {
-      return {
-        badge: 'MEDICAL & LEGAL RESEARCH LENS',
-        tagline: 'Clinical Evidence & International Consensus',
-        accent: C.goldBright,
-      };
-    } else if (host.includes('you')) {
-      return {
-        badge: 'PERSONAL DISCOVERY & DISCOVERY LENS',
-        tagline: 'Anatomy, Autonomy & Individual History',
-        accent: C.blue,
-      };
-    }
-    return {
-      badge: 'EXPECTANT PARENTS & ADVOCACY GUIDE',
-      tagline: 'Navigating Medical Pressure & Protecting Children',
-      accent: C.goldBright,
-    };
-  }, []);
 
   const [scrolled, setScrolled] = useState(false);
   const [loomPaused, setLoomPaused] = useState(() => {
@@ -113,352 +147,124 @@ export default function LandingPage() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: C.bg,
+      background: `linear-gradient(135deg, var(--c-bgDeep) 0%, var(--c-bg) 100%)`,
       color: C.text,
       fontFamily: FONT.body,
       position: 'relative',
       zIndex: 1,
-      paddingBottom: '4rem'
+      paddingBottom: '4rem',
+      overflow: 'hidden'
     }}>
+      {/* Background glowing orb for dynamic modern feel */}
+      <div style={{
+        position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: '1200px', height: '600px',
+        background: 'radial-gradient(ellipse at top, rgba(212,160,48,0.15) 0%, transparent 70%)',
+        zIndex: -1, pointerEvents: 'none'
+      }} />
 
-      {/* ════════════════════════════════════════════════════════════════════
-          SQUISH MASTHEAD / HERO CONTAINER
-          - Height squishes from 580px (full hero) to 64px (sticky navbar) on scroll.
-          - Harmonic Loom background fills the header area.
-          - Rainbow Line is positioned at the exact bottom edge of the header,
-            acting as the border between the Loom/Hero and the 3 boxes below.
-          ════════════════════════════════════════════════════════════════════ */}
-      <header style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        height: scrolled ? '64px' : '580px',
-        maxHeight: scrolled ? '64px' : '85vh',
-        transition: 'height 0.45s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, backdrop-filter 0.3s ease',
-        background: scrolled
-          ? 'color-mix(in srgb, var(--c-bg) 92%, transparent)'
-          : 'color-mix(in srgb, var(--c-bg) 75%, transparent)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.3)' : 'none',
-      }}>
 
-        {/* Clipper wrapper for Harmonic Loom so canvas crops cleanly with header height */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: scrolled ? 0.12 : 0.35,
-            transition: 'opacity 0.45s ease',
-          }}>
-            <HarmonicCanvas position="absolute" opacity={1} themeKey={themeKey} paused={loomPaused} />
+      <UniversalSquishHeader
+        themeKey={themeKey}
+        loomPaused={loomPaused}
+        startVh={40}
+        title={<>The Accidental<br />Intactivist's Guide</>}
+        navRightContent={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+            <Link to="/report" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
+              color: C.goldBright, textDecoration: 'none',
+              letterSpacing: '0.05em', textTransform: 'uppercase',
+              padding: '0.35rem 0.8rem', border: `1px solid ${C.border}`,
+              borderRadius: 4, transition: 'all 0.2s'
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,48,0.1)'; e.currentTarget.style.borderColor = C.goldBright; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = C.border; }}
+            >
+              <span>Phase 1 Report</span>
+              <ExternalLink size={14} />
+            </Link>
+
+            <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+              fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
+              color: 'var(--c-bgDeep)', textDecoration: 'none',
+              letterSpacing: '0.05em', textTransform: 'uppercase',
+              padding: '0.35rem 0.8rem', background: 'var(--c-gold)',
+              borderRadius: 4, transition: 'all 0.2s'
+            }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >
+              <ClipboardPen size={14} />
+              <span>Take the Survey</span>
+            </a>
+
+            <button onClick={toggleLoom} style={{
+              background: 'transparent', border: `1px solid ${C.ghost}`,
+              borderRadius: '50%', width: 34, height: 34,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', color: C.muted, transition: 'all 0.2s'
+            }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = C.goldBright}
+              onMouseLeave={e => e.currentTarget.style.borderColor = C.ghost}
+              aria-label={loomPaused ? 'Play animation' : 'Pause animation'}
+            >
+              {loomPaused ? <Play size={14} /> : <Pause size={14} />}
+            </button>
+
+            <ArchiveHamburgerMenu />
           </div>
-
-          {/* Vignette / gradient overlay for readability */}
-          <div style={{
-            position: 'absolute', inset: 0, zIndex: 1,
-            background: scrolled
-              ? 'transparent'
-              : `linear-gradient(180deg, color-mix(in srgb, var(--c-bg) 30%, transparent) 0%, color-mix(in srgb, var(--c-bg) 70%, transparent) 75%, var(--c-bg) 100%)`,
-            transition: 'background 0.45s ease',
-          }} />
-        </div>
-
-        {/* ── Rainbow Line at the EXACT bottom edge of the Harmonic Loom masthead ── */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 3,
-          background: RAINBOW,
-          zIndex: 50,
-        }} />
-
-        {/* ── Top Navigation Bar (Fixed 64px height at top of header) ── */}
-        <nav style={{
-          position: 'relative', zIndex: 200,
-          height: '64px',
-          padding: '0 2rem',
-          display: 'flex',
-          alignItems: 'center',
-        }}>
-          <div style={{
-            maxWidth: '1100px', width: '100%', margin: '0 auto',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-          }}>
-            {/* Brand Logo / Title */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{
-                width: 8, height: 8, borderRadius: '50%',
-                background: C.goldBright,
-                boxShadow: `0 0 10px ${C.goldBright}`,
-                flexShrink: 0
-              }} />
-              <span style={{
-                fontFamily: FONT.condensed, fontWeight: 800,
-                fontSize: scrolled ? '0.9rem' : '1rem',
-                color: C.textBright, letterSpacing: '0.08em', textTransform: 'uppercase',
-                whiteSpace: 'nowrap', transition: 'font-size 0.3s ease'
-              }}>
-                The Accidental Intactivist <span style={{ color: C.goldBright }}>// Phase 2</span>
-              </span>
-            </div>
-
-            {/* Right Nav Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-              <a href="https://intactivist.report" style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
-                color: C.goldBright, textDecoration: 'none',
-                letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.35rem 0.8rem', border: `1px solid ${C.border}`,
-                borderRadius: 4, transition: 'all 0.2s'
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,48,0.1)'; e.currentTarget.style.borderColor = C.goldBright; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = C.border; }}
-              >
-                <span>Phase 1 Report</span>
-                <ExternalLink size={14} />
-              </a>
-
-              <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
-                color: 'var(--c-bgDeep)', textDecoration: 'none',
-                letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.35rem 0.8rem', background: 'var(--c-gold)',
-                borderRadius: 4, transition: 'all 0.2s'
-              }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >
-                <ClipboardPen size={14} />
-                <span>Take the Survey</span>
-              </a>
-
-              {/* Loom pause/play button */}
-              <button onClick={toggleLoom} style={{
-                background: 'transparent', border: `1px solid ${C.ghost}`,
-                borderRadius: '50%', width: 34, height: 34,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', color: C.muted, transition: 'all 0.2s'
-              }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = C.goldBright}
-                onMouseLeave={e => e.currentTarget.style.borderColor = C.ghost}
-                aria-label={loomPaused ? 'Play animation' : 'Pause animation'}
-              >
-                {loomPaused ? <Play size={14} /> : <Pause size={14} />}
-              </button>
-
-              <ThemeToggle />
-            </div>
-          </div>
-        </nav>
-
-        {/* ── Hero Center Content (inside the squishing masthead) ── */}
-        <div style={{
-          position: 'relative', zIndex: 10,
-          opacity: scrolled ? 0 : 1,
-          transform: scrolled ? 'translateY(-30px)' : 'translateY(0)',
-          transition: 'opacity 0.35s ease, transform 0.4s ease',
-          pointerEvents: scrolled ? 'none' : 'auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexDirection: 'column',
-          textAlign: 'center',
-          padding: '1.5rem 2rem 2rem',
-          height: 'calc(100% - 64px)',
-        }}>
-          <div style={{ maxWidth: '1000px', width: '100%' }}>
-            {/* Domain Lens Badge */}
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-              padding: '0.4rem 1.2rem',
-              background: 'rgba(212, 160, 48, 0.08)',
-              border: `1px solid ${C.border}`, borderRadius: '100px',
-              fontSize: '0.75rem', fontFamily: FONT.condensed,
-              fontWeight: 800, color: C.goldBright,
-              letterSpacing: '0.12em', textTransform: 'uppercase',
-              marginBottom: '1.5rem',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-            }}>
-              <Sparkles size={14} style={{ color: C.goldBright }} />
-              <span>{lensInfo.badge}</span>
-            </div>
-
-            <h1 style={{
-              fontFamily: FONT.display,
-              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-              fontWeight: 700, color: C.textBright,
-              lineHeight: 1.15, letterSpacing: '-0.01em',
-              marginBottom: '1.2rem'
-            }}>
-              The Data is Unassailable.<br />
-              <span style={{ color: C.goldBright, fontStyle: 'italic', fontWeight: 400 }}>
-                Now Comes the Action.
-              </span>
-            </h1>
-
-            <p style={{
-              fontSize: '1.1rem', color: C.text, fontFamily: FONT.body,
-              lineHeight: 1.6, maxWidth: '720px', margin: '0 auto 1.5rem', fontWeight: 300
-            }}>
-              Building upon the empirical findings of <strong style={{ color: C.textBright }}>The Accidental Intactivist's Inquiry</strong>, Phase 2 turns static evidence into a dynamic, chat-based AI research assistant.
-            </p>
-
-            {/* Respondent count & trust indicators */}
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-              fontFamily: FONT.mono, fontSize: '0.82rem', color: C.dim,
-              letterSpacing: '0.06em', marginBottom: '1.2rem',
-              flexWrap: 'wrap', justifyContent: 'center'
-            }}>
-              <span style={{
-                display: 'inline-block', width: 6, height: 6,
-                borderRadius: '50%', background: C.green || '#68b878',
-                animation: 'pulse 2s infinite'
-              }} />
-              <span>{PHASE1_TOTAL}+ RESPONDENTS</span>
-              <span style={{ color: C.ghost }}>·</span>
-              <span>100+ INTERACTIVE CHARTS</span>
-              <span style={{ color: C.ghost }}>·</span>
-              <span>PEER-REVIEWED METHODOLOGY</span>
-            </div>
-
-            {/* Lens context box — sits right above the bottom Rainbow Line */}
-            <div>
-              <div style={{
-                display: 'inline-block', padding: '0.45rem 1rem',
-                borderLeft: `3px solid ${C.goldBright}`,
-                background: 'rgba(255,255,255,0.02)',
-                textAlign: 'left', maxWidth: '650px',
-                fontSize: '0.9rem', color: C.muted,
-                fontFamily: FONT.condensed, letterSpacing: '0.04em'
-              }}>
-                LENS CONTEXT: <span style={{ color: C.textBright }}>{lensInfo.tagline}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </header>
+        }
+        heroContent={null}
+      />
 
       {/* ════════════════════════════════════════════════════════════════════
           MAIN CONTENT AREA (Starts immediately below the Squish Masthead)
           ════════════════════════════════════════════════════════════════════ */}
       <main style={{ maxWidth: '1140px', margin: '0 auto', padding: '3.5rem 2rem 2rem' }}>
-        {/* 3 Core Pillar Cards */}
+        
+        {/* Extracted Hero Content */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <p style={{
+            fontSize: '1.1rem', color: C.text, fontFamily: FONT.body,
+            lineHeight: 1.6, maxWidth: '720px', margin: '0 auto 1.5rem', fontWeight: 300
+          }}>
+            Your central hub for global genital autonomy research, historical archives, and educational tools. Whether you're exploring the empirical data from our international survey, navigating historical precedents, or mapping the advocacy network, you'll find the resources you need here.
+          </p>
+
+          <p style={{
+            fontSize: '1.05rem', color: C.muted, fontFamily: FONT.condensed,
+            lineHeight: 1.6, maxWidth: '720px', margin: '0 auto 2rem', fontWeight: 400,
+            letterSpacing: '0.02em', fontStyle: 'italic'
+          }}>
+            "We didn't ask for this fight, but the evidence demands it. Dive into the living dataset, comb through a century of medical literature, or step up and add your own voice to the record. This is where the cultural blind spot ends."
+          </p>
+        </div>
+
+        {/* Core Zones rendered as chicklets */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.75rem',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+          gap: '1.25rem',
           marginBottom: '5rem'
         }}>
-          
-          {/* Card 1: Living Data Pipeline */}
-          <div style={{
-            padding: '2.2rem',
-            background: C.card,
-            border: `1px solid ${C.borderMuted}`,
-            borderRadius: '12px',
-            transition: 'transform 0.25s, border-color 0.25s',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.borderColor = C.border;
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = C.borderMuted;
-          }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 8,
-              background: 'rgba(212, 160, 48, 0.1)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <Database size={24} style={{ color: C.goldBright }} />
-            </div>
-            <h3 style={{ fontFamily: FONT.display, fontSize: '1.35rem', color: C.textBright, marginBottom: '0.75rem' }}>
-              Living Data Pipeline
-            </h3>
-            <p style={{ color: C.muted, fontSize: '0.92rem', lineHeight: 1.6, fontFamily: FONT.body }}>
-              The survey remains active to continuously aggregate voices from parents, partners, and medical professionals—feeding updated quantitative findings directly into the empirical consensus.
-            </p>
-          </div>
-
-          {/* Card 2: AI Research Assistant */}
-          <Link to="/archive" style={{
-            padding: '2.2rem',
-            background: C.card,
-            border: `1px solid ${C.borderMuted}`,
-            borderRadius: '12px',
-            textDecoration: 'none',
-            display: 'block',
-            transition: 'transform 0.25s, border-color 0.25s'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.borderColor = C.border;
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = C.borderMuted;
-          }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 8,
-              background: 'rgba(66, 165, 245, 0.1)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <Binary size={24} style={{ color: C.blue }} />
-            </div>
-            <h3 style={{ fontFamily: FONT.display, fontSize: '1.35rem', color: C.textBright, marginBottom: '0.75rem' }}>
-              AI Research Assistant
-            </h3>
-            <p style={{ color: C.muted, fontSize: '0.92rem', lineHeight: 1.6, fontFamily: FONT.body }}>
-              A chat-based AI assistant trained specifically to retrieve international medical consensus (KNMG, Swedish Pediatric Society), statutory case law, and empirical survey cross-tabs.
-            </p>
-          </Link>
-
-          {/* Card 3: Universal Autonomy & Legal Parity */}
-          <div style={{
-            padding: '2.2rem',
-            background: C.card,
-            border: `1px solid ${C.borderMuted}`,
-            borderRadius: '12px',
-            transition: 'transform 0.25s, border-color 0.25s'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.borderColor = C.border;
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = C.borderMuted;
-          }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 8,
-              background: 'rgba(229, 57, 53, 0.1)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: '1.5rem'
-            }}>
-              <ShieldAlert size={24} style={{ color: C.red }} />
-            </div>
-            <h3 style={{ fontFamily: FONT.display, fontSize: '1.35rem', color: C.textBright, marginBottom: '0.75rem' }}>
-              Universal Autonomy & Legal Parity
-            </h3>
-            <p style={{ color: C.muted, fontSize: '0.92rem', lineHeight: 1.6, fontFamily: FONT.body }}>
-              Exposing medical double standards by applying international bioethical frameworks and child protection standards equally to all children regardless of gender.
-            </p>
-          </div>
-
+          {CORE_ZONES.map(zone => (
+            <ExhibitCard 
+              key={zone.num} 
+              exhibit={zone} 
+              meta={{ desc: zone.tagline }} 
+              href={zone.route}
+              onClick={zone.external ? undefined : (e) => { e.preventDefault(); navigate(zone.route); }}
+            />
+          ))}
         </div>
 
         {/* ── Rainbow divider ── */}
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.4, marginBottom: '4rem' }} />
+
+        <NewsAggregator />
 
         {/* ════════════════════════════════════════════════════════════════════
             STRATEGIC PARTNERS & ALLIED COALITIONS
@@ -595,13 +401,14 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════════════════════════════
             URGENT CALL TO ACTION: REGRET PARENTS & LEGAL ADVOCACY
             ════════════════════════════════════════════════════════════════════ */}
-        <div style={{
+        <div className="lux-lens lux-glide-in" style={{
           padding: '2.5rem',
           background: 'rgba(232, 164, 74, 0.05)',
-          border: `1px solid rgba(232, 164, 74, 0.3)`,
-          borderRadius: '12px',
+          border: `1px solid rgba(232, 164, 74, 0.2)`,
+          borderRadius: '16px',
           marginBottom: '4rem',
-          position: 'relative'
+          position: 'relative',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
             <Scale size={22} style={{ color: 'var(--c-orange, #e8a44a)' }} />
@@ -675,10 +482,11 @@ export default function LandingPage() {
                 fontFamily: FONT.condensed, fontWeight: 800,
                 fontSize: '0.95rem', letterSpacing: '0.05em', textTransform: 'uppercase',
                 padding: '0.65rem 1.4rem', borderRadius: '6px', textDecoration: 'none',
-                transition: 'opacity 0.2s'
+                transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                boxShadow: '0 4px 15px rgba(232, 164, 74, 0.3)'
               }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(232, 164, 74, 0.5)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(232, 164, 74, 0.3)'; }}
             >
               <Mail size={16} />
               <span>Reach Out Confidentially</span>
@@ -720,12 +528,13 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════════════════════════════
             GRASSROOTS RESEARCH FUNDRAISER & PLEDGE MATCH
             ════════════════════════════════════════════════════════════════════ */}
-        <div style={{
+        <div className="lux-lens lux-glide-in" style={{
           padding: '2.5rem',
-          background: C.card,
-          border: `1px solid ${C.borderMuted}`,
-          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.02)',
+          border: `1px solid rgba(255, 255, 255, 0.05)`,
+          borderRadius: '16px',
           marginBottom: '4rem',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
             <HeartHandshake size={22} style={{ color: C.goldBright }} />
@@ -805,8 +614,8 @@ export default function LandingPage() {
           <p style={{ color: C.text, fontSize: '1rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 1.5rem', fontFamily: FONT.body }}>
             Phase 1 is live with 100+ interactive charts, participant narratives, and international medical policy comparisons.
           </p>
-          <a
-            href="https://intactivist.report"
+          <Link
+            to="/report"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
               background: C.goldBright, color: C.bg,
@@ -820,7 +629,7 @@ export default function LandingPage() {
           >
             <span>Launch Special Report Data Explorer</span>
             <ArrowRight size={18} />
-          </a>
+          </Link>
         </div>
 
       </main>

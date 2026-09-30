@@ -1,0 +1,159 @@
+{
+  "input": "examples/huckleberry_finn.mid",
+  "output": "examples/out/huckleberry_finn",
+  "video": "pal",
+  "fps": 50.1245,
+  "parts": [
+    {
+      "index": 0,
+      "name": "Bassoons / Bass Clarinet",
+      "program": 70,
+      "notes": 216,
+      "drums": false
+    },
+    {
+      "index": 1,
+      "name": "Strings (Pizzicato)",
+      "program": 45,
+      "notes": 683,
+      "drums": false
+    },
+    {
+      "index": 2,
+      "name": "Flutes / Piccolo",
+      "program": 73,
+      "notes": 148,
+      "drums": false
+    },
+    {
+      "index": 3,
+      "name": "Horns",
+      "program": 56,
+      "notes": 112,
+      "drums": false
+    }
+  ],
+  "transpose": 0,
+  "tuning_cents": 0.0,
+  "sid_starts_at_midi_s": 0.0,
+  "roles": {
+    "Bassoons / Bass Clarinet": {
+      "role": "bass",
+      "weight": 1.3
+    },
+    "Strings (Pizzicato)": {
+      "role": "chords",
+      "weight": 0.8
+    },
+    "Flutes / Piccolo": {
+      "role": "melody",
+      "weight": 1.5
+    },
+    "Horns": {
+      "role": "counter",
+      "weight": 1.0
+    }
+  },
+  "instruments": [
+    {
+      "name": "bassoon:Bassoons / Bass Clarinet",
+      "wave": 64,
+      "ad": 24,
+      "sr": 152,
+      "pw": 640,
+      "pw_speed": 8,
+      "pw_min": 384,
+      "pw_max": 1280,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": []
+    },
+    {
+      "name": "pizzicato:Strings (Pizzicato)",
+      "wave": 64,
+      "ad": 8,
+      "sr": 4,
+      "pw": 1536,
+      "pw_speed": 0,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": [
+        [
+          128,
+          36
+        ]
+      ]
+    },
+    {
+      "name": "flute:Flutes / Piccolo",
+      "wave": 16,
+      "ad": 56,
+      "sr": 168,
+      "pw": 2048,
+      "pw_speed": 0,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 12,
+      "vib_depth": 3,
+      "vib_speed": 3,
+      "table": [
+        [
+          128,
+          24
+        ]
+      ]
+    },
+    {
+      "name": "horn:Horns",
+      "wave": 64,
+      "ad": 73,
+      "sr": 152,
+      "pw": 768,
+      "pw_speed": 10,
+      "pw_min": 512,
+      "pw_max": 1536,
+      "vib_delay": 20,
+      "vib_depth": 4,
+      "vib_speed": 4,
+      "table": []
+    }
+  ],
+  "arrangement": {
+    "midi_notes": 1159,
+    "unique_onsets": 1111,
+    "onsets_played": 815,
+    "onset_coverage_pct": 73.4,
+    "arpeggio_seconds": 61.43,
+    "pitch_onsets_heard_pct": 84.8,
+    "note_time_heard_pct": 90.2
+  },
+  "frames": 7154,
+  "duration_s": 142.724,
+  "dynamics": "velocity",
+  "memory": {
+    "load": "$1000",
+    "end": "$1D06",
+    "total_bytes": 3335,
+    "player_bytes": 1012,
+    "song_bytes": 1969,
+    "song_bytes_uncompressed": 3595,
+    "init": "$1000",
+    "play": "$1003",
+    "frame_counter": "$1006",
+    "zero_page": "$FB-$FC"
+  },
+  "cpu": {
+    "max_cycles_per_frame": 2029,
+    "avg_cycles_per_frame": 987,
+    "max_rasterlines": 32.2
+  },
+  "verification": {
+    "attacks_expected": 560,
+    "attack_timing_mismatches": 0,
+    "ok": true
+  }
+}

@@ -1,0 +1,225 @@
+# midi2sid: orchestral MIDI → Commodore 64 SID tunes
+
+Turns a multi-track MIDI file, optionally paired with a reference recording
+(MP3/WAV), into a 3-voice SID tune for a C64 game:
+
+| output | what it is |
+|---|---|
+| `NAME.sid` | PSID v2 file: plays in SIDPlay / sidplayfp / VICE `vsid` |
+| `NAME.prg` | the same player + song as a raw C64 binary with load address, to link into the game |
+| `NAME.asm` | ACME-syntax listing of the player and data (readable, auditable, re-assemblable) |
+| `NAME.sync.json` | frame number of every bar/beat (and MIDI markers), for syncing gameplay to the music |
+| `NAME.report.json` | arrangement, alignment, memory and CPU statistics |
+| `NAME.wav` | preview rendered by **running the generated 6502 code** on an emulated CPU (py65) into reSID |
+
+```bash
+cd c64-sid
+pip install -r requirements.txt          # + ffmpeg on PATH for --audio
+python -m midi2sid song.mid                                   # MIDI timing
+python -m midi2sid song.mid --audio recording.mp3             # follow the recording
+python -m midi2sid.compare song.report.json recording.mp3     # sync-check mp3 + piano-roll png
+python -m unittest discover -s tests                          # tests
+```
+
+## How it works
+
+```
+MIDI ──► notes per part ─┐
+                          ├─► time map ─► frame-quantised notes ─► arranger ─► byte-code ─► 6502 player ─► .sid/.prg
+recording ─► tuning, key, ┘   (DTW)          (50.125 / 59.826 Hz)   (3 voices)   (+ repeat      │
+             tempo curve,                                                        compression)   └─► py65 + reSID ─► .wav
+             loudness ───────────────────────────────► master-volume stream                           + verification
+```
+
+### 1. Timing: MIDI or recording
+
+Without `--audio`, note times come from the MIDI tempo map. Each note start
+and end is rounded to the nearest C64 frame from its absolute time (PAL
+50.125 Hz, NTSC 59.826 Hz), so rounding error never accumulates: the tune
+lasts exactly as long as the MIDI, ±½ frame.
+
+With `--audio`, the recording is analysed first:
+
+* **Tuning**: spectral-peak deviation from A440. The SID frequency table is
+  rebuilt for it (e.g. +10 cents).
+* **Key**: MIDI arrangements are often in a different key from the
+  recording. The best transposition is chosen by DTW cost among the most
+  likely keys.
+* **Tempo curve**: chroma + onset **dynamic time warping**. A coarse pass
+  at 10 fps is followed by a banded 50 fps pass, and every step pays for the
+  frames it skips so that silence or mismatched material is never "free".
+  The result is a smooth, monotone MIDI-time → recording-time map, so
+  rubato, fermatas and tempo drift in the performance are followed.
+* **Dynamics**: the recording's loudness drives the SID master volume
+  (`$D418`), smoothed and hysteresis-limited to avoid the 6581 volume click.
+  Use `--dynamics none` to turn this off.
+
+On a synthetic test (the MIDI rendered with ±8% tempo drift, transposed,
+detuned and with leading silence) the recovered map is within **~20 ms
+(about one PAL frame)** of the truth. The report gives
+`onset_score_unaligned` → `onset_score_final` so you can see how much the
+alignment helped on your recording.
+
+### 2. Arrangement: N parts → 3 voices
+
+At every point where a note starts or a voice goes idle, the arranger scores
+candidate assignments and keeps the best:
+
+* **voice 1**: single notes, prefers the lowest line (bass)
+* **voice 2**: single notes, prefers the most salient/highest line (melody)
+* **voice 3**: single notes, drum hits, or a **1-frame arpeggio** through the
+  remaining chord tones (the classic C64 chord trick), preferring chord tones
+  not already heard in voices 1–2
+
+**How important a note is (salience):**
+* **Part role**, detected automatically (melody 1.5, bass 1.3, counter-line
+  1.0, chords 0.8, drums 1.1).
+* **Duration and velocity.**
+* **Melodic motion**: repeated pitches and pedal tones count for less.
+
+**Penalties** for what sounds worst on a SID:
+* cutting a note that is still ringing
+* re-attacking a note on another voice
+* bass above melody
+* arpeggios spanning more than 19 semitones
+* instrument hopping
+
+Unison doublings across parts are merged.
+
+### 3. Instruments and envelopes
+
+Each part gets a SID instrument, chosen from its track name ("pizz",
+"bassoon", "flute", "horn" …) or its GM program. An instrument has:
+* ADSR
+* sustain waveform
+* a **wavetable** for the first frames, e.g. a noise-burst pluck for
+  pizzicato, drum pitch-drops or octave blips
+* bouncing pulse-width modulation
+* delayed vibrato
+
+ADSR is then **adapted to how the part is played**:
+* attack capped at ⅓ of the median note length
+* staccato parts get a fast decay and release
+* legato parts get enough release to bridge the hard-restart gap
+
+Drums (MIDI channel 10) map to kick, snare, hat, cymbal and tom drum tables.
+
+Every new note is preceded by a **2-frame hard restart** (gate off + ADSR
+$00/$00), the standard fix for the SID's ADSR bug. Without it, repeated
+notes swallow their attacks.
+
+Override anything per part with `--instruments overrides.json`:
+
+```json
+{
+  "Flutes / Piccolo": {"preset": "lead", "ad": 34, "sr": 168, "vib_depth": 2},
+  "Horns":            {"weight": 0.6},
+  "Strings (Pizzicato)": {"table": [[128, 24], [64, 0]]}
+}
+```
+
+(`wave`/table waveforms: 16 triangle, 32 saw, 64 pulse, 128 noise. Table notes
+are relative semitones, or `"abs:N"` for an absolute note.)
+
+### 4. Player and data
+
+The player is written in Python against a small built-in 6502 assembler
+(`asm6502.py`), so the tune can be **relocated anywhere** (`--load $C000`)
+with no external toolchain. It takes about 1 KB of code and tables plus the
+song data.
+
+Song data is a compact per-voice byte-code: note, off, hard-restart, wait,
+instrument, legato, arpeggio, call, jump (see `compiler.py`). Repeated
+passages are compressed LZ-style into `CALL`s of earlier data. The example
+compresses from 3.6 KB to 2.0 KB with MIDI timing. With recording sync,
+repeats are less exact (the tempo breathes), so it compresses less.
+
+## Using it in the game
+
+```
+init  = load+0   ; jsr once
+play  = load+3   ; jsr once per frame (raster IRQ)
+frame = load+6   ; 16-bit frame counter (lo, hi), updated by play
+zp    = $FB/$FC  ; temp pointer during play (--zp to move)
+```
+
+```asm
+        sei
+        jsr $1000            ; init music
+        lda #<irq
+        sta $0314
+        lda #>irq
+        sta $0315
+        lda #$7f
+        sta $dc0d            ; CIA IRQs off
+        lda $dc0d
+        lda #$01
+        sta $d01a            ; raster IRQ on
+        lda #$f8
+        sta $d012
+        lda $d011
+        and #$7f
+        sta $d011
+        cli
+        ...
+irq     inc $d019
+        jsr $1003            ; play one frame
+        jmp $ea31
+```
+
+To sync gameplay to the music, compare the frame counter at `$1006/$1007`
+with the frame numbers in `NAME.sync.json` (every bar and beat). The tune
+loops by default (`--no-loop` stops at the end). All three voices loop on the
+same frame, so they never drift apart.
+
+CPU cost for the example is about 2,000 cycles per frame worst case (~33
+raster lines).
+
+## Example: Grofé, *Mississippi Suite*, "Huckleberry Finn"
+
+`examples/huckleberry_finn.mid` has 4 parts: bassoons, pizzicato strings,
+flutes and horns, with up to 8 simultaneous notes.
+
+| | MIDI timing | synced to the MP3 |
+|---|---|---|
+| note onsets audible on 3 voices | 84.8 % | 84.1 % |
+| note-time audible | 90.2 % | 89.7 % |
+| size (player + song) | 3,335 bytes | 4,379 bytes |
+| 6502 verification | 560/560 attacks on the exact frame | 558/558 |
+
+The reference MP3 is a **different performance** from the MIDI:
+* it is in B♭ (the MIDI is in C) and 10 cents sharp
+* it is about 12% faster
+* it starts after 9.6 s of silence
+* it contains material the MIDI arrangement does not have (e.g. a rising run
+  around 25–30 s)
+
+The synced build follows its key, tuning, tempo curve and dynamics. It starts
+at 11.27 s into the recording, which `sync-check.mp3` (recording left, SID
+right) lets you judge by ear. Where the recording and the MIDI disagree
+musically, no alignment can make them agree. A MIDI transcribed from that
+exact recording will sync much more tightly.
+
+![comparison](examples/out/huckleberry_finn_synced.compare.png)
+
+## Verification
+
+`convert` checks its own output. It runs the generated `.prg` on py65 and
+compares every gate-on edge the player writes to `$D404/$D40B/$D412`
+against the frame the compiler scheduled it for. The tests also check:
+* register pitches match the notes
+* compression is lossless
+* branch relaxation in the assembler works
+* alignment recovers a known tempo warp
+
+The `.sid` files were also checked in sidplayfp (libsidplayfp 2.6).
+
+## Limitations / next steps
+
+* No filter or ring-mod/sync yet. Everything is waveform + ADSR +
+  arpeggio + PWM + vibrato.
+* One tune per file. Several songs could share one player (subtunes).
+* The arranger is greedy, deciding at each event. A look-ahead (Viterbi)
+  pass could improve voice continuity further.
+* Master-volume dynamics click slightly on real 6581s. Use `--dynamics none`
+  or `--model 8580` if that bothers you.

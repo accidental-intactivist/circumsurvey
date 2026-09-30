@@ -1,0 +1,138 @@
+/* TopNav.css - Tomorrow's Bureau Aesthetic */
+
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--c-bg);
+  border-bottom: 1px solid transparent;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 1.5rem 2rem;
+}
+
+.top-nav.squished {
+  padding: 0 2rem;
+  height: 70px;
+  background: color-mix(in srgb, var(--c-bg) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--c-ghost);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.nav-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-link {
+  text-decoration: none;
+  color: var(--c-textBright);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-title {
+  font-family: var(--f-display, 'Space Grotesk', sans-serif);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--c-textBright);
+  transition: font-size 0.3s ease;
+}
+
+.brand-supertitle {
+  font-family: var(--f-condensed, 'Barlow Condensed', sans-serif);
+  font-weight: 700;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--c-dim);
+  line-height: 1;
+  margin-bottom: 0.1rem;
+  margin-top: -0.2rem;
+}
+
+.top-nav.squished .brand-title {
+  font-size: 1.15rem;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ask-assistant-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px solid var(--c-gold);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  color: var(--c-goldBright);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .top-nav {
+    padding: 1rem;
+  }
+  
+  .top-nav.squished {
+    padding: 0 1rem;
+  }
+
+  .brand-supertitle {
+    display: none;
+  }
+
+  .brand {
+    max-width: 50vw;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+  
+  .top-nav.squished .brand-title {
+    font-size: 1.1rem;
+  }
+
+  .ask-assistant-btn {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .ask-assistant-text {
+    display: none;
+  }
+  
+  .nav-controls {
+    gap: 0.6rem;
+  }
+}

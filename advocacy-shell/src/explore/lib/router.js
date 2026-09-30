@@ -1,0 +1,265 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Minimal router with URL-addressable search params using History API.
+// Routes: /, /pathways, /q/:id
+// Query params: /q/foo?pathway=intact&view=relevant
+// Includes backwards compatibility for legacy hash URLs.
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { useEffect, useState, useCallback } from "react";
+
+function parseLocation() {
+  // Backwards compatibility: if a user visits a legacy hash URL (#/culture or #question/lube), 
+  // immediately rewrite the URL to use the path API without reloading.
+  if (typeof window !== "undefined" && window.location.hash && window.location.hash.length > 1) {
+    const hashContent = window.location.hash.replace(/^#\/?/, "");
+    const firstSegment = hashContent.split("/")[0];
+    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "contact", "the-forward-view", "editorial", "resources"];
+    
+    if (knownRoutes.includes(firstSegment)) {
+      const newUrl = "/explore/" + hashContent + window.location.search;
+      try {
+        window.history.replaceState(null, "", newUrl);
+      } catch (e) {
+        console.warn("Ignored invalid legacy hash URL rewrite");
+      }
+    }
+  }
+
+  const path = (typeof window !== "undefined" ? window.location.pathname : "/") || "/";
+  const query = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+
+  // Parse path into route + params
+  const segments = path.split("/").filter(Boolean);
+  const offset = segments[0] === "explore" ? 1 : 0;
+  
+  let route = "index";
+  let params = {};
+  if (segments[offset] === "pathways") {
+    route = "pathways";
+  } else if ((segments[offset] === "q" || segments[offset] === "question") && segments[offset + 1]) {
+    route = "question";
+    params.id = segments[offset + 1];
+  } else if (segments[offset] === "tools" && segments[offset + 1] === "cultural-alignment") {
+    route = "cultural-alignment";
+  } else if (segments[offset] === "correlations") {
+    route = "correlations";
+  } else if (segments[offset] === "pairs") {
+    route = "pairs";
+  } else if (segments[offset] === "demographics") {
+    route = "demographics";
+  } else if (segments[offset] === "religious-mirrors") {
+    route = "religious-mirrors";
+  } else if (segments[offset] === "narrative-mirrors") {
+    route = "narrative-mirrors";
+  } else if (segments[offset] === "observer-triad" || segments[offset] === "observer-lens") {
+    route = "observer-lens";
+  } else if (segments[offset] === "numbers") {
+    route = "numbers";
+  } else if (segments[offset] === "pleasure-gap") {
+    route = "pleasure-gap";
+  } else if (segments[offset] === "methodology") {
+    route = "methodology";
+  } else if (segments[offset] === "report") {
+    route = "report";
+  } else if (segments[offset] === "restoration-journey") {
+    route = "restoration-journey";
+  } else if (segments[offset] === "culture") {
+    route = "culture";
+  } else if (segments[offset] === "generational-faultlines") {
+    route = "culture"; // redirect: merged into Culture & Generations
+  } else if (
+    segments[offset] === "the-decision" ||
+    segments[offset] === "final-thoughts" ||
+    segments[offset] === "trans-intersex"
+  ) {
+    // Phase 2 stubs: gated from the public until real content exists.
+    route = "index";
+  } else if (segments[offset] === "cognizant-alteration" || segments[offset] === "adult-experience") {
+    route = "adult-experience";
+  } else if (segments[offset] === "for-parents") {
+    route = "for-parents";
+  } else if (segments[offset] === "about") {
+    route = "about";
+  } else if (segments[offset] === "faq") {
+    route = "faq";
+  } else if (segments[offset] === "contact") {
+    route = "contact";
+  } else if (segments[offset] === "the-forward-view") {
+    route = "the-forward-view";
+  } else if (segments[offset] === "editorial") {
+    route = "editorial";
+  } else if (segments[offset] === "resources") {
+    route = "resources";
+  } else if (segments.length > offset) {
+    route = "not-found";
+  }
+
+  // Extract standardized query state
+  const rawPathway = query.get("pathway");
+  const state = {
+    pathway: rawPathway ? (rawPathway.includes(",") ? rawPathway.split(",") : [rawPathway]) : null,
+    view: query.get("view") || "all", // mine | relevant | all
+    search: query.get("s") || "",
+    section: query.get("section") || null,
+    observerRole: query.get("role") || null,
+    format: query.get("format") || null,
+    ai_query: query.get("ai_query") || (typeof window !== "undefined" ? window.sessionStorage.getItem("ai_query") : null) || "",
+    x: query.get("x") || null,
+    y: query.get("y") || null,
+    z: query.get("z") || null,
+    mode: query.get("mode") || null,
+  };
+
+  // Cohort filters (demographic): prefix "c_"
+  const cohort = Object.create(null);
+  for (const [key, val] of query.entries()) {
+    if (key.startsWith("c_") && val && key !== "c___proto__" && key !== "c_constructor") {
+      cohort[key.slice(2)] = val.includes(",") ? val.split(",") : val;
+    }
+  }
+  state.cohort = Object.keys(cohort).length > 0 ? cohort : null;
+
+  return { route, params, state };
+}
+
+function serializeState(route, params, state) {
+  let path;
+  if (route === "pathways") path = "/explore/pathways";
+  else if (route === "question") path = `/explore/q/${params.id}`;
+  else if (route === "cultural-alignment") path = "/explore/tools/cultural-alignment";
+  else if (route === "correlations") path = "/explore/correlations";
+  else if (route === "pairs") path = "/explore/pairs";
+  else if (route === "demographics") path = "/explore/demographics";
+  else if (route === "pleasure-gap") path = "/explore/pleasure-gap";
+  else if (route === "methodology") path = "/explore/methodology";
+  else if (route === "report") path = "/explore/report";
+  else if (route === "numbers") path = "/explore/numbers";
+  else if (route === "restoration-journey") path = "/explore/restoration-journey";
+  else if (route === "religious-mirrors") path = "/explore/religious-mirrors";
+  else if (route === "narrative-mirrors") path = "/explore/narrative-mirrors";
+  else if (route === "generational-faultlines") path = "/explore/culture"; // redirect
+  else if (route === "observer-lens") path = "/explore/observer-lens";
+  else if (route === "culture") path = "/explore/culture";
+  else if (route === "the-decision") path = "/explore/the-decision";
+  else if (route === "adult-experience") path = "/explore/adult-experience";
+  else if (route === "final-thoughts") path = "/explore/final-thoughts";
+  else if (route === "trans-intersex") path = "/explore/trans-intersex";
+  else if (route === "for-parents") path = "/explore/for-parents";
+  else if (route === "about") path = "/explore/about";
+  else if (route === "faq") path = "/explore/faq";
+  else if (route === "the-forward-view") path = "/explore/the-forward-view";
+  else if (route === "editorial") path = "/explore/editorial";
+  else if (route === "resources") path = "/explore/resources";
+  else if (route === "not-found") path = "/explore/404";
+  else path = "/explore";
+
+  const q = new URLSearchParams();
+  if (state.pathway) {
+    if (Array.isArray(state.pathway)) {
+      if (state.pathway.length > 0) q.set("pathway", state.pathway.join(","));
+    } else {
+      q.set("pathway", state.pathway);
+    }
+  }
+  if (state.view && state.view !== "relevant") q.set("view", state.view);
+  if (state.search) q.set("s", state.search);
+  if (state.section) q.set("section", state.section);
+  if (state.observerRole) q.set("role", state.observerRole);
+  if (state.format) q.set("format", state.format);
+  // ai_query intentionally omitted from URL for privacy; stored in sessionStorage
+  if (state.x) q.set("x", state.x);
+  if (state.y) q.set("y", state.y);
+  if (state.z) q.set("z", state.z);
+  if (state.mode) q.set("mode", state.mode);
+  if (state.cohort) {
+    for (const [k, v] of Object.entries(state.cohort)) {
+      if (v) {
+        if (Array.isArray(v)) {
+          if (v.length > 0) q.set(`c_${k}`, v.join(","));
+        } else {
+          q.set(`c_${k}`, v);
+        }
+      }
+    }
+  }
+  const qs = q.toString();
+  return `${path}${qs ? "?" + qs : ""}`;
+}
+
+export function useRouter() {
+  const [current, setCurrent] = useState(parseLocation());
+
+  useEffect(() => {
+    const onLocationChange = () => setCurrent(parseLocation());
+    window.addEventListener("popstate", onLocationChange);
+
+    // Global click interceptor for internal links
+    const handleGlobalClick = (e) => {
+      // Find closest anchor tag
+      const anchor = e.target.closest("a");
+      if (!anchor) return;
+      
+      // Ignore external links, mailto, open in new tab, etc
+      if (
+        anchor.target === "_blank" ||
+        anchor.hasAttribute("download") ||
+        anchor.getAttribute("rel")?.includes("external") ||
+        anchor.href.startsWith("mailto:") ||
+        anchor.href.startsWith("http") && new URL(anchor.href).origin !== window.location.origin
+      ) {
+        return;
+      }
+
+      // Check if it's an internal path 
+      // (sometimes href is absolute on the same domain, so we check origin)
+      const url = new URL(anchor.href, window.location.origin);
+      if (url.origin === window.location.origin) {
+        e.preventDefault();
+        window.history.pushState(null, "", url.pathname + url.search + url.hash);
+        window.dispatchEvent(new Event("popstate"));
+      }
+    };
+
+    document.addEventListener("click", handleGlobalClick);
+
+    return () => {
+      window.removeEventListener("popstate", onLocationChange);
+      document.removeEventListener("click", handleGlobalClick);
+    };
+  }, []);
+
+  const navigate = useCallback((route, params = {}, stateOverrides = {}) => {
+    const nextState = { ...current.state, ...stateOverrides };
+    if (stateOverrides.ai_query !== undefined && typeof window !== "undefined") {
+       if (stateOverrides.ai_query) window.sessionStorage.setItem("ai_query", stateOverrides.ai_query);
+       else window.sessionStorage.removeItem("ai_query");
+    }
+    const nextUrl = serializeState(route, params, nextState);
+    window.history.pushState(null, "", nextUrl);
+    window.dispatchEvent(new Event("popstate"));
+  }, [current]);
+
+  const updateState = useCallback((overrides) => {
+    const nextState = {
+      ...current.state,
+      ...overrides,
+    };
+    if (overrides.ai_query !== undefined && typeof window !== "undefined") {
+       if (overrides.ai_query) window.sessionStorage.setItem("ai_query", overrides.ai_query);
+       else window.sessionStorage.removeItem("ai_query");
+    }
+    const nextUrl = serializeState(current.route, current.params, nextState);
+    // Replace state instead of push so we don't spam history when tweaking filters
+    window.history.replaceState(null, "", nextUrl);
+    window.dispatchEvent(new Event("popstate"));
+  }, [current]);
+
+  return { ...current, navigate, updateState };
+}
+
+// Exported helper for building links inside components
+// IMPORTANT: We keep the name hashLink temporarily so we don't have to rename it in 50 files yet,
+// but it now returns standard paths!
+export function hashLink(route, params = {}, state = {}) {
+  return serializeState(route, params, state);
+}

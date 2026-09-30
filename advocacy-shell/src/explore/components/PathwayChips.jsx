@@ -1,0 +1,88 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// PathwayChips — horizontal pill row for selecting the "I am viewing as..." pathway
+// Used at the top of every page and in the left nav panel
+// ═══════════════════════════════════════════════════════════════════════════
+
+import { C, FONT } from "../styles/tokens";
+import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
+
+export default function PathwayChips({ selected, onSelect, compact = false }) {
+  const totalN = PATHWAY_IDS.reduce((sum, id) => sum + (PATHWAYS[id]?.n || 0), 0);
+  const size = compact ? {
+    padding: "0.28rem 0.6rem",
+    fontSize: "0.68rem",
+    gap: "0.3rem",
+  } : {
+    padding: "0.42rem 0.85rem",
+    fontSize: "0.76rem",
+    gap: "0.4rem",
+  };
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: size.gap, alignItems: "center" }}>
+      {/* "All respondents" chip */}
+      <button
+        onClick={() => onSelect(null)}
+        style={{
+          padding: size.padding,
+          background: !selected ? C.goldBright : "transparent",
+          border: `1px solid ${C.goldBright}`,
+          borderRadius: 999,
+          color: !selected ? C.bg : C.goldBright,
+          fontFamily: FONT.condensed,
+          fontSize: size.fontSize,
+          fontWeight: 700,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        All · {totalN}
+      </button>
+
+      {PATHWAY_IDS.map((id) => {
+        const p = PATHWAYS[id];
+        const isSelected = selected === id;
+        return (
+          <button
+            key={id}
+            onClick={() => onSelect(id)}
+            style={{
+              padding: size.padding,
+              background: isSelected ? p.color : "transparent",
+              border: `1px solid ${p.color}`,
+              borderRadius: 999,
+              color: isSelected ? C.bg : p.color,
+              fontFamily: FONT.condensed,
+              fontSize: size.fontSize,
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              transition: "all 0.15s",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.3rem",
+              opacity: p.waiting ? 0.7 : 1,
+            }}
+          >
+            <span style={{ fontSize: "0.9em" }}>{p.emoji}</span>
+            <span>{p.label}</span>
+            <span style={{
+              fontFamily: FONT.mono,
+              fontSize: "0.82em",
+              color: isSelected ? C.bg : p.color,
+              fontWeight: 400,
+              letterSpacing: "0",
+              textTransform: "none",
+              opacity: 0.75,
+            }}>
+              {p.waiting ? "✦" : p.n}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}

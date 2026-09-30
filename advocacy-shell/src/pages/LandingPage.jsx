@@ -5,7 +5,7 @@ import HarmonicCanvas from '../components/HarmonicCanvas';
 import { useTheme } from '../contexts/ThemeContext';
 import { Database, ShieldAlert, Binary, Sparkles, ExternalLink, ArrowRight, ClipboardPen, Play, Pause, HeartHandshake, Scale, Mail, Coffee, BookOpen, Building2, Archive, BarChart2, Users, Newspaper } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
-import UniversalSquishHeader from '../../../circumsurvey/src/components/Scrollytelling/UniversalSquishHeader';
+import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import NewsAggregator from '../components/NewsAggregator';
 import { ExhibitCard } from '../explore/components/ExhibitsDashboard';

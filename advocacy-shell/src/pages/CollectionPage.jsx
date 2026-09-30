@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Newspaper, BookOpen, Scale, Video, Headphones, Image as ImageIcon, FileText, Globe, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
-import UniversalSquishHeader from '../../../circumsurvey/src/components/Scrollytelling/UniversalSquishHeader';
+import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
-import MicrofilmTimeline from '../../../circumsurvey/src/components/MicrofilmTimeline';
+import MicrofilmTimeline from '../components/MicrofilmTimeline';
 
 export default function CollectionPage() {
   const { slug } = useParams();

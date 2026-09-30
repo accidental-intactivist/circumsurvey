@@ -27,7 +27,7 @@ if sys.platform == "win32":
 
 API_BASE = "https://advocacy-shell.pages.dev"
 DB_ID = "9018c642-05c8-4335-93cc-4282c5e7ff12"
-BATCH_SIZE = 50
+BATCH_SIZE = 25
 WRANGLER_CMD = "npx.cmd" if sys.platform == "win32" else "npx"
 CWD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
@@ -40,7 +40,7 @@ def run_d1_execute(sql):
         tmp.close()
         cmd = [WRANGLER_CMD, "wrangler", "d1", "execute", DB_ID, "--remote", "--file", tmp.name]
         result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=120,
+            cmd, capture_output=True, text=True, timeout=300,
             cwd=CWD, shell=(sys.platform == "win32"),
             encoding="utf-8", errors="replace",
         )
@@ -308,12 +308,33 @@ def update_taglines(entities, profiles):
         sys.stdout.write(f"\r   Batch {batch_num}/{total_batches} ({len(batch)} stmts)... ")
         sys.stdout.flush()
 
-        if run_d1_execute(sql):
-            success += len(batch)
-            sys.stdout.write("OK")
-        else:
-            fail += len(batch)
-            sys.stdout.write("FAIL")
+        try:
+            if run_d1_execute(sql):
+                success += len(batch)
+                sys.stdout.write("OK")
+            else:
+                # Retry one-at-a-time on batch failure
+                sys.stdout.write("RETRY...")
+                for stmt in batch:
+                    try:
+                        if run_d1_execute(stmt):
+                            success += 1
+                        else:
+                            fail += 1
+                    except Exception:
+                        fail += 1
+                sys.stdout.write(f" {success}ok")
+        except Exception as e:
+            sys.stdout.write(f"TIMEOUT-RETRY...")
+            for stmt in batch:
+                try:
+                    if run_d1_execute(stmt):
+                        success += 1
+                    else:
+                        fail += 1
+                except Exception:
+                    fail += 1
+            sys.stdout.write(f" {success}ok")
         sys.stdout.flush()
 
     print()

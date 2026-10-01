@@ -1,5 +1,59 @@
 [
  {
+  "bar": 13,
+  "beat": 1,
+  "recording_s": 11.4,
+  "note": "rehearsal 2, poco a poco cresc. e accel."
+ },
+ {
+  "bar": 14,
+  "beat": 1,
+  "recording_s": 12.35,
+  "note": "accel., bass on the downbeat"
+ },
+ {
+  "bar": 19,
+  "beat": 1,
+  "recording_s": 16.83,
+  "note": "chord bars before rehearsal 3"
+ },
+ {
+  "bar": 20,
+  "beat": 1,
+  "recording_s": 17.95,
+  "note": "rehearsal 3: sf, descending run (dim.)"
+ },
+ {
+  "bar": 21,
+  "beat": 1,
+  "recording_s": 18.82,
+  "note": "run"
+ },
+ {
+  "bar": 22,
+  "beat": 1,
+  "recording_s": 19.7,
+  "note": "run"
+ },
+ {
+  "bar": 23,
+  "beat": 1,
+  "recording_s": 20.65,
+  "note": "sf chord, flutter-tongue brass + cymbal roll (fermata)"
+ },
+ {
+  "bar": 24,
+  "beat": 1,
+  "recording_s": 22.0,
+  "note": "fermata: rising flourish"
+ },
+ {
+  "bar": 25,
+  "beat": 1,
+  "recording_s": 23.37,
+  "note": "rehearsal 4, tutti"
+ },
+ {
   "bar": 37,
   "beat": 1,
   "recording_s": 34.29,

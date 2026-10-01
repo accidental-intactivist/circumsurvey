@@ -2,15 +2,15 @@
   "tunes": [
     {
       "tune": 0,
-      "title": "section01 (bars 1-22)",
-      "frames": 1058,
-      "seconds": 21.16
+      "title": "section01 (bars 1-24)",
+      "frames": 1149,
+      "seconds": 22.98
     },
     {
       "tune": 1,
-      "title": "section02 (bars 23-50)",
-      "frames": 1465,
-      "seconds": 29.3
+      "title": "section02 (bars 25-50)",
+      "frames": 1374,
+      "seconds": 27.48
     },
     {
       "tune": 2,
@@ -51,11 +51,11 @@
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2E7E",
-    "total_bytes": 7807,
+    "end": "$2E85",
+    "total_bytes": 7814,
     "player_bytes": 1032,
     "instruments": 10,
-    "song_bytes": 6268,
+    "song_bytes": 6275,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -64,13 +64,13 @@
   "verification": [
     {
       "tune": 0,
-      "attacks_expected": 245,
+      "attacks_expected": 270,
       "attack_timing_mismatches": 0,
       "ok": true
     },
     {
       "tune": 1,
-      "attacks_expected": 275,
+      "attacks_expected": 250,
       "attack_timing_mismatches": 0,
       "ok": true
     },

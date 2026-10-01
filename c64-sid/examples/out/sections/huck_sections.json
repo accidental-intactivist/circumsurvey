@@ -4,16 +4,16 @@
     "name": "section01",
     "bars": [
       1,
-      22
+      24
     ],
     "recording_s": [
       0.45,
-      21.56
+      23.37
     ],
     "sid": "huck_01_section01.sid",
-    "frames": 1058,
-    "bytes": 2698,
-    "onset_match": 0.671,
+    "frames": 1149,
+    "bytes": 2833,
+    "onset_match": 0.666,
     "verified": true,
     "tune_in_all_sid": 0
   },
@@ -21,17 +21,17 @@
     "section": 2,
     "name": "section02",
     "bars": [
-      23,
+      25,
       50
     ],
     "recording_s": [
-      21.56,
+      23.37,
       50.79
     ],
     "sid": "huck_02_section02.sid",
-    "frames": 1465,
-    "bytes": 2957,
-    "onset_match": 1.274,
+    "frames": 1374,
+    "bytes": 2829,
+    "onset_match": 1.348,
     "verified": true,
     "tune_in_all_sid": 1
   },

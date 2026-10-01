@@ -8,41 +8,27 @@
       "index": 0,
       "name": "Piano",
       "program": 0,
-      "notes": 834,
+      "notes": 859,
       "drums": false
     },
     {
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 546,
+      "notes": 559,
       "drums": false
     },
     {
       "index": 2,
-      "name": "Horns",
-      "program": 0,
-      "notes": 24,
-      "drums": false
-    },
-    {
-      "index": 3,
       "name": "Timpani",
       "program": 47,
       "notes": 30,
-      "drums": false
-    },
-    {
-      "index": 4,
-      "name": "Horns 2",
-      "program": 60,
-      "notes": 24,
       "drums": false
     }
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.826,
+    "onset_score_final": 0.836,
     "anchors_midi_s": [
       0.0,
       0.562,
@@ -227,8 +213,8 @@
       47.51,
       49.204,
       50.79,
-      51.64,
-      52.5,
+      51.7,
+      52.56,
       53.28,
       57.68,
       59.08,
@@ -404,15 +390,7 @@
   ],
   "sid_starts_at_recording_s": 0.21,
   "roles": {
-    "Horns": {
-      "role": "counter",
-      "weight": 1.0
-    },
     "Timpani": {
-      "role": "counter",
-      "weight": 1.0
-    },
-    "Horns 2": {
       "role": "counter",
       "weight": 1.0
     },
@@ -459,20 +437,6 @@
       "table": []
     },
     {
-      "name": "horn:Horns",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
-      "table": []
-    },
-    {
       "name": "timpani:Timpani",
       "wave": 16,
       "ad": 4,
@@ -494,20 +458,6 @@
           0
         ]
       ]
-    },
-    {
-      "name": "horn:Horns 2",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
-      "table": []
     },
     {
       "name": "flute:Flute runs (from recording)",
@@ -574,30 +524,30 @@
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 22,
   "slurred_steps": 140,
-  "inner_bass_part_notes": 236,
-  "inner_melody_part_notes": 473,
-  "unisons_merged": 24,
+  "inner_bass_part_notes": 238,
+  "inner_melody_part_notes": 485,
+  "unisons_merged": 23,
   "soft_entries": 156,
   "short_resumes_dropped": 67,
   "arrangement": {
-    "midi_notes": 1465,
-    "unique_onsets": 1465,
-    "onsets_played": 1280,
-    "onset_coverage_pct": 87.4,
+    "midi_notes": 1456,
+    "unique_onsets": 1456,
+    "onsets_played": 1275,
+    "onset_coverage_pct": 87.6,
     "arpeggio_seconds": 79.34,
-    "pitch_onsets_heard_pct": 87.4,
-    "note_time_heard_pct": 83.4
+    "pitch_onsets_heard_pct": 87.6,
+    "note_time_heard_pct": 84.0
   },
   "frames": 7212,
   "duration_s": 143.882,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2A50",
-    "total_bytes": 6737,
+    "end": "$2A48",
+    "total_bytes": 6729,
     "player_bytes": 1039,
-    "song_bytes": 5273,
-    "song_bytes_uncompressed": 5542,
+    "song_bytes": 5289,
+    "song_bytes_uncompressed": 5550,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

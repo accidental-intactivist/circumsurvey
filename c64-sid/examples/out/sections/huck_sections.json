@@ -30,8 +30,8 @@
     ],
     "sid": "huck_02_section02.sid",
     "frames": 1378,
-    "bytes": 2623,
-    "onset_match": 0.843,
+    "bytes": 2593,
+    "onset_match": 0.85,
     "verified": true,
     "tune_in_all_sid": 1
   },
@@ -48,8 +48,8 @@
     ],
     "sid": "huck_03_section03.sid",
     "frames": 345,
-    "bytes": 1629,
-    "onset_match": 0.838,
+    "bytes": 1620,
+    "onset_match": 1.162,
     "verified": true,
     "tune_in_all_sid": 2
   },

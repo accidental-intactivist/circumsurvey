@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmp2u13sh25/s1.mid",
+  "input": "../../../../tmp/tmp3jofxujl/s1.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_02_section02",
   "video": "pal",
   "fps": 50.1245,
@@ -17,25 +17,11 @@
       "program": 0,
       "notes": 140,
       "drums": false
-    },
-    {
-      "index": 2,
-      "name": "Horns",
-      "program": 0,
-      "notes": 1,
-      "drums": false
-    },
-    {
-      "index": 3,
-      "name": "Horns 2",
-      "program": 60,
-      "notes": 1,
-      "drums": false
     }
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.843,
+    "onset_score_final": 0.85,
     "anchors_midi_s": [
       0.0,
       1.125,
@@ -95,8 +81,8 @@
       24.51,
       26.204,
       27.79,
-      28.64,
-      29.309
+      28.7,
+      29.369
     ]
   },
   "transpose": 0,
@@ -109,14 +95,6 @@
   ],
   "sid_starts_at_recording_s": 0.3,
   "roles": {
-    "Horns": {
-      "role": "counter",
-      "weight": 1.0
-    },
-    "Horns 2": {
-      "role": "counter",
-      "weight": 1.0
-    },
     "Flute runs (from recording)": {
       "role": "runs",
       "weight": 1.5
@@ -157,34 +135,6 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": []
-    },
-    {
-      "name": "horn:Horns",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
-      "table": []
-    },
-    {
-      "name": "horn:Horns 2",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
       "table": []
     },
     {
@@ -244,24 +194,24 @@
   "soft_entries": 0,
   "short_resumes_dropped": 30,
   "arrangement": {
-    "midi_notes": 384,
-    "unique_onsets": 384,
-    "onsets_played": 286,
-    "onset_coverage_pct": 74.5,
+    "midi_notes": 382,
+    "unique_onsets": 382,
+    "onsets_played": 285,
+    "onset_coverage_pct": 74.6,
     "arpeggio_seconds": 19.21,
-    "pitch_onsets_heard_pct": 74.5,
-    "note_time_heard_pct": 78.0
+    "pitch_onsets_heard_pct": 74.6,
+    "note_time_heard_pct": 78.2
   },
   "frames": 1378,
   "duration_s": 27.492,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1A3E",
-    "total_bytes": 2623,
+    "end": "$1A20",
+    "total_bytes": 2593,
     "player_bytes": 1039,
-    "song_bytes": 1189,
-    "song_bytes_uncompressed": 1263,
+    "song_bytes": 1183,
+    "song_bytes_uncompressed": 1257,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -273,7 +223,7 @@
     "max_rasterlines": 33.1
   },
   "verification": {
-    "attacks_expected": 208,
+    "attacks_expected": 207,
     "attack_timing_mismatches": 0,
     "ok": true
   }

@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmp2u13sh25/s2.mid",
+  "input": "../../../../tmp/tmp3jofxujl/s2.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
@@ -8,34 +8,20 @@
       "index": 0,
       "name": "Piano",
       "program": 0,
-      "notes": 2,
+      "notes": 27,
       "drums": false
     },
     {
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 4,
-      "drums": false
-    },
-    {
-      "index": 2,
-      "name": "Horns",
-      "program": 0,
-      "notes": 23,
-      "drums": false
-    },
-    {
-      "index": 3,
-      "name": "Horns 2",
-      "program": 60,
-      "notes": 23,
+      "notes": 17,
       "drums": false
     }
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.838,
+    "onset_score_final": 1.162,
     "anchors_midi_s": [
       0.0,
       1.125,
@@ -47,8 +33,8 @@
     ],
     "anchors_recording_s": [
       0.3,
-      1.15,
-      2.01,
+      1.21,
+      2.07,
       2.79,
       7.19,
       8.59,
@@ -61,28 +47,20 @@
   "sid_starts_at_recording_s": 0.3,
   "roles": {
     "Piano": {
-      "role": "counter",
-      "weight": 1.0
+      "role": "melody",
+      "weight": 1.5
     },
     "Piano #2": {
       "role": "bass",
       "weight": 1.3
-    },
-    "Horns": {
-      "role": "melody",
-      "weight": 1.5
-    },
-    "Horns 2": {
-      "role": "counter",
-      "weight": 1.0
     }
   },
   "instruments": [
     {
       "name": "piano:Piano",
       "wave": 64,
-      "ad": 10,
-      "sr": 73,
+      "ad": 7,
+      "sr": 70,
       "pw": 1536,
       "pw_speed": 24,
       "pw_min": 512,
@@ -95,8 +73,8 @@
     {
       "name": "piano:Piano #2",
       "wave": 64,
-      "ad": 10,
-      "sr": 73,
+      "ad": 7,
+      "sr": 70,
       "pw": 1536,
       "pw_speed": 24,
       "pw_min": 512,
@@ -104,34 +82,6 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": []
-    },
-    {
-      "name": "horn:Horns",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
-      "table": []
-    },
-    {
-      "name": "horn:Horns 2",
-      "wave": 64,
-      "ad": 68,
-      "sr": 148,
-      "pw": 768,
-      "pw_speed": 10,
-      "pw_min": 512,
-      "pw_max": 1536,
-      "vib_delay": 20,
-      "vib_depth": 4,
-      "vib_speed": 4,
       "table": []
     },
     {
@@ -166,42 +116,42 @@
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 0,
   "slurred_steps": 0,
-  "inner_bass_part_notes": 0,
-  "inner_melody_part_notes": 0,
-  "unisons_merged": 1,
+  "inner_bass_part_notes": 2,
+  "inner_melody_part_notes": 13,
+  "unisons_merged": 0,
   "soft_entries": 0,
   "short_resumes_dropped": 0,
   "arrangement": {
-    "midi_notes": 51,
-    "unique_onsets": 51,
-    "onsets_played": 49,
-    "onset_coverage_pct": 96.1,
-    "arpeggio_seconds": 4.17,
-    "pitch_onsets_heard_pct": 98.0,
-    "note_time_heard_pct": 99.7
+    "midi_notes": 44,
+    "unique_onsets": 44,
+    "onsets_played": 44,
+    "onset_coverage_pct": 100.0,
+    "arpeggio_seconds": 0.0,
+    "pitch_onsets_heard_pct": 100.0,
+    "note_time_heard_pct": 100.0
   },
   "frames": 345,
   "duration_s": 6.883,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$165C",
-    "total_bytes": 1629,
+    "end": "$1653",
+    "total_bytes": 1620,
     "player_bytes": 1039,
-    "song_bytes": 211,
-    "song_bytes_uncompressed": 215,
+    "song_bytes": 226,
+    "song_bytes_uncompressed": 232,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1920,
-    "avg_cycles_per_frame": 978,
-    "max_rasterlines": 30.5
+    "max_cycles_per_frame": 1801,
+    "avg_cycles_per_frame": 844,
+    "max_rasterlines": 28.6
   },
   "verification": {
-    "attacks_expected": 48,
+    "attacks_expected": 44,
     "attack_timing_mismatches": 0,
     "ok": true
   }

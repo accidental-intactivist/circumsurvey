@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp4fu_q8mp/s7.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec12/huck_08_section08",
+  "input": "../../../../tmp/tmp0npqcchs/s7.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec13/huck_08_section08",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -21,7 +21,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 2.128,
+    "onset_score_final": 3.372,
     "anchors_midi_s": [
       0.0,
       0.187,
@@ -37,8 +37,9 @@
       3.499,
       4.499,
       4.873,
+      5.622,
       5.623,
-      5.997,
+      5.996,
       6.746,
       6.812,
       6.879,
@@ -62,9 +63,10 @@
       4.138,
       5.684,
       6.921,
-      8.021,
-      11.073,
-      11.852,
+      8.281,
+      9.801,
+      9.808,
+      11.301,
       12.911,
       13.024,
       13.126,
@@ -134,7 +136,7 @@
     {
       "name": "flute:Flute runs (from recording)",
       "wave": 16,
-      "ad": 17,
+      "ad": 18,
       "sr": 161,
       "pw": 2048,
       "pw_speed": 0,
@@ -181,39 +183,40 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 1,
+  "inner_bass_part_notes": 5,
   "unisons_merged": 0,
-  "short_resumes_dropped": 6,
+  "short_resumes_dropped": 5,
   "arrangement": {
     "midi_notes": 46,
     "unique_onsets": 46,
-    "onsets_played": 40,
-    "onset_coverage_pct": 87.0,
-    "arpeggio_seconds": 5.87,
-    "pitch_onsets_heard_pct": 87.0,
-    "note_time_heard_pct": 79.8
+    "onsets_played": 41,
+    "onset_coverage_pct": 89.1,
+    "arpeggio_seconds": 5.95,
+    "pitch_onsets_heard_pct": 89.1,
+    "note_time_heard_pct": 86.2
   },
   "frames": 788,
   "duration_s": 15.721,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$168B",
-    "total_bytes": 1676,
+    "end": "$1686",
+    "total_bytes": 1671,
     "player_bytes": 1039,
-    "song_bytes": 266,
-    "song_bytes_uncompressed": 270,
+    "song_bytes": 261,
+    "song_bytes_uncompressed": 261,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2039,
-    "avg_cycles_per_frame": 828,
-    "max_rasterlines": 32.4
+    "max_cycles_per_frame": 2018,
+    "avg_cycles_per_frame": 838,
+    "max_rasterlines": 32.0
   },
   "verification": {
-    "attacks_expected": 27,
+    "attacks_expected": 26,
     "attack_timing_mismatches": 0,
     "ok": true
   }

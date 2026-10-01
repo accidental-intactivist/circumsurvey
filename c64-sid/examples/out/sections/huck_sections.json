@@ -12,7 +12,7 @@
     ],
     "sid": "huck_01_section01.sid",
     "frames": 1161,
-    "bytes": 2657,
+    "bytes": 2654,
     "onset_match": 0.725,
     "verified": true,
     "tune_in_all_sid": 0
@@ -30,7 +30,7 @@
     ],
     "sid": "huck_02_section02.sid",
     "frames": 1374,
-    "bytes": 2766,
+    "bytes": 2743,
     "onset_match": 1.348,
     "verified": true,
     "tune_in_all_sid": 1
@@ -66,7 +66,7 @@
     ],
     "sid": "huck_04_section04.sid",
     "frames": 1562,
-    "bytes": 2093,
+    "bytes": 2188,
     "onset_match": 0.054,
     "verified": true,
     "tune_in_all_sid": 3
@@ -84,7 +84,7 @@
     ],
     "sid": "huck_05_section05.sid",
     "frames": 1181,
-    "bytes": 2491,
+    "bytes": 2493,
     "onset_match": 0.962,
     "verified": true,
     "tune_in_all_sid": 4
@@ -120,7 +120,7 @@
     ],
     "sid": "huck_07_section07.sid",
     "frames": 557,
-    "bytes": 2077,
+    "bytes": 2082,
     "onset_match": 0.901,
     "verified": true,
     "tune_in_all_sid": 6
@@ -138,8 +138,8 @@
     ],
     "sid": "huck_08_section08.sid",
     "frames": 788,
-    "bytes": 1676,
-    "onset_match": 2.128,
+    "bytes": 1671,
+    "onset_match": 3.372,
     "verified": true,
     "tune_in_all_sid": 7
   }

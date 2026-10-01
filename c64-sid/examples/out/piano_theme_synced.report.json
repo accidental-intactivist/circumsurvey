@@ -21,7 +21,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 1.114,
+    "onset_score_final": 1.157,
     "anchors_midi_s": [
       0.0,
       0.375,
@@ -603,8 +603,9 @@
       130.624,
       131.624,
       131.998,
+      132.747,
       132.748,
-      133.122,
+      133.121,
       133.871,
       133.937,
       134.004,
@@ -1193,9 +1194,10 @@
       134.507,
       136.053,
       137.29,
-      138.39,
-      141.442,
-      142.221,
+      138.65,
+      140.17,
+      140.177,
+      141.67,
       143.28,
       143.393,
       143.495,
@@ -1339,39 +1341,40 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 24,
+  "inner_bass_part_notes": 235,
   "unisons_merged": 20,
-  "short_resumes_dropped": 75,
+  "short_resumes_dropped": 98,
   "arrangement": {
     "midi_notes": 1481,
     "unique_onsets": 1481,
-    "onsets_played": 1245,
-    "onset_coverage_pct": 84.1,
-    "arpeggio_seconds": 80.46,
-    "pitch_onsets_heard_pct": 84.1,
-    "note_time_heard_pct": 85.7
+    "onsets_played": 1286,
+    "onset_coverage_pct": 86.8,
+    "arpeggio_seconds": 79.04,
+    "pitch_onsets_heard_pct": 86.8,
+    "note_time_heard_pct": 84.9
   },
   "frames": 7212,
   "duration_s": 143.882,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2B5F",
-    "total_bytes": 7008,
+    "end": "$2BDC",
+    "total_bytes": 7133,
     "player_bytes": 1039,
-    "song_bytes": 5598,
-    "song_bytes_uncompressed": 5709,
+    "song_bytes": 5723,
+    "song_bytes_uncompressed": 5854,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2123,
-    "avg_cycles_per_frame": 870,
-    "max_rasterlines": 33.7
+    "max_cycles_per_frame": 2159,
+    "avg_cycles_per_frame": 873,
+    "max_rasterlines": 34.3
   },
   "verification": {
-    "attacks_expected": 955,
+    "attacks_expected": 992,
     "attack_timing_mismatches": 0,
     "ok": true
   }

@@ -138,27 +138,28 @@
   ],
   "anticipate_s": 0.0,
   "rolled_chord_notes_joined": 0,
+  "inner_bass_part_notes": 0,
   "unisons_merged": 48,
   "short_resumes_dropped": 0,
   "arrangement": {
     "midi_notes": 1111,
     "unique_onsets": 1111,
-    "onsets_played": 819,
-    "onset_coverage_pct": 73.7,
-    "arpeggio_seconds": 60.31,
-    "pitch_onsets_heard_pct": 85.5,
-    "note_time_heard_pct": 89.7
+    "onsets_played": 821,
+    "onset_coverage_pct": 73.9,
+    "arpeggio_seconds": 59.19,
+    "pitch_onsets_heard_pct": 85.7,
+    "note_time_heard_pct": 89.5
   },
   "frames": 7154,
   "duration_s": 142.724,
   "dynamics": "velocity",
   "memory": {
     "load": "$1000",
-    "end": "$1DA9",
-    "total_bytes": 3498,
+    "end": "$1DB1",
+    "total_bytes": 3506,
     "player_bytes": 1039,
-    "song_bytes": 2084,
-    "song_bytes_uncompressed": 3609,
+    "song_bytes": 2092,
+    "song_bytes_uncompressed": 3617,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -170,7 +171,7 @@
     "max_rasterlines": 33.7
   },
   "verification": {
-    "attacks_expected": 563,
+    "attacks_expected": 565,
     "attack_timing_mismatches": 0,
     "ok": true
   }

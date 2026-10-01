@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp4fu_q8mp/s0.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec12/huck_01_section01",
+  "input": "../../../../tmp/tmp0npqcchs/s0.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec13/huck_01_section01",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -471,8 +471,9 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 8,
+  "inner_bass_part_notes": 22,
   "unisons_merged": 18,
-  "short_resumes_dropped": 10,
+  "short_resumes_dropped": 11,
   "arrangement": {
     "midi_notes": 322,
     "unique_onsets": 322,
@@ -480,18 +481,18 @@
     "onset_coverage_pct": 90.7,
     "arpeggio_seconds": 7.12,
     "pitch_onsets_heard_pct": 90.7,
-    "note_time_heard_pct": 94.1
+    "note_time_heard_pct": 93.1
   },
   "frames": 1161,
   "duration_s": 23.162,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1A60",
-    "total_bytes": 2657,
+    "end": "$1A5D",
+    "total_bytes": 2654,
     "player_bytes": 1039,
-    "song_bytes": 1247,
-    "song_bytes_uncompressed": 1265,
+    "song_bytes": 1244,
+    "song_bytes_uncompressed": 1262,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -503,7 +504,7 @@
     "max_rasterlines": 33.7
   },
   "verification": {
-    "attacks_expected": 216,
+    "attacks_expected": 218,
     "attack_timing_mismatches": 0,
     "ok": true
   }

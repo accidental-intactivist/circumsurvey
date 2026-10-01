@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp4fu_q8mp/s4.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec12/huck_05_section05",
+  "input": "../../../../tmp/tmp0npqcchs/s4.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec13/huck_05_section05",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -339,27 +339,28 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 4,
+  "inner_bass_part_notes": 59,
   "unisons_merged": 0,
-  "short_resumes_dropped": 26,
+  "short_resumes_dropped": 29,
   "arrangement": {
     "midi_notes": 273,
     "unique_onsets": 273,
-    "onsets_played": 216,
-    "onset_coverage_pct": 79.1,
-    "arpeggio_seconds": 12.89,
-    "pitch_onsets_heard_pct": 79.1,
-    "note_time_heard_pct": 83.1
+    "onsets_played": 228,
+    "onset_coverage_pct": 83.5,
+    "arpeggio_seconds": 13.21,
+    "pitch_onsets_heard_pct": 83.5,
+    "note_time_heard_pct": 80.9
   },
   "frames": 1181,
   "duration_s": 23.561,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$19BA",
-    "total_bytes": 2491,
+    "end": "$19BC",
+    "total_bytes": 2493,
     "player_bytes": 1039,
-    "song_bytes": 1097,
-    "song_bytes_uncompressed": 1097,
+    "song_bytes": 1099,
+    "song_bytes_uncompressed": 1099,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -367,11 +368,11 @@
   },
   "cpu": {
     "max_cycles_per_frame": 2087,
-    "avg_cycles_per_frame": 870,
+    "avg_cycles_per_frame": 873,
     "max_rasterlines": 33.1
   },
   "verification": {
-    "attacks_expected": 164,
+    "attacks_expected": 178,
     "attack_timing_mismatches": 0,
     "ok": true
   }

@@ -1965,6 +1965,7 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 0,
+  "inner_bass_part_notes": 0,
   "unisons_merged": 48,
   "short_resumes_dropped": 1,
   "arrangement": {

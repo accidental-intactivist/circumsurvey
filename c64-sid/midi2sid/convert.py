@@ -182,13 +182,15 @@ def convert(midi_path, out_base, opt: Options):
         if inst in held_inst and e - s >= HELD_S:
             inst = held_inst[inst]
         fn = FNote(n.id, f0, f1, pitch, n.track, inst, is_drum=n.is_drum, vel=n.velocity)
-        fn.decay = int(DECAYING.get(insts[inst].name.split(":")[0], 0) * fps)
+        kind = insts[inst].name.split(":")[0]
+        fn.decay = int((HELD_DECAY_S if kind == "held" else DECAYING.get(kind, 0)) * fps)
         fn.pred = slur_pred.get(n.id)
         fn.sal = (salience(fn, roles.get(n.track, ("", 1.0))[1], fps) * (0.85 + 0.3 * n.velocity / 127)
                   * motion[n.id])
         fnotes.append(fn)
     report["instruments"] = [i.to_json() for i in insts]
     report["rolled_chord_notes_joined"] = _join_rolled_chords(fnotes, _ornament_ids(song))
+    report["inner_bass_part_notes"] = _demote_inner_bass_notes(fnotes, roles)
     fnotes, report["unisons_merged"] = _merge_unisons(fnotes)
     n_frames = max(n.f1 for n in fnotes) + int(0.5 * fps)
     if opt.end_s is not None:                # exact length, so sections chain seamlessly
@@ -317,6 +319,32 @@ def _block(group):
     for g in group:
         g.f0, g.f1 = f0, f1
     return len(group) - len(head)
+
+
+# a held chord (sustained variant) still matters less as it goes on: after a
+# couple of seconds a new melody note should win a voice over a pad tone
+HELD_DECAY_S = 2.0
+
+
+def _demote_inner_bass_notes(fnotes, roles):
+    """The bass role's extra weight belongs to the bass line: the part's
+    lowest sounding note.  Chord tones the same hand holds above it (a
+    left-hand chord in a piano reduction) are weighed like any chord tone,
+    so they don't keep the melody off the voices."""
+    bass_parts = {p for p, (role, _) in roles.items() if role == "bass"}
+    chords_w = 0.8
+    demoted = 0
+    by_part = {}
+    for n in fnotes:
+        if n.part in bass_parts and not n.is_drum:
+            by_part.setdefault(n.part, []).append(n)
+    for p, ns in by_part.items():
+        w = roles[p][1]
+        for n in ns:
+            if any(o is not n and o.pitch < n.pitch and o.f0 <= n.f0 < o.f1 for o in ns):
+                n.sal *= chords_w / w
+                demoted += 1
+    return demoted
 
 
 def _merge_unisons(fnotes):

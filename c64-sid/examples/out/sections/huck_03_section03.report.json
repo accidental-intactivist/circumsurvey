@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp4fu_q8mp/s2.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec12/huck_03_section03",
+  "input": "../../../../tmp/tmp0npqcchs/s2.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec13/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -149,6 +149,7 @@
   ],
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 0,
+  "inner_bass_part_notes": 2,
   "unisons_merged": 0,
   "short_resumes_dropped": 0,
   "arrangement": {

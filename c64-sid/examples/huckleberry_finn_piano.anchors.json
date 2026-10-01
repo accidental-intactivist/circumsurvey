@@ -300,6 +300,24 @@
   "note": "closing chord"
  },
  {
+  "bar": 117,
+  "beat": 2,
+  "recording_s": 138.65,
+  "note": "1st fermata chord: sf peak of the fp<sf swell (trumpets hand in bell, IN-OUT)"
+ },
+ {
+  "bar": 117,
+  "beat": 4,
+  "recording_s": 140.17,
+  "note": "2nd fermata chord (fp)"
+ },
+ {
+  "bar": 117,
+  "beat": 5,
+  "recording_s": 141.67,
+  "note": "2nd chord: sf peak"
+ },
+ {
   "bar": 118,
   "beat": 1,
   "recording_s": 143.28,

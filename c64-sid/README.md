@@ -159,6 +159,13 @@ notes swallow their attacks.
   * a voice no longer picks up an already-sounding note for a frame or two;
   * grace notes and rolled chords written off the 16th grid join the chord
     they decorate, so the bass note under a roll keeps ringing.
+* **Melody over pads:** a bass part's extra weight goes only to its lowest
+  sounding note. Chord tones the same hand holds above it count like any
+  chord tone, and held (sustained) notes lose importance over about 2 s.
+  Otherwise a left-hand chord held for two bars keeps all three voices, and
+  the melody that moves above it is never heard. On the example this halved
+  the unheard melody notes (104 → 58 of 569), restoring e.g. the *Tempo I*
+  melody at 1:30 and the chromatic bass descent at 1:13.
 * **Recovered runs** are snapped to the half-beat grid (16ths in 6/8).
   Transcribed onsets jitter by 15–45 ms around the beat; flourishes faster
   than the grid are left as played.
@@ -290,9 +297,9 @@ Calling `init` again with another number switches tunes at once, e.g. on the
 frame where a section ends. Play is still `jsr $1003` once per frame.
 
 `midi2sid.sections` builds such a bundle of a piece's sections
-(`--no-bundle` to skip it). For the example, all 8 sections take 7,342 bytes
-together, against 17,001 bytes as 8 separate files. That's about the size of
-the full-length tune (7,020 bytes), because the tunes are compressed together
+(`--no-bundle` to skip it). For the example, all 8 sections take 7,413 bytes
+together, against 17,072 bytes as 8 separate files. That's about the size of
+the full-length tune (7,133 bytes), because the tunes are compressed together
 and share one player. Each tune's SID register writes are identical, frame
 for frame, to its separate file's.
 
@@ -321,10 +328,10 @@ flutes and horns, with up to 8 simultaneous notes.
 
 | | MIDI timing | synced to the MP3 |
 |---|---|---|
-| note onsets audible on 3 voices | 85.5 % | 83.1 % |
-| note-time audible | 89.7 % | 89.0 % |
-| size (player + song) | 3,498 bytes | 4,740 bytes |
-| 6502 verification | 563/563 attacks on the exact frame | 564/564 |
+| note onsets audible on 3 voices | 85.7 % | 83.1 % |
+| note-time audible | 89.5 % | 89.0 % |
+| size (player + song) | 3,506 bytes | 4,740 bytes |
+| 6502 verification | 565/565 attacks on the exact frame | 564/564 |
 
 The reference MP3 is a **different performance** from the MIDI:
 * it is in B♭ (the MIDI is in C) and 10 cents sharp

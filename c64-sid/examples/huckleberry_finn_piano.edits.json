@@ -391,5 +391,33 @@
   "eighth": 2,
   "to_eighth": 3,
   "why": "the single note between the chords, on eighth 3 as in the neighbouring bars (trumpet quarter-eighth)"
+ },
+ {
+  "part": "Piano",
+  "bar": 53,
+  "eighth": 4,
+  "delete": true,
+  "why": "horn soli cadence: the recording plays the accented beat-4 chord of bar 53 as the arrival of the held chord (one attack at 53.20 s, broadened), not a stab followed by the fermata chord; the reduction's separate chord here made the SID land a third of a second early and re-attack"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 4,
+  "delete": true,
+  "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bar": 53,
+  "eighth": 3,
+  "len_eighths": 1.5,
+  "why": "the stab before the arrival rings into it"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 3,
+  "len_eighths": 1.5,
+  "why": "see above"
  }
 ]

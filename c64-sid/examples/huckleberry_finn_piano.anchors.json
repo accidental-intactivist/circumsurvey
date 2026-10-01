@@ -260,20 +260,20 @@
  {
   "bar": 52,
   "beat": 1,
-  "recording_s": 51.7,
-  "note": "horn soli in tempo"
+  "recording_s": 51.66,
+  "note": "horn soli: bar-52 downbeat stab (attack 51.63 s)"
  },
  {
   "bar": 53,
   "beat": 1,
-  "recording_s": 52.56,
-  "note": "horn soli in tempo"
+  "recording_s": 52.5,
+  "note": "horn soli: bar-53 downbeat stab (attack 52.48 s)"
  },
  {
   "bar": 54,
   "beat": 1,
-  "recording_s": 53.28,
-  "note": "horns' held chord under the fermata"
+  "recording_s": 53.2,
+  "note": "the horns' held chord under the fermata: the broadened arrival (attack 53.20 s)"
  },
  {
   "bar": 55,

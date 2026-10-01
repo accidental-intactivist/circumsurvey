@@ -812,14 +812,17 @@
  },
  {
   "part": "Piano #2",
-  "bar": 53,
   "eighth": 1,
   "add": [
    "B1"
   ],
   "len_eighths": 6,
   "velocity": 90,
-  "why": "the bass continues through bar 53 (the reduction had only chord tones here)"
+  "why": "the bass B1 continues through bars 52-53 (the reduction had only a B2 / chord tones here)",
+  "bars": [
+   52,
+   53
+  ]
  },
  {
   "part": "Piano #2",

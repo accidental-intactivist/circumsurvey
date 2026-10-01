@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmpae32t_08/s2.mid",
+  "input": "../../../../tmp/tmp49wafm2k/s2.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
@@ -15,7 +15,7 @@
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 3,
+      "notes": 4,
       "drums": false
     },
     {
@@ -35,7 +35,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.68,
+    "onset_score_final": 0.668,
     "anchors_midi_s": [
       0.0,
       1.125,
@@ -170,35 +170,35 @@
   "inner_melody_part_notes": 0,
   "unisons_merged": 1,
   "soft_entries": 0,
-  "short_resumes_dropped": 0,
+  "short_resumes_dropped": 1,
   "arrangement": {
-    "midi_notes": 40,
-    "unique_onsets": 40,
+    "midi_notes": 41,
+    "unique_onsets": 41,
     "onsets_played": 38,
-    "onset_coverage_pct": 95.0,
+    "onset_coverage_pct": 92.7,
     "arpeggio_seconds": 4.17,
-    "pitch_onsets_heard_pct": 95.0,
-    "note_time_heard_pct": 99.2
+    "pitch_onsets_heard_pct": 92.7,
+    "note_time_heard_pct": 98.4
   },
   "frames": 345,
   "duration_s": 6.883,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1650",
-    "total_bytes": 1617,
+    "end": "$164C",
+    "total_bytes": 1613,
     "player_bytes": 1039,
-    "song_bytes": 199,
-    "song_bytes_uncompressed": 199,
+    "song_bytes": 195,
+    "song_bytes_uncompressed": 195,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1920,
-    "avg_cycles_per_frame": 985,
-    "max_rasterlines": 30.5
+    "max_cycles_per_frame": 1998,
+    "avg_cycles_per_frame": 971,
+    "max_rasterlines": 31.7
   },
   "verification": {
     "attacks_expected": 37,

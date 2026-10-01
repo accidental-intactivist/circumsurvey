@@ -15,7 +15,7 @@
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 545,
+      "notes": 546,
       "drums": false
     },
     {
@@ -578,14 +578,14 @@
   "inner_melody_part_notes": 473,
   "unisons_merged": 24,
   "soft_entries": 156,
-  "short_resumes_dropped": 68,
+  "short_resumes_dropped": 69,
   "arrangement": {
-    "midi_notes": 1452,
-    "unique_onsets": 1452,
+    "midi_notes": 1453,
+    "unique_onsets": 1453,
     "onsets_played": 1267,
-    "onset_coverage_pct": 87.3,
+    "onset_coverage_pct": 87.2,
     "arpeggio_seconds": 79.34,
-    "pitch_onsets_heard_pct": 87.3,
+    "pitch_onsets_heard_pct": 87.2,
     "note_time_heard_pct": 83.4
   },
   "frames": 7212,
@@ -597,7 +597,7 @@
     "total_bytes": 6711,
     "player_bytes": 1039,
     "song_bytes": 5247,
-    "song_bytes_uncompressed": 5516,
+    "song_bytes_uncompressed": 5512,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

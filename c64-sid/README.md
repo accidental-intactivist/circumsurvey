@@ -294,6 +294,8 @@ puts the Allegro's tutti chords (bars 105–108) on the accented eighths 1
 and 4 as in the score and the recording, and corrects the grace-note
 figures that the recording transcription landed on bars 14–19.
 
+`pitches` narrows a move/resize/delete to some notes of a chord (`{"part":
+"Piano #2", "bars": [51, 52], "eighth": 1, "pitches": ["B2"], "delete": true}`).
 An `add` to a part the MIDI lacks creates it, with the edit's `program` as
 its General MIDI instrument (`{"part": "Horns", "program": 60, …}`), and an
 entry with `"figure": true` replaces the transcribed grace-note figure on

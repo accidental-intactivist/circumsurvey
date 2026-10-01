@@ -51,11 +51,11 @@
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2B66",
-    "total_bytes": 7015,
+    "end": "$2B62",
+    "total_bytes": 7011,
     "player_bytes": 1059,
     "instruments": 14,
-    "song_bytes": 5406,
+    "song_bytes": 5402,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -111,6 +111,6 @@
       "ok": true
     }
   ],
-  "cpu_max_cycles_per_frame": 2088,
+  "cpu_max_cycles_per_frame": 2083,
   "verified": true
 }

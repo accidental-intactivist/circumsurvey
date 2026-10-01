@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec17/huck.edited.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec17/huck_whole",
+  "input": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck.edited.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_whole",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -15,19 +15,26 @@
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 546,
+      "notes": 545,
       "drums": false
     },
     {
       "index": 2,
-      "name": "Timpani",
-      "program": 47,
-      "notes": 43,
+      "name": "Horns",
+      "program": 60,
+      "notes": 18,
       "drums": false
     },
     {
       "index": 3,
-      "name": "Horns",
+      "name": "Timpani",
+      "program": 47,
+      "notes": 30,
+      "drums": false
+    },
+    {
+      "index": 4,
+      "name": "Horns 2",
       "program": 60,
       "notes": 18,
       "drums": false
@@ -35,7 +42,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.829,
+    "onset_score_final": 0.825,
     "anchors_midi_s": [
       0.0,
       0.562,
@@ -397,11 +404,15 @@
   ],
   "sid_starts_at_recording_s": 0.21,
   "roles": {
+    "Horns": {
+      "role": "counter",
+      "weight": 1.0
+    },
     "Timpani": {
       "role": "counter",
       "weight": 1.0
     },
-    "Horns": {
+    "Horns 2": {
       "role": "counter",
       "weight": 1.0
     },
@@ -448,6 +459,20 @@
       "table": []
     },
     {
+      "name": "horn:Horns",
+      "wave": 64,
+      "ad": 73,
+      "sr": 151,
+      "pw": 768,
+      "pw_speed": 10,
+      "pw_min": 512,
+      "pw_max": 1536,
+      "vib_delay": 20,
+      "vib_depth": 4,
+      "vib_speed": 4,
+      "table": []
+    },
+    {
       "name": "timpani:Timpani",
       "wave": 16,
       "ad": 4,
@@ -471,7 +496,7 @@
       ]
     },
     {
-      "name": "horn:Horns",
+      "name": "horn:Horns 2",
       "wave": 64,
       "ad": 73,
       "sr": 151,
@@ -549,30 +574,30 @@
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 22,
   "slurred_steps": 140,
-  "inner_bass_part_notes": 237,
+  "inner_bass_part_notes": 236,
   "inner_melody_part_notes": 473,
-  "unisons_merged": 23,
+  "unisons_merged": 24,
   "soft_entries": 156,
-  "short_resumes_dropped": 67,
+  "short_resumes_dropped": 68,
   "arrangement": {
-    "midi_notes": 1449,
-    "unique_onsets": 1449,
-    "onsets_played": 1266,
-    "onset_coverage_pct": 87.4,
+    "midi_notes": 1452,
+    "unique_onsets": 1452,
+    "onsets_played": 1267,
+    "onset_coverage_pct": 87.3,
     "arpeggio_seconds": 79.34,
-    "pitch_onsets_heard_pct": 87.4,
-    "note_time_heard_pct": 83.3
+    "pitch_onsets_heard_pct": 87.3,
+    "note_time_heard_pct": 83.4
   },
   "frames": 7212,
   "duration_s": 143.882,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2A40",
-    "total_bytes": 6721,
+    "end": "$2A36",
+    "total_bytes": 6711,
     "player_bytes": 1039,
-    "song_bytes": 5269,
-    "song_bytes_uncompressed": 5542,
+    "song_bytes": 5247,
+    "song_bytes_uncompressed": 5516,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

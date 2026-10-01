@@ -22,7 +22,8 @@ that the recording transcription (recover.py) lands on that bar's downbeat.
 `part` is the part name as the converter reports it ("Piano", "Piano #2" for a
 second track of the same name).  `eighth` counts the time signature's beat
 unit from 1 (eighths in 6/8); a note is selected when it starts within a
-quarter of a unit of that position.  `bars` is inclusive; `bar` selects one.
+quarter of a unit of that position; `pitches` narrows the selection to those
+notes of the chord.  `bars` is inclusive; `bar` selects one.
 Operations: move (`to_eighth`), resize (`len_eighths`), `delete`, `add`
 (pitches, with `len_eighths` and optional `velocity`).  `add` to a part the
 MIDI lacks creates it, with the edit's `program` (General MIDI number) as its
@@ -138,6 +139,9 @@ def apply_edits(midi_path, edits, out_path):
                 for e in eighths:
                     pos = b0 + (float(e) - 1) * unit
                     sel = [n for n in notes if n["ch"] == ch and abs(n["start"] - pos) <= unit / 4]
+                    if "pitches" in ed:                      # only these notes of the chord
+                        want = {_pitch(x) for x in ed["pitches"]}
+                        sel = [n for n in sel if n["pitch"] in want]
                     if ed.get("delete"):
                         for n in sel:
                             notes.remove(n)

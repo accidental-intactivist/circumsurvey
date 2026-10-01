@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmpew45pb0i/s2.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec17/huck_03_section03",
+  "input": "../../../../tmp/tmpae32t_08/s2.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -15,19 +15,19 @@
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 4,
+      "notes": 3,
       "drums": false
     },
     {
       "index": 2,
-      "name": "Timpani",
-      "program": 47,
-      "notes": 13,
+      "name": "Horns",
+      "program": 60,
+      "notes": 18,
       "drums": false
     },
     {
       "index": 3,
-      "name": "Horns",
+      "name": "Horns 2",
       "program": 60,
       "notes": 18,
       "drums": false
@@ -35,7 +35,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.791,
+    "onset_score_final": 0.68,
     "anchors_midi_s": [
       0.0,
       1.125,
@@ -65,16 +65,16 @@
       "weight": 0.8
     },
     "Piano #2": {
-      "role": "counter",
-      "weight": 1.0
-    },
-    "Timpani": {
       "role": "bass",
       "weight": 1.3
     },
     "Horns": {
       "role": "melody",
       "weight": 1.5
+    },
+    "Horns 2": {
+      "role": "counter",
+      "weight": 1.0
     }
   },
   "instruments": [
@@ -95,8 +95,8 @@
     {
       "name": "piano:Piano #2",
       "wave": 64,
-      "ad": 7,
-      "sr": 70,
+      "ad": 10,
+      "sr": 73,
       "pw": 1536,
       "pw_speed": 24,
       "pw_min": 512,
@@ -107,30 +107,21 @@
       "table": []
     },
     {
-      "name": "timpani:Timpani",
-      "wave": 16,
-      "ad": 4,
-      "sr": 0,
-      "pw": 2048,
-      "pw_speed": 0,
+      "name": "horn:Horns",
+      "wave": 64,
+      "ad": 73,
+      "sr": 151,
+      "pw": 768,
+      "pw_speed": 10,
       "pw_min": 512,
-      "pw_max": 3584,
-      "vib_delay": 0,
-      "vib_depth": 0,
-      "vib_speed": 0,
-      "table": [
-        [
-          128,
-          12
-        ],
-        [
-          16,
-          0
-        ]
-      ]
+      "pw_max": 1536,
+      "vib_delay": 20,
+      "vib_depth": 4,
+      "vib_speed": 4,
+      "table": []
     },
     {
-      "name": "horn:Horns",
+      "name": "horn:Horns 2",
       "wave": 64,
       "ad": 73,
       "sr": 151,
@@ -170,20 +161,6 @@
       "vib_depth": 0,
       "vib_speed": 0,
       "table": []
-    },
-    {
-      "name": "held:timpani:Timpani",
-      "wave": 16,
-      "ad": 40,
-      "sr": 201,
-      "pw": 2048,
-      "pw_speed": 12,
-      "pw_min": 512,
-      "pw_max": 3584,
-      "vib_delay": 0,
-      "vib_depth": 0,
-      "vib_speed": 0,
-      "table": []
     }
   ],
   "anticipate_s": 0.04,
@@ -191,40 +168,40 @@
   "slurred_steps": 0,
   "inner_bass_part_notes": 0,
   "inner_melody_part_notes": 0,
-  "unisons_merged": 0,
+  "unisons_merged": 1,
   "soft_entries": 0,
-  "short_resumes_dropped": 1,
+  "short_resumes_dropped": 0,
   "arrangement": {
-    "midi_notes": 37,
-    "unique_onsets": 37,
-    "onsets_played": 36,
-    "onset_coverage_pct": 97.3,
+    "midi_notes": 40,
+    "unique_onsets": 40,
+    "onsets_played": 38,
+    "onset_coverage_pct": 95.0,
     "arpeggio_seconds": 4.17,
-    "pitch_onsets_heard_pct": 97.3,
-    "note_time_heard_pct": 99.4
+    "pitch_onsets_heard_pct": 95.0,
+    "note_time_heard_pct": 99.2
   },
   "frames": 345,
   "duration_s": 6.883,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1666",
-    "total_bytes": 1639,
+    "end": "$1650",
+    "total_bytes": 1617,
     "player_bytes": 1039,
-    "song_bytes": 203,
-    "song_bytes_uncompressed": 215,
+    "song_bytes": 199,
+    "song_bytes_uncompressed": 199,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1917,
-    "avg_cycles_per_frame": 1000,
-    "max_rasterlines": 30.4
+    "max_cycles_per_frame": 1920,
+    "avg_cycles_per_frame": 985,
+    "max_rasterlines": 30.5
   },
   "verification": {
-    "attacks_expected": 35,
+    "attacks_expected": 37,
     "attack_timing_mismatches": 0,
     "ok": true
   }

@@ -143,58 +143,6 @@
   "why": "chord tones, see above (bar 53 has no bass note of its own)"
  },
  {
-  "part": "Timpani",
-  "program": 47,
-  "bar": 51,
-  "eighth": [
-   3,
-   3.5,
-   4,
-   5,
-   6
-  ],
-  "add": [
-   "B1"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100,
-  "why": "score p.24: the timpani's figure under the soli (two 16ths, then accented eighths), which the reduction's low chord tones stood for"
- },
- {
-  "part": "Timpani",
-  "program": 47,
-  "bar": 52,
-  "eighth": [
-   1,
-   2,
-   3,
-   4,
-   6
-  ],
-  "add": [
-   "B1"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100,
-  "why": "timpani, as above"
- },
- {
-  "part": "Timpani",
-  "program": 47,
-  "bar": 53,
-  "eighth": [
-   1,
-   3,
-   4
-  ],
-  "add": [
-   "B1"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100,
-  "why": "timpani, as above"
- },
- {
   "part": "Horns",
   "program": 60,
   "bar": 51,
@@ -652,5 +600,238 @@
   "eighth": 2,
   "to_eighth": 3,
   "why": "the single note between the chords, on eighth 3 as in the neighbouring bars (trumpet quarter-eighth)"
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 1,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100,
+  "why": "score p.24: the soli is for all horns in two octaves, and the recording shows both (F#4+F#5, B3+B4, Eb4+Eb5); the lower octave replaces the timpani figure, which on three voices read as percussion rather than weight"
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 1.5,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 2.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 3,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 4,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 5.5,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 6,
+  "add": [
+   "Bb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 6.5,
+  "add": [
+   "C#4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 1,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 2.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 4,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 2.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 1,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 2.5,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 2.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 4.5,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 5.5,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 6,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 54,
+  "eighth": 1,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 5.5,
+  "velocity": 100
+ },
+ {
+  "part": "Piano #2",
+  "bars": [
+   51,
+   52
+  ],
+  "eighth": 1,
+  "len_eighths": 6,
+  "why": "the bass under the soli held for the bar (basses/timpani roll) rather than a short stab"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 1,
+  "add": [
+   "B1"
+  ],
+  "len_eighths": 6,
+  "velocity": 90,
+  "why": "the bass continues through bar 53 (the reduction had only chord tones here)"
+ },
+ {
+  "part": "Piano #2",
+  "bars": [
+   51,
+   52
+  ],
+  "eighth": 1,
+  "pitches": [
+   "B2"
+  ],
+  "delete": true,
+  "why": "the octave above the bass B1 would occupy the third voice; that voice carries the horns' lower octave here"
  }
 ]

@@ -51,11 +51,11 @@
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2B5E",
-    "total_bytes": 7007,
+    "end": "$2B66",
+    "total_bytes": 7015,
     "player_bytes": 1059,
-    "instruments": 13,
-    "song_bytes": 5410,
+    "instruments": 14,
+    "song_bytes": 5406,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -76,7 +76,7 @@
     },
     {
       "tune": 2,
-      "attacks_expected": 35,
+      "attacks_expected": 37,
       "attack_timing_mismatches": 0,
       "ok": true
     },
@@ -111,6 +111,6 @@
       "ok": true
     }
   ],
-  "cpu_max_cycles_per_frame": 2083,
+  "cpu_max_cycles_per_frame": 2088,
   "verified": true
 }

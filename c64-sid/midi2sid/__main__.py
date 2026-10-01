@@ -2,7 +2,7 @@ import argparse
 import json
 import sys
 
-from .convert import Options, convert
+from .convert import Options, convert, load_map
 
 
 def _addr(s):
@@ -41,6 +41,8 @@ def main(argv=None):
     ap.add_argument("--released", default="")
     ap.add_argument("--anchors", help="JSON list of score anchors pinning MIDI bars to recording times, "
                     "e.g. [{\"bar\": 73, \"beat\": 3, \"recording_s\": 89.38}] (fermatas, tempo changes)")
+    ap.add_argument("--map", help="saved time map (a .report.json or {midi_s, recording_s, transpose, "
+                    "tuning_cents}) to use instead of aligning; --anchors then only correct it locally")
     ap.add_argument("--no-recover-runs", action="store_true",
                     help="don't add fast runs found in the recording but missing from the MIDI")
     ap.add_argument("--no-wav", action="store_true", help="skip the audio preview")
@@ -63,6 +65,8 @@ def main(argv=None):
                   keep_lead_in=args.keep_lead_in, overrides=overrides, title=args.title,
                   author=args.author, released=args.released, render_wav=not args.no_wav,
                   recover_runs=not args.no_recover_runs, anchors=anchors)
+    if args.map:
+        opt.fixed_map, opt.fixed_key = load_map(args.map)
     rep = convert(args.midi, out, opt)
     m = rep["memory"]
     print(f"wrote {out}.sid / .prg / .asm / .sync.json / .report.json" + ("" if args.no_wav else " / .wav"))

@@ -60,6 +60,60 @@
   "note": "rehearsal 6, pp, after the horns' fermata and a short silence (score p.24)"
  },
  {
+  "bar": 56,
+  "beat": 1,
+  "recording_s": 59.08,
+  "note": "pp section: low D tremolo + sustained chord re-enter every two bars"
+ },
+ {
+  "bar": 58,
+  "beat": 1,
+  "recording_s": 61.84,
+  "note": "pp section: low D tremolo + sustained chord re-enter every two bars"
+ },
+ {
+  "bar": 60,
+  "beat": 1,
+  "recording_s": 64.74,
+  "note": "pp section: low D tremolo + sustained chord re-enter every two bars"
+ },
+ {
+  "bar": 62,
+  "beat": 1,
+  "recording_s": 67.6,
+  "note": "pp section: low D tremolo + sustained chord re-enter every two bars"
+ },
+ {
+  "bar": 64,
+  "beat": 1,
+  "recording_s": 70.75,
+  "note": "pp section: low D tremolo + sustained chord re-enter every two bars"
+ },
+ {
+  "bar": 65,
+  "beat": 1,
+  "recording_s": 72.2,
+  "note": "ritard: low tutti entry"
+ },
+ {
+  "bar": 68,
+  "beat": 1,
+  "recording_s": 76.9,
+  "note": "ritard: low tutti entry"
+ },
+ {
+  "bar": 70,
+  "beat": 1,
+  "recording_s": 80.65,
+  "note": "ritard: low tutti entry"
+ },
+ {
+  "bar": 71,
+  "beat": 1,
+  "recording_s": 82.5,
+  "note": "ritard: low tutti entry"
+ },
+ {
   "bar": 72,
   "beat": 1,
   "recording_s": 84.65,
@@ -76,5 +130,53 @@
   "beat": 3,
   "recording_s": 89.38,
   "note": "flute solo pickup"
+ },
+ {
+  "bar": 98,
+  "beat": 1,
+  "recording_s": 112.64,
+  "note": "held chord"
+ },
+ {
+  "bar": 99,
+  "beat": 1,
+  "recording_s": 114.9,
+  "note": "fz downbeat, rising arpeggio begins"
+ },
+ {
+  "bar": 100,
+  "beat": 1,
+  "recording_s": 115.88,
+  "note": "arpeggio"
+ },
+ {
+  "bar": 101,
+  "beat": 1,
+  "recording_s": 116.8,
+  "note": "chords (2nd on the 117.5 attack)"
+ },
+ {
+  "bar": 102,
+  "beat": 1,
+  "recording_s": 118.2,
+  "note": "held chord before the tutti"
+ },
+ {
+  "bar": 103,
+  "beat": 1,
+  "recording_s": 119.56,
+  "note": "tutti returns"
+ },
+ {
+  "bar": 117,
+  "beat": 1,
+  "recording_s": 137.29,
+  "note": "closing chord"
+ },
+ {
+  "bar": 118,
+  "beat": 1,
+  "recording_s": 143.28,
+  "note": "final chord"
  }
 ]

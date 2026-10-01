@@ -4,10 +4,10 @@ SID tune with its own alignment to the matching stretch of the recording.
   python -m midi2sid.sections song.mid --audio rec.mp3 --bars 21,40,50,54,73,98,101,116 -o out/song
 
 Sections are cut on MIDI bar lines, so every mini-tune starts on a downbeat.
-The whole piece is aligned first (with --anchors if given) to find where each
-bar line falls in the recording; then each section's MIDI and audio are cut
-and aligned on their own, so a fermata or tempo change at a boundary never
-drags the neighbouring section's tempo around.
+The whole piece is aligned once (or loaded with --map, then corrected locally
+with --anchors) to find where each bar line falls in the recording; each
+section then plays its slice of that one map, so sections join seamlessly and
+a correction in one section never moves another.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import tempfile
 import mido
 import numpy as np
 
-from .convert import Options, convert
+from .convert import Options, convert, load_map
 from .midi_in import load_midi
 
 
@@ -82,6 +82,8 @@ def main(argv=None):
     ap.add_argument("-a", "--audio", required=True)
     ap.add_argument("--bars", required=True, help="comma-separated first bars of sections 2..N")
     ap.add_argument("--anchors", help="score anchors JSON for the whole-piece alignment")
+    ap.add_argument("--map", help="saved whole-piece time map to start from instead of aligning; "
+                    "--anchors then only correct it locally (see python -m midi2sid --map)")
     ap.add_argument("-o", "--out", required=True, help="output prefix, e.g. out/huck")
     ap.add_argument("--names", help="comma-separated section names")
     ap.add_argument("--video", default="pal")
@@ -90,9 +92,11 @@ def main(argv=None):
     anchors = json.load(open(args.anchors)) if args.anchors else []
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     # 1. whole piece: where does each bar line fall in the recording?
-    whole = convert(args.midi, args.out + "_whole",
-                    Options(audio=args.audio, anchors=anchors, render_wav=False, verify=False,
-                            recover_runs=True, video=args.video))
+    wopt = Options(audio=args.audio, anchors=anchors, render_wav=False, verify=False,
+                   recover_runs=True, video=args.video)
+    if args.map:
+        wopt.fixed_map, wopt.fixed_key = load_map(args.map)
+    whole = convert(args.midi, args.out + "_whole", wopt)
     al = whole["alignment"]
     am, ar = np.array(al["anchors_midi_s"]), np.array(al["anchors_recording_s"])
     bar_len, song = bar_ticks(args.midi)

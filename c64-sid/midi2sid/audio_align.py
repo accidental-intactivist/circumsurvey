@@ -554,17 +554,24 @@ def steady_tempo(notes, am, aa, flux, beat_times, bars=4, lurch=1.4, slack=0.03,
     return am, aa, changed
 
 
-def pin_map(am, aa, pins, fade_s=1.5):
+def pin_map(am, aa, pins, fade_s=1.5, link_s=None):
     """Make the map pass exactly through pins [(midi_t, rec_t)]: corrections
-    are linear between pins and fade out over fade_s outside them."""
+    are linear between pins and fade out over fade_s outside them.  With
+    link_s, only pins at most link_s (MIDI s) apart are linked; across a wider
+    gap each correction fades out over fade_s, so a pin stays local."""
     if not pins:
         return am, aa
     pins = sorted(pins)
     pm = np.array([p[0] for p in pins])
     pd = np.array([p[1] - float(np.interp(p[0], am, aa)) for p in pins])
-    xs = np.concatenate([[pm[0] - fade_s], pm, [pm[-1] + fade_s]])
-    ds = np.concatenate([[0.0], pd, [0.0]])
-    grid = np.union1d(am, pm)
+    xs, ds = [pm[0] - fade_s], [0.0]
+    for k in range(len(pm)):
+        xs.append(pm[k]); ds.append(pd[k])
+        if k + 1 < len(pm) and link_s is not None and pm[k + 1] - pm[k] > link_s:
+            xs += [pm[k] + fade_s, pm[k + 1] - fade_s]; ds += [0.0, 0.0]
+    xs.append(pm[-1] + fade_s); ds.append(0.0)
+    xs, ds = np.array(xs), np.array(ds)
+    grid = np.union1d(am, xs)
     grid = grid[np.concatenate([[True], np.diff(grid) > 1e-3])]
     new = np.interp(grid, am, aa) + np.interp(grid, xs, ds, left=0.0, right=0.0)
     for m, r in pins:                                # exact at the pins

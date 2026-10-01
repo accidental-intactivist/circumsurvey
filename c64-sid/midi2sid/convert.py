@@ -70,6 +70,11 @@ def convert(midi_path, out_base, opt: Options):
     if opt.audio and opt.fixed_map is not None:
         # time map supplied (e.g. a section cut from a whole-piece alignment)
         am_, ar_ = (np.asarray(x, float) for x in opt.fixed_map)
+        pins = _resolve_anchors(song, opt.anchors)
+        if pins:
+            # score anchors on a fixed map are local corrections only: linear
+            # between neighbouring pins, so fixing one passage never moves another
+            am_, ar_ = audio_align.pin_map(am_, ar_, pins, fade_s=1.0, link_s=3.0)
         tm = audio_align.TimeMap(1.0, 0.0, (am_, ar_))
         y = audio_align.decode_audio(opt.audio)
         feat = audio_align.audio_features(y)
@@ -107,7 +112,8 @@ def convert(midi_path, out_base, opt: Options):
     slur_pred = {}
     if opt.audio and opt.recover_runs and opt.sync != "none":
         tmap = _recover_runs(song, opt.audio, tmap, transpose, tuning, slur_pred, report,
-                             flux=feat["flux"] if feat is not None else None)
+                             flux=feat["flux"] if feat is not None else None,
+                             adjust_map=opt.fixed_map is None)
         if getattr(tmap, "anchors", None) is not None:
             report["alignment"]["anchors_midi_s"] = [round(float(x), 3) for x in tmap.anchors[0]]
             report["alignment"]["anchors_recording_s"] = [round(float(x), 3) for x in tmap.anchors[1]]
@@ -272,9 +278,10 @@ def _resolve_anchors(song, anchors):
 RUNS_PART = "Flute runs (from recording)"
 
 
-def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=None):
+def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=None, adjust_map=True):
     """Transcribe fast runs the MIDI lacks from the recording and add them to
-    the song as an extra part (MIDI time, MIDI key)."""
+    the song as an extra part (MIDI time, MIDI key).  With adjust_map the
+    figures also pin the time map where they land; a fixed map is kept."""
     from . import recover
     from .midi_in import Note, Part
     y = audio_align.decode_audio(audio)
@@ -283,8 +290,9 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=
     if not found:
         report["recovered_runs"] = []
         return tmap
-    tmap = _landing_anchors(song, tmap, found, report)
-    if flux is not None and getattr(tmap, "anchors", None) is not None and report.get("landing_anchors"):
+    if adjust_map:
+        tmap = _landing_anchors(song, tmap, found, report)
+    if adjust_map and flux is not None and getattr(tmap, "anchors", None) is not None and report.get("landing_anchors"):
         # with the figures pinned, neighbouring onsets are now within reach:
         # one more snapping pass settles the bars around them
         notes = [n for n in song.notes if not n.is_drum]
@@ -486,3 +494,14 @@ def verify(frame_writes, streams, n_frames):
         mism += len(set(e_att) ^ set(g_att))
     return {"attacks_expected": sum(1 for v in range(3) for _, k in expected[v] if k == "attack"),
             "attack_timing_mismatches": mism, "ok": mism == 0}
+
+
+def load_map(path):
+    """A saved time map: a report JSON (its alignment) or {midi_s, recording_s,
+    transpose, tuning_cents}.  Returns ((midi_s, recording_s), (transpose, tuning))."""
+    with open(path) as f:
+        d = json.load(f)
+    al = d.get("alignment", d)
+    am = al.get("anchors_midi_s", al.get("midi_s"))
+    ar = al.get("anchors_recording_s", al.get("recording_s"))
+    return (list(am), list(ar)), (int(d.get("transpose", 0)), float(d.get("tuning_cents", 0.0)) / 100)

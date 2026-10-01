@@ -170,18 +170,31 @@ repeats are less exact (the tempo breathes), so it compresses less.
 
 ```bash
 python -m midi2sid.sections examples/piano_theme.mid -a recording.mp3 \
+    --map examples/huckleberry_finn_piano.map.json \
     --anchors examples/huckleberry_finn_piano.anchors.json \
-    --bars 21,40,50,54,73,98,101,116 -o out/huck
+    --bars 23,51,55,73,98,103,113 -o out/huck
 ```
 
 This splits a piece at bar lines into separate tunes (`out/huck_01_….sid`
-… `_09_….sid`, plus `out/huck_sections.json`):
-* **Each section is aligned on its own** to its stretch of the recording,
-  so a fermata or tempo change at a boundary can't drag a neighbouring
-  section's tempo around.
+… `_08_….sid`, plus `out/huck_sections.json`):
+* **Every section plays its slice of one whole-piece time map**, so sections
+  agree with the full-length tune and join seamlessly.
 * **Each tune starts exactly on its first bar line** and lasts exactly
   until the next section's bar line, so playing section N then N+1 is
   seamless. Each tune loops on its own if left running.
+
+The example's sections (recording times):
+
+| # | Bars | Recording | Passage |
+|---|------|-----------|---------|
+| 1 | 1–22 | 0:00–0:21.6 | opening, flute runs, *poco a poco accel.* |
+| 2 | 23–50 | 0:21.6–0:50.8 | tutti, trumpet soli, fermata swell, rehearsal 5 |
+| 3 | 51–54 | 0:50.8–0:57.9 | horn soli and held horn chord |
+| 4 | 55–72 | 0:57.9–1:29.1 | rehearsal 6, *pp*, ritard. to the held chord |
+| 5 | 73–97 | 1:29.1–1:52.6 | rehearsal 7, *Tempo I* |
+| 6 | 98–102 | 1:52.6–1:59.6 | held chord, rising arpeggio |
+| 7 | 103–112 | 1:59.6–2:09.3 | tutti |
+| 8 | 113–end | 2:09.3–2:26.4 | coda, closing chords |
 
 **Score anchors** (`--anchors`) pin moments you know from the score, such as
 a fermata or a *Tempo I*, to times in the recording:
@@ -191,11 +204,18 @@ a fermata or a *Tempo I*, to times in the recording:
  {"bar": 73, "beat": 1, "recording_s": 89.07, "note": "rehearsal 7, Tempo I"}]
 ```
 
-Beats count the time signature's beat unit (eighths in 6/8), starting at
-1. The alignment is forced through the pins, and its long hold steps
-(up to 4× per step) let a fermata stretch between them. A steady-tempo
-check then replaces lurching stretches with a constant tempo whenever that
-explains the recording's attacks at least as well.
+Beats count the time signature's beat unit (eighths in 6/8), starting at 1.
+
+**Fine-tuning one passage at a time.** Without `--map`, anchors steer the
+whole-piece alignment: they are forced into it, and long hold steps let a
+fermata stretch between them. But re-aligning can also move passages far
+from the new anchor. To fine-tune, start from a saved map with `--map` (a
+`.report.json` from an earlier run, or the
+`{midi_s, recording_s, transpose, tuning_cents}` file in `examples/`). The
+anchors are then **local corrections**: anchors up to 3 s apart are joined
+linearly, and each correction fades out within 1 s otherwise. Nothing
+outside the passage you're fixing moves. The same `--map`/`--anchors` pair
+works for the single full-length tune (`python -m midi2sid … --map …`).
 
 ## Using it in the game
 

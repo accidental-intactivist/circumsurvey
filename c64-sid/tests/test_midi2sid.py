@@ -91,7 +91,10 @@ class TestEndToEnd(unittest.TestCase):
             make_midi(mid)
             rep = convert(mid, os.path.join(d, "t"), Options(render_wav=False, load_addr=0x3000))
             self.assertTrue(rep["verification"]["ok"], rep["verification"])
-            self.assertGreater(rep["verification"]["attacks_expected"], 50)
+            # the test melody moves stepwise in abutting notes, so it is slurred
+            # (glides, no re-attack); chords, bass and drums still attack
+            self.assertGreater(rep["slurred_steps"], 20)
+            self.assertGreater(rep["verification"]["attacks_expected"], 30)
             self.assertLess(rep["cpu"]["max_cycles_per_frame"], 19656 // 4)
             self.assertGreater(rep["arrangement"]["pitch_onsets_heard_pct"], 60)
             with open(os.path.join(d, "t.sid"), "rb") as f:

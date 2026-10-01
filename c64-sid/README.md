@@ -111,6 +111,30 @@ candidate assignments and keeps the best:
 
 Unison doublings across parts are merged.
 
+**The role's weight belongs to the line, not the whole hand.** In a piano
+reduction the melody part also holds the harmony under its top note, and
+the bass part holds chord tones above the bass. Only the top note of a
+chord the melody part strikes carries the melody weight, and only the
+lowest sounding note of the bass part carries the bass weight; the rest
+are weighed like any chord tone. Otherwise a held inner tone of a
+right-hand chord would keep a timpani figure or a bass entry off the voices.
+
+**Slurs.** A single note of a part that starts as the part's previous note
+ends and moves by a step (one or two semitones) is slurred to it: the voice
+glides to the new pitch without re-attacking, as a wind or string player
+would, instead of a hard restart and a fresh hammer on every eighth of the
+melody. Leaps and repeated pitches keep their attacks.
+
+**Soft entries.** With a recording, a struck note that enters while the
+master volume is low (the orchestra's *p* entries) uses the sustained
+variant of its instrument, with the gentler attack.
+
+**No stale re-strikes.** A voice that frees up does not pick a chord tone
+back up if that note is already sounding on another voice for a moment
+(under 0.2 s) or if, for a struck sound, it has already died away: no
+orchestra re-plays a chord tone a second after the chord, and such pops
+between two melody notes jumble the line.
+
 **Struck and plucked notes fade.** For piano, harp, guitar, mallets,
 timpani and pizzicato, a held note's claim on its voice decays over about
 0.4–0.8 s. Without this, a chord held for a bar would keep all three voices
@@ -220,13 +244,13 @@ The example's sections (recording times):
 
 | # | Bars | Recording | Passage |
 |---|------|-----------|---------|
-| 1 | 1–24 | 0:00.2–0:23.4 | opening, flute runs, *poco a poco accel.*, descending run, fermata |
-| 2 | 25–50 | 0:23.4–0:50.8 | rehearsal 4 tutti, trumpet soli, fermata swell, rehearsal 5 |
-| 3 | 51–54 | 0:50.8–0:57.9 | horn soli and held horn chord |
-| 4 | 55–72 | 0:57.9–1:29.1 | rehearsal 6, *pp*, ritard. to the held chord |
-| 5 | 73–97 | 1:29.1–1:52.6 | rehearsal 7, *Tempo I* |
-| 6 | 98–102 | 1:52.6–1:59.6 | held chord, rising arpeggio |
-| 7 | 103–113 | 1:59.6–2:10.7 | tutti, to its last chord |
+| 1 | 1–24 | 0:00.2–0:23.3 | opening, flute runs, *poco a poco accel.*, descending run, fermata |
+| 2 | 25–50 | 0:23.3–0:50.8 | rehearsal 4 tutti, trumpet soli, fermata swell, rehearsal 5 |
+| 3 | 51–54 | 0:50.8–0:57.7 | horn soli and held horn chord |
+| 4 | 55–72 | 0:57.7–1:29.0 | rehearsal 6, *pp*, ritard. to the held chord |
+| 5 | 73–97 | 1:29.0–1:52.6 | rehearsal 7, *Tempo I* |
+| 6 | 98–102 | 1:52.6–1:59.5 | held chord, rising arpeggio |
+| 7 | 103–113 | 1:59.5–2:10.7 | tutti, to its last chord |
 | 8 | 114–end | 2:10.7–2:26.4 | coda: rising bass line, closing chords |
 
 **Score anchors** (`--anchors`) pin moments you know from the score, such as
@@ -238,6 +262,17 @@ a fermata or a *Tempo I*, to times in the recording:
 ```
 
 Beats count the time signature's beat unit (eighths in 6/8), starting at 1.
+With a saved `--map` the map is also **straightened** between bar lines and
+anchors: the alignment's within-bar wobble (up to 200 ms in this example)
+is replaced by a steady tempo from one bar line to the next, so eighths
+land on an even grid, like a player keeping time between the beats.
+
+A quick way to find bar lines is a dynamic-programming fit of the
+corrected MIDI's onset positions (eighths) in each bar against the
+recording's attack curve, bar by bar, with each bar's length free. The
+example's anchors for bars 11–20, 25–49, 73–83, 84–97 and 103–113 come
+from such a fit: the recording ran a steady 50–80 ms ahead of the
+feature-level alignment through most of the piece.
 
 **Score corrections** (`--edits`). A piano reduction is not the score. Where
 the full score and the recording disagree with the reduction, an edits JSON
@@ -250,7 +285,20 @@ and adds broken-chord filler on eighths 3, 5 and 6, while the score has the
 chords on the downbeat, held a dotted quarter, over the bass line alone. The
 recording attacks on the downbeat and has nothing on eighth 2. Before the
 correction, the timing fit had followed the reduction's off-beat chords, so
-the whole passage played an eighth note early.
+the whole passage played an eighth note early. The same file re-enters
+the horn soli of bars 51–53 as a part of its own (the reduction had stacked
+the horns' chord tones on the timpani's rhythm), gives the timpani its own
+part and the score's rhythm in the *pp* passage (bars 56–68, where the
+reduction wrote its figure as low D eighths without the downbeat stroke),
+puts the Allegro's tutti chords (bars 105–108) on the accented eighths 1
+and 4 as in the score and the recording, and corrects the grace-note
+figures that the recording transcription landed on bars 14–19.
+
+An `add` to a part the MIDI lacks creates it, with the edit's `program` as
+its General MIDI instrument (`{"part": "Horns", "program": 60, …}`), and an
+entry with `"figure": true` replaces the transcribed grace-note figure on
+that bar's downbeat (`"notes"`, last one on the beat) rather than editing
+the MIDI.
 
 **Fine-tuning one passage at a time.** Without `--map`, anchors steer the
 whole-piece alignment: they are forced into it, and long hold steps let a

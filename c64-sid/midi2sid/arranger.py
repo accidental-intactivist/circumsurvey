@@ -23,7 +23,7 @@ import math
 
 ARP_WEIGHT = 0.6
 CUT_PENALTY = 0.7
-RESUME_PENALTY = 0.45
+RESUME_PENALTY = 0.65
 ROLE_BONUS = 0.25
 PART_STICKY = 0.15
 SLUR_BONUS = 1.2
@@ -75,7 +75,12 @@ def part_roles(song, notes_by_part):
         distinct = len({n.pitch for n in ns})
         info[p.index] = dict(poly=poly, mean=mean, distinct=distinct, drum=p.is_drum)
     tonal = [i for i, d in info.items() if not d["drum"]]
-    roles = {}
+    # a part with only a handful of notes (a horn soli, a timpani figure)
+    # must not claim the bass or melody role of the whole piece
+    biggest = max((len(notes_by_part.get(i, [])) for i in tonal), default=0)
+    small = {i for i in tonal if len(notes_by_part.get(i, [])) < 0.1 * biggest}
+    roles = {i: ("counter", 1.0) for i in small}
+    tonal = [i for i in tonal if i not in small]
     if tonal:
         low = min(tonal, key=lambda i: info[i]["mean"])
         mono = [i for i in tonal if info[i]["poly"] < 0.4 and i != low] or [i for i in tonal if i != low]
@@ -248,7 +253,9 @@ def _chord_group(notes, used, by_id, max_arp):
     """Pick up to max_arp chord tones, preferring distinct pitch classes."""
     used_pcs = {by_id[i].pitch % 12 for i in used}
     seen, grp = set(), []
-    for n in sorted(notes, key=lambda n: (-n.sal, -n.pitch)):
+    # one note per pitch class, the lowest: a compact arpeggio under the
+    # melody (a chord tone an octave up would widen it and crowd the lead)
+    for n in sorted(notes, key=lambda n: (n.pitch, -n.sal)):
         pc = n.pitch % 12
         if pc in seen:
             continue
@@ -290,6 +297,10 @@ def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part, before=Non
             placed[i] = v
             if attack and i not in new_ids:
                 sc -= RESUME_PENALTY * _value(n, f)   # re-attacking a note mid-way
+                if n.decay and f - n.f0 > n.decay:
+                    # a struck note that has already died away is not re-struck
+                    # (no orchestra re-plays a chord tone a second after the chord)
+                    sc -= 2.0 * _value(n, f)
         if len(c) > 1:
             ps = [by_id[i].pitch for i in c]
             if max(ps) - min(ps) > 19:

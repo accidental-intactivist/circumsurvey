@@ -20,62 +20,62 @@
  {
   "bar": 11,
   "beat": 1,
-  "recording_s": 9.71,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 9.65,
+  "note": "rehearsal 2: downbeat accents re-fitted to the recording attacks (fine analysis: 11.52/12.43/13.32/14.24/15.12/16.00/16.88/17.86 s), ~60 ms earlier than before"
  },
  {
   "bar": 12,
   "beat": 1,
-  "recording_s": 10.64,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 10.6,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 13,
   "beat": 1,
-  "recording_s": 11.59,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 11.53,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 14,
   "beat": 1,
-  "recording_s": 12.51,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 12.47,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 15,
   "beat": 1,
-  "recording_s": 13.4,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 13.36,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 16,
   "beat": 1,
-  "recording_s": 14.32,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 14.26,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 17,
   "beat": 1,
-  "recording_s": 15.21,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 15.15,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 18,
   "beat": 1,
-  "recording_s": 16.08,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 16.05,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 19,
   "beat": 1,
-  "recording_s": 17.02,
-  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+  "recording_s": 16.93,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 20,
   "beat": 1,
-  "recording_s": 17.95,
-  "note": "rehearsal 3: sf, descending run (dim.)"
+  "recording_s": 17.9,
+  "note": "re-fitted to the recording attacks, see bar 11"
  },
  {
   "bar": 21,
@@ -104,38 +104,152 @@
  {
   "bar": 25,
   "beat": 1,
-  "recording_s": 23.37,
-  "note": "rehearsal 4, tutti"
+  "recording_s": 23.3,
+  "note": "rehearsal 4, tutti [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 26,
+  "beat": 1,
+  "recording_s": 24.26,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 27,
+  "beat": 1,
+  "recording_s": 25.14,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 28,
+  "beat": 1,
+  "recording_s": 26.05,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 29,
+  "beat": 1,
+  "recording_s": 26.95,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 30,
+  "beat": 1,
+  "recording_s": 27.86,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 31,
+  "beat": 1,
+  "recording_s": 28.77,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 32,
+  "beat": 1,
+  "recording_s": 29.67,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 33,
+  "beat": 1,
+  "recording_s": 30.58,
+  "note": "downbeat chord [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 34,
+  "beat": 1,
+  "recording_s": 31.51,
+  "note": "downbeat chord [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 35,
+  "beat": 1,
+  "recording_s": 32.43,
+  "note": "downbeat chord [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 36,
+  "beat": 1,
+  "recording_s": 33.36,
+  "note": "downbeat chord (was 0.14 s early) [re-fitted to the recording attacks]"
  },
  {
   "bar": 37,
   "beat": 1,
-  "recording_s": 34.29,
-  "note": "sf tutti cut-off, trumpet soli begin (score p.22)"
+  "recording_s": 34.27,
+  "note": "sf tutti cut-off, trumpet soli begin (score p.22) [re-fitted to the recording attacks]"
  },
  {
   "bar": 38,
   "beat": 1,
-  "recording_s": 35.23,
-  "note": "trumpet soli in tempo"
+  "recording_s": 35.19,
+  "note": "trumpet soli in tempo [re-fitted to the recording attacks]"
  },
  {
   "bar": 39,
   "beat": 1,
-  "recording_s": 36.13,
-  "note": "trumpet soli in tempo"
+  "recording_s": 36.1,
+  "note": "trumpet soli in tempo [re-fitted to the recording attacks]"
  },
  {
   "bar": 40,
   "beat": 1,
-  "recording_s": 37.07,
-  "note": "fermata chord sf > p <, the dramatic swell (score p.22)"
+  "recording_s": 37.0,
+  "note": "fermata chord sf > p <, the dramatic swell (score p.22) [re-fitted to the recording attacks]"
  },
  {
   "bar": 41,
   "beat": 1,
-  "recording_s": 40.13,
-  "note": "rehearsal 5, ff tutti"
+  "recording_s": 40.12,
+  "note": "rehearsal 5, ff tutti [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 42,
+  "beat": 1,
+  "recording_s": 41.09,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 43,
+  "beat": 1,
+  "recording_s": 41.94,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 44,
+  "beat": 1,
+  "recording_s": 42.91,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 45,
+  "beat": 1,
+  "recording_s": 43.8,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 46,
+  "beat": 1,
+  "recording_s": 44.76,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 47,
+  "beat": 1,
+  "recording_s": 45.67,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 48,
+  "beat": 1,
+  "recording_s": 46.58,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 49,
+  "beat": 1,
+  "recording_s": 47.51,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
  },
  {
   "bar": 51,
@@ -146,14 +260,14 @@
  {
   "bar": 52,
   "beat": 1,
-  "recording_s": 51.7,
-  "note": "horn soli in tempo"
+  "recording_s": 51.64,
+  "note": "horn soli in tempo (first horn attack of the bar, fine analysis 51.63 s)"
  },
  {
   "bar": 53,
   "beat": 1,
-  "recording_s": 52.56,
-  "note": "horn soli in tempo"
+  "recording_s": 52.5,
+  "note": "horn soli in tempo (accented B4, fine analysis 52.48 s)"
  },
  {
   "bar": 54,
@@ -164,8 +278,8 @@
  {
   "bar": 55,
   "beat": 1,
-  "recording_s": 57.9,
-  "note": "rehearsal 6, pp, after the horns' fermata and a short silence (score p.24)"
+  "recording_s": 57.68,
+  "note": "rehearsal 6, pp: first chord of the woodwinds (D4/D6/F#6 at 57.60 s fine-analysis); the bars that follow run 1.38 s"
  },
  {
   "bar": 56,
@@ -230,56 +344,158 @@
  {
   "bar": 73,
   "beat": 1,
-  "recording_s": 89.07,
-  "note": "rehearsal 7, Tempo I downbeat after the fermata (score p.27)"
+  "recording_s": 89.0,
+  "note": "rehearsal 7, Tempo I downbeat (clarinet entry 88.97 s fine analysis)"
  },
  {
   "bar": 73,
   "beat": 3,
-  "recording_s": 89.38,
-  "note": "flute solo pickup"
+  "recording_s": 89.3,
+  "note": "flute solo pickup (attack 89.29 s)"
  },
  {
   "bar": 74,
   "beat": 1,
-  "recording_s": 89.96,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 89.95,
+  "note": "flute solo: the G on eighth 2 attacks at 90.10 s"
  },
  {
   "bar": 75,
   "beat": 1,
-  "recording_s": 90.9,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 90.87,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
  },
  {
   "bar": 76,
   "beat": 1,
-  "recording_s": 91.85,
-  "note": "tutti chord on eighth 3 at 92.1 s (Tempo I)"
+  "recording_s": 91.78,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
  },
  {
   "bar": 77,
   "beat": 1,
-  "recording_s": 92.78,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 92.68,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
  },
  {
   "bar": 78,
   "beat": 1,
-  "recording_s": 93.72,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 93.63,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
  },
  {
   "bar": 79,
   "beat": 1,
-  "recording_s": 94.7,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 94.52,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
  },
  {
   "bar": 80,
   "beat": 1,
-  "recording_s": 95.68,
-  "note": "Tempo I, steady (~0.93 s/bar)"
+  "recording_s": 95.53,
+  "note": "Tempo I: bar line fitted to the recording attacks (DP fit over bars 73-83)"
+ },
+ {
+  "bar": 81,
+  "beat": 1,
+  "recording_s": 96.53,
+  "note": "bar line fitted to the recording attacks"
+ },
+ {
+  "bar": 82,
+  "beat": 1,
+  "recording_s": 97.42,
+  "note": "bar line fitted to the recording attacks"
+ },
+ {
+  "bar": 83,
+  "beat": 1,
+  "recording_s": 98.31,
+  "note": "bar line fitted to the recording attacks"
+ },
+ {
+  "bar": 84,
+  "beat": 1,
+  "recording_s": 99.28,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 85,
+  "beat": 1,
+  "recording_s": 100.14,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 86,
+  "beat": 1,
+  "recording_s": 101.12,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 87,
+  "beat": 1,
+  "recording_s": 102.01,
+  "note": "downbeat chord (E/G) at 102.11 s; the A4 melody note on eighth 3 at 102.40 had been taken for the bar line, squeezing bar 87 to 0.64 s [re-fitted to the recording attacks]"
+ },
+ {
+  "bar": 88,
+  "beat": 1,
+  "recording_s": 102.99,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 89,
+  "beat": 1,
+  "recording_s": 103.86,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 90,
+  "beat": 1,
+  "recording_s": 104.79,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 91,
+  "beat": 1,
+  "recording_s": 105.63,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 92,
+  "beat": 1,
+  "recording_s": 106.54,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 93,
+  "beat": 1,
+  "recording_s": 107.42,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 94,
+  "beat": 1,
+  "recording_s": 108.31,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 95,
+  "beat": 1,
+  "recording_s": 109.28,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 96,
+  "beat": 1,
+  "recording_s": 110.18,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
+ },
+ {
+  "bar": 97,
+  "beat": 1,
+  "recording_s": 111.15,
+  "note": "bar line fitted to the recording attacks (DP over onsets)"
  },
  {
   "bar": 98,
@@ -314,20 +530,68 @@
  {
   "bar": 103,
   "beat": 1,
-  "recording_s": 119.56,
-  "note": "tutti returns"
+  "recording_s": 119.48,
+  "note": "rehearsal 9 Allegro: tutti attack 119.46 s"
+ },
+ {
+  "bar": 104,
+  "beat": 1,
+  "recording_s": 120.43,
+  "note": "held Db chord, attack 120.41 s"
+ },
+ {
+  "bar": 105,
+  "beat": 1,
+  "recording_s": 121.37,
+  "note": "bar fit to the recording attacks 121.35 s"
+ },
+ {
+  "bar": 106,
+  "beat": 1,
+  "recording_s": 122.23,
+  "note": "122.21 s"
+ },
+ {
+  "bar": 107,
+  "beat": 1,
+  "recording_s": 123.12,
+  "note": "123.10 s"
+ },
+ {
+  "bar": 108,
+  "beat": 1,
+  "recording_s": 124.0,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
+ },
+ {
+  "bar": 109,
+  "beat": 1,
+  "recording_s": 124.97,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
+ },
+ {
+  "bar": 110,
+  "beat": 1,
+  "recording_s": 125.84,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
+ },
+ {
+  "bar": 111,
+  "beat": 1,
+  "recording_s": 126.73,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
  },
  {
   "bar": 112,
   "beat": 1,
-  "recording_s": 127.65,
-  "note": "chords in pairs on eighths 2-3 and 5-6 (127.91/128.07, 128.36/128.53)"
+  "recording_s": 127.61,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
  },
  {
   "bar": 113,
   "beat": 1,
-  "recording_s": 128.5,
-  "note": "last tutti chord, then the orchestra's tail"
+  "recording_s": 128.42,
+  "note": "Allegro: bar line fitted to the recording attacks (DP fit over bars 101-113)"
  },
  {
   "bar": 117,

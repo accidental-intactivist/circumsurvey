@@ -1,7 +1,10 @@
 [
  {
   "part": "Piano",
-  "bars": [13, 19],
+  "bars": [
+   13,
+   18
+  ],
   "eighth": 2,
   "to_eighth": 1,
   "len_eighths": 3,
@@ -9,16 +12,645 @@
  },
  {
   "part": "Piano",
-  "bars": [13, 19],
-  "eighth": [3, 5, 6],
+  "bars": [
+   13,
+   18
+  ],
+  "eighth": [
+   3,
+   5,
+   6
+  ],
   "delete": true,
   "why": "the reduction's broken-chord figuration (E4/G4 single notes, a second chord on eighth 5); the orchestra has only the bass line there"
  },
  {
   "part": "Piano",
+  "bar": 13,
+  "eighth": 1,
+  "add": [
+   89
+  ],
+  "len_eighths": 1,
+  "velocity": 100,
+  "why": "the piccolo's accented F6 on the first downbeat of rehearsal 2 (the loudest note in the recording at 11.55 s); the later downbeats get theirs from the grace-note figures"
+ },
+ {
+  "part": "Piano",
+  "bar": 19,
+  "eighth": [
+   2,
+   4
+  ],
+  "to_eighth": 1,
+  "len_eighths": 6,
+  "why": "score bar 19 (p.19): one accented chord on the downbeat, held through the bar with a crescendo into the sf of rehearsal 3; the reduction has a stab on eighth 2 and a second chord on eighth 4 (the recording has no attack mid-bar)"
+ },
+ {
+  "part": "Piano",
+  "bar": 19,
+  "eighth": [
+   3,
+   5,
+   6
+  ],
+  "delete": true,
+  "why": "figuration of the reduction, see above"
+ },
+ {
+  "part": "Piano #2",
   "bar": 19,
   "eighth": 4,
-  "len_eighths": 3,
-  "why": "score bar 20 (a 3/8 bar): the crescendo chord is held into the sf at rehearsal 3"
+  "to_eighth": 1,
+  "len_eighths": 6,
+  "why": "the left-hand chord of that bar: on the downbeat, held, like the strings and horns"
+ },
+ {
+  "part": "Piano #2",
+  "bars": [
+   33,
+   36
+  ],
+  "eighth": 3,
+  "to_eighth": 4,
+  "len_eighths": 2,
+  "why": "the bass plays on eighths 1 and 4 (recording 31.1/32.0/32.9 s); the reduction's extra G2 on eighth 3 had pulled the timing of these bars out of shape"
+ },
+ {
+  "part": "Piano",
+  "bar": 72,
+  "eighth": 1,
+  "len_eighths": 5,
+  "why": "the fermata chord: the orchestra holds it to ~88.3 s and is silent for 0.6 s before Tempo I; the reduction's chord ended at 87.4 s"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 72,
+  "eighth": 2,
+  "len_eighths": 4,
+  "why": "the bass under the fermata is a sustained Bb2/D3 (no re-attacks in the recording); the reduction had three detached eighths"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 72,
+  "eighth": [
+   3,
+   4
+  ],
+  "delete": true,
+  "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bars": [
+   51,
+   53
+  ],
+  "eighth": [
+   1,
+   2,
+   3,
+   3.5,
+   4,
+   5,
+   6
+  ],
+  "delete": true,
+  "why": "score p.24, horn soli (ff): the reduction stacks the horns' chord tones as block chords on the timpani's rhythm; the horns play a 16th-note line (below)"
+ },
+ {
+  "part": "Piano #2",
+  "bars": [
+   51,
+   53
+  ],
+  "eighth": [
+   2,
+   3,
+   3.5,
+   4,
+   5,
+   6
+  ],
+  "delete": true,
+  "why": "the same chord tones in the left hand; the bass notes on the downbeats (B1/B2, B2) stay"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 1,
+  "delete": true,
+  "why": "chord tones, see above (bar 53 has no bass note of its own)"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 51,
+  "eighth": [
+   3,
+   3.5,
+   4,
+   5,
+   6
+  ],
+  "add": [
+   "B1"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100,
+  "why": "score p.24: the timpani's figure under the soli (two 16ths, then accented eighths), which the reduction's low chord tones stood for"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 52,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "B1"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100,
+  "why": "timpani, as above"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 53,
+  "eighth": [
+   1,
+   3,
+   4
+  ],
+  "add": [
+   "B1"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100,
+  "why": "timpani, as above"
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 1,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110,
+  "why": "the horn soli as played (transcribed from the recording, 50.7-53.3 s: a B major arpeggio figure in 16ths); the piccolo-like octave doublings are left out"
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 1.5,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 2.5,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 3,
+  "add": [
+   "Eb5"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 4,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.0
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 5,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 5.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 6,
+  "add": [
+   "Bb4"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 51,
+  "eighth": 6.5,
+  "add": [
+   "C#5"
+  ],
+  "len_eighths": 1.0
+ },
+ {
+  "part": "Horns",
+  "bar": 52,
+  "eighth": 1,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 1.5,
+  "why": "recording 51.63 s: the bar-52 horn attacks (51.63/51.84/52.06) fall a half eighth earlier than first transcribed"
+ },
+ {
+  "part": "Horns",
+  "bar": 52,
+  "eighth": 2.5,
+  "add": [
+   "Eb5"
+  ],
+  "len_eighths": 1.5
+ },
+ {
+  "part": "Horns",
+  "bar": 52,
+  "eighth": 4,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 2.0
+ },
+ {
+  "part": "Horns",
+  "bar": 53,
+  "eighth": 1,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 1.5
+ },
+ {
+  "part": "Horns",
+  "bar": 53,
+  "eighth": 2.5,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 2.0
+ },
+ {
+  "part": "Horns",
+  "bar": 53,
+  "eighth": 4.5,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.0
+ },
+ {
+  "part": "Horns",
+  "bar": 53,
+  "eighth": 5.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5
+ },
+ {
+  "part": "Horns",
+  "bar": 53,
+  "eighth": 6,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.0
+ },
+ {
+  "part": "Horns",
+  "bar": 54,
+  "eighth": 1,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 5.5,
+  "why": "the horns' held chord (fermata) with its top note; the reduction's Eb4/F#4/B3 stay as the rest of the chord"
+ },
+ {
+  "figure": true,
+  "bar": 14,
+  "notes": [
+   "B5",
+   "C6",
+   "Db6"
+  ],
+  "why": "piccolo/flute grace notes into the downbeat accent (score p.18: natural, then flat); the transcription heard D6 Eb6 E6"
+ },
+ {
+  "figure": true,
+  "bar": 15,
+  "notes": [
+   "D6",
+   "Eb6",
+   "E6"
+  ],
+  "why": "the transcription picked up another line (C#6 F6 F#6 G6); the flutes play D Eb into E (recording 13.24-13.44 s)"
+ },
+ {
+  "figure": true,
+  "bar": 16,
+  "notes": [
+   "F6",
+   "F#6",
+   "G6"
+  ],
+  "why": "score: natural, sharp into the accent; the transcription added an Eb6 first"
+ },
+ {
+  "figure": true,
+  "bar": 17,
+  "notes": [
+   "Ab5",
+   "A5",
+   "Bb5"
+  ],
+  "why": "score: flat, natural into flat; in the flutes' octave (the piccolo doubles an octave up)"
+ },
+ {
+  "figure": true,
+  "bar": 18,
+  "notes": [
+   "B5",
+   "C6",
+   "Db6"
+  ],
+  "why": "score p.18-19: B natural, C into the flat accent (the piccolo's Db7 and the flutes' Db6/E6 in the recording); the transcription heard B5 C6 Eb6 E6"
+ },
+ {
+  "figure": true,
+  "bar": 19,
+  "notes": [
+   "Ab5",
+   "A5",
+   "Bb5"
+  ],
+  "why": "as transcribed (recording 16.88-17.02 s)"
+ },
+ {
+  "part": "Piano #2",
+  "bars": [
+   56,
+   56
+  ],
+  "eighth": [
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "score p.25-26 (rehearsal 6): the reduction's low D eighths are the timpani figure under the held chords, re-entered below as its own part on the score's rhythm"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 58,
+  "eighth": [
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "timpani figure, see bar 56"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 60,
+  "eighth": [
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "timpani figure, see bar 56"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 62,
+  "eighth": [
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "timpani figure, see bar 56"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 65,
+  "eighth": [
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "timpani figure (D1/D2 here), see bar 56; the tutti F#3/C3 on the downbeat stays"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 68,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "delete": true,
+  "why": "timpani figure, see bar 56"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 56,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 70,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 58,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 70,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 60,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 70,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 62,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 70,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 65,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 95,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note; louder here: the tutti holds a four-note chord over it and the recording's strokes at 72.24/73.05 s are as loud as the chord"
+ },
+ {
+  "part": "Timpani",
+  "program": 47,
+  "bar": 68,
+  "eighth": [
+   1,
+   2,
+   3,
+   4,
+   6
+  ],
+  "add": [
+   "D3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 70,
+  "why": "timpani p, accented eighths 1-2-3-4 and 6 (score p.25-26); the recording's stroke on each of these downbeats is its loudest low note"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 104,
+  "eighth": [
+   2,
+   3,
+   5,
+   6
+  ],
+  "delete": true,
+  "why": "score p.31 (Allegro, bar 2): under the held Db chord the strings, brass and timpani accent only eighths 1 and 4; the reduction's stepwise left-hand filler is not in the orchestra (the recording has no attacks there)"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 104,
+  "eighth": 4,
+  "len_eighths": 2,
+  "why": "the eighth-4 accent, held to the bar's end"
+ },
+ {
+  "part": "Piano",
+  "bars": [
+   105,
+   108
+  ],
+  "eighth": 2,
+  "to_eighth": 1,
+  "len_eighths": 2,
+  "why": "score p.31-32: the tutti chords are accented on eighths 1 and 4 (strings, brass, timpani: eighth, rest, eighth, rest) and the trumpets' tune runs quarter-eighth-quarter (eighths 1, 3, 4); the reduction put the chords on the off-beats 2 and 5 (bar 107's are already on 1). The recording attacks on 1, 3, 4 and 6 in every one of these bars"
+ },
+ {
+  "part": "Piano",
+  "bars": [
+   105,
+   108
+  ],
+  "eighth": 5,
+  "to_eighth": 4,
+  "len_eighths": 2,
+  "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bar": 107,
+  "eighth": 2,
+  "to_eighth": 3,
+  "why": "the single note between the chords, on eighth 3 as in the neighbouring bars (trumpet quarter-eighth)"
  }
 ]

@@ -99,16 +99,18 @@ def main(argv=None):
 
     anchors = json.load(open(args.anchors)) if args.anchors else []
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+    figures = []
     if args.edits:
-        from .edits import apply_edits, load_edits
+        from .edits import apply_edits, load_edits, split_edits
+        note_edits, figures = split_edits(load_edits(args.edits))
         edited = args.out + ".edited.mid"
-        summary = apply_edits(args.midi, load_edits(args.edits), edited)
+        summary = apply_edits(args.midi, note_edits, edited)
         print(f"applied {summary['edits']} score corrections ({summary['moved']} notes moved, "
               f"{summary['resized']} resized, {summary['deleted']} deleted, {summary['added']} added)")
         args.midi = edited
     # 1. whole piece: where does each bar line fall in the recording?
     wopt = Options(audio=args.audio, anchors=anchors, render_wav=False, verify=False,
-                   recover_runs=True, video=args.video)
+                   recover_runs=True, video=args.video, figures=figures)
     if args.map:
         wopt.fixed_map, wopt.fixed_key = load_map(args.map)
     whole = convert(args.midi, args.out + "_whole", wopt)
@@ -141,7 +143,9 @@ def main(argv=None):
             grid = np.concatenate([[m0], am[(am > m0) & (am < m1 + 2.0)], [m1 + 2.0]])
             sec_map = (list(grid - m0), list(np.interp(grid, am, ar) - cut0))
             out = f"{args.out}_{i + 1:02d}_{names[i]}"
-            rep = convert(mid, out, Options(audio=wav, fixed_map=sec_map,
+            b1 = (starts[i + 1] - 1) if i + 1 < len(starts) else 10 ** 6
+            sec_figs = [dict(f, bar=f["bar"] - b0 + 1) for f in figures if b0 <= f["bar"] <= b1]
+            rep = convert(mid, out, Options(audio=wav, fixed_map=sec_map, figures=sec_figs,
                                             fixed_key=(whole["transpose"], whole["tuning_cents"] / 100),
                                             video=args.video,
                                             lead_s=pad0,             # frame 0 = the section's first bar line

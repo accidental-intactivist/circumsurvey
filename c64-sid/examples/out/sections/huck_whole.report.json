@@ -1,6 +1,6 @@
 {
-  "input": "examples/out/piano_theme_synced.edited.mid",
-  "output": "examples/out/piano_theme_synced",
+  "input": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec17/huck.edited.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec17/huck_whole",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -577,15 +577,5 @@
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
-  },
-  "cpu": {
-    "max_cycles_per_frame": 2153,
-    "avg_cycles_per_frame": 875,
-    "max_rasterlines": 34.2
-  },
-  "verification": {
-    "attacks_expected": 841,
-    "attack_timing_mismatches": 0,
-    "ok": true
   }
 }

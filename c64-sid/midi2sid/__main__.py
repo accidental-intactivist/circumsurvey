@@ -61,11 +61,12 @@ def main(argv=None):
         with open(args.anchors) as f:
             anchors = json.load(f)
     out = args.out or args.midi.rsplit(".", 1)[0]
-    midi = args.midi
+    midi, figures = args.midi, []
     if args.edits:
-        from .edits import apply_edits, load_edits
+        from .edits import apply_edits, load_edits, split_edits
+        note_edits, figures = split_edits(load_edits(args.edits))
         midi = out + ".edited.mid"
-        summary = apply_edits(args.midi, load_edits(args.edits), midi)
+        summary = apply_edits(args.midi, note_edits, midi)
         print(f"applied {summary['edits']} score corrections -> {midi} "
               f"({summary['moved']} notes moved, {summary['resized']} resized, "
               f"{summary['deleted']} deleted, {summary['added']} added)")
@@ -76,7 +77,7 @@ def main(argv=None):
                   max_arp=max(1, args.max_arp), compress=not args.no_compress,
                   keep_lead_in=args.keep_lead_in, overrides=overrides, title=args.title,
                   author=args.author, released=args.released, render_wav=not args.no_wav,
-                  recover_runs=not args.no_recover_runs, anchors=anchors)
+                  recover_runs=not args.no_recover_runs, anchors=anchors, figures=figures)
     if args.map:
         opt.fixed_map, opt.fixed_key = load_map(args.map)
     if args.anticipate_ms is not None:

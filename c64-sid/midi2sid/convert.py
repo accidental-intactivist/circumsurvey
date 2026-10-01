@@ -46,6 +46,7 @@ class Options:
     end_s: float | None = None       # tune length ends at this recording time (sections: next bar line)
     fixed_map: tuple | None = None   # (midi_s list, recording_s list): use this time map, skip alignment
     fixed_key: tuple | None = None   # (transpose, tuning semitones) to go with fixed_map
+    straighten: bool = True          # fixed_map: steady tempo between bar lines / anchors
     overrides: dict = field(default_factory=dict)
     title: str = ""
     author: str = ""
@@ -53,6 +54,7 @@ class Options:
     render_wav: bool = True
     recover_runs: bool = True        # add fast figures the MIDI lacks, found in the recording
     anchors: list = field(default_factory=list)   # score anchors: [{bar, beat|eighth, recording_s}]
+    figures: list = field(default_factory=list)   # corrections to recovered figures: [{bar, notes}]
     verify: bool = True
 
 
@@ -77,6 +79,14 @@ def convert(midi_path, out_base, opt: Options):
             # score anchors on a fixed map are local corrections only: linear
             # between neighbouring pins, so fixing one passage never moves another
             am_, ar_ = audio_align.pin_map(am_, ar_, pins, fade_s=1.0, link_s=3.0)
+        if opt.straighten:
+            # an aligned map wobbles inside bars wherever the MIDI and the
+            # recording differ (a note the reduction places on another eighth
+            # pulls its neighbours); an orchestra's eighths within a bar are
+            # far more even than that, so keep the bar lines (and the anchors)
+            # and run straight between them
+            grid = sorted({t for t, _, bt in song.beat_times() if bt == 1} | {m for m, _ in pins})
+            am_, ar_ = audio_align.straighten_map(am_, ar_, grid)
         tm = audio_align.TimeMap(1.0, 0.0, (am_, ar_))
         y = audio_align.decode_audio(opt.audio)
         feat = audio_align.audio_features(y)
@@ -115,7 +125,7 @@ def convert(midi_path, out_base, opt: Options):
     if opt.audio and opt.recover_runs and opt.sync != "none":
         tmap = _recover_runs(song, opt.audio, tmap, transpose, tuning, slur_pred, report,
                              flux=feat["flux"] if feat is not None else None,
-                             adjust_map=opt.fixed_map is None)
+                             adjust_map=opt.fixed_map is None, figures=opt.figures)
         if getattr(tmap, "anchors", None) is not None:
             report["alignment"]["anchors_midi_s"] = [round(float(x), 3) for x in tmap.anchors[0]]
             report["alignment"]["anchors_recording_s"] = [round(float(x), 3) for x in tmap.anchors[1]]
@@ -190,7 +200,9 @@ def convert(midi_path, out_base, opt: Options):
         fnotes.append(fn)
     report["instruments"] = [i.to_json() for i in insts]
     report["rolled_chord_notes_joined"] = _join_rolled_chords(fnotes, _ornament_ids(song))
+    report["slurred_steps"] = _slur_steps(fnotes, fps)
     report["inner_bass_part_notes"] = _demote_inner_bass_notes(fnotes, roles)
+    report["inner_melody_part_notes"] = _demote_inner_melody_notes(fnotes, roles)
     fnotes, report["unisons_merged"] = _merge_unisons(fnotes)
     n_frames = max(n.f1 for n in fnotes) + int(0.5 * fps)
     if opt.end_s is not None:                # exact length, so sections chain seamlessly
@@ -198,6 +210,16 @@ def convert(midi_path, out_base, opt: Options):
         fnotes = [n for n in fnotes if n.f0 < n_frames]
         for n in fnotes:
             n.f1 = min(n.f1, n_frames)
+    # dynamics first: a note that enters softly (the orchestra's p entries)
+    # gets the sustained variant with its gentler attack instead of the hammer
+    vols = _dynamics(opt, feat, fps, n_frames, lead, fnotes)
+    soft = 0
+    for n in fnotes:
+        if n.inst in held_inst and 0 <= n.f0 < n_frames and vols[n.f0] <= SOFT_VOL:
+            n.inst = held_inst[n.inst]
+            n.decay = int(HELD_DECAY_S * fps)
+            soft += 1
+    report["soft_entries"] = soft
     arr = arrange(fnotes, n_frames, roles, fps, max_arp=opt.max_arp)
     report["short_resumes_dropped"] = _drop_short_resumes(arr, fnotes)
     arr.stats.update(_coverage(fnotes, arr, n_frames))
@@ -205,17 +227,7 @@ def convert(midi_path, out_base, opt: Options):
     report["frames"] = n_frames
     report["duration_s"] = round(n_frames / fps, 3)
 
-    # ---- dynamics -> master volume --------------------------------------
-    dyn = opt.dynamics
-    if dyn == "auto":
-        dyn = "recording" if feat is not None else "velocity"
-    if dyn == "recording" and feat is not None:
-        vols = audio_align.dynamics_curve(feat, fps, n_frames, time_offset=lead, floor=opt.dyn_floor)
-    elif dyn == "velocity":
-        vols = _velocity_curve(fnotes, n_frames, fps, opt.dyn_floor)
-    else:
-        vols = np.full(n_frames, 15)
-    report["dynamics"] = dyn
+    report["dynamics"] = _dyn_mode(opt, feat)
 
     # ---- compile ----------------------------------------------------------
     streams = [compiler.compile_voice(arr.voices[v], n_frames, opt.hard_restart) for v in range(3)]
@@ -269,6 +281,25 @@ def convert(midi_path, out_base, opt: Options):
 
 
 ROLL_FRAMES = 8
+SOFT_VOL = 10            # master volume at or below which a struck note enters with the sustained variant
+
+
+def _dyn_mode(opt, feat):
+    dyn = opt.dynamics
+    if dyn == "auto":
+        dyn = "recording" if feat is not None else "velocity"
+    return dyn
+
+
+def _dynamics(opt, feat, fps, n_frames, lead, fnotes):
+    """Master-volume curve (0-15 per frame) from the recording's loudness,
+    the MIDI velocities, or flat."""
+    dyn = _dyn_mode(opt, feat)
+    if dyn == "recording" and feat is not None:
+        return audio_align.dynamics_curve(feat, fps, n_frames, time_offset=lead, floor=opt.dyn_floor)
+    if dyn == "velocity":
+        return _velocity_curve(fnotes, n_frames, fps, opt.dyn_floor)
+    return np.full(n_frames, 15)
 # Measured on the Huckleberry Finn example: SID notes triggered 40 ms ahead of
 # the recording's onsets line up best with it (onset correlation 0.20 -> 0.46);
 # the SID's attack is heard later than an orchestra's measured onset.
@@ -347,6 +378,57 @@ def _demote_inner_bass_notes(fnotes, roles):
     return demoted
 
 
+def _demote_inner_melody_notes(fnotes, roles, chords_w=0.8):
+    """Likewise the melody role's weight belongs to the top note of each
+    chord the part strikes: the tones struck under it (the harmony a piano
+    reduction puts in the right hand) are weighed like any chord tone, so a
+    held inner tone does not keep a bass or timpani entry off the voices.  A
+    note that enters alone under a held higher note is a moving line and
+    keeps the melody weight."""
+    melody_parts = {p for p, (role, _) in roles.items() if role == "melody"}
+    demoted = 0
+    by_onset = {}
+    for n in fnotes:
+        if n.part in melody_parts and not n.is_drum:
+            by_onset.setdefault((n.part, n.f0), []).append(n)
+    for (p, _), ns in by_onset.items():
+        top = max(n.pitch for n in ns)
+        for n in ns:
+            if n.pitch < top:
+                n.sal *= chords_w / roles[p][1]
+                demoted += 1
+    return demoted
+
+
+def _slur_steps(fnotes, fps, max_step=2):
+    """A single note of a part that starts as the part's previous onset ends
+    (no rest; the previous onset's top note, so a melody note after a chord
+    counts) and moves by a step is slurred to it: the voice glides to the
+    new pitch without re-attacking, as a wind or string player would, instead
+    of a hard restart and a fresh hammer on every eighth of a melody.  The
+    two are made contiguous (a 1-frame rounding gap would free the voice for
+    a frame and lose the slur).  Repeated pitches and leaps keep their
+    attacks."""
+    by_part = {}
+    for n in fnotes:
+        if not n.is_drum and n.pred is None:
+            by_part.setdefault(n.part, {}).setdefault(n.f0, []).append(n)
+    count = 0
+    for onsets in by_part.values():
+        frames = sorted(onsets)
+        for a, b in zip(frames, frames[1:]):
+            if len(onsets[b]) != 1:
+                continue
+            m, n = max(onsets[a], key=lambda x: x.pitch), onsets[b][0]
+            if not (-1 <= n.f0 - m.f1 <= 1) or n.pred is not None:
+                continue
+            m.f1 = n.f0            # contiguous even without a slur: no 1-frame hole for another note to fill
+            if 0 < abs(n.pitch - m.pitch) <= max_step:
+                n.pred = m.id
+                count += 1
+    return count
+
+
 def _merge_unisons(fnotes):
     """The same pitch struck twice at once (a doubled chord tone, often one
     copy much shorter) is one note on a SID: keep the longest, with the
@@ -367,10 +449,12 @@ def _merge_unisons(fnotes):
     return out, len(fnotes) - len(out)
 
 
-def _drop_short_resumes(arr, fnotes, min_frames=5):
+def _drop_short_resumes(arr, fnotes, min_frames=10):
     """A voice that is free for a moment should not pick up a note that is
     already sounding elsewhere if it must leave it again within a few
-    frames: after the 2-frame hard restart only a 1-frame blip is heard."""
+    frames: after the 2-frame hard restart only a blip is heard, and a
+    chord tone that pops up for a fifth of a second between two melody
+    notes jumbles the line."""
     by_id = {n.id: n for n in fnotes}
     dropped = 0
     for evs in arr.voices:
@@ -441,7 +525,8 @@ def _resolve_anchors(song, anchors):
 RUNS_PART = "Flute runs (from recording)"
 
 
-def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=None, adjust_map=True):
+def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=None, adjust_map=True,
+                  figures=()):
     """Transcribe fast runs the MIDI lacks from the recording and add them to
     the song as an extra part (MIDI time, MIDI key).  With adjust_map the
     figures also pin the time map where they land; a fixed map is kept."""
@@ -450,6 +535,7 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=
     y = audio_align.decode_audio(audio)
     mapped = [(tmap(n.start), tmap(n.end), n.pitch + transpose) for n in song.notes if not n.is_drum]
     found = recover.recover_runs(y, tuning, transpose, mapped)
+    found = _override_figures(song, tmap, transpose, found, figures, report)
     if not found:
         report["recovered_runs"] = []
         return tmap
@@ -496,6 +582,63 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=
                                  "notes": " ".join(names[q % 12] + str(q // 12 - 1) for q in f["notes"])}
                                 for f in figs]
     return tmap
+
+
+_NAMES = {n: i for i, n in enumerate("C C# D Eb E F F# G Ab A Bb B".split())}
+_NAMES.update({"Db": 1, "D#": 3, "Gb": 6, "G#": 8, "A#": 10, "Cb": 11, "E#": 5, "Fb": 4, "B#": 0})
+
+
+def _pitch(name):
+    """'Eb6' -> 87 (C4 = 60)."""
+    if isinstance(name, int):
+        return name
+    i = 1 + (name[1] in "#b")
+    return 12 * (int(name[i:]) + 1) + _NAMES[name[:i]]
+
+
+def _override_figures(song, tmap, transpose, found, figures, report):
+    """Replace (or add) the grace-note figure that lands on a bar's downbeat
+    with the notes given in a `figures` entry [{bar, notes, eighth?}]: the
+    transcription from the recording can pick a neighbouring instrument's
+    line.  Notes are written in the recording's key (as the transcription
+    reports them); the last one lands on the beat, the others precede it a
+    sixteenth apart, slurred."""
+    if not figures:
+        return found
+    beats = song.beat_times()
+    out = list(found)
+    applied = []
+    for fig in figures:
+        bar, beat = int(fig["bar"]), float(fig.get("eighth", fig.get("beat", 1)))
+        row = [t for t, b, _ in beats if b == bar]
+        if not row:
+            raise ValueError(f"figure bar {bar} is outside the MIDI")
+        step = row[1] - row[0] if len(row) > 1 else 0.5
+        m_land = row[0] + (beat - 1) * step
+        land = tmap(m_land)
+        sixteenth = (tmap(m_land + step) - land) / 2
+        # drop recovered figures landing on this beat (last note of a slurred group)
+        groups, cur = [], []
+        for item in out:
+            if item[4] and cur:
+                cur.append(item)
+            else:
+                if cur:
+                    groups.append(cur)
+                cur = [item]
+        if cur:
+            groups.append(cur)
+        out = [it for g in groups for it in g if abs(g[-1][0] - land) > 0.3]
+        pitches = [_pitch(n) - transpose for n in fig["notes"]]
+        n = len(pitches)
+        for k, p in enumerate(pitches):
+            a = land - (n - 1 - k) * sixteenth
+            b = a + (sixteenth if k < n - 1 else 3 * sixteenth)
+            out.append((a, b, p, 1.0, k > 0))
+        applied.append({"bar": bar, "recording_s": round(land, 2), "notes": list(fig["notes"])})
+    out.sort(key=lambda it: it[0])
+    report["figure_corrections"] = applied
+    return out
 
 
 def _landing_anchors(song, tmap, found, report, reach=0.45, fade_s=2.0):

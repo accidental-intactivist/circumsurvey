@@ -582,6 +582,20 @@ def pin_map(am, aa, pins, fade_s=1.5, link_s=None):
     return grid, np.maximum.accumulate(new)
 
 
+def straighten_map(am, aa, grid):
+    """Keep the map's values at the grid points (bar lines, anchors) and
+    interpolate linearly between them; outside the grid the map is kept."""
+    am, aa = np.asarray(am, float), np.asarray(aa, float)
+    g = np.array(sorted(t for t in grid if am[0] <= t <= am[-1]))
+    if len(g) < 2:
+        return am, aa
+    keep = (am < g[0]) | (am > g[-1])
+    new_m = np.concatenate([am[keep], g])
+    new_a = np.concatenate([aa[keep], np.interp(g, am, aa)])
+    order = np.argsort(new_m)
+    return new_m[order], np.maximum.accumulate(new_a[order])
+
+
 def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5, smooth_s=0.0,
           snap=True, pins=None, beat_times=None):
     """Returns (TimeMap, features, info). transpose=None -> auto-detect."""

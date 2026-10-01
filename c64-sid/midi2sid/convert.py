@@ -43,6 +43,7 @@ class Options:
     author: str = ""
     released: str = ""
     render_wav: bool = True
+    recover_runs: bool = True        # add fast figures the MIDI lacks, found in the recording
     verify: bool = True
 
 
@@ -79,6 +80,10 @@ def convert(midi_path, out_base, opt: Options):
     report["transpose"] = transpose
     report["tuning_cents"] = round(tuning * 100, 1)
 
+    slur_pred = {}
+    if opt.audio and opt.recover_runs and opt.sync != "none":
+        _recover_runs(song, opt.audio, tmap, transpose, tuning, slur_pred, report)
+
     mapped = [(n, tmap(n.start), tmap(n.end)) for n in song.notes]
     t_first = min(s for _, s, _ in mapped)
     lead = 0.0 if opt.keep_lead_in else t_first
@@ -90,6 +95,9 @@ def convert(midi_path, out_base, opt: Options):
     for n in song.notes:
         nbp.setdefault(n.track, []).append(n)
     roles, _ = part_roles(song, nbp)
+    for p in song.parts:
+        if p.name == RUNS_PART:
+            roles[p.index] = ("runs", 1.5)
     for pi, (role, w) in list(roles.items()):
         ov = opt.overrides.get(song.parts[pi].name) or opt.overrides.get(str(pi)) or {}
         if "weight" in ov:
@@ -125,6 +133,7 @@ def convert(midi_path, out_base, opt: Options):
             pitch = n.pitch + transpose
         fn = FNote(n.id, f0, f1, pitch, n.track, inst, is_drum=n.is_drum, vel=n.velocity)
         fn.decay = int(DECAYING.get(insts[inst].name.split(":")[0], 0) * fps)
+        fn.pred = slur_pred.get(n.id)
         fn.sal = (salience(fn, roles.get(n.track, ("", 1.0))[1], fps) * (0.85 + 0.3 * n.velocity / 127)
                   * motion[n.id])
         fnotes.append(fn)
@@ -193,6 +202,46 @@ def convert(midi_path, out_base, opt: Options):
     with open(out_base + ".report.json", "w") as f:
         json.dump(report, f, indent=2, default=_json_default)
     return report
+
+
+RUNS_PART = "Flute runs (from recording)"
+
+
+def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report):
+    """Transcribe fast runs the MIDI lacks from the recording and add them to
+    the song as an extra part (MIDI time, MIDI key)."""
+    from . import recover
+    from .midi_in import Note, Part
+    y = audio_align.decode_audio(audio)
+    mapped = [(tmap(n.start), tmap(n.end), n.pitch + transpose) for n in song.notes if not n.is_drum]
+    found = recover.recover_runs(y, tuning, transpose, mapped)
+    if not found:
+        report["recovered_runs"] = []
+        return
+    # recording time -> MIDI time (the map is monotone: invert by sampling)
+    grid = np.linspace(-5, song.length + 5, 20000)
+    rec = np.array([tmap(t) for t in grid])
+    inv = lambda a: float(np.interp(a, rec, grid))       # noqa: E731
+    part = Part(len(song.parts), RUNS_PART, 73, False)
+    nid = max(n.id for n in song.notes) + 1
+    prev = None
+    figs = []
+    for a, b, p, sc, slurred in found:
+        n = Note(nid, inv(a), inv(b), p, 100, part.index, 73)
+        part.notes.append(n)
+        if slurred and prev is not None:
+            slur_pred[nid] = prev
+        else:
+            figs.append({"recording_s": round(a, 2), "notes": []})
+        figs[-1]["notes"].append(p + transpose)
+        prev = nid
+        nid += 1
+    song.parts.append(part)
+    song.notes = sorted(song.notes + part.notes, key=lambda n: (n.start, -n.pitch))
+    names = "C C# D Eb E F F# G Ab A Bb B".split()
+    report["recovered_runs"] = [{"recording_s": f["recording_s"],
+                                 "notes": " ".join(names[q % 12] + str(q // 12 - 1) for q in f["notes"])}
+                                for f in figs]
 
 
 def _json_default(o):

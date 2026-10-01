@@ -39,6 +39,8 @@ def main(argv=None):
     ap.add_argument("--instruments", help="JSON overrides per part name: preset/ad/sr/wave/pw/.../weight")
     ap.add_argument("--title", default=""); ap.add_argument("--author", default="")
     ap.add_argument("--released", default="")
+    ap.add_argument("--no-recover-runs", action="store_true",
+                    help="don't add fast runs found in the recording but missing from the MIDI")
     ap.add_argument("--no-wav", action="store_true", help="skip the audio preview")
     args = ap.parse_args(argv)
 
@@ -53,7 +55,8 @@ def main(argv=None):
                   hard_restart=args.hard_restart, dynamics=args.dynamics, dyn_floor=args.dyn_floor,
                   max_arp=max(1, args.max_arp), compress=not args.no_compress,
                   keep_lead_in=args.keep_lead_in, overrides=overrides, title=args.title,
-                  author=args.author, released=args.released, render_wav=not args.no_wav)
+                  author=args.author, released=args.released, render_wav=not args.no_wav,
+                  recover_runs=not args.no_recover_runs)
     rep = convert(args.midi, out, opt)
     m = rep["memory"]
     print(f"wrote {out}.sid / .prg / .asm / .sync.json / .report.json" + ("" if args.no_wav else " / .wav"))
@@ -77,6 +80,8 @@ def main(argv=None):
               f"{al['onset_score_final']}")
         print(f"  start the SID when the recording is at {rep.get('sid_starts_at_recording_s', 0)} s "
               f"to play them in sync")
+    for r in rep.get("recovered_runs", []):
+        print(f"  recovered run at {r['recording_s']:7.2f} s: {r['notes']}")
     return 0
 
 

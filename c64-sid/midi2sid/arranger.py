@@ -26,6 +26,7 @@ CUT_PENALTY = 0.7
 RESUME_PENALTY = 0.45
 ROLE_BONUS = 0.25
 PART_STICKY = 0.15
+SLUR_BONUS = 1.2
 
 
 @dataclass
@@ -40,6 +41,7 @@ class FNote:
     is_drum: bool = False
     vel: int = 64
     decay: int = 0       # frames for a held note to fade (0 = sustained instrument)
+    pred: int | None = None  # previous note of a slurred run (glide, no re-attack)
 
 
 @dataclass
@@ -123,6 +125,7 @@ def arrange(fnotes, n_frames, roles, fps, max_arp=4):
             del active[i]
         new_ids = {n.id for n in starts.get(f, [])}
 
+        before = list(vc)
         # prune ended notes from voices -> release or shrink arpeggio (legato)
         freed = False
         for v in range(3):
@@ -194,7 +197,7 @@ def arrange(fnotes, n_frames, roles, fps, max_arp=4):
                         if len(pg) >= 2:
                             c2_opts.add(pg)
                 for c2 in c2_opts:
-                    sc = _score((c0, c1, c2), vc, active, new_ids, by_id, f, lo_p, hi_p, last_part)
+                    sc = _score((c0, c1, c2), vc, active, new_ids, by_id, f, lo_p, hi_p, last_part, before)
                     if sc > best:
                         best, best_cfg = sc, (c0, c1, c2)
 
@@ -214,6 +217,9 @@ def arrange(fnotes, n_frames, roles, fps, max_arp=4):
             has_new = any(i in new_ids for i in c)
             # a subset of what this voice was already playing -> no re-attack
             kind = "legato" if vc[v] and set(c) <= set(vc[v]) and not has_new else "attack"
+            # slurred run: the next note of the figure glides on the same voice
+            if len(c) == 1 and by_id[c[0]].pred is not None and by_id[c[0]].pred in before[v]:
+                kind = "legato"
             voices[v].append(VoiceEvent(f, kind, pitches, inst, c))
             vc[v] = c
             last_part[v] = by_id[lead].part
@@ -264,8 +270,13 @@ def _value(n, f):
     return n.sal * (0.25 + 0.75 * math.exp(-age / n.decay))
 
 
-def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part):
+def _score(cfg, vc, active, new_ids, by_id, f, lo_p, hi_p, last_part, before=None):
     sc = 0.0
+    # slurred runs stay on the voice that played the previous note of the figure
+    if before is not None:
+        for v, c in enumerate(cfg):
+            if len(c) == 1 and by_id[c[0]].pred is not None and by_id[c[0]].pred in before[v]:
+                sc += SLUR_BONUS
     placed = {}
     for v, c in enumerate(cfg):
         if not c:

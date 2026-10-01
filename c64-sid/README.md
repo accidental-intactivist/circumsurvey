@@ -66,6 +66,15 @@ With `--audio`, the recording is analysed first:
      cause a glitch.
   4. The result is a monotone MIDI-time → recording-time map that follows
      rubato, ritardandos and fermatas.
+* **Recovered runs**: piano reductions drop orchestral filigree, such as
+  flute runs. `recover.py` scores straight diagonal streaks in the
+  recording's upper register (relative to its own running background, so
+  held notes don't count) and reads each figure's notes along a monotone
+  best path. A figure is only added if MIDI notes don't already trace it at
+  a constant interval (unison, octave or a harmonic). The figures become an
+  extra "Flute runs (from recording)" part. Their notes are slurred, so a
+  run glides on one voice instead of re-attacking every 40–100 ms note.
+  Use `--no-recover-runs` to turn this off.
 * **Dynamics**: the recording's loudness drives the SID master volume
   (`$D418`), smoothed and hysteresis-limited to avoid the 6581 volume click.
   Use `--dynamics none` to turn this off.
@@ -243,6 +252,14 @@ orchestral recording of the movement:
 | note onsets audible on 3 voices | 90.2 % | 90.2 % |
 | size (player + song) | 7,143 bytes | 7,321 bytes |
 | 6502 verification | 1125/1125 | 1116/1116 |
+
+**Missing flute runs.** The piano reduction leaves out the flutes' rising
+figures, about one every 0.9 s from 12.3 s. They are recovered from the
+recording: D6–E♭6–E6, C♯6–F6–F♯6–G6, E♭6–F6–F♯6–G6, A♭6–A6–B♭6, B5–C6–E♭6–E6
+and A♭5–A5–B♭5, plus two flourishes over the closing chords. On a synthetic
+test with planted runs the detector recovers them note-exactly, and it adds
+nothing to a render that has no runs. Its known limit: a run masked by a
+louder held note in the same register is missed.
 
 **Wrong-note audit.** Each MIDI note was checked against the recording's
 chroma at the aligned time, looking for its pitch class being weak while a

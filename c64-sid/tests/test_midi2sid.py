@@ -136,3 +136,45 @@ class TestAlignment(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRecoverRuns(unittest.TestCase):
+    def test_finds_runs_missing_from_midi(self):
+        from midi2sid import recover
+        from midi2sid.midi_in import load_midi
+        from synth_util import render
+        with tempfile.TemporaryDirectory() as d:
+            mid = os.path.join(d, "t.mid")
+            make_midi(mid)
+            song = load_midi(mid)
+            tonal = [n for n in song.notes if not n.is_drum]
+            ident = lambda t: t                               # noqa: E731
+            base = render(tonal, ident)
+            # add three rising flute figures the MIDI does not contain
+            sr, figs = 22050, [(1.5, [86, 88, 90, 91]), (4.0, [84, 86, 88]), (6.5, [89, 91, 93, 94])]
+            y = base.copy()
+            for t0, ps in figs:
+                for k, p in enumerate(ps):
+                    s0 = int((t0 + 0.07 * k) * sr)
+                    n = int(0.09 * sr) if k < len(ps) - 1 else int(0.3 * sr)
+                    tt = np.arange(n) / sr
+                    f0 = 440 * 2 ** ((p - 69) / 12)
+                    y[s0:s0 + n] += 0.25 * np.sin(2 * np.pi * f0 * tt) * np.minimum(1, tt / 0.005)
+            mapped = [(n.start, n.end, n.pitch) for n in tonal]
+            found = recover.recover_runs(y, 0.0, 0, mapped)
+            figures = []
+            for a, b, p, sc, sl in found:
+                if not sl:
+                    figures.append((a, []))
+                figures[-1][1].append(p)
+            # every recovered figure is one of the planted ones, note for note
+            for st, ps in figures:
+                match = [f for f in figs if abs(f[0] - st) < 0.1]
+                self.assertTrue(match, (st, ps))
+                self.assertEqual(ps, match[0][1])
+            # the middle figure sits under the test melody's own 3rd harmonic
+            # (a louder note in the same register), which masks it; the
+            # other two must be found
+            self.assertGreaterEqual(len(figures), 2, found)
+            # the plain render has no runs: nothing must be invented
+            self.assertEqual(recover.recover_runs(base, 0.0, 0, mapped), [])

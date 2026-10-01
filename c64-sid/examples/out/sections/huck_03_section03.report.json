@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmp49wafm2k/s2.mid",
+  "input": "../../../../tmp/tmp2u13sh25/s2.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
@@ -21,21 +21,21 @@
     {
       "index": 2,
       "name": "Horns",
-      "program": 60,
-      "notes": 18,
+      "program": 0,
+      "notes": 23,
       "drums": false
     },
     {
       "index": 3,
       "name": "Horns 2",
       "program": 60,
-      "notes": 18,
+      "notes": 23,
       "drums": false
     }
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.668,
+    "onset_score_final": 0.838,
     "anchors_midi_s": [
       0.0,
       1.125,
@@ -61,8 +61,8 @@
   "sid_starts_at_recording_s": 0.3,
   "roles": {
     "Piano": {
-      "role": "chords",
-      "weight": 0.8
+      "role": "counter",
+      "weight": 1.0
     },
     "Piano #2": {
       "role": "bass",
@@ -109,8 +109,8 @@
     {
       "name": "horn:Horns",
       "wave": 64,
-      "ad": 73,
-      "sr": 151,
+      "ad": 68,
+      "sr": 148,
       "pw": 768,
       "pw_speed": 10,
       "pw_min": 512,
@@ -123,8 +123,8 @@
     {
       "name": "horn:Horns 2",
       "wave": 64,
-      "ad": 73,
-      "sr": 151,
+      "ad": 68,
+      "sr": 148,
       "pw": 768,
       "pw_speed": 10,
       "pw_min": 512,
@@ -170,38 +170,38 @@
   "inner_melody_part_notes": 0,
   "unisons_merged": 1,
   "soft_entries": 0,
-  "short_resumes_dropped": 1,
+  "short_resumes_dropped": 0,
   "arrangement": {
-    "midi_notes": 41,
-    "unique_onsets": 41,
-    "onsets_played": 38,
-    "onset_coverage_pct": 92.7,
+    "midi_notes": 51,
+    "unique_onsets": 51,
+    "onsets_played": 49,
+    "onset_coverage_pct": 96.1,
     "arpeggio_seconds": 4.17,
-    "pitch_onsets_heard_pct": 92.7,
-    "note_time_heard_pct": 98.4
+    "pitch_onsets_heard_pct": 98.0,
+    "note_time_heard_pct": 99.7
   },
   "frames": 345,
   "duration_s": 6.883,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$164C",
-    "total_bytes": 1613,
+    "end": "$165C",
+    "total_bytes": 1629,
     "player_bytes": 1039,
-    "song_bytes": 195,
-    "song_bytes_uncompressed": 195,
+    "song_bytes": 211,
+    "song_bytes_uncompressed": 215,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1998,
-    "avg_cycles_per_frame": 971,
-    "max_rasterlines": 31.7
+    "max_cycles_per_frame": 1920,
+    "avg_cycles_per_frame": 978,
+    "max_rasterlines": 30.5
   },
   "verification": {
-    "attacks_expected": 37,
+    "attacks_expected": 48,
     "attack_timing_mismatches": 0,
     "ok": true
   }

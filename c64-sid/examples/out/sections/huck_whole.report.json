@@ -21,8 +21,8 @@
     {
       "index": 2,
       "name": "Horns",
-      "program": 60,
-      "notes": 18,
+      "program": 0,
+      "notes": 24,
       "drums": false
     },
     {
@@ -36,13 +36,13 @@
       "index": 4,
       "name": "Horns 2",
       "program": 60,
-      "notes": 18,
+      "notes": 24,
       "drums": false
     }
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.825,
+    "onset_score_final": 0.826,
     "anchors_midi_s": [
       0.0,
       0.562,
@@ -461,8 +461,8 @@
     {
       "name": "horn:Horns",
       "wave": 64,
-      "ad": 73,
-      "sr": 151,
+      "ad": 68,
+      "sr": 148,
       "pw": 768,
       "pw_speed": 10,
       "pw_min": 512,
@@ -498,8 +498,8 @@
     {
       "name": "horn:Horns 2",
       "wave": 64,
-      "ad": 73,
-      "sr": 151,
+      "ad": 68,
+      "sr": 148,
       "pw": 768,
       "pw_speed": 10,
       "pw_min": 512,
@@ -578,14 +578,14 @@
   "inner_melody_part_notes": 473,
   "unisons_merged": 24,
   "soft_entries": 156,
-  "short_resumes_dropped": 69,
+  "short_resumes_dropped": 67,
   "arrangement": {
-    "midi_notes": 1453,
-    "unique_onsets": 1453,
-    "onsets_played": 1267,
-    "onset_coverage_pct": 87.2,
+    "midi_notes": 1465,
+    "unique_onsets": 1465,
+    "onsets_played": 1280,
+    "onset_coverage_pct": 87.4,
     "arpeggio_seconds": 79.34,
-    "pitch_onsets_heard_pct": 87.2,
+    "pitch_onsets_heard_pct": 87.4,
     "note_time_heard_pct": 83.4
   },
   "frames": 7212,
@@ -593,11 +593,11 @@
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2A36",
-    "total_bytes": 6711,
+    "end": "$2A50",
+    "total_bytes": 6737,
     "player_bytes": 1039,
-    "song_bytes": 5247,
-    "song_bytes_uncompressed": 5512,
+    "song_bytes": 5273,
+    "song_bytes_uncompressed": 5542,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

@@ -144,163 +144,6 @@
  },
  {
   "part": "Horns",
-  "program": 60,
-  "bar": 51,
-  "eighth": 1,
-  "add": [
-   "B3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 110,
-  "why": "the horn soli as played (transcribed from the recording, 50.7-53.3 s: a B major arpeggio figure in 16ths); the piccolo-like octave doublings are left out"
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 1.5,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 1.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 2.5,
-  "add": [
-   "B4"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 3,
-  "add": [
-   "Eb5"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 4,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 1.0
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 5,
-  "add": [
-   "B4"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 5.5,
-  "add": [
-   "Eb4"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 6,
-  "add": [
-   "Bb4"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 51,
-  "eighth": 6.5,
-  "add": [
-   "C#5"
-  ],
-  "len_eighths": 1.0
- },
- {
-  "part": "Horns",
-  "bar": 52,
-  "eighth": 1,
-  "add": [
-   "B4"
-  ],
-  "len_eighths": 1.5,
-  "why": "recording 51.63 s: the bar-52 horn attacks (51.63/51.84/52.06) fall a half eighth earlier than first transcribed"
- },
- {
-  "part": "Horns",
-  "bar": 52,
-  "eighth": 2.5,
-  "add": [
-   "Eb5"
-  ],
-  "len_eighths": 1.5
- },
- {
-  "part": "Horns",
-  "bar": 52,
-  "eighth": 4,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 2.0
- },
- {
-  "part": "Horns",
-  "bar": 53,
-  "eighth": 1,
-  "add": [
-   "B4"
-  ],
-  "len_eighths": 1.5
- },
- {
-  "part": "Horns",
-  "bar": 53,
-  "eighth": 2.5,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 2.0
- },
- {
-  "part": "Horns",
-  "bar": 53,
-  "eighth": 4.5,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 1.0
- },
- {
-  "part": "Horns",
-  "bar": 53,
-  "eighth": 5.5,
-  "add": [
-   "Eb4"
-  ],
-  "len_eighths": 0.5
- },
- {
-  "part": "Horns",
-  "bar": 53,
-  "eighth": 6,
-  "add": [
-   "F#4"
-  ],
-  "len_eighths": 1.0
- },
- {
-  "part": "Horns",
   "bar": 54,
   "eighth": 1,
   "add": [
@@ -604,194 +447,6 @@
  {
   "part": "Horns 2",
   "program": 60,
-  "bar": 51,
-  "eighth": 1,
-  "add": [
-   "B2"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100,
-  "why": "score p.24: the soli is for all horns in two octaves, and the recording shows both (F#4+F#5, B3+B4, Eb4+Eb5); the lower octave replaces the timpani figure, which on three voices read as percussion rather than weight"
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 1.5,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 1.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 2.5,
-  "add": [
-   "B3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 3,
-  "add": [
-   "Eb4"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 4,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 1.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 5,
-  "add": [
-   "B3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 5.5,
-  "add": [
-   "Eb3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 6,
-  "add": [
-   "Bb3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 51,
-  "eighth": 6.5,
-  "add": [
-   "C#4"
-  ],
-  "len_eighths": 1.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 52,
-  "eighth": 1,
-  "add": [
-   "B3"
-  ],
-  "len_eighths": 1.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 52,
-  "eighth": 2.5,
-  "add": [
-   "Eb4"
-  ],
-  "len_eighths": 1.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 52,
-  "eighth": 4,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 2.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 53,
-  "eighth": 1,
-  "add": [
-   "B3"
-  ],
-  "len_eighths": 1.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 53,
-  "eighth": 2.5,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 2.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 53,
-  "eighth": 4.5,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 1.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 53,
-  "eighth": 5.5,
-  "add": [
-   "Eb3"
-  ],
-  "len_eighths": 0.5,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
-  "bar": 53,
-  "eighth": 6,
-  "add": [
-   "F#3"
-  ],
-  "len_eighths": 1.0,
-  "velocity": 100
- },
- {
-  "part": "Horns 2",
-  "program": 60,
   "bar": 54,
   "eighth": 1,
   "add": [
@@ -836,5 +491,512 @@
   ],
   "delete": true,
   "why": "the octave above the bass B1 would occupy the third voice; that voice carries the horns' lower octave here"
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 0.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110,
+  "why": "horn soli re-transcribed from the recording's pitch-salience trace (20 ms hops, 50.7-53.3 s): a B major figure (B, D#/Eb, F#) in two octaves; the earlier Bb4/C#5 at the end of bar 51 were spurious"
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 0.5,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 1,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 1,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 2,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 2,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 2.5,
+  "add": [
+   "Eb5"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 2.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 3,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 3,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 4,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 4,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 4.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 4.5,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 5,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 51,
+  "eighth": 6,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 51,
+  "eighth": 6,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 1,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 1,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 1.5,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 1.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 2,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 2,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 2.5,
+  "add": [
+   "Eb5"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 2.5,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 3,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 3,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 4,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 2.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 4,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 2.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 52,
+  "eighth": 6.5,
+  "add": [
+   "B4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 52,
+  "eighth": 6.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 1,
+  "add": [
+   "Eb4"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 1,
+  "add": [
+   "Eb3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 2,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 2,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 3.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 3.5,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 4,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 4,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 4.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 4.5,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 5,
+  "add": [
+   "F#4"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 5,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 0.5,
+  "velocity": 100
+ },
+ {
+  "part": "Horns",
+  "program": 60,
+  "bar": 53,
+  "eighth": 5.5,
+  "add": [
+   "B3"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 110
+ },
+ {
+  "part": "Horns 2",
+  "program": 60,
+  "bar": 53,
+  "eighth": 5.5,
+  "add": [
+   "B2"
+  ],
+  "len_eighths": 1.0,
+  "velocity": 100
  }
 ]

@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmpoev_hwsp/s8.mid",
+  "input": "../../../../tmp/tmphgx2q283/s8.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec/huck_09_section09",
   "video": "pal",
   "fps": 50.1245,
@@ -20,83 +20,44 @@
     }
   ],
   "alignment": {
-    "method": "dtw",
-    "audio_length_s": 12.154,
-    "recording_tuning_cents": 13.6,
-    "transpose_candidates": {
-      "0": 0.2185,
-      "4": 0.2815,
-      "-5": 0.268,
-      "-4": 0.272
-    },
-    "transpose_used": 0,
-    "dtw_mean_cost": 0.2185,
-    "recording_music_start_s": 0.0,
-    "onset_score_unaligned": 0.142,
-    "onset_score_linear": 0.256,
-    "onset_score_final": 2.084,
-    "lag_refine_mean_abs_ms_per_pass": [
-      1070.0,
-      343.1,
-      618.8,
-      512.2
-    ],
-    "onset_snap_matched_pct": 22.2,
-    "steadied_windows": 0,
-    "scale": 1.83757,
-    "offset_s": 0.3943,
-    "anchors": 21,
-    "max_deviation_from_linear_s": 1.214,
+    "method": "fixed (from whole-piece alignment)",
+    "onset_score_final": 2.473,
     "anchors_midi_s": [
       0.0,
-      0.22,
-      0.72,
-      1.24,
-      1.78,
-      2.24,
       2.249,
       2.623,
-      2.74,
-      3.24,
       3.373,
-      3.74,
       3.747,
-      4.24,
       4.496,
       4.562,
       4.629,
       4.684,
-      4.72,
-      5.24,
-      5.6
+      5.395,
+      5.665,
+      7.809
     ],
     "anchors_recording_s": [
-      1.51,
-      1.51,
-      1.917,
-      2.294,
-      2.686,
-      3.297,
-      3.324,
-      4.452,
-      4.804,
-      6.548,
-      6.961,
-      8.1,
-      8.11,
-      8.76,
-      9.043,
-      9.116,
-      9.19,
-      9.25,
-      9.29,
-      9.651,
-      9.901
+      0.3,
+      3.084,
+      4.184,
+      7.233,
+      8.011,
+      9.068,
+      9.181,
+      9.284,
+      9.316,
+      9.937,
+      10.207,
+      10.207
     ]
   },
   "transpose": 0,
-  "tuning_cents": 13.6,
+  "tuning_cents": 7.8,
   "recovered_runs": [
+    {
+      "recording_s": 3.03,
+      "notes": "F6 G6 Bb6"
+    },
     {
       "recording_s": 4.19,
       "notes": "G6 B6 D7"
@@ -163,7 +124,7 @@
     {
       "name": "flute:Flute runs (from recording)",
       "wave": 16,
-      "ad": 17,
+      "ad": 18,
       "sr": 161,
       "pw": 2048,
       "pw_speed": 0,
@@ -178,36 +139,64 @@
           24
         ]
       ]
+    },
+    {
+      "name": "held:piano:Piano",
+      "wave": 64,
+      "ad": 40,
+      "sr": 201,
+      "pw": 1536,
+      "pw_speed": 12,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": []
+    },
+    {
+      "name": "held:piano:Piano #2",
+      "wave": 64,
+      "ad": 40,
+      "sr": 201,
+      "pw": 1536,
+      "pw_speed": 12,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": []
     }
   ],
   "arrangement": {
-    "midi_notes": 36,
-    "unique_onsets": 36,
-    "onsets_played": 35,
-    "onset_coverage_pct": 97.2,
-    "arpeggio_seconds": 5.61,
-    "pitch_onsets_heard_pct": 97.2,
-    "note_time_heard_pct": 72.9
+    "midi_notes": 39,
+    "unique_onsets": 39,
+    "onsets_played": 32,
+    "onset_coverage_pct": 82.1,
+    "arpeggio_seconds": 5.89,
+    "pitch_onsets_heard_pct": 82.1,
+    "note_time_heard_pct": 78.8
   },
   "frames": 596,
   "duration_s": 11.89,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1643",
-    "total_bytes": 1604,
+    "end": "$164F",
+    "total_bytes": 1616,
     "player_bytes": 1012,
-    "song_bytes": 246,
-    "song_bytes_uncompressed": 246,
+    "song_bytes": 234,
+    "song_bytes_uncompressed": 234,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1972,
-    "avg_cycles_per_frame": 810,
-    "max_rasterlines": 31.3
+    "max_cycles_per_frame": 2050,
+    "avg_cycles_per_frame": 817,
+    "max_rasterlines": 32.5
   },
   "verification": {
     "attacks_expected": 24,

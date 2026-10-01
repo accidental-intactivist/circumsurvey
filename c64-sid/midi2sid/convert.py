@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 
@@ -16,6 +16,8 @@ from .player import build_player, PAL_CLOCK, NTSC_CLOCK
 # struck/plucked presets: seconds for a held note to fade (arranger weighting)
 DECAYING = {"piano": 0.8, "pizzicato": 0.4, "harp": 0.8, "guitar": 0.8, "mallet": 0.6,
             "timpani": 0.8}
+
+HELD_S = 1.0          # notes held this long (recording time) use the sustained variant
 
 FPS = {"pal": 985248 / 19656, "ntsc": 1022727 / 17095}
 
@@ -40,6 +42,8 @@ class Options:
     keep_lead_in: bool = False       # keep the recording's leading silence
     lead_s: float | None = None      # SID frame 0 = this recording time (sections: the bar line)
     end_s: float | None = None       # tune length ends at this recording time (sections: next bar line)
+    fixed_map: tuple | None = None   # (midi_s list, recording_s list): use this time map, skip alignment
+    fixed_key: tuple | None = None   # (transpose, tuning semitones) to go with fixed_map
     overrides: dict = field(default_factory=dict)
     title: str = ""
     author: str = ""
@@ -63,7 +67,20 @@ def convert(midi_path, out_base, opt: Options):
     tmap = lambda t: t                                   # noqa: E731
     transpose, tuning = 0, 0.0
     feat = None
-    if opt.audio:
+    if opt.audio and opt.fixed_map is not None:
+        # time map supplied (e.g. a section cut from a whole-piece alignment)
+        am_, ar_ = (np.asarray(x, float) for x in opt.fixed_map)
+        tm = audio_align.TimeMap(1.0, 0.0, (am_, ar_))
+        y = audio_align.decode_audio(opt.audio)
+        feat = audio_align.audio_features(y)
+        tmap = tm
+        transpose, tuning = opt.fixed_key if opt.fixed_key else (0, 0.0)
+        report["alignment"] = {"method": "fixed (from whole-piece alignment)",
+                               "onset_score_final": round(audio_align.onset_score(
+                                   [n for n in song.notes if not n.is_drum], tm, feat["flux"]), 3),
+                               "anchors_midi_s": [round(float(x), 3) for x in am_],
+                               "anchors_recording_s": [round(float(x), 3) for x in ar_]}
+    elif opt.audio:
         use_dtw = opt.sync in ("dtw", "auto")
         pins = _resolve_anchors(song, opt.anchors)
         tm, feat, info, key = audio_align.align(song.notes, song.length, opt.audio, use_dtw=use_dtw,
@@ -127,6 +144,16 @@ def convert(midi_path, out_base, opt: Options):
         motion[n.id] = (0.45 if n.end - n.start > 1.0 else 0.7) if repeat else 1.0
         if prev is None or n.start > prev[2] - 1e-6 or n.pitch >= prev[0]:
             last[n.track] = (n.pitch, n.end, n.start)
+    # held notes (fermatas, long chords) on struck/plucked sounds: a piano
+    # envelope would die away under a held orchestral chord, so long notes
+    # use a sustained variant of the part's instrument; the recording's
+    # loudness (master volume) then shapes the swell
+    held_inst = {}
+    for pi, ii in list(part_inst.items()):
+        base = insts[ii]
+        if base.name.split(":")[0] in DECAYING:
+            held_inst[ii] = len(insts)
+            insts.append(replace(base, name="held:" + base.name, ad=0x28, sr=0xC9, pw_speed=12, table=[]))
     fnotes = []
     for n, s, e in mapped:
         f0 = int(round((s - lead) * fps))
@@ -142,12 +169,15 @@ def convert(midi_path, out_base, opt: Options):
         else:
             inst = part_inst[n.track]
             pitch = n.pitch + transpose
+        if inst in held_inst and e - s >= HELD_S:
+            inst = held_inst[inst]
         fn = FNote(n.id, f0, f1, pitch, n.track, inst, is_drum=n.is_drum, vel=n.velocity)
         fn.decay = int(DECAYING.get(insts[inst].name.split(":")[0], 0) * fps)
         fn.pred = slur_pred.get(n.id)
         fn.sal = (salience(fn, roles.get(n.track, ("", 1.0))[1], fps) * (0.85 + 0.3 * n.velocity / 127)
                   * motion[n.id])
         fnotes.append(fn)
+    report["instruments"] = [i.to_json() for i in insts]
     n_frames = max(n.f1 for n in fnotes) + int(0.5 * fps)
     if opt.end_s is not None:                # exact length, so sections chain seamlessly
         n_frames = int(round((opt.end_s - lead) * fps))

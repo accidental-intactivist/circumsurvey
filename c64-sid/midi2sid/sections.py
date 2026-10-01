@@ -92,7 +92,7 @@ def main(argv=None):
     # 1. whole piece: where does each bar line fall in the recording?
     whole = convert(args.midi, args.out + "_whole",
                     Options(audio=args.audio, anchors=anchors, render_wav=False, verify=False,
-                            recover_runs=False, video=args.video))
+                            recover_runs=True, video=args.video))
     al = whole["alignment"]
     am, ar = np.array(al["anchors_midi_s"]), np.array(al["anchors_recording_s"])
     bar_len, song = bar_ticks(args.midi)
@@ -116,13 +116,15 @@ def main(argv=None):
             # removes it again
             pad0 = min(0.3, r0)
             cut_audio(args.audio, r0 - pad0, min(audio_len, r1 + 0.6), wav)
-            sec_anchors = []
-            for a in anchors:            # anchors inside this section, re-based
-                if "bar" in a and b0 <= a["bar"] < (starts[i + 1] if i + 1 < len(starts) else 10 ** 9):
-                    sec_anchors.append({"bar": a["bar"] - b0 + 1, "beat": a.get("beat", 1),
-                                        "recording_s": a["recording_s"] - (r0 - pad0)})
+            # the section uses the whole-piece time map (aligned once, with the
+            # score anchors): sections then join seamlessly and agree with it
+            cut0 = r0 - pad0
+            grid = np.concatenate([[m0], am[(am > m0) & (am < m1 + 2.0)], [m1 + 2.0]])
+            sec_map = (list(grid - m0), list(np.interp(grid, am, ar) - cut0))
             out = f"{args.out}_{i + 1:02d}_{names[i]}"
-            rep = convert(mid, out, Options(audio=wav, anchors=sec_anchors, video=args.video,
+            rep = convert(mid, out, Options(audio=wav, fixed_map=sec_map,
+                                            fixed_key=(whole["transpose"], whole["tuning_cents"] / 100),
+                                            video=args.video,
                                             lead_s=pad0,             # frame 0 = the section's first bar line
                                             end_s=pad0 + (r1 - r0),  # ends on the next section's bar line
                                             title=f"{names[i]} (bars {b0}-{(starts[i + 1] - 1) if i + 1 < len(starts) else 'end'})"))

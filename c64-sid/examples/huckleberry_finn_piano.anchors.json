@@ -1,8 +1,80 @@
 [
-  {"bar": 72, "beat": 1, "recording_s": 84.65,
-   "note": "last ritard. chord (score p.26), held under the fermata"},
-  {"bar": 73, "beat": 1, "recording_s": 89.07,
-   "note": "rehearsal 7, Tempo I downbeat after the fermata (score p.27)"},
-  {"bar": 73, "beat": 3, "recording_s": 89.38,
-   "note": "flute solo pickup"}
+ {
+  "bar": 37,
+  "beat": 1,
+  "recording_s": 34.29,
+  "note": "sf tutti cut-off, trumpet soli begin (score p.22)"
+ },
+ {
+  "bar": 38,
+  "beat": 1,
+  "recording_s": 35.23,
+  "note": "trumpet soli in tempo"
+ },
+ {
+  "bar": 39,
+  "beat": 1,
+  "recording_s": 36.13,
+  "note": "trumpet soli in tempo"
+ },
+ {
+  "bar": 40,
+  "beat": 1,
+  "recording_s": 37.07,
+  "note": "fermata chord sf > p <, the dramatic swell (score p.22)"
+ },
+ {
+  "bar": 41,
+  "beat": 1,
+  "recording_s": 40.13,
+  "note": "rehearsal 5, ff tutti"
+ },
+ {
+  "bar": 51,
+  "beat": 1,
+  "recording_s": 50.79,
+  "note": "cut-off after the sf fermata chord; horn soli ff begin (score p.24)"
+ },
+ {
+  "bar": 52,
+  "beat": 1,
+  "recording_s": 51.7,
+  "note": "horn soli in tempo"
+ },
+ {
+  "bar": 53,
+  "beat": 1,
+  "recording_s": 52.56,
+  "note": "horn soli in tempo"
+ },
+ {
+  "bar": 54,
+  "beat": 1,
+  "recording_s": 53.28,
+  "note": "horns' held chord under the fermata"
+ },
+ {
+  "bar": 55,
+  "beat": 1,
+  "recording_s": 57.9,
+  "note": "rehearsal 6, pp, after the horns' fermata and a short silence (score p.24)"
+ },
+ {
+  "bar": 72,
+  "beat": 1,
+  "recording_s": 84.65,
+  "note": "last ritard. chord (score p.26), held under the fermata"
+ },
+ {
+  "bar": 73,
+  "beat": 1,
+  "recording_s": 89.07,
+  "note": "rehearsal 7, Tempo I downbeat after the fermata (score p.27)"
+ },
+ {
+  "bar": 73,
+  "beat": 3,
+  "recording_s": 89.38,
+  "note": "flute solo pickup"
+ }
 ]

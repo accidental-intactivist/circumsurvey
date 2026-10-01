@@ -281,6 +281,23 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     return np.array(path[::-1], float)
 
 
+def clamp_tempo(am, aa, lo=0.55, hi=3.0, iters=4):
+    """Keep every stretch of the map within [lo, hi] x the overall tempo, so
+    no passage is crushed or smeared; forward and backward passes keep both
+    ends in place."""
+    am, aa = np.asarray(am, float), np.asarray(aa, float).copy()
+    if len(am) < 3:
+        return aa
+    g = (aa[-1] - aa[0]) / max(1e-9, am[-1] - am[0])
+    dm = np.diff(am)
+    for _ in range(iters):
+        for i in range(1, len(aa)):
+            aa[i] = min(max(aa[i], aa[i - 1] + lo * g * dm[i - 1]), aa[i - 1] + hi * g * dm[i - 1])
+        for i in range(len(aa) - 2, -1, -1):
+            aa[i] = min(max(aa[i], aa[i + 1] - hi * g * dm[i]), aa[i + 1] - lo * g * dm[i])
+    return aa
+
+
 def onset_peaks(flux):
     """Onset times (s) and strengths from the (latency-aligned) flux curve."""
     f = _smooth_env(flux, 1.0)
@@ -294,7 +311,7 @@ def onset_peaks(flux):
     return times, (b - base[idx]) / (f.std() + 1e-9)
 
 
-def snap_onsets(notes, am, aa, flux, reach=0.35, sigma=0.15):
+def snap_onsets(notes, am, aa, flux, reach=0.2, sigma=0.1):
     """Pull the time map onto the recording's actual onsets.
 
     Each MIDI onset cluster (notes starting together) is matched to the
@@ -314,12 +331,16 @@ def snap_onsets(notes, am, aa, flux, reach=0.35, sigma=0.15):
     cw = np.array([len(c) for c in clusters], float)
     m = np.interp(ct, am, aa)
     delta = np.full(len(ct), np.nan)
+    claim = {}                      # recording onset -> (score, cluster): one-to-one
     for i, (t, mm) in enumerate(zip(ct, m)):
         sel = np.where(np.abs(ptimes - mm) <= reach)[0]
         if len(sel):
             sc = pstr[sel] * np.exp(-0.5 * ((ptimes[sel] - mm) / sigma) ** 2)
             j = sel[int(np.argmax(sc))]
-            if sc.max() > 0.3:
+            if sc.max() > 0.3 and (j not in claim or sc.max() > claim[j][0]):
+                if j in claim:
+                    delta[claim[j][1]] = np.nan
+                claim[j] = (sc.max(), i)
                 delta[i] = ptimes[j] - mm
     ok = ~np.isnan(delta)
     if ok.sum() < 8:
@@ -339,8 +360,8 @@ def snap_onsets(notes, am, aa, flux, reach=0.35, sigma=0.15):
     aa2 = np.concatenate([aa[before] + corr[0], new_a, aa[after] + corr[-1]])
     order = np.argsort(am2, kind="stable")
     am2, aa2 = am2[order], aa2[order]
-    for i in range(1, len(aa2)):
-        aa2[i] = max(aa2[i], aa2[i - 1] + 0.3 * (am2[i] - am2[i - 1]))
+    keep = np.concatenate([[True], np.diff(am2) > 1e-4])
+    am2, aa2 = am2[keep], clamp_tempo(am2[keep], aa2[keep])
     return am2, aa2, {"onset_snap_matched_pct": round(100 * use.mean(), 1),
                       "onset_snap_median_correction_ms": round(1000 * float(np.median(corr)), 1)}
 
@@ -375,7 +396,8 @@ def onset_score(notes, tm, flux):
     """Correlation between mapped MIDI onsets and recording onsets (0..1)."""
     f = _smooth_env(flux, 2.0)
     f = (f - f.mean()) / (f.std() + 1e-9)
-    idx = [int(round(tm(n.start) * FPS)) for n in notes]
+    # flux frame i reports an onset at about i/FPS + NFFT/2/SR
+    idx = [int(round((tm(n.start) - NFFT / 2 / SR) * FPS)) for n in notes]
     idx = [i for i in idx if 0 <= i < len(f)]
     return float(np.mean(f[idx])) if idx else 0.0
 
@@ -470,9 +492,7 @@ def refine_by_lag(notes, am, aa, rec_chroma, rec_flux, transpose=0, iters=4):
         hist.append(round(float(np.mean(np.abs(lg))) * 1000, 1))
         if np.mean(np.abs(lg)) < 0.02:
             break
-        aa = aa - np.interp(aa, cs, lg)
-        for i in range(1, len(aa)):
-            aa[i] = max(aa[i], aa[i - 1] + 0.3 * (am[i] - am[i - 1]))
+        aa = clamp_tempo(am, aa - np.interp(aa, cs, lg))
     return am, aa, {"lag_refine_mean_abs_ms_per_pass": hist}
 
 

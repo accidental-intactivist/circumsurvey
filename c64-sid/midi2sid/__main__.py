@@ -39,6 +39,8 @@ def main(argv=None):
     ap.add_argument("--instruments", help="JSON overrides per part name: preset/ad/sr/wave/pw/.../weight")
     ap.add_argument("--title", default=""); ap.add_argument("--author", default="")
     ap.add_argument("--released", default="")
+    ap.add_argument("--anchors", help="JSON list of score anchors pinning MIDI bars to recording times, "
+                    "e.g. [{\"bar\": 73, \"beat\": 3, \"recording_s\": 89.38}] (fermatas, tempo changes)")
     ap.add_argument("--no-recover-runs", action="store_true",
                     help="don't add fast runs found in the recording but missing from the MIDI")
     ap.add_argument("--no-wav", action="store_true", help="skip the audio preview")
@@ -48,6 +50,10 @@ def main(argv=None):
     if args.instruments:
         with open(args.instruments) as f:
             overrides = json.load(f)
+    anchors = []
+    if args.anchors:
+        with open(args.anchors) as f:
+            anchors = json.load(f)
     out = args.out or args.midi.rsplit(".", 1)[0]
     opt = Options(audio=args.audio, sync=args.sync, match_key=not args.midi_key,
                   transpose=args.transpose, tuning_cents=args.tuning_cents, video=args.video,
@@ -56,7 +62,7 @@ def main(argv=None):
                   max_arp=max(1, args.max_arp), compress=not args.no_compress,
                   keep_lead_in=args.keep_lead_in, overrides=overrides, title=args.title,
                   author=args.author, released=args.released, render_wav=not args.no_wav,
-                  recover_runs=not args.no_recover_runs)
+                  recover_runs=not args.no_recover_runs, anchors=anchors)
     rep = convert(args.midi, out, opt)
     m = rep["memory"]
     print(f"wrote {out}.sid / .prg / .asm / .sync.json / .report.json" + ("" if args.no_wav else " / .wav"))

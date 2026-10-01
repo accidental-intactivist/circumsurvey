@@ -1,0 +1,214 @@
+{
+  "input": "../../../../tmp/tmpoev_hwsp/s3.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec/huck_04_section04",
+  "video": "pal",
+  "fps": 50.1245,
+  "parts": [
+    {
+      "index": 0,
+      "name": "Piano",
+      "program": 0,
+      "notes": 36,
+      "drums": false
+    },
+    {
+      "index": 1,
+      "name": "Piano #2",
+      "program": 0,
+      "notes": 19,
+      "drums": false
+    }
+  ],
+  "alignment": {
+    "method": "dtw",
+    "audio_length_s": 7.627,
+    "recording_tuning_cents": 4.4,
+    "transpose_candidates": {
+      "0": 0.1627,
+      "-5": 0.172,
+      "4": 0.1754,
+      "5": 0.1774
+    },
+    "transpose_used": 0,
+    "dtw_mean_cost": 0.1627,
+    "recording_music_start_s": 0.0,
+    "onset_score_unaligned": 0.185,
+    "onset_score_linear": 0.612,
+    "onset_score_final": 0.341,
+    "lag_refine_mean_abs_ms_per_pass": [
+      920.0,
+      580.0,
+      370.0,
+      400.0
+    ],
+    "onset_snap_matched_pct": 25.0,
+    "onset_snap_median_correction_ms": -14.0,
+    "steadied_windows": 0,
+    "scale": 1.51667,
+    "offset_s": -0.3635,
+    "anchors": 35,
+    "max_deviation_from_linear_s": 0.59,
+    "anchors_midi_s": [
+      0.0,
+      0.066,
+      0.066,
+      0.132,
+      0.132,
+      0.562,
+      0.562,
+      0.628,
+      0.628,
+      0.695,
+      0.695,
+      1.125,
+      1.5,
+      1.594,
+      1.594,
+      1.688,
+      1.688,
+      1.875,
+      2.062,
+      2.062,
+      2.25,
+      2.438,
+      2.438,
+      2.625,
+      2.812,
+      2.812,
+      3.188,
+      3.188,
+      3.375,
+      3.75,
+      3.938,
+      3.938,
+      4.24,
+      4.72,
+      5.2
+    ],
+    "anchors_recording_s": [
+      0.226,
+      0.265,
+      0.265,
+      0.304,
+      0.304,
+      0.559,
+      0.559,
+      0.598,
+      0.598,
+      0.637,
+      0.638,
+      0.893,
+      1.347,
+      1.464,
+      1.465,
+      1.621,
+      1.622,
+      1.992,
+      2.371,
+      2.373,
+      2.777,
+      3.136,
+      3.137,
+      3.52,
+      3.891,
+      3.892,
+      4.924,
+      4.925,
+      5.243,
+      5.807,
+      6.082,
+      6.083,
+      6.478,
+      6.776,
+      7.072
+    ]
+  },
+  "transpose": 0,
+  "tuning_cents": 4.4,
+  "recovered_runs": [],
+  "sid_starts_at_recording_s": 0.3,
+  "roles": {
+    "Piano": {
+      "role": "melody",
+      "weight": 1.5
+    },
+    "Piano #2": {
+      "role": "bass",
+      "weight": 1.3
+    }
+  },
+  "instruments": [
+    {
+      "name": "piano:Piano",
+      "wave": 64,
+      "ad": 7,
+      "sr": 70,
+      "pw": 1536,
+      "pw_speed": 24,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": [
+        [
+          32,
+          0
+        ]
+      ]
+    },
+    {
+      "name": "piano:Piano #2",
+      "wave": 64,
+      "ad": 7,
+      "sr": 70,
+      "pw": 1536,
+      "pw_speed": 24,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": [
+        [
+          32,
+          0
+        ]
+      ]
+    }
+  ],
+  "arrangement": {
+    "midi_notes": 49,
+    "unique_onsets": 49,
+    "onsets_played": 47,
+    "onset_coverage_pct": 95.9,
+    "arpeggio_seconds": 0.34,
+    "pitch_onsets_heard_pct": 95.9,
+    "note_time_heard_pct": 96.9
+  },
+  "frames": 337,
+  "duration_s": 6.723,
+  "dynamics": "recording",
+  "memory": {
+    "load": "$1000",
+    "end": "$163B",
+    "total_bytes": 1596,
+    "player_bytes": 1012,
+    "song_bytes": 254,
+    "song_bytes_uncompressed": 254,
+    "init": "$1000",
+    "play": "$1003",
+    "frame_counter": "$1006",
+    "zero_page": "$FB-$FC"
+  },
+  "cpu": {
+    "max_cycles_per_frame": 2052,
+    "avg_cycles_per_frame": 832,
+    "max_rasterlines": 32.6
+  },
+  "verification": {
+    "attacks_expected": 45,
+    "attack_timing_mismatches": 0,
+    "ok": true
+  }
+}

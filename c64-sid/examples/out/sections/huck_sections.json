@@ -1,0 +1,155 @@
+[
+  {
+    "section": 1,
+    "name": "section01",
+    "bars": [
+      1,
+      20
+    ],
+    "recording_s": [
+      0.45,
+      19.74
+    ],
+    "sid": "huck_01_section01.sid",
+    "frames": 967,
+    "bytes": 2458,
+    "onset_match": 0.911,
+    "verified": true
+  },
+  {
+    "section": 2,
+    "name": "section02",
+    "bars": [
+      21,
+      39
+    ],
+    "recording_s": [
+      19.74,
+      38.18
+    ],
+    "sid": "huck_02_section02.sid",
+    "frames": 924,
+    "bytes": 2517,
+    "onset_match": 0.887,
+    "verified": true
+  },
+  {
+    "section": 3,
+    "name": "section03",
+    "bars": [
+      40,
+      49
+    ],
+    "recording_s": [
+      38.18,
+      49.23
+    ],
+    "sid": "huck_03_section03.sid",
+    "frames": 554,
+    "bytes": 1967,
+    "onset_match": 1.373,
+    "verified": true
+  },
+  {
+    "section": 4,
+    "name": "section04",
+    "bars": [
+      50,
+      53
+    ],
+    "recording_s": [
+      49.23,
+      55.95
+    ],
+    "sid": "huck_04_section04.sid",
+    "frames": 337,
+    "bytes": 1596,
+    "onset_match": 0.341,
+    "verified": true
+  },
+  {
+    "section": 5,
+    "name": "section05",
+    "bars": [
+      54,
+      72
+    ],
+    "recording_s": [
+      55.95,
+      89.07
+    ],
+    "sid": "huck_05_section05.sid",
+    "frames": 1660,
+    "bytes": 2255,
+    "onset_match": 0.334,
+    "verified": true
+  },
+  {
+    "section": 6,
+    "name": "section06",
+    "bars": [
+      73,
+      97
+    ],
+    "recording_s": [
+      89.07,
+      112.64
+    ],
+    "sid": "huck_06_section06.sid",
+    "frames": 1181,
+    "bytes": 2564,
+    "onset_match": 0.972,
+    "verified": true
+  },
+  {
+    "section": 7,
+    "name": "section07",
+    "bars": [
+      98,
+      100
+    ],
+    "recording_s": [
+      112.64,
+      116.84
+    ],
+    "sid": "huck_07_section07.sid",
+    "frames": 211,
+    "bytes": 1510,
+    "onset_match": 1.239,
+    "verified": true
+  },
+  {
+    "section": 8,
+    "name": "section08",
+    "bars": [
+      101,
+      115
+    ],
+    "recording_s": [
+      116.84,
+      134.51
+    ],
+    "sid": "huck_08_section08.sid",
+    "frames": 886,
+    "bytes": 2195,
+    "onset_match": 1.221,
+    "verified": true
+  },
+  {
+    "section": 9,
+    "name": "section09",
+    "bars": [
+      116,
+      null
+    ],
+    "recording_s": [
+      134.51,
+      146.39
+    ],
+    "sid": "huck_09_section09.sid",
+    "frames": 596,
+    "bytes": 1604,
+    "onset_match": 2.084,
+    "verified": true
+  }
+]

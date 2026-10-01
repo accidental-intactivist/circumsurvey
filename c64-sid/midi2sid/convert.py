@@ -38,12 +38,15 @@ class Options:
     max_arp: int = 4
     compress: bool = True
     keep_lead_in: bool = False       # keep the recording's leading silence
+    lead_s: float | None = None      # SID frame 0 = this recording time (sections: the bar line)
+    end_s: float | None = None       # tune length ends at this recording time (sections: next bar line)
     overrides: dict = field(default_factory=dict)
     title: str = ""
     author: str = ""
     released: str = ""
     render_wav: bool = True
     recover_runs: bool = True        # add fast figures the MIDI lacks, found in the recording
+    anchors: list = field(default_factory=list)   # score anchors: [{bar, beat|eighth, recording_s}]
     verify: bool = True
 
 
@@ -62,8 +65,12 @@ def convert(midi_path, out_base, opt: Options):
     feat = None
     if opt.audio:
         use_dtw = opt.sync in ("dtw", "auto")
+        pins = _resolve_anchors(song, opt.anchors)
         tm, feat, info, key = audio_align.align(song.notes, song.length, opt.audio, use_dtw=use_dtw,
-                                                transpose=opt.transpose)
+                                                transpose=opt.transpose, pins=pins,
+                                                beat_times=song.beat_times())
+        if pins:
+            info["score_anchors"] = [{"midi_s": round(m, 3), "recording_s": r} for m, r in pins]
         report["alignment"] = info
         if tm.anchors is not None:
             report["alignment"]["anchors_midi_s"] = [round(float(x), 3) for x in tm.anchors[0]]
@@ -90,7 +97,7 @@ def convert(midi_path, out_base, opt: Options):
 
     mapped = [(n, tmap(n.start), tmap(n.end)) for n in song.notes]
     t_first = min(s for _, s, _ in mapped)
-    lead = 0.0 if opt.keep_lead_in else t_first
+    lead = opt.lead_s if opt.lead_s is not None else (0.0 if opt.keep_lead_in else t_first)
     report["sid_starts_at_recording_s" if opt.audio else "sid_starts_at_midi_s"] = round(lead, 3)
 
     # ---- instruments & roles --------------------------------------------
@@ -142,6 +149,11 @@ def convert(midi_path, out_base, opt: Options):
                   * motion[n.id])
         fnotes.append(fn)
     n_frames = max(n.f1 for n in fnotes) + int(0.5 * fps)
+    if opt.end_s is not None:                # exact length, so sections chain seamlessly
+        n_frames = int(round((opt.end_s - lead) * fps))
+        fnotes = [n for n in fnotes if n.f0 < n_frames]
+        for n in fnotes:
+            n.f1 = min(n.f1, n_frames)
     arr = arrange(fnotes, n_frames, roles, fps, max_arp=opt.max_arp)
     arr.stats.update(_coverage(fnotes, arr, n_frames))
     report["arrangement"] = arr.stats
@@ -206,6 +218,25 @@ def convert(midi_path, out_base, opt: Options):
     with open(out_base + ".report.json", "w") as f:
         json.dump(report, f, indent=2, default=_json_default)
     return report
+
+
+def _resolve_anchors(song, anchors):
+    """[{bar, beat (or eighth), recording_s} | {midi_s, recording_s}] -> [(midi_s, rec_s)].
+    Beats count the time signature's beat unit (eighths in 6/8), starting at 1."""
+    pins = []
+    beats = song.beat_times()
+    for a in anchors or []:
+        if "midi_s" in a:
+            m = float(a["midi_s"])
+        else:
+            bar, beat = int(a["bar"]), float(a.get("beat", a.get("eighth", 1)))
+            row = [t for t, b, bt in beats if b == bar]
+            if not row:
+                raise ValueError(f"anchor bar {bar} is outside the MIDI")
+            step = row[1] - row[0] if len(row) > 1 else 0.0
+            m = row[0] + (beat - 1) * step
+        pins.append((m, float(a["recording_s"])))
+    return sorted(pins)
 
 
 RUNS_PART = "Flute runs (from recording)"

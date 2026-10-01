@@ -6,7 +6,8 @@ Two stages:
                    (spectral flux).  Exact when the recording is a render of
                    the MIDI; a good start when it is a live performance.
   2. DTW (opt.)  - chroma+onset dynamic time warping (step sizes (1,1),(1,2),
-                   (2,1) so tempo can locally vary 0.5x..2x), smoothed into a
+                   (2,1),(1,3),(1,4): tempo can locally vary 0.5x..4x, so
+                   fermatas and big ritardandos fit), smoothed into a
                    monotone piecewise-linear map.  Handles rubato, fermatas and
                    tempo changes in a live recording.
 
@@ -187,6 +188,10 @@ def _pool(x, f):
     return x[:n * f].reshape(n, f, *x.shape[1:]).mean(axis=1)
 
 
+STEPS = ((1, 1), (1, 2), (2, 1), (1, 3), (1, 4))
+HOLD_PEN = 0.15        # extra cost of a hold step: used only when the recording really holds
+
+
 def dtw_path(M, A, start_range, end_range):
     """DTW with free start/end inside the given audio column ranges."""
     C = 1.0 - M @ A.T
@@ -197,13 +202,17 @@ def dtw_path(M, A, start_range, end_range):
     s0, s1 = max(0, start_range[0]), min(m, max(start_range[1], start_range[0] + 1))
     D[0, s0:s1] = C[0, s0:s1]
     for i in range(1, n):
-        cand = np.full((3, m), INF, np.float32)
+        cand = np.full((5, m), INF, np.float32)
         # every step pays for each cell it passes through, so skipping
         # material in either sequence is never free
         cand[0, 1:] = D[i - 1, :-1]                  # (1,1)
         cand[1, 2:] = D[i - 1, :-2] + C[i, 1:-1]     # (1,2)
         if i >= 2:
             cand[2, 1:] = D[i - 2, :-1] + C[i - 1, 1:]   # (2,1)
+        # (1,3) and (1,4): the recording holds while the MIDI barely moves
+        # (fermatas, caesuras, big ritardandos)
+        cand[3, 3:] = D[i - 1, :-3] + C[i, 1:-2] + C[i, 2:-1] + HOLD_PEN
+        cand[4, 4:] = D[i - 1, :-4] + C[i, 1:-3] + C[i, 2:-2] + C[i, 3:-1] + 2 * HOLD_PEN
         k = np.argmin(cand, axis=0)
         D[i] = cand[k, np.arange(m)] + C[i]
         P[i] = k
@@ -213,20 +222,15 @@ def dtw_path(M, A, start_range, end_range):
     end_cost = float(D[-1, j] / n)
     path = [(i, j)]
     while i > 0:
-        k = P[i, j]
-        if k == 0:
-            i, j = i - 1, j - 1
-        elif k == 1:
-            i, j = i - 1, j - 2
-        else:
-            i, j = i - 2, j - 1
+        di, dj = STEPS[P[i, j]]
+        i, j = i - di, j - dj
         if j < 0:
             break
         path.append((i, j))
     return np.array(path[::-1], float), end_cost
 
 
-def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
+def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None, pins=None):
     """DTW restricted to |col - centre[row]| <= half. Returns path (row, col)."""
     n, m = len(M), len(A)
     W = 2 * half + 1
@@ -243,7 +247,7 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     for i in range(1, n):
         cols = starts[i] + ar
         c = 1.0 - A[np.minimum(cols, m - 1)] @ M[i]
-        cand = np.full((3, W), INF, np.float32)
+        cand = np.full((5, W), INF, np.float32)
         # (1,1)
         idx = cols - 1 - starts[i - 1]
         ok = (idx >= 0) & (idx < W)
@@ -258,9 +262,19 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
             idp = cols - starts[i - 1]
             ok = (idx >= 0) & (idx < W) & (idp >= 0) & (idp < W)
             cand[2, ok] = D[i - 2, idx[ok]] + Cprev[idp[ok]]
+        # (1,3), (1,4): holds (fermatas); pay for every recording frame covered
+        for step, dj in ((3, 3), (4, 4)):
+            idx = cols - dj - starts[i - 1]
+            ok = (idx >= 0) & (idx < W) & (ar >= dj - 1)
+            extra = np.zeros(W, np.float32)
+            for q in range(1, dj):
+                extra[ar >= q] += c[ar[ar >= q] - q]
+            cand[step, ok] = D[i - 1, idx[ok]] + extra[ok] + (dj - 2) * HOLD_PEN
         Cprev = c
         kk = np.argmin(cand, axis=0)
         D[i] = cand[kk, ar] + c
+        if pins and i in pins:                       # score anchor: force the path
+            D[i, np.abs(cols - pins[i]) > 2] = INF
         P[i] = kk
     last = D[-1].copy()
     if end_slack is not None:
@@ -269,7 +283,7 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     i = n - 1
     path = [(i, starts[i] + j)]
     while i > 0:
-        di, dj = ((1, 1), (1, 2), (2, 1))[P[i, j]]
+        di, dj = STEPS[P[i, j]]
         col = starts[i] + j - dj
         i -= di
         if i < 0:
@@ -281,9 +295,9 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     return np.array(path[::-1], float)
 
 
-def clamp_tempo(am, aa, lo=0.45, hi=3.0, iters=4):
+def clamp_tempo(am, aa, lo=0.45, hi=6.0, iters=4):
     """Keep every stretch of the map within [lo, hi] x the overall tempo (0.45x
-    still allows a written accelerando; 3x a broad ritardando), so
+    still allows a written accelerando; 6x a fermata), so
     no passage is crushed or smeared; forward and backward passes keep both
     ends in place."""
     am, aa = np.asarray(am, float), np.asarray(aa, float).copy()
@@ -482,7 +496,10 @@ def refine_by_lag(notes, am, aa, rec_chroma, rec_flux, transpose=0, iters=4):
         B = _centred(np.roll(tuned_chroma(ry, 0.0, len(rf["flux"])), transpose, axis=1))
         Bo = _smooth_env(rf["flux"], 1.5)
         Bo = (Bo - Bo.mean()) / (Bo.std() + 1e-9)
-        cs, ls, cf = lag_curve(A, Ao, B, Bo)
+        span = min(len(A), len(B)) / FPS
+        cs, ls, cf = lag_curve(A, Ao, B, Bo, win_s=min(3.0, span / 4), hop_s=min(0.75, span / 8))
+        if len(cf) < 3:                       # too short to measure (short sections)
+            break
         good = cf > np.percentile(cf, 20)
         if good.sum() < 3:
             break
@@ -497,8 +514,66 @@ def refine_by_lag(notes, am, aa, rec_chroma, rec_flux, transpose=0, iters=4):
     return am, aa, {"lag_refine_mean_abs_ms_per_pass": hist}
 
 
+def steady_tempo(notes, am, aa, flux, beat_times, bars=4, lurch=1.4, slack=0.03, keep=()):
+    """Where the map's tempo lurches within a few bars, try a constant tempo
+    between the stretch's endpoints instead and keep it if it explains the
+    recording's onsets at least as well (minus a small slack).  Points in
+    `keep` (score anchors) are never moved."""
+    f = _smooth_env(flux, 1.5)
+    f = (f - f.mean()) / (f.std() + 1e-9)
+    lat = NFFT / 2 / SR
+    starts = np.array(sorted({round(n.start, 3) for n in notes}))
+    downs = [t for t, b, bt in beat_times if bt == 1]
+    if len(downs) < bars + 1:
+        return am, aa, 0
+
+    def score(mapped):
+        idx = np.round((mapped - lat) * FPS).astype(int)
+        idx = idx[(idx >= 0) & (idx < len(f))]
+        return float(f[idx].mean()) if len(idx) else -9.0
+
+    changed = 0
+    for k in range(len(downs) - bars):
+        m0, m1 = downs[k], downs[k + bars]
+        sel = (starts > m0) & (starts < m1)
+        if sel.sum() < 4:
+            continue
+        cur = np.interp(starts[sel], am, aa)
+        bar_len = np.diff(np.interp(downs[k:k + bars + 1], am, aa))
+        if bar_len.min() <= 0 or bar_len.max() / bar_len.min() < lurch:
+            continue
+        # steady tempo between the endpoints, passing through any anchors
+        xs = [m0] + [kp for kp in keep if m0 < kp < m1] + [m1]
+        ys = np.interp(xs, am, aa)
+        lin = np.interp(starts[sel], xs, ys)
+        if score(lin) >= score(cur) - slack:
+            inside = (am > m0) & (am < m1)
+            aa = aa.copy()
+            aa[inside] = np.interp(am[inside], xs, ys)
+            changed += 1
+    return am, aa, changed
+
+
+def pin_map(am, aa, pins, fade_s=1.5):
+    """Make the map pass exactly through pins [(midi_t, rec_t)]: corrections
+    are linear between pins and fade out over fade_s outside them."""
+    if not pins:
+        return am, aa
+    pins = sorted(pins)
+    pm = np.array([p[0] for p in pins])
+    pd = np.array([p[1] - float(np.interp(p[0], am, aa)) for p in pins])
+    xs = np.concatenate([[pm[0] - fade_s], pm, [pm[-1] + fade_s]])
+    ds = np.concatenate([[0.0], pd, [0.0]])
+    grid = np.union1d(am, pm)
+    grid = grid[np.concatenate([[True], np.diff(grid) > 1e-3])]
+    new = np.interp(grid, am, aa) + np.interp(grid, xs, ds, left=0.0, right=0.0)
+    for m, r in pins:                                # exact at the pins
+        new[int(np.argmin(np.abs(grid - m)))] = r
+    return grid, np.maximum.accumulate(new)
+
+
 def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, anchor_s=0.5, smooth_s=0.0,
-          snap=True):
+          snap=True, pins=None, beat_times=None):
     """Returns (TimeMap, features, info). transpose=None -> auto-detect."""
     y = decode_audio(audio_path)
     feat = audio_features(y)
@@ -559,8 +634,13 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
         return X / (np.linalg.norm(X, axis=1, keepdims=True) + 1e-6)
     Mf = fine(np.roll(mf["chroma"], k, axis=1), _smooth_env(mf["onset"], 1.0), m_sil)
     Af = fine(chroma[:nf], _smooth_env(feat["flux"], 1.0), a_sil)
+    if pins:                                         # move the band onto the score anchors
+        mt, at = pin_map(mt, at, pins, fade_s=4.0)
     centre = np.interp(np.arange(len(Mf)) / FPS, mt, at) * FPS
+    row_pins = {int(round(m * FPS)): int(round(r * FPS)) for m, r in (pins or [])
+                if 0 <= int(round(m * FPS)) < len(Mf)}
     fpath = banded_dtw(Mf, Af, centre.astype(int), int(band_s * FPS), start_slack=int(0.3 * FPS),
+                       pins=row_pins,
                        end_slack=int(0.5 * FPS))
     # both sides share the analysis latency, so it cancels
     mt, at = fpath[:, 0] / FPS, fpath[:, 1] / FPS
@@ -592,6 +672,20 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
         am, aa, snap_info = snap_onsets(notes_k, am, aa, feat["flux"])
     else:
         snap_info = {}
+    steadied = 0
+    if beat_times:
+        # with fine grid points the map is piecewise linear between onsets
+        grid = np.union1d(am, np.array(sorted({round(n.start, 3) for n in notes_k})))
+        aa = np.interp(grid, am, aa)
+        am = grid
+        for bars in (4, 6, 8):
+            am, aa, c = steady_tempo(notes_k, am, aa, feat["flux"], beat_times, bars=bars,
+                                     keep=[p[0] for p in (pins or [])])
+            steadied += c
+    if pins:                                         # corrections may not move the anchors
+        am, aa = pin_map(am, aa, pins)
+        aa = clamp_tempo(am, aa)
+        am, aa = pin_map(am, aa, pins, fade_s=0.5)
     scale, offset = np.polyfit(am, aa, 1)
     lin = TimeMap(float(scale), float(offset))
     tm = TimeMap(float(scale), float(offset), (am, aa) if use_dtw else None)
@@ -608,6 +702,7 @@ def align(notes, length, audio_path, use_dtw=True, transpose=None, band_s=3.0, a
         "onset_score_final": round(onset_score(notes_k, tm, feat["flux"]), 3),
         **lag_info,
         **snap_info,
+        "steadied_windows": steadied,
         **tm.describe(),
     }
     return tm, feat, info, {"tuning": tuning, "transpose": k}

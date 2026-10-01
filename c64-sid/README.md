@@ -166,6 +166,37 @@ passages are compressed LZ-style into `CALL`s of earlier data. The example
 compresses from 3.6 KB to 2.0 KB with MIDI timing. With recording sync,
 repeats are less exact (the tempo breathes), so it compresses less.
 
+## Sections (game cues) and score anchors
+
+```bash
+python -m midi2sid.sections examples/piano_theme.mid -a recording.mp3 \
+    --anchors examples/huckleberry_finn_piano.anchors.json \
+    --bars 21,40,50,54,73,98,101,116 -o out/huck
+```
+
+This splits a piece at bar lines into separate tunes (`out/huck_01_….sid`
+… `_09_….sid`, plus `out/huck_sections.json`):
+* **Each section is aligned on its own** to its stretch of the recording,
+  so a fermata or tempo change at a boundary can't drag a neighbouring
+  section's tempo around.
+* **Each tune starts exactly on its first bar line** and lasts exactly
+  until the next section's bar line, so playing section N then N+1 is
+  seamless. Each tune loops on its own if left running.
+
+**Score anchors** (`--anchors`) pin moments you know from the score, such as
+a fermata or a *Tempo I*, to times in the recording:
+
+```json
+[{"bar": 72, "beat": 1, "recording_s": 84.65, "note": "last ritard. chord, held (fermata)"},
+ {"bar": 73, "beat": 1, "recording_s": 89.07, "note": "rehearsal 7, Tempo I"}]
+```
+
+Beats count the time signature's beat unit (eighths in 6/8), starting at
+1. The alignment is forced through the pins, and its long hold steps
+(up to 4× per step) let a fermata stretch between them. A steady-tempo
+check then replaces lurching stretches with a constant tempo whenever that
+explains the recording's attacks at least as well.
+
 ## Using it in the game
 
 ```

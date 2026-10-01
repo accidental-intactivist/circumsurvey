@@ -140,6 +140,29 @@ Every new note is preceded by a **2-frame hard restart** (gate off + ADSR
 $00/$00), the standard fix for the SID's ADSR bug. Without it, repeated
 notes swallow their attacks.
 
+**Attack timing.** Several details keep notes from sounding late:
+* **ADSR write order:** the player writes a note's AD/SR only *after* its
+  gate is on, while the envelope still holds the hard restart's $00/$00.
+  Writing a slower release rate while the voice is gated off lets the
+  envelope's rate counter climb past the attack rate. The SID then holds the
+  attack until its 15-bit counter wraps, about 33 ms: the ADSR delay bug,
+  triggered by the write order. On the example this halved the measured lag
+  against the recording, from 80 ms to 40 ms.
+* **Anticipation:** with `--audio`, notes are triggered 40 ms ahead of the
+  recording's onsets (`--anticipate-ms`). A SID attack is heard later than an
+  orchestra's measured onset; this setting gave the best onset match on the
+  example (0.20 → 0.46), with no measurable remaining lag.
+* **Short notes** keep at least 3 audible frames: in fast passages the hard
+  restart shrinks rather than cutting a note to a 1-frame chirp.
+* **Clean voice use:**
+  * a doubled chord tone (the same pitch struck twice at once) becomes one note;
+  * a voice no longer picks up an already-sounding note for a frame or two;
+  * grace notes and rolled chords written off the 16th grid join the chord
+    they decorate, so the bass note under a roll keeps ringing.
+* **Recovered runs** are snapped to the half-beat grid (16ths in 6/8).
+  Transcribed onsets jitter by 15–45 ms around the beat; flourishes faster
+  than the grid are left as played.
+
 Override anything per part with `--instruments overrides.json`:
 
 ```json
@@ -267,9 +290,9 @@ Calling `init` again with another number switches tunes at once, e.g. on the
 frame where a section ends. Play is still `jsr $1003` once per frame.
 
 `midi2sid.sections` builds such a bundle of a piece's sections
-(`--no-bundle` to skip it). For the example, all 8 sections take 7,814 bytes
-together, against 17,293 bytes as 8 separate files. That's about the size of
-the full-length tune (7,401 bytes), because the tunes are compressed together
+(`--no-bundle` to skip it). For the example, all 8 sections take 7,378 bytes
+together, against 17,057 bytes as 8 separate files. That's about the size of
+the full-length tune (7,020 bytes), because the tunes are compressed together
 and share one player. Each tune's SID register writes are identical, frame
 for frame, to its separate file's.
 
@@ -298,10 +321,10 @@ flutes and horns, with up to 8 simultaneous notes.
 
 | | MIDI timing | synced to the MP3 |
 |---|---|---|
-| note onsets audible on 3 voices | 85.1 % | 84.3 % |
-| note-time audible | 90.0 % | 89.6 % |
-| size (player + song) | 3,345 bytes | 4,393 bytes |
-| 6502 verification | 564/564 attacks on the exact frame | 561/561 |
+| note onsets audible on 3 voices | 85.5 % | 83.1 % |
+| note-time audible | 89.7 % | 89.0 % |
+| size (player + song) | 3,498 bytes | 4,740 bytes |
+| 6502 verification | 563/563 attacks on the exact frame | 564/564 |
 
 The reference MP3 is a **different performance** from the MIDI:
 * it is in B♭ (the MIDI is in C) and 10 cents sharp

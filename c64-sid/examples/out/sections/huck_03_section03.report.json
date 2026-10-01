@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp95i_q3s5/s2.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec10/huck_03_section03",
+  "input": "../../../../tmp/tmpyjaj5f5_/s2.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec11/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -102,12 +102,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "piano:Piano #2",
@@ -121,12 +116,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "held:piano:Piano",
@@ -157,6 +147,10 @@
       "table": []
     }
   ],
+  "anticipate_s": 0.04,
+  "rolled_chord_notes_joined": 0,
+  "unisons_merged": 0,
+  "short_resumes_dropped": 0,
   "arrangement": {
     "midi_notes": 44,
     "unique_onsets": 44,
@@ -171,20 +165,20 @@
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$163D",
-    "total_bytes": 1598,
-    "player_bytes": 1012,
-    "song_bytes": 232,
-    "song_bytes_uncompressed": 232,
+    "end": "$1653",
+    "total_bytes": 1620,
+    "player_bytes": 1039,
+    "song_bytes": 226,
+    "song_bytes_uncompressed": 226,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 1745,
-    "avg_cycles_per_frame": 823,
-    "max_rasterlines": 27.7
+    "max_cycles_per_frame": 1801,
+    "avg_cycles_per_frame": 841,
+    "max_rasterlines": 28.6
   },
   "verification": {
     "attacks_expected": 44,

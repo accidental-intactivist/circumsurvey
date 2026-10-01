@@ -36,6 +36,7 @@ VARS = [
     ("inst", 3), ("note", 3), ("arpn", 3), ("arppos", 3), ("arpnotes", 12), ("wtpos", 3),
     ("frames", 3), ("gate", 3), ("vib_cnt", 3), ("vib_dir", 3), ("vib_off_lo", 3),
     ("vib_off_hi", 3), ("pw_lo", 3), ("pw_hi", 3), ("pw_dir", 3), ("cur_ctrl", 3),
+    ("adsr_pend", 3), ("pend_ad", 3), ("pend_sr", 3),
     # globals / temps
     ("gptr_lo", 1), ("gptr_hi", 1), ("gdelay", 1), ("sidy", 1), ("curnote", 1), ("curwave", 1),
     ("flo", 1), ("fhi", 1), ("dlo", 1), ("dhi", 1), ("tmp", 1), ("tmp2", 1), ("cnt", 1),
@@ -367,11 +368,17 @@ def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, 
     a.op("lda", "abs", "inst_pwlo", y=True); a.op("sta", "abs", "pw_lo", x=True)
     a.op("lda", "abs", "inst_pwhi", y=True); a.op("sta", "abs", "pw_hi", x=True)
     a.op("lda", "abs", "inst_vibspeed", y=True); a.op("sta", "abs", "vib_cnt", x=True)
+    # AD/SR are written only after the gate is on (see fx_write): writing a
+    # slower release rate while the voice is gated off lets the envelope's
+    # rate counter run past the attack period, and the SID then holds the
+    # attack until the 15-bit counter wraps (~33 ms: the ADSR delay bug)
     a.op("lda", "abs", "inst_sr", y=True)
-    a.op("ldy", "abs", "sidy")
-    a.op("sta", "abs", SID + 6, y=True)
+    a.op("sta", "abs", "pend_sr", x=True)
     a.op("lda", "abs", "tmp")
-    a.op("sta", "abs", SID + 5, y=True)
+    a.op("sta", "abs", "pend_ad", x=True)
+    a.op("lda", "#", 1)
+    a.op("sta", "abs", "adsr_pend", x=True)
+    a.op("ldy", "abs", "sidy")
     a.comment("gate off for a moment: the envelope always restarts")
     a.op("lda", "abs", "cur_ctrl", x=True)
     a.op("and", "#", 0xFE)
@@ -535,6 +542,13 @@ def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, 
     a.op("ora", "abs", "gate", x=True)
     a.op("sta", "abs", "cur_ctrl", x=True)
     a.op("sta", "abs", SID + 4, y=True)
+    a.op("lda", "abs", "adsr_pend", x=True)
+    a.op("beq", "fx_done")
+    a.op("lda", "abs", "pend_ad", x=True); a.op("sta", "abs", SID + 5, y=True)
+    a.op("lda", "abs", "pend_sr", x=True); a.op("sta", "abs", SID + 6, y=True)
+    a.op("lda", "#", 0)
+    a.op("sta", "abs", "adsr_pend", x=True)
+    a.label("fx_done")
     a.op("rts")
 
     # ------------------------------------------------------------- tables

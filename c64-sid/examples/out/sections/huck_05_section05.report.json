@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp95i_q3s5/s4.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec10/huck_05_section05",
+  "input": "../../../../tmp/tmpyjaj5f5_/s4.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec11/huck_05_section05",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -292,12 +292,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "piano:Piano #2",
@@ -311,12 +306,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "held:piano:Piano",
@@ -347,37 +337,41 @@
       "table": []
     }
   ],
+  "anticipate_s": 0.04,
+  "rolled_chord_notes_joined": 4,
+  "unisons_merged": 0,
+  "short_resumes_dropped": 24,
   "arrangement": {
     "midi_notes": 273,
     "unique_onsets": 273,
-    "onsets_played": 216,
-    "onset_coverage_pct": 79.1,
-    "arpeggio_seconds": 13.47,
-    "pitch_onsets_heard_pct": 79.1,
-    "note_time_heard_pct": 83.9
+    "onsets_played": 221,
+    "onset_coverage_pct": 81.0,
+    "arpeggio_seconds": 13.87,
+    "pitch_onsets_heard_pct": 81.0,
+    "note_time_heard_pct": 84.2
   },
   "frames": 1181,
   "duration_s": 23.561,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$19F3",
-    "total_bytes": 2548,
-    "player_bytes": 1012,
-    "song_bytes": 1182,
-    "song_bytes_uncompressed": 1186,
+    "end": "$19C6",
+    "total_bytes": 2503,
+    "player_bytes": 1039,
+    "song_bytes": 1109,
+    "song_bytes_uncompressed": 1109,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2120,
-    "avg_cycles_per_frame": 860,
-    "max_rasterlines": 33.7
+    "max_cycles_per_frame": 2087,
+    "avg_cycles_per_frame": 872,
+    "max_rasterlines": 33.1
   },
   "verification": {
-    "attacks_expected": 194,
+    "attacks_expected": 167,
     "attack_timing_mismatches": 0,
     "ok": true
   }

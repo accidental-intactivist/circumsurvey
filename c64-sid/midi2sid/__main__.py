@@ -43,6 +43,8 @@ def main(argv=None):
                     "e.g. [{\"bar\": 73, \"beat\": 3, \"recording_s\": 89.38}] (fermatas, tempo changes)")
     ap.add_argument("--map", help="saved time map (a .report.json or {midi_s, recording_s, transpose, "
                     "tuning_cents}) to use instead of aligning; --anchors then only correct it locally")
+    ap.add_argument("--anticipate-ms", type=float,
+                    help="trigger notes this many ms early (default 40 with --audio, else 0)")
     ap.add_argument("--no-recover-runs", action="store_true",
                     help="don't add fast runs found in the recording but missing from the MIDI")
     ap.add_argument("--no-wav", action="store_true", help="skip the audio preview")
@@ -67,6 +69,8 @@ def main(argv=None):
                   recover_runs=not args.no_recover_runs, anchors=anchors)
     if args.map:
         opt.fixed_map, opt.fixed_key = load_map(args.map)
+    if args.anticipate_ms is not None:
+        opt.anticipate_s = args.anticipate_ms / 1000
     rep = convert(args.midi, out, opt)
     m = rep["memory"]
     print(f"wrote {out}.sid / .prg / .asm / .sync.json / .report.json" + ("" if args.no_wav else " / .wav"))
@@ -85,9 +89,10 @@ def main(argv=None):
               f"({v['attacks_expected']} attacks, {v['attack_timing_mismatches']} timing mismatches)")
     if "alignment" in rep:
         al = rep["alignment"]
+        tempo = f"tempo x{1 / al['scale']:.3f}, " if "scale" in al else "saved time map, "
+        before = f"{al['onset_score_unaligned']} -> " if "onset_score_unaligned" in al else ""
         print(f"  recording: transpose {rep['transpose']:+d}, tuning {rep['tuning_cents']:+.1f} cents, "
-              f"tempo x{1 / al['scale']:.3f}, onset match {al['onset_score_unaligned']} -> "
-              f"{al['onset_score_final']}")
+              f"{tempo}onset match {before}{al['onset_score_final']}")
         print(f"  start the SID when the recording is at {rep.get('sid_starts_at_recording_s', 0)} s "
               f"to play them in sync")
     for r in rep.get("recovered_runs", []):

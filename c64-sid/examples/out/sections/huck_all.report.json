@@ -51,11 +51,11 @@
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2E85",
-    "total_bytes": 7814,
-    "player_bytes": 1032,
+    "end": "$2CD1",
+    "total_bytes": 7378,
+    "player_bytes": 1059,
     "instruments": 10,
-    "song_bytes": 6275,
+    "song_bytes": 5819,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -64,13 +64,13 @@
   "verification": [
     {
       "tune": 0,
-      "attacks_expected": 270,
+      "attacks_expected": 217,
       "attack_timing_mismatches": 0,
       "ok": true
     },
     {
       "tune": 1,
-      "attacks_expected": 250,
+      "attacks_expected": 228,
       "attack_timing_mismatches": 0,
       "ok": true
     },
@@ -82,13 +82,13 @@
     },
     {
       "tune": 3,
-      "attacks_expected": 120,
+      "attacks_expected": 108,
       "attack_timing_mismatches": 0,
       "ok": true
     },
     {
       "tune": 4,
-      "attacks_expected": 194,
+      "attacks_expected": 167,
       "attack_timing_mismatches": 0,
       "ok": true
     },
@@ -100,17 +100,17 @@
     },
     {
       "tune": 6,
-      "attacks_expected": 120,
+      "attacks_expected": 114,
       "attack_timing_mismatches": 0,
       "ok": true
     },
     {
       "tune": 7,
-      "attacks_expected": 36,
+      "attacks_expected": 30,
       "attack_timing_mismatches": 0,
       "ok": true
     }
   ],
-  "cpu_max_cycles_per_frame": 2231,
+  "cpu_max_cycles_per_frame": 2120,
   "verified": true
 }

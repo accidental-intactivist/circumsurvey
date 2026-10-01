@@ -27,6 +27,7 @@ from dataclasses import dataclass
 
 NOTE_MAX = 0x5F
 OFF, HR, WAIT, INSTR, LEG, ARPN, ARPL, CALL, JUMP, END = range(0x60, 0x6A)
+MIN_AUDIBLE = 3          # frames a note sounds before a hard restart may cut it
 
 
 @dataclass
@@ -90,7 +91,10 @@ def compile_voice(events, n_frames, hr_frames=2, loop=True):
             hr_at = e.frame - hr_frames
             last_on = next((t[0] for t in reversed(timeline) if t[1] in ("attack", "legato")), None)
             if last_on is not None:
-                hr_at = max(hr_at, last_on + 1)     # never swallow a whole note
+                # a short note keeps at least MIN_AUDIBLE frames: in fast
+                # passages the restart shrinks instead (or the next attack
+                # simply retriggers), rather than leaving a 1-frame chirp
+                hr_at = max(hr_at, min(last_on + MIN_AUDIBLE, e.frame))
             while timeline and timeline[-1][1] in ("off", "hr") and timeline[-1][0] >= hr_at:
                 timeline.pop()
             if hr_at < e.frame:

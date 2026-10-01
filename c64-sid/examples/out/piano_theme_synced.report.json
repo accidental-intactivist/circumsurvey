@@ -1267,12 +1267,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "piano:Piano #2",
@@ -1286,17 +1281,12 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "flute:Flute runs (from recording)",
       "wave": 16,
-      "ad": 53,
+      "ad": 52,
       "sr": 164,
       "pw": 2048,
       "pw_speed": 0,
@@ -1341,37 +1331,41 @@
       "table": []
     }
   ],
+  "anticipate_s": 0.04,
+  "rolled_chord_notes_joined": 24,
+  "unisons_merged": 20,
+  "short_resumes_dropped": 70,
   "arrangement": {
-    "midi_notes": 1501,
+    "midi_notes": 1481,
     "unique_onsets": 1481,
-    "onsets_played": 1263,
-    "onset_coverage_pct": 85.3,
-    "arpeggio_seconds": 83.51,
-    "pitch_onsets_heard_pct": 85.3,
-    "note_time_heard_pct": 86.4
+    "onsets_played": 1251,
+    "onset_coverage_pct": 84.5,
+    "arpeggio_seconds": 83.81,
+    "pitch_onsets_heard_pct": 84.5,
+    "note_time_heard_pct": 86.3
   },
-  "frames": 7202,
-  "duration_s": 143.682,
+  "frames": 7200,
+  "duration_s": 143.642,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2D0E",
-    "total_bytes": 7439,
-    "player_bytes": 1012,
-    "song_bytes": 6057,
-    "song_bytes_uncompressed": 6240,
+    "end": "$2B6B",
+    "total_bytes": 7020,
+    "player_bytes": 1039,
+    "song_bytes": 5610,
+    "song_bytes_uncompressed": 5741,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2168,
-    "avg_cycles_per_frame": 858,
-    "max_rasterlines": 34.4
+    "max_cycles_per_frame": 2157,
+    "avg_cycles_per_frame": 871,
+    "max_rasterlines": 34.2
   },
   "verification": {
-    "attacks_expected": 1068,
+    "attacks_expected": 955,
     "attack_timing_mismatches": 0,
     "ok": true
   }

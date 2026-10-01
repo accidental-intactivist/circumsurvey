@@ -41,6 +41,8 @@ class Options:
     compress: bool = True
     keep_lead_in: bool = False       # keep the recording's leading silence
     lead_s: float | None = None      # SID frame 0 = this recording time (sections: the bar line)
+    anticipate_s: float | None = None  # trigger notes this much early; default 0.04 s with --audio
+                                       # (the SID's attack peaks later than an orchestra's measured onset)
     end_s: float | None = None       # tune length ends at this recording time (sections: next bar line)
     fixed_map: tuple | None = None   # (midi_s list, recording_s list): use this time map, skip alignment
     fixed_key: tuple | None = None   # (transpose, tuning semitones) to go with fixed_map
@@ -161,11 +163,13 @@ def convert(midi_path, out_base, opt: Options):
             held_inst[ii] = len(insts)
             insts.append(replace(base, name="held:" + base.name, ad=0x28, sr=0xC9, pw_speed=12, table=[]))
     fnotes = []
+    adv = opt.anticipate_s if opt.anticipate_s is not None else (ANTICIPATE_S if opt.audio else 0.0)
+    report["anticipate_s"] = adv
     for n, s, e in mapped:
-        f0 = int(round((s - lead) * fps))
-        f1 = int(round((e - lead) * fps))
-        if f0 < 0:
+        if s < lead - 1e-6:
             continue
+        f0 = max(0, int(round((s - lead - adv) * fps)))
+        f1 = int(round((e - lead - adv) * fps))
         f1 = max(f1, f0 + 1)
         if n.is_drum:
             key = instruments.drum_preset(n.pitch)
@@ -184,6 +188,8 @@ def convert(midi_path, out_base, opt: Options):
                   * motion[n.id])
         fnotes.append(fn)
     report["instruments"] = [i.to_json() for i in insts]
+    report["rolled_chord_notes_joined"] = _join_rolled_chords(fnotes, _ornament_ids(song))
+    fnotes, report["unisons_merged"] = _merge_unisons(fnotes)
     n_frames = max(n.f1 for n in fnotes) + int(0.5 * fps)
     if opt.end_s is not None:                # exact length, so sections chain seamlessly
         n_frames = int(round((opt.end_s - lead) * fps))
@@ -191,6 +197,7 @@ def convert(midi_path, out_base, opt: Options):
         for n in fnotes:
             n.f1 = min(n.f1, n_frames)
     arr = arrange(fnotes, n_frames, roles, fps, max_arp=opt.max_arp)
+    report["short_resumes_dropped"] = _drop_short_resumes(arr, fnotes)
     arr.stats.update(_coverage(fnotes, arr, n_frames))
     report["arrangement"] = arr.stats
     report["frames"] = n_frames
@@ -259,6 +266,131 @@ def convert(midi_path, out_base, opt: Options):
     return report
 
 
+ROLL_FRAMES = 8
+# Measured on the Huckleberry Finn example: SID notes triggered 40 ms ahead of
+# the recording's onsets line up best with it (onset correlation 0.20 -> 0.46);
+# the SID's attack is heard later than an orchestra's measured onset.
+ANTICIPATE_S = 0.04
+
+
+def _ornament_ids(song):
+    """Notes written off the 16th-note grid (a third or two thirds into a
+    beat): the grace notes and rolled-chord notes of a piano reduction."""
+    if not song.notes or not song.ticks_per_beat:
+        return set()
+    num, den = (song.time_sigs[0][1], song.time_sigs[0][2]) if song.time_sigs else (4, 4)
+    q = song.ticks_per_beat * 4 / den / 4
+    return {n.id for n in song.notes
+            if not n.is_drum and min(n.start_tick % q, q - n.start_tick % q) > 0.12 * q}
+
+
+def _join_rolled_chords(fnotes, ornaments, roll=ROLL_FRAMES):
+    """A rolled chord or a grace-note figure in a piano reduction (a short
+    bass note, then chord tones a third and two thirds of a beat later)
+    becomes one block chord that rings as long as its longest note.  Played
+    as written, the bass voice hops through the roll and the bass is gone
+    after a frame or two, where the orchestra holds it."""
+    joined = 0
+    by_part = {}
+    for n in fnotes:
+        if not n.is_drum:
+            by_part.setdefault(n.part, []).append(n)
+    for ns in by_part.values():
+        ns.sort(key=lambda n: (n.f0, n.pitch))
+        group = []
+        for n in ns:
+            if n.id in ornaments and group and n.f0 - group[0].f0 <= roll:
+                group.append(n)
+                continue
+            if len(group) > 1:
+                joined += _block(group)
+            group = [n] if n.id not in ornaments else []
+        if len(group) > 1:
+            joined += _block(group)
+    return joined
+
+
+def _block(group):
+    f0 = group[0].f0
+    head = [g for g in group if g.f0 == f0]
+    f1 = max(g.f1 for g in group)
+    for g in group:
+        g.f0, g.f1 = f0, f1
+    return len(group) - len(head)
+
+
+def _merge_unisons(fnotes):
+    """The same pitch struck twice at once (a doubled chord tone, often one
+    copy much shorter) is one note on a SID: keep the longest, with the
+    higher salience, so no voice is spent on a 1-frame duplicate."""
+    best = {}
+    out = []
+    for n in fnotes:
+        if n.is_drum:
+            out.append(n)
+            continue
+        k = (n.f0, n.pitch)
+        if k in best:
+            b = best[k]
+            b.f1, b.sal = max(b.f1, n.f1), max(b.sal, n.sal)
+            continue
+        best[k] = n
+        out.append(n)
+    return out, len(fnotes) - len(out)
+
+
+def _drop_short_resumes(arr, fnotes, min_frames=5):
+    """A voice that is free for a moment should not pick up a note that is
+    already sounding elsewhere if it must leave it again within a few
+    frames: after the 2-frame hard restart only a 1-frame blip is heard."""
+    by_id = {n.id: n for n in fnotes}
+    dropped = 0
+    for evs in arr.voices:
+        for k, e in enumerate(evs):
+            if e.kind != "attack" or not e.ids:
+                continue
+            if min(by_id[i].f0 for i in e.ids if i in by_id) >= e.frame:
+                continue                                  # a new note: keep it
+            nxt = next((x for x in evs[k + 1:] if x.frame > e.frame), None)
+            if nxt is not None and nxt.kind != "legato" and nxt.frame - e.frame < min_frames:
+                evs[k] = type(e)(e.frame, "off")
+                dropped += 1
+    return dropped
+
+
+def _quantize_figure(notes, beat_times):
+    """Snap a recovered figure's notes (MIDI time) to the half-beat grid
+    (16ths in 6/8), keeping their order.  Transcribed onsets jitter by
+    15-45 ms around the beat, which sounds like notes firing late.  Figures
+    faster than the grid (flourishes) are left as transcribed."""
+    if len(notes) < 2:
+        return
+    bts = [t for t, _, _ in beat_times]
+    import bisect
+
+    def grid_near(t):
+        i = max(0, min(len(bts) - 2, bisect.bisect_right(bts, t) - 1))
+        step = (bts[i + 1] - bts[i]) / 2
+        k = round((t - bts[i]) / step)
+        return bts[i] + k * step, step
+    ioi = [b.start - a.start for a, b in zip(notes, notes[1:])]
+    _, step = grid_near(notes[0].start)
+    if sorted(ioi)[len(ioi) // 2] < 0.6 * step:
+        return
+    prev = None
+    for n in notes:
+        q, step = grid_near(n.start)
+        if prev is not None and q <= prev + 1e-6:
+            q = prev + step
+        shift = q - n.start
+        n.start, n.end = q, n.end + shift
+        prev = q
+    for a, b in zip(notes, notes[1:]):           # the figure stays legato
+        a.end = b.start
+    if notes[-1].end <= notes[-1].start:
+        notes[-1].end = notes[-1].start + 0.05
+
+
 def _resolve_anchors(song, anchors):
     """[{bar, beat (or eighth), recording_s} | {midi_s, recording_s}] -> [(midi_s, rec_s)].
     Beats count the time signature's beat unit (eighths in 6/8), starting at 1."""
@@ -313,6 +445,7 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=
     nid = max(n.id for n in song.notes) + 1
     prev = None
     figs = []
+    fig_notes = []
     for a, b, p, sc, slurred in found:
         n = Note(nid, inv(a), inv(b), p, 100, part.index, 73)
         part.notes.append(n)
@@ -320,9 +453,14 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=
             slur_pred[nid] = prev
         else:
             figs.append({"recording_s": round(a, 2), "notes": []})
+            fig_notes.append([])
         figs[-1]["notes"].append(p + transpose)
+        fig_notes[-1].append(n)
         prev = nid
         nid += 1
+    beats = song.beat_times()
+    for ns in fig_notes:
+        _quantize_figure(ns, beats)
     song.parts.append(part)
     song.notes = sorted(song.notes + part.notes, key=lambda n: (n.start, -n.pitch))
     names = "C C# D Eb E F F# G Ab A Bb B".split()

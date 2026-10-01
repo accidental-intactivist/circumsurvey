@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmp95i_q3s5/s0.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec10/huck_01_section01",
+  "input": "../../../../tmp/tmpyjaj5f5_/s0.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec11/huck_01_section01",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -403,12 +403,7 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "piano:Piano #2",
@@ -422,18 +417,13 @@
       "vib_delay": 0,
       "vib_depth": 0,
       "vib_speed": 0,
-      "table": [
-        [
-          32,
-          0
-        ]
-      ]
+      "table": []
     },
     {
       "name": "flute:Flute runs (from recording)",
       "wave": 16,
-      "ad": 54,
-      "sr": 165,
+      "ad": 52,
+      "sr": 164,
       "pw": 2048,
       "pw_speed": 0,
       "pw_min": 512,
@@ -477,37 +467,41 @@
       "table": []
     }
   ],
+  "anticipate_s": 0.04,
+  "rolled_chord_notes_joined": 8,
+  "unisons_merged": 18,
+  "short_resumes_dropped": 11,
   "arrangement": {
-    "midi_notes": 340,
+    "midi_notes": 322,
     "unique_onsets": 322,
-    "onsets_played": 311,
-    "onset_coverage_pct": 96.6,
-    "arpeggio_seconds": 6.8,
-    "pitch_onsets_heard_pct": 96.6,
-    "note_time_heard_pct": 95.5
+    "onsets_played": 292,
+    "onset_coverage_pct": 90.7,
+    "arpeggio_seconds": 6.96,
+    "pitch_onsets_heard_pct": 90.7,
+    "note_time_heard_pct": 94.2
   },
   "frames": 1149,
   "duration_s": 22.923,
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$1B10",
-    "total_bytes": 2833,
-    "player_bytes": 1012,
-    "song_bytes": 1451,
-    "song_bytes_uncompressed": 1467,
+    "end": "$1A80",
+    "total_bytes": 2689,
+    "player_bytes": 1039,
+    "song_bytes": 1279,
+    "song_bytes_uncompressed": 1291,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2155,
-    "avg_cycles_per_frame": 910,
-    "max_rasterlines": 34.2
+    "max_cycles_per_frame": 2123,
+    "avg_cycles_per_frame": 912,
+    "max_rasterlines": 33.7
   },
   "verification": {
-    "attacks_expected": 270,
+    "attacks_expected": 217,
     "attack_timing_mismatches": 0,
     "ok": true
   }

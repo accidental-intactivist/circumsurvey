@@ -120,39 +120,57 @@
       "vib_depth": 4,
       "vib_speed": 4,
       "table": []
+    },
+    {
+      "name": "held:pizzicato:Strings (Pizzicato)",
+      "wave": 64,
+      "ad": 40,
+      "sr": 201,
+      "pw": 1536,
+      "pw_speed": 12,
+      "pw_min": 512,
+      "pw_max": 3584,
+      "vib_delay": 0,
+      "vib_depth": 0,
+      "vib_speed": 0,
+      "table": []
     }
   ],
+  "anticipate_s": 0.0,
+  "rolled_chord_notes_joined": 0,
+  "unisons_merged": 48,
+  "short_resumes_dropped": 0,
   "arrangement": {
-    "midi_notes": 1159,
+    "midi_notes": 1111,
     "unique_onsets": 1111,
     "onsets_played": 819,
     "onset_coverage_pct": 73.7,
-    "arpeggio_seconds": 59.75,
-    "pitch_onsets_heard_pct": 85.1,
-    "note_time_heard_pct": 90.0
+    "arpeggio_seconds": 60.31,
+    "pitch_onsets_heard_pct": 85.5,
+    "note_time_heard_pct": 89.7
   },
   "frames": 7154,
   "duration_s": 142.724,
   "dynamics": "velocity",
   "memory": {
     "load": "$1000",
-    "end": "$1D10",
-    "total_bytes": 3345,
-    "player_bytes": 1012,
-    "song_bytes": 1979,
-    "song_bytes_uncompressed": 3613,
+    "end": "$1DA9",
+    "total_bytes": 3498,
+    "player_bytes": 1039,
+    "song_bytes": 2084,
+    "song_bytes_uncompressed": 3609,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",
     "zero_page": "$FB-$FC"
   },
   "cpu": {
-    "max_cycles_per_frame": 2029,
-    "avg_cycles_per_frame": 989,
-    "max_rasterlines": 32.2
+    "max_cycles_per_frame": 2120,
+    "avg_cycles_per_frame": 974,
+    "max_rasterlines": 33.7
   },
   "verification": {
-    "attacks_expected": 564,
+    "attacks_expected": 563,
     "attack_timing_mismatches": 0,
     "ok": true
   }

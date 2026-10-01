@@ -216,3 +216,34 @@ class TestBundle(unittest.TestCase):
             # sharing the player makes the bundle smaller than the two files
             single = sum(os.path.getsize(os.path.join(d, x + ".prg")) for x in "ab")
             self.assertLess(rep["memory"]["total_bytes"], single - 800)
+
+
+class TestEdits(unittest.TestCase):
+    def test_score_corrections(self):
+        from midi2sid.edits import apply_edits
+        from midi2sid.midi_in import load_midi
+        with tempfile.TemporaryDirectory() as d:
+            mid = os.path.join(d, "t.mid")
+            make_midi(mid)
+            before = load_midi(mid)
+            # 4/4 at 96 ticks per beat: the Horn plays on beats 1 and 3 of every bar
+            edits = [{"part": "Horn", "bars": [2, 3], "eighth": 1, "delete": True},
+                     {"part": "Horn", "bars": [2, 3], "eighth": 3, "to_eighth": 1, "len_eighths": 2},
+                     {"part": "Flute", "bar": 1, "eighth": 2, "add": [84], "len_eighths": 1}]
+            out = os.path.join(d, "e.mid")
+            summary = apply_edits(mid, edits, out)
+            after = load_midi(out)
+            self.assertEqual((summary["moved"], summary["deleted"], summary["added"]), (2, 2, 1))
+            bar = 4 * 96
+            horn = [p.index for p in after.parts if p.name == "Horn"][0]
+            for b in (2, 3):
+                in_bar = [n for n in after.notes if n.track == horn and (b - 1) * bar <= n.start_tick < b * bar]
+                self.assertEqual([n.start_tick for n in in_bar], [(b - 1) * bar])
+                self.assertAlmostEqual(in_bar[0].end - in_bar[0].start, 1.0, delta=0.02)   # 2 beats at 120 bpm
+            flute = [p.index for p in after.parts if p.name == "Flute"][0]
+            self.assertIn(84, {n.pitch for n in after.notes if n.track == flute and n.start_tick == 96})
+            # untouched parts keep exactly their notes
+            same = lambda s, name: sorted((n.start_tick, n.pitch) for n in s.notes       # noqa: E731
+                                          if s.parts[n.track].name == name)
+            for name in ("Bass", "Strings", "Drums"):
+                self.assertEqual(same(before, name), same(after, name))

@@ -200,6 +200,7 @@ repeats are less exact (the tempo breathes), so it compresses less.
 
 ```bash
 python -m midi2sid.sections examples/piano_theme.mid -a recording.mp3 \
+    --edits examples/huckleberry_finn_piano.edits.json \
     --map examples/huckleberry_finn_piano.map.json \
     --anchors examples/huckleberry_finn_piano.anchors.json \
     --bars 25,51,55,73,98,103,114 -o out/huck
@@ -237,6 +238,19 @@ a fermata or a *Tempo I*, to times in the recording:
 ```
 
 Beats count the time signature's beat unit (eighths in 6/8), starting at 1.
+
+**Score corrections** (`--edits`). A piano reduction is not the score. Where
+the full score and the recording disagree with the reduction, an edits JSON
+moves, resizes, deletes or adds notes by bar and eighth, with a reason for
+each change; the source MIDI is never touched (an edited copy is written
+next to the output). Format and operations: `midi2sid/edits.py`. The example's
+`examples/huckleberry_finn_piano.edits.json` fixes rehearsal 2 (bars 13–19,
+0:11–0:18): the reduction syncopates the accented string chords onto eighth 2
+and adds broken-chord filler on eighths 3, 5 and 6, while the score has the
+chords on the downbeat, held a dotted quarter, over the bass line alone. The
+recording attacks on the downbeat and has nothing on eighth 2. Before the
+correction, the timing fit had followed the reduction's off-beat chords, so
+the whole passage played an eighth note early.
 
 **Fine-tuning one passage at a time.** Without `--map`, anchors steer the
 whole-piece alignment: they are forced into it, and long hold steps let a
@@ -297,9 +311,9 @@ Calling `init` again with another number switches tunes at once, e.g. on the
 frame where a section ends. Play is still `jsr $1003` once per frame.
 
 `midi2sid.sections` builds such a bundle of a piece's sections
-(`--no-bundle` to skip it). For the example, all 8 sections take 7,413 bytes
-together, against 17,072 bytes as 8 separate files. That's about the size of
-the full-length tune (7,133 bytes), because the tunes are compressed together
+(`--no-bundle` to skip it). For the example, all 8 sections take 7,410 bytes
+together, against 17,069 bytes as 8 separate files. That's about the size of
+the full-length tune (7,124 bytes), because the tunes are compressed together
 and share one player. Each tune's SID register writes are identical, frame
 for frame, to its separate file's.
 

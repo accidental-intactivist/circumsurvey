@@ -51,11 +51,11 @@
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2CF4",
-    "total_bytes": 7413,
+    "end": "$2CF1",
+    "total_bytes": 7410,
     "player_bytes": 1059,
     "instruments": 11,
-    "song_bytes": 5842,
+    "song_bytes": 5839,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -64,7 +64,7 @@
   "verification": [
     {
       "tune": 0,
-      "attacks_expected": 218,
+      "attacks_expected": 209,
       "attack_timing_mismatches": 0,
       "ok": true
     },

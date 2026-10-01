@@ -41,6 +41,8 @@ def main(argv=None):
     ap.add_argument("--released", default="")
     ap.add_argument("--anchors", help="JSON list of score anchors pinning MIDI bars to recording times, "
                     "e.g. [{\"bar\": 73, \"beat\": 3, \"recording_s\": 89.38}] (fermatas, tempo changes)")
+    ap.add_argument("--edits", help="JSON of score corrections applied to a copy of the MIDI first "
+                    "(move/resize/delete/add notes by bar and eighth; see midi2sid/edits.py)")
     ap.add_argument("--map", help="saved time map (a .report.json or {midi_s, recording_s, transpose, "
                     "tuning_cents}) to use instead of aligning; --anchors then only correct it locally")
     ap.add_argument("--anticipate-ms", type=float,
@@ -59,6 +61,14 @@ def main(argv=None):
         with open(args.anchors) as f:
             anchors = json.load(f)
     out = args.out or args.midi.rsplit(".", 1)[0]
+    midi = args.midi
+    if args.edits:
+        from .edits import apply_edits, load_edits
+        midi = out + ".edited.mid"
+        summary = apply_edits(args.midi, load_edits(args.edits), midi)
+        print(f"applied {summary['edits']} score corrections -> {midi} "
+              f"({summary['moved']} notes moved, {summary['resized']} resized, "
+              f"{summary['deleted']} deleted, {summary['added']} added)")
     opt = Options(audio=args.audio, sync=args.sync, match_key=not args.midi_key,
                   transpose=args.transpose, tuning_cents=args.tuning_cents, video=args.video,
                   model=args.model, load_addr=args.load, zp=args.zp, loop=not args.no_loop,
@@ -71,7 +81,7 @@ def main(argv=None):
         opt.fixed_map, opt.fixed_key = load_map(args.map)
     if args.anticipate_ms is not None:
         opt.anticipate_s = args.anticipate_ms / 1000
-    rep = convert(args.midi, out, opt)
+    rep = convert(midi, out, opt)
     m = rep["memory"]
     print(f"wrote {out}.sid / .prg / .asm / .sync.json / .report.json" + ("" if args.no_wav else " / .wav"))
     print(f"  memory {m['load']}-{m['end']} ({m['total_bytes']} bytes: player {m['player_bytes']}, "

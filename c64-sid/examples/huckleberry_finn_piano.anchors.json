@@ -18,22 +18,58 @@
   "note": "bar 2"
  },
  {
+  "bar": 11,
+  "beat": 1,
+  "recording_s": 9.71,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
+  "bar": 12,
+  "beat": 1,
+  "recording_s": 10.64,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
   "bar": 13,
   "beat": 1,
-  "recording_s": 11.4,
-  "note": "rehearsal 2, poco a poco cresc. e accel."
+  "recording_s": 11.59,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
  },
  {
   "bar": 14,
   "beat": 1,
-  "recording_s": 12.35,
-  "note": "accel., bass on the downbeat"
+  "recording_s": 12.51,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
+  "bar": 15,
+  "beat": 1,
+  "recording_s": 13.4,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
+  "bar": 16,
+  "beat": 1,
+  "recording_s": 14.32,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
+  "bar": 17,
+  "beat": 1,
+  "recording_s": 15.21,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
+ },
+ {
+  "bar": 18,
+  "beat": 1,
+  "recording_s": 16.08,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
  },
  {
   "bar": 19,
   "beat": 1,
-  "recording_s": 16.83,
-  "note": "chord bars before rehearsal 3"
+  "recording_s": 17.02,
+  "note": "downbeat: bass-line entry in the recording (bars 13-19: with the wind accent the grace notes lead to)"
  },
  {
   "bar": 20,

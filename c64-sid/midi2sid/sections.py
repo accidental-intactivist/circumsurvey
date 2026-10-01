@@ -86,6 +86,7 @@ def main(argv=None):
     ap.add_argument("-a", "--audio", required=True)
     ap.add_argument("--bars", required=True, help="comma-separated first bars of sections 2..N")
     ap.add_argument("--anchors", help="score anchors JSON for the whole-piece alignment")
+    ap.add_argument("--edits", help="JSON of score corrections applied to a copy of the MIDI first")
     ap.add_argument("--map", help="saved whole-piece time map to start from instead of aligning; "
                     "--anchors then only correct it locally (see python -m midi2sid --map)")
     ap.add_argument("-o", "--out", required=True, help="output prefix, e.g. out/huck")
@@ -98,6 +99,13 @@ def main(argv=None):
 
     anchors = json.load(open(args.anchors)) if args.anchors else []
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
+    if args.edits:
+        from .edits import apply_edits, load_edits
+        edited = args.out + ".edited.mid"
+        summary = apply_edits(args.midi, load_edits(args.edits), edited)
+        print(f"applied {summary['edits']} score corrections ({summary['moved']} notes moved, "
+              f"{summary['resized']} resized, {summary['deleted']} deleted, {summary['added']} added)")
+        args.midi = edited
     # 1. whole piece: where does each bar line fall in the recording?
     wopt = Options(audio=args.audio, anchors=anchors, render_wav=False, verify=False,
                    recover_runs=True, video=args.video)

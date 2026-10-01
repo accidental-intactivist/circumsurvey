@@ -8,14 +8,14 @@
       "index": 0,
       "name": "Piano",
       "program": 0,
-      "notes": 855,
+      "notes": 853,
       "drums": false
     },
     {
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 557,
+      "notes": 556,
       "drums": false
     },
     {
@@ -28,7 +28,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.827,
+    "onset_score_final": 0.829,
     "anchors_midi_s": [
       0.0,
       0.562,
@@ -525,14 +525,14 @@
   "rolled_chord_notes_joined": 22,
   "slurred_steps": 140,
   "inner_bass_part_notes": 238,
-  "inner_melody_part_notes": 483,
+  "inner_melody_part_notes": 482,
   "unisons_merged": 23,
   "soft_entries": 156,
   "short_resumes_dropped": 67,
   "arrangement": {
-    "midi_notes": 1450,
-    "unique_onsets": 1450,
-    "onsets_played": 1269,
+    "midi_notes": 1447,
+    "unique_onsets": 1447,
+    "onsets_played": 1266,
     "onset_coverage_pct": 87.5,
     "arpeggio_seconds": 79.34,
     "pitch_onsets_heard_pct": 87.5,
@@ -547,7 +547,7 @@
     "total_bytes": 6703,
     "player_bytes": 1039,
     "song_bytes": 5263,
-    "song_bytes_uncompressed": 5526,
+    "song_bytes_uncompressed": 5520,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

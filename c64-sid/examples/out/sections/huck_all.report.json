@@ -76,7 +76,7 @@
     },
     {
       "tune": 2,
-      "attacks_expected": 38,
+      "attacks_expected": 35,
       "attack_timing_mismatches": 0,
       "ok": true
     },

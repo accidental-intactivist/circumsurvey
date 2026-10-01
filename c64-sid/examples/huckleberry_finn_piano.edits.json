@@ -447,5 +447,63 @@
   "eighth": 4,
   "len_eighths": 3,
   "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bar": 52,
+  "eighth": 2,
+  "delete": true,
+  "why": "horn soli bar 52 as recorded: three stabs (downbeat 51.63 s, 51.84 s = between eighths 2 and 3, beat-4 chord 52.06 s held); the reduction stabs on 1, 2, 3 and 4"
+ },
+ {
+  "part": "Piano",
+  "bar": 52,
+  "eighth": 3,
+  "to_eighth": 2.5,
+  "len_eighths": 1.5,
+  "why": "the second stab, where the recording attacks"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 52,
+  "eighth": 2,
+  "delete": true,
+  "why": "D natural: not in the recording (B major throughout); see above"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 52,
+  "eighth": 3,
+  "delete": true,
+  "why": "F natural: not in the recording"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 52,
+  "eighth": 2.5,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 80,
+  "why": "the second stab's bass note, in the chord (recording: F#3 under Eb5)"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 3,
+  "delete": true,
+  "why": "F natural: the recording's stab is B major (F#)"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 53,
+  "eighth": 3,
+  "add": [
+   "F#3"
+  ],
+  "len_eighths": 1.5,
+  "velocity": 80,
+  "why": "see above"
  }
 ]

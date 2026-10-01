@@ -281,8 +281,9 @@ def banded_dtw(M, A, centre, half, start_slack=None, end_slack=None):
     return np.array(path[::-1], float)
 
 
-def clamp_tempo(am, aa, lo=0.55, hi=3.0, iters=4):
-    """Keep every stretch of the map within [lo, hi] x the overall tempo, so
+def clamp_tempo(am, aa, lo=0.45, hi=3.0, iters=4):
+    """Keep every stretch of the map within [lo, hi] x the overall tempo (0.45x
+    still allows a written accelerando; 3x a broad ritardando), so
     no passage is crushed or smeared; forward and backward passes keep both
     ends in place."""
     am, aa = np.asarray(am, float), np.asarray(aa, float).copy()

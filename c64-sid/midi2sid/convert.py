@@ -82,7 +82,11 @@ def convert(midi_path, out_base, opt: Options):
 
     slur_pred = {}
     if opt.audio and opt.recover_runs and opt.sync != "none":
-        _recover_runs(song, opt.audio, tmap, transpose, tuning, slur_pred, report)
+        tmap = _recover_runs(song, opt.audio, tmap, transpose, tuning, slur_pred, report,
+                             flux=feat["flux"] if feat is not None else None)
+        if getattr(tmap, "anchors", None) is not None:
+            report["alignment"]["anchors_midi_s"] = [round(float(x), 3) for x in tmap.anchors[0]]
+            report["alignment"]["anchors_recording_s"] = [round(float(x), 3) for x in tmap.anchors[1]]
 
     mapped = [(n, tmap(n.start), tmap(n.end)) for n in song.notes]
     t_first = min(s for _, s, _ in mapped)
@@ -207,7 +211,7 @@ def convert(midi_path, out_base, opt: Options):
 RUNS_PART = "Flute runs (from recording)"
 
 
-def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report):
+def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report, flux=None):
     """Transcribe fast runs the MIDI lacks from the recording and add them to
     the song as an extra part (MIDI time, MIDI key)."""
     from . import recover
@@ -217,7 +221,18 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report):
     found = recover.recover_runs(y, tuning, transpose, mapped)
     if not found:
         report["recovered_runs"] = []
-        return
+        return tmap
+    tmap = _landing_anchors(song, tmap, found, report)
+    if flux is not None and getattr(tmap, "anchors", None) is not None and report.get("landing_anchors"):
+        # with the figures pinned, neighbouring onsets are now within reach:
+        # one more snapping pass settles the bars around them
+        notes = [n for n in song.notes if not n.is_drum]
+        am2, aa2, _ = audio_align.snap_onsets(notes, *tmap.anchors, flux)
+        for a in report["landing_anchors"]:                 # keep the pins
+            k = int(np.argmin(np.abs(am2 - a["midi_s"])))
+            if abs(am2[k] - a["midi_s"]) < 1e-3:
+                aa2[k] = a["recording_s"]
+        tmap = audio_align.TimeMap(tmap.scale, tmap.offset, (am2, audio_align.clamp_tempo(am2, aa2)))
     # recording time -> MIDI time (the map is monotone: invert by sampling)
     grid = np.linspace(-5, song.length + 5, 20000)
     rec = np.array([tmap(t) for t in grid])
@@ -242,6 +257,70 @@ def _recover_runs(song, audio, tmap, transpose, tuning, slur_pred, report):
     report["recovered_runs"] = [{"recording_s": f["recording_s"],
                                  "notes": " ".join(names[q % 12] + str(q // 12 - 1) for q in f["notes"])}
                                 for f in figs]
+    return tmap
+
+
+def _landing_anchors(song, tmap, found, report, reach=0.45, fade_s=2.0):
+    """Fast figures (grace-note runs, scales) land on an accented chord.
+    Pin the nearest multi-note MIDI chord to where each recovered figure
+    lands, one-to-one and in order, fading the correction out within about
+    a bar on either side."""
+    if getattr(tmap, "anchors", None) is None:
+        return tmap
+    am, aa = (np.array(x, float) for x in tmap.anchors)
+    clusters = {}
+    for n in song.notes:
+        if not n.is_drum:
+            clusters.setdefault(round(n.start, 3), []).append(n)
+    chords = sorted(t for t, ns in clusters.items() if len({n.pitch for n in ns}) >= 3)
+    if not chords:
+        return tmap
+    ch_rec = np.array([tmap(t) for t in chords])
+    landings = []
+    for i, (a, b, p, sc, slurred) in enumerate(found):
+        nxt_slurred = i + 1 < len(found) and found[i + 1][4]
+        if not nxt_slurred:
+            landings.append(a)                       # start of the figure's last note
+    # only a regular series (3+ figures, 0.4-1.6 s apart, e.g. one per bar)
+    # is trusted as an anchor; isolated flourishes are left alone
+    series, cur = [], [landings[0]] if landings else []
+    for x in landings[1:]:
+        if 0.4 <= x - cur[-1] <= 1.6:
+            cur.append(x)
+        else:
+            series.append(cur)
+            cur = [x]
+    if cur:
+        series.append(cur)
+    landings = [x for sr in series if len(sr) >= 3 for x in sr]
+    pairs, used, last_midi = [], set(), -1e9
+    for land in landings:
+        cand = [j for j in range(len(chords)) if abs(ch_rec[j] - land) <= reach
+                and j not in used and chords[j] > last_midi]
+        if not cand:
+            continue
+        j = min(cand, key=lambda jj: abs(ch_rec[jj] - land))
+        used.add(j)
+        last_midi = chords[j]
+        pairs.append((chords[j], land))
+    if not pairs:
+        return tmap
+    pts_m, pts_d = [pairs[0][0] - fade_s], [0.0]
+    for k, (mt, land) in enumerate(pairs):
+        if k and mt - pairs[k - 1][0] > 2 * fade_s:
+            pts_m += [pairs[k - 1][0] + fade_s, mt - fade_s]
+            pts_d += [0.0, 0.0]
+        pts_m.append(mt)
+        pts_d.append(land - tmap(mt))
+    pts_m.append(pairs[-1][0] + fade_s)
+    pts_d.append(0.0)
+    grid = np.union1d(am, np.array(pts_m))
+    grid = grid[np.concatenate([[True], np.diff(grid) > 1e-3])]     # merge near-duplicates
+    new_a = np.interp(grid, am, aa) + np.interp(grid, pts_m, pts_d, left=0.0, right=0.0)
+    new_a = audio_align.clamp_tempo(grid, new_a)
+    report["landing_anchors"] = [{"midi_s": round(m, 3), "recording_s": round(r, 3),
+                                  "moved_ms": round(1000 * (r - tmap(m)))} for m, r in pairs]
+    return audio_align.TimeMap(tmap.scale, tmap.offset, (grid, new_a))
 
 
 def _json_default(o):

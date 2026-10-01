@@ -253,6 +253,19 @@ orchestral recording of the movement:
 | size (player + song) | 7,143 bytes | 7,321 bytes |
 | 6502 verification | 1125/1125 | 1116/1116 |
 
+**Checked against the full score.** The MIDI is a piano reduction of
+*Huckleberry Finn* (E♭, 6/8, *Allegro moderato scherzando*), and the
+recording is the same movement. Rehearsal **2** (bar 13) is marked *poco a
+poco cresc. e accel.*; there piccolo, flutes, oboes, English horn and
+clarinets play a rising grace-note figure into an accented chord, one per
+bar for six bars. Those are the six recovered runs. Because each figure
+lands on its bar's accented chord, the converter pins the matching MIDI
+chord (the right hand's 2nd eighth in bars 14–19) to the moment the figure
+lands ("landing anchors": three or more regular figures, chords of three or
+more notes, one-to-one). That made the piano chords and the flute runs
+coincide within 17 ms through the accelerando; before, they drifted up to
+0.4 s apart.
+
 **Missing flute runs.** The piano reduction leaves out the flutes' rising
 figures, about one every 0.9 s from 12.3 s. They are recovered from the
 recording: D6–E♭6–E6, C♯6–F6–F♯6–G6, E♭6–F6–F♯6–G6, A♭6–A6–B♭6, B5–C6–E♭6–E6

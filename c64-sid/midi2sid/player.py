@@ -1,7 +1,7 @@
 """The 6502 music player + song data, assembled for any load address.
 
 Memory map of the generated binary (load address = base):
-  base+0   JMP init      ; call once (A ignored)
+  base+0   JMP init      ; call once (A ignored; in a multi-tune build A = tune 0..n-1)
   base+3   JMP play      ; call once per frame (raster IRQ / VBI)
   base+6   frame_lo      ; 16-bit frame counter, incremented by every play call.
   base+7   frame_hi      ;   Read it from the game to sync events to the music.
@@ -79,8 +79,9 @@ def encode_instruments(insts: list[Instrument]):
 
 
 def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, loop=True,
-                 layout_fn=None):
-    """Assemble player + data. `layout_fn(addr)` returns (song_bytes, stream_starts)."""
+                 layout_fn=None, n_songs=1):
+    """Assemble player + data. `layout_fn(addr)` returns (song_bytes, stream_starts):
+    4 streams (3 voices + global) per tune, tune after tune."""
     a = Asm(base)
     a.equ("ZP", zp)
     a.equ("SID", SID)
@@ -92,6 +93,15 @@ def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, 
 
     # ------------------------------------------------------------- init
     a.label("init")
+    if n_songs > 1:
+        # A = tune number: remember its offset into the stream tables
+        a.op("cmp", "#", n_songs)
+        a.op("bcc", "init_song")
+        a.op("lda", "#", 0)
+        a.label("init_song")
+        a.op("asl", "acc")
+        a.op("asl", "acc")
+        a.op("sta", "abs", "song_ofs")
     a.op("lda", "#", 0)
     a.op("tax")
     a.label("init_clr")
@@ -110,17 +120,32 @@ def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, 
     a.op("sta", "abs", SID + 0x18)
     a.op("ldx", "#", 2)
     a.label("init_v")
-    a.op("lda", "abs", "stream_lo", x=True)
-    a.op("sta", "abs", "ptr_lo", x=True)
-    a.op("lda", "abs", "stream_hi", x=True)
+    if n_songs > 1:
+        a.op("txa")
+        a.op("clc")
+        a.op("adc", "abs", "song_ofs")
+        a.op("tay")
+        a.op("lda", "abs", "stream_lo", y=True)
+        a.op("sta", "abs", "ptr_lo", x=True)
+        a.op("lda", "abs", "stream_hi", y=True)
+    else:
+        a.op("lda", "abs", "stream_lo", x=True)
+        a.op("sta", "abs", "ptr_lo", x=True)
+        a.op("lda", "abs", "stream_hi", x=True)
     a.op("sta", "abs", "ptr_hi", x=True)
     a.op("lda", "#", 1)
     a.op("sta", "abs", "delay", x=True)
     a.op("dex")
     a.op("bpl", "init_v")
-    a.op("lda", "abs", L("stream_lo", 3))
-    a.op("sta", "abs", "gptr_lo")
-    a.op("lda", "abs", L("stream_hi", 3))
+    if n_songs > 1:
+        a.op("ldy", "abs", "song_ofs")
+        a.op("lda", "abs", L("stream_lo", 3), y=True)
+        a.op("sta", "abs", "gptr_lo")
+        a.op("lda", "abs", L("stream_hi", 3), y=True)
+    else:
+        a.op("lda", "abs", L("stream_lo", 3))
+        a.op("sta", "abs", "gptr_lo")
+        a.op("lda", "abs", L("stream_hi", 3))
     a.op("sta", "abs", "gptr_hi")
     a.op("lda", "#", 1)
     a.op("sta", "abs", "gdelay")
@@ -523,8 +548,10 @@ def build_player(base, insts, song_items, clock=PAL_CLOCK, tuning=0.0, zp=0xFB, 
         a.byte(*v)
     a.label("wt_wave"); a.byte(*wt_wave)
     a.label("wt_note"); a.byte(*wt_note)
-    a.label("stream_lo"); a.byte(*[lo(f"stream{i}") for i in range(4)])
-    a.label("stream_hi"); a.byte(*[hi(f"stream{i}") for i in range(4)])
+    a.label("stream_lo"); a.byte(*[lo(f"stream{i}") for i in range(4 * n_songs)])
+    a.label("stream_hi"); a.byte(*[hi(f"stream{i}") for i in range(4 * n_songs)])
+    if n_songs > 1:
+        a.label("song_ofs"); a.byte(0)
     a.label("vars")
     total = 0
     for name, size in VARS:

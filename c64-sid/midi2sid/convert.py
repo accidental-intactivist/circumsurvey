@@ -253,6 +253,9 @@ def convert(midi_path, out_base, opt: Options):
             emulate.write_wav(out_base + ".wav", pcm)
     with open(out_base + ".report.json", "w") as f:
         json.dump(report, f, indent=2, default=_json_default)
+    # compiled parts, for building several tunes into one player (bundle.py)
+    report["_build"] = {"insts": insts, "streams": streams, "tuning": tuning, "clock": clock,
+                        "n_frames": n_frames, "title": title}
     return report
 
 

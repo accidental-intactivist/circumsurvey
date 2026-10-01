@@ -1,7 +1,10 @@
 """Split a piece into sections (e.g. dramatic cues for a game), each its own
 SID tune with its own alignment to the matching stretch of the recording.
 
-  python -m midi2sid.sections song.mid --audio rec.mp3 --bars 21,40,50,54,73,98,101,116 -o out/song
+  python -m midi2sid.sections song.mid --audio rec.mp3 --bars 23,51,55,73,98,103,113 -o out/song
+
+Writes one tune per section (out/song_01_....sid ...) and, unless --no-bundle,
+out/song_all.sid: every section as a tune of ONE player (init with A = tune).
 
 Sections are cut on MIDI bar lines, so every mini-tune starts on a downbeat.
 The whole piece is aligned once (or loaded with --map, then corrected locally
@@ -21,6 +24,7 @@ import tempfile
 import mido
 import numpy as np
 
+from .bundle import bundle
 from .convert import Options, convert, load_map
 from .midi_in import load_midi
 
@@ -87,6 +91,9 @@ def main(argv=None):
     ap.add_argument("-o", "--out", required=True, help="output prefix, e.g. out/huck")
     ap.add_argument("--names", help="comma-separated section names")
     ap.add_argument("--video", default="pal")
+    ap.add_argument("--title", default="", help="title of the multi-tune .sid with every section")
+    ap.add_argument("--no-bundle", action="store_true",
+                    help="don't build the multi-tune {out}_all.sid holding every section")
     args = ap.parse_args(argv)
 
     anchors = json.load(open(args.anchors)) if args.anchors else []
@@ -106,7 +113,7 @@ def main(argv=None):
     audio_len = float(subprocess.run(
         ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", args.audio],
         capture_output=True, text=True).stdout)
-    summary = []
+    summary, builds = [], []
     with tempfile.TemporaryDirectory() as d:
         for i, b0 in enumerate(starts):
             t0 = (b0 - 1) * bar_len
@@ -132,6 +139,7 @@ def main(argv=None):
                                             lead_s=pad0,             # frame 0 = the section's first bar line
                                             end_s=pad0 + (r1 - r0),  # ends on the next section's bar line
                                             title=f"{names[i]} (bars {b0}-{(starts[i + 1] - 1) if i + 1 < len(starts) else 'end'})"))
+            builds.append(rep["_build"])
             summary.append({"section": i + 1, "name": names[i], "bars": [b0, (starts[i + 1] - 1) if i + 1 < len(starts) else None],
                             "recording_s": [round(r0, 2), round(r1, 2)],
                             "sid": os.path.basename(out) + ".sid", "frames": rep["frames"],
@@ -142,6 +150,15 @@ def main(argv=None):
                   f"recording {r0:6.2f}-{r1:6.2f} s -> {out}.sid  ({rep['memory']['total_bytes']} bytes, "
                   f"onset match {rep['alignment']['onset_score_final']}, "
                   f"6502 {'OK' if rep['verification']['ok'] else 'MISMATCH'})")
+    if not args.no_bundle:
+        b = bundle(builds, args.out + "_all", video=args.video,
+                   title=args.title or os.path.basename(args.out))
+        m = b["memory"]
+        print(f"all {len(builds)} sections as tunes 0-{len(builds) - 1} of one player -> {args.out}_all.sid  "
+              f"({m['total_bytes']} bytes, {m['load']}-{m['end']}; separately "
+              f"{sum(s['bytes'] for s in summary)} bytes; 6502 {'OK' if b['verified'] else 'MISMATCH'})")
+        for s in summary:
+            s["tune_in_all_sid"] = s["section"] - 1
     with open(args.out + "_sections.json", "w") as f:
         json.dump(summary, f, indent=2)
 

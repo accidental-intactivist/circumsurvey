@@ -178,3 +178,41 @@ class TestRecoverRuns(unittest.TestCase):
             self.assertGreaterEqual(len(figures), 2, found)
             # the plain render has no runs: nothing must be invented
             self.assertEqual(recover.recover_runs(base, 0.0, 0, mapped), [])
+
+
+class TestBundle(unittest.TestCase):
+    def test_two_tunes_one_player(self):
+        from midi2sid.bundle import bundle
+        with tempfile.TemporaryDirectory() as d:
+            mid = os.path.join(d, "t.mid")
+            make_midi(mid)
+            # tune 1: the test song; tune 2: the same song a fifth up, faster
+            mf = mido.MidiFile(mid)
+            for tr in mf.tracks:
+                for m in tr:
+                    if m.type in ("note_on", "note_off") and m.channel != 9:
+                        m.note += 7
+                    if m.type == "set_tempo":
+                        m.tempo = 400000
+            mid2 = os.path.join(d, "t2.mid")
+            mf.save(mid2)
+            b1 = convert(mid, os.path.join(d, "a"), Options(render_wav=False))["_build"]
+            b2 = convert(mid2, os.path.join(d, "b"), Options(render_wav=False))["_build"]
+            rep = bundle([b1, b2], os.path.join(d, "ab"), render_wav=False)
+            self.assertTrue(rep["verified"], rep["verification"])
+            sid = open(os.path.join(d, "ab.sid"), "rb").read()
+            self.assertEqual(int.from_bytes(sid[0x0E:0x10], "big"), 2)       # 2 subtunes
+            # A selects the tune: tune 1 (index 1) plays the transposed melody
+            prg = open(os.path.join(d, "ab.prg"), "rb").read()[2:]
+            ft = np.array(player.freq_table(player.PAL_CLOCK))
+            lead = []
+            for song in (0, 1):
+                _, fw, _ = emulate.run(prg, 0x1000, 0x1000, 0x1003, 60, song=song)
+                tr = emulate.register_trace(fw)
+                f = tr[:, 7] | tr[:, 8] << 8
+                g = (tr[:, 11] & 1) == 1
+                lead.append(np.median(np.abs(ft[None, :] - f[g][:, None]).argmin(axis=1)))
+            self.assertAlmostEqual(lead[1] - lead[0], 7, delta=1)
+            # sharing the player makes the bundle smaller than the two files
+            single = sum(os.path.getsize(os.path.join(d, x + ".prg")) for x in "ab")
+            self.assertLess(rep["memory"]["total_bytes"], single - 800)

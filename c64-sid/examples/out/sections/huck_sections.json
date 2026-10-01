@@ -14,7 +14,8 @@
     "frames": 1058,
     "bytes": 2698,
     "onset_match": 0.671,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 0
   },
   {
     "section": 2,
@@ -31,7 +32,8 @@
     "frames": 1465,
     "bytes": 2957,
     "onset_match": 1.274,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 1
   },
   {
     "section": 3,
@@ -48,7 +50,8 @@
     "frames": 356,
     "bytes": 1598,
     "onset_match": 1.347,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 2
   },
   {
     "section": 4,
@@ -65,7 +68,8 @@
     "frames": 1562,
     "bytes": 2129,
     "onset_match": 0.054,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 3
   },
   {
     "section": 5,
@@ -82,7 +86,8 @@
     "frames": 1181,
     "bytes": 2548,
     "onset_match": 1.021,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 4
   },
   {
     "section": 6,
@@ -99,7 +104,8 @@
     "frames": 347,
     "bytes": 1605,
     "onset_match": 0.558,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 5
   },
   {
     "section": 7,
@@ -116,7 +122,8 @@
     "frames": 489,
     "bytes": 2057,
     "onset_match": 0.815,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 6
   },
   {
     "section": 8,
@@ -133,6 +140,7 @@
     "frames": 855,
     "bytes": 1694,
     "onset_match": 1.796,
-    "verified": true
+    "verified": true,
+    "tune_in_all_sid": 7
   }
 ]

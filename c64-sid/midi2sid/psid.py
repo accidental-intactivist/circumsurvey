@@ -9,11 +9,11 @@ def _str32(s):
 
 
 def write_psid(path, binary, load_addr, init_addr, play_addr, name="", author="", released="",
-               video="pal", model="6581"):
+               video="pal", model="6581", songs=1, start_song=1):
     clock = {"pal": 1, "ntsc": 2, "any": 3}[video]
     sid = {"6581": 1, "8580": 2, "any": 3}[model]
     flags = (clock << 2) | (sid << 4)
-    header = b"PSID" + struct.pack(">HHHHHHHI", 2, 0x7C, 0, init_addr, play_addr, 1, 1, 0)
+    header = b"PSID" + struct.pack(">HHHHHHHI", 2, 0x7C, 0, init_addr, play_addr, songs, start_song, 0)
     header += _str32(name) + _str32(author) + _str32(released)
     header += struct.pack(">HBBBB", flags, 0, 0, 0, 0)
     assert len(header) == 0x7C

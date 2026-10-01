@@ -176,7 +176,9 @@ python -m midi2sid.sections examples/piano_theme.mid -a recording.mp3 \
 ```
 
 This splits a piece at bar lines into separate tunes (`out/huck_01_….sid`
-… `_08_….sid`, plus `out/huck_sections.json`):
+… `_08_….sid`, plus `out/huck_sections.json`). It also writes
+**`out/huck_all.sid`, one player holding every section as tunes 0–7**
+(see *Several tunes in one player* below):
 * **Every section plays its slice of one whole-piece time map**, so sections
   agree with the full-length tune and join seamlessly.
 * **Each tune starts exactly on its first bar line** and lasts exactly
@@ -248,6 +250,37 @@ zp    = $FB/$FC  ; temp pointer during play (--zp to move)
 irq     inc $d019
         jsr $1003            ; play one frame
         jmp $ea31
+```
+
+### Several tunes in one player
+
+A game normally loads **one** player with all its music, so the ~1 KB of
+player code, the frequency table and the instruments are shared. `init`
+then takes the tune number in A:
+
+```asm
+        lda #3               ; tune 3 (0-based; a .sid player shows it as subtune 4)
+        jsr $1000            ; init: stops the current tune, starts tune 3
+```
+
+Calling `init` again with another number switches tunes at once, e.g. on the
+frame where a section ends. Play is still `jsr $1003` once per frame.
+
+`midi2sid.sections` builds such a bundle of a piece's sections
+(`--no-bundle` to skip it). For the example, all 8 sections take 7,807 bytes
+together, against 17,286 bytes as 8 separate files. That's about the size of
+the full-length tune (7,401 bytes), because the tunes are compressed together
+and share one player. Each tune's SID register writes are identical, frame
+for frame, to its separate file's.
+
+From Python, any tunes converted with the same tuning and video standard can
+be bundled, e.g. every cue of the game in one build:
+
+```python
+from midi2sid.convert import Options, convert
+from midi2sid.bundle import bundle
+tunes = [convert(m, "out/" + n, Options(...))["_build"] for m, n in cues]
+bundle(tunes, "out/game_music", title="My Game")
 ```
 
 To sync gameplay to the music, compare the frame counter at `$1006/$1007`

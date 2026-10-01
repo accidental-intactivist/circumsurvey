@@ -48,8 +48,9 @@ class C64Sound:
                 raise RuntimeError("6502 routine did not return (runaway)")
         return self.mpu.processorCycles - self._t0
 
-    def init(self):
+    def init(self, song=0):
         self.writes = []
+        self.mpu.a = song
         self._call(0x0340, 0x0343)
         return self.writes
 
@@ -60,10 +61,10 @@ class C64Sound:
         return self.writes, cyc
 
 
-def run(binary, load_addr, init_addr, play_addr, n_frames, video="pal"):
+def run(binary, load_addr, init_addr, play_addr, n_frames, video="pal", song=0):
     """Returns (init_writes, [frame_writes], cycles_per_call list)."""
     emu = C64Sound(binary, load_addr, init_addr, play_addr, video)
-    iw = emu.init()
+    iw = emu.init(song)
     frames, cycles = [], []
     for _ in range(n_frames):
         w, c = emu.play_frame()

@@ -419,5 +419,33 @@
   "eighth": 3,
   "len_eighths": 1.5,
   "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bar": 52,
+  "eighth": 6,
+  "delete": true,
+  "why": "horn soli: the recording has no attack between the beat-4 chord (52.06 s) and the bar-53 stab (52.48 s); the reduction's eighth on beat 6 made a hurried pair before the arrival"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 52,
+  "eighth": 6,
+  "delete": true,
+  "why": "see above"
+ },
+ {
+  "part": "Piano",
+  "bar": 52,
+  "eighth": 4,
+  "len_eighths": 3,
+  "why": "the beat-4 chord held to the next stab"
+ },
+ {
+  "part": "Piano #2",
+  "bar": 52,
+  "eighth": 4,
+  "len_eighths": 3,
+  "why": "see above"
  }
 ]

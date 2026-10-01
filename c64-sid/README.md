@@ -195,7 +195,7 @@ repeats are less exact (the tempo breathes), so it compresses less.
 python -m midi2sid.sections examples/piano_theme.mid -a recording.mp3 \
     --map examples/huckleberry_finn_piano.map.json \
     --anchors examples/huckleberry_finn_piano.anchors.json \
-    --bars 25,51,55,73,98,103,113 -o out/huck
+    --bars 25,51,55,73,98,103,114 -o out/huck
 ```
 
 This splits a piece at bar lines into separate tunes (`out/huck_01_….sid`
@@ -212,14 +212,14 @@ The example's sections (recording times):
 
 | # | Bars | Recording | Passage |
 |---|------|-----------|---------|
-| 1 | 1–24 | 0:00–0:23.4 | opening, flute runs, *poco a poco accel.*, descending run, fermata |
+| 1 | 1–24 | 0:00.2–0:23.4 | opening, flute runs, *poco a poco accel.*, descending run, fermata |
 | 2 | 25–50 | 0:23.4–0:50.8 | rehearsal 4 tutti, trumpet soli, fermata swell, rehearsal 5 |
 | 3 | 51–54 | 0:50.8–0:57.9 | horn soli and held horn chord |
 | 4 | 55–72 | 0:57.9–1:29.1 | rehearsal 6, *pp*, ritard. to the held chord |
 | 5 | 73–97 | 1:29.1–1:52.6 | rehearsal 7, *Tempo I* |
 | 6 | 98–102 | 1:52.6–1:59.6 | held chord, rising arpeggio |
-| 7 | 103–112 | 1:59.6–2:09.3 | tutti |
-| 8 | 113–end | 2:09.3–2:26.4 | coda, closing chords |
+| 7 | 103–113 | 1:59.6–2:10.7 | tutti, to its last chord |
+| 8 | 114–end | 2:10.7–2:26.4 | coda: rising bass line, closing chords |
 
 **Score anchors** (`--anchors`) pin moments you know from the score, such as
 a fermata or a *Tempo I*, to times in the recording:
@@ -290,8 +290,8 @@ Calling `init` again with another number switches tunes at once, e.g. on the
 frame where a section ends. Play is still `jsr $1003` once per frame.
 
 `midi2sid.sections` builds such a bundle of a piece's sections
-(`--no-bundle` to skip it). For the example, all 8 sections take 7,378 bytes
-together, against 17,057 bytes as 8 separate files. That's about the size of
+(`--no-bundle` to skip it). For the example, all 8 sections take 7,342 bytes
+together, against 17,001 bytes as 8 separate files. That's about the size of
 the full-length tune (7,020 bytes), because the tunes are compressed together
 and share one player. Each tune's SID register writes are identical, frame
 for frame, to its separate file's.

@@ -1,5 +1,23 @@
 [
  {
+  "bar": 1,
+  "beat": 1,
+  "recording_s": 0.21,
+  "note": "first chord + bassoon solo (score p.16)"
+ },
+ {
+  "bar": 1,
+  "beat": 4,
+  "recording_s": 0.75,
+  "note": "second chord of bar 1"
+ },
+ {
+  "bar": 2,
+  "beat": 1,
+  "recording_s": 1.23,
+  "note": "bar 2"
+ },
+ {
   "bar": 13,
   "beat": 1,
   "recording_s": 11.4,
@@ -186,6 +204,48 @@
   "note": "flute solo pickup"
  },
  {
+  "bar": 74,
+  "beat": 1,
+  "recording_s": 89.96,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
+  "bar": 75,
+  "beat": 1,
+  "recording_s": 90.9,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
+  "bar": 76,
+  "beat": 1,
+  "recording_s": 91.85,
+  "note": "tutti chord on eighth 3 at 92.1 s (Tempo I)"
+ },
+ {
+  "bar": 77,
+  "beat": 1,
+  "recording_s": 92.78,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
+  "bar": 78,
+  "beat": 1,
+  "recording_s": 93.72,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
+  "bar": 79,
+  "beat": 1,
+  "recording_s": 94.7,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
+  "bar": 80,
+  "beat": 1,
+  "recording_s": 95.68,
+  "note": "Tempo I, steady (~0.93 s/bar)"
+ },
+ {
   "bar": 98,
   "beat": 1,
   "recording_s": 112.64,
@@ -220,6 +280,18 @@
   "beat": 1,
   "recording_s": 119.56,
   "note": "tutti returns"
+ },
+ {
+  "bar": 112,
+  "beat": 1,
+  "recording_s": 127.65,
+  "note": "chords in pairs on eighths 2-3 and 5-6 (127.91/128.07, 128.36/128.53)"
+ },
+ {
+  "bar": 113,
+  "beat": 1,
+  "recording_s": 128.5,
+  "note": "last tutti chord, then the orchestra's tail"
  },
  {
   "bar": 117,

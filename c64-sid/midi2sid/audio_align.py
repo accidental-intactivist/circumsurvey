@@ -571,7 +571,10 @@ def pin_map(am, aa, pins, fade_s=1.5, link_s=None):
             xs += [pm[k] + fade_s, pm[k + 1] - fade_s]; ds += [0.0, 0.0]
     xs.append(pm[-1] + fade_s); ds.append(0.0)
     xs, ds = np.array(xs), np.array(ds)
-    grid = np.union1d(am, xs)
+    # fade points outside the map would sit on its flat extrapolation and,
+    # through the monotonicity clamp below, override a pin near either end
+    grid = np.union1d(am, xs[(xs >= am[0]) & (xs <= am[-1])])
+    grid = np.union1d(grid, pm)
     grid = grid[np.concatenate([[True], np.diff(grid) > 1e-3])]
     new = np.interp(grid, am, aa) + np.interp(grid, xs, ds, left=0.0, right=0.0)
     for m, r in pins:                                # exact at the pins

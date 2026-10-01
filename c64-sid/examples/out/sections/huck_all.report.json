@@ -3,8 +3,8 @@
     {
       "tune": 0,
       "title": "section01 (bars 1-24)",
-      "frames": 1149,
-      "seconds": 22.98
+      "frames": 1161,
+      "seconds": 23.22
     },
     {
       "tune": 1,
@@ -38,24 +38,24 @@
     },
     {
       "tune": 6,
-      "title": "section07 (bars 103-112)",
-      "frames": 489,
-      "seconds": 9.78
+      "title": "section07 (bars 103-113)",
+      "frames": 557,
+      "seconds": 11.14
     },
     {
       "tune": 7,
-      "title": "section08 (bars 113-end)",
-      "frames": 855,
-      "seconds": 17.1
+      "title": "section08 (bars 114-end)",
+      "frames": 788,
+      "seconds": 15.76
     }
   ],
   "memory": {
     "load": "$1000",
-    "end": "$2CD1",
-    "total_bytes": 7378,
+    "end": "$2CAD",
+    "total_bytes": 7342,
     "player_bytes": 1059,
-    "instruments": 10,
-    "song_bytes": 5819,
+    "instruments": 11,
+    "song_bytes": 5771,
     "init": "$1000 (A = tune 0..7)",
     "play": "$1003",
     "frame_counter": "$1006",
@@ -64,7 +64,7 @@
   "verification": [
     {
       "tune": 0,
-      "attacks_expected": 217,
+      "attacks_expected": 216,
       "attack_timing_mismatches": 0,
       "ok": true
     },
@@ -88,7 +88,7 @@
     },
     {
       "tune": 4,
-      "attacks_expected": 167,
+      "attacks_expected": 164,
       "attack_timing_mismatches": 0,
       "ok": true
     },
@@ -100,17 +100,17 @@
     },
     {
       "tune": 6,
-      "attacks_expected": 114,
+      "attacks_expected": 117,
       "attack_timing_mismatches": 0,
       "ok": true
     },
     {
       "tune": 7,
-      "attacks_expected": 30,
+      "attacks_expected": 27,
       "attack_timing_mismatches": 0,
       "ok": true
     }
   ],
-  "cpu_max_cycles_per_frame": 2120,
+  "cpu_max_cycles_per_frame": 2163,
   "verified": true
 }

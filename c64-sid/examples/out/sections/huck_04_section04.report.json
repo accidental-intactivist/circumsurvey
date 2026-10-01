@@ -1,6 +1,6 @@
 {
-  "input": "../../../../tmp/tmpyjaj5f5_/s3.mid",
-  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec11/huck_04_section04",
+  "input": "../../../../tmp/tmp4fu_q8mp/s3.mid",
+  "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec12/huck_04_section04",
   "video": "pal",
   "fps": 50.1245,
   "parts": [
@@ -112,7 +112,6 @@
       21.188,
       21.375,
       21.562,
-      21.625,
       21.75,
       21.938,
       22.125,
@@ -204,15 +203,14 @@
       29.259,
       31.47,
       31.78,
-      31.87,
-      32.051,
-      32.142,
-      32.232,
-      32.262,
-      32.322,
-      32.411,
-      32.501,
-      32.561
+      31.925,
+      32.215,
+      32.36,
+      32.517,
+      32.674,
+      32.83,
+      32.986,
+      33.091
     ]
   },
   "transpose": 0,

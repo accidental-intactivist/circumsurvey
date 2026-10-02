@@ -1,5 +1,5 @@
 {
-  "input": "../../../../tmp/tmpo09uesyd/s2.mid",
+  "input": "../../../../tmp/tmptkx4l794/s2.mid",
   "output": "../../../../tmp/claude-0/-home-user-circumsurvey/80fff5b2-ffab-5f26-84ac-0801f017f387/scratchpad/sec18/huck_03_section03",
   "video": "pal",
   "fps": 50.1245,
@@ -21,7 +21,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.895,
+    "onset_score_final": 0.815,
     "anchors_midi_s": [
       0.0,
       1.125,

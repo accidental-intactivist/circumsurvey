@@ -604,8 +604,9 @@
    "Eb4",
    "B3"
   ],
-  "len_eighths": 1.0,
-  "velocity": 100
+  "len_eighths": 2.0,
+  "velocity": 100,
+  "why": "the \"ba\" before the held note, a quarter (composer: a touch longer than the record)"
  },
  {
   "part": "Piano #2",
@@ -614,19 +615,21 @@
   "add": [
    "F#3"
   ],
-  "len_eighths": 1.0,
-  "velocity": 100
+  "len_eighths": 2.0,
+  "velocity": 100,
+  "why": "the \"ba\" before the held note, a quarter (composer: a touch longer than the record)"
  },
  {
   "part": "Piano",
   "bar": 53,
-  "eighth": 2,
+  "eighth": 3,
   "add": [
    "F#4",
    "Eb4",
    "B3"
   ],
-  "len_eighths": 10.7,
-  "velocity": 100
+  "len_eighths": 9.7,
+  "velocity": 100,
+  "why": "\"baaaa\": one note from beat 3 through the fermata chord (no re-attack)"
  }
 ]

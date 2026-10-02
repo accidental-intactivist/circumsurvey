@@ -28,7 +28,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.834,
+    "onset_score_final": 0.833,
     "anchors_midi_s": [
       0.0,
       0.562,

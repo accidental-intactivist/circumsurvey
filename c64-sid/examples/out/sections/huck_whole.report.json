@@ -8,14 +8,14 @@
       "index": 0,
       "name": "Piano",
       "program": 0,
-      "notes": 853,
+      "notes": 854,
       "drums": false
     },
     {
       "index": 1,
       "name": "Piano #2",
       "program": 0,
-      "notes": 556,
+      "notes": 549,
       "drums": false
     },
     {
@@ -28,7 +28,7 @@
   ],
   "alignment": {
     "method": "fixed (from whole-piece alignment)",
-    "onset_score_final": 0.829,
+    "onset_score_final": 0.834,
     "anchors_midi_s": [
       0.0,
       0.562,
@@ -524,18 +524,18 @@
   "anticipate_s": 0.04,
   "rolled_chord_notes_joined": 22,
   "slurred_steps": 140,
-  "inner_bass_part_notes": 238,
-  "inner_melody_part_notes": 482,
+  "inner_bass_part_notes": 236,
+  "inner_melody_part_notes": 483,
   "unisons_merged": 23,
   "soft_entries": 156,
   "short_resumes_dropped": 67,
   "arrangement": {
-    "midi_notes": 1447,
-    "unique_onsets": 1447,
-    "onsets_played": 1266,
-    "onset_coverage_pct": 87.5,
-    "arpeggio_seconds": 79.34,
-    "pitch_onsets_heard_pct": 87.5,
+    "midi_notes": 1441,
+    "unique_onsets": 1441,
+    "onsets_played": 1260,
+    "onset_coverage_pct": 87.4,
+    "arpeggio_seconds": 79.56,
+    "pitch_onsets_heard_pct": 87.4,
     "note_time_heard_pct": 84.0
   },
   "frames": 7212,
@@ -543,11 +543,11 @@
   "dynamics": "recording",
   "memory": {
     "load": "$1000",
-    "end": "$2A2E",
-    "total_bytes": 6703,
+    "end": "$2A0D",
+    "total_bytes": 6670,
     "player_bytes": 1039,
-    "song_bytes": 5263,
-    "song_bytes_uncompressed": 5520,
+    "song_bytes": 5230,
+    "song_bytes_uncompressed": 5487,
     "init": "$1000",
     "play": "$1003",
     "frame_counter": "$1006",

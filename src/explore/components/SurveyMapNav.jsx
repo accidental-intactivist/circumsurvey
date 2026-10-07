@@ -3,19 +3,37 @@
 // Universal → Pathways (with Observer sub-roles) → Synthesis
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { C, FONT } from "../styles/tokens";
-import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, OBSERVER_SUBROLES } from "../lib/pathways";
+import { C, FONT, PATH_COLORS } from "../styles/tokens";
+import { PATHWAYS, PATHWAY_IDS, SURVEY_PHASES, OBSERVER_SUBROLES, CIRCUMCISED_SUBROLES, TRANS_SUBROLES } from "../lib/pathways";
+import IconifyEmoji from "./IconifyEmoji";
+import * as Icons from "./Icons";
 
 // A single nav row
-function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, indent = 0, smaller = false, rare = false, waiting = false, multi = false }) {
+function NavRow({ icon, emoji, label, desc, count, selected, onClick, color = C.gold, indent = 0, smaller = false, rare = false, waiting = false, multi = false }) {
   const fontSize = smaller ? "0.72rem" : "0.78rem";
   const sublabelSize = smaller ? "0.64rem" : "0.7rem";
   return (
-    <div
-      onClick={onClick}
-      style={{
-        padding: smaller ? "0.32rem 0.5rem" : "0.52rem 0.65rem",
-        paddingLeft: `${0.65 + indent * 0.8}rem`,
+    <div style={{ position: "relative" }}>
+      {/* Subway node dot */}
+      <div style={{
+        position: "absolute",
+        left: "-0.65rem",
+        top: "1.1rem",
+        transform: "translateY(-50%)",
+        width: selected ? 8 : 6,
+        height: selected ? 8 : 6,
+        borderRadius: "50%",
+        background: selected ? color : `${color}80`,
+        border: `2px solid ${C.bg}`,
+        zIndex: 2,
+        transition: "all 0.2s",
+      }} />
+
+      <div
+        onClick={onClick}
+        style={{
+          padding: smaller ? "0.32rem 0.5rem" : "0.52rem 0.65rem",
+          paddingLeft: `${0.65 + indent * 0.8}rem`,
         background: selected ? `${color}14` : "transparent",
         border: `1px solid ${selected ? `${color}50` : "transparent"}`,
         borderRadius: 6,
@@ -23,22 +41,29 @@ function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, 
         transition: "background 0.15s",
         position: "relative",
       }}
-      onMouseEnter={(e) => { if (onClick && !selected) e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
-      onMouseLeave={(e) => { if (onClick && !selected) e.currentTarget.style.background = "transparent"; }}
-    >
-      {selected && (
-        <div style={{
-          position: "absolute",
-          left: 0,
-          top: "20%",
-          bottom: "20%",
-          width: 2,
-          background: color,
-          borderRadius: 2,
-        }} />
-      )}
+        onMouseEnter={(e) => { if (onClick && !selected) e.currentTarget.style.background = "rgba(255,255,255,0.025)"; }}
+        onMouseLeave={(e) => { if (onClick && !selected) e.currentTarget.style.background = "transparent"; }}
+      >
+        {selected && (
+          <div style={{
+            position: "absolute",
+            left: 0,
+            top: "20%",
+            bottom: "20%",
+            width: 2,
+            background: color,
+            borderRadius: 2,
+          }} />
+        )}
       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-        {emoji && <span style={{ fontSize: smaller ? "0.8rem" : "0.95rem" }}>{emoji}</span>}
+        {icon && Icons[icon] ? (
+          (() => {
+            const IconComp = Icons[icon];
+            return <IconComp size={smaller ? 14 : 16} color={selected ? color : C.muted} />;
+          })()
+        ) : (
+          emoji && <IconifyEmoji emoji={emoji} size={smaller ? "0.8rem" : "0.95rem"} />
+        )}
         <span style={{
           fontFamily: smaller ? FONT.body : FONT.condensed,
           fontWeight: smaller ? 500 : 700,
@@ -94,7 +119,8 @@ function NavRow({ emoji, label, desc, count, selected, onClick, color = C.gold, 
           marginTop: "0.1rem",
           lineHeight: 1.35,
         }}>{desc}</div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -114,7 +140,7 @@ function PhaseHeader({ phase }) {
       alignItems: "center",
       gap: "0.4rem",
     }}>
-      <span>{phase.emoji}</span>
+      <IconifyEmoji emoji={phase.emoji} />
       <span>{phase.label}</span>
     </div>
   );
@@ -138,6 +164,7 @@ function PhaseDivider({ label }) {
   );
 }
 
+
 export default function SurveyMapNav({
   selectedPathway,
   onSelectPathway,
@@ -150,90 +177,211 @@ export default function SurveyMapNav({
   const synthesisPhase = SURVEY_PHASES.find(p => p.id === "synthesis");
 
   return (
-    <nav style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-      {/* Universal phase */}
-      <PhaseHeader phase={universalPhase} />
-      {universalPhase.sections.map((s) => (
-        <NavRow
-          key={s.name}
-          label={s.name}
-          desc={s.desc}
-          smaller
-          indent={1}
-          selected={selectedSection === s.name}
-          onClick={() => onSelectSection(selectedSection === s.name ? null : s.name)}
-          color={C.gold}
-        />
-      ))}
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* Section label with info tooltip explaining question filtering */}
+      <div style={{
+        fontFamily: FONT.condensed,
+        fontSize: "0.65rem",
+        fontWeight: 700,
+        letterSpacing: "0.18em",
+        textTransform: "uppercase",
+        color: C.gold,
+        marginBottom: "0.6rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingRight: "0.4rem",
+      }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+          <span>★</span> Map Navigation
+        </span>
+        <span 
+          title="Question Filter: Select a phase, section, or pathway branch to narrow down which questions are shown in the list."
+          style={{
+            cursor: "help",
+            color: C.muted,
+            fontSize: "0.7rem",
+            background: "rgba(255,255,255,0.06)",
+            border: `1px solid ${C.ghost}`,
+            width: 15,
+            height: 15,
+            borderRadius: "50%",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: FONT.mono,
+            fontWeight: "normal",
+            textTransform: "none",
+            letterSpacing: "normal",
+          }}
+        >
+          ?
+        </span>
+      </div>
 
-      <PhaseDivider label="↓ Pathway Routing ↓" />
+      <nav style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: "0.2rem", 
+        position: "relative",
+        paddingLeft: "0.9rem" 
+      }}>
 
-      {/* Pathway branches */}
-      {PATHWAY_IDS.map((id) => {
-        const p = PATHWAYS[id];
-        const isSelected = selectedPathway === id;
-        return (
-          <div key={id}>
-            <NavRow
-              emoji={p.emoji}
-              label={p.label}
-              desc={p.desc}
-              count={p.n}
-              selected={isSelected}
-              color={p.color}
-              waiting={p.waiting}
-              onClick={() => onSelectPathway(isSelected ? null : id)}
-            />
+        {/* The main trunk line (Subway map style) */}
+        <div style={{
+          position: "absolute",
+          left: "0.25rem",
+          top: "1.2rem",
+          bottom: "1rem",
+          width: 2,
+          background: `linear-gradient(to bottom, ${C.gold}40 0%, ${PATH_COLORS.observer}60 40%, ${PATH_COLORS.intact}60 60%, ${C.gold}40 100%)`,
+          zIndex: 1,
+          borderRadius: 2,
+        }} />
 
-            {/* Observer sub-pathways expand inline when Observer is selected */}
-            {id === "observer" && isSelected && (
-              <div style={{
-                marginLeft: "0.6rem",
-                marginTop: "0.1rem",
-                paddingLeft: "0.5rem",
-                borderLeft: `1px dashed ${p.color}40`,
-              }}>
-                {OBSERVER_SUBROLES.map((role) => {
-                  const isRoleSelected = selectedObserverRole === role.id;
-                  return (
-                    <NavRow
-                      key={role.id}
-                      emoji={role.emoji}
-                      label={role.label}
-                      desc={null}
-                      count={role.n}
-                      smaller
-                      indent={0}
-                      rare={role.rare}
-                      multi={role.multi}
-                      selected={isRoleSelected}
-                      color={p.color}
-                      onClick={() => onSelectObserverRole(isRoleSelected ? null : role.id)}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        );
-      })}
+        {/* Universal phase */}
+        <PhaseHeader phase={universalPhase} />
+        {universalPhase.sections.map((s) => (
+          <NavRow
+            key={s.name}
+            label={s.name}
+            desc={s.desc}
+            smaller
+            indent={1}
+            selected={selectedSection === s.name}
+            onClick={() => onSelectSection(selectedSection === s.name ? null : s.name)}
+            color={C.gold}
+          />
+        ))}
 
-      <PhaseDivider label="↓ Reconvenes ↓" />
+        <PhaseDivider label="↓ Pathway Routing ↓" />
 
-      {/* Synthesis phase */}
-      <PhaseHeader phase={synthesisPhase} />
-      {synthesisPhase.sections.map((s) => (
-        <NavRow
-          key={s.name}
-          label={s.name}
-          desc={s.desc}
-          smaller
-          indent={1}
-          selected={selectedSection === s.name}
-          onClick={() => onSelectSection(selectedSection === s.name ? null : s.name)}
-          color={C.gold}
-        />
-      ))}
-    </nav>
+        {/* Pathway branches */}
+        {PATHWAY_IDS.map((id) => {
+          const p = PATHWAYS[id];
+          const isSelected = Array.isArray(selectedPathway) ? selectedPathway.includes(id) : selectedPathway === id;
+          return (
+            <div key={id}>
+              <NavRow
+                emoji={p.emoji}
+                label={p.label}
+                desc={p.desc}
+                count={p.n}
+                selected={isSelected}
+                color={p.color}
+                waiting={p.waiting}
+                onClick={() => onSelectPathway(isSelected ? null : id)}
+              />
+
+              {/* Circumcised sub-pathways expand inline when active */}
+              {id === "circumcised" && isSelected && (
+                <div style={{
+                  marginLeft: "0.6rem",
+                  marginTop: "0.1rem",
+                  paddingLeft: "0.5rem",
+                  borderLeft: `1px dashed ${p.color}40`,
+                }}>
+                  {CIRCUMCISED_SUBROLES.map((role) => {
+                    const isRoleSelected = selectedObserverRole === role.id;
+                    return (
+                      <NavRow
+                        key={role.id}
+                        icon={role.icon}
+                        emoji={role.emoji}
+                        label={role.label}
+                        desc={null}
+                        count={role.n}
+                        smaller
+                        indent={0}
+                        selected={isRoleSelected}
+                        color={p.color}
+                        onClick={() => onSelectObserverRole(isRoleSelected ? null : role.id)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Observer sub-pathways expand inline when active */}
+              {id === "observer" && isSelected && (
+                <div style={{
+                  marginLeft: "0.6rem",
+                  marginTop: "0.1rem",
+                  paddingLeft: "0.5rem",
+                  borderLeft: `1px dashed ${p.color}40`,
+                }}>
+                  {OBSERVER_SUBROLES.map((role) => {
+                    const isRoleSelected = selectedObserverRole === role.id;
+                    return (
+                      <NavRow
+                        key={role.id}
+                        icon={role.icon}
+                        emoji={role.emoji}
+                        label={role.label}
+                        desc={null}
+                        count={role.n}
+                        smaller
+                        indent={0}
+                        rare={role.rare}
+                        multi={role.multi}
+                        selected={isRoleSelected}
+                        color={p.color}
+                        onClick={() => onSelectObserverRole(isRoleSelected ? null : role.id)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Transgender sub-pathways expand inline when active */}
+              {id === "trans" && isSelected && (
+                <div style={{
+                  marginLeft: "0.6rem",
+                  marginTop: "0.1rem",
+                  paddingLeft: "0.5rem",
+                  borderLeft: `1px dashed ${p.color}40`,
+                }}>
+                  {TRANS_SUBROLES.map((role) => {
+                    const isRoleSelected = selectedObserverRole === role.id;
+                    return (
+                      <NavRow
+                        key={role.id}
+                        icon={role.icon}
+                        emoji={role.emoji}
+                        label={role.label}
+                        desc={null}
+                        count={role.n}
+                        smaller
+                        indent={0}
+                        selected={isRoleSelected}
+                        color={p.color}
+                        onClick={() => onSelectObserverRole(isRoleSelected ? null : role.id)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        <PhaseDivider label="↓ Reconvenes ↓" />
+
+        {/* Synthesis phase */}
+        <PhaseHeader phase={synthesisPhase} />
+        {synthesisPhase.sections.map((s) => (
+          <NavRow
+            key={s.name}
+            label={s.name}
+            desc={s.desc}
+            smaller
+            indent={1}
+            selected={selectedSection === s.name}
+            onClick={() => onSelectSection(selectedSection === s.name ? null : s.name)}
+            color={C.gold}
+          />
+        ))}
+      </nav>
+    </div>
   );
 }

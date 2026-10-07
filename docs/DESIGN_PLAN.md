@@ -460,7 +460,7 @@ The findings site never goes "all in" on advocacy framing. That's what Substack 
 ### Phase A: Summit-Ready (Saturday)
 - [x] Curated Findings view with 7 themed sections
 - [x] Question cards with pie charts and pathway toggles
-- [x] Born-circumcised combined default
+- [x] Circumcised as infants combined default
 - [x] Mirror pairs (3-4 key pairs with data)
 - [x] Observer Pathway section
 - [x] Curated quote galleries on key questions

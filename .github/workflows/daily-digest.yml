@@ -1,0 +1,36 @@
+name: Generate Daily Digest
+
+on:
+  schedule:
+    # Runs at 08:00 UTC every day
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ingest Latest News (batched)
+        run: |
+          echo "Pulling and analyzing latest headlines..."
+          for i in 1 2 3 4 5; do
+            OUT=$(curl -s --max-time 240 "https://advocacy-shell.pages.dev/api/cron_news_ingest?max=4" || echo '{}')
+            echo "Pass $i: $(echo "$OUT" | jq -c '{stats, remaining}' 2>/dev/null || echo "$OUT" | head -c 500)"
+            REMAINING=$(echo "$OUT" | jq -r '.remaining // 0' 2>/dev/null || echo 0)
+            [ "$REMAINING" = "0" ] && break
+          done
+
+      - name: Trigger Daily Digest API
+        run: |
+          echo "Triggering live digest generation..."
+          RESPONSE=$(curl -s -w "%{http_code}" -X GET "https://advocacy-shell.pages.dev/api/cron_daily_digest")
+          HTTP_STATUS=${RESPONSE: -3}
+          BODY=${RESPONSE:0:${#RESPONSE}-3}
+          
+          echo "Status: $HTTP_STATUS"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Daily digest generation failed!"
+            exit 1
+          fi

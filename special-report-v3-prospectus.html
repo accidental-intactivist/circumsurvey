@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Inquiry — A Prospectus of Findings · Prototype v3.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,500;1,600&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#faf8f4; --paper2:#fffdf8; --edge:#e0dcd4;
+  --teal:#1a5c3a; --teal-lt:#2e7d54; --gold:#d4a030; --red:#cc2a2a;
+  --ink:#2a2a2a; --ink2:#5a5a5a; --ink3:#8d887e;
+  /* print-ink pathway colors (for paper) */
+  --ink-int:#2f6ea8; --ink-circ:#c04038; --ink-rest:#c2932a; --ink-obs:#8a8a86;
+  /* luminous pathway colors (dark spread only) */
+  --lum-int:#5b93c7; --lum-circ:#d94f4f; --lum-rest:#e8c868; --lum-obs:#a0a0a0;
+  --night:#0d1522;
+  --f-disp:'Playfair Display',serif; --f-body:'Barlow',sans-serif;
+  --f-cond:'Barlow Condensed',sans-serif; --f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);
+  font-size:1.02rem;line-height:1.75;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:40;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:var(--gold);color:#fff}
+
+.page{max-width:840px;margin:0 auto;padding:0 1.6rem}
+.narrow{max-width:640px;margin:0 auto}
+p{margin-bottom:1.15rem;color:var(--ink)}
+.lede{font-size:1.12rem;color:var(--ink)}
+small,.fine{font-size:.78rem;color:var(--ink2)}
+a{color:var(--teal);text-decoration-color:var(--gold);text-underline-offset:3px}
+
+/* reveal */
+.rev{opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease}
+.rev.on{opacity:1;transform:none}
+
+/* ── COVER ─────────────────────────────────────────────── */
+.cover{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2.2rem 1.2rem;
+  position:relative;overflow:hidden}
+.loom-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cover-frame{width:100%;max-width:760px;border:2px solid var(--teal);outline:1px solid var(--teal);
+  outline-offset:5px;padding:3.4rem 2.4rem 2.6rem;text-align:center;position:relative;z-index:2;
+  background:rgba(250,248,244,.9);backdrop-filter:blur(2px)}
+
+/* ── LOOM RIBBON STRIPS (live section dividers) ───────── */
+.loom-strip{position:relative;height:120px;margin:4.4rem auto;max-width:1100px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.loom-strip canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.presents{font-family:var(--f-cond);font-weight:600;font-size:.78rem;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--ink2)}
+.presents b{color:var(--red);font-weight:700}
+.cover-title{font-family:var(--f-cond);font-weight:700;font-size:clamp(2.4rem,7vw,4.3rem);
+  line-height:1.02;letter-spacing:.04em;text-transform:uppercase;color:var(--teal);margin:1.2rem 0 .4rem}
+.cover-title .accent{color:var(--gold)}
+.cover-q{font-family:var(--f-disp);font-style:italic;font-weight:600;
+  font-size:clamp(1rem,2.4vw,1.3rem);color:var(--ink);max-width:520px;margin:1.4rem auto 0}
+.cover-meta{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:2rem;
+  font-family:var(--f-mono);font-weight:600;font-size:.66rem;letter-spacing:.14em;color:var(--ink2);text-transform:uppercase}
+.cover-meta span b{color:var(--red)}
+.cover-foot{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--edge);
+  font-family:var(--f-cond);font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3)}
+#emblem{display:block;margin:1.8rem auto .4rem}
+
+/* ── ORNAMENT DIVIDERS ────────────────────────────────── */
+.orn{display:flex;justify-content:center;align-items:center;gap:1.1rem;margin:4.6rem auto;color:var(--gold)}
+.orn::before,.orn::after{content:"";height:1px;width:110px;background:var(--edge)}
+.orn svg{display:block}
+
+/* ── SECTION HEADERS ──────────────────────────────────── */
+.sec{margin:0 auto 1.2rem}
+.sec-head{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.8rem}
+.badge{flex-shrink:0;width:64px;height:64px;border:2px solid var(--teal);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);
+  font-weight:800;font-size:1.25rem;color:var(--teal);position:relative}
+.badge::after{content:"";position:absolute;inset:-7px;border:1px dashed var(--gold);border-radius:50%}
+.sec-kick{font-family:var(--f-cond);font-weight:600;font-size:.72rem;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--gold)}
+.sec-title{font-family:var(--f-cond);font-weight:700;font-size:clamp(1.7rem,4vw,2.5rem);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--teal);line-height:1.08}
+
+/* ── SPOT ART (floats beside text) ────────────────────── */
+.spot{float:right;margin:0 0 .8rem 1.8rem;shape-outside:circle(50%)}
+.spot-l{float:left;margin:0 1.8rem .8rem 0;shape-outside:circle(50%)}
+@media(max-width:700px){.spot,.spot-l{float:none;display:block;margin:1rem auto}}
+
+/* ── TABLE OF CONTENTS ────────────────────────────────── */
+.toc{background:var(--paper2);border:1px solid var(--edge);padding:2rem 2.4rem;margin:2rem auto}
+.toc-row{display:flex;align-items:baseline;gap:.7rem;margin:.55rem 0;font-size:.95rem}
+.toc-row .no{font-family:var(--f-mono);font-weight:700;font-size:.75rem;color:var(--red)}
+.toc-row .nm{font-family:var(--f-cond);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.toc-row .dots{flex:1;border-bottom:2px dotted var(--edge);transform:translateY(-4px)}
+.toc-row .pg{font-family:var(--f-mono);font-size:.72rem;color:var(--ink2)}
+
+/* ── GAUGES (pathway counts) ──────────────────────────── */
+.gauges{display:flex;justify-content:center;gap:1.6rem;flex-wrap:wrap;margin:2.4rem 0 1.2rem}
+.gauge{text-align:center;width:132px}
+.gauge svg{display:block;margin:0 auto .5rem}
+.gauge .num{font-family:var(--f-mono);font-weight:800;font-size:1.55rem}
+.gauge .cap{font-family:var(--f-cond);font-weight:600;font-size:.68rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink2);margin-top:.15rem}
+
+/* ── FIGURE CARDS ─────────────────────────────────────── */
+.fig{background:var(--paper2);border:1px solid var(--edge);border-top:3px solid var(--gold);
+  padding:1.7rem 2rem 1.3rem;margin:2.2rem 0;box-shadow:0 6px 24px rgba(90,70,30,.06)}
+.fig-tag{font-family:var(--f-mono);font-weight:600;font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--red);margin-bottom:.3rem}
+.fig-title{font-family:var(--f-cond);font-weight:700;font-size:1.25rem;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:.2rem}
+.fig-sub{font-size:.82rem;color:var(--ink2);margin-bottom:1.3rem}
+.fig-foot{font-family:var(--f-mono);font-size:.55rem;color:var(--ink3);letter-spacing:.1em;
+  margin-top:1.2rem;padding-top:.7rem;border-top:1px solid var(--edge);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem;text-transform:uppercase}
+
+/* bars — clean print style */
+.brow{display:grid;grid-template-columns:150px 1fr 54px;align-items:center;gap:.9rem;margin:.5rem 0}
+.brow .lbl{font-family:var(--f-cond);font-weight:600;font-size:.74rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink2);text-align:right}
+.track{height:13px;background:#efece4;border-radius:2px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:2px;transition:width 1.1s cubic-bezier(.25,.8,.3,1)}
+.brow .val{font-family:var(--f-mono);font-weight:700;font-size:.8rem;color:var(--ink)}
+.grp{margin:1rem 0 1.35rem}
+.grp-title{font-family:var(--f-cond);font-weight:700;font-size:.8rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:.4rem;
+  display:flex;align-items:center;gap:.6rem}
+.grp-title::after{content:"";flex:1;border-bottom:1px solid var(--edge)}
+.legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.lg{display:flex;align-items:center;gap:.45rem;font-family:var(--f-cond);font-weight:600;
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.lg i{width:16px;height:4px;border-radius:2px;display:inline-block}
+
+/* ── PROJECTION CARD (predict) ────────────────────────── */
+.proj{border:2px solid var(--red);padding:1.8rem 2rem;margin:2.6rem 0;background:var(--paper2);
+  position:relative;text-align:center}
+.proj::before{content:"AUDIENCE PARTICIPATION";position:absolute;top:-11px;left:50%;
+  transform:translateX(-50%);background:var(--paper2);padding:0 .9rem;
+  font-family:var(--f-cond);font-weight:700;font-size:.64rem;letter-spacing:.3em;color:var(--red)}
+.proj h3{font-family:var(--f-cond);font-weight:700;font-size:1.35rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:.4rem}
+.proj p{font-size:.88rem;color:var(--ink2)}
+.pbtns{display:flex;gap:.7rem;flex-wrap:wrap;justify-content:center;margin-top:1.2rem}
+.pbtn{font-family:var(--f-cond);font-weight:600;font-size:.76rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--teal);background:transparent;border:1.5px solid var(--teal);
+  border-radius:3px;padding:.65rem 1.3rem;cursor:pointer;transition:all .15s ease}
+.pbtn:hover{background:var(--teal);color:var(--paper)}
+.pbtn.sel{background:var(--teal);color:var(--paper)}
+.p-echo{display:none;margin-top:1.1rem;font-family:var(--f-mono);font-size:.7rem;color:var(--red)}
+.p-echo.on{display:block}
+
+/* ── THE DARK SPREAD (demonstration in the dark) ──────── */
+.night{background:var(--night);color:#eeeef0;margin:4.5rem 0;position:relative;overflow:hidden}
+.night-inner{position:relative;z-index:2;max-width:840px;margin:0 auto;padding:5.5rem 1.6rem}
+#laser{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.night .sec-title{color:#eeeef0}
+.night .sec-kick{color:var(--gold)}
+.night p{color:#c9c9d2}
+.night .fig{background:rgba(255,255,255,.035);border-color:#26303f;border-top-color:var(--gold);box-shadow:none}
+.night .fig-title{color:#eeeef0}
+.night .fig-sub{color:#8a8a96}
+.night .track{background:rgba(255,255,255,.07)}
+.night .brow .lbl{color:#8a8a96}
+.night .brow .val{color:#eeeef0}
+.night .lg{color:#8a8a96}
+.night .fig-foot{color:#55555f;border-top-color:#26303f}
+.night .grp-title{color:#eeeef0}
+.night .grp-title::after{border-color:#26303f}
+#nightlock{position:absolute;inset:0;z-index:3;background:rgba(13,21,34,.88);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;
+  transition:opacity .8s ease}
+#nightlock.open{opacity:0;pointer-events:none}
+#nightlock .msg{font-family:var(--f-cond);font-weight:600;font-size:.85rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--gold)}
+
+/* pull quote */
+.pull{font-family:var(--f-disp);font-style:italic;font-weight:600;font-size:1.25rem;line-height:1.5;
+  color:var(--teal);max-width:560px;margin:2.6rem auto;text-align:center}
+.night .pull{color:var(--gold)}
+.pull .att{display:block;font-family:var(--f-cond);font-style:normal;font-weight:600;
+  font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:.7rem}
+
+/* ── LETTER ───────────────────────────────────────────── */
+.letter{font-family:var(--f-disp);font-size:1.04rem;line-height:1.9}
+.letter p{color:var(--ink)}
+.letter .sig{font-style:italic;font-weight:600;font-size:1.15rem;margin-top:1.6rem}
+.letter .sig small{display:block;font-family:var(--f-cond);font-style:normal;font-weight:600;
+  font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);margin-top:.3rem}
+
+/* ── RINGS ────────────────────────────────────────────── */
+.rings{display:flex;gap:1.8rem;justify-content:center;flex-wrap:wrap;margin:2.2rem 0 .6rem}
+.ring{text-align:center}
+.ring .pct{font-family:var(--f-mono);font-weight:800;font-size:1.35rem;margin-top:.4rem}
+.ring .who{font-family:var(--f-cond);font-weight:600;font-size:.64rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink2);margin-top:.1rem}
+.ringfill{transition:stroke-dasharray 1.5s cubic-bezier(.3,.7,.3,1)}
+
+/* ── TICKETS (finale) ─────────────────────────────────── */
+.tickets{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center;margin:2.6rem 0}
+.ticket{flex:1;min-width:210px;max-width:255px;border:2px solid var(--teal);background:var(--paper2);
+  padding:1.3rem 1.4rem;text-decoration:none;position:relative;transition:transform .18s ease}
+.ticket:hover{transform:translateY(-4px)}
+.ticket::before,.ticket::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--teal);top:50%}
+.ticket::before{left:-10px;transform:translateY(-50%);border-left-color:transparent}
+.ticket::after{right:-10px;transform:translateY(-50%);border-right-color:transparent}
+.ticket .adm{font-family:var(--f-mono);font-weight:600;font-size:.55rem;letter-spacing:.22em;
+  color:var(--red);text-transform:uppercase}
+.ticket .t{font-family:var(--f-cond);font-weight:700;font-size:1.15rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--teal);margin:.35rem 0 .3rem}
+.ticket .d{font-size:.78rem;color:var(--ink2);line-height:1.55}
+
+.colophon{font-family:var(--f-mono);font-size:.58rem;color:var(--ink3);letter-spacing:.12em;
+  text-align:center;margin:4rem 0 3rem;line-height:2.1;text-transform:uppercase}
+.proto-badge{position:fixed;bottom:12px;right:14px;z-index:50;font-family:var(--f-mono);
+  font-size:.55rem;letter-spacing:.12em;color:var(--ink3);border:1px solid var(--edge);
+  background:rgba(250,248,244,.9);padding:.3rem .55rem;border-radius:3px;text-transform:uppercase}
+
+/* trace-the-line draw-on */
+.trace path,.trace circle,.trace line,.trace ellipse{fill:none}
+@media(max-width:640px){
+  .brow{grid-template-columns:104px 1fr 46px}
+  .brow .lbl{font-size:.64rem}
+  .fig{padding:1.3rem 1.1rem 1.1rem}
+  .cover-frame{padding:2.4rem 1.3rem 1.8rem}
+  .sec-head{gap:.9rem}.badge{width:52px;height:52px;font-size:1rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .rev{transition:none;opacity:1;transform:none}
+  .fill{transition:none}
+  .ringfill{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="proto-badge">Prototype · not for distribution</div>
+<!-- ═══════════ COVER ═══════════ -->
+<header class="cover">
+  <canvas class="loom-bg" id="coverLoom" aria-hidden="true"></canvas>
+  <div class="cover-frame">
+    <div class="presents">The Accidental Intactivist&rsquo;s Inquiry <b>&middot;</b> presents</div>
+    <svg id="emblem" class="trace" width="190" height="150" viewBox="0 0 190 150" data-art="lissajous" aria-hidden="true"></svg>
+    <h1 class="cover-title">A Prospectus<br>of <span class="accent">Findings</span></h1>
+    <div class="cover-q">&ldquo;If someone asked you honestly how you felt about your circumcision status &mdash; what would you say?&rdquo;</div>
+    <div class="cover-meta">
+      <span><b>500</b> respondents</span>
+      <span><b>6</b> pathways</span>
+      <span><b>1</b> question nobody asks</span>
+    </div>
+    <div class="cover-foot">Phase One &middot; circumsurvey.online &middot; MMXXVI</div>
+  </div>
+</header>
+
+<!-- ═══════════ LETTER ═══════════ -->
+<div class="page">
+  <div class="narrow letter rev">
+    <div class="sec-kick" style="text-align:center;margin-bottom:1.6rem">A letter from the lead researcher</div>
+    <p>This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults.</p>
+    <p>So I asked &mdash; respectfully, anonymously, with room for every perspective. Five hundred people answered questions most of them had never been asked before. This prospectus is a guided tour through what they said. I have opinions of my own, and you can read them <a href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noopener">elsewhere</a>; here, the respondents do the talking, and the conclusions are yours to draw.</p>
+    <div class="sig">Tone Pettit<small>The Accidental Intactivist &middot; Lead Researcher</small></div>
+  </div>
+
+  <div class="orn rev"><svg class="trace" width="46" height="46" viewBox="0 0 46 46" data-art="burst"></svg></div>
+
+  <!-- ═══════════ CONTENTS ═══════════ -->
+  <div class="narrow rev">
+    <div class="toc">
+      <div class="sec-kick" style="margin-bottom:1rem">What lies ahead</div>
+      <div class="toc-row"><span class="no">01</span><span class="nm">Who Answered</span><span class="dots"></span><span class="pg">The five hundred</span></div>
+      <div class="toc-row"><span class="no">02</span><span class="nm">The Baseline</span><span class="dots"></span><span class="pg">Before anyone knew who was who</span></div>
+      <div class="toc-row"><span class="no">03</span><span class="nm">The Demonstration</span><span class="dots"></span><span class="pg">One question sorts the answers</span></div>
+      <div class="toc-row"><span class="no">04</span><span class="nm">The Mirror</span><span class="dots"></span><span class="pg">The same question, both sides</span></div>
+      <div class="toc-row"><span class="no">05</span><span class="nm">Looking Forward</span><span class="dots"></span><span class="pg">What they would choose today</span></div>
+    </div>
+  </div>
+
+  <div class="loom-strip"><canvas class="loom-ribbon" aria-hidden="true"></canvas></div>
+
+  <!-- ═══════════ 01 · WHO ANSWERED ═══════════ -->
+  <section class="sec rev">
+    <div class="sec-head">
+      <div class="badge">01</div>
+      <div><div class="sec-kick">Section One</div><div class="sec-title">Who Answered</div></div>
+    </div>
+    <div class="narrow">
+      <svg class="spot trace" width="140" height="140" viewBox="0 0 140 140" data-art="orbit"></svg>
+      <p class="lede">Five hundred people, gathered anonymously, sorted by the survey into pathways &mdash; so that every question could be asked in the words that fit each life.</p>
+      <p>A note before the numbers: this is a self-selected sample, drawn largely from communities already thinking about the topic. It is not a census, and we never pretend otherwise. What it offers is rarer &mdash; the same structured questions, answered from <em>both sides</em> of the anatomical fence, with the sexual-experience questions asked <em>before</em> any mention of status.</p>
+    </div>
+    <div class="gauges rev">
+      <div class="gauge"><svg class="trace" width="86" height="86" viewBox="0 0 86 86" data-art="gauge" data-col="var(--ink-int)"></svg><div class="num" style="color:var(--ink-int)" data-count="141">0</div><div class="cap">Intact</div></div>
+      <div class="gauge"><svg class="trace" width="86" height="86" viewBox="0 0 86 86" data-art="gauge" data-col="var(--ink-circ)"></svg><div class="num" style="color:var(--ink-circ)" data-count="212">0</div><div class="cap">Circumcised</div></div>
+      <div class="gauge"><svg class="trace" width="86" height="86" viewBox="0 0 86 86" data-art="gauge" data-col="var(--ink-rest)"></svg><div class="num" style="color:var(--ink-rest)" data-count="110">0</div><div class="cap">Restoring</div></div>
+      <div class="gauge"><svg class="trace" width="86" height="86" viewBox="0 0 86 86" data-art="gauge" data-col="var(--ink-obs)"></svg><div class="num" style="color:var(--ink-obs)" data-count="37">0</div><div class="cap">Observer &amp; Ally</div></div>
+    </div>
+    <div class="narrow" style="text-align:center"><small class="fine">Provisional split &mdash; final per-pathway counts stamped by the Phase&nbsp;1 freeze script.<br>Trans &amp; intersex pathways receive dedicated treatment under the small-sample rule.</small></div>
+  </section>
+
+  <div class="orn rev"><svg class="trace" width="46" height="46" viewBox="0 0 46 46" data-art="ripple"></svg></div>
+
+  <!-- ═══════════ 02 · THE BASELINE ═══════════ -->
+  <section class="sec rev">
+    <div class="sec-head">
+      <div class="badge">02</div>
+      <div><div class="sec-kick">Section Two</div><div class="sec-title">The Baseline</div></div>
+    </div>
+    <div class="narrow">
+      <p class="lede">Early in the survey &mdash; before circumcision was mentioned at all &mdash; every respondent rated their own sexual experience on a five-point scale.</p>
+      <p>Here is everyone together. One pool of honest answers, no labels, no sides.</p>
+    </div>
+    <div class="fig rev">
+      <div class="fig-tag">Fig. 1 &mdash; All respondents together</div>
+      <div class="fig-title">&ldquo;Rate the following aspects of your sexual experience&rdquo;</div>
+      <div class="fig-sub">Mean rating, 1&ndash;5 scale &middot; anatomical-status respondents pooled</div>
+      <div class="brow"><span class="lbl">Orgasm intensity</span><div class="track"><div class="fill" data-w="64" style="background:var(--ink3)"></div></div><span class="val" data-val="3.20">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Ease of orgasm</span><div class="track"><div class="fill" data-w="61" style="background:var(--ink3)"></div></div><span class="val" data-val="3.04">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Variety of sensation</span><div class="track"><div class="fill" data-w="59" style="background:var(--ink3)"></div></div><span class="val" data-val="2.96">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Light touch</span><div class="track"><div class="fill" data-w="59" style="background:var(--ink3)"></div></div><span class="val" data-val="2.94">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Mobile skin</span><div class="track"><div class="fill" data-w="61" style="background:var(--ink3)"></div></div><span class="val" data-val="3.03">&nbsp;</span></div>
+      <div class="fig-foot"><span>Pooled means, weighted by pathway n</span><span>circumsurvey.online</span></div>
+    </div>
+    <div class="proj rev" id="projBox">
+      <h3>Make your projection</h3>
+      <p>The survey then asked one question &mdash; <em>&ldquo;Are you circumcised?&rdquo;</em> &mdash; and every answer above could suddenly be sorted. What do you expect happened to these numbers?</p>
+      <div class="pbtns">
+        <button class="pbtn" data-p="split">They split wide apart</button>
+        <button class="pbtn" data-p="small">Small differences</button>
+        <button class="pbtn" data-p="same">About the same</button>
+      </div>
+      <div class="p-echo" id="pEcho"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════ 03 · THE DEMONSTRATION (dark spread) ═══════════ -->
+<section class="night">
+  <canvas id="laser" aria-hidden="true"></canvas>
+  <div id="nightlock"><div class="msg">The demonstration awaits your projection above</div></div>
+  <div class="night-inner">
+    <div class="sec-head rev">
+      <div class="badge" style="border-color:var(--gold);color:var(--gold)">03</div>
+      <div><div class="sec-kick">Section Three &middot; Lights down, please</div><div class="sec-title">The Demonstration</div></div>
+    </div>
+    <div class="narrow">
+      <p class="lede rev" id="verdictLine">Sorted by a single question, the pool of answers comes apart.</p>
+    </div>
+    <div class="fig rev">
+      <div class="fig-tag" style="color:var(--gold)">Fig. 2 &mdash; The same answers, sorted by status</div>
+      <div class="fig-title">The baseline, separated</div>
+      <div class="fig-sub">Mean rating, 1&ndash;5 scale &middot; same respondents as Fig. 1</div>
+      <div class="legend">
+        <span class="lg"><i style="background:var(--lum-int)"></i>Intact</span>
+        <span class="lg"><i style="background:var(--lum-rest)"></i>Restoring</span>
+        <span class="lg"><i style="background:var(--lum-circ)"></i>Circumcised</span>
+      </div>
+      <div class="grp"><div class="grp-title">Pleasure from mobile skin</div>
+        <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="78" style="background:var(--lum-int)"></div></div><span class="val" data-val="3.88">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="60" style="background:var(--lum-rest)"></div></div><span class="val" data-val="3.00">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="50" style="background:var(--lum-circ)"></div></div><span class="val" data-val="2.49">&nbsp;</span></div>
+      </div>
+      <div class="grp"><div class="grp-title">Light touch sensitivity</div>
+        <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="73" style="background:var(--lum-int)"></div></div><span class="val" data-val="3.67">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="53" style="background:var(--lum-rest)"></div></div><span class="val" data-val="2.67">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="52" style="background:var(--lum-circ)"></div></div><span class="val" data-val="2.60">&nbsp;</span></div>
+      </div>
+      <div class="grp"><div class="grp-title">Variety of sensation</div>
+        <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="76" style="background:var(--lum-int)"></div></div><span class="val" data-val="3.78">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="53" style="background:var(--lum-rest)"></div></div><span class="val" data-val="2.65">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="52" style="background:var(--lum-circ)"></div></div><span class="val" data-val="2.58">&nbsp;</span></div>
+      </div>
+      <div class="fig-foot"><span>Anatomical-status pathways only</span><span>circumsurvey.online</span></div>
+    </div>
+    <div class="fig rev">
+      <div class="fig-tag" style="color:var(--gold)">Fig. 3 &mdash; Lubrication requirement</div>
+      <div class="fig-title">&ldquo;Do you generally need artificial lubrication?&rdquo;</div>
+      <div class="fig-sub">Answering &ldquo;never&rdquo; &middot; by pathway</div>
+      <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="55.5" style="background:var(--lum-int)"></div></div><span class="val" data-val="55.5%">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="16" style="background:var(--lum-rest)"></div></div><span class="val" data-val="16.0%">&nbsp;</span></div>
+      <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="5.5" style="background:var(--lum-circ)"></div></div><span class="val" data-val="5.5%">&nbsp;</span></div>
+      <p style="font-size:.82rem;margin-top:.9rem">A ten-to-one ratio, in the respondents&rsquo; own reporting. We add no adjective to it.</p>
+      <div class="fig-foot"><span>N=486 anatomical-status respondents</span><span>circumsurvey.online</span></div>
+    </div>
+    <div class="pull rev">&ldquo;I spent years thinking something was wrong with me. It never occurred to me to ask whether something had been done to me.&rdquo;<span class="att">Circumcised &middot; Gen X &middot; placeholder quote for prototype</span></div>
+  </div>
+</section>
+
+<div class="page">
+  <!-- ═══════════ 04 · THE MIRROR ═══════════ -->
+  <section class="sec rev">
+    <div class="sec-head">
+      <div class="badge">04</div>
+      <div><div class="sec-kick">Section Four</div><div class="sec-title">The Mirror</div></div>
+    </div>
+    <div class="narrow">
+      <svg class="spot-l trace" width="130" height="130" viewBox="0 0 130 130" data-art="rose"></svg>
+      <p class="lede">Eighteen questions in this survey were asked twice &mdash; once from each side of the fence. The same concept, mirrored.</p>
+      <p>Here is one pair: <em>how often do you wonder what the other experience is like?</em></p>
+    </div>
+    <div class="fig rev">
+      <div class="fig-tag">Fig. 4 &mdash; Mirror pair No. 15</div>
+      <div class="fig-title">The Curiosity Mirror</div>
+      <div class="fig-sub">Respondents answering &ldquo;I often wonder&rdquo; about the other anatomy</div>
+      <svg class="trace" id="mirrorSvg" viewBox="0 0 720 190" width="100%" role="img" aria-label="Mirrored bar chart: 67.8 percent of circumcised respondents often wonder about the intact experience, versus 27.3 percent of intact respondents wondering about the circumcised experience."></svg>
+      <div class="fig-foot"><span>N=486 &middot; A note on words: for circumcised respondents we ask about resentment, not regret &mdash; regret implies a decision they were never given</span><span>circumsurvey.online</span></div>
+    </div>
+    <div class="pull rev">The curiosity points overwhelmingly in one direction.<br>We leave it to you to say which.</div>
+  </section>
+
+  <div class="orn rev"><svg class="trace" width="46" height="46" viewBox="0 0 46 46" data-art="burst"></svg></div>
+
+  <!-- ═══════════ 05 · LOOKING FORWARD ═══════════ -->
+  <section class="sec rev">
+    <div class="sec-head">
+      <div class="badge">05</div>
+      <div><div class="sec-kick">Section Five</div><div class="sec-title">Looking Forward</div></div>
+    </div>
+    <div class="narrow">
+      <p class="lede">Near the end, every pathway was asked the same forward-looking question: <em>if you had a son today, what would you choose for him?</em></p>
+      <p>Every pathway &mdash; including circumcised respondents &mdash; converges on the same answer.</p>
+    </div>
+    <div class="fig rev">
+      <div class="fig-tag">Fig. 5 &mdash; &ldquo;If you had a son today&rdquo;</div>
+      <div class="fig-title">Choosing &ldquo;keep intact,&rdquo; by pathway</div>
+      <div class="fig-sub">Share of each pathway &middot; among intact and restoring respondents, the share choosing circumcision was zero</div>
+      <div class="rings">
+        <div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="43" fill="none" stroke="#efece4" stroke-width="7"/><circle class="ringfill" cx="52" cy="52" r="43" fill="none" stroke="var(--ink-int)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 52 52)" data-pct="88.8"/></svg><div class="pct" style="color:var(--ink-int)" data-val="88.8%">&nbsp;</div><div class="who">Intact</div></div>
+        <div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="43" fill="none" stroke="#efece4" stroke-width="7"/><circle class="ringfill" cx="52" cy="52" r="43" fill="none" stroke="var(--ink-circ)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 52 52)" data-pct="78.1"/></svg><div class="pct" style="color:var(--ink-circ)" data-val="78.1%">&nbsp;</div><div class="who">Circumcised</div></div>
+        <div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="43" fill="none" stroke="var(--ink-rest)" stroke-width="7" opacity="0" class="x"/><circle cx="52" cy="52" r="43" fill="none" stroke="#efece4" stroke-width="7"/><circle class="ringfill" cx="52" cy="52" r="43" fill="none" stroke="var(--ink-rest)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 52 52)" data-pct="98.1"/></svg><div class="pct" style="color:var(--ink-rest)" data-val="98.1%">&nbsp;</div><div class="who">Restoring</div></div>
+        <div class="ring"><svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="43" fill="none" stroke="#efece4" stroke-width="7"/><circle class="ringfill" cx="52" cy="52" r="43" fill="none" stroke="var(--ink-obs)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 52 52)" data-pct="90.9"/></svg><div class="pct" style="color:var(--ink-obs)" data-val="90.9%">&nbsp;</div><div class="who">Observer &amp; Ally</div></div>
+      </div>
+      <div class="fig-foot"><span>N=500 &middot; all pathways &middot; the majority holds across every age, politics, income &amp; religiosity slice we can display</span><span>circumsurvey.online</span></div>
+    </div>
+  </section>
+
+  <div class="loom-strip"><canvas class="loom-ribbon" aria-hidden="true"></canvas></div>
+
+  <!-- ═══════════ FINALE ═══════════ -->
+  <section class="sec rev" style="text-align:center">
+    <div class="sec-kick">Your visit concludes &mdash; or begins</div>
+    <div class="sec-title" style="margin:.4rem 0 1rem">Five hundred voices.<br>Room for one more.</div>
+    <p class="narrow">You&rsquo;ve toured what five hundred people said when someone finally asked. Three doors lead out of this prospectus &mdash; choose freely.</p>
+    <div class="tickets">
+      <a class="ticket" href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noopener">
+        <div class="adm">Admit One</div><div class="t">Add your voice</div>
+        <div class="d">Take the survey. Fifteen minutes, totally anonymous, skip any question.</div>
+      </a>
+      <a class="ticket" href="https://findings.circumsurvey.online" target="_blank" rel="noopener">
+        <div class="adm">All-Day Pass</div><div class="t">Explore every question</div>
+        <div class="d">The live data explorer &mdash; all pathways, all questions, no narration.</div>
+      </a>
+      <a class="ticket" href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noopener">
+        <div class="adm">Guide&rsquo;s Notes</div><div class="t">The researcher&rsquo;s view</div>
+        <div class="d">Interpretation and argument, clearly labeled as such. Off the exhibit floor.</div>
+      </a>
+    </div>
+    <div class="colophon">
+      The Accidental Intactivist&rsquo;s Inquiry &middot; Phase 1 snapshot &middot; N=500<br>
+      Methodology &amp; limitations one click away, always &middot; anonymous quotes, all identifying details removed<br>
+      circumsurvey.online
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+"use strict";
+var NS='http://www.w3.org/2000/svg';
+var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ═════════ PLOTTER CLIP-ART GENERATORS ═════════
+   Parametric curves rendered as single-stroke paths —
+   spirograph roses, lissajous figures, orbits, bursts. */
+function P(d,stroke,w,dash){
+  var p=document.createElementNS(NS,'path');
+  p.setAttribute('d',d); p.setAttribute('stroke',stroke);
+  p.setAttribute('stroke-width',w||1.5); p.setAttribute('fill','none');
+  p.setAttribute('stroke-linecap','round');
+  if(dash) p.setAttribute('stroke-dasharray',dash);
+  return p;
+}
+function curve(fn,t0,t1,steps){
+  var d='';
+  for(var i=0;i<=steps;i++){
+    var t=t0+(t1-t0)*i/steps, pt=fn(t);
+    d+=(i===0?'M':'L')+pt[0].toFixed(1)+' '+pt[1].toFixed(1);
+  }
+  return d;
+}
+function C(cx,cy,r,stroke,w){
+  var c=document.createElementNS(NS,'circle');
+  c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+  c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',w||1.5);c.setAttribute('fill','none');
+  return c;
+}
+function L(x1,y1,x2,y2,stroke,w){
+  var l=document.createElementNS(NS,'line');
+  l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+  l.setAttribute('stroke',stroke);l.setAttribute('stroke-width',w||1.5);l.setAttribute('stroke-linecap','round');
+  return l;
+}
+function T(x,y,str,fill,size,anchor,weight){
+  var t=document.createElementNS(NS,'text');
+  t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('fill',fill);
+  t.setAttribute('text-anchor',anchor||'start');
+  t.setAttribute('style','font-family:JetBrains Mono,monospace;font-size:'+size+'px;font-weight:'+(weight||600)+';letter-spacing:.08em');
+  t.textContent=str; return t;
+}
+
+var TEAL='#1a5c3a', GOLD='#d4a030', RED='#cc2a2a', EDGE='#cfc9bc';
+
+var ART={
+  lissajous:function(svg){ // cover emblem — a nod to the Harmonic Loom
+    var cx=95,cy=75;
+    svg.appendChild(P(curve(function(t){return [cx+72*Math.sin(3*t+1.57),cy+52*Math.sin(2*t)];},0,Math.PI*2,220),TEAL,1.7));
+    svg.appendChild(P(curve(function(t){return [cx+64*Math.sin(3*t+1.2),cy+44*Math.sin(2*t+.35)];},0,Math.PI*2,220),GOLD,1.3));
+    svg.appendChild(P(curve(function(t){return [cx+56*Math.sin(3*t+.85),cy+37*Math.sin(2*t+.7)];},0,Math.PI*2,220),RED,1.1));
+  },
+  burst:function(svg){ // compass star
+    var cx=23,cy=23;
+    for(var i=0;i<8;i++){
+      var a=i*Math.PI/4, r1=(i%2?9:13), r0=5;
+      svg.appendChild(L(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0,cx+Math.cos(a)*r1,cy+Math.sin(a)*r1,GOLD,1.4));
+    }
+    svg.appendChild(C(cx,cy,3,GOLD,1.4));
+  },
+  ripple:function(svg){
+    var cx=23,cy=23;
+    [5,10,15,20].forEach(function(r,i){ svg.appendChild(C(cx,cy,r,i%2?GOLD:TEAL,1.2)); });
+  },
+  'rose-s':function(svg){ // small lissajous ribbon ornament
+    svg.appendChild(P(curve(function(t){return [30+26*Math.sin(3*t),22+14*Math.sin(2*t+.6)];},0,Math.PI*2,160),GOLD,1.3));
+  },
+  rose:function(svg){ // spirograph rose
+    var cx=65,cy=65;
+    svg.appendChild(P(curve(function(t){var r=54*Math.cos(2.5*t);return [cx+r*Math.cos(t),cy+r*Math.sin(t)];},0,Math.PI*4,420),TEAL,1.3));
+    svg.appendChild(P(curve(function(t){var r=30*Math.cos(3.5*t);return [cx+r*Math.cos(t),cy+r*Math.sin(t)];},0,Math.PI*4,420),GOLD,1));
+    svg.appendChild(C(cx,cy,58,EDGE,.8));
+  },
+  orbit:function(svg){ // atomic orbits — pop-science emblem
+    var cx=70,cy=70;
+    [0,60,120].forEach(function(deg,i){
+      var e=document.createElementNS(NS,'ellipse');
+      e.setAttribute('cx',cx);e.setAttribute('cy',cy);e.setAttribute('rx',56);e.setAttribute('ry',22);
+      e.setAttribute('transform','rotate('+deg+' '+cx+' '+cy+')');
+      e.setAttribute('stroke',[TEAL,GOLD,RED][i]);e.setAttribute('stroke-width',1.3);e.setAttribute('fill','none');
+      svg.appendChild(e);
+    });
+    svg.appendChild(C(cx,cy,5,TEAL,1.6));
+  },
+  gauge:function(svg){ // dial gauge for pathway counts
+    var col=svg.dataset.col||TEAL, cx=43,cy=43;
+    svg.appendChild(C(cx,cy,34,col,1.8));
+    for(var i=0;i<12;i++){
+      var a=i*Math.PI/6, r0=29,r1=34;
+      svg.appendChild(L(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0,cx+Math.cos(a)*r1,cy+Math.sin(a)*r1,col,1.1));
+    }
+    svg.appendChild(C(cx,cy,22,EDGE,.9));
+  }
+};
+document.querySelectorAll('svg[data-art]').forEach(function(svg){
+  var fn=ART[svg.dataset.art]; if(fn) fn(svg);
+});
+
+/* ═════════ THE CURIOSITY MIRROR (Fig. 4) ═════════ */
+(function(){
+  var svg=document.getElementById('mirrorSvg'); if(!svg) return;
+  var INKC='#c04038', INKI='#2f6ea8', mid=360;
+  svg.appendChild(L(mid,14,mid,150,GOLD,2));
+  svg.appendChild(T(mid-16,34,'CIRCUMCISED, ASKED ABOUT INTACT','#5a5a5a',10.5,'end'));
+  svg.appendChild(T(mid+16,34,'INTACT, ASKED ABOUT CIRCUMCISED','#5a5a5a',10.5,'start'));
+  // bars grow outward from the mirror line — 67.8% vs 27.3% (scale: 3.1 px/%)
+  svg.appendChild(L(mid-14,78,mid-14-210,78,INKC,26));
+  svg.appendChild(L(mid+14,78,mid+14+85,78,INKI,26));
+  svg.appendChild(T(mid-14-222,84,'67.8%',INKC,17,'end',800));
+  svg.appendChild(T(mid+14+97,84,'27.3%',INKI,17,'start',800));
+  svg.appendChild(T(mid-16,110,'"I often wonder"','#8d887e',10,'end'));
+  svg.appendChild(T(mid+16,110,'"I often wonder"','#8d887e',10,'start'));
+  svg.appendChild(T(mid,142,'THE MIRROR','#b39026',9.5,'middle'));
+})();
+
+/* ═════════ TRACE-THE-LINE DRAW-ON ═════════ */
+function prepTrace(svg){
+  svg.querySelectorAll('path,circle,ellipse,line').forEach(function(el,i){
+    try{
+      var len=el.getTotalLength();
+      el.style.strokeDasharray=len;
+      el.style.strokeDashoffset=len;
+      el.dataset.len=len; el.dataset.i=i;
+    }catch(e){}
+  });
+}
+function playTrace(svg){
+  svg.querySelectorAll('path,circle,ellipse,line').forEach(function(el){
+    if(!el.dataset.len) return;
+    el.style.transition = reduced ? 'none' : 'stroke-dashoffset 1.3s cubic-bezier(.3,.7,.35,1) '+(el.dataset.i*0.18)+'s';
+    el.style.strokeDashoffset=0;
+  });
+}
+document.querySelectorAll('svg.trace').forEach(prepTrace);
+
+/* cover emblem: trace in, then a slow perpetual glint retraces it */
+(function(){
+  var em=document.getElementById('emblem'); if(!em) return;
+  playTrace(em);
+  if(reduced) return;
+  setTimeout(function(){
+    em.querySelectorAll('path').forEach(function(el,i){
+      var len=parseFloat(el.dataset.len)||600;
+      el.style.transition='none';
+      el.style.strokeDasharray=(len*.82)+' '+(len*.18);
+      var off=0;
+      (function drift(){
+        off-=0.55; el.style.strokeDashoffset=off;
+        requestAnimationFrame(drift);
+      })();
+    });
+  },2600);
+})();
+
+/* ═════════ REVEALS, COUNTERS, BARS ═════════ */
+function countUp(el,str){
+  var target=parseFloat(str), suffix=str.indexOf('%')>-1?'%':'';
+  var dec=(str.split('.')[1]||'').replace('%','').length;
+  if(reduced){ el.textContent=str; return; }
+  var t0=null;
+  (function step(ts){
+    if(!t0)t0=ts;
+    var f=Math.min(1,(ts-t0)/950); f=1-Math.pow(1-f,3);
+    el.textContent=(target*f).toFixed(dec)+suffix;
+    if(f<1) requestAnimationFrame(step);
+  })(performance.now());
+}
+function activate(el){
+  el.classList.add('on');
+  el.querySelectorAll('svg.trace').forEach(playTrace);
+  if(el.matches&&el.matches('svg.trace')) playTrace(el);
+  el.querySelectorAll('.fill').forEach(function(b){ b.style.width=b.dataset.w+'%'; });
+  el.querySelectorAll('.val[data-val]').forEach(function(v){ countUp(v,v.dataset.val); });
+  el.querySelectorAll('.num[data-count]').forEach(function(v){ countUp(v,v.dataset.count); });
+  el.querySelectorAll('.pct[data-val]').forEach(function(v){ countUp(v,v.dataset.val); });
+  el.querySelectorAll('.ringfill').forEach(function(c){
+    var pct=parseFloat(c.dataset.pct), len=2*Math.PI*43;
+    c.style.strokeDasharray='0 '+len;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      c.style.strokeDasharray=(pct/100*len)+' '+len;
+    });});
+  });
+}
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ activate(e.target); io.unobserve(e.target); }
+  });
+},{threshold:.22});
+// observe everything outside the dark spread now; the spread waits for the projection
+document.querySelectorAll('.rev').forEach(function(el){
+  if(!el.closest('.night')) io.observe(el);
+});
+
+/* ═════════ MAKE YOUR PROJECTION ═════════ */
+var predicted=false;
+var ECHO={
+  split:'Projection recorded: they split wide apart. The demonstration below is now open.',
+  small:'Projection recorded: small differences. The demonstration below is now open.',
+  same:'Projection recorded: about the same. The demonstration below is now open.'
+};
+var VERDICT={
+  split:'You projected a wide split. Here is how wide the respondents drew it.',
+  small:'You projected small differences. Here is what the respondents reported.',
+  same:'You projected no change. Here is what actually happened.'
+};
+document.querySelectorAll('.pbtn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    var first=!predicted; predicted=true;
+    document.getElementById('pEcho').textContent=ECHO[btn.dataset.p];
+    document.getElementById('pEcho').classList.add('on');
+    document.getElementById('verdictLine').textContent=VERDICT[btn.dataset.p];
+    document.getElementById('nightlock').classList.add('open');
+    if(first) document.querySelectorAll('.night .rev').forEach(function(el){ io.observe(el); });
+  });
+});
+
+/* ═════════ THE HARMONIC LOOM ═════════
+   Faithful vanilla port of HarmonicCanvas.jsx / LOOM_CONFIG:
+   two invisible parent curves per ribbon, lines blended between them
+   with per-line time offsets (the moiré), Catmull-Rom splines with
+   perspective depth, and the staggered holographic glint. */
+function createLoom(canvas, opts){
+  opts=opts||{};
+  var CFG={
+    speed:.018, travelSpeed:.0014, waveFreq:3.8, moirePhaseSpread:520,
+    ampXScale:.47, ampYScale:.58, rippleAmpScale:.52, loopAmpScale:.32,
+    parentSeparation:.32, endAnchorMargin:.15, nodeCount:6, kinkDepth:.5,
+    focalLength:1270, lineWidth:4,
+    glintGroups:2, glintInterval:20, glintSpeed:.05, glintWidth:.15,
+    glintStrength:.5, glintTint:0
+  };
+  for(var k in (opts.config||{})) CFG[k]=opts.config[k];
+  var lowPower=(navigator.hardwareConcurrency||8)<=4 || Math.min(innerWidth,innerHeight)<640;
+  var ctx=canvas.getContext('2d');
+  var dpr=Math.min(window.devicePixelRatio||1, lowPower?1.5:2);
+  var steps=opts.steps!=null?opts.steps:(lowPower?30:48);
+  var halfSteps=opts.halfSteps!=null?opts.halfSteps:(lowPower?20:32);
+  var alphaScale=opts.alphaScale!=null?opts.alphaScale:1;
+  var cols=opts.colors; // [ [rgbA,rgbB] ribbon1, [rgbA,rgbB] ribbon2 ]
+  var lerp=function(a,b,t){return a+(b-a)*t;};
+
+  function resize(){
+    var p=canvas.parentElement;
+    var w=p?p.clientWidth:innerWidth, h=p?p.clientHeight:innerHeight;
+    canvas.width=w*dpr; canvas.height=h*dpr;
+    canvas.style.width=w+'px'; canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize',resize); resize();
+
+  function createNode(type){
+    return {type:type,
+      ax:Math.random()*.5+.7, ay:Math.random()*.5+.7, az:(Math.random()*.5+.5)*600,
+      fx:Math.random()*.0015+.0005, fy:Math.random()*.0015+.0005, fz:Math.random()*.0015+.0005,
+      px:Math.random()*Math.PI*2, py:Math.random()*Math.PI*2, pz:Math.random()*Math.PI*2};
+  }
+  function curveOf(offY){
+    var n=Math.max(4,Math.round(CFG.nodeCount)), nodes=[];
+    for(var i=0;i<n;i++){
+      var nd=createNode(i===0?'left':i===n-1?'right':'inner');
+      nd.xFract=i/(n-1); nd.offY=offY; nodes.push(nd);
+    }
+    return nodes;
+  }
+  var sep=CFG.parentSeparation;
+  var r1a=curveOf(-sep), r1b=curveOf(sep), r2a=curveOf(-sep*.7), r2b=curveOf(sep*1.3);
+
+  function ramp(cA,cB,n,arrS,arrC){
+    for(var i=0;i<=n;i++){
+      var t=i/n, a=(Math.sin(t*Math.PI)*.5+.2)*alphaScale;
+      var r=Math.round(lerp(cA[0],cB[0],t)),g=Math.round(lerp(cA[1],cB[1],t)),b=Math.round(lerp(cA[2],cB[2],t));
+      arrS.push('rgba('+r+','+g+','+b+','+a.toFixed(3)+')'); arrC.push([r,g,b]);
+    }
+  }
+  var st1=[],rgb1=[],st2=[],rgb2=[];
+  ramp(cols[0][0],cols[0][1],steps,st1,rgb1);
+  ramp(cols[1][0],cols[1][1],halfSteps,st2,rgb2);
+
+  var nodeN=Math.max(4,Math.round(CFG.nodeCount));
+  var lines=[]; for(var li=0;li<steps+halfSteps+2;li++){
+    var pts=[]; for(var pj=0;pj<nodeN;pj++) pts.push({x:0,y:0});
+    lines.push({pts:pts,avgZ:0,scale:0,style:'',colorPos:0});
+  }
+
+  function evalNode(n,t){
+    var cw=canvas.width/dpr, ch=canvas.height/dpr;
+    var span=Math.max(cw,ch), half=span/2;
+    var xBase=-half-100+(n.xFract||.5)*(span+200);
+    var sp=CFG.travelSpeed, wf=CFG.waveFreq;
+    var trav=t*sp-n.xFract*wf*Math.PI*2;
+    var phX=t*n.fx+n.px+trav, phY=t*n.fy+n.py+trav*1.5;
+    var ripple=t*sp*2.2-n.xFract*wf*2.5*Math.PI*2+n.px;
+    var loop=t*sp*1.9-n.xFract*wf*1.7*Math.PI*2+n.py;
+    var k=n.type==='inner'?CFG.kinkDepth:1;
+    var ampX=half*CFG.ampXScale*n.ax*k, ampY=half*CFG.ampYScale*n.ay*k;
+    var rAmp=half*CFG.rippleAmpScale*n.ay*k, lAmp=half*CFG.loopAmpScale*n.ax*k;
+    var y=Math.sin(phY)*ampY+Math.cos(ripple)*rAmp+Math.cos(loop*1.5)*rAmp*1.2+(n.offY||0)*half;
+    if(n.type!=='inner'){
+      var dir=n.type==='left'?-1:1;
+      return {x:dir*half*(1+CFG.endAnchorMargin), y:y, z:0};
+    }
+    return {x:xBase+Math.cos(phX)*ampX+Math.sin(loop)*lAmp, y:y, z:Math.sin(t*n.fz+n.pz)*n.az};
+  }
+  function trace(pts){
+    var n=pts.length;
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(var s=0;s<n-1;s++){
+      var p0=pts[s-1]||pts[0],p1=pts[s],p2=pts[s+1],p3=pts[s+2]||pts[n-1];
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,
+                        p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y);
+    }
+  }
+  function splinePoint(pts,u){
+    var n=pts.length, seg=Math.min(n-2,Math.floor(u*(n-1))), t=u*(n-1)-seg;
+    var p0=pts[seg-1]||pts[0],p1=pts[seg],p2=pts[seg+1],p3=pts[seg+2]||pts[n-1];
+    var t2=t*t,t3=t2*t;
+    return {x:.5*(2*p1.x+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+            y:.5*(2*p1.y+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)};
+  }
+  var time=0, glintTime=0, last=performance.now(), running=false, rafId=null;
+  var MIN_INT=1000/(lowPower?24:30);
+
+  function ribbon(pA,pB,styles,rgbs,rSteps,startIdx,c0,c1){
+    var cw=canvas.width/dpr,ch=canvas.height/dpr,cx=cw/2,cy=ch/2, idx=startIdx;
+    for(var i=0;i<=rSteps;i++){
+      var lin=i/rSteps, blend=.5-Math.cos(lin*Math.PI)*.5;
+      var lt=time+(lin-.5)*CFG.moirePhaseSpread;
+      var line=lines[idx++], zS=0,sS=0;
+      for(var j=0;j<nodeN;j++){
+        var a=evalNode(pA[j],lt), b=evalNode(pB[j],lt);
+        var cz=lerp(a.z,b.z,blend), sc=CFG.focalLength/Math.max(1,CFG.focalLength+cz);
+        line.pts[j].x=cx+lerp(a.x,b.x,blend)*sc;
+        line.pts[j].y=cy+lerp(a.y,b.y,blend)*sc;
+        zS+=cz; sS+=sc;
+      }
+      line.avgZ=zS/nodeN; line.scale=sS/nodeN;
+      line.style=styles[i]; line.colorPos=c0+(rSteps>0?i/rSteps:0)*(c1-c0);
+    }
+    return idx;
+  }
+  function render(now){
+    if(!running){rafId=null;return;}
+    var el=now-last;
+    if(el<MIN_INT){rafId=requestAnimationFrame(render);return;}
+    var delta=Math.min(el,100); time+=delta*CFG.speed; glintTime+=delta; last=now;
+    var cw=canvas.width/dpr,ch=canvas.height/dpr;
+    var sizeScale=Math.max(.3,Math.sqrt(cw*cw+ch*ch)/1400);
+    ctx.clearRect(0,0,cw,ch);
+    var idx=ribbon(r1a,r1b,st1,rgb1,steps,0,0,.5);
+    ribbon(r2a,r2b,st2,rgb2,halfSteps,idx,.5,1);
+    lines.sort(function(a,b){return b.avgZ-a.avgZ;});
+    // base weave, batched by style
+    var groups={};
+    lines.forEach(function(line){
+      var w=Math.max(.4,line.scale*CFG.lineWidth*Math.min(sizeScale,1));
+      var key=line.style+'|'+w.toFixed(2);
+      (groups[key]=groups[key]||{style:line.style,width:w,ls:[]}).ls.push(line);
+    });
+    for(var key in groups){
+      var g=groups[key];
+      ctx.strokeStyle=g.style; ctx.lineWidth=g.width; ctx.beginPath();
+      g.ls.forEach(function(l){trace(l.pts);}); ctx.stroke();
+    }
+    // the glisten — one glint per colour family, alternating directions
+    if(CFG.glintGroups>0 && !reduced){
+      var fam=Math.max(1,Math.round(CFG.glintGroups));
+      var tailF=Math.max(.02,CFG.glintWidth);
+      var sat=Math.max(0,Math.min(100,Math.round(95-CFG.glintTint*60)));
+      var A=CFG.glintStrength, NS2=lowPower?32:64;
+      var tSec=glintTime/1000, period=Math.max(.5,CFG.glintInterval);
+      var gspeed=Math.max(.001,CFG.glintSpeed), travelT=Math.min(period,1/gspeed);
+      var heads=[],dirs=[],any=false;
+      for(var g2=0;g2<fam;g2++){
+        dirs[g2]=g2%2===0?1:-1;
+        var off=(g2/fam)*period, lT=(((tSec-off)%period)+period)%period;
+        if(lT<travelT){heads[g2]=lT/travelT;any=true;}else heads[g2]=-1;
+      }
+      if(any){
+        ctx.lineCap='round';ctx.lineJoin='round';
+        lines.forEach(function(line){
+          var g3=Math.min(fam-1,Math.max(0,Math.floor((line.colorPos||0)*fam)));
+          var hp0=heads[g3]; if(hp0<0)return;
+          var dir=dirs[g3], pts=line.pts;
+          var w=Math.max(1,line.scale*CFG.lineWidth*sizeScale*1.5);
+          var sx=[],sy=[],cum=[],total=0,px0=0,py0=0;
+          for(var i2=0;i2<=NS2;i2++){
+            var p=splinePoint(pts,i2/NS2); sx[i2]=p.x;sy[i2]=p.y;
+            if(i2===0)cum[i2]=0;else{total+=Math.hypot(p.x-px0,p.y-py0);cum[i2]=total;}
+            px0=p.x;py0=p.y;
+          }
+          if(total<1)return;
+          var tailLen=tailF*total;
+          function at(s){
+            var i3=1; while(i3<NS2&&cum[i3]<s)i3++;
+            var c0=cum[i3-1],c1=cum[i3],t4=c1>c0?(s-c0)/(c1-c0):0;
+            return {x:sx[i3-1]+(sx[i3]-sx[i3-1])*t4,y:sy[i3-1]+(sy[i3]-sy[i3-1])*t4};
+          }
+          var hp=dir===1?hp0:1-hp0, sHead=hp*total;
+          var sTail=dir===1?Math.max(0,sHead-tailLen):Math.min(total,sHead+tailLen);
+          if(Math.abs(sHead-sTail)<.5)return;
+          var T2=at(sTail),H2=at(sHead);
+          var grad=ctx.createLinearGradient(T2.x,T2.y,H2.x,H2.y);
+          var hueBase=glintTime*.03+g3*140+(line.colorPos||0)*60;
+          for(var q=0;q<=6;q++){
+            var f=q/6, hue=(((hueBase+f*150)%360)+360)%360;
+            grad.addColorStop(f,'hsla('+hue.toFixed(0)+','+sat+'%,'+(60+f*28).toFixed(0)+'%,'+(Math.pow(f,1.8)*A).toFixed(3)+')');
+          }
+          ctx.strokeStyle=grad; ctx.lineWidth=w; ctx.beginPath();
+          ctx.moveTo(T2.x,T2.y);
+          var sLo=Math.min(sTail,sHead),sHi=Math.max(sTail,sHead);
+          if(dir===1){for(var i4=0;i4<=NS2;i4++)if(cum[i4]>sLo&&cum[i4]<sHi)ctx.lineTo(sx[i4],sy[i4]);}
+          else{for(var i5=NS2;i5>=0;i5--)if(cum[i5]>sLo&&cum[i5]<sHi)ctx.lineTo(sx[i5],sy[i5]);}
+          ctx.lineTo(H2.x,H2.y); ctx.stroke();
+        });
+        ctx.lineCap='butt';ctx.lineJoin='miter';
+      }
+    }
+    rafId=requestAnimationFrame(render);
+  }
+  if(reduced){
+    // one still frame of the weave — the composition without the motion
+    time=12345;
+    (function still(){
+      var cw=canvas.width/dpr,ch=canvas.height/dpr;
+      ctx.clearRect(0,0,cw,ch);
+      var idx=ribbon(r1a,r1b,st1,rgb1,steps,0,0,.5);
+      ribbon(r2a,r2b,st2,rgb2,halfSteps,idx,.5,1);
+      lines.sort(function(a,b){return b.avgZ-a.avgZ;});
+      lines.forEach(function(l){
+        ctx.strokeStyle=l.style;
+        ctx.lineWidth=Math.max(.4,l.scale*CFG.lineWidth*.8);
+        ctx.beginPath(); trace(l.pts); ctx.stroke();
+      });
+    })();
+    return;
+  }
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting&&!running){running=true;last=performance.now();rafId=requestAnimationFrame(render);}
+      else if(!e.isIntersecting){running=false;}
+    });
+  },{rootMargin:'100px'}).observe(canvas);
+}
+
+/* ── Loom instances: ink on paper, laser in the dark ── */
+var INK={teal:[26,92,58],gold:[212,160,48],red:[204,42,42],blue:[47,110,168]};
+var LUM={red:[217,79,79],gold:[232,200,104],blue:[91,147,199]};
+
+// Cover: the full weave, printed in the book's ink colors
+var coverLoom=document.getElementById('coverLoom');
+if(coverLoom) createLoom(coverLoom,{
+  colors:[[INK.red,INK.gold],[INK.teal,INK.blue]],
+  alphaScale:.42,
+  config:{lineWidth:3, glintStrength:.35, glintInterval:14}
+});
+
+// Ribbon strips: narrow live-woven section dividers
+document.querySelectorAll('.loom-ribbon').forEach(function(cv,i){
+  createLoom(cv,{
+    colors: i%2===0 ? [[INK.teal,INK.gold],[INK.gold,INK.red]]
+                    : [[INK.red,INK.gold],[INK.gold,INK.blue]],
+    alphaScale:.5, steps:26, halfSteps:16,
+    config:{ampYScale:.10, rippleAmpScale:.07, loopAmpScale:.05,
+            ampXScale:.30, parentSeparation:.05, kinkDepth:.35,
+            waveFreq:5.2, lineWidth:2.2, moirePhaseSpread:420,
+            glintStrength:.4, glintInterval:11, glintWidth:.2}
+  });
+});
+
+// The Demonstration: the Loom as laser light in the dark
+var laser=document.getElementById('laser');
+if(laser) createLoom(laser,{
+  colors:[[LUM.red,LUM.gold],[LUM.gold,LUM.blue]],
+  alphaScale:.30,
+  config:{lineWidth:2.6, glintStrength:.55, glintInterval:12, glintTint:.2}
+});
+})();
+</script>
+<!-- v3.1 — Harmonic Loom engine port -->
+</body>
+</html>

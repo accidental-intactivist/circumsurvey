@@ -541,7 +541,7 @@ These are the headline numbers from the n=496 dataset. Update these when the dat
 
 - **Pleasure from Mobile Skin gap:** Intact 4.47 vs Circumcised 1.96 (Δ 2.52, 56% drop) — largest single finding
 - **Light Touch Sensitivity gap:** Intact 4.24 vs Circumcised 2.24 (Δ 2.00, 47% drop)
-- **Resentment (born-circumcised combined):** 86% report some level, 63% strong & frequent, only 14% "no, never"
+- **Resentment (circumcised as infants combined):** 86% report some level, 63% strong & frequent, only 14% "no, never"
 - **Resentment (restoring only):** 0% said "no, never" — every single restoring respondent reports negative feelings
 - **Orgasm confidence "something is missing":** Intact 4.5%, Circumcised 48.2%, Restoring 59.6%
 - **Lubrication never needed:** Intact 55.5%, Circumcised 5.5% (10:1 ratio)
@@ -570,3 +570,268 @@ The agent should always:
 - Suggest related questions the visitor might want to explore
 - End with an invitation to take the survey if the visitor hasn't already
 - Never reproduce individual qualitative responses — only reference curated quotes that appear on the site
+
+---
+
+## 🛠 Agent Work Log & Active Conventions
+
+> Multiple agents work on this repo. This section records recent cross-cutting
+> work and the conventions you must keep. Full narrative: `docs/retros/`.
+
+### 2026-07-09 — "THE UNDERLOOM" — scroll-choreographed background (Guided Tour)
+NEW: `circumsurvey/src/components/GuidedTour/LoomChoreography.jsx` — the
+UNDERLOOM (masthead has the Harmonic Loom; this is the loom beneath the
+report): one fixed TRANSPARENT canvas behind the whole tour; 64 threads morph
+between 7 named formations keyed to station anchors (#st01…#st14 +
+prologue/epilogue). SHARES THE MASTHEAD'S DIALECT: the quiet ribbon runs the
+red→gold→blue spectrum, and the Harmonic Loom's holographic GLISTEN pass now
+rakes across EVERY formation (glint values IMPORTED from `LOOM_CONFIG` in
+HarmonicCanvas.jsx — single source of truth; adjust there, not in CFG).
+CASTING lives in the `REGIONS` array at the TOP of LoomChoreography.jsx
+(station-anchor → formation-key). This is the SOLE source of truth for the
+production tour; the prototype uses per-section data-f attributes instead, so
+the two CAN desync — if a formation "never appears on the site but shows in
+the prototype," check REGIONS first (2026-07-09: st07/st10 had drifted to
+"flow", so the spirograph/pendulum was cast to ZERO stations and convergence
+showed 4×, reading as "duplicate backgrounds"; restored st07+st10=pendulum,
+st06=pulsar). Current casting: prologue=TARTAN (directly under the masthead,
+the quiet ribbon read as a HarmonicCanvas duplicate — keep ribbon away from
+the masthead's neighborhood), st05=tron, st01=CONVERGENCE, demo-band+st03=
+canyon (flight continues through the Separation), st02=moire, st06=pulsar,
+st07=PENDULUM, st09=moire, st08=quiet, st04=TARTAN (crossed bands = cross-
+tabs), st10=PENDULUM, st11=moire, st13=quiet, st12=pulsar, st14=CONVERGENCE,
+epilogue=quiet. The Demonstration
+band's embedded HarmonicCanvas was REMOVED — that band yielded to the
+Underloom (translucent bgDeep, `#demonstration-band` is a canyon anchor, the
+flight starts as the lights go down). GuidedTour.jsx no longer imports
+HarmonicCanvas; the masthead SquishHeader keeps its own.
+Formations: quiet ribbon (HarmonicCanvas parent-curve DNA, 45% amp,
+masthead spectrum), harlequin TARTAN
+(crossing diagonal sett bands, 2-pt lines — replaced the full ribbon loom,
+which Tone flagged as too similar to the masthead), beam racer (grid floor +
+light-cycles), canyon flight (wireframe terrain flythrough),
+moiré + saw-tooth blips, PENDULUM harmonograph — now a SPIROGRAPH SIMULATOR:
+real gear semantics (gearRing/gearWheel teeth → petal advance = 2π·w/(R−w);
+penHole → loop size) drive a Coral-Records / 70s-HB slinky-torus wreath whose
+pen draws CONTINUOUSLY (newest loop inks, oldest dissolves as the pen returns;
+draw=0 → complete static figure); 3 token families, counter-precessing.
+GLINT SYNC: GLN.scatter default dropped to 0.12 (masthead-coherent rakes);
+formations may override via F.scatter (convergence keeps 0.45 rain).
+PULSAR STACK (Unknown Pleasures / CP 1919: the canyon's inverse — flat-on
+stacked signal rows in --c-text, peaks waking in a center channel; now cast
+at st12 By the Numbers, replacing the canyon repeat), spirograph THE TIN
+(PEN.variety detunes each family's gears, spreads sizes, and swaps wheel
+shapes — circle / rounded triangle / rounded square via cos(m·θ) radius
+breathing — so the three figures differ like real Spirograph wheels; NOW
+PER-FIGURE RIGS: PEN.figs[3] each own gearRing/gearWheel/penHole/size/ecc/
+twist/shape/lobe, tuner has a Fig 1/2/3 radio that re-targets the sliders;
+shared pen: draw/prec/sway/spreadX. 2026-07-09 LATER PASS: figures are now
+TRUE HYPOTROCHOIDS — each of the 21 threads per figure carries one
+consecutive arc of the actual pen trace (closes after wheel/gcd revs, points
+= ring/gcd, exactly the SpirographicArt pattern-guide arithmetic); tuner has
+Ring-105 PRESET chips (Sunflower-35 / 7-Star / 5-Star / Daisy-7 / Loops-15 /
+Net-105) that stamp the selected figure; each figure wears ONE solid
+strand-group color (red/gold/blue, per Tone). FIREWORKS MODE (PEN.mutate,
+default ON): each figure inks in → holds (PEN.hold) → dissolves → rerolls
+into a random Ring-105 pattern-guide figure at a random spot, staggered
+thirds — they come and go like fireworks; figs[] (each now with px/py home
+position — stack two for compound patterns) seed only the first volley.
+Spirograph glints densified via per-formation glint override (F.glint =
+{interval:6, width:0.55}, supported engine-wide in glisten()). GLACIER FLYOVER: built, then REVERTED same day — Tone judged it lost the
+Separation's drama; the ORIGINAL canyon flight (CAN config, mono lbl→blu
+ramp) is restored and is the keeper. SPIROGRAPH PACING MELLOWED (Tone:
+"too hyperkinetic"): glints are now ONE cohesive sync wave — F.glint.sync
+(engine-wide option) forces same direction + same clock for all threads, the
+inking-order cascade alone carries a single luminous pulse through all three
+figures (pendulum glint {interval:16, width:0.3, sync:true}, scatter 0.5);
+prec 0.11→0.04, hold 0.6→1.0. THEN EVOLVED (video review): F.glint.crisscross
+(engine-wide) = TWO counter-running waves per thread, second cascading from
+the opposite end half a period behind — holographic trails that repeat and
+CROSS on the figures as the pen draws (pendulum glint {interval:8, width:0.4,
+speed:0.5, tint:0.12, crisscross:true}); vis-gate means trails only appear on
+inked arcs; per-formation tint override supported (gi.tint). QUIET-RIBBON TREATMENT promoted
+to house style via spec3(t) red→gold→blue ramp: canyon = spectrum across
+depth (warm foreground→cool horizon), moiré = two half-spectrum gradients
+interfering, tron lanes = spectrum across the floor, pendulum = full spectrum
+along each figure's inking order (offset per figure); hue(i) follows the
+ramps so glint families stay hue-true. pulsar stays mono (JD), flow keeps
+--path-* (semantic), tartan keeps its sett. Also fixed: tourKit ShareTools
+referenced missing Icons.Share2 → whole tour white-screened; themed Share2
+added to Icons.jsx),
+convergence + glisten (streaks brighten each thread's own token toward
+--c-textBright — never off-palette). GLISTEN FAMILIES ARE HUE-BINNED like the
+masthead: every formation exposes hue(i) — its threads' positions on the
+red→gold→blue spectrum (masthead colorPos, discretized) — and glint families
+bin on that axis, so warm threads glint together and cool threads answer from
+the opposite direction; monochrome formations (canyon) fire only their own
+lane, and streak hue is seeded from hue(i)*60. GLINT CHOREOGRAPHY 2.0: the
+stagger is a STRUCTURED CASCADE, not random — formations declare order(i)
+(canyon: depth, a pulse receding into the scene; spirograph: inking order,
+glints chase the pen; convergence: height) and may override scatter; streak
+alpha is coupled to the thread's own visibility (faint far rows carry faint
+glints); perspective formations declare span(i) so streaks ride only the
+VISIBLE part of a line (canyon near rows now carry foreground beam riders
+instead of glinting off-screen).
+DESIGN NORTH STAR (Tone, 2026-07-09): dense RULED-MESH OVERLAPS — sheets of
+closely-spaced parallel rings/lines crossing to weave net-like moiré lattices
+(see the Coral-sleeve details he circled). Prefer formations and glint
+choreography that create sheet-through-sheet crossings (twisting ring stacks,
+counter-moving glints on overlapping families) over isolated clean curves.
+PALETTE POLICY (2026-07-09, after Tone noted vaporwave/evergreen backgrounds
+looked identical): decorative formations use theme-REACTIVE --c-* data colors
+so every theme repaints the Underloom; --path-* tokens are universal semantic
+anchors by design and are reserved for the convergence streams only. Wired in `GuidedTour.jsx` (content div
+raised to zIndex 1). MASTHEAD GATE: draws NOTHING (zero CPU) above the first
+station anchor — the SquishHeader zone belongs to HarmonicCanvas exclusively;
+fades in at the prologue. PERF: DPR capped 1.25 (1 low-power), per-line point
+budgets via `pts(i)` (straight grid/moiré lines = 2 pts; detail only where
+curvature lives), 30/24fps caps. WIDTHS: HarmonicCanvas-style depth-scaled
+strokes (ribbon belly ~3.8px × sizeScale), all multiplied by ENG.lineWidth
+(default 1.6, tuner-exposed) so the Underloom sits in the masthead's weight
+class; glint widths ride the same multiplier.
+PAUSE: the masthead's pause button rules ALL looms — SquishHeader's
+toggleLoom dispatches `cs-loom-pause` (and persists `cs_loom_paused`); the
+Underloom listens + reads the key on mount. PAUSED = FROZEN FRAME, not blank
+(Tone's call, 2026-07-09, after a persisted pause read as a site outage):
+HarmonicCanvas draws exactly ONE frame then holds it (pausedHeld flag — the
+only non-sacred edit ever made to the masthead file: 3 lines in the pause
+path + a resize reset; drawing pipeline untouched); the Underloom freezes T
+and its glint clock but re-renders one static frame whenever scroll/viewport
+changes, so a paused page still shows the correct formation at every station.
+DEBUGGING NOTE: both looms "down" with zero console errors almost certainly
+means `cs_loom_paused=true` in localStorage, NOT a code failure.
+DISCIPLINE: morphs only in gutters between stations;
+motion damps to 30% at scroll-rest; alpha budget ≤~0.35; prefers-reduced-motion
+freezes drift; ALL colors via resolveCssColor tokens (no palette flips
+mid-scroll — Tone's explicit direction: respect the theme's stated palette,
+canvas paints no backgrounds). Tuning: constants live in CFG at top of the
+component; the interactive tuner (sliders + hints + copy-config, harmonic-tuner
+granularity) is `loom-choreography-v2.html` in the workspace root (standalone
+draft with the same math + THEME ENGINE chips; v1 kept for lineage).
+
+### 2026-07-02 — Special Report retooled as theme-native "Guided Tour"
+NOW THE FRONT DOOR: `/` renders SpecialReportPage (old landing moved to
+`/landing`, `/special-report` redirects to `/`). The tour intro opens with the
+researcher's letter ("The 'Why' Behind This Inquiry"), Inquiry-Frame edited
+with Tone: advocacy lines ("bring readers over to the side of…", "dictates
+sexual dysfunction", "overwhelmingly dissatisfied") cut/moved off the data
+floor; 86% resentment figure labeled circumcised as infants combined (circ-only is
+79%). `/special-report` body replaced: ScrollyEngine (v1 acts) is no longer rendered
+by the page. New `circumsurvey/src/components/GuidedTour/` (tourData.js,
+tourKit.jsx, TourVisuals.jsx, GuidedTour.jsx) walks all 14 exhibits in catalog
+order — ExhibitHero-consistent station cards (tint/border/topbar/kicker/
+watermark via Icons.jsx), Accidental-Intactivist "lens" copy (report, never
+argue), dotted-leader data cards, a projection-gated "Demonstration" band
+(HarmonicCanvas laser + dumbbell separation), convergence sankey, and per-
+station deep links to `/explore#/<route>`. Fully theme-engine native: C/FONT
+tokens + `var(--path-*)` + color-mix tints — verified live in-browser across
+paper/light, amber, and colorblind (Wong) toggles. SquishHeader kept as
+masthead; its dummy nav buttons now anchor-link to stations (#st01…#st14).
+Reuses real Explore chrome: `ExhibitCard` gemstone tiles (now exported from
+ExhibitsDashboard with optional `href`/`onClick` overrides) render the tour
+map grid (tiles jump to stations), and `GlobalFooter` (route="special-report",
+navigate → `/explore#/<route>`) provides the Master Index directory + next-
+exhibit block. FIXED: SquishHeader's `overflow:hidden` was clipping the
+ThemeToggle Display Settings panel — overflow moved to a canvas-only clipping
+wrapper, and the ThemeToggle + Explorer CTA moved out of the dock-gated nav so
+Display Settings are always reachable. SquishHeader now collapses 1:1 with
+scroll (all tweens duration:1 over `innerHeight*0.85 − 70`, scrub:true, like
+ExploreMasthead) with theme-aware glass when scrolled. The tour opens with a
+"Before you enter — The Inquiry & Its Method" intro (origin + 4-point
+condensed methodology + links), and Station 01 embeds the REAL
+`SurveyFlowchart` board (wrapped in `ReportProvider`; navigate crosses to
+`/explore#/<route>`) — Tone wants the board-game flow aesthetic leaned into
+going forward. SurveyFlowchart search fixed (affects /explore#/pathways too):
+search now activates at 2+ chars via `effectiveQuery`, the `grouped` memo's
+missing `searchQuery` dep was repaired (stale counts made EVERY node claim
+matches, so one keystroke expanded the whole board), and a "Collapse All"
+button beside the search bar clears query + nodes + sections + pins. Search
+also "lights the route": matching fork ribbons glow at 0.95 opacity with an
+animated dashed current (`sf-flow-anim`) down their spine + drop-shadow glow,
+non-matching ribbons dim to 0.06 (`searchActive` prop on
+UniversalForkConnector). CHARTS OVER TABLES (Tone's direction): the tour's
+dotted-leader DataRows ledgers were replaced with `BarRows` (tourKit) animated
+color bars everywhere, and Station 03's Demonstration now embeds the REAL
+`PleasureGapWidget` (self-fetching, theme-native) instead of a custom
+dumbbell + pooled table; the projection gate keeps a one-line pooled summary.
+Prefer embedding real exhibit visuals over restating data as text.
+DOCKED NAV: the flat station anchors were replaced with the ExploreMasthead
+pattern — "Findings" wordmark + scrollspy `BreadcrumbDropdown` (reused from
+Explore) showing the current station, full 14-station tour in the dropdown,
+smooth-scroll onSelect. Scrollspy = last #stNN above y=140, rAF-throttled.
+EDITORIAL PASS (scrollytelling practices): methodology card → `MethodPillars`
+(icon + 3-word label + one line); 3 `PullStat` full-width display-number
+interstitials as breathing moments (4.47 vs 1.96 / 2.7% / 433 of 500); all 14
+station lens strings cut to wall-text length (≤2 sentences, ≤23 words).
+Editorial rules for this page: one idea per viewport, numbers as display
+type, dense→light rhythm, wall text under 40 words. NOTES: (a) tour
+numbers are the frozen 500-milestone snapshot and drift from live API values
+(e.g. mobile-skin 4.47/1.96 vs live 4.46/2.00) — `scripts/freeze_phase1.js`
+(planned) is the single stamp; (b) SquishHeader's docked bar uses a hardcoded
+dark glass rgba — slightly off in light modes, pre-existing; (c) design
+lineage: `circumsurvey/docs/SPECIAL-REPORT-V2-BLUEPRINT.md` + standalone
+prototypes `special-report-v2…v7*.html` in the workspace root (iteration
+artifacts, not deployed).
+
+### 2026-06-22 — Docent productionization + Explore consistency pass
+Live code lives in the **nested `circumsurvey/`** project (Worker at
+`circumsurvey/worker/`, Explore at `circumsurvey/src/explore/`).
+
+Shipped this session:
+- **AI Docent (Worker):** replaced the deprecated `@cf/meta/llama-3.1-8b-instruct`
+  (sunset 2026-05-30); synthesis now runs on **Gemini 2.5 Flash** via env, with a
+  Cloudflare fallback and cheap CF routing. Added a security layer, per-visitor
+  rate limiting, an output-source labeling system, a unit-tested logic module,
+  and an ACRUE evaluation framework + CI.
+- **Explore UI:** catalog-driven title cards, "Sections" nav terminology,
+  For-Parents fixes, emoji→React-icon conversion, narrative privacy hardening,
+  clearer Docent chat (persistence + Clear + clean URLs).
+- **Docs:** `docs/explore-diagnostic.md` and `docs/explore-exhibits-review.md`
+  (holistic reviews of the Explore side).
+
+### Active conventions — do not regress these
+1. **Respondent attribution = pathway + generation ONLY.** Never show geography
+   (state/province/country) for a quote — re-identification risk. Enforced in
+   `components/NarrativeList.jsx` and `worker/src/copilotLib.js` (`formatSourceLabel`).
+2. **`ExhibitHero` is catalog-driven.** Color, icon, and number derive from
+   `EXHIBIT_ROUTES` (color/icon) + `ROUTE_META` (kicker) by route, resolved
+   through the theme engine. To restyle an exhibit, edit the catalog in
+   `components/ExploreMasthead.jsx` — don't hardcode hero color/icon per page.
+3. **No emojis in the UI.** Use the React icon set in `components/Icons.jsx`.
+   `ExhibitSectionHeading` takes `Icon={IconComponent}` (preferred over the
+   legacy emoji `icon` prop).
+4. **Exhibits vs "Sections" terminology is ACTIVELY MANAGED BY THE TEAM — do
+   NOT change nav wording in automated/consistency passes.** It has been flipped
+   back and forth; leave `InlineBreadcrumb`/masthead wording exactly as found
+   unless Tone explicitly asks. (Current intent: breadcrumb crumb = "Exhibits".)
+5. **Docent deterministic logic = `worker/src/copilotLib.js`** (intent/tool
+   parsing, ID allowlist validation, SUA parsing, source labeling). It is the
+   tested source of truth (`worker/test/copilot.test.js`); the Worker imports it.
+   Don't fork this logic inline in `index.js`.
+6. **Docent safety is layered, don't weaken it:** `DOCENT_SYSTEM` scope/refusal,
+   retrieved content fenced as untrusted, Gemini `safetySettings` (keep
+   SEXUALLY_EXPLICIT permissive so clinical discussion isn't blocked), input
+   length cap, tool-ID allowlist, optional `AI_OUTPUT_GUARD`.
+7. **Worker env:** `SYNTH_PROVIDER`, `GEMINI_MODEL`, `CF_SYNTH_MODEL`,
+   `CF_ROUTER_MODEL`, `AI_OUTPUT_GUARD` (vars); `GEMINI_API_KEY` (secret).
+   Worker changes require `npm run deploy` from `worker/`.
+8. **ACRUE eval** (`worker/eval/`): ACRUE = answer QUALITY (Accurate, Complete,
+   Relevant, Useful, Exceptional), 1–5. Safety is a SEPARATE hard gate. CI:
+   `.github/workflows/docent-tests.yml` (unit, every push) and `docent-eval.yml`
+   (live, weekly; needs `GEMINI_API_KEY` secret). Run locally: `node --test`
+   and `node eval/run.js`.
+
+### Known issues / not yet done
+- **2026-06-22 update:** Explore headline counts are now LIVE via
+  `src/explore/lib/useLiveCounts.js` (Methodology card, PathwayChips, Survey
+  Map flowchart, Religious "Missing Congregation", masthead). Do NOT reintroduce
+  hardcoded 501/355 on the Explore side — read from `/count` + `/questions`.
+- OPEN (needs Tone's call): the *frozen* Special Report `src/data.js` is
+  self-contradictory — the `demographics` block is 142/213/109/37 (=501) but the
+  `pathways[]` block is 140/210/109/37 (=496). Pick one canonical snapshot and
+  align both (and the "n=" labels in the narrative prose).
+- `SmallSampleBadge` (n<5 suppress, n<20 warn) is not yet wired into every
+  exhibit/chart — see `docs/explore-exhibits-review.md` §4.
+- Sandbox caveat for agents: `node_modules` here is Windows-built, so native
+  esbuild/vite/vitest won't run on Linux. Use `node --test` for the Worker
+  (pure JS) and a CRLF-normalized `@babel/parser` for JSX syntax checks.

@@ -1,65 +1,16 @@
-# CircumSurvey — Preliminary Results Explorer
+# React + Vite
 
-**The Accidental Intactivist's Inquiry** — Phase 1 Interactive Data Explorer
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-An independent, anonymous survey of 496+ respondents documenting the lived experiences of intact, circumcised, and restoring individuals, along with partners, parents, and healthcare professionals.
+Currently, two official plugins are available:
 
-## 🔗 Links
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-- **Survey site:** [circumsurvey.online](https://circumsurvey.online)
-- **Take the survey:** [Google Forms](https://forms.gle/FQ8o9g7j1yU3Cw7n7)
-- **Substack:** [The Accidental Intactivist](https://theaccidentalintactivist.substack.com)
-- **Reddit:** [r/FriendsOfTheFrenulum](https://reddit.com/r/FriendsOfTheFrenulum)
+## React Compiler
 
-## 📊 About This Project
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-This repository contains the interactive data explorer for Phase 1 preliminary findings. The site presents comparative response data across six survey pathways:
+## Expanding the Oxlint configuration
 
-- 🟢 The Intact Pathway (n=140)
-- 🔵 The Circumcised Pathway (n=210)
-- 🟣 The Restoration Pathway (n=109)
-- 🟠 The Observer, Partner & Ally Pathway (n=37)
-- 🔴 The Trans Pathway
-- ⚪ The Intersex Pathway
-
-## 🏗️ Project Structure
-
-```
-circumsurvey/
-├── CLAUDE.md              ← Project context for AI-assisted development
-├── docs/
-│   ├── DESIGN_PLAN.md     ← Comprehensive website design plan
-│   └── TECHNICAL_REQUIREMENTS.md ← Infrastructure & hosting plan
-├── data/
-│   └── raw/               ← Raw CSV (LOCAL ONLY, never committed)
-├── scripts/               ← Python data aggregation scripts
-├── src/
-│   ├── components/        ← React components
-│   ├── data/              ← Aggregated JSON data (committed)
-│   └── styles/            ← CSS / design system
-├── public/                ← Static assets
-└── reference/             ← Design motif references
-```
-
-## 🔐 Data Security
-
-- Raw survey CSV is **never committed** to this repository
-- Only pre-computed aggregate statistics are deployed
-- Qualitative quotes are individually curated and reviewed
-- No personally identifiable information exists in the dataset by design
-
-## 🎨 Design: "Tomorrow's Bureau"
-
-The site uses a hybrid design language combining mid-century modern optimistic geometry (Josefin Sans, rainbow accents, warm cream palette) with ruled-form documentary structure (dotted leaders, red stars, black header bars, justified text blocks).
-
-See `docs/DESIGN_PLAN.md` for the full design specification and `reference/` for visual motif samples.
-
-## 👤 Author
-
-**Tone Pettit** — Independent researcher, Seattle, WA
-- tone@circumsurvey.online
-- [circumsurvey.online](https://circumsurvey.online)
-
-## 🤝 Strategic Partners
-
-Intact Global · GALDEF · Doctors Opposing Circumcision · WIBM
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Inquiry — Phase 1 Special Report · Prototype v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,500;1,600&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#faf8f4; --paper-edge:#e0dcd4; --teal:#1a5c3a; --ink:#2a2a2a; --ink2:#5a5a5a;
+  --gold:#d4a030; --gold-hi:#e8b84a; --cs-red:#cc2a2a;
+  --bg:#0e0e10; --card:#18181c; --border:#222228;
+  --text:#eeeef0; --mut:#8a8a96; --ghost:#55555f;
+  --p-int:#5b93c7; --p-circ:#d94f4f; --p-rest:#e8c868; --p-obs:#a0a0a0;
+  --f-disp:'Playfair Display',serif; --f-body:'Barlow',sans-serif;
+  --f-cond:'Barlow Condensed',sans-serif; --f-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);overflow-x:hidden}
+::selection{background:var(--gold);color:#0e0e10}
+
+/* ── persistent thread canvas ─────────────────────────────── */
+#threads{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+
+main{position:relative;z-index:1}
+
+/* ── section scaffolding ──────────────────────────────────── */
+.movement{position:relative;padding:14vh 1.5rem}
+.dark{background:transparent}
+.cream{background:var(--paper);color:var(--ink)}
+.cream::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+.fade-top{background:linear-gradient(to bottom, rgba(14,14,16,0) , var(--paper) 85%);height:80px;margin-top:-80px;position:relative;z-index:2}
+.fade-bot{background:linear-gradient(to bottom, var(--paper), rgba(14,14,16,0));height:80px;position:relative;z-index:2}
+.col{max-width:720px;margin:0 auto;position:relative}
+.col-wide{max-width:940px;margin:0 auto;position:relative}
+
+.eyebrow{font-family:var(--f-cond);font-weight:700;font-size:.72rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:.9rem}
+.dark h2{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.6rem,3.4vw,2.4rem);
+  color:var(--text);line-height:1.15;margin-bottom:1.4rem}
+.cream h2{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.6rem,3.4vw,2.4rem);
+  color:var(--teal);line-height:1.15;margin-bottom:1.4rem}
+.movement p{font-size:.95rem;line-height:1.75;margin-bottom:1.15rem}
+.dark p{color:var(--text)}
+.cream p{color:var(--ink)}
+.gold-rule{width:52px;height:2px;background:var(--gold);border:none;margin:2.2rem 0}
+
+/* reveal-on-scroll for text blocks */
+.rev{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+.rev.on{opacity:1;transform:none}
+
+/* ── masthead ─────────────────────────────────────────────── */
+#masthead{min-height:170vh;display:block}
+.mast-pin{position:sticky;top:0;min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:0 1.5rem}
+.mast-q{font-family:var(--f-disp);font-weight:800;font-size:clamp(1.7rem,4.6vw,3.4rem);
+  line-height:1.18;max-width:880px;color:var(--text);text-wrap:balance;
+  text-shadow:0 2px 30px rgba(0,0,0,.55)}
+.mast-a{font-family:var(--f-disp);font-style:italic;font-weight:600;
+  font-size:clamp(1.05rem,2vw,1.5rem);color:var(--gold-hi);margin-top:1.6rem;
+  opacity:0;transition:opacity 1.2s ease .4s}
+.mast-a.on{opacity:1}
+.mast-kicker{font-family:var(--f-cond);font-weight:600;font-size:.72rem;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--mut);margin-bottom:1.6rem}
+.scroll-cue{position:absolute;bottom:4.5vh;left:50%;transform:translateX(-50%);
+  font-family:var(--f-cond);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--ghost);animation:cue 2.6s ease-in-out infinite}
+@keyframes cue{0%,100%{opacity:.35;transform:translateX(-50%) translateY(0)}50%{opacity:.9;transform:translateX(-50%) translateY(6px)}}
+
+/* ── bureau memo card (cream interludes) ──────────────────── */
+.memo{background:#fff;border:1px solid var(--paper-edge);border-top:3px solid var(--teal);
+  border-radius:4px;padding:2rem 2.2rem;box-shadow:0 8px 30px rgba(60,50,30,.09);position:relative}
+.memo .stamp{position:absolute;top:1.1rem;right:1.2rem;font-family:var(--f-mono);
+  font-size:.55rem;letter-spacing:.14em;color:var(--ink2);border:1px solid var(--paper-edge);
+  padding:.25rem .5rem;border-radius:2px;text-transform:uppercase}
+.sig{display:flex;align-items:baseline;gap:.8rem;margin-top:1.6rem;padding-top:1.2rem;
+  border-top:1px dashed var(--paper-edge)}
+.sig b{font-family:var(--f-disp);font-style:italic;font-size:1.05rem;color:var(--ink)}
+.sig span{font-family:var(--f-cond);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink2)}
+.memo a{color:var(--teal);text-decoration-color:var(--gold)}
+
+/* ── plates (figures) ─────────────────────────────────────── */
+.plate{background:rgba(24,24,28,.82);backdrop-filter:blur(5px);border:1px solid var(--border);
+  border-radius:10px;padding:1.8rem 2rem 1.5rem;margin:2.6rem 0;position:relative}
+.plate::before,.plate::after,
+.plate .rm::before,.plate .rm::after{content:"";position:absolute;width:14px;height:14px;
+  border-color:var(--ghost);border-style:solid;opacity:.7}
+.plate::before{top:8px;left:8px;border-width:1px 0 0 1px}
+.plate::after{top:8px;right:8px;border-width:1px 1px 0 0}
+.plate .rm::before{bottom:8px;left:8px;border-width:0 0 1px 1px}
+.plate .rm::after{bottom:8px;right:8px;border-width:0 1px 1px 0}
+.fig-tag{font-family:var(--f-mono);font-weight:600;font-size:.6rem;letter-spacing:.16em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:.35rem}
+.fig-title{font-family:var(--f-disp);font-weight:700;font-size:1.15rem;color:var(--text);margin-bottom:.3rem}
+.fig-sub{font-size:.78rem;color:var(--mut);margin-bottom:1.4rem}
+.fig-foot{font-family:var(--f-mono);font-size:.55rem;color:var(--ghost);letter-spacing:.08em;
+  margin-top:1.3rem;padding-top:.8rem;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+
+/* ── bar rows ─────────────────────────────────────────────── */
+.brow{display:grid;grid-template-columns:172px 1fr 56px;align-items:center;gap:.8rem;margin:.55rem 0}
+.brow .lbl{font-family:var(--f-cond);font-weight:600;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mut);text-align:right}
+.track{height:14px;background:rgba(255,255,255,.045);border-radius:3px;overflow:hidden;position:relative}
+.fill{height:100%;width:0;border-radius:3px;transition:width 1s cubic-bezier(.22,.8,.3,1)}
+.brow .val{font-family:var(--f-mono);font-weight:700;font-size:.78rem;color:var(--text)}
+.grp{margin:1.1rem 0 1.4rem}
+.grp-title{font-family:var(--f-cond);font-weight:700;font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text);margin-bottom:.5rem}
+.mini .brow{grid-template-columns:110px 1fr 52px;margin:.3rem 0}
+.mini .track{height:10px}
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;margin:.4rem 0 1rem}
+.lg{display:flex;align-items:center;gap:.45rem;font-family:var(--f-cond);font-size:.68rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.lg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ── predict-then-reveal ──────────────────────────────────── */
+.predict{border:1px dashed var(--gold);border-radius:10px;padding:1.6rem 1.8rem;margin:2.4rem 0;
+  background:rgba(212,160,48,.05)}
+.predict h3{font-family:var(--f-disp);font-weight:700;font-size:1.2rem;margin-bottom:.5rem;color:var(--text)}
+.predict p{font-size:.85rem;color:var(--mut)}
+.pbtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.1rem}
+.pbtn{font-family:var(--f-cond);font-weight:600;font-size:.74rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text);background:transparent;border:1px solid var(--ghost);
+  border-radius:999px;padding:.6rem 1.2rem;cursor:pointer;transition:all .15s ease}
+.pbtn:hover{border-color:var(--gold);color:var(--gold)}
+.pbtn.sel{border-color:var(--gold);background:rgba(212,160,48,.12);color:var(--gold-hi)}
+.p-echo{display:none;margin-top:1rem;font-family:var(--f-mono);font-size:.68rem;color:var(--gold-hi)}
+.p-echo.on{display:block}
+.locked-note{font-family:var(--f-cond);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ghost);text-align:center;margin:1.2rem 0}
+#splitwrap{filter:blur(10px);opacity:.35;transition:filter .9s ease,opacity .9s ease;pointer-events:none}
+#splitwrap.unlocked{filter:none;opacity:1;pointer-events:auto}
+
+/* ── voice cards ──────────────────────────────────────────── */
+.voices{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin:1.6rem 0}
+.voice{background:rgba(24,24,28,.85);border:1px solid var(--border);border-left:3px solid var(--mut);
+  border-radius:6px;padding:1rem 1.1rem}
+.voice q{font-family:var(--f-disp);font-style:italic;font-size:.82rem;line-height:1.55;color:var(--text);quotes:"\201C" "\201D"}
+.voice .att{font-family:var(--f-cond);font-weight:600;font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;margin-top:.7rem}
+.v-int{border-left-color:var(--p-int)} .v-int .att{color:var(--p-int)}
+.v-circ{border-left-color:var(--p-circ)} .v-circ .att{color:var(--p-circ)}
+.v-rest{border-left-color:var(--p-rest)} .v-rest .att{color:var(--p-rest)}
+.v-note{font-family:var(--f-cond);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ghost);text-align:center;margin-top:.4rem}
+
+/* ── streams overlay (Movement II) ────────────────────────── */
+.streams{display:flex;justify-content:space-between;gap:1rem;margin:2.2rem 0;flex-wrap:wrap}
+.stream-tag{flex:1;min-width:130px;text-align:center;padding:1rem .6rem;border-radius:8px;
+  background:rgba(24,24,28,.72);backdrop-filter:blur(4px);border:1px solid var(--border);border-top:3px solid var(--mut)}
+.stream-tag .n{font-family:var(--f-mono);font-weight:800;font-size:1.9rem}
+.stream-tag .nm{font-family:var(--f-cond);font-weight:600;font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mut);margin-top:.2rem}
+.st-int{border-top-color:var(--p-int)} .st-int .n{color:var(--p-int)}
+.st-circ{border-top-color:var(--p-circ)} .st-circ .n{color:var(--p-circ)}
+.st-rest{border-top-color:var(--p-rest)} .st-rest .n{color:var(--p-rest)}
+.st-obs{border-top-color:var(--p-obs)} .st-obs .n{color:var(--p-obs)}
+
+/* ── SVG draw-on ──────────────────────────────────────────── */
+.draw path,.draw line,.draw circle:not(.ringfill),.draw rect.stroke{stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600)}
+.draw.on path,.draw.on line,.draw.on circle:not(.ringfill),.draw.on rect.stroke{animation:drawon 1.1s cubic-bezier(.3,.7,.3,1) forwards}
+.ringfill{stroke-dasharray:0 289.03;stroke-dashoffset:0}
+@keyframes drawon{to{stroke-dashoffset:0}}
+.draw .lateA{animation-delay:.35s!important}
+.draw .lateB{animation-delay:.7s!important}
+.svglabel{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em}
+
+/* ── convergence circles ──────────────────────────────────── */
+.rings{display:flex;gap:1.4rem;justify-content:center;flex-wrap:wrap;margin:2rem 0}
+.ring{text-align:center}
+.ring .pct{font-family:var(--f-mono);font-weight:800;font-size:1.5rem}
+.ring .who{font-family:var(--f-cond);font-weight:600;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mut);margin-top:.3rem}
+
+/* ── finale doors ─────────────────────────────────────────── */
+#finale{min-height:120vh;display:flex;align-items:center}
+.doors{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.4rem;justify-content:center}
+.door{flex:1;min-width:200px;max-width:270px;text-align:left;background:rgba(24,24,28,.85);
+  border:1px solid var(--border);border-radius:10px;padding:1.4rem 1.4rem;cursor:pointer;
+  text-decoration:none;transition:all .18s ease;position:relative}
+.door:hover{border-color:var(--gold);transform:translateY(-3px)}
+.door .k{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
+.door .t{font-family:var(--f-disp);font-weight:700;font-size:1.05rem;color:var(--text);margin:.4rem 0 .35rem}
+.door .d{font-size:.75rem;color:var(--mut);line-height:1.5}
+.colophon{font-family:var(--f-mono);font-size:.58rem;color:var(--ghost);letter-spacing:.08em;
+  text-align:center;margin-top:4rem;line-height:2}
+
+.proto-badge{position:fixed;bottom:12px;right:14px;z-index:50;font-family:var(--f-mono);
+  font-size:.55rem;letter-spacing:.12em;color:var(--ghost);border:1px solid var(--border);
+  background:rgba(14,14,16,.7);padding:.3rem .55rem;border-radius:4px;text-transform:uppercase}
+
+@media (max-width:640px){
+  .brow{grid-template-columns:110px 1fr 46px}
+  .brow .lbl{font-size:.62rem}
+  .plate{padding:1.3rem 1.1rem 1.2rem}
+  .movement{padding:11vh 1rem}
+}
+@media (prefers-reduced-motion: reduce){
+  .rev{transition:none;opacity:1;transform:none}
+  .fill{transition:none}
+  .draw path,.draw line,.draw circle{stroke-dasharray:none;stroke-dashoffset:0}
+  .scroll-cue{animation:none}
+}
+</style>
+</head>
+<body>
+<canvas id="threads" aria-hidden="true"></canvas>
+<div class="proto-badge">Prototype · not for distribution</div>
+<main>
+
+<!-- ═════════ MOVEMENT I · THE QUESTION ═════════ -->
+<section id="masthead" class="movement dark" data-stage="0" style="padding:0">
+  <div class="mast-pin">
+    <div class="mast-kicker">The Accidental Intactivist&rsquo;s Inquiry &middot; Phase 1 Special Report</div>
+    <h1 class="mast-q">If someone asked you honestly how you felt about your circumcision status &mdash; what would you say?</h1>
+    <div class="mast-a" id="mastA">We asked. Five hundred people answered.</div>
+    <div class="scroll-cue">Scroll &darr;</div>
+  </div>
+</section>
+
+<div class="fade-top"></div>
+<section class="movement cream" style="padding-top:6vh">
+  <div class="col">
+    <div class="memo rev">
+      <div class="stamp">Memo &middot; 01</div>
+      <div class="eyebrow" style="color:var(--teal)">From the Lead Researcher</div>
+      <h2 style="font-size:1.5rem">A simple observation</h2>
+      <p>This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults.</p>
+      <p>So I asked &mdash; respectfully, anonymously, and with room for every perspective. What follows is what five hundred people said when someone finally asked. I have opinions about this practice, and you can read them <a href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noopener">elsewhere</a>. This report is not that. Here, the respondents speak, and you draw your own conclusions.</p>
+      <div class="sig"><b>Tone Pettit</b><span>The Accidental Intactivist &middot; Lead Researcher</span></div>
+    </div>
+  </div>
+</section>
+<div class="fade-bot"></div>
+
+<!-- ═════════ MOVEMENT II · WHO ANSWERED ═════════ -->
+<section class="movement dark" data-stage="1">
+  <div class="col">
+    <div class="rev">
+      <div class="eyebrow">Movement II</div>
+      <h2>Who answered</h2>
+      <p>Each luminous thread on this page is one respondent. Five hundred of them, gathered anonymously. As you scroll, watch them sort themselves into the four main pathways of the survey.</p>
+    </div>
+    <div class="streams rev">
+      <div class="stream-tag st-int"><div class="n" data-count="141">0</div><div class="nm">Intact</div></div>
+      <div class="stream-tag st-circ"><div class="n" data-count="212">0</div><div class="nm">Circumcised</div></div>
+      <div class="stream-tag st-rest"><div class="n" data-count="110">0</div><div class="nm">Restoring</div></div>
+      <div class="stream-tag st-obs"><div class="n" data-count="37">0</div><div class="nm">Observer &amp; Ally</div></div>
+    </div>
+    <div class="rev" style="font-family:var(--f-mono);font-size:.58rem;color:var(--ghost);text-align:center;letter-spacing:.08em">
+      PROVISIONAL SPLIT &mdash; FINAL PER-PATHWAY N&rsquo;S STAMPED BY THE PHASE-1 FREEZE SCRIPT &middot; TRANS &amp; INTERSEX PATHWAYS HELD FOR DEDICATED TREATMENT (SMALL-N RULE)
+    </div>
+    <div class="plate rev"><span class="rm"></span>
+      <div class="fig-tag">Fig. 01 &mdash; Read this before the results</div>
+      <div class="fig-title">How the instrument works &mdash; and what it can&rsquo;t tell you</div>
+      <div class="fig-sub">We show you the caveats first, because that&rsquo;s the honest order.</div>
+      <p style="font-size:.85rem;color:var(--mut)">This is a self-selected sample recruited largely from communities already thinking about this topic. It is not a random population survey, and we never present it as one. What it <em>is</em>: one of the largest structured, comparative records of how people describe their own lived experience of their circumcision status &mdash; asked the same questions, in the same words, from both sides of the anatomical fence. The survey asked about sexual experience <em>before</em> asking about status, so baseline answers were given before the comparison was framed.</p>
+      <div class="fig-foot"><span>N=500 &middot; PHASE 1 MILESTONE SNAPSHOT</span><span>CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ MOVEMENT III · BEFORE YOU KNEW WHO WAS WHO ═════════ -->
+<section class="movement dark" data-stage="2">
+  <div class="col">
+    <div class="rev">
+      <div class="eyebrow">Movement III</div>
+      <h2>Before anyone knew who was who</h2>
+      <p>Early in the survey &mdash; before any mention of circumcision &mdash; respondents rated their own sexual experience on a 1&ndash;5 scale. Here is everyone together: one braided cord, no labels, no sides.</p>
+    </div>
+    <div class="plate rev"><span class="rm"></span>
+      <div class="fig-tag">Fig. 02 &mdash; Baseline, all respondents together</div>
+      <div class="fig-title">&ldquo;Rate the following aspects of your sexual experience&rdquo;</div>
+      <div class="fig-sub">Mean rating, 1&ndash;5 scale &middot; all anatomical-status respondents pooled</div>
+      <div id="aggBars">
+        <div class="brow"><span class="lbl">Orgasm intensity</span><div class="track"><div class="fill" data-w="64" style="background:#7a7a82"></div></div><span class="val" data-val="3.20">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Ease of orgasm</span><div class="track"><div class="fill" data-w="61" style="background:#7a7a82"></div></div><span class="val" data-val="3.04">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Variety of sensation</span><div class="track"><div class="fill" data-w="59" style="background:#7a7a82"></div></div><span class="val" data-val="2.96">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Light touch sensitivity</span><div class="track"><div class="fill" data-w="59" style="background:#7a7a82"></div></div><span class="val" data-val="2.94">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Pleasure from mobile skin</span><div class="track"><div class="fill" data-w="61" style="background:#7a7a82"></div></div><span class="val" data-val="3.03">&nbsp;</span></div>
+      </div>
+      <div class="fig-foot"><span>POOLED MEANS, WEIGHTED BY PATHWAY N</span><span>CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+
+    <div class="predict rev" id="predictBox">
+      <h3>Then the survey asked one question.</h3>
+      <p>&ldquo;Are you circumcised?&rdquo; &mdash; and every answer above could suddenly be sorted. Before you scroll on: what do you expect happened to these numbers?</p>
+      <div class="pbtns">
+        <button class="pbtn" data-p="split">They split wide apart</button>
+        <button class="pbtn" data-p="small">Small differences</button>
+        <button class="pbtn" data-p="same">About the same</button>
+      </div>
+      <div class="p-echo" id="pEcho"></div>
+    </div>
+    <div class="locked-note" id="lockNote">Make your prediction to unlock the answer</div>
+  </div>
+</section>
+
+<section class="movement dark" data-stage="3" id="splitSection" style="padding-top:4vh">
+  <div class="col" id="splitwrap">
+    <div class="rev">
+      <div class="eyebrow">The Separation</div>
+      <h2>The cord comes apart</h2>
+      <p id="verdictLine">Sorted by a single question, the braid separates.</p>
+    </div>
+    <div class="plate rev"><span class="rm"></span>
+      <div class="fig-tag">Fig. 03 &mdash; The same answers, sorted by status</div>
+      <div class="fig-title">The baseline, separated</div>
+      <div class="fig-sub">Mean rating, 1&ndash;5 scale &middot; same respondents as Fig. 02</div>
+      <div class="legend">
+        <span class="lg"><i style="background:var(--p-int)"></i>Intact</span>
+        <span class="lg"><i style="background:var(--p-rest)"></i>Restoring</span>
+        <span class="lg"><i style="background:var(--p-circ)"></i>Circumcised</span>
+      </div>
+      <div id="splitBars">
+        <div class="grp"><div class="grp-title">Pleasure from mobile skin</div><div class="mini">
+          <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="78" style="background:var(--p-int)"></div></div><span class="val" data-val="3.88">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="60" style="background:var(--p-rest)"></div></div><span class="val" data-val="3.00">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="50" style="background:var(--p-circ)"></div></div><span class="val" data-val="2.49">&nbsp;</span></div>
+        </div></div>
+        <div class="grp"><div class="grp-title">Light touch sensitivity</div><div class="mini">
+          <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="73" style="background:var(--p-int)"></div></div><span class="val" data-val="3.67">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="53" style="background:var(--p-rest)"></div></div><span class="val" data-val="2.67">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="52" style="background:var(--p-circ)"></div></div><span class="val" data-val="2.60">&nbsp;</span></div>
+        </div></div>
+        <div class="grp"><div class="grp-title">Variety of sensation</div><div class="mini">
+          <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="76" style="background:var(--p-int)"></div></div><span class="val" data-val="3.78">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="53" style="background:var(--p-rest)"></div></div><span class="val" data-val="2.65">&nbsp;</span></div>
+          <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="52" style="background:var(--p-circ)"></div></div><span class="val" data-val="2.58">&nbsp;</span></div>
+        </div></div>
+      </div>
+      <div class="fig-foot"><span>ANATOMICAL-STATUS PATHWAYS ONLY &middot; OBSERVERS STEP ASIDE HERE</span><span>CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+
+    <div class="plate rev"><span class="rm"></span>
+      <div class="fig-tag">Fig. 04 &mdash; Lubrication requirement</div>
+      <div class="fig-title">&ldquo;Do you generally need artificial lubrication?&rdquo;</div>
+      <div class="fig-sub">Answering &ldquo;never&rdquo; &middot; by pathway</div>
+      <div class="mini">
+        <div class="brow"><span class="lbl">Intact</span><div class="track"><div class="fill" data-w="55.5" style="background:var(--p-int)"></div></div><span class="val" data-val="55.5%">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Restoring</span><div class="track"><div class="fill" data-w="16" style="background:var(--p-rest)"></div></div><span class="val" data-val="16.0%">&nbsp;</span></div>
+        <div class="brow"><span class="lbl">Circumcised</span><div class="track"><div class="fill" data-w="5.5" style="background:var(--p-circ)"></div></div><span class="val" data-val="5.5%">&nbsp;</span></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--mut);margin-top:.9rem">A ten-to-one ratio, in the respondents&rsquo; own reporting. We add no adjective to it.</p>
+      <div class="fig-foot"><span>N=486 ANATOMICAL-STATUS RESPONDENTS</span><span>CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+
+    <div class="voices rev">
+      <div class="voice v-circ"><q>I spent years thinking something was wrong with me. It never occurred to me to ask whether something had been done to me.</q><div class="att">Circumcised &middot; Gen X</div></div>
+      <div class="voice v-int"><q>Honestly? I never think about it. It works, everything moves, nothing hurts. I didn&rsquo;t realize that was worth saying out loud until this survey.</q><div class="att">Intact &middot; Millennial</div></div>
+      <div class="voice v-circ"><q>I&rsquo;m fine with it. My parents did what everyone did. I don&rsquo;t feel damaged and I don&rsquo;t feel angry.</q><div class="att">Circumcised &middot; Boomer</div></div>
+    </div>
+    <div class="v-note">Representative placeholder quotes for prototype &mdash; final quotes are curated by Tone from open-ended responses &middot; attribution is pathway + generation only</div>
+  </div>
+</section>
+
+<!-- ═════════ MOVEMENT IV · THE MIRRORS (teaser) ═════════ -->
+<div class="fade-top"></div>
+<section class="movement cream">
+  <div class="col-wide">
+    <div class="rev" style="max-width:720px;margin:0 auto">
+      <div class="eyebrow" style="color:var(--gold)">Movement IV</div>
+      <h2>The mirrors</h2>
+      <p>Eighteen questions in the survey were asked twice &mdash; once from each side of the fence. The same concept, mirrored. Here is one pair: <em>how often do you wonder what the other experience is like?</em></p>
+    </div>
+    <div class="memo rev" style="max-width:820px;margin:2rem auto 0;padding:2rem 2.4rem">
+      <div class="stamp">Mirror &middot; Pair 15</div>
+      <svg class="draw" id="mirrorSvg" viewBox="0 0 760 250" width="100%" role="img" aria-label="Mirrored bar chart: 67.8 percent of circumcised respondents often wonder about the intact experience, versus 27.3 percent of intact respondents wondering about the circumcised experience.">
+        <line x1="380" y1="18" x2="380" y2="212" stroke="#d4a030" stroke-width="2" style="--len:200"/>
+        <text x="368" y="132" text-anchor="end" class="svglabel" fill="#8a6a20" transform="rotate(-90 368 132)">THE MIRROR</text>
+        <text x="360" y="40" text-anchor="end" class="svglabel" fill="#2a2a2a" font-weight="700">CIRCUMCISED, ASKED ABOUT INTACT</text>
+        <text x="400" y="40" class="svglabel" fill="#2a2a2a" font-weight="700">INTACT, ASKED ABOUT CIRCUMCISED</text>
+        <text x="360" y="84" text-anchor="end" class="svglabel" fill="#5a5a5a">&ldquo;I often wonder&rdquo;</text>
+        <line class="lateA" x1="360" y1="100" x2="122" y2="100" stroke="#d94f4f" stroke-width="26" style="--len:240"/>
+        <text x="112" y="105" text-anchor="end" class="svglabel" fill="#d94f4f" font-weight="800" font-size="17">67.8%</text>
+        <text x="400" y="84" class="svglabel" fill="#5a5a5a">&ldquo;I often wonder&rdquo;</text>
+        <line class="lateA" x1="400" y1="100" x2="496" y2="100" stroke="#5b93c7" stroke-width="26" style="--len:240"/>
+        <text x="506" y="105" class="svglabel" fill="#3a6ea5" font-weight="800" font-size="17">27.3%</text>
+        <line class="lateB" x1="60" y1="170" x2="700" y2="170" stroke="#e0dcd4" stroke-width="1" style="--len:640"/>
+        <text x="380" y="196" text-anchor="middle" class="svglabel" fill="#5a5a5a">The curiosity points overwhelmingly in one direction. We leave the reader to say which.</text>
+      </svg>
+      <div class="sig" style="border-top:none;padding-top:.4rem;margin-top:.6rem"><span style="font-family:var(--f-mono);font-size:.55rem;color:#8a8a8a">FIG. 05 &middot; MIRROR PAIR &middot; N=486 &middot; CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+    <p class="rev" style="max-width:720px;margin:1.8rem auto 0;font-size:.85rem;color:var(--ink2)"><strong style="color:var(--teal)">A note on our words:</strong> for circumcised respondents we asked about <em>resentment</em>, not <em>regret</em> &mdash; regret implies a decision they were never given. The full report walks through every mirror pair, including the ones where the two sides agree.</p>
+  </div>
+</section>
+<div class="fade-bot"></div>
+
+<!-- ═════════ MOVEMENT VI · THE CONVERGENCE ═════════ -->
+<section class="movement dark" data-stage="4">
+  <div class="col">
+    <div class="rev">
+      <div class="eyebrow">Movement VI</div>
+      <h2>What they&rsquo;d do now</h2>
+      <p>Near the end, every pathway was asked the same forward-looking question: <em>if you had a son today, what would you choose for him?</em> Watch the threads bend toward the same gate.</p>
+    </div>
+    <div class="plate rev"><span class="rm"></span>
+      <div class="fig-tag">Fig. 06 &mdash; &ldquo;If you had a son today&rdquo;</div>
+      <div class="fig-title">Choosing &ldquo;keep intact,&rdquo; by pathway</div>
+      <div class="fig-sub">Every pathway &mdash; including circumcised respondents &mdash; converges</div>
+      <div class="rings draw" id="ringsSvg">
+        <div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="46" fill="none" stroke="#222228" stroke-width="6"/><circle class="ringfill" cx="55" cy="55" r="46" fill="none" stroke="#5b93c7" stroke-width="6" stroke-linecap="round" transform="rotate(-90 55 55)" data-pct="88.8" style="--len:289"/></svg><div class="pct" style="color:var(--p-int)" data-val="88.8%">&nbsp;</div><div class="who">Intact</div></div>
+        <div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="46" fill="none" stroke="#222228" stroke-width="6"/><circle class="ringfill" cx="55" cy="55" r="46" fill="none" stroke="#d94f4f" stroke-width="6" stroke-linecap="round" transform="rotate(-90 55 55)" data-pct="78.1" style="--len:289"/></svg><div class="pct" style="color:var(--p-circ)" data-val="78.1%">&nbsp;</div><div class="who">Circumcised</div></div>
+        <div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="46" fill="none" stroke="#222228" stroke-width="6"/><circle class="ringfill" cx="55" cy="55" r="46" fill="none" stroke="#e8c868" stroke-width="6" stroke-linecap="round" transform="rotate(-90 55 55)" data-pct="98.1" style="--len:289"/></svg><div class="pct" style="color:var(--p-rest)" data-val="98.1%">&nbsp;</div><div class="who">Restoring</div></div>
+        <div class="ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="46" fill="none" stroke="#222228" stroke-width="6"/><circle class="ringfill" cx="55" cy="55" r="46" fill="none" stroke="#a0a0a0" stroke-width="6" stroke-linecap="round" transform="rotate(-90 55 55)" data-pct="90.9" style="--len:289"/></svg><div class="pct" style="color:var(--p-obs)" data-val="90.9%">&nbsp;</div><div class="who">Observer &amp; Ally</div></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--mut)">Among intact and restoring respondents, the share choosing circumcision for a future son was zero. In the full report, you can re-cut this result by age, politics, income, and religiosity yourself &mdash; the majority holds in every slice we can display.</p>
+      <div class="fig-foot"><span>N=500 &middot; ALL PATHWAYS &middot; FULL DIMENSION FLIPPER IN PRODUCTION BUILD</span><span>CIRCUMSURVEY.ONLINE</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ MOVEMENT VII · FINALE ═════════ -->
+<section class="movement dark" data-stage="5" id="finale">
+  <div class="col" style="text-align:center">
+    <div class="rev">
+      <div class="eyebrow">Movement VII</div>
+      <h2>Five hundred threads. One is unlit.</h2>
+      <p style="max-width:540px;margin:0 auto 1rem">You&rsquo;ve now heard what five hundred people said when someone finally asked. The loom re-forms above &mdash; and one dim thread waits in the middle. It&rsquo;s yours, if you want it.</p>
+    </div>
+    <div class="doors rev">
+      <a class="door" href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noopener">
+        <div class="k">Door 01</div><div class="t">Add your thread</div>
+        <div class="d">Take the survey. Fifteen minutes, totally anonymous, skip any question.</div>
+      </a>
+      <a class="door" href="https://findings.circumsurvey.online" target="_blank" rel="noopener">
+        <div class="k">Door 02</div><div class="t">Explore every question</div>
+        <div class="d">The live data explorer &mdash; all pathways, all questions, no narration.</div>
+      </a>
+      <a class="door" href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noopener">
+        <div class="k">Door 03</div><div class="t">The researcher&rsquo;s view</div>
+        <div class="d">Interpretation and argument, clearly labeled as such. Off the data floor.</div>
+      </a>
+    </div>
+    <div class="colophon">
+      THE ACCIDENTAL INTACTIVIST&rsquo;S INQUIRY &middot; PHASE 1 SNAPSHOT &middot; N=500<br>
+      METHODOLOGY &amp; LIMITATIONS: ONE CLICK AWAY, ALWAYS &middot; ANONYMOUS QUOTES, ALL IDENTIFYING DETAILS REMOVED<br>
+      CIRCUMSURVEY.ONLINE
+    </div>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+"use strict";
+/* ═══════════════════ THE 500 THREADS ═══════════════════
+   One persistent canvas. Each thread = one respondent.
+   Stages: 0 loom · 1 streams · 2 braid · 3 separation · 4 convergence · 5 finale
+*/
+var canvas = document.getElementById('threads');
+var ctx = canvas.getContext('2d');
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var lowPower = reduced || (navigator.hardwareConcurrency||8)<=4 || Math.min(innerWidth,innerHeight)<640;
+var N = lowPower ? 160 : 500;
+var YSTEP = lowPower ? 44 : 30;
+var dpr = Math.min(window.devicePixelRatio||1, lowPower?1.25:2);
+var W=0,H=0;
+
+var PATH = [
+  {key:'int',  n:141, col:[91,147,199]},
+  {key:'circ', n:212, col:[217,79,79]},
+  {key:'rest', n:110, col:[232,200,104]},
+  {key:'obs',  n:37,  col:[160,160,160]}
+];
+var GREY=[122,122,130], PAPER=[245,240,224];
+
+// build + shuffle threads (deterministic)
+var threads=[];
+(function(){
+  var pool=[];
+  PATH.forEach(function(p,pi){
+    var count = Math.max(2, Math.round(p.n/500*N));
+    for(var k=0;k<count;k++) pool.push({p:pi,k:k,count:count});
+  });
+  pool = pool.slice(0,N);
+  var seed=42; function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+  for(var i=pool.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1));var tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
+  pool.forEach(function(o,idx){
+    threads.push({ p:o.p, k:o.k, count:o.count, idx:idx,
+      ph: idx*2.399963,            // golden-angle phase spread (the moiré)
+      jit:(rnd()-.5)               // per-thread jitter
+    });
+  });
+})();
+
+// stage layouts → x-fraction, wobble amp(px), alpha, color per thread
+var STREAM_X = {0:.17, 1:.44, 2:.70, 3:.895};
+var SPLIT_X  = {0:.24, 2:.52, 1:.80, 3:.52};   // intact left, restoring mid, circ right
+function layout(t, s){
+  var p = PATH[t.p], spread = (t.count>1 ? (t.k/(t.count-1)-.5) : 0);
+  switch(s){
+    case 0: return {x:.5, amp:0, a:0, col:p.col};                       // (loom drawn separately)
+    case 1: return {x:STREAM_X[t.p] + spread*(p.n/500)*.55, amp:9,  a:.38, col:p.col};
+    case 2: return {x:.5 + t.jit*.015, amp:58, a:(t.p===3? .04:.20), col:GREY, braid:1};
+    case 3: return {x:SPLIT_X[t.p] + spread*.13, amp:10, a:(t.p===3? .04:.40), col:p.col};
+    case 4: return {x:.5 + spread*.24, amp:22, a:.30, col:p.col};
+    case 5: return {x:.5 + t.jit*.06, amp:44, a:.24, col:p.col, braid:1};
+  }
+}
+function lerp(a,b,f){return a+(b-a)*f;}
+function smooth(f){return f*f*(3-2*f);}
+
+// stage anchors from sections
+var anchors=[];
+function buildAnchors(){
+  anchors=[];
+  document.querySelectorAll('[data-stage]').forEach(function(el){
+    var r=el.getBoundingClientRect(), top=r.top+window.scrollY;
+    anchors.push({y: top + Math.min(r.height*.30, innerHeight*.55), s:+el.dataset.stage});
+  });
+  anchors.sort(function(a,b){return a.y-b.y;});
+}
+var predicted=false;
+function stageProgress(){
+  var y = window.scrollY + innerHeight*.55, sp;
+  if(!anchors.length) return 0;
+  if(y<=anchors[0].y) sp=anchors[0].s;
+  else if(y>=anchors[anchors.length-1].y) sp=anchors[anchors.length-1].s;
+  else{
+    for(var i=0;i<anchors.length-1;i++){
+      var a=anchors[i], b=anchors[i+1];
+      if(y>=a.y && y<b.y){ sp = a.s + (b.s-a.s)*smooth((y-a.y)/(b.y-a.y)); break; }
+    }
+  }
+  if(!predicted) sp = Math.min(sp, 2.35);   // the separation waits for your guess
+  return sp;
+}
+
+function resize(){
+  W=innerWidth; H=innerHeight;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  buildAnchors();
+}
+window.addEventListener('resize', resize);
+
+function drawLoom(t, time, gAlpha){
+  // horizontal harmonic weave (masthead) — simplified Loom math
+  var d=(t.idx/N-.5)*2;
+  var cy=H*.50 + d*H*.17;
+  var col=PATH[t.p].col;
+  ctx.strokeStyle='rgba('+col[0]+','+col[1]+','+col[2]+','+(0.11*gAlpha)+')';
+  ctx.lineWidth=1.3;
+  ctx.beginPath();
+  var a1=H*.11*(1-Math.abs(d)*.45), a2=H*.05;
+  for(var x=-20;x<=W+20;x+=26){
+    var y=cy + Math.sin(x*.0052*3.8 + time*.9 + t.idx*.045)*a1
+             + Math.sin(x*.0023 + t.ph + time*.35)*a2;
+    if(x===-20) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+function drawVertical(t, time, sp, gAlpha){
+  var s0=Math.max(1,Math.floor(sp)), s1=Math.min(5,s0+1), f=smooth(Math.min(1,Math.max(0,sp-s0)));
+  if(sp<=1){ s0=1; s1=1; f=0; }
+  var A=layout(t,s0), B=layout(t,s1);
+  var x0=lerp(A.x,B.x,f)*W;
+  var amp=lerp(A.amp,B.amp,f);
+  var alpha=lerp(A.a,B.a,f)*gAlpha;
+  if(alpha<.008) return;
+  var col=[Math.round(lerp(A.col[0],B.col[0],f)),Math.round(lerp(A.col[1],B.col[1],f)),Math.round(lerp(A.col[2],B.col[2],f))];
+  var braid=lerp(A.braid||0,B.braid||0,f);
+  ctx.strokeStyle='rgba('+col[0]+','+col[1]+','+col[2]+','+alpha+')';
+  ctx.lineWidth=1.4;
+  ctx.beginPath();
+  for(var y=-10;y<=H+10;y+=YSTEP){
+    var wob=Math.sin(y*.010 + t.ph + time*.7)*amp;
+    if(braid>0) wob += Math.sin(y*.014 - t.ph*1.7 + time*.5)*amp*.8*braid;
+    var x=x0+wob;
+    if(y===-10) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+function drawUnlit(sp, time){
+  if(sp<4.45) return;
+  var a=Math.min(.85,(sp-4.45)*1.6);
+  ctx.strokeStyle='rgba(245,240,224,'+a+')';
+  ctx.lineWidth=1.8;
+  ctx.beginPath();
+  for(var y=-10;y<=H+10;y+=YSTEP){
+    var x=W*.5 + Math.sin(y*.006+time*.4)*7;
+    if(y===-10) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // soft glow head
+  ctx.fillStyle='rgba(245,240,224,'+(a*.5)+')';
+  ctx.beginPath(); ctx.arc(W*.5, H*.5+Math.sin(time*.4)*12, 3.2, 0, 6.283); ctx.fill();
+}
+
+var start=performance.now();
+function frame(now){
+  var time=(now-start)/1000;
+  var sp=stageProgress();
+  ctx.clearRect(0,0,W,H);
+  var loomW = Math.max(0, Math.min(1, 1 - sp/.85));
+  for(var i=0;i<threads.length;i++){
+    var t=threads[i];
+    if(loomW>0.02) drawLoom(t, time, loomW);
+    if(loomW<0.98) drawVertical(t, time, Math.max(1,sp), 1-loomW);
+  }
+  drawUnlit(sp, time);
+  // masthead text fade
+  var pin=document.querySelector('.mast-pin');
+  if(pin){ pin.style.opacity = Math.max(0, 1-(window.scrollY/(innerHeight*.75))); }
+  if(!reduced) requestAnimationFrame(frame);
+}
+resize();
+requestAnimationFrame(frame);
+if(reduced){ window.addEventListener('scroll', function(){ requestAnimationFrame(frame); }); }
+
+/* ═══════════════════ REVEALS, BARS, COUNTERS ═══════════════════ */
+function countUp(el, str){
+  var target=parseFloat(str), suffix=str.indexOf('%')>-1?'%':'';
+  var dec=(str.split('.')[1]||'').replace('%','').length;
+  var t0=null;
+  function step(ts){
+    if(!t0)t0=ts;
+    var f=Math.min(1,(ts-t0)/950); f=1-Math.pow(1-f,3);
+    el.textContent=(target*f).toFixed(dec)+suffix;
+    if(f<1) requestAnimationFrame(step);
+  }
+  if(reduced){ el.textContent=str; return; }
+  requestAnimationFrame(step);
+}
+function activate(el){
+  el.classList.add('on');
+  el.querySelectorAll('.fill').forEach(function(b){ b.style.width=b.dataset.w+'%'; });
+  el.querySelectorAll('.val').forEach(function(v){ if(v.dataset.val) countUp(v, v.dataset.val); });
+  el.querySelectorAll('.n[data-count]').forEach(function(v){ countUp(v, v.dataset.count); });
+  el.querySelectorAll('.pct[data-val]').forEach(function(v){ countUp(v, v.dataset.val); });
+  el.querySelectorAll('.ringfill').forEach(function(c){
+    var pct=parseFloat(c.dataset.pct), len=289.03;
+    c.style.transition = reduced ? 'none' : 'stroke-dasharray 1.4s cubic-bezier(.3,.7,.3,1)';
+    c.style.strokeDasharray='0 '+len;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      c.style.strokeDasharray=(pct/100*len)+' '+len;
+    });});
+  });
+}
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ activate(e.target); io.unobserve(e.target); }
+  });
+},{threshold:.25});
+document.querySelectorAll('.rev,.draw,.plate').forEach(function(el){ io.observe(el); });
+
+// masthead answer line
+setTimeout(function(){ var a=document.getElementById('mastA'); if(a)a.classList.add('on'); }, 1600);
+
+/* ═══════════════════ PREDICT-THEN-REVEAL ═══════════════════ */
+var ECHO={
+  split:'Your guess is on record: they split wide apart. Scroll on.',
+  small:'Your guess is on record: small differences. Scroll on.',
+  same:'Your guess is on record: about the same. Scroll on.'
+};
+var VERDICT={
+  split:'You guessed they would split wide apart. Here is how wide.',
+  small:'You guessed small differences. Here is what the respondents reported.',
+  same:'You guessed they would stay about the same. Here is what actually happened.'
+};
+document.querySelectorAll('.pbtn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    predicted=true;
+    var echo=document.getElementById('pEcho');
+    echo.textContent=ECHO[btn.dataset.p]; echo.classList.add('on');
+    document.getElementById('verdictLine').textContent=VERDICT[btn.dataset.p];
+    document.getElementById('splitwrap').classList.add('unlocked');
+    var ln=document.getElementById('lockNote'); if(ln) ln.style.display='none';
+    buildAnchors();
+  });
+});
+
+// rebuild anchors after fonts/layout settle
+window.addEventListener('load', buildAnchors);
+setTimeout(buildAnchors, 1200);
+})();
+</script>
+</body>
+</html>

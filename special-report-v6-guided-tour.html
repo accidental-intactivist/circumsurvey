@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Inquiry — A Guided Tour of the Exhibition · Tomorrow's Bureau · v6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOMORROW'S BUREAU — The Guided Tour
+   All fourteen exhibits, walked in order, reported not argued.
+   Icons per EXHIBIT_ROUTES; deep links into /explore#/<route>.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --b-red:#e85d50; --b-orange:#f09860; --b-yellow:#f0c840; --b-green:#68b878; --b-blue:#5888c0;
+  --b-yellow-text:#c8a020;
+  --paper:#faf6f0; --paper-soft:#f4ede0; --card:#ffffff; --deep:#e8e2d8;
+  --ink:#2a2622; --ink-bright:#1a1815; --muted:#5a5450; --dim:#8a8680; --ghost:#d4cfc4;
+  --body-text:#5a5a52; --callout:#f0ece4; --rule:#e8e2d8; --dash:#d4cfc4;
+  --dark:#0a0a0c;
+  --rainbow:linear-gradient(90deg,#e85d50,#f09860,#f0c840,#68b878,#5888c0);
+  --f-disp:'Josefin Sans',sans-serif; --f-body:'Outfit',sans-serif; --f-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-weight:300;
+  font-size:1rem;line-height:1.7;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:var(--b-orange);color:#fff}
+a{color:var(--b-blue);text-decoration-color:var(--b-orange);text-underline-offset:3px}
+
+.showcase{max-width:900px;margin:0 auto;padding:2rem}
+.narrow{max-width:660px;margin:0 auto}
+.rev{opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease}
+.rev.on{opacity:1;transform:none}
+
+/* ═══ STATION HEAD (exhibit walk-through) ═══ */
+.station-head{display:flex;align-items:center;gap:1.1rem;margin:3.6rem 0 1.1rem;scroll-margin-top:2rem}
+.badge2{position:relative;width:64px;height:64px;flex-shrink:0}
+.badge2 svg{position:absolute;inset:0;overflow:visible}
+.badge2 .ring-anim{transform-origin:32px 32px;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.station-meta{flex:1;min-width:0}
+.station-kick{font-family:var(--f-mono);font-weight:700;font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--b-red)}
+.station-title{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.15rem,2.6vw,1.6rem);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink);line-height:1.1}
+.station-tag{font-family:var(--f-body);font-weight:300;font-style:italic;font-size:.74rem;color:var(--dim)}
+.enter-link{flex-shrink:0;font-family:var(--f-disp);font-weight:600;font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;text-decoration:none;border:1.5px solid var(--ghost);border-radius:100px;
+  padding:.45rem 1rem;color:var(--muted);transition:all .15s ease;white-space:nowrap}
+.enter-link:hover{border-color:var(--b-orange);color:var(--b-orange)}
+@media(max-width:640px){.station-head{flex-wrap:wrap}.enter-link{margin-left:76px}}
+.lens{font-family:var(--f-body);font-weight:300;font-size:.95rem;color:var(--ink);
+  line-height:1.75;margin:0 0 1.1rem 0;max-width:680px}
+.lens em{color:var(--b-orange);font-style:italic}
+
+/* ═══ SECTION LABEL / BUREAU CARD / FORMS (canonical, per motif ref) ═══ */
+.section-label{font-family:var(--f-disp);font-weight:600;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--b-orange);margin:3.2rem 0 1rem;display:flex;align-items:center;gap:.5rem}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--b-orange) 0%,transparent 100%)}
+.bureau-card{background:var(--paper);border:2.5px solid var(--ink);border-radius:3px;position:relative;
+  overflow:visible;margin-bottom:2.5rem;box-shadow:0 3px 15px rgba(0,0,0,.12)}
+.bureau-card .rainbow-bar{height:5px;background:var(--rainbow)}
+.bureau-card .corner-star{position:absolute;top:-11px;left:24px;font-size:1.1rem;color:var(--b-red);
+  background:var(--paper);padding:0 .35rem;line-height:1}
+.bureau-card .header-bar{background:var(--ink);color:var(--paper);padding:.55rem 1.25rem;
+  display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap}
+.bureau-card .bar-title{font-family:var(--f-disp);font-weight:700;font-size:.65rem;text-transform:uppercase;
+  letter-spacing:.12em;display:flex;align-items:center;gap:.4rem}
+.bureau-card .bar-title .star{color:var(--b-red);font-size:.85rem}
+.bureau-card .bar-ref{font-family:var(--f-mono);font-size:.5rem;color:#888;letter-spacing:.05em}
+.bureau-card .card-body{padding:1.75rem 1.5rem}
+.bureau-card .stamp{position:absolute;bottom:14px;right:18px;font-family:var(--f-disp);font-weight:700;
+  font-size:.5rem;text-transform:uppercase;letter-spacing:.14em;color:var(--b-red);border:2px solid var(--b-red);
+  padding:.2rem .45rem;transform:rotate(-4deg);opacity:.6;border-radius:2px;pointer-events:none}
+.form-field{margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px dashed var(--dash)}
+.form-field:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.field-label{font-family:var(--f-disp);font-weight:600;font-size:.58rem;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--b-orange);margin-bottom:.3rem}
+.field-question{font-family:var(--f-disp);font-weight:500;font-size:1.05rem;color:var(--ink);
+  line-height:1.35;margin-bottom:.4rem}
+.field-body{font-family:var(--f-body);font-weight:300;font-size:.78rem;color:var(--body-text);line-height:1.6}
+.data-table{margin-top:.5rem}
+.data-row{display:flex;align-items:baseline;gap:.5rem;padding:.45rem 0;border-bottom:1px solid var(--rule)}
+.data-row:last-child{border-bottom:none}
+.data-row .pathway-label{font-family:var(--f-disp);font-weight:600;font-size:.72rem;color:var(--ink);
+  width:190px;flex-shrink:0;display:flex;align-items:center;gap:.35rem}
+.data-row .dotted-fill{flex:1;border-bottom:2px dotted #ccc4b8;margin-bottom:3px;min-width:20px}
+.data-row .data-value{font-family:var(--f-mono);font-weight:800;font-size:.9rem;flex-shrink:0}
+.swatch{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+a.tour-row{text-decoration:none;display:flex;align-items:baseline;gap:.5rem;padding:.45rem 0;
+  border-bottom:1px solid var(--rule);transition:background .15s ease}
+a.tour-row:hover{background:rgba(240,152,96,.07)}
+a.tour-row:last-child{border-bottom:none}
+.arrow-note{font-family:var(--f-mono);font-size:.58rem;color:#999;margin-top:.75rem;line-height:1.6}
+.arrow-note .arrow{color:var(--b-orange);font-weight:700}
+.arrow-note a{color:var(--b-blue)}
+.stat-callout{display:flex;align-items:center;gap:.75rem;margin-top:1rem;padding:.75rem 1rem;
+  background:var(--callout);border-radius:10px;border-left:4px solid}
+.stat-callout .big-num{font-family:var(--f-disp);font-weight:700;font-size:2rem;line-height:1}
+.stat-callout .stat-text{font-family:var(--f-body);font-weight:400;font-size:.72rem;color:var(--body-text);line-height:1.4}
+.language-note{margin:1rem 1.5rem;padding:.5rem .75rem;background:rgba(240,152,96,.08);
+  border-left:3px solid var(--b-orange);border-radius:0 4px 4px 0;font-family:var(--f-body);
+  font-size:.65rem;font-style:italic;color:#8a7a62;line-height:1.5}
+.language-note strong{color:var(--b-orange);font-weight:600;font-style:normal}
+.mirror-inner{display:flex;gap:0;flex-wrap:wrap}
+.mirror-side{flex:1;min-width:240px;padding:1.5rem}
+.mirror-side:first-child{border-right:1px dashed var(--dash)}
+.mirror-side .side-pathway{font-family:var(--f-disp);font-weight:700;font-size:.75rem;margin-bottom:.15rem;
+  display:flex;align-items:center;gap:.4rem}
+.mirror-side .side-question{font-family:var(--f-body);font-weight:300;font-size:.72rem;color:#7a7a72;
+  font-style:italic;margin-bottom:.6rem;line-height:1.4}
+.mirror-bar-row{display:flex;align-items:center;gap:.3rem;margin-bottom:.3rem}
+.mirror-bar-row .bar-container{flex:1;height:14px;background:#eae4da;border-radius:3px;overflow:hidden}
+.mirror-bar-row .bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:4px;
+  font-family:var(--f-mono);font-size:.48rem;font-weight:700;color:rgba(255,255,255,.85);
+  width:0;transition:width .9s cubic-bezier(.25,.8,.3,1)}
+.mirror-bar-row .bar-label{font-family:var(--f-body);font-size:.6rem;color:#7a7a72;width:85px;flex-shrink:0}
+.mirror-bar-row .bar-value{font-family:var(--f-mono);font-size:.6rem;font-weight:700;color:var(--ink);
+  width:36px;text-align:right;flex-shrink:0}
+.voices-label{font-family:var(--f-disp);font-weight:600;font-size:.55rem;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--b-orange);margin-bottom:.6rem;display:flex;align-items:center;gap:.35rem}
+.voices-label .star{color:var(--b-red)}
+.quote-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem}
+.quote-card{padding:.65rem .85rem;border-radius:6px;border-left:3px solid}
+.quote-card .quote-text{font-family:var(--f-body);font-weight:300;font-style:italic;font-size:.72rem;
+  line-height:1.5;color:#3a3a35;margin-bottom:.35rem}
+.quote-card .quote-attrib{font-family:var(--f-disp);font-weight:600;font-size:.5rem;
+  text-transform:uppercase;letter-spacing:.08em}
+.voices-disclaimer{font-family:var(--f-mono);font-size:.5rem;color:#aaa;margin-top:.5rem}
+.pathway-chips{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center}
+.pathway-chip{font-family:var(--f-disp);font-size:.6rem;font-weight:600;padding:.25rem .7rem;
+  border-radius:100px;letter-spacing:.02em;display:inline-flex;align-items:center;gap:.35rem}
+
+/* ═══ SQUISH MASTHEAD (ported from /special-report SquishHeader) ═══
+   Full-viewport Loom cover that compresses into a fixed paper nav bar. */
+#mast{position:fixed;top:0;left:0;width:100%;z-index:90;overflow:hidden;
+  height:calc(64px + var(--inv,1)*86vh);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.mast-bg{position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at center,#fffdf8 0%,var(--paper) 55%,var(--paper-soft) 100%)}
+.mast-rainbow{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--rainbow);z-index:50}
+.mast-spacer{height:90vh}
+.mast-center{position:relative;z-index:20;display:flex;flex-direction:column;align-items:center;
+  text-align:center;padding:0 1rem}
+.m-eyebrow{font-family:var(--f-disp);font-weight:600;font-size:.78rem;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--b-orange);margin-bottom:.9rem}
+.m-eyebrow .star{color:var(--b-red)}
+.m-title{font-family:var(--f-disp);font-weight:700;text-transform:uppercase;color:var(--ink);
+  line-height:1.06;letter-spacing:.02em;margin:0;
+  font-size:calc(1rem + var(--inv,1)*2.4rem);white-space:nowrap}
+@media(max-width:760px){.m-title{white-space:normal;font-size:calc(.92rem + var(--inv,1)*1.7rem)}}
+.m-sub{font-family:var(--f-disp);font-weight:300;font-style:italic;
+  font-size:clamp(.95rem,1.6vw,1.2rem);color:#8a8680;margin-top:.9rem}
+.rotfact{text-align:center;max-width:760px;margin:1.8rem auto 0;transition:opacity .5s ease,transform .6s ease}
+.rotfact .rf-num{font-family:var(--f-disp);font-weight:700;font-size:clamp(2.6rem,7vw,4.6rem);
+  line-height:1;margin-bottom:.6rem;transition:color .6s ease}
+.rotfact .rf-line{font-family:var(--f-disp);font-weight:500;font-size:clamp(1rem,2vw,1.4rem);
+  color:var(--ink);line-height:1.3}
+.rotfact .rf-ctx{font-family:var(--f-body);font-weight:300;font-style:italic;font-size:.8rem;
+  color:var(--dim);margin-top:.7rem;max-width:480px;margin-left:auto;margin-right:auto}
+.scrollcue{position:absolute;bottom:4.5vh;left:50%;transform:translateX(-50%);z-index:30;
+  display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.scrollcue i{width:1px;height:54px;background:linear-gradient(to bottom,var(--b-orange),transparent)}
+.scrollcue span{font-family:var(--f-disp);font-weight:600;font-size:.62rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--b-orange)}
+.mast-nav{position:absolute;inset:0;z-index:60;display:flex;align-items:center;
+  justify-content:space-between;padding:0 1.3rem;opacity:0;pointer-events:none}
+.mn-left{display:flex;gap:.9rem;flex-wrap:wrap}
+.mn-link{font-family:var(--f-disp);font-weight:600;font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .15s ease}
+.mn-link:hover{color:var(--b-orange)}
+.mn-cta{font-family:var(--f-disp);font-weight:700;font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--b-red);text-decoration:none;padding:.32rem .85rem;
+  border:1.5px solid rgba(232,93,80,.4);border-radius:100px;background:rgba(232,93,80,.08)}
+@media(max-width:700px){.mn-left{display:none}}
+@keyframes blurin{from{opacity:0;transform:translateY(26px);filter:blur(10px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.bi1{animation:blurin 1.1s .15s cubic-bezier(.2,.7,.3,1) both}
+.bi2{animation:blurin 1.1s .5s cubic-bezier(.2,.7,.3,1) both}
+.bi3{animation:blurin 1.1s .85s cubic-bezier(.2,.7,.3,1) both}
+.bi4{animation:blurin 1.3s 1.3s cubic-bezier(.2,.7,.3,1) both}
+.station-head{scroll-margin-top:84px}
+.bureau-card{scroll-margin-top:84px}
+
+/* COVER (legacy class, kept for card sizing) */
+.cover{min-height:96vh;display:flex;align-items:center;justify-content:center;
+  padding:3rem 1.4rem;position:relative;overflow:hidden}
+.loom-bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cover .bureau-card{width:100%;max-width:780px;border-width:3px;margin-bottom:0;position:relative;z-index:2;
+  box-shadow:0 10px 40px rgba(42,38,34,.18)}
+.cover .rainbow-bar{height:6px}
+.cover .corner-star{font-size:1.3rem;top:-13px}
+.cover .header-bar{padding:.7rem 1.5rem}
+.cover .bar-title{font-size:.75rem}
+.cover .bar-title .star{font-size:1rem}
+.cover .bar-ref{font-size:.55rem}
+.cover-title{font-family:var(--f-disp);font-weight:700;font-size:clamp(1.9rem,5.4vw,3rem);
+  color:var(--ink);letter-spacing:.03em;margin-bottom:.3rem;line-height:1.1}
+.cover-sub{font-family:var(--f-disp);font-weight:300;font-style:italic;font-size:1.05rem;color:#888;margin-bottom:1.25rem}
+.cover-desc{font-family:var(--f-body);font-weight:300;font-size:.82rem;color:var(--body-text);
+  line-height:1.6;max-width:480px;margin:0 auto 1.5rem}
+.cover-quote{font-family:var(--f-body);font-weight:300;font-style:italic;font-size:.72rem;
+  color:var(--b-orange);max-width:430px;margin:1.4rem auto 0}
+#emblem{display:block;margin:.4rem auto .8rem}
+
+.loom-strip{position:relative;height:110px;margin:3.4rem auto;max-width:1100px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.loom-strip canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+.gauges{display:flex;justify-content:center;gap:1.4rem;flex-wrap:wrap;margin:1.6rem 0 .4rem}
+.gauge{text-align:center;width:126px}
+.gauge svg{display:block;margin:0 auto .45rem}
+.gauge .num{font-family:var(--f-disp);font-weight:700;font-size:1.7rem;line-height:1}
+.gauge .cap{font-family:var(--f-disp);font-weight:600;font-size:.6rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+
+.proj .card-body{text-align:center;padding:1.9rem 1.6rem}
+.proj h3{font-family:var(--f-disp);font-weight:700;font-size:1.3rem;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:.35rem}
+.proj p{font-size:.82rem;color:var(--body-text)}
+.pbtns{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:1.1rem}
+.pbtn{font-family:var(--f-disp);font-weight:600;font-size:.66rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);background:transparent;border:1.5px solid var(--ghost);
+  border-radius:100px;padding:.5rem 1.1rem;cursor:pointer;transition:all .15s ease}
+.pbtn:hover{border-color:var(--b-orange);color:var(--b-orange)}
+.pbtn.sel{border-color:var(--b-red);background:rgba(232,93,80,.12);color:var(--b-red);transform:scale(1.05)}
+.p-echo{display:none;margin-top:1rem;font-family:var(--f-mono);font-size:.62rem;color:var(--b-red)}
+.p-echo.on{display:block}
+
+.night{background:var(--dark);margin:4rem 0;position:relative;overflow:hidden}
+.night-inner{position:relative;z-index:2;max-width:900px;margin:0 auto;padding:4.5rem 2rem}
+#laser{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.night .station-head{margin-top:0}
+.night .station-title{color:#eee}
+.night .station-tag{color:#777}
+.night .corner-star{background:var(--dark)}
+.night .lens{color:#ccc;font-style:italic}
+.night .enter-link{border-color:#333;color:#999}
+.night .enter-link:hover{border-color:var(--b-orange);color:var(--b-orange)}
+#nightlock{position:absolute;inset:0;z-index:3;background:rgba(10,10,12,.9);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;transition:opacity .8s ease}
+#nightlock.open{opacity:0;pointer-events:none}
+#nightlock .msg{font-family:var(--f-disp);font-weight:600;font-size:.8rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--b-orange)}
+
+/* Exhibit visuals */
+.dotmap-legend{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem}
+.dotmap-legend .lg{display:flex;align-items:center;gap:.4rem;font-family:var(--f-disp);font-weight:600;
+  font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#dumbbell text{font-family:var(--f-mono)}
+#dumbbell .metric{font-family:var(--f-disp);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+#dumbbell circle{transition:transform 1.3s cubic-bezier(.25,.8,.3,1)}
+#dumbbell .gapline{opacity:0;transition:opacity .6s ease 1.1s}
+#dumbbell.split circle{transform:none!important}
+#dumbbell.split .gapline{opacity:1}
+.wc-pair{display:flex;gap:0;flex-wrap:wrap}
+.wc-panel{flex:1;min-width:240px;padding:1.2rem 1.4rem;text-align:center}
+.wc-panel:first-child{border-right:1px dashed var(--dash)}
+.wc-title{font-family:var(--f-disp);font-weight:700;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:.7rem;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.wc-word{display:inline-block;font-family:var(--f-disp);line-height:1.35;margin:.05rem .35rem;
+  opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease}
+.on .wc-word{opacity:1;transform:none}
+#sankey text{font-family:var(--f-disp)}
+#sankey .flow{opacity:0;transition:opacity 1s ease}
+#sankey.on .flow{opacity:1}
+#flowchart text{font-family:var(--f-disp)}
+
+.tickets{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center;margin:2rem 0 1rem}
+.ticket{flex:1;min-width:212px;max-width:258px;border:2.5px solid var(--ink);border-radius:3px;
+  background:var(--card);text-decoration:none;position:relative;transition:transform .18s ease;overflow:hidden}
+.ticket:hover{transform:translateY(-4px)}
+.ticket .t-rainbow{height:4px;background:var(--rainbow)}
+.ticket .t-inner{padding:1.1rem 1.25rem 1.25rem}
+.ticket .adm{font-family:var(--f-mono);font-weight:600;font-size:.52rem;letter-spacing:.22em;
+  color:var(--b-red);text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
+.ticket .t{font-family:var(--f-disp);font-weight:700;font-size:1.05rem;letter-spacing:.03em;
+  text-transform:uppercase;color:var(--ink);margin:.35rem 0 .3rem}
+.ticket .d{font-family:var(--f-body);font-weight:300;font-size:.74rem;color:var(--body-text);line-height:1.5}
+.ticket::before,.ticket::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;
+  background:var(--paper);border:2.5px solid var(--ink);top:50%}
+.ticket::before{left:-9px;transform:translateY(-50%)}
+.ticket::after{right:-9px;transform:translateY(-50%)}
+
+.colophon{text-align:center;padding:2.5rem 2rem 3rem}
+.colophon .rule{height:4px;background:var(--rainbow);width:120px;margin:0 auto 1rem;border-radius:2px}
+.colophon .t{font-family:var(--f-disp);font-weight:600;font-size:.85rem;color:var(--b-orange);margin-bottom:.3rem}
+.colophon .d{font-family:var(--f-mono);font-size:.55rem;color:#999;letter-spacing:.1em;
+  line-height:2;text-transform:uppercase}
+
+.proto-badge{position:fixed;bottom:12px;right:14px;z-index:70;font-family:var(--f-mono);
+  font-size:.55rem;letter-spacing:.12em;color:var(--dim);border:1px solid var(--ghost);
+  background:rgba(250,246,240,.92);padding:.3rem .55rem;border-radius:3px;text-transform:uppercase}
+
+.trace path,.trace circle,.trace line,.trace ellipse{fill:none}
+@media(max-width:640px){
+  .showcase{padding:1.2rem}
+  .bureau-card .card-body{padding:1.25rem 1rem}
+  .data-row .pathway-label{width:136px;font-size:.64rem}
+  .mirror-side:first-child,.wc-panel:first-child{border-right:none;border-bottom:1px dashed var(--dash)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rev{transition:none;opacity:1;transform:none}
+  .fill,.mirror-bar-row .bar-fill{transition:none}
+  #dumbbell circle{transition:none}
+  .wc-word{transition:none}
+  .badge2 .ring-anim{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="proto-badge">Prototype v6 · not for distribution</div>
+<!-- ═══════════ SQUISH MASTHEAD (from /special-report) ═══════════ -->
+<header id="mast">
+  <div class="mast-bg" id="mastBg"></div>
+  <canvas class="loom-bg" id="coverLoom" aria-hidden="true" style="z-index:1"></canvas>
+  <div class="mast-nav" id="mastNav">
+    <div class="mn-left">
+      <a class="mn-link" href="#tourmapCard">Tour Map</a>
+      <a class="mn-link" href="#st01">01 The Map</a>
+      <a class="mn-link" href="#st03">03 The Gap</a>
+      <a class="mn-link" href="#st06">06 The Voices</a>
+      <a class="mn-link" href="#st13">13 For Parents</a>
+      <a class="mn-link" href="#st14">14 Forward</a>
+    </div>
+    <a class="mn-cta" href="https://findings.circumsurvey.online/explore" target="_blank" rel="noopener">Full Exhibition →</a>
+  </div>
+  <div class="mast-center">
+    <svg id="emblem" class="trace bi1" width="150" height="96" viewBox="0 0 180 120" aria-hidden="true"></svg>
+    <div class="m-eyebrow bi2" id="mastEyebrow"><span class="star">★</span> A Data-Guided Tour &middot; Special Report <span class="star">★</span></div>
+    <h1 class="m-title" id="mastTitle">The Accidental Intactivist&rsquo;s Inquiry</h1>
+    <div class="m-sub bi3" id="mastSub">500 Voices &middot; Fourteen Exhibits &middot; One Question, Asked Honestly</div>
+    <div class="rotfact bi4" id="rotfact">
+      <div class="rf-num" id="rfNum">&nbsp;</div>
+      <div class="rf-line" id="rfL1">&nbsp;</div>
+      <div class="rf-line" id="rfL2" style="margin-bottom:.2rem">&nbsp;</div>
+      <div class="rf-ctx" id="rfCtx">&nbsp;</div>
+    </div>
+  </div>
+  <div class="scrollcue bi4" id="scrollCue"><i></i><span>Scroll to begin the tour</span></div>
+  <div class="mast-rainbow"></div>
+</header>
+<div class="mast-spacer" id="mastSpacer"></div>
+
+<div class="showcase">
+
+<!-- ═══════════ TOUR MAP ═══════════ -->
+<div class="section-label rev">Your tour map &mdash; fourteen stations</div>
+<div class="bureau-card rev" id="tourmapCard">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Index of Exhibits</div>
+    <div class="bar-ref">TAP ANY ROW TO JUMP &middot; FULL EXHIBITS AT /EXPLORE</div>
+  </div>
+  <div class="card-body">
+    <div class="pathway-chips" style="margin-bottom:1.1rem">
+      <span class="pathway-chip" style="background:rgba(88,136,192,.12);color:var(--b-blue);border:1.5px solid rgba(88,136,192,.4)"><i class="swatch" style="background:var(--b-blue)"></i>Intact n=141</span>
+      <span class="pathway-chip" style="background:rgba(232,93,80,.12);color:var(--b-red);border:1.5px solid rgba(232,93,80,.4)"><i class="swatch" style="background:var(--b-red)"></i>Circumcised n=212</span>
+      <span class="pathway-chip" style="background:rgba(240,200,64,.12);color:var(--b-yellow-text);border:1.5px solid rgba(240,200,64,.4)"><i class="swatch" style="background:var(--b-yellow)"></i>Restoring n=110</span>
+      <span class="pathway-chip" style="background:rgba(150,150,150,.12);color:#888;border:1.5px solid rgba(150,150,150,.4)"><i class="swatch" style="background:#a0a0a0"></i>Observer n=37</span>
+    </div>
+    <div class="data-table" id="tourmap"></div>
+    <div class="arrow-note"><span class="arrow">→</span> This tour samples each exhibit; every station links into its live, interactive original</div>
+  </div>
+</div>
+
+<div class="loom-strip"><canvas class="loom-ribbon" aria-hidden="true"></canvas></div>
+
+<!-- ═══════════ STATION 01 · THE SURVEY MAP ═══════════ -->
+<div class="station-head rev" id="st01" data-icon="compass" data-col="#5888c0">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 01</div>
+    <div class="station-title">The Survey Map</div>
+    <div class="station-tag">Interactive survey architecture flowchart</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/pathways" target="_blank" rel="noopener">Enter Exhibit 01 →</a>
+</div>
+<p class="lens rev">Before I could ask anything sensitive, I had to build an instrument people could trust. Five hundred respondents entered the same door and answered the same experience questions <em>before</em> any mention of status &mdash; then the survey forked, and every question after that was phrased for the life answering it.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Survey Architecture &mdash; Live Flow</div>
+    <div class="bar-ref">EXHIBIT 01 &middot; 355 QUESTIONS &middot; 6 PATHWAYS</div>
+  </div>
+  <div class="card-body">
+    <svg id="flowchart" viewBox="0 0 760 430" width="100%" role="img" aria-label="Flowchart: 500 respondents pass through universal questions, reach the pathway fork, and divide into intact, circumcised, restoring, and observer pathways."></svg>
+    <div class="arrow-note"><span class="arrow">→</span> Every question node, clickable: <a href="https://findings.circumsurvey.online/explore#/pathways" target="_blank" rel="noopener">Exhibit 01</a></div>
+  </div>
+  <div class="stamp">Exhibit 01</div>
+</div>
+
+<!-- ═══════════ STATION 02 · MIRROR PAIRS ═══════════ -->
+<div class="station-head rev" id="st02" data-icon="scale" data-col="#f09860">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 02</div>
+    <div class="station-title">Mirror Pairs</div>
+    <div class="station-tag">Side-by-side cohort question contrasts</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/pairs" target="_blank" rel="noopener">Enter Exhibit 02 →</a>
+</div>
+<p class="lens rev">Eighteen questions were asked twice, once from each side of the fence. This is the pair the community shaped most carefully. I report both columns in full; the asymmetry needs no help from me.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Mirror Comparison &middot; Resentment vs Regret</div>
+    <div class="bar-ref">EXHIBIT 02 &middot; PARALLEL QUESTION PAIR</div>
+  </div>
+  <div class="language-note">
+    <strong>★ Language note:</strong> We use &ldquo;resentment&rdquo; for the Circumcised Pathway because the procedure was performed without their agency. We use &ldquo;regret&rdquo; for the Intact Pathway because that is the word that could meaningfully apply to a state they grew into. This distinction was shaped by community feedback.
+  </div>
+  <div class="mirror-inner">
+    <div class="mirror-side" style="background:rgba(232,93,80,.03)">
+      <div class="side-pathway" style="color:var(--b-red)"><i class="swatch" style="background:var(--b-red)"></i>The Circumcised Pathway</div>
+      <div class="side-question">Have you experienced resentment, loss, anger, or grief about your circumcision?</div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="54.6" style="background:var(--b-red)">55%</div></div><div class="bar-label">Strong &amp; frequent</div><div class="bar-value">54.6%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="16.1" style="background:var(--b-orange)"></div></div><div class="bar-label">Sometimes</div><div class="bar-value">16.1%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="8.3" style="background:var(--b-yellow)"></div></div><div class="bar-label">Rarely</div><div class="bar-value">8.3%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="21" style="background:var(--b-blue)"></div></div><div class="bar-label">No, never</div><div class="bar-value">21.0%</div></div>
+    </div>
+    <div class="mirror-side" style="background:rgba(88,136,192,.03)">
+      <div class="side-pathway" style="color:var(--b-blue)"><i class="swatch" style="background:var(--b-blue)"></i>The Intact Pathway</div>
+      <div class="side-question">Have you ever wished you were circumcised, or felt regret about being intact?</div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="8.6" style="background:var(--b-red)"></div></div><div class="bar-label">Strong &amp; frequent</div><div class="bar-value">8.6%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="11.5" style="background:var(--b-orange)"></div></div><div class="bar-label">Sometimes</div><div class="bar-value">11.5%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="18" style="background:var(--b-yellow)"></div></div><div class="bar-label">Rarely</div><div class="bar-value">18.0%</div></div>
+      <div class="mirror-bar-row"><div class="bar-container"><div class="bar-fill" data-w="61.9" style="background:var(--b-blue)">62%</div></div><div class="bar-label">No, never</div><div class="bar-value">61.9%</div></div>
+    </div>
+  </div>
+  <div class="card-body" style="padding-top:.5rem">
+    <div class="arrow-note">
+      <span class="arrow">→</span> 79% of circumcised respondents report some resentment; 61.9% of intact respondents report no regret, ever<br>
+      <span class="arrow">→</span> All eighteen pairs, interactive: <a href="https://findings.circumsurvey.online/explore#/pairs" target="_blank" rel="noopener">Exhibit 02</a>
+    </div>
+  </div>
+  <div class="stamp">Mirror</div>
+</div>
+
+<!-- ═══════════ STATION 03 SETUP · BASELINE + PROJECTION ═══════════ -->
+<div class="station-head rev" id="st03" data-icon="heart" data-col="#68b878">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 03</div>
+    <div class="station-title">The Pleasure Gap</div>
+    <div class="station-tag">Sensation, sensitivity &amp; orgasm ratings</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/pleasure-gap" target="_blank" rel="noopener">Enter Exhibit 03 →</a>
+</div>
+<p class="lens rev">Remember the map: these ratings were collected <em>before</em> the fork. Here is everyone pooled together, exactly as the survey first saw them &mdash; then you tell me what you expect the fork revealed.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Sexual Experience Assessment &mdash; Pooled</div>
+    <div class="bar-ref">FORM CS-048 &middot; ALL STATUS PATHWAYS &middot; SCALE 1&ndash;5</div>
+  </div>
+  <div class="card-body">
+    <div class="form-field">
+      <div class="field-label">Pooled means &mdash; all anatomical-status respondents together</div>
+      <div class="data-table">
+        <div class="data-row"><span class="pathway-label">Orgasm intensity</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="3.37">&nbsp;</span></div>
+        <div class="data-row"><span class="pathway-label">Ease of orgasm</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="3.08">&nbsp;</span></div>
+        <div class="data-row"><span class="pathway-label">Variety of sensation</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="3.10">&nbsp;</span></div>
+        <div class="data-row"><span class="pathway-label">Orgasm duration</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="3.07">&nbsp;</span></div>
+        <div class="data-row"><span class="pathway-label">Light touch sensitivity</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="2.91">&nbsp;</span></div>
+        <div class="data-row"><span class="pathway-label">Pleasure from mobile skin</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="2.94">&nbsp;</span></div>
+      </div>
+    </div>
+    <div class="arrow-note"><span class="arrow">→</span> Means weighted by pathway n &middot; canonical values stamped by the freeze script</div>
+  </div>
+  <div class="stamp">Pooled</div>
+</div>
+
+<div class="bureau-card proj rev" id="projBox">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Audience Participation</div>
+    <div class="bar-ref">MAKE YOUR PROJECTION</div>
+  </div>
+  <div class="card-body">
+    <h3>Then came the fork.</h3>
+    <p>&ldquo;Are you circumcised?&rdquo; &mdash; and every answer above could suddenly be sorted. What do you expect happened to these numbers?</p>
+    <div class="pbtns">
+      <button class="pbtn" data-p="split">They split wide apart</button>
+      <button class="pbtn" data-p="small">Small differences</button>
+      <button class="pbtn" data-p="same">About the same</button>
+    </div>
+    <div class="p-echo" id="pEcho"></div>
+  </div>
+  <div class="stamp">Sealed</div>
+</div>
+
+</div><!-- /showcase -->
+<!-- ═══════════ STATION 03 · THE DEMONSTRATION (dark) ═══════════ -->
+<section class="night">
+  <canvas id="laser" aria-hidden="true"></canvas>
+  <div id="nightlock"><div class="msg">The demonstration awaits your projection above</div></div>
+  <div class="night-inner">
+    <div class="station-head rev" data-icon="heart" data-col="#68b878">
+      <div class="badge2"></div>
+      <div class="station-meta">
+        <div class="station-kick">Station 03 &middot; Lights down, please</div>
+        <div class="station-title">The Separation</div>
+        <div class="station-tag">Same respondents as pooled &middot; sorted by one question</div>
+      </div>
+      <a class="enter-link" href="https://findings.circumsurvey.online/explore#/pleasure-gap" target="_blank" rel="noopener">Enter Exhibit 03 →</a>
+    </div>
+    <p class="lens rev" id="verdictLine">Sorted by a single question, the pool of answers comes apart.</p>
+
+    <div class="bureau-card rev">
+      <div class="rainbow-bar"></div>
+      <div class="corner-star">★</div>
+      <div class="header-bar">
+        <div class="bar-title"><span class="star">★</span> Sexual Experience &mdash; The Separation</div>
+        <div class="bar-ref">EXHIBIT 03 &middot; SCALE 1&ndash;5</div>
+      </div>
+      <div class="card-body">
+        <div class="field-body" style="margin-bottom:.6rem">Every dot starts at the pooled average you just saw &mdash; then slides to where its pathway actually reported it.</div>
+        <svg id="dumbbell" viewBox="0 0 860 400" width="100%" role="img" aria-label="Dumbbell chart: for six sexual experience metrics, intact respondents rate 4.0 to 4.5 while circumcised respondents rate 2.0 to 3.0, with restoring in between."></svg>
+        <div class="dotmap-legend">
+          <span class="lg"><i class="swatch" style="background:var(--b-blue)"></i>Intact</span>
+          <span class="lg"><i class="swatch" style="background:var(--b-yellow)"></i>Restoring</span>
+          <span class="lg"><i class="swatch" style="background:var(--b-red)"></i>Circumcised</span>
+        </div>
+        <div class="arrow-note">
+          <span class="arrow">→</span> Largest gap in the dataset: pleasure from mobile skin, 4.47 vs 1.96<br>
+          <span class="arrow">→</span> Filter by any cohort yourself: <a href="https://findings.circumsurvey.online/explore#/pleasure-gap" target="_blank" rel="noopener" style="color:var(--b-blue)">Exhibit 03</a>
+        </div>
+      </div>
+      <div class="stamp">Separated</div>
+    </div>
+
+    <div class="bureau-card rev">
+      <div class="rainbow-bar"></div>
+      <div class="corner-star">★</div>
+      <div class="header-bar">
+        <div class="bar-title"><span class="star">★</span> Lubrication Requirement</div>
+        <div class="bar-ref">FORM CS-058 &middot; ANSWERING &ldquo;NEVER&rdquo; &middot; N = 486</div>
+      </div>
+      <div class="card-body">
+        <div class="data-table">
+          <div class="data-row"><span class="pathway-label"><i class="swatch" style="background:var(--b-blue)"></i>Intact</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-blue)" data-val="55.5%">&nbsp;</span></div>
+          <div class="data-row"><span class="pathway-label"><i class="swatch" style="background:var(--b-yellow)"></i>Restoring</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-yellow-text)" data-val="16.0%">&nbsp;</span></div>
+          <div class="data-row"><span class="pathway-label"><i class="swatch" style="background:var(--b-red)"></i>Circumcised</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="5.5%">&nbsp;</span></div>
+        </div>
+        <div class="stat-callout" style="border-left-color:var(--b-red)">
+          <div class="big-num" style="color:var(--b-red)">10:1</div>
+          <div class="stat-text">The ratio between intact and circumcised respondents who never need artificial lubrication &mdash; in the respondents&rsquo; own reporting. We add no adjective to it.</div>
+        </div>
+      </div>
+      <div class="stamp">Fig. 3</div>
+    </div>
+  </div>
+</section>
+
+<div class="showcase">
+
+<!-- ═══════════ STATION 04 · CORRELATIONS ═══════════ -->
+<div class="station-head rev" id="st04" data-icon="grid" data-col="#e85d50">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 04</div>
+    <div class="station-title">Correlations Explorer</div>
+    <div class="station-tag">Cross-tabulate demographic predictors</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/correlations" target="_blank" rel="noopener">Enter Exhibit 04 →</a>
+</div>
+<p class="lens rev">My next question was the skeptic&rsquo;s question: <em>is this just one kind of person answering?</em> The correlations table lets you check me &mdash; slice the outcome variables by any demographic you like.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> The Cycle, Cross-Tabulated</div>
+    <div class="bar-ref">EXHIBIT 04 &middot; FATHER STATUS &times; RESPONDENT STATUS</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Circumcised respondents with circumcised fathers</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="67.1%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Intact respondents with intact fathers</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-blue)" data-val="48.9%">&nbsp;</span></div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> The status tends to repeat &mdash; until someone examines it. See Station 14 for where the cycle goes next<br>
+      <span class="arrow">→</span> The &ldquo;keep intact&rdquo; majority holds across every age, politics, income &amp; religiosity slice displayable: <a href="https://findings.circumsurvey.online/explore#/correlations" target="_blank" rel="noopener">Exhibit 04</a>
+    </div>
+  </div>
+  <div class="stamp">Cross-Tab</div>
+</div>
+
+<!-- ═══════════ STATION 05 · DEMOGRAPHICS ═══════════ -->
+<div class="station-head rev" id="st05" data-icon="users" data-col="#5888c0">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 05</div>
+    <div class="station-title">Demographic Explorer</div>
+    <div class="station-tag">Age, generation, geography &amp; more</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/demographics" target="_blank" rel="noopener">Enter Exhibit 05 →</a>
+</div>
+<p class="lens rev">Who actually showed up? Heavily North Americans &mdash; which is itself the finding, since that is where the practice is the norm. A self-selected sample, reported as exactly that.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Respondent Census &amp; Origins</div>
+    <div class="bar-ref">FORM CS-001 &middot; PHASE 1 &middot; N = 500</div>
+  </div>
+  <div class="card-body">
+    <div class="gauges">
+      <div class="gauge"><svg class="trace" width="82" height="82" viewBox="0 0 86 86" data-art="gauge" data-col="#5888c0"></svg><div class="num" style="color:var(--b-blue)" data-count="141">0</div><div class="cap">Intact</div></div>
+      <div class="gauge"><svg class="trace" width="82" height="82" viewBox="0 0 86 86" data-art="gauge" data-col="#e85d50"></svg><div class="num" style="color:var(--b-red)" data-count="212">0</div><div class="cap">Circumcised</div></div>
+      <div class="gauge"><svg class="trace" width="82" height="82" viewBox="0 0 86 86" data-art="gauge" data-col="#f0c840"></svg><div class="num" style="color:var(--b-yellow-text)" data-count="110">0</div><div class="cap">Restoring</div></div>
+      <div class="gauge"><svg class="trace" width="82" height="82" viewBox="0 0 86 86" data-art="gauge" data-col="#a0a0a0"></svg><div class="num" style="color:#888" data-count="37">0</div><div class="cap">Observer &amp; Ally</div></div>
+    </div>
+    <div class="form-field" style="margin-top:.6rem">
+      <div class="field-label">Origins &mdash; the punch-card atlas</div>
+      <svg id="dotmap" viewBox="0 0 580 200" width="100%" role="img" aria-label="Dot-matrix world map showing respondent origins concentrated in North America."></svg>
+      <div class="dotmap-legend" id="dotmapLegend"></div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> Regional counts provisional &mdash; stamped by the freeze script &middot; country detail: <a href="https://findings.circumsurvey.online/explore#/demographics" target="_blank" rel="noopener">Exhibit 05</a><br>
+      <span class="arrow">→</span> Trans &amp; intersex pathways receive dedicated treatment under the small-sample rule
+    </div>
+  </div>
+  <div class="stamp">Phase 1</div>
+</div>
+
+<!-- ═══════════ STATION 06 · THE VOICES ═══════════ -->
+<div class="station-head rev" id="st06" data-icon="message" data-col="#f09860">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 06</div>
+    <div class="station-title">The Voices &middot; Narrative Mirrors</div>
+    <div class="station-tag">Open-ended narratives &amp; word clouds</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/narrative-mirrors" target="_blank" rel="noopener">Enter Exhibit 06 →</a>
+</div>
+<p class="lens rev">Numbers first, then language. When the survey opened a blank text box, two different vocabularies came back. The words below are sized by how often each side reaches for them.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Narrative Mirrors &mdash; The Language of Each Side</div>
+    <div class="bar-ref">EXHIBIT 06 &middot; OPEN-ENDED RESPONSES &middot; CURATED SAMPLE</div>
+  </div>
+  <div class="wc-pair">
+    <div class="wc-panel" style="background:rgba(232,93,80,.03)" id="wcCirc">
+      <div class="wc-title" style="color:var(--b-red)"><i class="swatch" style="background:var(--b-red)"></i>Circumcised, in their words</div>
+    </div>
+    <div class="wc-panel" style="background:rgba(88,136,192,.03)" id="wcIntact">
+      <div class="wc-title" style="color:var(--b-blue)"><i class="swatch" style="background:var(--b-blue)"></i>Intact, in their words</div>
+    </div>
+  </div>
+  <div class="card-body" style="padding-top:.9rem">
+    <div class="voices-label"><span class="star">★</span> Voices from the Survey</div>
+    <div class="quote-grid">
+      <div class="quote-card" style="background:rgba(232,93,80,.06);border-left-color:var(--b-red)">
+        <div class="quote-text">&ldquo;Pain. Loss of pleasure. Loss of confidence. Loss of trust. Self hatred. Depression.&rdquo;</div>
+        <div class="quote-attrib" style="color:var(--b-red)">&mdash; Circumcised Pathway &middot; On drawbacks</div>
+      </div>
+      <div class="quote-card" style="background:rgba(88,136,192,.06);border-left-color:var(--b-blue)">
+        <div class="quote-text">&ldquo;Honestly? I never think about it. It works, everything moves, nothing hurts. I didn&rsquo;t realize that was worth saying out loud until this survey.&rdquo;</div>
+        <div class="quote-attrib" style="color:var(--b-blue)">&mdash; Intact Pathway &middot; On the everyday</div>
+      </div>
+      <div class="quote-card" style="background:rgba(232,93,80,.06);border-left-color:var(--b-red)">
+        <div class="quote-text">&ldquo;I&rsquo;m fine with it. My parents did what everyone did. I don&rsquo;t feel damaged and I don&rsquo;t feel angry.&rdquo;</div>
+        <div class="quote-attrib" style="color:var(--b-red)">&mdash; Circumcised Pathway &middot; On satisfaction</div>
+      </div>
+      <div class="quote-card" style="background:rgba(88,136,192,.06);border-left-color:var(--b-blue)">
+        <div class="quote-text">&ldquo;In childhood and through college I was self conscious because all my friends were cut and I only knew one other kid who was uncut.&rdquo;</div>
+        <div class="quote-attrib" style="color:var(--b-blue)">&mdash; Intact Pathway &middot; On adolescent pressure</div>
+      </div>
+    </div>
+    <div class="voices-disclaimer">★ Anonymous quotes selected from open-ended responses. All identifying details removed. Word weights provisional pending the narrative-frequency export; final curation by the lead researcher.</div>
+  </div>
+  <div class="stamp">Voices</div>
+</div>
+
+<div class="loom-strip"><canvas class="loom-ribbon" aria-hidden="true"></canvas></div>
+
+<!-- ═══════════ STATION 07 · CULTURE & GENERATIONS ═══════════ -->
+<div class="station-head rev" id="st07" data-icon="globe" data-col="#5888c0">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 07</div>
+    <div class="station-title">Culture &amp; Generations</div>
+    <div class="station-tag">Norms, stereotypes &amp; generational shifts</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/culture" target="_blank" rel="noopener">Enter Exhibit 07 →</a>
+</div>
+<p class="lens rev">I asked both sides the same question about the world they grew up in. Two fences, two different weather reports.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> &ldquo;What was the norm in your community growing up?&rdquo;</div>
+    <div class="bar-ref">EXHIBIT 07 &middot; MIRROR &middot; CIRCUMCISED VS INTACT</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Automatic / unquestioned</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)">47.6% <span style="color:#bbb">vs</span> <span style="color:var(--b-blue)">23.5%</span></span></div>
+      <div class="data-row"><span class="pathway-label">Strong push / very common</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)">18.9% <span style="color:#bbb">vs</span> <span style="color:var(--b-blue)">22.8%</span></span></div>
+      <div class="data-row"><span class="pathway-label">Not discussed / uncommon</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)">7.6% <span style="color:#bbb">vs</span> <span style="color:var(--b-blue)">33.8%</span></span></div>
+      <div class="data-row"><span class="pathway-label">Neutral / 50-50</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)">2.7% <span style="color:#bbb">vs</span> <span style="color:var(--b-blue)">12.5%</span></span></div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> Red = circumcised respondents&rsquo; world &middot; blue = intact respondents&rsquo; world<br>
+      <span class="arrow">→</span> Generational trend lines, Silent Generation through Gen Z: <a href="https://findings.circumsurvey.online/explore#/culture" target="_blank" rel="noopener">Exhibit 07</a>
+    </div>
+  </div>
+  <div class="stamp">Two Worlds</div>
+</div>
+
+<!-- ═══════════ STATION 08 · OBSERVER LENS ═══════════ -->
+<div class="station-head rev" id="st08" data-icon="eye" data-col="#a0a0a0">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 08</div>
+    <div class="station-title">The Observer Lens</div>
+    <div class="station-tag">Partners, parents &amp; professionals</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/observer-lens" target="_blank" rel="noopener">Enter Exhibit 08 →</a>
+</div>
+<p class="lens rev">Thirty-seven people took the survey about bodies that are not their own &mdash; partners, parents, healthcare workers. Independent witnesses, reporting from the outside.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> The Witnesses</div>
+    <div class="bar-ref">EXHIBIT 08 &middot; N = 37 &middot; SMALL-SAMPLE FLAGGED</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Would keep a future son intact</span><span class="dotted-fill"></span><span class="data-value" style="color:#888" data-val="90.9%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Prioritize bodily autonomy</span><span class="dotted-fill"></span><span class="data-value" style="color:#888" data-val="97.0%">&nbsp;</span></div>
+    </div>
+    <div class="arrow-note"><span class="arrow">→</span> Partner, parent &amp; professional breakdowns: <a href="https://findings.circumsurvey.online/explore#/observer-lens" target="_blank" rel="noopener">Exhibit 08</a></div>
+  </div>
+  <div class="stamp">n=37</div>
+</div>
+
+<!-- ═══════════ STATION 09 · RELIGIOUS MIRRORS ═══════════ -->
+<div class="station-head rev" id="st09" data-icon="book" data-col="#5888c0">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 09</div>
+    <div class="station-title">Religious Mirrors</div>
+    <div class="station-tag">Faith, tradition &amp; personal experience</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/religious-mirrors" target="_blank" rel="noopener">Enter Exhibit 09 →</a>
+</div>
+<p class="lens rev">The survey offered optional sections for Jewish, Christian, and Islamic respondents &mdash; the same respectful questions, framed for each tradition. I won&rsquo;t compress those answers into a headline here; they deserve their full exhibit, side by side, in the respondents&rsquo; own words.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Three Traditions, One Question Set</div>
+    <div class="bar-ref">EXHIBIT 09 &middot; OPTIONAL FAITH SECTIONS</div>
+  </div>
+  <div class="card-body">
+    <div class="field-body">Where does faith intersect with &mdash; or diverge from &mdash; personal experience? The exhibit presents each tradition&rsquo;s responses in parallel, unabridged and uncompared until you choose to compare them.</div>
+    <div class="arrow-note"><span class="arrow">→</span> Enter the mirrors: <a href="https://findings.circumsurvey.online/explore#/religious-mirrors" target="_blank" rel="noopener">Exhibit 09</a></div>
+  </div>
+  <div class="stamp">In Full</div>
+</div>
+
+<!-- ═══════════ STATION 10 · RESTORATION JOURNEY ═══════════ -->
+<div class="station-head rev" id="st10" data-icon="refresh" data-col="#c8a020">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 10</div>
+    <div class="station-title">Restoration Journey</div>
+    <div class="station-tag">Methods, progress &amp; sensitivity gains</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/restoration-journey" target="_blank" rel="noopener">Enter Exhibit 10 →</a>
+</div>
+<p class="lens rev">One hundred and ten respondents are actively growing back what was removed &mdash; a years-long project of tension and patience. Their numbers sit between the two fences, and their motivation column is the starkest in the study.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> The Restoring Cohort, In Numbers</div>
+    <div class="bar-ref">EXHIBIT 10 &middot; N = 110</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Report no resentment, ever</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="0.0%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">&ldquo;Something is missing&rdquo; (orgasm confidence)</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-yellow-text)" data-val="59.6%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Mobile-skin pleasure vs circumcised baseline</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-green)">2.85 vs 1.96</span></div>
+      <div class="data-row"><span class="pathway-label">Would keep a future son intact</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-yellow-text)" data-val="98.1%">&nbsp;</span></div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> Every restoring respondent reports some resentment &mdash; and their mobile-skin ratings sit above the circumcised baseline<br>
+      <span class="arrow">→</span> Methods, RCI progress &amp; timelines: <a href="https://findings.circumsurvey.online/explore#/restoration-journey" target="_blank" rel="noopener">Exhibit 10</a>
+    </div>
+  </div>
+  <div class="stamp">Restoring</div>
+</div>
+
+<!-- ═══════════ STATION 11 · ADULT EXPERIENCE ═══════════ -->
+<div class="station-head rev" id="st11" data-icon="zap" data-col="#68b878">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 11</div>
+    <div class="station-title">Before &amp; After: The Adult Experience</div>
+    <div class="station-tag">Those who remember both states</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/adult-experience" target="_blank" rel="noopener">Enter Exhibit 11 →</a>
+</div>
+<p class="lens rev">A small group can answer the question no one else can: <em>what changed?</em> Respondents circumcised as adults remember both states first-hand. Their accounts are few &mdash; so the exhibit presents them carefully, under the small-sample rule, as testimony rather than statistics.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> The Only Direct Witnesses</div>
+    <div class="bar-ref">EXHIBIT 11 &middot; SMALL N &middot; TESTIMONY-FIRST</div>
+  </div>
+  <div class="card-body">
+    <div class="field-body">First-hand before-and-after comparisons of sensation, function, and adjustment &mdash; presented individually, flagged for sample size, never aggregated into percentages the n cannot support.</div>
+    <div class="arrow-note"><span class="arrow">→</span> Read their accounts: <a href="https://findings.circumsurvey.online/explore#/adult-experience" target="_blank" rel="noopener">Exhibit 11</a></div>
+  </div>
+  <div class="stamp">Testimony</div>
+</div>
+
+<div class="loom-strip"><canvas class="loom-ribbon" aria-hidden="true"></canvas></div>
+<!-- ═══════════ STATION 12 · BY THE NUMBERS ═══════════ -->
+<div class="station-head rev" id="st12" data-icon="bars" data-col="#c8a020">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 12</div>
+    <div class="station-title">By the Numbers</div>
+    <div class="station-tag">Key statistical stories &amp; functional shifts</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/numbers" target="_blank" rel="noopener">Enter Exhibit 12 →</a>
+</div>
+<p class="lens rev">Three findings I did not expect when I built this. I report them exactly as answered.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Three Unexpected Numbers</div>
+    <div class="bar-ref">EXHIBIT 12 &middot; COHORT FILTERS AVAILABLE</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Circumcised men preferring the intact appearance</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="52%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Circumcised who often wonder about intact experience</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="67.8%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Intact who often wonder the reverse</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-blue)" data-val="27.3%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Prioritize bodily autonomy (all pathways)</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-green)">81&ndash;100%</span></div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> The curiosity points overwhelmingly in one direction; we leave it to you to say which<br>
+      <span class="arrow">→</span> All key metrics with cohort filters: <a href="https://findings.circumsurvey.online/explore#/numbers" target="_blank" rel="noopener">Exhibit 12</a>
+    </div>
+  </div>
+  <div class="stamp">Key Stats</div>
+</div>
+
+<!-- ═══════════ STATION 13 · FOR PARENTS ═══════════ -->
+<div class="station-head rev" id="st13" data-icon="shield" data-col="#e85d50">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 13</div>
+    <div class="station-title">For New &amp; Expectant Parents</div>
+    <div class="station-tag">Curated data for informed decisions</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/for-parents" target="_blank" rel="noopener">Enter Exhibit 13 →</a>
+</div>
+<p class="lens rev">If you are deciding for someone else right now, this station is yours. I asked circumcised respondents how the decision was handled when it was <em>them</em> on the table.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> How the Decision Was Handled</div>
+    <div class="bar-ref">FORM CS-095 &middot; CIRCUMCISED PATHWAY &middot; EXHIBIT 13</div>
+  </div>
+  <div class="card-body">
+    <div class="data-table">
+      <div class="data-row"><span class="pathway-label">Routine / automatic</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-red)" data-val="47.6%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">No idea</span><span class="dotted-fill"></span><span class="data-value" style="color:#999" data-val="23.2%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Strong medical recommendation</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-orange)" data-val="18.9%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Not brought up</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--ink)" data-val="7.6%">&nbsp;</span></div>
+      <div class="data-row"><span class="pathway-label">Neutral pros &amp; cons</span><span class="dotted-fill"></span><span class="data-value" style="color:var(--b-blue)" data-val="2.7%">&nbsp;</span></div>
+    </div>
+    <div class="stat-callout" style="border-left-color:var(--b-red)">
+      <div class="big-num" style="color:var(--b-red)">2.7%</div>
+      <div class="stat-text">report the procedure was presented as a neutral choice with pros and cons. This exhibit exists so the next 97.3% can have what they didn&rsquo;t: what grown children, other parents, and medical professionals actually say.</div>
+    </div>
+    <div class="arrow-note"><span class="arrow">→</span> The shareable parents&rsquo; resource: <a href="https://findings.circumsurvey.online/explore#/for-parents" target="_blank" rel="noopener">Exhibit 13</a></div>
+  </div>
+  <div class="stamp">For Parents</div>
+</div>
+
+<!-- ═══════════ STATION 14 · THE FORWARD VIEW ═══════════ -->
+<div class="station-head rev" id="st14" data-icon="check" data-col="#68b878">
+  <div class="badge2"></div>
+  <div class="station-meta">
+    <div class="station-kick">Station 14 &middot; Final Station</div>
+    <div class="station-title">The Forward View</div>
+    <div class="station-tag">Decisions for the next generation</div>
+  </div>
+  <a class="enter-link" href="https://findings.circumsurvey.online/explore#/the-forward-view" target="_blank" rel="noopener">Enter Exhibit 14 →</a>
+</div>
+<p class="lens rev">The last question looks forward: <em>if you had a son today, what would you choose for him?</em> Follow each pathway&rsquo;s ribbon. Whatever their past, watch where they flow.</p>
+<div class="bureau-card rev">
+  <div class="rainbow-bar"></div>
+  <div class="corner-star">★</div>
+  <div class="header-bar">
+    <div class="bar-title"><span class="star">★</span> Future-Son Intentions &mdash; The Convergence</div>
+    <div class="bar-ref">EXHIBIT 14 &middot; FORM CS-177 &middot; ALL PATHWAYS &middot; N = 500</div>
+  </div>
+  <div class="card-body">
+    <svg id="sankey" viewBox="0 0 780 420" width="100%" role="img" aria-label="Sankey diagram: ribbons from all four pathways flow overwhelmingly into the keep intact node - 433 of 500 respondents."></svg>
+    <div class="stat-callout" style="border-left-color:var(--b-green)">
+      <div class="big-num" style="color:var(--b-green)">0%</div>
+      <div class="stat-text">of intact and restoring respondents would choose circumcision for a future son. The &ldquo;keep intact&rdquo; majority holds across every demographic slice we can display.</div>
+    </div>
+    <div class="arrow-note">
+      <span class="arrow">→</span> 433 of 500 flow to &ldquo;keep intact&rdquo; &mdash; including 78.1% of circumcised respondents<br>
+      <span class="arrow">→</span> Re-cut by any demographic: <a href="https://findings.circumsurvey.online/explore#/the-forward-view" target="_blank" rel="noopener">Exhibit 14</a>
+    </div>
+  </div>
+  <div class="stamp">Consensus</div>
+</div>
+
+<!-- ═══════════ FINALE ═══════════ -->
+<div class="section-label rev">The tour concludes &mdash; the exhibition stays open</div>
+<div class="narrow rev" style="text-align:center">
+  <p class="lens" style="text-align:center;margin:0 auto 1rem">Fourteen stations, five hundred voices, zero adjectives from me.<br>Three doors lead out &mdash; choose freely.</p>
+</div>
+<div class="tickets rev">
+  <a class="ticket" href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noopener">
+    <div class="t-rainbow"></div><div class="t-inner">
+    <div class="adm"><span style="color:var(--b-red)">★</span> Admit One</div><div class="t">Add your voice</div>
+    <div class="d">Take the survey. Fifteen minutes, totally anonymous, skip any question.</div></div>
+  </a>
+  <a class="ticket" href="https://findings.circumsurvey.online/explore" target="_blank" rel="noopener">
+    <div class="t-rainbow"></div><div class="t-inner">
+    <div class="adm"><span style="color:var(--b-red)">★</span> All-Day Pass</div><div class="t">The full exhibition</div>
+    <div class="d">All fourteen exhibits, every question, cohort filters, and the AI docent.</div></div>
+  </a>
+  <a class="ticket" href="https://theaccidentalintactivist.substack.com" target="_blank" rel="noopener">
+    <div class="t-rainbow"></div><div class="t-inner">
+    <div class="adm"><span style="color:var(--b-red)">★</span> Guide&rsquo;s Notes</div><div class="t">The researcher&rsquo;s view</div>
+    <div class="d">Interpretation and argument, clearly labeled as such. Off the exhibit floor.</div></div>
+  </a>
+</div>
+
+<div class="colophon rev">
+  <div class="rule"></div>
+  <div class="t">Tomorrow&rsquo;s Bureau</div>
+  <div class="d">The Accidental Intactivist&rsquo;s Inquiry &middot; Phase 1 snapshot &middot; N = 500<br>
+  Fourteen exhibits &middot; findings.circumsurvey.online/explore<br>
+  Methodology &amp; limitations one click away, always &middot; Anonymous quotes, all identifying details removed</div>
+</div>
+
+</div><!-- /showcase -->
+<script>
+(function(){
+"use strict";
+var NS='http://www.w3.org/2000/svg';
+var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var BC={red:'#e85d50',orange:'#f09860',yellow:'#f0c840',green:'#68b878',blue:'#5888c0',
+        ink:'#2a2622',grey:'#a0a0a0',edge:'#d4cfc4',ytext:'#c8a020'};
+
+function E(tag,attrs,parent){
+  var el=document.createElementNS(NS,tag);
+  for(var k in attrs) el.setAttribute(k,attrs[k]);
+  if(parent) parent.appendChild(el);
+  return el;
+}
+function TXT(parent,x,y,str,fill,size,anchor,weight,family){
+  var t=E('text',{x:x,y:y,fill:fill,'text-anchor':anchor||'start'},parent);
+  t.style.fontFamily=family||"Josefin Sans,sans-serif";
+  t.style.fontSize=size+'px';
+  t.style.fontWeight=weight||600;
+  t.textContent=str;
+  return t;
+}
+function curvePath(fn,t0,t1,steps){
+  var d='';
+  for(var i=0;i<=steps;i++){
+    var t=t0+(t1-t0)*i/steps,pt=fn(t);
+    d+=(i===0?'M':'L')+pt[0].toFixed(1)+' '+pt[1].toFixed(1);
+  }
+  return d;
+}
+
+/* ═════════ LUCIDE-STYLE EXHIBIT ICONS (single-stroke, traceable) ═════════
+   One drawing function per EXHIBIT_ROUTES icon, rendered into the loom-ringed
+   station badges. All strokes, no fills — so the loom can "draw" each one. */
+var ICONS={
+  compass:function(g,c){ E('circle',{cx:32,cy:32,r:13,stroke:c,'stroke-width':2,fill:'none'},g);
+    E('path',{d:'M38 26 L34.5 34.5 L26 38 L29.5 29.5 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g); },
+  scale:function(g,c){ E('line',{x1:32,y1:19,x2:32,y2:44,stroke:c,'stroke-width':2},g);
+    E('line',{x1:20,y1:23,x2:44,y2:23,stroke:c,'stroke-width':2},g);
+    E('path',{d:'M20 23 L15 33 H25 Z',stroke:c,'stroke-width':1.8,fill:'none','stroke-linejoin':'round'},g);
+    E('path',{d:'M44 23 L39 33 H49 Z',stroke:c,'stroke-width':1.8,fill:'none','stroke-linejoin':'round'},g);
+    E('line',{x1:25,y1:44,x2:39,y2:44,stroke:c,'stroke-width':2},g); },
+  heart:function(g,c){ E('path',{d:'M32 43 C20 34 18 25 24 22 C28 20 31 22 32 25 C33 22 36 20 40 22 C46 25 44 34 32 43 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g); },
+  grid:function(g,c){ E('rect',{x:20,y:20,width:24,height:24,rx:2,stroke:c,'stroke-width':2,fill:'none'},g);
+    E('line',{x1:20,y1:28,x2:44,y2:28,stroke:c,'stroke-width':1.6},g);
+    E('line',{x1:20,y1:36,x2:44,y2:36,stroke:c,'stroke-width':1.6},g);
+    E('line',{x1:28,y1:20,x2:28,y2:44,stroke:c,'stroke-width':1.6},g);
+    E('line',{x1:36,y1:20,x2:36,y2:44,stroke:c,'stroke-width':1.6},g); },
+  users:function(g,c){ E('circle',{cx:26,cy:26,r:5,stroke:c,'stroke-width':2,fill:'none'},g);
+    E('path',{d:'M17 44 C17 37 21 34 26 34 C31 34 35 37 35 44',stroke:c,'stroke-width':2,fill:'none','stroke-linecap':'round'},g);
+    E('circle',{cx:39,cy:28,r:4,stroke:c,'stroke-width':1.8,fill:'none'},g);
+    E('path',{d:'M37 44 C37 39 40 36 43 36 C46 36 48 38 48 44',stroke:c,'stroke-width':1.8,fill:'none','stroke-linecap':'round'},g); },
+  message:function(g,c){ E('path',{d:'M18 22 H46 V40 H28 L22 46 V40 H18 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g);
+    E('line',{x1:24,y1:29,x2:40,y2:29,stroke:c,'stroke-width':1.6},g);
+    E('line',{x1:24,y1:34,x2:34,y2:34,stroke:c,'stroke-width':1.6},g); },
+  globe:function(g,c){ E('circle',{cx:32,cy:32,r:13,stroke:c,'stroke-width':2,fill:'none'},g);
+    E('line',{x1:19,y1:32,x2:45,y2:32,stroke:c,'stroke-width':1.6},g);
+    E('ellipse',{cx:32,cy:32,rx:5.5,ry:13,stroke:c,'stroke-width':1.6,fill:'none'},g); },
+  eye:function(g,c){ E('path',{d:'M15 32 C23 21 41 21 49 32 C41 43 23 43 15 32 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g);
+    E('circle',{cx:32,cy:32,r:5,stroke:c,'stroke-width':2,fill:'none'},g); },
+  book:function(g,c){ E('path',{d:'M32 23 C28 19 21 19 17 21 V42 C21 40 28 40 32 44 C36 40 43 40 47 42 V21 C43 19 36 19 32 23 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g);
+    E('line',{x1:32,y1:23,x2:32,y2:44,stroke:c,'stroke-width':1.6},g); },
+  refresh:function(g,c){ E('path',{d:'M44 24 A14 14 0 1 0 46 32',stroke:c,'stroke-width':2,fill:'none','stroke-linecap':'round'},g);
+    E('path',{d:'M44 16 V24 H36',stroke:c,'stroke-width':2,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},g); },
+  zap:function(g,c){ E('path',{d:'M35 16 L24 35 H32 L29 48 L42 28 H33 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g); },
+  bars:function(g,c){ E('line',{x1:24,y1:44,x2:24,y2:31,stroke:c,'stroke-width':2.4},g);
+    E('line',{x1:32,y1:44,x2:32,y2:21,stroke:c,'stroke-width':2.4},g);
+    E('line',{x1:40,y1:44,x2:40,y2:36,stroke:c,'stroke-width':2.4},g);
+    E('line',{x1:18,y1:44,x2:46,y2:44,stroke:c,'stroke-width':1.6},g); },
+  shield:function(g,c){ E('path',{d:'M32 16 L44 21 V31 C44 40 38 45 32 48 C26 45 20 40 20 31 V21 Z',stroke:c,'stroke-width':2,fill:'none','stroke-linejoin':'round'},g); },
+  check:function(g,c){ E('circle',{cx:32,cy:32,r:13,stroke:c,'stroke-width':2,fill:'none'},g);
+    E('path',{d:'M25.5 32 L30 36.5 L39 26.5',stroke:c,'stroke-width':2.2,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},g); }
+};
+
+/* Station badges: loom-ringed icons. The dashed ring is the "thread" —
+   it rotates forever; the icon inside is traced on when the station reveals. */
+document.querySelectorAll('.station-head[data-icon]').forEach(function(head){
+  var slot=head.querySelector('.badge2'); if(!slot) return;
+  var col=head.dataset.col||BC.ink, icon=ICONS[head.dataset.icon];
+  var svg=E('svg',{viewBox:'0 0 64 64',width:64,height:64,'class':'trace','aria-hidden':'true'});
+  var ring=E('circle',{cx:32,cy:32,r:30,stroke:col,'stroke-width':1.4,fill:'none',
+    'stroke-dasharray':'4 7','stroke-linecap':'round','class':'ring-anim'},svg);
+  ring.style.opacity=.55;
+  E('circle',{cx:32,cy:32,r:24,stroke:col,'stroke-width':1.6,fill:'rgba(255,255,255,.75)'},svg);
+  if(icon) icon(svg,col);
+  slot.appendChild(svg);
+});
+
+/* Tour map rows (jump links to stations) */
+(function(){
+  var TOUR=[
+    ['01','The Survey Map','st01','#5888c0'],
+    ['02','Mirror Pairs','st02','#f09860'],
+    ['03','The Pleasure Gap','st03','#68b878'],
+    ['04','Correlations Explorer','st04','#e85d50'],
+    ['05','Demographic Explorer','st05','#5888c0'],
+    ['06','The Voices','st06','#f09860'],
+    ['07','Culture & Generations','st07','#5888c0'],
+    ['08','The Observer Lens','st08','#a0a0a0'],
+    ['09','Religious Mirrors','st09','#5888c0'],
+    ['10','Restoration Journey','st10','#c8a020'],
+    ['11','Before & After','st11','#68b878'],
+    ['12','By the Numbers','st12','#c8a020'],
+    ['13','For New & Expectant Parents','st13','#e85d50'],
+    ['14','The Forward View','st14','#68b878']
+  ];
+  var map=document.getElementById('tourmap'); if(!map) return;
+  TOUR.forEach(function(t){
+    var a=document.createElement('a');
+    a.className='tour-row'; a.href='#'+t[2];
+    a.innerHTML='<span class="pathway-label"><i class="swatch" style="background:'+t[3]+'"></i>Station '+t[0]+' · '+t[1]+'</span>'+
+      '<span class="dotted-fill"></span>'+
+      '<span class="data-value" style="color:'+t[3]+';font-size:.6rem">JUMP ↓</span>';
+    map.appendChild(a);
+  });
+})();
+
+/* ═════════ CLIP ART (gauge + cover emblem) ═════════ */
+var ART={
+  gauge:function(svg){
+    var col=svg.dataset.col||BC.green,cx=43,cy=43;
+    E('circle',{cx:cx,cy:cy,r:34,stroke:col,'stroke-width':1.8,fill:'none'},svg);
+    for(var i=0;i<12;i++){
+      var a=i*Math.PI/6;
+      E('line',{x1:cx+Math.cos(a)*29,y1:cy+Math.sin(a)*29,x2:cx+Math.cos(a)*34,y2:cy+Math.sin(a)*34,stroke:col,'stroke-width':1.1},svg);
+    }
+    E('circle',{cx:cx,cy:cy,r:22,stroke:BC.edge,'stroke-width':.9,fill:'none'},svg);
+  }
+};
+document.querySelectorAll('svg[data-art]').forEach(function(svg){
+  var fn=ART[svg.dataset.art]; if(fn) fn(svg);
+});
+(function(){
+  var em=document.getElementById('emblem'); if(!em) return;
+  var cx=90,cy=60;
+  [[BC.red,1.57,42,70,1.6],[BC.yellow,1.2,35,62,1.2],[BC.blue,.85,29,54,1.1]].forEach(function(s){
+    E('path',{d:curvePath(function(t){return [cx+s[3]*Math.sin(3*t+s[1]),cy+s[2]*Math.sin(2*t+(1.57-s[1]))];},0,Math.PI*2,220),stroke:s[0],'stroke-width':s[4],fill:'none'},em);
+  });
+})();
+
+/* ═════════ STATION 01 · SURVEY MAP FLOWCHART ═════════ */
+var flowPaths=[], flowDots=[];
+(function(){
+  var fc=document.getElementById('flowchart'); if(!fc) return;
+  fc.classList.add('trace');
+  function box(x,y,w,h,col,line1,line2){
+    E('rect',{x:x,y:y,width:w,height:h,rx:4,fill:'#ffffff',stroke:col,'stroke-width':2},fc);
+    TXT(fc,x+w/2,y+(line2?h/2-4:h/2+4),line1,BC.ink,12,'middle',700);
+    if(line2) TXT(fc,x+w/2,y+h/2+13,line2,'#8a8680',9.5,'middle',500);
+  }
+  box(290,12,180,42,BC.ink,'500 RESPONDENTS','one anonymous door in');
+  box(240,96,280,48,BC.orange,'UNIVERSAL QUESTIONS','experience asked BEFORE status');
+  E('path',{d:'M380,178 L490,222 L380,266 L270,222 Z',fill:'#ffffff',stroke:BC.red,'stroke-width':2.2},fc);
+  TXT(fc,380,216,'THE FORK',BC.red,13,'middle',700);
+  TXT(fc,380,232,'what is your status?','#8a8680',9.5,'middle',500);
+  [
+    {x:20, col:BC.blue,  n:'INTACT',      c:'n = 141'},
+    {x:210,col:BC.red,   n:'CIRCUMCISED', c:'n = 212'},
+    {x:400,col:BC.ytext, n:'RESTORING',   c:'n = 110'},
+    {x:590,col:BC.grey,  n:'OBSERVER',    c:'n = 37'}
+  ].forEach(function(p){ box(p.x,316,150,50,p.col,p.n,p.c); });
+  function conn(d,col){
+    var p=E('path',{d:d,stroke:col,'stroke-width':1.8,fill:'none','stroke-linecap':'round'},fc);
+    flowPaths.push({el:p,col:col});
+  }
+  conn('M380,54 L380,96',BC.ink);
+  conn('M380,144 L380,178',BC.ink);
+  conn('M310,240 C180,265 95,280 95,316',BC.blue);
+  conn('M355,258 C330,285 285,290 285,316',BC.red);
+  conn('M405,258 C430,285 475,290 475,316',BC.ytext);
+  conn('M450,240 C580,265 665,280 665,316',BC.grey);
+  TXT(fc,380,398,'355 QUESTIONS ACROSS ALL PATHWAYS — EVERY ONE PHRASED FOR THE LIFE THAT ANSWERS IT','#8a8680',10,'middle',600,'JetBrains Mono,monospace');
+  if(!reduced){
+    var branchIdx=[2,3,4,5];
+    for(var i=0;i<8;i++){
+      var pi=i<2? i : branchIdx[(i-2)%4];
+      flowDots.push({p:pi, off:Math.random(), speed:.0022+Math.random()*.0012,
+        el:E('circle',{r:3.2,fill:flowPaths[pi].col,opacity:0},fc)});
+    }
+    var running=false;
+    function tick(){
+      if(!running) return;
+      flowDots.forEach(function(dt){
+        dt.off+=dt.speed; if(dt.off>1) dt.off=0;
+        var path=flowPaths[dt.p].el, len=path.getTotalLength();
+        var pt=path.getPointAtLength(dt.off*len);
+        dt.el.setAttribute('cx',pt.x); dt.el.setAttribute('cy',pt.y);
+        dt.el.setAttribute('opacity',Math.sin(dt.off*Math.PI)*.9);
+      });
+      requestAnimationFrame(tick);
+    }
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting&&!running){running=true;requestAnimationFrame(tick);}
+        else if(!e.isIntersecting) running=false;
+      });
+    },{rootMargin:'50px'}).observe(fc);
+  }
+})();
+
+/* ═════════ STATION 05 · PUNCH-CARD ATLAS ═════════ */
+(function(){
+  var svg=document.getElementById('dotmap'); if(!svg) return;
+  var ROWS=[
+    "......NN........................................................",
+    "..NNNNNNNNN.............EE......AAAAAAAAAA......................",
+    ".NNNNNNNNNNN......EE...EEEE...AAAAAAAAAAAAAAA...................",
+    ".NNNNNNNNNNNN.....EEEEEEEEE..AAAAAAAAAAAAAAAAAA.................",
+    "..NNNNNNNNNNN......EEEEEEE...AAAAAAAAAAAAAAAAAAA................",
+    "...NNNNNNNNN........EEEEE...AAAAAAAAAAAAAAAAAAA.................",
+    "....NNNNNN...........EEE....AAAAAAAAAAAAAAAAAA..................",
+    ".....NNNN.............FFF...AAAAAAAAAAAAAAA.....................",
+    "......NNN............FFFFF...AAAAAAAAAAA........................",
+    ".......NN...........FFFFFFF....AAAAAAA..........................",
+    "........N..........FFFFFFFFF....AAAAA...........................",
+    "........SS.........FFFFFFFFF.....AAA............................",
+    ".......SSSS........FFFFFFFF......................................",
+    "......SSSSSS.......FFFFFF.......................................",
+    "......SSSSSS........FFFF..............OOO.......................",
+    ".....SSSSS...........FF..............OOOOOO.....................",
+    ".....SSSS............................OOOOOO.....................",
+    "....SSS...............................OOOO......................",
+    "....SS...........................................................",
+    "....S............................................................"
+  ];
+  var REGION={
+    N:{col:BC.red,   name:'North America', n:352, a:1},
+    E:{col:BC.blue,  name:'Europe',        n:74,  a:.85},
+    A:{col:BC.yellow,name:'Asia',          n:20,  a:.7},
+    F:{col:BC.grey,  name:'Africa',        n:10,  a:.6},
+    S:{col:BC.orange,name:'South America', n:14,  a:.7},
+    O:{col:BC.green, name:'Oceania',       n:30,  a:.85}
+  };
+  ROWS.forEach(function(row,ry){
+    for(var rx=0;rx<row.length;rx++){
+      var ch=row[rx]; if(ch==='.') continue;
+      var reg=REGION[ch]; if(!reg) continue;
+      var c=E('circle',{cx:8+rx*9,cy:10+ry*9,r:3.1,fill:reg.col,'fill-opacity':reg.a},svg);
+      c.style.opacity=0;
+      c.style.transition=reduced?'none':'opacity .5s ease '+(rx*14)+'ms';
+    }
+  });
+  var legend=document.getElementById('dotmapLegend');
+  Object.keys(REGION).sort(function(a,b){return REGION[b].n-REGION[a].n;}).forEach(function(k){
+    var r=REGION[k], s=document.createElement('span');
+    s.className='lg';
+    s.innerHTML='<i class="swatch" style="background:'+r.col+'"></i>'+r.name+' <b style="font-family:JetBrains Mono,monospace">'+r.n+'</b>';
+    legend.appendChild(s);
+  });
+})();
+function dotmapReveal(){
+  var svg=document.getElementById('dotmap'); if(!svg) return;
+  svg.querySelectorAll('circle').forEach(function(c){ c.style.opacity=1; });
+}
+
+/* ═════════ STATION 03 · DUMBBELL SEPARATION ═════════ */
+(function(){
+  var svg=document.getElementById('dumbbell'); if(!svg) return;
+  var M=[
+    {m:'Mobile skin', pool:2.94, i:4.47, r:2.85, c:1.96},
+    {m:'Light touch', pool:2.91, i:4.24, r:2.49, c:2.24},
+    {m:'Variety',     pool:3.10, i:4.39, r:2.68, c:2.46},
+    {m:'Duration',    pool:3.07, i:4.01, r:2.66, c:2.65},
+    {m:'Ease',        pool:3.08, i:4.04, r:2.79, c:2.60},
+    {m:'Intensity',   pool:3.37, i:4.25, r:3.05, c:2.96}
+  ];
+  var X0=210,X1=830,YT=44,RH=56;
+  function gx(v){ return X0+((Math.max(1,Math.min(5,v))-1)/4)*(X1-X0); }
+  for(var t=1;t<=5;t++){
+    E('line',{x1:gx(t),y1:YT-16,x2:gx(t),y2:YT+M.length*RH,stroke:BC.edge,'stroke-width':1,'stroke-dasharray':'3 3'},svg);
+    TXT(svg,gx(t),YT-24,t+'.0','#8a8680',12,'middle',600,'JetBrains Mono,monospace');
+  }
+  M.forEach(function(q,i){
+    var y=YT+i*RH+RH/2;
+    TXT(svg,X0-22,y+4,q.m,BC.ink,13,'end',600).setAttribute('class','metric');
+    E('line',{x1:gx(1),y1:y,x2:gx(5),y2:y,stroke:'#eae4da','stroke-width':6,'stroke-linecap':'round'},svg);
+    E('line',{x1:gx(q.c),y1:y,x2:gx(q.i),y2:y,stroke:BC.red,'stroke-width':2,'stroke-dasharray':'5 4','class':'gapline'},svg);
+    TXT(svg,gx(q.c),y-13,q.c.toFixed(2),BC.red,11,'middle',700,'JetBrains Mono,monospace').setAttribute('class','gapline');
+    TXT(svg,gx(q.i),y-13,q.i.toFixed(2),BC.blue,11,'middle',700,'JetBrains Mono,monospace').setAttribute('class','gapline');
+    [['c',BC.red,7],['r',BC.yellow,5.5],['i',BC.blue,7]].forEach(function(s,si){
+      var dot=E('circle',{cx:gx(q[s[0]]),cy:y,r:s[2],fill:s[1],stroke:'#fff','stroke-width':1.5},svg);
+      dot.style.transform='translateX('+(gx(q.pool)-gx(q[s[0]])).toFixed(1)+'px)';
+      dot.style.transitionDelay=(i*.08+si*.05)+'s';
+    });
+  });
+})();
+
+/* ═════════ STATION 14 · CONVERGENCE SANKEY ═════════ */
+(function(){
+  var svg=document.getElementById('sankey'); if(!svg) return;
+  var SC=.62, GAP=14, LX=150, RX=610, NW=20, TOP=34;
+  var L=[
+    {name:'INTACT',      n:141, col:BC.blue},
+    {name:'CIRCUMCISED', n:212, col:BC.red},
+    {name:'RESTORING',   n:110, col:BC.yellow},
+    {name:'OBSERVER',    n:37,  col:BC.grey}
+  ];
+  var R=[
+    {name:'KEEP INTACT',      n:433, col:BC.green},
+    {name:'WOULD CIRCUMCISE', n:19,  col:BC.red},
+    {name:'UNDECIDED / OTHER',n:48,  col:BC.grey}
+  ];
+  var FLOWS=[
+    {l:0,r:0,n:125},{l:0,r:2,n:16},
+    {l:1,r:0,n:166},{l:1,r:1,n:18},{l:1,r:2,n:28},
+    {l:2,r:0,n:108},{l:2,r:2,n:2},
+    {l:3,r:0,n:34},{l:3,r:1,n:1},{l:3,r:2,n:2}
+  ];
+  var y=TOP; L.forEach(function(nd){ nd.y=y; nd.h=nd.n*SC; nd.off=0; y+=nd.h+GAP; });
+  y=TOP+14; R.forEach(function(nd){ nd.y=y; nd.h=nd.n*SC; nd.off=0; y+=nd.h+GAP+8; });
+  FLOWS.forEach(function(f,fi){
+    var a=L[f.l], b=R[f.r], h=f.n*SC;
+    var y0=a.y+a.off, y1=b.y+b.off;
+    a.off+=h; b.off+=h;
+    var x0=LX+NW, x1=RX, mid=(x0+x1)/2;
+    var d='M'+x0+','+y0+' C'+mid+','+y0+' '+mid+','+y1+' '+x1+','+y1+
+          ' L'+x1+','+(y1+h)+' C'+mid+','+(y1+h)+' '+mid+','+(y0+h)+' '+x0+','+(y0+h)+' Z';
+    var p=E('path',{d:d,fill:a.col,'fill-opacity':.38,'class':'flow'},svg);
+    p.style.transitionDelay=(fi*.1)+'s';
+  });
+  L.forEach(function(nd){
+    E('rect',{x:LX,y:nd.y,width:NW,height:nd.h,fill:nd.col,rx:2},svg);
+    TXT(svg,LX-10,nd.y+nd.h/2+1,nd.name,BC.ink,11,'end',700).setAttribute('class','nodelab');
+    TXT(svg,LX-10,nd.y+nd.h/2+14,'n = '+nd.n,'#8a8680',9.5,'end',500,'JetBrains Mono,monospace');
+  });
+  R.forEach(function(nd){
+    E('rect',{x:RX,y:nd.y,width:NW,height:nd.h,fill:nd.col,rx:2},svg);
+    TXT(svg,RX+NW+10,nd.y+Math.max(nd.h/2,9)+1,nd.name,BC.ink,11,'start',700).setAttribute('class','nodelab');
+    TXT(svg,RX+NW+10,nd.y+Math.max(nd.h/2,9)+14,nd.n+' of 500','#8a8680',9.5,'start',500,'JetBrains Mono,monospace');
+  });
+  TXT(svg,(LX+RX)/2,410,'"IF YOU HAD A SON TODAY" — RIBBON WIDTH = RESPONDENTS','#8a8680',10,'middle',600,'JetBrains Mono,monospace');
+})();
+
+/* ═════════ STATION 06 · WORD MIRRORS ═════════ */
+(function(){
+  var CIRC=[['missing',1],['wonder',.9],['resentment',.95],['numb',.8],['angry',.75],
+    ['never asked',.85],['dry',.65],['betrayed',.6],['curious',.8],['what if',.7],
+    ['scar',.55],['taken',.6],['fine with it',.7]];
+  var INT=[['never think about it',1],['grateful',.9],['normal',.9],['lucky',.8],
+    ['sensitive',.8],['natural',.75],['glad',.8],['whole',.7],['teased',.5],
+    ['simple',.6],['curious',.55],['no complaints',.7]];
+  function fill(panelId,words,col){
+    var panel=document.getElementById(panelId); if(!panel) return;
+    words.forEach(function(w,i){
+      var s=document.createElement('span');
+      s.className='wc-word';
+      s.textContent=w[0];
+      s.style.fontSize=(0.68+w[1]*0.78)+'rem';
+      s.style.fontWeight=w[1]>.8?700:500;
+      s.style.color=col;
+      s.style.transitionDelay=(i*70)+'ms';
+      panel.appendChild(s);
+    });
+  }
+  fill('wcCirc',CIRC,BC.red);
+  fill('wcIntact',INT,BC.blue);
+})();
+
+/* ═════════ SQUISH MASTHEAD CONTROLLER (from SquishHeader.jsx) ═════════
+   The 86vh Loom cover compresses into a fixed 64px paper nav bar over the
+   first 600px of scroll; nav anchors fade in as it docks. */
+(function(){
+  var mast=document.getElementById('mast'); if(!mast) return;
+  var bg=document.getElementById('mastBg'), nav=document.getElementById('mastNav');
+  var loom=document.getElementById('coverLoom'), cue=document.getElementById('scrollCue');
+  var fading=[document.getElementById('mastEyebrow'),document.getElementById('mastSub'),
+              document.getElementById('rotfact'),document.getElementById('emblem')];
+  if(reduced){
+    mast.style.position='relative'; mast.style.height='88vh';
+    var sp=document.getElementById('mastSpacer'); if(sp) sp.style.display='none';
+    return;
+  }
+  // once the blur-in intro finishes, release the animation fill so the
+  // squish + rotator can drive opacity via inline styles
+  document.querySelectorAll('.bi1,.bi2,.bi3,.bi4').forEach(function(el){
+    el.addEventListener('animationend',function(){
+      el.classList.remove('bi1','bi2','bi3','bi4');
+    });
+  });
+  var ticking=false;
+  function apply(){
+    ticking=false;
+    var p=Math.min(1,Math.max(0,window.scrollY/600));
+    mast.style.setProperty('--inv',(1-p).toFixed(4));
+    var fade=Math.max(0,1-p*1.9).toFixed(3);
+    fading.forEach(function(el){ if(el){ el.style.opacity=fade; el.style.pointerEvents=p>.4?'none':'auto'; } });
+    if(cue) cue.style.opacity=Math.max(0,1-p*3).toFixed(3);
+    if(bg) bg.style.opacity=(1-p*.14).toFixed(3);
+    if(loom) loom.style.opacity=(0.95-p*.8).toFixed(3);
+    if(nav){
+      var np=Math.max(0,(p-.82)/.18);
+      nav.style.opacity=np.toFixed(3);
+      nav.style.pointerEvents=p>.9?'auto':'none';
+    }
+    mast.style.boxShadow = p>.95 ? '0 2px 14px rgba(42,38,34,.14)' : 'none';
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){ ticking=true; requestAnimationFrame(apply); }
+  },{passive:true});
+  apply();
+})();
+
+/* ═════════ ROTATING HERO FACTS (from SquishHeader RotatingFact) ═════════ */
+(function(){
+  var wrap=document.getElementById('rotfact'); if(!wrap) return;
+  var FACTS=[
+    {big:'96%', l1:'of intact respondents prioritize', l2:'the child&rsquo;s right to bodily autonomy.',
+     ctx:'Every pathway lands between 81% and 100%.', col:BC.blue},
+    {big:'80%', l1:'of restoring respondents report', l2:'strong, frequent resentment.',
+     ctx:'0% said they have never felt negative about their circumcision.', col:BC.red},
+    {big:'47.6%', l1:'describe the decision as', l2:'&ldquo;routine / automatic.&rdquo;',
+     ctx:'Only 2.7% were offered it as a neutral choice with pros and cons.', col:BC.orange},
+    {big:'52%', l1:'of circumcised respondents', l2:'prefer the intact appearance.',
+     ctx:'A quiet majority, in their own words.', col:BC.ytext},
+    {big:'88%', l1:'of intact respondents would', l2:'keep their son intact.',
+     ctx:'78% of circumcised respondents would make the same choice for their son.', col:BC.green}
+  ];
+  var num=document.getElementById('rfNum'), l1=document.getElementById('rfL1'),
+      l2=document.getElementById('rfL2'), ctx=document.getElementById('rfCtx');
+  var idx=0, raf=null;
+  function countTo(target,suffix,dec){
+    if(raf) cancelAnimationFrame(raf);
+    var t0=performance.now();
+    (function step(now){
+      var f=Math.min(1,(now-t0)/1400);
+      var e=f===1?1:1-Math.pow(2,-10*f);   // easeOutExpo, as the original
+      num.textContent=(target*e).toFixed(dec)+suffix;
+      if(f<1) raf=requestAnimationFrame(step);
+    })(t0);
+  }
+  function show(i){
+    var f=FACTS[i];
+    num.style.color=f.col;
+    l1.innerHTML=f.l1; l2.innerHTML=f.l2; ctx.innerHTML=f.ctx;
+    if(reduced){ num.textContent=f.big; return; }
+    countTo(parseFloat(f.big), f.big.replace(/[\d.]+/g,''), f.big.indexOf('.')>-1?1:0);
+  }
+  show(0);
+  if(reduced) return;
+  setInterval(function(){
+    wrap.style.opacity=0; wrap.style.transform='translateY(-14px)';
+    setTimeout(function(){
+      idx=(idx+1)%FACTS.length; show(idx);
+      wrap.style.transform='translateY(0)';
+      // respect the squish fade: only restore if masthead is still expanded
+      if(window.scrollY<200) wrap.style.opacity=1;
+    },600);
+  },6400);
+})();
+
+/* ═════════ TRACE + REVEALS + COUNTERS ═════════ */
+function prepTrace(svg){
+  svg.querySelectorAll('path,circle,ellipse,line').forEach(function(el,i){
+    var cls=el.getAttribute('class')||'';
+    if(cls.indexOf('flow')>-1||cls.indexOf('ring-anim')>-1) return;
+    if(el.closest('#dotmap')||el.closest('#dumbbell')||el.closest('#sankey')) return;
+    try{
+      var len=el.getTotalLength();
+      el.style.strokeDasharray=len; el.style.strokeDashoffset=len;
+      el.dataset.len=len; el.dataset.i=i;
+    }catch(e){}
+  });
+}
+function playTrace(svg){
+  svg.querySelectorAll('path,circle,ellipse,line').forEach(function(el){
+    if(!el.dataset.len) return;
+    el.style.transition=reduced?'none':'stroke-dashoffset 1.3s cubic-bezier(.3,.7,.35,1) '+(el.dataset.i*0.1)+'s';
+    el.style.strokeDashoffset=0;
+  });
+}
+document.querySelectorAll('svg.trace').forEach(prepTrace);
+(function(){
+  var em=document.getElementById('emblem'); if(!em) return;
+  playTrace(em);
+  if(reduced) return;
+  setTimeout(function(){
+    em.querySelectorAll('path').forEach(function(el){
+      var len=parseFloat(el.dataset.len)||600;
+      el.style.transition='none';
+      el.style.strokeDasharray=(len*.82)+' '+(len*.18);
+      var off=0;
+      (function drift(){ off-=0.5; el.style.strokeDashoffset=off; requestAnimationFrame(drift); })();
+    });
+  },2600);
+})();
+
+function countUp(el,str){
+  var target=parseFloat(str), suffix=str.indexOf('%')>-1?'%':'';
+  var dec=(str.split('.')[1]||'').replace('%','').length;
+  if(reduced){ el.textContent=str; return; }
+  var t0=null;
+  (function step(ts){
+    if(!t0)t0=ts;
+    var f=Math.min(1,(ts-t0)/950); f=1-Math.pow(1-f,3);
+    el.textContent=(target*f).toFixed(dec)+suffix;
+    if(f<1) requestAnimationFrame(step);
+  })(performance.now());
+}
+function activate(el){
+  el.classList.add('on');
+  el.querySelectorAll('svg.trace').forEach(playTrace);
+  el.querySelectorAll('.fill,.bar-fill').forEach(function(b){ if(b.dataset.w) b.style.width=b.dataset.w+'%'; });
+  el.querySelectorAll('.val[data-val],.data-value[data-val],.pct[data-val]').forEach(function(v){ if(v.dataset.val) countUp(v,v.dataset.val); });
+  el.querySelectorAll('.num[data-count]').forEach(function(v){ if(v.dataset.count) countUp(v,v.dataset.count); });
+  if(el.querySelector('#dotmap')) dotmapReveal();
+  if(el.querySelector('#sankey')) el.querySelector('#sankey').classList.add('on');
+  var db=el.querySelector('#dumbbell');
+  if(db){ requestAnimationFrame(function(){requestAnimationFrame(function(){ db.classList.add('split'); });}); }
+}
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ activate(e.target); io.unobserve(e.target); }
+  });
+},{threshold:.2});
+document.querySelectorAll('.rev').forEach(function(el){
+  if(!el.closest('.night')) io.observe(el);
+});
+
+/* ═════════ AUDIENCE PARTICIPATION ═════════ */
+var predicted=false;
+var ECHO={
+  split:'PROJECTION RECORDED: WIDE SPLIT · THE DEMONSTRATION BELOW IS NOW OPEN',
+  small:'PROJECTION RECORDED: SMALL DIFFERENCES · THE DEMONSTRATION BELOW IS NOW OPEN',
+  same:'PROJECTION RECORDED: ABOUT THE SAME · THE DEMONSTRATION BELOW IS NOW OPEN'
+};
+var VERDICT={
+  split:'You projected a wide split. Watch how wide the respondents drew it.',
+  small:'You projected small differences. Watch what the respondents reported.',
+  same:'You projected no change. Watch what actually happened.'
+};
+document.querySelectorAll('.pbtn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.pbtn').forEach(function(b){b.classList.remove('sel');});
+    btn.classList.add('sel');
+    var first=!predicted; predicted=true;
+    document.getElementById('pEcho').textContent=ECHO[btn.dataset.p];
+    document.getElementById('pEcho').classList.add('on');
+    document.getElementById('verdictLine').textContent=VERDICT[btn.dataset.p];
+    document.getElementById('nightlock').classList.add('open');
+    if(first) document.querySelectorAll('.night .rev').forEach(function(el){ io.observe(el); });
+  });
+});
+
+/* ═════════ THE HARMONIC LOOM (verified port of HarmonicCanvas.jsx) ═════════ */
+function createLoom(canvas, opts){
+  opts=opts||{};
+  var CFG={
+    speed:.018, travelSpeed:.0014, waveFreq:3.8, moirePhaseSpread:520,
+    ampXScale:.47, ampYScale:.58, rippleAmpScale:.52, loopAmpScale:.32,
+    parentSeparation:.32, endAnchorMargin:.15, nodeCount:6, kinkDepth:.5,
+    focalLength:1270, lineWidth:4,
+    glintGroups:2, glintInterval:20, glintSpeed:.05, glintWidth:.15,
+    glintStrength:.5, glintTint:0
+  };
+  for(var k in (opts.config||{})) CFG[k]=opts.config[k];
+  var lowPower=(navigator.hardwareConcurrency||8)<=4 || Math.min(innerWidth,innerHeight)<640;
+  var ctx=canvas.getContext('2d');
+  var dpr=Math.min(window.devicePixelRatio||1, lowPower?1.5:2);
+  var steps=opts.steps!=null?opts.steps:(lowPower?30:48);
+  var halfSteps=opts.halfSteps!=null?opts.halfSteps:(lowPower?20:32);
+  var alphaScale=opts.alphaScale!=null?opts.alphaScale:1;
+  var cols=opts.colors;
+  var lerp=function(a,b,t){return a+(b-a)*t;};
+  function resize(){
+    var p=canvas.parentElement;
+    var w=p?p.clientWidth:innerWidth, h=p?p.clientHeight:innerHeight;
+    canvas.width=w*dpr; canvas.height=h*dpr;
+    canvas.style.width=w+'px'; canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize',resize); resize();
+  function createNode(type){
+    return {type:type,
+      ax:Math.random()*.5+.7, ay:Math.random()*.5+.7, az:(Math.random()*.5+.5)*600,
+      fx:Math.random()*.0015+.0005, fy:Math.random()*.0015+.0005, fz:Math.random()*.0015+.0005,
+      px:Math.random()*Math.PI*2, py:Math.random()*Math.PI*2, pz:Math.random()*Math.PI*2};
+  }
+  function curveOf(offY){
+    var n=Math.max(4,Math.round(CFG.nodeCount)), nodes=[];
+    for(var i=0;i<n;i++){
+      var nd=createNode(i===0?'left':i===n-1?'right':'inner');
+      nd.xFract=i/(n-1); nd.offY=offY; nodes.push(nd);
+    }
+    return nodes;
+  }
+  var sep=CFG.parentSeparation;
+  var r1a=curveOf(-sep), r1b=curveOf(sep), r2a=curveOf(-sep*.7), r2b=curveOf(sep*1.3);
+  function ramp(cA,cB,n,arrS){
+    for(var i=0;i<=n;i++){
+      var t=i/n, a=(Math.sin(t*Math.PI)*.5+.2)*alphaScale;
+      var r=Math.round(lerp(cA[0],cB[0],t)),g=Math.round(lerp(cA[1],cB[1],t)),b=Math.round(lerp(cA[2],cB[2],t));
+      arrS.push('rgba('+r+','+g+','+b+','+a.toFixed(3)+')');
+    }
+  }
+  var st1=[],st2=[];
+  ramp(cols[0][0],cols[0][1],steps,st1);
+  ramp(cols[1][0],cols[1][1],halfSteps,st2);
+  var nodeN=Math.max(4,Math.round(CFG.nodeCount));
+  var lines=[]; for(var li=0;li<steps+halfSteps+2;li++){
+    var pts=[]; for(var pj=0;pj<nodeN;pj++) pts.push({x:0,y:0});
+    lines.push({pts:pts,avgZ:0,scale:0,style:'',colorPos:0});
+  }
+  function evalNode(n,t){
+    var cw=canvas.width/dpr, ch=canvas.height/dpr;
+    var span=Math.max(cw,ch), half=span/2;
+    var xBase=-half-100+(n.xFract||.5)*(span+200);
+    var sp=CFG.travelSpeed, wf=CFG.waveFreq;
+    var trav=t*sp-n.xFract*wf*Math.PI*2;
+    var phX=t*n.fx+n.px+trav, phY=t*n.fy+n.py+trav*1.5;
+    var ripple=t*sp*2.2-n.xFract*wf*2.5*Math.PI*2+n.px;
+    var loop=t*sp*1.9-n.xFract*wf*1.7*Math.PI*2+n.py;
+    var k=n.type==='inner'?CFG.kinkDepth:1;
+    var ampX=half*CFG.ampXScale*n.ax*k, ampY=half*CFG.ampYScale*n.ay*k;
+    var rAmp=half*CFG.rippleAmpScale*n.ay*k, lAmp=half*CFG.loopAmpScale*n.ax*k;
+    var y=Math.sin(phY)*ampY+Math.cos(ripple)*rAmp+Math.cos(loop*1.5)*rAmp*1.2+(n.offY||0)*half;
+    if(n.type!=='inner'){
+      var dir=n.type==='left'?-1:1;
+      return {x:dir*half*(1+CFG.endAnchorMargin), y:y, z:0};
+    }
+    return {x:xBase+Math.cos(phX)*ampX+Math.sin(loop)*lAmp, y:y, z:Math.sin(t*n.fz+n.pz)*n.az};
+  }
+  function trace(pts){
+    var n=pts.length;
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(var s=0;s<n-1;s++){
+      var p0=pts[s-1]||pts[0],p1=pts[s],p2=pts[s+1],p3=pts[s+2]||pts[n-1];
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,
+                        p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y);
+    }
+  }
+  function splinePoint(pts,u){
+    var n=pts.length, seg=Math.min(n-2,Math.floor(u*(n-1))), t=u*(n-1)-seg;
+    var p0=pts[seg-1]||pts[0],p1=pts[seg],p2=pts[seg+1],p3=pts[seg+2]||pts[n-1];
+    var t2=t*t,t3=t2*t;
+    return {x:.5*(2*p1.x+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+            y:.5*(2*p1.y+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)};
+  }
+  var time=0, glintTime=0, last=performance.now(), running=false, rafId=null;
+  var MIN_INT=1000/(lowPower?24:30);
+  function ribbon(pA,pB,styles,rSteps,startIdx,c0,c1){
+    var cw=canvas.width/dpr,ch=canvas.height/dpr,cx=cw/2,cy=ch/2, idx=startIdx;
+    for(var i=0;i<=rSteps;i++){
+      var lin=i/rSteps, blend=.5-Math.cos(lin*Math.PI)*.5;
+      var lt=time+(lin-.5)*CFG.moirePhaseSpread;
+      var line=lines[idx++], zS=0,sS=0;
+      for(var j=0;j<nodeN;j++){
+        var a=evalNode(pA[j],lt), b=evalNode(pB[j],lt);
+        var cz=lerp(a.z,b.z,blend), sc=CFG.focalLength/Math.max(1,CFG.focalLength+cz);
+        line.pts[j].x=cx+lerp(a.x,b.x,blend)*sc;
+        line.pts[j].y=cy+lerp(a.y,b.y,blend)*sc;
+        zS+=cz; sS+=sc;
+      }
+      line.avgZ=zS/nodeN; line.scale=sS/nodeN;
+      line.style=styles[i]; line.colorPos=c0+(rSteps>0?i/rSteps:0)*(c1-c0);
+    }
+    return idx;
+  }
+  function render(now){
+    if(!running){rafId=null;return;}
+    var el=now-last;
+    if(el<MIN_INT){rafId=requestAnimationFrame(render);return;}
+    var delta=Math.min(el,100); time+=delta*CFG.speed; glintTime+=delta; last=now;
+    var cw=canvas.width/dpr,ch=canvas.height/dpr;
+    var sizeScale=Math.max(.3,Math.sqrt(cw*cw+ch*ch)/1400);
+    ctx.clearRect(0,0,cw,ch);
+    var idx=ribbon(r1a,r1b,st1,steps,0,0,.5);
+    ribbon(r2a,r2b,st2,halfSteps,idx,.5,1);
+    lines.sort(function(a,b){return b.avgZ-a.avgZ;});
+    var groups={};
+    lines.forEach(function(line){
+      var w=Math.max(.4,line.scale*CFG.lineWidth*Math.min(sizeScale,1));
+      var key=line.style+'|'+w.toFixed(2);
+      (groups[key]=groups[key]||{style:line.style,width:w,ls:[]}).ls.push(line);
+    });
+    for(var key in groups){
+      var g=groups[key];
+      ctx.strokeStyle=g.style; ctx.lineWidth=g.width; ctx.beginPath();
+      g.ls.forEach(function(l){trace(l.pts);}); ctx.stroke();
+    }
+    if(CFG.glintGroups>0 && !reduced){
+      var fam=Math.max(1,Math.round(CFG.glintGroups));
+      var tailF=Math.max(.02,CFG.glintWidth);
+      var sat=Math.max(0,Math.min(100,Math.round(95-CFG.glintTint*60)));
+      var A=CFG.glintStrength, NS2=lowPower?32:64;
+      var tSec=glintTime/1000, period=Math.max(.5,CFG.glintInterval);
+      var gspeed=Math.max(.001,CFG.glintSpeed), travelT=Math.min(period,1/gspeed);
+      var heads=[],dirs=[],any=false;
+      for(var g2=0;g2<fam;g2++){
+        dirs[g2]=g2%2===0?1:-1;
+        var off=(g2/fam)*period, lT=(((tSec-off)%period)+period)%period;
+        if(lT<travelT){heads[g2]=lT/travelT;any=true;}else heads[g2]=-1;
+      }
+      if(any){
+        ctx.lineCap='round';ctx.lineJoin='round';
+        lines.forEach(function(line){
+          var g3=Math.min(fam-1,Math.max(0,Math.floor((line.colorPos||0)*fam)));
+          var hp0=heads[g3]; if(hp0<0)return;
+          var dir=dirs[g3], pts=line.pts;
+          var w=Math.max(1,line.scale*CFG.lineWidth*sizeScale*1.5);
+          var sx=[],sy=[],cum=[],total=0,px0=0,py0=0;
+          for(var i2=0;i2<=NS2;i2++){
+            var p=splinePoint(pts,i2/NS2); sx[i2]=p.x;sy[i2]=p.y;
+            if(i2===0)cum[i2]=0;else{total+=Math.hypot(p.x-px0,p.y-py0);cum[i2]=total;}
+            px0=p.x;py0=p.y;
+          }
+          if(total<1)return;
+          var tailLen=tailF*total;
+          function at(s){
+            var i3=1; while(i3<NS2&&cum[i3]<s)i3++;
+            var c0=cum[i3-1],c1=cum[i3],t4=c1>c0?(s-c0)/(c1-c0):0;
+            return {x:sx[i3-1]+(sx[i3]-sx[i3-1])*t4,y:sy[i3-1]+(sy[i3]-sy[i3-1])*t4};
+          }
+          var hp=dir===1?hp0:1-hp0, sHead=hp*total;
+          var sTail=dir===1?Math.max(0,sHead-tailLen):Math.min(total,sHead+tailLen);
+          if(Math.abs(sHead-sTail)<.5)return;
+          var T2=at(sTail),H2=at(sHead);
+          var grad=ctx.createLinearGradient(T2.x,T2.y,H2.x,H2.y);
+          var hueBase=glintTime*.03+g3*140+(line.colorPos||0)*60;
+          for(var q=0;q<=6;q++){
+            var f=q/6, hue=(((hueBase+f*150)%360)+360)%360;
+            grad.addColorStop(f,'hsla('+hue.toFixed(0)+','+sat+'%,'+(60+f*28).toFixed(0)+'%,'+(Math.pow(f,1.8)*A).toFixed(3)+')');
+          }
+          ctx.strokeStyle=grad; ctx.lineWidth=w; ctx.beginPath();
+          ctx.moveTo(T2.x,T2.y);
+          var sLo=Math.min(sTail,sHead),sHi=Math.max(sTail,sHead);
+          if(dir===1){for(var i4=0;i4<=NS2;i4++)if(cum[i4]>sLo&&cum[i4]<sHi)ctx.lineTo(sx[i4],sy[i4]);}
+          else{for(var i5=NS2;i5>=0;i5--)if(cum[i5]>sLo&&cum[i5]<sHi)ctx.lineTo(sx[i5],sy[i5]);}
+          ctx.lineTo(H2.x,H2.y); ctx.stroke();
+        });
+        ctx.lineCap='butt';ctx.lineJoin='miter';
+      }
+    }
+    rafId=requestAnimationFrame(render);
+  }
+  if(reduced){
+    time=12345;
+    (function still(){
+      var cw=canvas.width/dpr,ch=canvas.height/dpr;
+      ctx.clearRect(0,0,cw,ch);
+      var idx=ribbon(r1a,r1b,st1,steps,0,0,.5);
+      ribbon(r2a,r2b,st2,halfSteps,idx,.5,1);
+      lines.sort(function(a,b){return b.avgZ-a.avgZ;});
+      lines.forEach(function(l){
+        ctx.strokeStyle=l.style;
+        ctx.lineWidth=Math.max(.4,l.scale*CFG.lineWidth*.8);
+        ctx.beginPath(); trace(l.pts); ctx.stroke();
+      });
+    })();
+    return;
+  }
+  new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting&&!running){running=true;last=performance.now();rafId=requestAnimationFrame(render);}
+      else if(!e.isIntersecting){running=false;}
+    });
+  },{rootMargin:'100px'}).observe(canvas);
+}
+var RB={red:[232,93,80],orange:[240,152,96],yellow:[240,200,64],green:[104,184,120],blue:[88,136,192]};
+var coverLoom=document.getElementById('coverLoom');
+if(coverLoom) createLoom(coverLoom,{
+  colors:[[RB.red,RB.yellow],[RB.green,RB.blue]],
+  alphaScale:.40,
+  config:{lineWidth:3, glintStrength:.35, glintInterval:14}
+});
+document.querySelectorAll('.loom-ribbon').forEach(function(cv,i){
+  createLoom(cv,{
+    colors: i%2===0 ? [[RB.green,RB.blue],[RB.orange,RB.red]]
+                    : [[RB.red,RB.orange],[RB.yellow,RB.blue]],
+    alphaScale:.5, steps:26, halfSteps:16,
+    config:{ampYScale:.10, rippleAmpScale:.07, loopAmpScale:.05,
+            ampXScale:.30, parentSeparation:.05, kinkDepth:.35,
+            waveFreq:5.2, lineWidth:2.2, moirePhaseSpread:420,
+            glintStrength:.4, glintInterval:11, glintWidth:.2}
+  });
+});
+var laser=document.getElementById('laser');
+if(laser) createLoom(laser,{
+  colors:[[RB.red,RB.yellow],[RB.green,RB.blue]],
+  alphaScale:.32,
+  config:{lineWidth:2.6, glintStrength:.55, glintInterval:12, glintTint:.2}
+});
+})();
+</script>
+</body>
+</html>

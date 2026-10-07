@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="standard" data-mode="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Underloom — Tuner — CircumSurvey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,600&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Josefin+Sans:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ══ THEME ENGINE TOKENS ══ mirrors src/explore/styles/tokens.js.
+     Every color below resolves through --c-* / --path-* custom properties —
+     nothing in this prototype paints a hardcoded hex. In production these
+     blocks are DELETED and the engine's GLOBAL_CSS provides the tokens. */
+  :root{
+    --c-bg:#0a0a0c; --c-bgSoft:#131316; --c-bgCard:#18181c;
+    --c-text:#eee; --c-textBright:#fff; --c-muted:#999; --c-dim:#555; --c-ghost:#2a2a30;
+    --c-gold:#d4a030; --c-goldBright:#e8b840;
+    --c-red:#d94f4f; --c-orange:#e8a44a; --c-yellow:#e8c868; --c-green:#68b878;
+    --c-ltBlue:#8bb8d9; --c-blue:#5b93c7; --c-grey:#a0a0a0; --c-purple:#7868b8;
+    --path-intact:#2a9d8f; --path-circumcised:#e76f51; --path-restoring:#e9c46a; --path-observer:#7868b8;
+    --cs-ed-bg:#faf8f4; --cs-ed-head:#1a5c3a; --cs-ed-text:#2a2a2a; --cs-ed-muted:#5a5a5a; --cs-ed-border:rgba(26,92,58,0.18);
+  }
+  [data-theme="standard"][data-mode="light"]{
+    --c-bg:#faf6f0; --c-bgSoft:#f4ede0; --c-bgCard:#ffffff;
+    --c-text:#2a2622; --c-textBright:#1a1815; --c-muted:#5a5450; --c-dim:#8a8680; --c-ghost:#d4cfc4;
+    --c-gold:#a87e18; --c-goldBright:#d4a030;
+    --path-intact:#59a14f; --path-circumcised:#e15759; --path-restoring:#edc948;
+  }
+  [data-theme="evergreen"][data-mode="dark"]{
+    --c-bg:#06120e; --c-bgSoft:#0d221a; --c-bgCard:#132f24;
+    --c-text:#e2f0e9; --c-textBright:#ffffff; --c-muted:#84bfa0; --c-dim:#4e8f6e; --c-ghost:#1c4535;
+    --c-gold:#f59e0b; --c-goldBright:#fbbf24;
+    --c-red:#ef4444; --c-orange:#f97316; --c-yellow:#fcd34d; --c-green:#10b981;
+    --c-ltBlue:#6ee7b7; --c-blue:#0ea5e9; --c-grey:#1e3b2d; --c-purple:#8b5cf6;
+    --cs-ed-bg:#f0f5f2; --cs-ed-head:#047857; --cs-ed-text:#1a3324; --cs-ed-muted:#5c7a6a; --cs-ed-border:rgba(92,122,106,0.35);
+  }
+  [data-theme="vaporwave"][data-mode="dark"]{
+    --c-bg:#0d0221; --c-bgSoft:#180436; --c-bgCard:#23074d;
+    --c-text:#00f0ff; --c-textBright:#ffffff; --c-muted:#ff00a0; --c-dim:#9d00ff; --c-ghost:#3c126d;
+    --c-gold:#fcee09; --c-goldBright:#ffffff;
+    --c-red:#ff003c; --c-orange:#ff5e00; --c-yellow:#fcee09; --c-green:#00ff41;
+    --c-ltBlue:#00f0ff; --c-blue:#1a53ff; --c-grey:#5a3982; --c-purple:#9d00ff;
+    --cs-ed-bg:#f5efff; --cs-ed-head:#8e24aa; --cs-ed-text:#4a148c; --cs-ed-muted:#00838f; --cs-ed-border:rgba(206,147,216,0.5);
+  }
+  [data-colorblind="true"],
+  [data-theme][data-colorblind="true"],
+  [data-theme][data-mode][data-colorblind="true"]{
+    /* Wong high-contrast accessible palette */
+    --c-red:#d95f02; --c-green:#1b9e77; --c-yellow:#e6ab02; --c-purple:#7570b3;
+    --path-intact:#7570b3; --path-circumcised:#d95f02; --path-restoring:#e6ab02; --path-observer:#1b9e77;
+  }
+  [data-typeface="tomorrow"]{
+    --f-display:'Josefin Sans',sans-serif; --f-body:'Outfit',sans-serif; --f-condensed:'Outfit',sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--f-body,'Barlow',sans-serif);color:var(--c-text);background:var(--c-bg)}
+  #loom{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+  main{position:relative;z-index:1}
+
+  section{min-height:150vh;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem}
+  .card{
+    max-width:680px;width:100%;
+    background:color-mix(in srgb, var(--c-bg) 62%, transparent);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    border:1px solid color-mix(in srgb, var(--c-ghost) 60%, transparent);
+    border-radius:12px;padding:2.4rem 2.6rem;
+  }
+  /* Editorial sections shift to the theme's SOFT SURFACE — never a palette
+     flip. One theme, two moods, per Tone's direction. */
+  section[data-theme="cream"] .card{
+    background:color-mix(in srgb, var(--c-bgSoft) 84%, transparent);
+    border-color:var(--c-ghost);color:var(--c-text);
+  }
+  .kicker{
+    font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-weight:700;
+    font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--c-gold);margin-bottom:0.9rem;
+  }
+  h1{font-family:var(--f-display,'Playfair Display',serif);font-weight:800;font-size:clamp(2.2rem,5.5vw,3.4rem);line-height:1.08;margin-bottom:1.1rem}
+  h2{font-family:var(--f-display,'Playfair Display',serif);font-weight:700;font-size:1.65rem;line-height:1.15;margin-bottom:0.9rem}
+  section[data-theme="cream"] h2{color:var(--c-goldBright)}
+  p{font-size:0.92rem;line-height:1.65;margin-bottom:0.85rem}
+  .sub{color:var(--c-muted);font-size:0.88rem}
+  section[data-theme="cream"] .sub{color:var(--c-muted)}
+  .stats{display:flex;gap:1.8rem;flex-wrap:wrap;margin:1.4rem 0 0.6rem}
+  .stat b{display:block;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.95rem;line-height:1}
+  .stat span{display:block;font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-weight:600;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--c-muted);margin-top:0.35rem;max-width:9.5rem}
+  .note{
+    font-family:'JetBrains Mono',monospace;font-size:0.62rem;line-height:1.7;
+    color:var(--c-muted);border-left:2px solid var(--c-gold);padding-left:0.8rem;margin-top:1.6rem;
+  }
+  section[data-theme="cream"] .note{color:var(--c-muted)}
+  .note b{color:var(--c-gold);font-weight:700}
+  .rule{display:flex;gap:1rem;align-items:baseline;padding:0.75rem 0;border-bottom:1px solid color-mix(in srgb, var(--c-ghost) 70%, transparent)}
+  .rule:last-child{border-bottom:none}
+  .rule i{font-style:normal;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.7rem;color:var(--c-gold);flex:0 0 1.6rem}
+  .rule p{margin:0;font-size:0.85rem}
+  #hud{
+    position:fixed;right:1.1rem;bottom:1rem;z-index:2;
+    font-family:'JetBrains Mono',monospace;font-size:0.6rem;
+    letter-spacing:0.08em;color:var(--c-gold);opacity:0.85;pointer-events:none;
+  }
+  #tuneBtn{
+    position:fixed;top:1rem;right:1.1rem;z-index:4;
+    background:color-mix(in srgb, var(--c-bg) 72%, transparent);
+    border:1px solid var(--c-ghost);border-radius:6px;
+    color:var(--c-gold);font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-weight:600;
+    font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;
+    padding:0.45rem 0.8rem;cursor:pointer;
+  }
+  #tuneBtn:hover{border-color:var(--c-gold)}
+  #tuner{
+    position:fixed;top:0;right:0;bottom:0;width:312px;z-index:3;
+    background:var(--c-bgSoft);border-left:1px solid var(--c-ghost);
+    padding:3.4rem 1.1rem 1.2rem;overflow-y:auto;
+    transform:translateX(100%);transition:transform 0.25s ease;
+  }
+  #tuner.open{transform:translateX(0)}
+  .tgrp{
+    font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-size:0.6rem;letter-spacing:0.18em;
+    text-transform:uppercase;color:var(--c-muted);font-weight:700;margin:1.1rem 0 0.5rem;
+    border-bottom:1px solid var(--c-ghost);padding-bottom:0.3rem;
+    display:flex;justify-content:space-between;align-items:center;gap:0.5rem;
+  }
+  .tgrp:first-child{margin-top:0}
+  .tgrp.active{color:var(--c-gold);border-bottom-color:var(--c-gold)}
+  .tgrp span{flex:1;min-width:0}
+  .tgcopy{
+    flex:none;background:transparent;border:1px solid var(--c-ghost);color:var(--c-muted);
+    font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-weight:600;
+    font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;
+    padding:0.12rem 0.42rem;border-radius:4px;cursor:pointer;
+  }
+  .tgcopy:hover{border-color:var(--c-gold);color:var(--c-gold)}
+  .tctl{margin-bottom:0.65rem}
+  .tctl label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--c-text);margin-bottom:0.2rem}
+  .tctl label .val{font-family:'JetBrains Mono',monospace;color:var(--c-goldBright);font-size:0.66rem}
+  .tctl input[type=range]{width:100%;accent-color:var(--c-gold);cursor:pointer}
+  .thint{font-size:0.6rem;color:var(--c-muted);margin-top:0.05rem;line-height:1.35}
+  .trow{display:flex;gap:0.5rem;margin:1.1rem 0 0.4rem}
+  .trow button{
+    flex:1;background:transparent;border:1px solid var(--c-ghost);color:var(--c-text);
+    font-family:var(--f-body,'Barlow',sans-serif);font-size:0.66rem;text-transform:uppercase;
+    letter-spacing:0.06em;padding:0.5rem;border-radius:6px;cursor:pointer;
+  }
+  .trow button:hover{border-color:var(--c-gold);color:var(--c-goldBright)}
+  #tmsg{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--c-muted);min-height:1em}
+  #tout{
+    width:100%;min-height:150px;resize:vertical;margin-top:0.5rem;
+    background:var(--c-bgCard,#18181c);border:1px solid var(--c-ghost);border-radius:8px;
+    color:var(--c-text);font-family:'JetBrains Mono',monospace;font-size:0.62rem;
+    line-height:1.5;padding:0.6rem;outline:none;
+  }
+  .tchips{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.5rem}
+  .tchips button{
+    background:transparent;border:1px solid var(--c-ghost);color:var(--c-muted);
+    font-family:var(--f-condensed,'Barlow Condensed',sans-serif);font-weight:600;
+    font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;
+    padding:0.32rem 0.55rem;border-radius:999px;cursor:pointer;
+  }
+  .tchips button:hover{border-color:var(--c-gold);color:var(--c-goldBright)}
+  .tchips button.on{border-color:var(--c-gold);color:var(--c-gold);background:color-mix(in srgb, var(--c-gold) 12%, transparent)}
+  @media (max-width:600px){
+    .card{padding:1.7rem 1.4rem}
+    section{min-height:130vh;padding:4rem 1rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="loom"></canvas>
+<div id="hud"></div>
+<button id="tuneBtn" type="button">&#9881; Tune</button>
+<div id="tuner"></div>
+<main>
+
+<section data-f="tartan" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Design Draft &middot; Background Choreography 03</div>
+    <h1>The Underloom</h1>
+    <p>Draft three. The ribbon loom is retired — it was the masthead's twin, and the masthead owns that language. In its place: a <em>harlequin tartan</em>. Two band sets cross on the diagonal in a woven sett of pathway tokens, sliding slowly against each other so the diamonds shimmer.</p>
+    <p class="sub">Scroll. The threads never leave — they re-form into each section's motif, then hold still while you read. Open &#9881; Tune to dial every formation and try the theme chips.</p>
+    <div class="note"><b>FORMATION 01 — HARLEQUIN TARTAN.</b> Straight two-point bands in a repeating sett: wide gold, grey pinstripe, intact, circumcised, restoring. The cheapest formation in the registry — the crossing pattern does all the work.</div>
+  </div>
+</section>
+
+<section data-f="quiet" data-theme="cream">
+  <div class="card">
+    <div class="kicker">The Researcher's Letter</div>
+    <h2>The "Why" Behind This Inquiry</h2>
+    <p>This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults. So I asked.</p>
+    <p class="sub">We are not telling people how to feel. We are creating a platform for them to anonymously share how they actually feel and what they actually experience.</p>
+    <div class="note"><b>FORMATION 02 — QUIET RIBBON.</b> The same ribbon at 45% amplitude in the masthead's own red&rarr;gold&rarr;blue spectrum, motion damped while you read. Editorial sections shift to the theme's soft surface — never a palette flip. The two looms share a palette; this one just gets starched.</div>
+  </div>
+</section>
+
+<section data-f="tron" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Phase 1 &middot; Global Reach</div>
+    <h2>The Inquiry Went Global</h2>
+    <p>What began as a US-focused inquiry spread organically. Respondents arrived from every inhabited continent — including a baseline of experience from non-cutting cultures that the United States has largely never had access to.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--c-ltBlue)">322</b><span>United States</span></div>
+      <div class="stat"><b style="color:var(--c-ltBlue)">43</b><span>Canada</span></div>
+      <div class="stat"><b style="color:var(--c-ltBlue)">32</b><span>United Kingdom</span></div>
+      <div class="stat"><b style="color:var(--c-ltBlue)">21</b><span>Australia</span></div>
+    </div>
+    <div class="note"><b>FORMATION 03 — BEAM RACER.</b> The graticule, re-imagined per your note: a perspective grid floor rolling toward you while light-cycle beams in pathway colors race the lanes toward the horizon, banking 90&deg; turns as they go. Six beams, six pathways, one grid.</div>
+  </div>
+</section>
+
+<section data-f="canyon" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Sexual Experience &middot; Six Metrics</div>
+    <h2>The Pleasure Gap</h2>
+    <p>On pleasure from mobile skin, intact respondents average <b style="font-family:'JetBrains Mono',monospace;color:var(--path-intact)">4.47</b> of 5. Circumcised respondents average <b style="font-family:'JetBrains Mono',monospace;color:var(--path-circumcised)">1.96</b> — the largest single finding in the dataset.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--path-intact)">4.47</b><span>Intact Pathway &middot; mobile skin</span></div>
+      <div class="stat"><b style="color:var(--path-circumcised)">1.96</b><span>Circumcised Pathway &middot; mobile skin</span></div>
+      <div class="stat"><b style="color:var(--path-restoring)">&Delta; 2.52</b><span>a 56% drop</span></div>
+    </div>
+    <div class="note"><b>FORMATION 04 — CANYON FLIGHT.</b> The original, restored: Fractalus / Commander Blood wireframe terrain traveling toward you continuously, canyon walls rising on both sides, pale at the horizon and blue up close. Glint pulses recede into the scene by depth, each riding only its row's visible span. In production the wall heights come from the real distributions.</div>
+  </div>
+</section>
+
+<section data-f="pulsar" data-theme="dark">
+  <div class="card">
+    <div class="kicker">By the Numbers &middot; Signal</div>
+    <h2>Unknown Pleasures</h2>
+    <p>Sixty-four rows of quiet, and then the pulse. The canyon turned inside out: no perspective, no flight — just stacked signal, peaks waking in the center channel, row after row after row.</p>
+    <div class="note"><b>FORMATION 05 — PULSAR STACK.</b> The CP&nbsp;1919 sleeve as a formation — and now it <em>travels</em>: new ridges crest at the horizon and flow toward you like going forward over a mountain range, swelling through the center band, each row reseeded as it laps so the terrain never repeats. Rows in the theme's text token; monochrome by design, one glint lane riding the travel.</div>
+  </div>
+</section>
+
+<section data-f="moire" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Mirror Pairs &middot; Parallel Questions</div>
+    <h2>The Curiosity Mirror</h2>
+    <p>The same question, asked from opposite sides. <b style="font-family:'JetBrains Mono',monospace;color:var(--path-circumcised)">67.8%</b> of circumcised respondents often wonder what intact experience is like. <b style="font-family:'JetBrains Mono',monospace;color:var(--path-intact)">27.3%</b> of intact respondents wonder the reverse.</p>
+    <div class="note"><b>FORMATION 06 — MOIR&Eacute; + BLIPS.</b> The two offset grids stay, and now saw-tooth signal blips ride the lines — little jagged packets ping-ponging to-and-fro like pulses on an oscilloscope trace. Every third line carries one, each on its own clock, so they cross.</div>
+  </div>
+</section>
+
+<section data-f="pendulum" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Future Sons &middot; All Pathways</div>
+    <h2>The Generational Break</h2>
+    <p>For generations the pattern repeated itself. Asked about their own future sons, respondents across every pathway converge on keeping them intact.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--path-intact)">88.8%</b><span>Intact &middot; keep intact</span></div>
+      <div class="stat"><b style="color:var(--path-circumcised)">78.1%</b><span>Circumcised &middot; keep intact</span></div>
+      <div class="stat"><b style="color:var(--path-restoring)">98.1%</b><span>Restoring &middot; keep intact</span></div>
+      <div class="stat"><b style="color:var(--path-observer)">0%</b><span>Intact &amp; Restoring &middot; would circumcise</span></div>
+    </div>
+    <div class="note"><b>FORMATION 07 — SPIROGRAPH.</b> Real gear semantics: pick a ring gear and a wheel gear (the ratio sets the petal advance — swap gears, new rosette), choose a pen hole, and the pen draws <em>continuously</em> — the newest loop inking while the oldest dissolves as it comes back around. And now THE TIN: variety detunes each family's gears, spreads their sizes, and swaps wheel shapes — circle, rounded triangle, rounded square — three different figures interlocking. Where loop sheets cross, the moir&eacute; mesh does the talking.</div>
+  </div>
+</section>
+
+<section data-f="flow" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Bodily Autonomy &middot; The Consensus</div>
+    <h2>Where Every Stream Bends</h2>
+    <p>Whatever their starting point, respondents converge: the individual's right to bodily autonomy outweighs parental discretion.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--path-intact)">96.4%</b><span>Intact Pathway</span></div>
+      <div class="stat"><b style="color:var(--path-circumcised)">81.3%</b><span>Circumcised Pathway</span></div>
+      <div class="stat"><b style="color:var(--path-restoring)">100%</b><span>Restoring Pathway</span></div>
+      <div class="stat"><b style="color:var(--path-observer)">97.0%</b><span>Observer Pathway</span></div>
+    </div>
+    <div class="note"><b>FORMATION 08 — CONVERGENCE.</b> Streams run in the four --path-* tokens and bend to one channel. The glisten (see the tuner group) is no longer convergence-only — the Harmonic Loom's holographic glint pass now rakes across <em>every</em> formation: staggered families, alternating directions, drifting hue. Same dialect above and below the fold.</div>
+  </div>
+</section>
+
+<section data-f="quiet" data-theme="cream">
+  <div class="card">
+    <div class="kicker">The Discipline</div>
+    <h2>Beautiful, Engaging, Never Distracting</h2>
+    <p class="sub">The rules this draft obeys — and the production build must keep:</p>
+    <div style="margin-top:0.8rem">
+      <div class="rule"><i>R1</i><p><b>Opacity budget.</b> Background strokes stay in the 10–35% alpha band; only pen heads and racer beams may exceed it, and only as small, moving points of light.</p></div>
+      <div class="rule"><i>R2</i><p><b>Transitions live in the gutters.</b> Formations hold steady while a section is centered; the morph happens only between sections, where nobody is reading.</p></div>
+      <div class="rule"><i>R3</i><p><b>Motion damps at rest.</b> When scrolling stops, drift eases to 30% speed — the glacier still glides, the pens still draw, but gently. Watch the HUD.</p></div>
+      <div class="rule"><i>R4</i><p><b>Text always sits on a scrim.</b> Content cards carry a translucent blur layer, so legibility never depends on where the lines happen to be.</p></div>
+      <div class="rule"><i>R5</i><p><b>One motif per viewport.</b> Each formation echoes its section's subject and never mixes metaphors.</p></div>
+      <div class="rule"><i>R6</i><p><b>Reduced motion is honored.</b> With <span style="font-family:'JetBrains Mono',monospace;font-size:0.78em">prefers-reduced-motion</span>, idle drift freezes (the pendulum rests mid-swing); formations still change with scroll.</p></div>
+      <div class="rule"><i>R7</i><p><b>The theme engine rules above all.</b> Every stroke, scrim, and glint resolves through the Bureau's tokens (--c-*, --path-*, --f-*, data-theme/data-mode/data-colorblind). No palette flips mid-scroll — one theme, two surface moods. Try the THEME ENGINE chips in the tuner.</p></div>
+    </div>
+    <div class="note"><b>NEXT STEP.</b> Engine becomes a React component sharing LOOM_CONFIG with HarmonicCanvas — one canvas behind the Guided Tour, formations registered per station, theme-engine native.</div>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+  var canvas=document.getElementById('loom');
+  var ctx=canvas.getContext('2d');
+  var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var L=64,P=120;
+  var W=1280,H=800,DPR=1,sizeScale=1;
+  var T=RM?7:0; // RM: freeze at a settled pose
+
+  // ══ THEME ENGINE BRIDGE ══ every canvas color resolves through the CSS
+  // custom properties (same pipeline as HarmonicCanvas.jsx parseColor /
+  // resolveCssColor). Fallbacks are only a safety net — the tokens rule.
+  var PAL={red:[217,79,79],yel:[232,200,104],lbl:[139,184,217],blu:[91,147,199],gold:[212,160,48],goldB:[232,184,64],green:[104,184,120],text:[238,238,238],bright:[255,255,255]};
+  var PAT={intact:[42,157,143],circ:[231,111,81],rest:[233,196,106],obs:[120,104,184]};
+  var THEME={dark:[14,14,16],cream:[250,248,244]};
+  var probe=document.createElement('span');
+  probe.style.display='none';
+  document.body.appendChild(probe);
+  function tok(varName,fb){
+    probe.style.color='';
+    probe.style.color='var('+varName+')';
+    var c=window.getComputedStyle(probe).color;
+    var m=c&&c.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+    return m?[+m[1],+m[2],+m[3]]:fb;
+  }
+  function readTheme(){
+    PAL.red=tok('--c-red',PAL.red);
+    PAL.yel=tok('--c-yellow',PAL.yel);
+    PAL.lbl=tok('--c-ltBlue',PAL.lbl);
+    PAL.blu=tok('--c-blue',PAL.blu);
+    PAL.gold=tok('--c-gold',PAL.gold);
+    PAL.goldB=tok('--c-goldBright',PAL.goldB);
+    PAL.green=tok('--c-green',PAL.green);
+    PAT.intact=tok('--path-intact',PAT.intact);
+    PAT.circ=tok('--path-circumcised',PAT.circ);
+    PAT.rest=tok('--path-restoring',PAT.rest);
+    PAT.obs=tok('--path-observer',PAT.obs);
+    THEME.dark=tok('--c-bg',THEME.dark);
+    THEME.cream=tok('--c-bgSoft',THEME.cream); // soft surface, same palette — no light/dark flip
+    PAL.text=tok('--c-text',PAL.text);
+    PAL.bright=tok('--c-textBright',PAL.bright);
+    tokCache=PAL.bright;
+  }
+
+  function hash(n){var x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);}
+  function gcd(a,b){a=Math.round(a);b=Math.round(b);while(b){var t=a%b;a=b;b=t;}return a||1;}
+  function ss(a,b,x){x=Math.max(0,Math.min(1,(x-a)/(b-a)));return x*x*(3-2*x);}
+  function lerp(a,b,m){return a+(b-a)*m;}
+  function mod(a,b){return ((a%b)+b)%b;}
+  function mixc(c1,c2,t){return [lerp(c1[0],c2[0],t),lerp(c1[1],c2[1],t),lerp(c1[2],c2[2],t)];}
+  // the masthead's red→gold→blue spectrum as a ramp — the quiet ribbon's
+  // treatment, promoted to the house style (continuous colorPos everywhere)
+  function spec3(t){return t<0.5?mixc(PAL.red,PAL.gold,t*2):mixc(PAL.gold,PAL.blu,(t-0.5)*2);}
+
+  // ══ RIBBON LOOM ══ adapted from HarmonicCanvas.jsx LOOM_CONFIG:
+  // two parent curves, cosine-bunched blend, per-line phase spread (moiré),
+  // traveling wave + ripple + loop phases, perspective z, spectrum gradient.
+  // Baseline stamped from Tone's tuning session, 2026-07-09
+  var RIB={waveFreq:1.5,spread:1.2,sep:0.22,speed:0.3,amp:0.9}; // speed re-mellowed per Tone
+  var TAR={angle:1.10,driftPx:9.5,breathe:0.065,alpha:0.40};
+  var MO={angle:0.63,drift:0.028,blipEvery:3,blipSpeed:1.0,teeth:2,blipAmp:0.023,blipWin:0.02};
+  // Spirograph gear semantics: ring teeth ÷ wheel teeth = petal advance;
+  // penHole = which hole the pen sits in; draw = pen speed (loops/beat).
+  // Gears stamped from Tone's tuning session, 2026-07-09
+  // THE TIN, fully opened: each figure has its OWN rig (gears, pen hole,
+  // size, squash, twist, wheel shape+lobe); shared knobs stay top-level.
+  // TRUE HYPOTROCHOIDS: each figure is the pattern-guide pen trace itself —
+  // 21 threads each carry one consecutive arc of the closed curve. Defaults
+  // from the Ring 105 guide: Sunflower-35 / 7-Star / Daisy-7, one solid
+  // strand-group color each (red / gold / blue, like the harmonic loom).
+  // px/py = each figure's home spot (stack two for compound patterns).
+  // mutate = FIREWORKS: ink in → hold → dissolve → reroll into a new random
+  // pattern-guide figure at a new spot. Seed trio from Tone's screenshot.
+  // Defaults stamped from Tone's tuning session, 2026-07-09: three big slow
+  // hypotrochoids, fireworks OFF (mutate 0) so they sit as tuned.
+  var PEN={
+    draw:0.05,prec:0.025,sway:0.025,mutate:0,hold:0.1,
+    figs:[
+      {gearRing:119,gearWheel:40,penHole:0.65,size:0.8,ecc:0,twist:1.4,shape:0,lobe:0,px:-0.27,py:-0.17},
+      {gearRing:105,gearWheel:64,penHole:0.9,size:0.64,ecc:0,twist:0.4,shape:0,lobe:0,px:0.39,py:0.02},
+      {gearRing:107,gearWheel:60,penHole:0.9,size:0.48,ecc:0,twist:0.9,shape:0,lobe:0,px:0.07,py:0.3}
+    ]
+  };
+  var penSel=0; // which figure the tuner's sliders address (FIG radio)
+  var penD={cyc:21,prog:-1,fam:[{},{},{}]}; // per-family gearing, filled per frame by pendulum prep
+  // Unknown Pleasures — the pulsar stack (canyon's inverse: flat-on signal)
+  var PUL={height:0.14,env:0.26,drift:0.35,speed:0.02,sharp:2.6};
+  var FL={pinch:0.03,shimmer:0.006,bendIn:0.18,bendOut:0.85};
+  // The glisten — the masthead Harmonic Loom's glint values (LOOM_CONFIG).
+  // In production these are IMPORTED from HarmonicCanvas.jsx; keep in sync.
+  var GLN={groups:2,interval:20,speed:0.05,width:0.15,strength:0.5,tint:0,scatter:0.12}; // low scatter = masthead-sync
+  var ENG={gutterA:0.40,gutterB:0.66,idleFloor:0.30,alphaMul:1.0,lineWidth:1.6}; // 1.6 ≈ masthead weight class
+  function parentY(u,tau,seed,ampScale){
+    var half=Math.max(W,H)/2;
+    var trav=tau*RIB.speed-u*RIB.waveFreq*6.283;
+    var ripple=tau*RIB.speed*2.2-u*RIB.waveFreq*2.5*6.283+seed;
+    var loop=(tau*RIB.speed*1.9-u*RIB.waveFreq*1.7*6.283+seed*2.1)*1.5;
+    return (Math.sin(trav+seed)*0.33+Math.cos(ripple)*0.18+Math.cos(loop)*0.21)*half*ampScale;
+  }
+  function ribbonPt(i,u,o,ampScale){
+    var v=i/(L-1);
+    var blend,seedA,seedB,tt;
+    if(i<40){blend=0.5-Math.cos((i/39)*Math.PI)*0.5;seedA=1.7;seedB=4.2;}
+    else{blend=0.5-Math.cos(((i-40)/23)*Math.PI)*0.5;seedA=2.9;seedB=0.8;}
+    var tau=T+(blend-0.5)*RIB.spread;
+    var half=Math.max(W,H)/2;
+    var taper=Math.pow(Math.sin(Math.PI*u),0.7);
+    var yA=parentY(u,tau,seedA,ampScale)-RIB.sep*half*ampScale*2;
+    var yB=parentY(u,tau+0.9,seedB,ampScale)+RIB.sep*half*ampScale*2*(i<40?1:1.6);
+    var y=H*0.5+lerp(yA,yB,blend)*taper;
+    var loopX=Math.sin(tau*RIB.speed*1.9-u*RIB.waveFreq*1.7*6.283+blend*3)*half*0.10*ampScale*taper;
+    var x=(-0.06+1.12*u)*W+Math.cos(tau*RIB.speed-u*RIB.waveFreq*6.283+blend*2)*half*0.14*ampScale*taper+loopX;
+    var z=Math.sin(tau*0.8+u*4+blend*5)*0.35;
+    var sc=1/(1+z*0.25);
+    o.x=W*0.5+(x-W*0.5)*sc;
+    o.y=H*0.5+(y-H*0.5)*sc;
+  }
+  function ribbonCol(i,alphaScale,pal1,pal2,pal3){
+    var c,tt;
+    if(i<40){tt=i/39;c=mixc(pal1,pal2,tt);}
+    else{tt=(i-40)/23;c=mixc(pal2,pal3,tt);}
+    var bl=0.5-Math.cos(tt*Math.PI)*0.5;
+    var al=Math.sin(bl*Math.PI)*0.5+0.2;
+    // HarmonicCanvas-weight threads: thick belly, fine bunched edges
+    return [c[0],c[1],c[2],al*alphaScale,(1.1+2.7*Math.sin(bl*Math.PI))*sizeScale];
+  }
+
+  // ══ HARLEQUIN TARTAN sett ══ repeating block of [spacing-units, token,
+  // width, alpha-mul]; two crossing diagonal band sets, all straight lines.
+  // PALETTE POLICY: decorative formations use theme-reactive --c-* data
+  // colors (--path-* is universal by design; reserved for convergence).
+  var SETT=[
+    [1.6,'gold',2.6,1.0],[0.5,'grey',0.9,0.65],[1.0,'red',1.8,0.9],[0.5,'green',0.9,0.6],
+    [1.7,'blue',2.6,1.0],[0.6,'gold',1.0,0.7],[1.1,'yellow',1.8,0.9],[0.5,'grey',0.9,0.6]
+  ];
+  var settHalf=Math.floor(L/2);
+  var settTotalU=0,settPrefix=[];
+  (function(){var acc=0,e,q;for(q=0;q<SETT.length;q++){e=SETT[q];settPrefix.push(acc+e[0]/2);acc+=e[0];}settTotalU=acc;})();
+  var settSpanU=Math.ceil(settHalf/SETT.length)*settTotalU;
+  function settOffU(k){return Math.floor(k/SETT.length)*settTotalU+settPrefix[k%SETT.length];}
+  function tartanColor(key){
+    return key==='gold'?PAL.gold:key==='grey'?PAL.lbl:key==='red'?PAL.red
+      :key==='green'?PAL.green:key==='blue'?PAL.blu:PAL.yel;
+  }
+  // Spectrum positions (0 = red … 0.5 = gold … 1 = blue) for hue-binned
+  // glint families — the masthead's colorPos, adapted to a discrete sett.
+  var settHue={red:0.05,gold:0.35,yellow:0.5,green:0.7,grey:0.85,blue:0.95};
+
+  // ══ BEAM RACER ══ world-space grid floor + light-cycle paths (init once)
+  var TRON={zN:1.8,zF:34,rows:28,lanes:30,racers:6,horizon:0.27,camY:1.5,laneW:1.4,speed:3.4,gridSpeed:1.2,trail:3.5};
+  var racers=[];
+  (function(){
+    for(var r=0;r<TRON.racers;r++){
+      var x=Math.round(hash(r*7.7)*10-5),z=TRON.zN+0.2,pts=[[x,z]],n=0;
+      while(z<TRON.zF+8&&n<80){
+        if(n%2===0){z+=3+5*hash(r*31.7+n*3.1);}
+        else{var dx=(hash(r*17.3+n*5.7)<0.5?-1:1)*(1+Math.floor(hash(r*23.9+n*2.3)*2));x=Math.max(-6,Math.min(6,x+dx));}
+        pts.push([x,z]);n++;
+      }
+      var cum=[0],tot=0,q;
+      for(q=1;q<pts.length;q++){tot+=Math.abs(pts[q][0]-pts[q-1][0])*TRON.laneW+Math.abs(pts[q][1]-pts[q-1][1]);cum.push(tot);}
+      racers.push({pts:pts,cum:cum,tot:tot});
+    }
+  })();
+  var rw={x:0,z:0};
+  function racerAt(R,s){
+    s=Math.max(0,Math.min(R.tot,s));
+    var i=1;while(i<R.cum.length-1&&R.cum[i]<s)i++;
+    var c0=R.cum[i-1],c1=R.cum[i],t=c1>c0?(s-c0)/(c1-c0):0;
+    rw.x=lerp(R.pts[i-1][0],R.pts[i][0],t);
+    rw.z=lerp(R.pts[i-1][1],R.pts[i][1],t);
+  }
+  function projFloor(xw,zw,o){
+    zw=Math.max(0.9,zw);
+    var f=0.92*Math.min(W,H);
+    o.x=W*0.5+xw*f/zw;
+    o.y=H*TRON.horizon+TRON.camY*f/zw;
+  }
+  function tronRowZ(i){
+    var span=TRON.zF-TRON.zN;
+    return TRON.zN+mod(i*(span/TRON.rows)-T*TRON.gridSpeed,span);
+  }
+  function tronFade(zw){
+    return ss(TRON.zN,TRON.zN+1.4,zw)*(1-ss(TRON.zF-6,TRON.zF,zw));
+  }
+
+  // ══ CANYON FLIGHT ══ world-stable terrain, camera flying forward
+  // CANYON FLIGHT — the original Fractalus terrain, restored per Tone
+  var CAN={zN:1.6,zF:26,horizon:0.26,camY:2.2,speed:0.5,xSpan:30,wall:3.1,valley:0.2};
+  // ══ CANYON FLIGHT surface ══ the original Fractalus terrain, restored
+  function canyonH(xw,zw){
+    var b=Math.sin(xw*0.5+zw*0.4)+0.6*Math.sin(xw*1.1-zw*0.23+1.7)+0.35*Math.sin(xw*2.2+zw*0.72+4);
+    var h01=(b+1.95)/3.9;
+    var env=0.12+0.88*ss(0.10,CAN.valley,Math.abs(xw)/(CAN.xSpan*0.5));
+    return h01*CAN.wall*env;
+  }
+  function canyonRowZ(i){
+    var span=CAN.zF-CAN.zN;
+    return CAN.zN+mod(i*(span/L)-T*CAN.speed,span);
+  }
+  function canyonFade(zw){
+    return ss(CAN.zN,CAN.zN+1.1,zw)*(1-ss(CAN.zF-6,CAN.zF,zw));
+  }
+
+  // (The drawing spirograph retired in Draft 03 — too chaotic. Its slot now
+  // belongs to the pendulum harmonograph, defined inline in FORMS below.)
+
+  // ══ THE GLISTEN, engine-wide ══ faithful port of the Harmonic Loom's
+  // glint pass: colour families staggered in time, alternating directions so
+  // opposite-moving glints cross, holographic hue drift (tint desaturates
+  // toward pearly white), quick tail falloff. Rides whichever formation is
+  // on stage, following that formation's own geometry via pt(i,u).
+  var glintT=0; // real-seconds clock, decoupled from damp (like the masthead)
+  function glisten(F,wgt){
+    if(wgt<0.02||GLN.groups<=0)return;
+    // formations may override glint cadence/size (F.glint) — the spirograph
+    // runs a much denser sparkle so streaks crowd its mesh
+    var gi=F.glint||GLN;
+    var period=Math.max(0.5,gi.interval!==undefined?gi.interval:GLN.interval);
+    var gWidth=gi.width!==undefined?gi.width:GLN.width;
+    var gStrength=gi.strength!==undefined?gi.strength:GLN.strength;
+    var travelT=Math.min(period,1/Math.max(0.001,gi.speed!==undefined?gi.speed:GLN.speed));
+    var sat=Math.max(0,Math.min(100,Math.round(95-(gi.tint!==undefined?gi.tint:GLN.tint)*60)));
+    ctx.lineCap='round';
+    for(var i=0;i<L;i++){
+      var c=F.col(i);
+      if(c[3]<0.01)continue; // invisible thread — no streak
+      // HUE BINNING — the masthead's actual trick: every thread reports its
+      // spectrum position via the formation's hue(i), and glint families are
+      // COLOUR families binned on that axis. Warm threads glint together;
+      // cool threads answer from the other direction.
+      var cp=F.hue?F.hue(i):i/L;
+      var g=Math.min(GLN.groups-1,Math.max(0,Math.floor(cp*GLN.groups)));
+      // gi.sync = ONE cohesive wave: same direction, same clock, no family
+      // stagger — the cascade order alone carries the wave through the shape
+      var baseDir=gi.sync?1:(g%2===0?1:-1);
+      // STRUCTURED CASCADE (not random): threads fire in the order the
+      // formation declares — depth for the canyon (a pulse receding into the
+      // scene), inking order for the spirograph (glints chase the pen),
+      // height for convergence. Low scatter = masthead-coherent rake.
+      var ord=F.order?F.order(i):cp;
+      var effScatter=F.scatter!==undefined?F.scatter:GLN.scatter;
+      var gOff=gi.sync?0:(g/GLN.groups)*period;
+      // the streak rides the thread's VISIBLE span (F.span) — perspective
+      // formations map u far past the viewport
+      var spn=F.span?F.span(i):null;
+      var s0=spn?spn[0]:0,s1=spn?spn[1]:1;
+      // streak hue seeded from the thread's spectrum position (masthead's colorPos*60)
+      var hueBase=glintT*30+g*140+cp*60;
+      // streak brightness rides the thread's own visibility — un-inked or
+      // faint threads carry no glint, so trails only appear where the pen
+      // has already been
+      var vis=Math.min(1,c[3]*5);
+      if(vis<=0.01)continue;
+      // gi.crisscross = the masthead's crossing glints: TWO counter-running
+      // waves — the second cascades from the opposite end, half a period
+      // behind — so holographic trails meet and cross, again and again
+      var passes=gi.crisscross?2:1;
+      for(var ps=0;ps<passes;ps++){
+        var dir=gi.crisscross?(ps===0?1:-1):baseDir;
+        var pOrd=ps===0?ord:1-ord;
+        var pOff=gi.crisscross?ps*period*0.5:gOff;
+        // cascade offsets span the PERIOD, so fast crossings become one
+        // bright head sweeping thread-to-thread
+        var localT=mod(glintT-pOff-pOrd*effScatter*period,period);
+        if(localT>=travelT)continue;
+        var hp=localT/travelT;
+        var uHead=s0+(dir===1?hp:1-hp)*(s1-s0);
+        var uTail=Math.max(s0,Math.min(s1,uHead-dir*gWidth*(s1-s0)));
+        F.pt(i,uTail,pA);
+        F.pt(i,uHead,pB);
+        if(Math.abs(pA.x-pB.x)+Math.abs(pA.y-pB.y)<2)continue;
+        var grad=ctx.createLinearGradient(pA.x,pA.y,pB.x,pB.y);
+        var hb=hueBase+ps*80; // the counter-wave shimmers offset
+        for(var q=0;q<=6;q++){
+          var f=q/6;
+          var hue=mod(hb+f*150,360);
+          grad.addColorStop(f,'hsla('+hue.toFixed(0)+','+sat+'%,'+(60+f*28).toFixed(0)+'%,'+(Math.pow(f,1.8)*gStrength*wgt*vis).toFixed(3)+')');
+        }
+        ctx.strokeStyle=grad;
+        ctx.lineWidth=Math.max(1,c[4]*1.5*ENG.lineWidth); // glints ride the same weight
+        ctx.beginPath();
+        for(var s2=0;s2<=20;s2++){
+          F.pt(i,uTail+(uHead-uTail)*(s2/20),pA);
+          if(s2===0)ctx.moveTo(pA.x,pA.y);else ctx.lineTo(pA.x,pA.y);
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.lineCap='butt';
+  }
+  var tokCache=null; // --c-textBright, refreshed by readTheme (kept for future use)
+
+  // ══ FORMATIONS ══ pt(i,u,o) geometry · col(i)→[r,g,b,a,width] · prep() per frame
+  var FORMS={
+    tartan:{
+      pt:function(i,u,o){
+        var g=i<settHalf?0:1;
+        var k=g?i-settHalf:i;
+        var a=TAR.angle*(g?1:-1);
+        var ca=Math.cos(a),sa=Math.sin(a);
+        var span=Math.hypot(W,H)*1.05;
+        var unitPx=(span/settSpanU)*(1+TAR.breathe*Math.sin(T*0.11+g*2.4));
+        var shift=(g?1:-1)*T*TAR.driftPx; // the weave slides, slowly
+        var offPx=mod(settOffU(k)*unitPx+shift,span)-span/2;
+        var len=Math.hypot(W,H)*1.2;
+        var cx=W*0.5-sa*offPx,cy=H*0.5+ca*offPx;
+        o.x=cx+ca*(u-0.5)*len;
+        o.y=cy+sa*(u-0.5)*len;
+      },
+      col:function(i){
+        var k=(i<settHalf?i:i-settHalf)%SETT.length;
+        var e=SETT[k];
+        var c=tartanColor(e[1]);
+        return [c[0],c[1],c[2],TAR.alpha*e[3],e[2]*sizeScale];
+      },
+      hue:function(i){return settHue[SETT[(i<settHalf?i:i-settHalf)%SETT.length][1]];},
+      pts:function(){return 2;} // straight bands — the diamonds come from crossing
+    },
+    quiet:{
+      // the masthead's own red→gold→blue spectrum, at editorial volume
+      pt:function(i,u,o){ribbonPt(i,u,o,RIB.amp*0.45);},
+      col:function(i){return ribbonCol(i,0.26,PAL.red,PAL.gold,PAL.blu);},
+      // exact masthead colorPos: ribbon 1 red→gold, ribbon 2 gold→blue
+      hue:function(i){return i<40?(i/39)*0.5:0.5+((i-40)/23)*0.5;},
+      pts:function(){return 56;}
+    },
+    tron:{
+      pt:function(i,u,o){
+        if(i<TRON.rows){
+          projFloor((u-0.5)*34,tronRowZ(i),o);
+        }else if(i<TRON.rows+TRON.lanes){
+          var k=i-TRON.rows;
+          projFloor((k-(TRON.lanes-1)/2)*TRON.laneW,TRON.zN+u*(TRON.zF-TRON.zN),o);
+        }else{
+          var rr=i-TRON.rows-TRON.lanes;
+          var R=racers[rr];
+          var head=mod(T*TRON.speed+rr*(R.tot/TRON.racers)*1.7,R.tot+9);
+          racerAt(R,head-TRON.trail*(1-u));
+          projFloor(rw.x*TRON.laneW,rw.z,o);
+        }
+      },
+      col:function(i){
+        var c,c2;
+        if(i<TRON.rows){
+          var zw=tronRowZ(i);
+          var near=1-(zw-TRON.zN)/(TRON.zF-TRON.zN);
+          // spectrum across depth (warm near → cool far) + gradient along row
+          c=spec3(0.15+0.7*near);c2=spec3(0.35+0.55*near);
+          return [c[0],c[1],c[2],(0.13+0.16*near)*tronFade(zw),(0.6+5/zw)*sizeScale,c2[0],c2[1],c2[2]];
+        }
+        if(i<TRON.rows+TRON.lanes){
+          // lanes ramp the spectrum across the floor and gradient near→far
+          var tl=(i-TRON.rows)/(TRON.lanes-1);
+          c=spec3(tl);c2=spec3(Math.min(1,tl+0.12));
+          return [c[0],c[1],c[2],0.16,1.5*sizeScale,c2[0],c2[1],c2[2]];
+        }
+        var rr=i-TRON.rows-TRON.lanes;
+        c=[PAL.red,PAL.gold,PAL.blu,PAL.green,PAL.yel,PAL.lbl][rr]; // theme-reactive
+        var R=racers[rr];
+        var head=mod(T*TRON.speed+rr*(R.tot/TRON.racers)*1.7,R.tot+9);
+        var on=head<R.tot?1:0; // beam has exited — hide during the gap
+        // the beam swells as it nears the viewer, thins toward the horizon
+        racerAt(R,Math.min(R.tot,head));
+        var wZ=Math.max(1.2,rw.z);
+        return [c[0],c[1],c[2],0.78*on,Math.min(5,1.0+6/wZ)*sizeScale];
+      },
+      hue:function(i){
+        if(i<TRON.rows)return 0.9; // structural rows stay in the cool lane
+        if(i<TRON.rows+TRON.lanes)return (i-TRON.rows)/(TRON.lanes-1);
+        return [0.05,0.35,0.95,0.7,0.5,0.85][(i-TRON.rows-TRON.lanes)%TRON.racers];
+      },
+      pts:function(i){return i<TRON.rows+TRON.lanes?2:48;} // grid lines are straight
+    },
+    canyon:{
+      pt:function(i,u,o){
+        var zw=canyonRowZ(i);
+        var xw=(u-0.5)*CAN.xSpan;
+        var f=0.9*Math.min(W,H);
+        o.x=W*0.5+xw*f/zw*0.85;
+        o.y=H*CAN.horizon+(CAN.camY-canyonH(xw,zw))*f/zw;
+      },
+      col:function(i){
+        var zw=canyonRowZ(i);
+        var near=1-(zw-CAN.zN)/(CAN.zF-CAN.zN);
+        // the original mono-cool ramp — pale at the horizon, blue up close
+        var c=mixc(PAL.lbl,PAL.blu,near);
+        return [c[0],c[1],c[2],(0.05+0.33*Math.pow(near,1.6))*canyonFade(zw),(0.7+1.7*near)*sizeScale];
+      },
+      // all-cool formation: only the cool glint lane fires — hue-honest
+      hue:function(i){return 0.8+0.15*(1-(canyonRowZ(i)-CAN.zN)/(CAN.zF-CAN.zN));},
+      // glint pulse recedes INTO the canyon; streaks ride the VISIBLE span
+      order:function(i){return (canyonRowZ(i)-CAN.zN)/(CAN.zF-CAN.zN);},
+      scatter:0.85,
+      span:function(i){
+        var zw=canyonRowZ(i);
+        var halfU=Math.min(0.5,(0.62*W*zw)/(0.9*Math.min(W,H)*0.85*CAN.xSpan));
+        return [0.5-halfU,0.5+halfU];
+      },
+      pts:function(i){
+        var near=1-(canyonRowZ(i)-CAN.zN)/(CAN.zF-CAN.zN);
+        return 24+Math.round(near*(P-24)); // detail only where the ridges are tall
+      }
+    },
+    // Unknown Pleasures — the CP 1919 pulsar stack. The canyon's inverse:
+    // flat-on, no perspective, pure stacked signal in the theme's text token.
+    pulsar:{
+      pt:function(i,u,o){
+        // the rows TRAVEL over one continuous WORLD FIELD (the canyon's
+        // trick, flat-on): ridgelines persist row-to-row and flow coherently
+        var prog=i/L+T*PUL.speed;
+        var v=mod(prog,1);
+        var wD=prog*3.1;           // world depth — adjacent rows sample nearby terrain
+        var x=(u-0.5)*12;          // world x
+        var dr=T*PUL.drift*0.08;   // the range itself evolves, slowly
+        var b=Math.sin(x*0.9+wD*1.3+dr)
+          +0.6*Math.sin(x*1.9-wD*0.8+1.7-dr*0.7)
+          +0.35*Math.sin(x*4.2+wD*2.1+4.0)
+          +0.18*Math.sin(x*9.3-wD*3.7+2.2);
+        var h01=Math.max(0,(b+2.13)/4.26);
+        var s=Math.pow(h01,PUL.sharp)*2.2; // sharpen → sparse JD spikes
+        var env=Math.exp(-Math.pow((u-0.5)/PUL.env,2));
+        var rowAmp=0.15+0.85*Math.pow(Math.sin(v*Math.PI),1.5);
+        var yRow=H*(0.12+0.76*v);
+        o.x=u*W;
+        o.y=yRow-env*s*rowAmp*H*PUL.height;
+      },
+      col:function(i){
+        var v=mod(i/L+T*PUL.speed,1);
+        var near=Math.pow(Math.sin(v*Math.PI),1.5);
+        // monochrome by design (CP 1919) but with more body: thicker rows,
+        // brightening toward the front of the stack for luminous depth
+        var c=mixc(PAL.text,PAL.bright,near*0.5);
+        var edge=ss(0,0.07,v)*(1-ss(0.93,1,v)); // fade the wrap seam
+        return [c[0],c[1],c[2],(0.12+0.20*near)*edge,(1.2+1.3*near)*sizeScale];
+      },
+      hue:function(){return 0.5;},                       // monochrome — one glint lane
+      order:function(i){return mod(i/L+T*PUL.speed,1);}, // cascade rides the travel
+      scatter:0.7,
+      pts:function(){return 100;}
+    },
+    moire:{
+      pt:function(i,u,o){
+        var half=L/2;
+        var g=i<half?0:1;
+        var k=g?i-half:i;
+        var d=g?0.045+MO.drift*Math.sin(T*0.07):0;
+        var a=MO.angle+d;
+        var ca=Math.cos(a),sa=Math.sin(a);
+        var span=Math.max(W,H)*1.15,len=Math.hypot(W,H)*1.2;
+        var off=((k/(half-1))-0.5)*span;
+        var cx=W*0.5-sa*off,cy=H*0.5+ca*off;
+        var x=cx+ca*(u-0.5)*len;
+        var y=cy+sa*(u-0.5)*len;
+        // saw-tooth blips ping-ponging to-and-fro along carrier lines
+        if(i%MO.blipEvery===0){
+          var pos=0.5+0.5*Math.asin(Math.sin(T*MO.blipSpeed*(0.5+0.4*hash(i*2.1))+hash(i)*6.283))*(2/Math.PI);
+          var wdw=MO.blipWin;
+          var dist=Math.abs(u-pos);
+          if(dist<wdw){
+            var envT=1-dist/wdw;
+            var fr=((u-(pos-wdw))/(2*wdw))*MO.teeth;
+            var saw=2*(fr-Math.floor(fr))-1;
+            var disp=envT*saw*H*MO.blipAmp;
+            x+=-sa*disp;y+=ca*disp;
+          }
+        }
+        o.x=x;o.y=y;
+      },
+      col:function(i){
+        // quiet-ribbon treatment: each grid carries its own half of the
+        // spectrum, and each LINE gradients along its length toward the
+        // adjacent hue — richer, meatier, no flat monochrome lines
+        var half=L/2;
+        var k=i<half?i:i-half;
+        var pos=i<half?0.5+(k/(half-1))*0.5:(k/(half-1))*0.5;
+        var c=spec3(pos),c2=spec3(mod(pos+0.18,1));
+        var blip=i%MO.blipEvery===0;
+        return [c[0],c[1],c[2],blip?0.22:0.15,(blip?2.0:1.5)*sizeScale,c2[0],c2[1],c2[2]];
+      },
+      hue:function(i){
+        var half=L/2;
+        var k=i<half?i:i-half;
+        return i<half?0.5+(k/(half-1))*0.5:(k/(half-1))*0.5;
+      },
+      pts:function(i){return i%MO.blipEvery===0?P:2;} // only blip carriers bend
+    },
+    // Pendulum harmonograph — the Coral Records sleeve: three token families
+    // of nested decaying ellipses, phase creeping ring by ring so each family
+    // fans from a blade through a round and back. The anti-spirograph.
+    pendulum:{
+      // Spirograph simulator: real gear semantics drive the wreath, and the
+      // pen draws CONTINUOUSLY — the newest loop inks while the oldest
+      // dissolves as the pen comes back around. Never resets, never hurries.
+      prep:function(){
+        penD.cyc=Math.floor(L/3);
+        penD.prog=PEN.draw>0?T*PEN.draw:-1; // -1 = complete figure
+        var cyc=penD.cyc;
+        penD.life=cyc*(1+PEN.hold+0.3); // ink + hold + dissolve, in arc-units
+        var f,fig,rg,rw,revs,G,src,tf,lap,wheels;
+        for(f=0;f<3;f++){
+          fig=PEN.figs[f];
+          G=penD.fam[f];
+          src=fig;
+          if(PEN.mutate>0){
+            // FIREWORKS: one lifecycle (ink in → hold → dissolve), then
+            // reroll into a new random pattern-guide figure at a new spot
+            tf=T*Math.max(0.05,PEN.draw)+f*penD.life/3;
+            lap=Math.floor(tf/penD.life);
+            G.lp=tf-lap*penD.life;
+            if(G.lap===undefined){G.lap=lap;G.rig=JSON.parse(JSON.stringify(fig));} // first volley = seed config
+            else if(G.lap!==lap){
+              G.lap=lap;
+              wheels=[24,30,32,36,40,42,45,48,50,52,56,60,63,64,72,75,80,84];
+              G.rig={
+                gearRing:105,
+                gearWheel:wheels[Math.floor(hash(lap*37.7+f*11.3)*wheels.length)],
+                penHole:0.6+0.38*hash(lap*17.3+f*5.7),
+                size:0.3+0.35*hash(lap*53.1+f*29.9),
+                px:(hash(lap*71.7+f*3.1)-0.5)*0.6,
+                py:-0.1+0.45*hash(lap*91.3+f*7.9)
+              };
+            }
+            src=G.rig;
+          }else{G.lp=-1;}
+          rg=Math.max(24,src.gearRing);
+          rw=Math.max(6,Math.min(src.gearWheel,rg-6));
+          // the TRUE curve: closes after wheel/gcd revolutions with
+          // ring/gcd points — the pattern guide's arithmetic exactly
+          revs=rw/gcd(rg,rw);
+          G.q=(rg-rw)/rw;                 // wheel spin per carrier rev
+          G.Rr=rg-rw;                     // carrier radius (teeth units)
+          G.d=src.penHole*rw;             // pen distance from wheel center
+          G.segT=(6.283*revs)/cyc;        // arc of curve per thread
+          G.scale=(Math.min(W,H)*src.size*0.55)/(G.Rr+G.d);
+          G.px=src.px!==undefined?src.px:fig.px;
+          G.py=src.py!==undefined?src.py:fig.py;
+          G.ecc=fig.ecc;
+          G.rotOff=fig.twist;             // static orientation offset
+          G.m=Math.round(fig.shape);
+          G.lobe=fig.lobe;
+          G.ptsSeg=Math.max(24,Math.min(P,Math.round(24+(revs/cyc)*72)));
+        }
+      },
+      pt:function(i,u,o){
+        var fam=i%3,k=(i-fam)/3;
+        var G=penD.fam[fam];
+        var t;
+        if(G.lp>=0){
+          // fireworks: arcs ink once in order, sit, then the figure fades
+          var frac=Math.max(0,Math.min(1,G.lp-k));
+          t=k*G.segT+u*frac*G.segT;
+        }else{
+          var ph=1,absIdx=k;
+          if(penD.prog>=0){
+            ph=mod(penD.prog-k,penD.cyc);
+            absIdx=penD.prog-ph; // the pen keeps circling the closed figure
+          }
+          t=absIdx*G.segT+u*Math.min(1,ph)*G.segT;
+        }
+        // shape/lobe: the tin's non-circular wheels as pen-distance breathing
+        var dm=G.d*(1+(G.m?G.lobe*Math.cos(G.m*G.q*t):0));
+        var x1=(G.Rr*Math.cos(t)+dm*Math.cos(G.q*t))*G.scale;
+        var y1=(G.Rr*Math.sin(t)-dm*Math.sin(G.q*t))*G.scale*(1-G.ecc);
+        var rot=G.rotOff+T*PEN.prec*(fam===1?-1:1);
+        var cr=Math.cos(rot),sr=Math.sin(rot);
+        var cx=W*(0.5+G.px)+Math.sin(T*0.07+fam*2.1)*W*PEN.sway;
+        var cy=H*(0.47+G.py)+Math.cos(T*0.055+fam*1.4)*H*PEN.sway*0.6;
+        o.x=cx+x1*cr-y1*sr;
+        o.y=cy+(x1*sr+y1*cr)*0.9;
+      },
+      col:function(i){
+        var fam=i%3,k=(i-fam)/3;
+        var G=penD.fam[fam];
+        // each figure's strand-group color, gradient toward a brighter tip
+        var c=[PAL.red,PAL.gold,PAL.blu][fam];
+        var c2=mixc(c,PAL.bright,0.4);
+        var alMul=1;
+        if(G.lp>=0){
+          alMul=Math.max(0,Math.min(1,G.lp-k))>0?1:0; // not yet inked = invisible
+          var holdEnd=penD.cyc*(1+PEN.hold);
+          if(G.lp>holdEnd)alMul*=Math.max(0,1-(G.lp-holdEnd)/(penD.life-holdEnd)); // the firework fades
+        }else if(penD.prog>=0){
+          var ph=mod(penD.prog-k,penD.cyc);
+          alMul=1-ss(penD.cyc-2.5,penD.cyc-0.2,ph); // oldest arcs dissolve ahead of the pen
+        }
+        return [c[0],c[1],c[2],0.26*alMul,1.6*sizeScale,c2[0],c2[1],c2[2]];
+      },
+      hue:function(i){return [0.05,0.5,0.95][i%3];}, // red / gold / blue strand groups
+      // TOTALLY CHILL, quiet-ribbon style: one soft, slow, coherent wave —
+      // all arcs light at nearly the same parameter, so a single glowing
+      // contour glides smoothly THROUGH the figure instead of a bright head
+      // jumping between spatially-scattered arcs. sync + narrow + dim + pale.
+      glint:{interval:26,width:0.16,speed:0.032,sync:true,tint:0.6,strength:0.3},
+      // glints chase the pen: loops fire in inking order (newest first),
+      // front-to-back around the figure; colour lanes cross left-to-right
+      order:function(i){return ((i-(i%3))/3)/Math.max(1,penD.cyc);}, // glints chase inking order
+      scatter:0.12, // near-unison — arcs are spatially scattered, so keep the wave coherent
+      pts:function(i){
+        var fam=i%3,k=(i-fam)/3;
+        var G=penD.fam[fam];
+        var base=G.ptsSeg||52; // dense figures need dense arcs
+        var frac=1;
+        if(G.lp>=0)frac=Math.max(0,Math.min(1,G.lp-k));
+        else if(penD.prog>=0)frac=Math.min(1,mod(penD.prog-k,penD.cyc));
+        return 8+Math.round(frac*(base-8)); // resolution grows with the ink
+      }
+    },
+    flow:{
+      pt:function(i,u,o){
+        var v=i/(L-1);
+        var y0=H*(0.06+0.88*v);
+        var bend=ss(FL.bendIn,FL.bendOut,u);
+        var yT=H*0.5+(v-0.5)*H*FL.pinch;
+        o.x=u*W;
+        o.y=lerp(y0,yT,bend)+Math.sin(u*9+T*0.4+i)*H*FL.shimmer*(1-bend*0.8);
+      },
+      col:function(i){
+        var c=[PAT.intact,PAT.circ,PAT.rest,PAT.obs][i%4];
+        return [c[0],c[1],c[2],0.20,1.6*sizeScale];
+      },
+      hue:function(i){return [0.65,0.12,0.48,0.95][i%4];}, // teal / orange / yellow / purple
+      order:function(i){return i/(L-1);}, // cascade runs top→bottom through the streams
+      pts:function(){return 48;},
+      scatter:0.45 // parallel streams: sync reads as a solid bar — keep the rain
+    }
+  };
+
+  // ══ ENGINE ══ scroll → formation pair + mix; morph only in section gutters
+  var secEls=Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var secs=secEls.map(function(el){return{el:el,f:el.getAttribute('data-f'),theme:el.getAttribute('data-theme')};});
+  var centers=[];
+  function measure(){
+    DPR=Math.min(1.25,window.devicePixelRatio||1); // background canvas — fill-rate first
+    W=window.innerWidth;H=window.innerHeight;
+    sizeScale=Math.max(0.3,Math.min(1,Math.hypot(W,H)/1400));
+    canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    centers=secs.map(function(s){
+      var r=s.el.getBoundingClientRect();
+      return r.top+window.scrollY+r.height/2;
+    });
+  }
+  window.addEventListener('resize',measure);
+  window.addEventListener('load',measure);
+
+  var lastScrollT=-1e9;
+  window.addEventListener('scroll',function(){lastScrollT=performance.now();},{passive:true});
+
+  var NAMES={tartan:'HARLEQUIN TARTAN',quiet:'QUIET RIBBON',tron:'BEAM RACER',canyon:'CANYON FLIGHT',pulsar:'PULSAR STACK',moire:'MOIRÉ + BLIPS',pendulum:'SPIROGRAPH',flow:'CONVERGENCE'};
+  var hud=document.getElementById('hud');
+  var pA={x:0,y:0},pB={x:0,y:0};
+  var damp=1,prev=performance.now();
+
+  function frame(now){
+    var dt=Math.min(0.05,(now-prev)/1000);prev=now;
+    glintT+=dt; // the glisten keeps its own clock
+    var scrolling=(now-lastScrollT)<200;
+    damp+=((scrolling?1:ENG.idleFloor)-damp)*0.04;
+    if(!RM)T+=dt*(0.35+0.65*damp);
+
+    var p=window.scrollY+H*0.5;
+    var k=0;
+    while(k<centers.length-1&&p>centers[k+1])k++;
+    var mix=0;
+    if(k<centers.length-1){
+      var raw=(p-centers[k])/(centers[k+1]-centers[k]);
+      mix=ss(ENG.gutterA,ENG.gutterB,raw);
+    }
+    var A=secs[k],B=secs[Math.min(k+1,secs.length-1)];
+    var FA=FORMS[A.f],FB=FORMS[B.f];
+    if(FA.prep)FA.prep();
+    if(mix>0.001&&FB!==FA&&FB.prep)FB.prep();
+    var tA=THEME[A.theme],tB=THEME[B.theme];
+
+    ctx.fillStyle='rgb('+(lerp(tA[0],tB[0],mix)|0)+','+(lerp(tA[1],tB[1],mix)|0)+','+(lerp(tA[2],tB[2],mix)|0)+')';
+    ctx.fillRect(0,0,W,H);
+
+    var blending=mix>0.001;
+    var i,j,u,x,y,ca2,cb2,al,wd,n,grad2,fx,fy,lx,ly,gr;
+    for(i=0;i<L;i++){
+      ca2=FA.col(i);cb2=blending?FB.col(i):ca2;
+      al=lerp(ca2[3],cb2[3],mix)*ENG.alphaMul;
+      if(al<0.004)continue;
+      // per-line point budget: straight lines cost 2 points, not 120
+      n=FA.pts?FA.pts(i):P;
+      if(blending&&FB.pts)n=Math.max(n,FB.pts(i));
+      if(blending)n=Math.max(n,24); // curves mid-morph need enough joints
+      wd=Math.max(0.5,lerp(ca2[4],cb2[4],mix)*ENG.lineWidth);
+      ctx.lineWidth=wd;
+      // RICHNESS: col() may return a SECOND colour (elems 5-7) for a per-line
+      // gradient — the Harmonic Loom's along-thread spectrum
+      grad2=!blending&&ca2.length>=8;fx=0;fy=0;lx=0;ly=0;
+      ctx.beginPath();
+      for(j=0;j<n;j++){
+        u=j/(n-1);
+        FA.pt(i,u,pA);
+        x=pA.x;y=pA.y;
+        if(blending){FB.pt(i,u,pB);x=lerp(x,pB.x,mix);y=lerp(y,pB.y,mix);}
+        if(j===0){ctx.moveTo(x,y);fx=x;fy=y;}else ctx.lineTo(x,y);
+        lx=x;ly=y;
+      }
+      if(grad2){
+        gr=ctx.createLinearGradient(fx,fy,lx,ly);
+        gr.addColorStop(0,'rgba('+(ca2[0]|0)+','+(ca2[1]|0)+','+(ca2[2]|0)+','+al.toFixed(3)+')');
+        gr.addColorStop(1,'rgba('+(ca2[5]|0)+','+(ca2[6]|0)+','+(ca2[7]|0)+','+al.toFixed(3)+')');
+        ctx.strokeStyle=gr;
+      }else{
+        ctx.strokeStyle='rgba('+(lerp(ca2[0],cb2[0],mix)|0)+','+(lerp(ca2[1],cb2[1],mix)|0)+','+(lerp(ca2[2],cb2[2],mix)|0)+','+al.toFixed(3)+')';
+      }
+      ctx.stroke();
+    }
+
+    // the glisten rides whichever formation is on stage; fades out early in
+    // the morph so streaks never ghost across two geometries
+    if(!RM){
+      glisten(FA,Math.max(0,1-mix*2.5));
+      if(blending&&FB!==FA)glisten(FB,Math.max(0,(mix-0.6)*2.5));
+    }
+
+    var cur=mix<0.5?A:B;
+    hud.textContent='F0'+(secs.indexOf(cur)+1)+' · '+NAMES[cur.f]+' · motion '+damp.toFixed(2);
+    highlightGroup(cur.f);
+    requestAnimationFrame(frame);
+  }
+
+  // ══ TUNER ══ mirrors docs/harmonic-tuner.html: every motion concept is a
+  // named, sliderable parameter with a plain-language hint, grouped by
+  // perceptual effect. Dial it in, copy the config, stamp it into production.
+  var TMETA=[
+    {name:'HARLEQUIN TARTAN (F01)',forms:['tartan'],obj:TAR,keys:{
+      angle:[0.2,1.4,0.01,'Skew of the two crossing band sets (radians). 0.785 = true 45° harlequin diamonds.'],
+      driftPx:[0,20,0.5,'How fast the band sets slide against each other — the weave\'s slow shuttle. 0 = a still cloth.'],
+      breathe:[0,0.15,0.005,'Spacing breath — the sett gently swells and settles.'],
+      alpha:[0.05,0.4,0.01,'Band opacity budget. The pinstripes scale with it.']}},
+    {name:'QUIET RIBBON (F02)',forms:['quiet'],obj:RIB,keys:{
+      waveFreq:[0.5,6,0.1,'Waves packed along each thread — the scarf-like billow count.'],
+      spread:[0,8,0.1,'Per-line time offset across ribbon depth (the moiré). 0 = rigid fan; higher = layers slide past each other.'],
+      sep:[0.02,0.5,0.01,'Gap between the two invisible parent curves. Smaller = they cross more often into tight knots.'],
+      speed:[0.1,2,0.05,'Traveling-wave tempo along each curve.'],
+      amp:[0.2,2,0.05,'Sweep amplitude. The quiet ribbon runs at 45% of this.']}},
+    {name:'BEAM RACER (F03)',forms:['tron'],obj:TRON,keys:{
+      gridSpeed:[0,6,0.1,'How fast the floor rolls toward you. 0 = static grid, racers only.'],
+      speed:[0.5,10,0.1,'Light-cycle pace along their paths toward the horizon.'],
+      trail:[1,16,0.5,'Beam trail length in world units — longer = more comet, shorter = more spark.'],
+      horizon:[0.15,0.55,0.01,'Vertical position of the vanishing line (fraction of viewport).']}},
+    {name:'CANYON FLIGHT (F04)',forms:['canyon'],obj:CAN,keys:{
+      speed:[0,4,0.05,'Forward flight speed through the terrain — how fast you travel while reading.'],
+      wall:[0.5,5,0.1,'Canyon wall height. Production drives this from the real distributions.'],
+      valley:[0.2,1,0.02,'Valley width — how far out the flat floor extends before walls rise.'],
+      horizon:[0.15,0.5,0.01,'Vertical position of the horizon (fraction of viewport).']}},
+    {name:'PULSAR STACK (F05)',forms:['pulsar'],obj:PUL,keys:{
+      height:[0.03,0.3,0.005,'Peak height — how far the pulses rise off their rows.'],
+      env:[0.08,0.5,0.01,'Width of the waking channel — the center band where the signal lives.'],
+      drift:[0,1.5,0.05,'How fast the range itself slowly evolves, independent of travel.'],
+      speed:[0,0.1,0.002,'Forward travel over the range — new ridges crest at the horizon and flow toward you. 0 = the still sleeve.'],
+      sharp:[1,6,0.1,'Peakiness of the ridge field. Low = rolling hills; high = sparse Unknown-Pleasures spikes.']}},
+    {name:'MOIRÉ + BLIPS (F06)',forms:['moire'],obj:MO,keys:{
+      angle:[0.05,1.2,0.01,'Base skew of both grids (radians).'],
+      drift:[0,0.08,0.002,'How far the second grid slowly slides against the first — the moiré breathing.'],
+      blipEvery:[2,6,1,'A blip rides every Nth line. 2 = busy switchboard, 6 = rare ghosts.'],
+      blipSpeed:[0.2,3,0.05,'Blip ping-pong tempo along the line.'],
+      teeth:[2,10,1,'Saw teeth per blip packet — more = angrier glitch.'],
+      blipAmp:[0.004,0.04,0.001,'Blip spike height (fraction of viewport).'],
+      blipWin:[0.02,0.15,0.005,'Blip packet width along the line.']}},
+    {name:'SPIROGRAPH — FIGURE (F07)',forms:['pendulum'],objGet:function(){return PEN.figs[penSel];},copyRef:PEN,radio:true,
+      // with fireworks (mutate) running, volleys render from their own random
+      // rig — re-seed the LIVE figure so slider changes show up instantly
+      after:function(){if(penD.fam[penSel])penD.fam[penSel].lap=undefined;},
+      keys:{
+      gearRing:[48,150,1,'Teeth on the fixed ring — the big gear you pin to the page. THIS figure only.'],
+      gearWheel:[12,120,1,'Teeth on the rolling wheel. The ratio to the ring sets the petal advance — swap gears, new rosette.'],
+      penHole:[0.1,1,0.05,'Which hole the pen sits in — distance from the wheel\'s center. Outer holes = bigger loops.'],
+      size:[0.15,0.8,0.01,'Scale of this figure on the page.'],
+      ecc:[0,0.8,0.01,'Squash of this figure\'s loops. ~0.5 = the slinky-torus depth of the Coral sleeve.'],
+      twist:[0,2,0.05,'How much each loop rotates with its station. 1 = classic interlocked wreath; 0 = flat stacked rings.'],
+      shape:[0,6,1,'Wheel shape as lobe count: 0 = circle, 3 = rounded triangle, 4 = rounded square, higher = flowers.'],
+      lobe:[0,0.4,0.01,'How deep the shape bites into the loop. 0 = perfect circle whatever the shape.'],
+      px:[-0.45,0.45,0.01,'This figure\'s horizontal home (fraction of viewport from center). Give two figures the same spot to STACK their patterns.'],
+      py:[-0.2,0.45,0.01,'This figure\'s vertical home. Note: with mutate ON, fireworks reroll positions each volley.']}},
+    {name:'SPIROGRAPH — SHARED PEN',forms:[],obj:PEN,keys:{
+      draw:[0,1.5,0.05,'Pen speed, arcs per beat, all figures. Draws continuously — newest arc inking, oldest dissolving. 0 = complete figures, no pen.'],
+      prec:[0,0.2,0.005,'Precession — how fast the whole ensemble turns. Keep it barely perceptible.'],
+      sway:[0,0.12,0.005,'Drift of each figure\'s center — the drawing table itself swinging.'],
+      mutate:[0,1,1,'FIREWORKS: 1 = each figure inks in, holds, dissolves, then rerolls into a new random pattern-guide figure at a new spot (your fig settings seed the first volley). 0 = figures stay as tuned, pen circles forever.'],
+      hold:[0,2,0.05,'How long a completed firework lingers before dissolving, in figure-lengths.']}},
+    {name:'CONVERGENCE (F08)',forms:['flow'],obj:FL,keys:{
+      pinch:[0,0.3,0.01,'How tight the channel is where the streams meet. 0 = a single line.'],
+      shimmer:[0,0.02,0.001,'Residual wave on the streams before they commit.'],
+      bendIn:[0,0.5,0.01,'Where along the width the bending begins.'],
+      bendOut:[0.5,1,0.01,'Where the streams finish converging.']}},
+    {name:'THE GLISTEN (ALL FORMATIONS)',forms:[],obj:GLN,keys:{
+      interval:[1,30,0.5,'Seconds between a family\'s glints (families staggered, directions alternate so glints cross).'],
+      speed:[0.02,1,0.01,'Pace of a pass (line-lengths/sec). Slow = a long light-rake; fast = a spark.'],
+      width:[0.02,0.6,0.01,'Streak tail length as a fraction of the line.'],
+      strength:[0,1,0.05,'Brightness of the streak.'],
+      tint:[0,1,0.05,'Holographic saturation: 0 = vivid rainbow (the masthead\'s setting), 1 = pearly white.'],
+      scatter:[0,1,0.05,'Cascade spread. Threads fire in the FORMATION\'s own order — depth (glacier), inking order (spirograph), height (convergence) — not randomly. ~0.1 = coherent rake; 1 = the cascade spans the whole pass. Glacier/spirograph/convergence override upward.']}},
+    {name:'ENGINE (ALL)',forms:[],obj:ENG,keys:{
+      gutterA:[0.1,0.49,0.01,'Where in the between-section gap the morph begins (0.5 = section centers).'],
+      gutterB:[0.51,0.9,0.01,'Where the morph completes. Tight window = snappy; wide = languid.'],
+      idleFloor:[0,1,0.05,'Motion floor when you stop scrolling. 0 = freezes at rest; 1 = never settles.'],
+      alphaMul:[0.2,2,0.05,'Global opacity budget on every stroke. The whole draft, louder or quieter.'],
+      lineWidth:[0.5,3.5,0.05,'Global stroke weight on every formation\'s lines (glints scale with it). ~1.6 matches the Harmonic Loom\'s heft; 1 = the old hairlines.']}}
+  ];
+  var DEFAULT_CFG=JSON.parse(JSON.stringify({RIB:RIB,TAR:TAR,TRON:TRON,CAN:CAN,PUL:PUL,MO:MO,PEN:PEN,FL:FL,GLN:GLN,ENG:ENG}));
+  var tuner=document.getElementById('tuner');
+  var grpEls={};
+  function tfmt(v){return v>=1?(v%1?v.toFixed(2):String(v)):v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+
+  // ── THEME ENGINE chips: the Bureau's tokens rule every stroke ──
+  var rootEl=document.documentElement;
+  var themeHdr=document.createElement('div');themeHdr.className='tgrp';
+  themeHdr.textContent='THEME ENGINE — THE BUREAU';tuner.appendChild(themeHdr);
+  var chips=document.createElement('div');chips.className='tchips';tuner.appendChild(chips);
+  var THEMES=[['Deep Space','standard','dark'],['Paper','standard','light'],['Evergreen','evergreen','dark'],['Vaporwave','vaporwave','dark']];
+  var themeBtns=[];
+  function markChips(){
+    var t=rootEl.getAttribute('data-theme'),m=rootEl.getAttribute('data-mode');
+    themeBtns.forEach(function(b){b.el.classList.toggle('on',b.t===t&&b.m===m);});
+    cbBtn.classList.toggle('on',rootEl.getAttribute('data-colorblind')==='true');
+    tfBtn.classList.toggle('on',rootEl.getAttribute('data-typeface')==='tomorrow');
+  }
+  THEMES.forEach(function(th){
+    var b=document.createElement('button');b.type='button';b.textContent=th[0];
+    b.addEventListener('click',function(){
+      rootEl.setAttribute('data-theme',th[1]);rootEl.setAttribute('data-mode',th[2]);
+      readTheme();markChips();
+    });
+    chips.appendChild(b);themeBtns.push({el:b,t:th[1],m:th[2]});
+  });
+  var cbBtn=document.createElement('button');cbBtn.type='button';cbBtn.textContent='Colorblind (Wong)';
+  cbBtn.addEventListener('click',function(){
+    if(rootEl.getAttribute('data-colorblind')==='true')rootEl.removeAttribute('data-colorblind');
+    else rootEl.setAttribute('data-colorblind','true');
+    readTheme();markChips();
+  });
+  chips.appendChild(cbBtn);
+  var tfBtn=document.createElement('button');tfBtn.type='button';tfBtn.textContent='Tomorrow type';
+  tfBtn.addEventListener('click',function(){
+    if(rootEl.getAttribute('data-typeface')==='tomorrow')rootEl.removeAttribute('data-typeface');
+    else rootEl.setAttribute('data-typeface','tomorrow');
+    markChips();
+  });
+  chips.appendChild(tfBtn);
+  // Groups may bind to a FIXED object (obj) or a DYNAMIC one (objGet) — the
+  // spirograph FIGURE group re-targets whichever figure the FIG radio picks.
+  function gobj(gm){return gm.objGet?gm.objGet():gm.obj;}
+  // reverse-lookup a config object to its top-level name (for per-group copy)
+  function cfgNameOf(o){
+    var m={RIB:RIB,TAR:TAR,TRON:TRON,CAN:CAN,PUL:PUL,MO:MO,PEN:PEN,FL:FL,GLN:GLN,ENG:ENG},k;
+    for(k in m)if(m[k]===o)return k;
+    return null;
+  }
+  TMETA.forEach(function(gm){
+    var h=document.createElement('div');h.className='tgrp';
+    var hlabel=document.createElement('span');hlabel.textContent=gm.name;h.appendChild(hlabel);
+    // per-group Copy Config: copies JUST this animation type's settings
+    var copyObj=gm.copyRef||gm.obj;
+    if(copyObj){
+      var cbtn=document.createElement('button');cbtn.type='button';cbtn.className='tgcopy';
+      cbtn.textContent='copy';cbtn.title='Copy just this animation’s config';
+      cbtn.addEventListener('click',function(){
+        var nm=cfgNameOf(copyObj)||'CFG',wrapObj={};
+        wrapObj[nm]=copyObj;
+        copyText(JSON.stringify(wrapObj,null,2),nm);
+      });
+      h.appendChild(cbtn);
+    }
+    tuner.appendChild(h);
+    gm.forms.forEach(function(f){grpEls[f]=h;});
+    if(gm.radio){
+      // FIG selector: each spirograph figure has its own independent rig
+      var rrow=document.createElement('div');rrow.className='tchips';
+      var rbtns=[];
+      [0,1,2].forEach(function(fi){
+        var b=document.createElement('button');b.type='button';
+        b.textContent='Fig '+(fi+1);
+        if(fi===penSel)b.classList.add('on');
+        b.addEventListener('click',function(){
+          penSel=fi;
+          rbtns.forEach(function(x,xi){x.classList.toggle('on',xi===fi);});
+          syncTuner(); // re-read every slider from the newly selected figure
+        });
+        rrow.appendChild(b);rbtns.push(b);
+      });
+      tuner.appendChild(rrow);
+      // PRESETS from the pattern guide (Ring 105): one click stamps the
+      // selected figure's gears — points = wheel/gcd, just like the book.
+      var prow=document.createElement('div');prow.className='tchips';
+      [['Sunflower 35',105,24,0.7],['7-Star',105,30,0.95],['5-Star',105,42,0.95],
+       ['Daisy 7',105,60,0.9],['Loops 15',105,56,0.85],['Net 105',105,52,0.8]].forEach(function(pr){
+        var b=document.createElement('button');b.type='button';b.textContent=pr[0];
+        b.addEventListener('click',function(){
+          var fg=PEN.figs[penSel];
+          fg.gearRing=pr[1];fg.gearWheel=pr[2];fg.penHole=pr[3];
+          if(penD.fam[penSel])penD.fam[penSel].lap=undefined; // re-seed the live figure
+          syncTuner();
+          tmsg.textContent='Fig '+(penSel+1)+' → '+pr[0]+' (ring '+pr[1]+' / wheel '+pr[2]+')';
+        });
+        prow.appendChild(b);
+      });
+      tuner.appendChild(prow);
+    }
+    Object.keys(gm.keys).forEach(function(key){
+      var m=gm.keys[key];
+      var wrap=document.createElement('div');wrap.className='tctl';
+      wrap.innerHTML='<label><span>'+key+'</span><span class="val" id="tv_'+gm.name.charCodeAt(0)+key+'">'+tfmt(gobj(gm)[key])+'</span></label>'
+        +'<input type="range" min="'+m[0]+'" max="'+m[1]+'" step="'+m[2]+'" value="'+gobj(gm)[key]+'">'
+        +'<div class="thint">'+m[3]+'</div>';
+      tuner.appendChild(wrap);
+      var val=wrap.querySelector('.val');
+      wrap.querySelector('input').addEventListener('input',function(e){
+        gobj(gm)[key]=parseFloat(e.target.value);
+        val.textContent=tfmt(gobj(gm)[key]);
+        if(gm.after)gm.after();
+      });
+      wrap._sync=function(){wrap.querySelector('input').value=gobj(gm)[key];val.textContent=tfmt(gobj(gm)[key]);};
+    });
+  });
+  var trow=document.createElement('div');trow.className='trow';
+  trow.innerHTML='<button type="button" id="trand">&#127922; Random</button><button type="button" id="treset">Reset</button><button type="button" id="tcopy">Copy config</button>';
+  tuner.appendChild(trow);
+  var tmsg=document.createElement('div');tmsg.id='tmsg';tuner.appendChild(tmsg);
+  var tout=document.createElement('textarea');
+  tout.id='tout';tout.readOnly=true;tout.spellcheck=false;
+  tout.style.display='none';
+  tuner.appendChild(tout);
+  function syncTuner(){
+    Array.prototype.forEach.call(tuner.querySelectorAll('.tctl'),function(w){if(w._sync)w._sync();});
+  }
+  document.getElementById('trand').addEventListener('click',function(){
+    TMETA.forEach(function(gm){
+      if(gm.obj===ENG)return; // never randomize the discipline itself
+      Object.keys(gm.keys).forEach(function(key){
+        var m=gm.keys[key];
+        var n=Math.round((m[1]-m[0])/m[2]);
+        gobj(gm)[key]=parseFloat((m[0]+m[2]*Math.floor(Math.random()*(n+1))).toFixed(4));
+      });
+      if(gm.after)gm.after();
+    });
+    syncTuner();tmsg.textContent='randomized (engine rules untouched; spiro: selected figure only)';
+  });
+  function deepAssign(dst,src){
+    Object.keys(src).forEach(function(k){
+      if(src[k]&&typeof src[k]==='object'){deepAssign(dst[k],src[k]);}
+      else dst[k]=src[k];
+    });
+  }
+  document.getElementById('treset').addEventListener('click',function(){
+    var names={RIB:RIB,TAR:TAR,TRON:TRON,CAN:CAN,PUL:PUL,MO:MO,PEN:PEN,FL:FL,GLN:GLN,ENG:ENG};
+    Object.keys(names).forEach(function(k){deepAssign(names[k],DEFAULT_CFG[k]);});
+    syncTuner();tmsg.textContent='defaults restored';
+  });
+  // Shared copy: reveal the block (manual select always works) then try the
+  // modern clipboard API, falling back to select + execCommand (the async
+  // Clipboard API is refused on file:// pages).
+  function copyText(cfg,label){
+    tout.style.display='block';
+    tout.value=cfg;
+    function done(ok){
+      tmsg.textContent=ok
+        ?(label+' copied — and shown below for good measure')
+        :('clipboard blocked on file:// — '+label+' is selected below, hit Ctrl/Cmd+C');
+    }
+    function legacy(){
+      try{tout.focus();tout.select();done(document.execCommand('copy'));}
+      catch(e){tout.focus();tout.select();done(false);}
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(cfg).then(function(){done(true);},legacy);
+    }else{legacy();}
+  }
+  document.getElementById('tcopy').addEventListener('click',function(){
+    copyText(JSON.stringify({RIB:RIB,TAR:TAR,TRON:TRON,CAN:CAN,PUL:PUL,MO:MO,PEN:PEN,FL:FL,GLN:GLN,ENG:ENG},null,2),'full config');
+  });
+  document.getElementById('tuneBtn').addEventListener('click',function(){
+    tuner.classList.toggle('open');
+  });
+  var lastGrp=null;
+  function highlightGroup(f){
+    if(f===lastGrp)return;lastGrp=f;
+    Object.keys(grpEls).forEach(function(k){grpEls[k].classList.remove('active');});
+    if(grpEls[f])grpEls[f].classList.add('active');
+  }
+
+  readTheme();
+  markChips();
+  measure();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

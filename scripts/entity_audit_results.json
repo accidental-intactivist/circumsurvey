@@ -1,0 +1,854 @@
+{
+  "tim hammond": {
+    "name": "Tim Hammond",
+    "type": "person",
+    "count": 14,
+    "see_also": [
+      {
+        "name": "Charles Bonner",
+        "pmi": 10.681,
+        "shared": 4
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 10.266,
+        "shared": 6
+      },
+      {
+        "name": "American Academy of Pediatrics (AAP)",
+        "pmi": 10.096,
+        "shared": 2
+      },
+      {
+        "name": "Paul Fleiss",
+        "pmi": 10.096,
+        "shared": 2
+      },
+      {
+        "name": "Jed Diamond",
+        "pmi": 10.096,
+        "shared": 2
+      }
+    ]
+  },
+  "marilyn milos": {
+    "name": "Marilyn Milos",
+    "type": "person",
+    "count": 11,
+    "see_also": [
+      {
+        "name": "American Academy of Pediatrics (AAP)",
+        "pmi": 11.028,
+        "shared": 3
+      },
+      {
+        "name": "Jed Diamond",
+        "pmi": 11.028,
+        "shared": 3
+      },
+      {
+        "name": "Men and their Friends Against Infant Circumcision",
+        "pmi": 11.028,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 10.707,
+        "shared": 4
+      },
+      {
+        "name": "Charles Bonner",
+        "pmi": 10.613,
+        "shared": 3
+      }
+    ]
+  },
+  "national organization of circumcision information resource centers (nocirc)": {
+    "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+    "type": "organization",
+    "count": 25,
+    "see_also": [
+      {
+        "name": "American College of Obstetricians and Gynecologists",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "American Urological Association",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "American Academy of Pediatrics (AAP)",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "Jed Diamond",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 9.429,
+        "shared": 3
+      }
+    ]
+  },
+  "california medical association": {
+    "name": "California Medical Association",
+    "type": "organization",
+    "count": 8,
+    "see_also": [
+      {
+        "name": "Paul Fleiss",
+        "pmi": 11.488,
+        "shared": 3
+      },
+      {
+        "name": "Men and their Friends Against Infant Circumcision",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "Charles Bonner",
+        "pmi": 11.073,
+        "shared": 3
+      },
+      {
+        "name": "Jed Diamond",
+        "pmi": 10.903,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 10.751,
+        "shared": 3
+      }
+    ]
+  },
+  "american college of obstetricians and gynecologists": {
+    "name": "American College of Obstetricians and Gynecologists",
+    "type": "organization",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "american urological association": {
+    "name": "American Urological Association",
+    "type": "organization",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "american academy of pediatrics (aap)": {
+    "name": "American Academy of Pediatrics (AAP)",
+    "type": "organization",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Marilyn Milos",
+        "pmi": 11.028,
+        "shared": 3
+      },
+      {
+        "name": "Tim Hammond",
+        "pmi": 10.096,
+        "shared": 2
+      },
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "jim bigelow": {
+    "name": "Jim Bigelow",
+    "type": "person",
+    "count": 10,
+    "see_also": [
+      {
+        "name": "Jed Diamond",
+        "pmi": 11.166,
+        "shared": 3
+      },
+      {
+        "name": "Thomas J. Ritter",
+        "pmi": 11.166,
+        "shared": 4
+      },
+      {
+        "name": "Men and their Friends Against Infant Circumcision",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 10.844,
+        "shared": 4
+      },
+      {
+        "name": "Charles Bonner",
+        "pmi": 10.751,
+        "shared": 3
+      }
+    ]
+  },
+  "charles bonner": {
+    "name": "Charles Bonner",
+    "type": "person",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "NOHARMM",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 11.073,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.751,
+        "shared": 3
+      },
+      {
+        "name": "Tim Hammond",
+        "pmi": 10.681,
+        "shared": 4
+      }
+    ]
+  },
+  "national organization to halt the abuse and routine mutilation of males (noharmm)": {
+    "name": "National Organization to Halt the Abuse and Routine Mutilation of Males (NOHARMM)",
+    "type": "organization",
+    "count": 29,
+    "see_also": [
+      {
+        "name": "Men Organized Against Infant Circumcision",
+        "pmi": 9.733,
+        "shared": 2
+      },
+      {
+        "name": "Paul Fleiss",
+        "pmi": 9.733,
+        "shared": 2
+      },
+      {
+        "name": "Jed Diamond",
+        "pmi": 9.733,
+        "shared": 2
+      },
+      {
+        "name": "James Prescott",
+        "pmi": 9.733,
+        "shared": 2
+      },
+      {
+        "name": "Tim Hammond",
+        "pmi": 9.318,
+        "shared": 7
+      }
+    ]
+  },
+  "nocirc": {
+    "name": "NOCIRC",
+    "type": "organization",
+    "count": 7,
+    "see_also": [
+      {
+        "name": "Thomas J. Ritter",
+        "pmi": 11.266,
+        "shared": 3
+      },
+      {
+        "name": "UNCIRC",
+        "pmi": 11.266,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.681,
+        "shared": 5
+      },
+      {
+        "name": "Charles Bonner",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "Anne Briggs",
+        "pmi": 10.681,
+        "shared": 2
+      }
+    ]
+  },
+  "recap": {
+    "name": "RECAP",
+    "type": "organization",
+    "count": 11,
+    "see_also": [
+      {
+        "name": "Ron Goldman",
+        "pmi": 10.903,
+        "shared": 2
+      },
+      {
+        "name": "National Organization to Halt the Abuse and Routine Mutilation of Males (NOHARMM)",
+        "pmi": 8.903,
+        "shared": 3
+      },
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 8.751,
+        "shared": 3
+      }
+    ]
+  },
+  "noharmm": {
+    "name": "NOHARMM",
+    "type": "organization",
+    "count": 6,
+    "see_also": [
+      {
+        "name": "Charles Bonner",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "NOCIRC",
+        "pmi": 10.359,
+        "shared": 2
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 10.166,
+        "shared": 2
+      },
+      {
+        "name": "Tim Hammond",
+        "pmi": 9.944,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 9.844,
+        "shared": 2
+      }
+    ]
+  },
+  "men organized against infant circumcision": {
+    "name": "Men Organized Against Infant Circumcision",
+    "type": "organization",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "National Organization to Halt the Abuse and Routine Mutilation of Males (NOHARMM)",
+        "pmi": 9.733,
+        "shared": 2
+      }
+    ]
+  },
+  "american academy of pediatrics": {
+    "name": "American Academy of Pediatrics",
+    "type": "organization",
+    "count": 20,
+    "see_also": [
+      {
+        "name": "National Organization of Circumcision Information Resource Centers",
+        "pmi": 10.166,
+        "shared": 5
+      },
+      {
+        "name": "American College of Obstetricians and Gynecologists",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "Paul Fleiss",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "James Prescott",
+        "pmi": 9.581,
+        "shared": 2
+      },
+      {
+        "name": "Marilyn Fayre Milos",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "paul fleiss": {
+    "name": "Paul Fleiss",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Jed Diamond",
+        "pmi": 12.318,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 11.581,
+        "shared": 2
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 11.488,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.581,
+        "shared": 2
+      },
+      {
+        "name": "Marilyn Milos",
+        "pmi": 10.444,
+        "shared": 2
+      }
+    ]
+  },
+  "hanny lightfoot-klein": {
+    "name": "Hanny Lightfoot-Klein",
+    "type": "person",
+    "count": 5,
+    "see_also": [
+      {
+        "name": "Jed Diamond",
+        "pmi": 12.166,
+        "shared": 3
+      },
+      {
+        "name": "Men and their Friends Against Infant Circumcision",
+        "pmi": 12.166,
+        "shared": 2
+      },
+      {
+        "name": "Paul Fleiss",
+        "pmi": 11.581,
+        "shared": 2
+      },
+      {
+        "name": "Charles Bonner",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.844,
+        "shared": 4
+      }
+    ]
+  },
+  "jed diamond": {
+    "name": "Jed Diamond",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Paul Fleiss",
+        "pmi": 12.318,
+        "shared": 2
+      },
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 12.166,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 11.166,
+        "shared": 3
+      },
+      {
+        "name": "Marilyn Milos",
+        "pmi": 11.028,
+        "shared": 3
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 10.903,
+        "shared": 2
+      }
+    ]
+  },
+  "national organization of circumcision information resource centers": {
+    "name": "National Organization of Circumcision Information Resource Centers",
+    "type": "organization",
+    "count": 6,
+    "see_also": [
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 10.166,
+        "shared": 5
+      },
+      {
+        "name": "Marilyn Milos",
+        "pmi": 9.707,
+        "shared": 2
+      },
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 8.844,
+        "shared": 2
+      }
+    ]
+  },
+  "james prescott": {
+    "name": "James Prescott",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Tim Hammond",
+        "pmi": 10.096,
+        "shared": 2
+      },
+      {
+        "name": "National Organization to Halt the Abuse and Routine Mutilation of Males (NOHARMM)",
+        "pmi": 9.733,
+        "shared": 2
+      },
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "thomas j. ritter": {
+    "name": "Thomas J. Ritter",
+    "type": "person",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "UNCIRC",
+        "pmi": 12.073,
+        "shared": 3
+      },
+      {
+        "name": "Anne Briggs",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "NOCIRC",
+        "pmi": 11.266,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 11.166,
+        "shared": 4
+      },
+      {
+        "name": "Edward Wallerstein",
+        "pmi": 10.681,
+        "shared": 2
+      }
+    ]
+  },
+  "uncirc": {
+    "name": "UNCIRC",
+    "type": "organization",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "Thomas J. Ritter",
+        "pmi": 12.073,
+        "shared": 3
+      },
+      {
+        "name": "Anne Briggs",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "NOCIRC",
+        "pmi": 11.266,
+        "shared": 3
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.751,
+        "shared": 3
+      },
+      {
+        "name": "Edward Wallerstein",
+        "pmi": 10.681,
+        "shared": 2
+      }
+    ]
+  },
+  "edward wallerstein": {
+    "name": "Edward Wallerstein",
+    "type": "person",
+    "count": 7,
+    "see_also": [
+      {
+        "name": "Thomas J. Ritter",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "UNCIRC",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "Anne Briggs",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "NOCIRC",
+        "pmi": 9.873,
+        "shared": 2
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 9.359,
+        "shared": 2
+      }
+    ]
+  },
+  "anne briggs": {
+    "name": "Anne Briggs",
+    "type": "person",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "Thomas J. Ritter",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "UNCIRC",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "NOCIRC",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "Edward Wallerstein",
+        "pmi": 10.681,
+        "shared": 2
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 10.166,
+        "shared": 2
+      }
+    ]
+  },
+  "rosemary romberg": {
+    "name": "Rosemary Romberg",
+    "type": "person",
+    "count": 8,
+    "see_also": [
+      {
+        "name": "Ron Goldman",
+        "pmi": 10.903,
+        "shared": 2
+      },
+      {
+        "name": "Peaceful Beginnings",
+        "pmi": 10.751,
+        "shared": 3
+      }
+    ]
+  },
+  "ron goldman": {
+    "name": "Ron Goldman",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "RECAP",
+        "pmi": 10.903,
+        "shared": 2
+      },
+      {
+        "name": "Rosemary Romberg",
+        "pmi": 10.903,
+        "shared": 2
+      }
+    ]
+  },
+  "benjamin spock": {
+    "name": "Benjamin Spock",
+    "type": "person",
+    "count": 3,
+    "see_also": []
+  },
+  "peaceful beginnings": {
+    "name": "Peaceful Beginnings",
+    "type": "organization",
+    "count": 6,
+    "see_also": [
+      {
+        "name": "Rosemary Romberg",
+        "pmi": 10.751,
+        "shared": 3
+      }
+    ]
+  },
+  "united nations": {
+    "name": "United Nations",
+    "type": "organization",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "National Organization of Circumcision Information Resource Centers (NOCIRC)",
+        "pmi": 9.166,
+        "shared": 2
+      }
+    ]
+  },
+  "thomas e. wiswell": {
+    "name": "Thomas E. Wiswell",
+    "type": "person",
+    "count": 8,
+    "see_also": [
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.166,
+        "shared": 4
+      }
+    ]
+  },
+  "national center for health statistics": {
+    "name": "National Center for Health Statistics",
+    "type": "organization",
+    "count": 3,
+    "see_also": []
+  },
+  "men and their friends against infant circumcision": {
+    "name": "Men and their Friends Against Infant Circumcision",
+    "type": "organization",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Hanny Lightfoot-Klein",
+        "pmi": 12.166,
+        "shared": 2
+      },
+      {
+        "name": "California Medical Association",
+        "pmi": 11.488,
+        "shared": 2
+      },
+      {
+        "name": "Jim Bigelow",
+        "pmi": 11.166,
+        "shared": 2
+      },
+      {
+        "name": "Marilyn Milos",
+        "pmi": 11.028,
+        "shared": 2
+      }
+    ]
+  },
+  "altschul": {
+    "name": "Altschul",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Wiswell",
+        "pmi": 12.318,
+        "shared": 2
+      }
+    ]
+  },
+  "wiswell": {
+    "name": "Wiswell",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "Altschul",
+        "pmi": 12.318,
+        "shared": 2
+      }
+    ]
+  },
+  "marilyn fayre milos": {
+    "name": "Marilyn Fayre Milos",
+    "type": "person",
+    "count": 5,
+    "see_also": [
+      {
+        "name": "American Atheists",
+        "pmi": 12.488,
+        "shared": 3
+      },
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  },
+  "american atheists": {
+    "name": "American Atheists",
+    "type": "organization",
+    "count": 4,
+    "see_also": [
+      {
+        "name": "Marilyn Fayre Milos",
+        "pmi": 12.488,
+        "shared": 3
+      },
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.166,
+        "shared": 2
+      }
+    ]
+  },
+  "alice miller": {
+    "name": "Alice Miller",
+    "type": "person",
+    "count": 3,
+    "see_also": [
+      {
+        "name": "American Academy of Pediatrics",
+        "pmi": 9.581,
+        "shared": 2
+      }
+    ]
+  }
+}

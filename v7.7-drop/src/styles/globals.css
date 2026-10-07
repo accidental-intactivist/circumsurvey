@@ -1,0 +1,82 @@
+/* ═══════════════════════════════════════════
+   CircumSurvey Findings — v7 Global Styles
+   Editorial design language × Special Report
+   ═══════════════════════════════════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background: #0a0a0c;
+  color: #eee;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar for dark theme */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ── Animation keyframes ─────────────────── */
+
+@keyframes bureauShimmer {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(400%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes bureauRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bureauPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes bureauFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ── Reduce motion for those who prefer ──── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Typography refinements ──────────────── */
+
+/* Prevent ligatures from breaking our monospace stats */
+.mono {
+  font-feature-settings: "tnum" on, "lnum" on;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smoother text on dark backgrounds */
+body { letter-spacing: 0.003em; }
+
+/* Selection color */
+::selection {
+  background: rgba(212, 160, 48, 0.3);
+  color: #faf6f0;
+}

@@ -7,6 +7,7 @@ import { C, FONT } from "../styles/tokens";
 import { PATHWAYS, PATHWAY_IDS } from "../lib/pathways";
 
 export default function PathwayChips({ selected, onSelect, compact = false }) {
+  const totalN = PATHWAY_IDS.reduce((sum, id) => sum + (PATHWAYS[id]?.n || 0), 0);
   const size = compact ? {
     padding: "0.28rem 0.6rem",
     fontSize: "0.68rem",
@@ -24,10 +25,10 @@ export default function PathwayChips({ selected, onSelect, compact = false }) {
         onClick={() => onSelect(null)}
         style={{
           padding: size.padding,
-          background: !selected ? "rgba(212,160,48,0.15)" : "transparent",
-          border: `1px solid ${!selected ? "rgba(212,160,48,0.4)" : C.ghost}`,
+          background: !selected ? C.goldBright : "transparent",
+          border: `1px solid ${C.goldBright}`,
           borderRadius: 999,
-          color: !selected ? C.goldBright : C.muted,
+          color: !selected ? C.bg : C.goldBright,
           fontFamily: FONT.condensed,
           fontSize: size.fontSize,
           fontWeight: 700,
@@ -37,7 +38,7 @@ export default function PathwayChips({ selected, onSelect, compact = false }) {
           transition: "all 0.15s",
         }}
       >
-        All · 501
+        All · {totalN}
       </button>
 
       {PATHWAY_IDS.map((id) => {
@@ -49,10 +50,10 @@ export default function PathwayChips({ selected, onSelect, compact = false }) {
             onClick={() => onSelect(id)}
             style={{
               padding: size.padding,
-              background: isSelected ? `${p.color}22` : "transparent",
-              border: `1px solid ${isSelected ? p.color : C.ghost}`,
+              background: isSelected ? p.color : "transparent",
+              border: `1px solid ${p.color}`,
               borderRadius: 999,
-              color: isSelected ? p.color : C.muted,
+              color: isSelected ? C.bg : p.color,
               fontFamily: FONT.condensed,
               fontSize: size.fontSize,
               fontWeight: 700,
@@ -71,7 +72,7 @@ export default function PathwayChips({ selected, onSelect, compact = false }) {
             <span style={{
               fontFamily: FONT.mono,
               fontSize: "0.82em",
-              color: isSelected ? p.color : C.dim,
+              color: isSelected ? C.bg : p.color,
               fontWeight: 400,
               letterSpacing: "0",
               textTransform: "none",

@@ -1,0 +1,1442 @@
+[
+  {
+    "header": "Timestamp",
+    "meta_tag": "meta_timestamp"
+  },
+  {
+    "header": "Consent",
+    "meta_tag": "meta_consent"
+  },
+  {
+    "header": "In which COUNTRY were you BORN?",
+    "meta_tag": "demo_country_born"
+  },
+  {
+    "header": "In which country are you primarily located now?",
+    "meta_tag": "demo_country_current"
+  },
+  {
+    "header": "Please select the US State or Territory in which you were BORN",
+    "meta_tag": "demo_us_state_born"
+  },
+  {
+    "header": "In which US STATE or TERRITORY do you live or primarily reside in NOW?",
+    "meta_tag": "demo_us_state_current"
+  },
+  {
+    "header": "How would you describe your race or ethnicity? (Please select all that apply, or specify if your identity is not listed)",
+    "meta_tag": "demo_ethnicity"
+  },
+  {
+    "header": "What is your approximate age?",
+    "meta_tag": "demo_age"
+  },
+  {
+    "header": "Which generation do you most identify with?",
+    "meta_tag": "demo_generation"
+  },
+  {
+    "header": "What is the highest level of education you have completed?",
+    "meta_tag": "demo_education_self"
+  },
+  {
+    "header": "Family Upbringing & Adoption Status",
+    "meta_tag": "family_upbringing_status"
+  },
+  {
+    "header": "Thinking about your MOTHER (or primary female/maternal guardian) during your upbringing, what was her highest level of education, to the best of your knowledge?",
+    "meta_tag": "family_mother_education"
+  },
+  {
+    "header": "What was the primary profession or field of work for your MOTHER (or primary female/maternal guardian) during your upbringing?",
+    "meta_tag": "family_mother_profession"
+  },
+  {
+    "header": "Thinking about your FATHER (or primary male/paternal guardian) during your upbringing, what was his highest level of education, to the best of your knowledge?",
+    "meta_tag": "family_father_education"
+  },
+  {
+    "header": "What was the primary profession or field of work for your FATHER (or primary male/paternal guardian) during your upbringing?",
+    "meta_tag": "family_father_profession"
+  },
+  {
+    "header": "How would you generally describe your family's socioeconomic status during your childhood?",
+    "meta_tag": "family_ses"
+  },
+  {
+    "header": "Politically, how would you generally describe your views or your family's views during your upbringing?",
+    "meta_tag": "family_politics"
+  },
+  {
+    "header": "How do you identify your SEXUALITY?",
+    "meta_tag": "demo_sexuality"
+  },
+  {
+    "header": "How do you currently describe your GENDER identity?",
+    "meta_tag": "demo_gender_identity"
+  },
+  {
+    "header": "What sex were you assigned at birth?",
+    "meta_tag": "demo_sex_assigned_at_birth"
+  },
+  {
+    "header": "In which CANADIAN PROVINCE were you BORN?",
+    "meta_tag": "demo_can_province_born"
+  },
+  {
+    "header": "In which CANADIAN PROVINCE do you live NOW?",
+    "meta_tag": "demo_can_province_current"
+  },
+  {
+    "header": "Was religion a significant part of your upbringing?",
+    "meta_tag": "religion_is_significant"
+  },
+  {
+    "header": "PRIMARY TRADITION(S):\nWhich religious or spiritual tradition(s) were most significant in your family's upbringing (or are most significant to you now)?",
+    "meta_tag": "religion_primary_tradition"
+  },
+  {
+    "header": "🟡  Christian Denominations/Traditions",
+    "meta_tag": "religion_christian_denomination"
+  },
+  {
+    "header": "🟡  Within your specific Christian tradition/upbringing, was infant circumcision generally viewed as:",
+    "meta_tag": "religion_christian_circ_view"
+  },
+  {
+    "header": "🟡  Were you taught or did you understand there to be any specific theological basis for or against penile circumcision within your Christian context",
+    "meta_tag": "religion_christian_theology_basis"
+  },
+  {
+    "header": "🟡  Anything else you'd like to share about your perspective as a Christian?",
+    "meta_tag": "religion_christian_comments"
+  },
+  {
+    "header": "⚪  Which Jewish denomination or movement do you (or your family during your upbringing) most closely identify with?",
+    "meta_tag": "religion_jewish_denomination"
+  },
+  {
+    "header": "⚪  In your upbringing or current understanding within your Jewish context, how was/is Brit Milah (ritual circumcision) generally viewed?",
+    "meta_tag": "religion_jewish_brit_milah_view"
+  },
+  {
+    "header": "⚪  Were you aware of or taught about specific theological or historical reasons for Brit Milah?",
+    "meta_tag": "religion_jewish_theology_awareness"
+  },
+  {
+    "header": "⚪  If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?",
+    "meta_tag": "religion_jewish_theology_reasons"
+  },
+  {
+    "header": "⚪  From your perspective as a Jewish individual (or a parent who chose Brit Milah for a Jewish son):  \nHow important is the act of Brit Milah to your personal sense of Jewish identity or connection to the Jewish people?",
+    "meta_tag": "religion_jewish_identity_importance"
+  },
+  {
+    "header": "⚪  Have you ever encountered or explored interpretations within Judaism that question the necessity of physical circumcision or offer alternative ways to express covenant or Jewish identity?",
+    "meta_tag": "religion_jewish_alternatives_awareness"
+  },
+  {
+    "header": "⚪  Any thoughts on these alternative interpretations?",
+    "meta_tag": "religion_jewish_alternatives_thoughts"
+  },
+  {
+    "header": "⚪  From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Brit Milah within contemporary Jewish life (either in your specific community or Judaism more broadly)?",
+    "meta_tag": "religion_jewish_diversity_view"
+  },
+  {
+    "header": "⚪  Have you/your family participated in or considered alternative welcoming ceremonies, like a Brit Shalom (Covenant of Peace) or similar non-cutting ritual?",
+    "meta_tag": "religion_jewish_brit_shalom_awareness"
+  },
+  {
+    "header": "⚫  Which school of Islamic thought (madhhab), theological branch, or cultural expression of Islam do you (or your family during your upbringing) most closely identify with, if any?",
+    "meta_tag": "religion_islamic_school"
+  },
+  {
+    "header": "⚫  In your upbringing or current understanding within your Islamic context, how was/is Khitan (penile circumcision, also sometimes known as Sunnet) generally viewed?",
+    "meta_tag": "religion_islamic_khitan_view"
+  },
+  {
+    "header": "⚫  Were you aware of or taught about specific religious reasons or justifications for Khitan?",
+    "meta_tag": "religion_islamic_theology_awareness"
+  },
+  {
+    "header": "⚫  If yes or somewhat, what were the main reasons or interpretations you recall being emphasized?",
+    "meta_tag": "religion_islamic_theology_reasons"
+  },
+  {
+    "header": "⚫  In your understanding, is Khitan considered a direct commandment (Fard) from the Quran, or more of an emphasized Sunnah (prophetic tradition) and cultural norm?",
+    "meta_tag": "religion_islamic_fard_vs_sunnah"
+  },
+  {
+    "header": "⚫  From your perspective as a Muslim (or a parent who chose Khitan for a Muslim son):\nHow important is the act of Khitan to your personal sense of Muslim identity, adherence to Sunnah, or feeling of ritual purity?",
+    "meta_tag": "religion_islamic_identity_importance"
+  },
+  {
+    "header": "⚫  Have you ever encountered or explored interpretations within Islam that question the absolute necessity of Khitan, discuss potential harms, or emphasize the Quran's silence on the matter?",
+    "meta_tag": "religion_islamic_alternatives_awareness"
+  },
+  {
+    "header": "⚫  Any thoughts on these alternative interpretations or perspectives?",
+    "meta_tag": "religion_islamic_alternatives_thoughts"
+  },
+  {
+    "header": "⚫  From your perspective, how much room is there for diverse viewpoints or evolving practices regarding Khitan within contemporary Islamic life (either in your specific community or Islam more broadly)?",
+    "meta_tag": "religion_islamic_diversity_view"
+  },
+  {
+    "header": "⚫  How do you/your family reconcile the choice of intactness with the common practice of Khitan in many Muslim cultures?",
+    "meta_tag": "religion_islamic_intact_reconciliation"
+  },
+  {
+    "header": "Thinking about your penis today, how do you generally FEEL about its physical appearance?",
+    "meta_tag": "exp_appearance_feeling"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Intensity of Orgasm]",
+    "meta_tag": "exp_sex_rating_orgasm_intensity"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Duration of Orgasm Sensation]",
+    "meta_tag": "exp_sex_rating_orgasm_duration"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Overall Ease of Reaching Orgasm]",
+    "meta_tag": "exp_sex_rating_ease_of_orgasm"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Sensitivity to Light Touch]",
+    "meta_tag": "exp_sex_rating_sensitivity_light_touch"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Pleasure from Mobile Skin]",
+    "meta_tag": "exp_sex_rating_pleasure_mobile_skin"
+  },
+  {
+    "header": "Rating Sexual Experience Factors\nPlease rate the following aspects of your own sexual experience on a scale of 1 to 5 [Variety of Pleasurable Sensations]",
+    "meta_tag": "exp_sex_rating_variety_of_sensation"
+  },
+  {
+    "header": "How would you describe the general sensitivity of your penis to various types of touch and stimulation?",
+    "meta_tag": "exp_sensitivity_desc"
+  },
+  {
+    "header": "How would you describe your typical ORGASM experience in terms of its INTENSITY, BUILD-UP, and overall QUALITY of pleasure?",
+    "meta_tag": "exp_orgasm_desc"
+  },
+  {
+    "header": "DURATION: How long do the primary pleasurable sensations of your typical orgasm last?",
+    "meta_tag": "exp_orgasm_duration_desc"
+  },
+  {
+    "header": "And, if you're comfortable sharing, how would you rate your general confidence that your orgasms are as intense or fulfilling as possible?",
+    "meta_tag": "exp_orgasm_confidence_rating"
+  },
+  {
+    "header": "Do you generally need to use artificial LUBRICATION (e.g., store-bought lube, saliva, lotion) for comfortable and pleasurable masturbation or partnered sex?",
+    "meta_tag": "exp_lubrication_need"
+  },
+  {
+    "header": "Any additional comments on your experience with lubrication (or lack of need for it)?",
+    "meta_tag": "exp_lubrication_comments"
+  },
+  {
+    "header": "When it comes to partnered sex and intimacy, have you ever felt it was difficult to communicate what types of touch provide you with genuine pleasure?",
+    "meta_tag": "exp_pleasure_comm_difficulty"
+  },
+  {
+    "header": "If you have experienced this disconnect, could you briefly elaborate on what that's like or in what situations it occurs?",
+    "meta_tag": "exp_pleasure_comm_elaboration"
+  },
+  {
+    "header": "Thinking about your typical sexual arousal, do you notice the presence of pre-ejaculate fluid (sometimes called 'pre-cum' or Cowper's gland fluid – a clear fluid released from the penis before orgasm/ejaculation)?",
+    "meta_tag": "exp_pre_ejaculate_awareness"
+  },
+  {
+    "header": "How would you describe your ability to communicate your sexual needs and what provides you pleasure to a partner?",
+    "meta_tag": "exp_needs_comm_ability"
+  },
+  {
+    "header": "Overall, how PROUD or satisfied are you with your penis, considering all aspects (appearance, how it functions, and the pleasure it provides)?",
+    "meta_tag": "exp_pride_satisfaction_rating"
+  },
+  {
+    "header": "What is your circumcision status?",
+    "meta_tag": "meta_status"
+  },
+  {
+    "header": "🟢 What do you consider the main ADVANTAGES of being intact/having a foreskin?",
+    "meta_tag": "intact_advantages_desc"
+  },
+  {
+    "header": "🟢   Have you experienced any DRAWBACKS or challenges related to being intact/having a foreskin?",
+    "meta_tag": "intact_drawbacks_desc"
+  },
+  {
+    "header": "🟢 Can you recall when you first understood what \"being circumcised\" actually meant—not just that some boys were different, but the specifics of it being a surgical alteration of genitals?",
+    "meta_tag": "intact_circ_awareness_age"
+  },
+  {
+    "header": "🟢  Based on what you know or believe (or assume), what were the PRIMARY REASONS your parents chose for you to remain intact?",
+    "meta_tag": "intact_parents_reason"
+  },
+  {
+    "header": "🟢 Who do you believe was the PRIMARY DRIVER or key advocate for the decision to keep you intact within your family?",
+    "meta_tag": "intact_parents_driver"
+  },
+  {
+    "header": "🟢 Based on what you know, how was the topic of circumcision likely handled around the time of your birth? (If applicable)",
+    "meta_tag": "intact_parents_handling_of_topic"
+  },
+  {
+    "header": "🟢 Have you ever experienced feelings such as REGRET, embarrassment, resentment, anger, or a wish that you had been circumcised?",
+    "meta_tag": "intact_regret_feeling"
+  },
+  {
+    "header": "🟢 If you have had such feelings (even if mild or infrequent), when did they first emerge, and what do you think primarily triggers them or what aspects of being intact contribute most to them?",
+    "meta_tag": "intact_regret_triggers"
+  },
+  {
+    "header": "🟢 Have you ever had a direct conversation with your parents (or guardians) about their decision to LEAVE YOU INTACT?",
+    "meta_tag": "intact_parents_convo"
+  },
+  {
+    "header": "🟢 If you haven't asked them, will you share why?",
+    "meta_tag": "intact_parents_convo_why_not"
+  },
+  {
+    "header": "🟢 Have you ever experienced or required any medical interventions, procedures, or forced actions related to your foreskin or intact anatomy?",
+    "meta_tag": "intact_medical_intervention"
+  },
+  {
+    "header": "🟢 If yes, please briefly describe the intervention(s), your age at the time, who initiated it (e.g., parent, doctor, self), and any effects (physical or emotional) that you feel are significant.",
+    "meta_tag": "intact_medical_intervention_desc"
+  },
+  {
+    "header": "🟢 Would you like to share anything about what it was like for you growing up intact?",
+    "meta_tag": "intact_growing_up_experience"
+  },
+  {
+    "header": "🟢 How would you describe your complete FORESKIN (the moveable sheath of skin) play in your sexual experiences (masturbation or partnered sex)?",
+    "meta_tag": "intact_foreskin_role_sex"
+  },
+  {
+    "header": "🟢 And what about the FRENULUM (the V-shaped band of tissue on the underside, connecting the foreskin to the glans)? How would you describe its contribution to your sexual pleasure, if you are specifically aware of it?",
+    "meta_tag": "intact_frenulum_role_sex"
+  },
+  {
+    "header": "🟢 Have you ever wondered what it would be like to experience sex or masturbation with a CIRCUMCISED penis?",
+    "meta_tag": "intact_curiosity_about_circ"
+  },
+  {
+    "header": "🟢 If you have wondered, what aspects are you most curious about (e.g., different sensations, the impact of constant glans exposure, different mechanics)?",
+    "meta_tag": "intact_curiosity_about_circ_aspects"
+  },
+  {
+    "header": "🟢 If you have had sexual experiences with circumcised partners, have you discussed with them or observed any differences in their reported sensitivity, sexual function, orgasm quality, or need for lubrication compared to your own experience as an intact person?",
+    "meta_tag": "intact_partner_comparison_observation"
+  },
+  {
+    "header": "🟢 If yes, can you briefly describe the types of differences you've noted?",
+    "meta_tag": "intact_partner_comparison_desc"
+  },
+  {
+    "header": "🟢 As an intact individual, have you ever felt pressure (social, cultural, from partners, or medical professionals) to consider circumcision for yourself, or have you ever personally researched or seriously contemplated getting circumcised?",
+    "meta_tag": "intact_pressure_to_circ"
+  },
+  {
+    "header": "🟢 Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are intact, or to the specifics of why your penis wasn't surgically altered?",
+    "meta_tag": "intact_prior_thought_level"
+  },
+  {
+    "header": "🟢 How do you feel about terms like \"uncircumcised\" or \"uncut\" to describe your natural state?",
+    "meta_tag": "intact_preferred_terminology"
+  },
+  {
+    "header": "🟢 What's one thing you wish individuals who are circumcised (or parents considering circumcision for their sons) truly understood about the intact penis and the holistic experience of being naturally whole?",
+    "meta_tag": "intact_message_to_others"
+  },
+  {
+    "header": "🔵  At what age were you circumcised, if you know?",
+    "meta_tag": "circ_age"
+  },
+  {
+    "header": "🔵  Can you recall when you first understood what \"being circumcised\" actually meant in terms of a physical alteration to your body?",
+    "meta_tag": "circ_awareness_age"
+  },
+  {
+    "header": "🔵  What do you consider the main ADVANTAGES of being circumcised?",
+    "meta_tag": "circ_advantages_desc"
+  },
+  {
+    "header": "🔵  Have you experienced any DRAWBACKS or challenges related to being circumcised?",
+    "meta_tag": "circ_drawbacks_desc"
+  },
+  {
+    "header": "🔵  If you had to speculate, who do you think was the PRIMARY DRIVER of the decision to have you circumcised in your family?",
+    "meta_tag": "circ_parents_driver"
+  },
+  {
+    "header": "🔵  What was the reason(s) given for your circumcision, if you know/have learned?",
+    "meta_tag": "circ_parents_reason"
+  },
+  {
+    "header": "🔵  Based on your understanding of healthcare at the time, how do you believe the topic of circumcision was likely PRESENTED to your parents by the hospital or doctor?",
+    "meta_tag": "circ_presentation_by_medical"
+  },
+  {
+    "header": "🔵Thinking about the era in which you were born and what you know of your parents and their community, which of the following sources of information or influence do you believe were the MOST CRITICAL in their decision to circumcise you?",
+    "meta_tag": "circ_parents_influences"
+  },
+  {
+    "header": "🔵  When you look at your penis, how would you describe the specific characteristics of your circumcision? (e.g., amount of shaft skin remaining, tightness during erection, scar visibility/texture, evenness of skin removal, glans exposure when flaccid/erect).",
+    "meta_tag": "circ_physical_characteristics_desc"
+  },
+  {
+    "header": "🔵  How do you personally perceive your circumcision scar?",
+    "meta_tag": "circ_scar_perception"
+  },
+  {
+    "header": "🔵  Have you ever wondered what it would be like to experience sex or masturbation with an intact penis (i.e., with a complete foreskin)?",
+    "meta_tag": "circ_curiosity_about_intact"
+  },
+  {
+    "header": "🔵 If you have wondered, what aspects are you most curious about?",
+    "meta_tag": "circ_curiosity_about_intact_aspects"
+  },
+  {
+    "header": "🔵After your initial circumcision, have you ever required or undergone any further medical interventions, treatments, or surgeries related to your penis or circumcision site?",
+    "meta_tag": "circ_medical_intervention"
+  },
+  {
+    "header": "🔵  If yes, please briefly describe the intervention(s), your age at the time, who initiated it (e.g., parent, doctor, self), and any effects (physical or emotional) that you feel are significant.",
+    "meta_tag": "circ_medical_intervention_desc"
+  },
+  {
+    "header": "🔵  Have you ever experienced feelings that could be described as RESENTMENT, loss, anger, grief or regret in relation to your circumcision?",
+    "meta_tag": "circ_regret_feeling"
+  },
+  {
+    "header": "🔵  If you have had such feelings (even if mild or infrequent), when did they first emerge, and what do you think primarily triggers them or what aspects of being circumcised contribute most to them?",
+    "meta_tag": "circ_regret_triggers"
+  },
+  {
+    "header": "🔵  Separate from any formal interventions, have you personally experienced any ongoing physical SYMPTOMS or challenges you attribute to your circumcision?",
+    "meta_tag": "circ_physical_symptoms"
+  },
+  {
+    "header": "🔵  If yes, please briefly describe the issue(s)",
+    "meta_tag": "circ_physical_symptoms_desc"
+  },
+  {
+    "header": "🔵  Have you ever had a direct conversation with your parents (or guardians) about their decision to have you circumcised?",
+    "meta_tag": "circ_parents_convo"
+  },
+  {
+    "header": "🔵  If you haven't asked them, could you share why?",
+    "meta_tag": "circ_parents_convo_why_not"
+  },
+  {
+    "header": "🔵  If you could send a message to the parents who made the decision for you to be circumcised, what would it be?",
+    "meta_tag": "circ_message_to_parents"
+  },
+  {
+    "header": "🔵  Have you ever considered or researched options like foreskin RESTORATION (using methods to gradually regrow skin for glans coverage) or foreskin REGENERATION (biomedical approaches to grow new foreskin tissue, like Foregen's research)?",
+    "meta_tag": "circ_restoration_awareness"
+  },
+  {
+    "header": "🔵 Before encountering discussions like this survey (or in intactivist/restoration communities, if applicable), how much thought had you given to the fact that you are circumcised, or to the specifics of how/why your penis was surgically altered?",
+    "meta_tag": "circ_prior_thought_level"
+  },
+  {
+    "header": "What is your FATHER'S (or primary male guardian's) circumcision status, to the best of your knowledge?",
+    "meta_tag": "family_father_status"
+  },
+  {
+    "header": "Do you have any male (AMAB) SIBLINGS (brothers, including half-brothers or step-brothers raised with you) and if so, how many",
+    "meta_tag": "family_sibling_count"
+  },
+  {
+    "header": "What is your siblings' circumcision status in relation to your own.",
+    "meta_tag": "family_sibling_status"
+  },
+  {
+    "header": "Since there is a mix of circumcision statuses among you and your brother(s), do you know anything about why the decision was different for different children?\nAny insight you have into why the decision changed—whether due to new information, a different doctor, personal experience, or a change of heart—is incredibly valuable for understanding what motivates people to break from a previous decision \n\n(e.g. did one parent become more informed, did you move to a different area, was there a negative experience with an older brother's circumcision?)",
+    "meta_tag": "family_sibling_status_mixed_reason"
+  },
+  {
+    "header": "🟣  Before you began (or seriously considered) foreskin restoration, how would you have described your feelings about being circumcised?",
+    "meta_tag": "restore_feelings_before"
+  },
+  {
+    "header": "🟣  What were/are your PRIMARY motivations for pursuing foreskin restoration?",
+    "meta_tag": "restore_motivations"
+  },
+  {
+    "header": "🟣  What was your approximate age when you began actively restoring or seriously researching restoration methods?",
+    "meta_tag": "restore_age_started"
+  },
+  {
+    "header": "🟣  What methods of restoration have you primarily used or found most effective for you?",
+    "meta_tag": "restore_methods"
+  },
+  {
+    "header": "🟣  How long have you been actively restoring?",
+    "meta_tag": "restore_duration"
+  },
+  {
+    "header": "🟣  Have you been open with partners, friends, or family about your restoration journey?",
+    "meta_tag": "restore_openness"
+  },
+  {
+    "header": "🟣  When you began your restoration journey, what was your approximate starting Real Coverage Index (RCI) score, if you know or can estimate?",
+    "meta_tag": "restore_rci_start"
+  },
+  {
+    "header": "🟣  What is your approximate CURRENT Real Coverage Index (RCI) score, if you are still restoring? Or what was your final RCI score if you consider yourself 'done' or have achieved your primary coverage goals?",
+    "meta_tag": "restore_rci_current"
+  },
+  {
+    "header": "🟣  Have you experienced noticeable changes in penile SENSITIVITY (general or specific, like in the frenular area) as a result of your restoration? Please describe.",
+    "meta_tag": "restore_sensitivity_change_desc"
+  },
+  {
+    "header": "🟣  Has restoration impacted the quality, intensity, or nature of your ORGASMS? If so, how?",
+    "meta_tag": "restore_orgasm_change_desc"
+  },
+  {
+    "header": "🟣  How has restoration affected your need for LUBRICATION during masturbation or partnered sex?",
+    "meta_tag": "restore_lubrication_change"
+  },
+  {
+    "header": "🟣  From your perspective, what does the term \"uncircumcised\" or \"uncut\" mean to you as someone who has restored?",
+    "meta_tag": "restore_terminology_view"
+  },
+  {
+    "header": "🟣 What has been the most challenging aspect of your restoration journey? What has been the most rewarding?",
+    "meta_tag": "restore_challenge_reward"
+  },
+  {
+    "header": "🟣  What advice would you offer to someone considering starting foreskin restoration?",
+    "meta_tag": "restore_advice_to_others"
+  },
+  {
+    "header": "🟣  Are you aware of any scientific research focused on biologically regenerating or regrowing human foreskin tissue (e.g., using stem cells or tissue engineering)?",
+    "meta_tag": "restore_regen_tech_awareness"
+  },
+  {
+    "header": "🟣  Knowing this possibility exists:\n\nHow does it influence your feelings about your own circumcision status or restoration journey?",
+    "meta_tag": "restore_regen_tech_feelings"
+  },
+  {
+    "header": "🟣  Anything else you'd like to say about biological Regenerative Technologies",
+    "meta_tag": "restore_regen_tech_comments"
+  },
+  {
+    "header": "🟠  What primarily motivated you to take this survey and explore these topics?",
+    "meta_tag": "observe_motivation"
+  },
+  {
+    "header": "🟠 As a PARTNER, what have you observed or experienced regarding your partner's genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, their sexual pleasure, or their feelings about their body?",
+    "meta_tag": "observe_partner_experience"
+  },
+  {
+    "header": "🟠 If you are the PARTNER of someone whose circumcision status is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?",
+    "meta_tag": "observe_partner_cultural_diff"
+  },
+  {
+    "header": "🟠As a PARENT or GUARDIAN  What were/are the most significant factors influencing your decision (or your thought process if undecided) about circumcision for your child or children:",
+    "meta_tag": "observe_parent_decision_factors"
+  },
+  {
+    "header": "🟠  As a PARENT or GUARDIAN, how adequate or biased did you find the information available to you from medical professionals or other sources when making this decision?",
+    "meta_tag": "observe_parent_info_quality"
+  },
+  {
+    "header": "🟠 As PARENTS/GUARDIANS which statement best captures the emotional state you (or your partner) are/were in regarding their whether to circumcise your child or children?",
+    "meta_tag": "observe_parent_emotional_state"
+  },
+  {
+    "header": "🟠 Have you ever experienced feelings of REGRET or reconsidered that decision based on information learned later or changes in your perspective?",
+    "meta_tag": "observe_parent_regret"
+  },
+  {
+    "header": "🟠  What is your general stance or approach when counseling parents about routine infant circumcision? [With PARENTS in a clinical setting]",
+    "meta_tag": "observe_professional_counseling_stance"
+  },
+  {
+    "header": "🟠 What training, guidelines, or protocols have most influenced how you present circumcision to parents?",
+    "meta_tag": "observe_professional_training_protocol"
+  },
+  {
+    "header": "🟠In your practice, what are the most common questions or concerns you hear from parents regarding this procedure?",
+    "meta_tag": "observe_professional_parent_questions"
+  },
+  {
+    "header": "🟠 What, if any, changes have you observed in medical consensus or parental attitudes towards routine infant circumcision (RIC) over the course of your career?",
+    "meta_tag": "observe_professional_attitudes_change"
+  },
+  {
+    "header": "🟠 What was your personal \"tipping point\" that moved you from a passive observer to an active advocate?",
+    "meta_tag": "observe_barrier_to_recognition"
+  },
+  {
+    "header": "🟠 Conversely, what strategy or argument have you found to be the least effective or most likely to backfire and shut down a conversation?",
+    "meta_tag": "observe_effective_strategy"
+  },
+  {
+    "header": "🟠  Do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or  FGM (female genital mutilation)?",
+    "meta_tag": "observe_fgm_mgm_parallel"
+  },
+  {
+    "header": "🟠  From your unique standpoint, what is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding male circumcision, intactness, or their lifelong impacts?",
+    "meta_tag": "observe_societal_blindspot"
+  },
+  {
+    "header": "🟠  Is there anything else you'd like to share based on your observations, experiences, or your reasons for being interested in this topic?",
+    "meta_tag": "observe_final_comments"
+  },
+  {
+    "header": "In general, how do you view the relationship between the human body's natural state and medical interventions?",
+    "meta_tag": "culture_body_intervention_view"
+  },
+  {
+    "header": "In your family or the community you grew up in, what was the general EXPECTATION for newborn boys regarding circumcision?",
+    "meta_tag": "culture_community_expectation"
+  },
+  {
+    "header": "In your view, or based on what you understood from your upbringing/community, penile circumcision is primarily seen as:",
+    "meta_tag": "culture_primary_view_of_circ"
+  },
+  {
+    "header": "Additional comments",
+    "meta_tag": "culture_additional_comments"
+  },
+  {
+    "header": "Thinking back to your upbringing or just general societal messages (from peers, media, family, health class), what was a common STEREOTYPE, assumption, or \"fact\" that 'everyone seemed to know' about INTACT (uncircumcised) penises?",
+    "meta_tag": "culture_stereotype_intact"
+  },
+  {
+    "header": "Similarly, what was a common STEREOTYPE, assumption, or \"fact\" that 'everyone seemed to know' about CIRCUMCISED penises?",
+    "meta_tag": "culture_stereotype_circ"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Medically Healthier]",
+    "meta_tag": "culture_assoc_medically_healthier"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Hygienic / Cleaner]",
+    "meta_tag": "culture_assoc_more_hygienic"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More 'Natural' Looking]",
+    "meta_tag": "culture_assoc_more_natural"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Aesthetically Pleasing / \"Better\" Looking]",
+    "meta_tag": "culture_assoc_more_aesthetic"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Sensitive / Greater Pleasure Potential]",
+    "meta_tag": "culture_assoc_more_sensitive"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Easier to Care For]",
+    "meta_tag": "culture_assoc_easier_care"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More 'Manly' or 'Masculine']",
+    "meta_tag": "culture_assoc_more_masculine"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Modern / Progressive]",
+    "meta_tag": "culture_assoc_more_modern"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Traditional / Old-Fashioned]",
+    "meta_tag": "culture_assoc_more_traditional"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [More Socially Acceptable (in your primary culture)]",
+    "meta_tag": "culture_assoc_more_socially_acceptable"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Preferred by Sexual Partners (in general)]",
+    "meta_tag": "culture_assoc_partner_preference"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Associated with Higher Intelligence/Education (of parents who choose it)]",
+    "meta_tag": "culture_assoc_higher_education"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Associated with Higher Socioeconomic Status (of parents who choose it)]",
+    "meta_tag": "culture_assoc_higher_ses"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Associated with Liberal/Progressive Values (of parents who choose it)]",
+    "meta_tag": "culture_assoc_liberal_values"
+  },
+  {
+    "header": "Please indicate which state (Intact or Circumcised) you believe is MORE LIKELY to be associated with the following attributes. \n\n [Associated with Conservative/Traditional Values (of parents who choose it)]",
+    "meta_tag": "culture_assoc_conservative_values"
+  },
+  {
+    "header": "Putting aside your personal satisfaction or feelings, which state do you generally believe to be MEDICALLY HEALTHIER or more HYGIENIC overall?",
+    "meta_tag": "final_healthier_hygienic_belief"
+  },
+  {
+    "header": "Again, putting aside your own personal level of satisfaction, which state do you generally BELIEVE offers a greater POTENTIAL for physical sexual pleasure and sensation?",
+    "meta_tag": "final_pleasure_potential_belief"
+  },
+  {
+    "header": "Based on your life experiences, conversations, and media consumption, what do you believe is the general preference of sexual partners (of any gender) regarding a partner's circumcision status (intact vs. circumcised) in your culture?",
+    "meta_tag": "final_partner_preference_belief"
+  },
+  {
+    "header": "What do you believe has most shaped this perceived preference?",
+    "meta_tag": "final_partner_preference_reason"
+  },
+  {
+    "header": "Purely in terms of AESTHETICS (visual appearance), which look do you personally find more appealing?",
+    "meta_tag": "final_aesthetic_preference"
+  },
+  {
+    "header": "Based on your own experiences, observations, and everything you've heard or read, which group of men do you believe, on average, experiences more intense or fulfilling SEXUAL PLEASURE AND ORGASM?",
+    "meta_tag": "final_avg_pleasure_belief"
+  },
+  {
+    "header": "In your specific cultural context (e.g., in the US, in Europe, in your community), which state do you believe is perceived as more SOCIALLY NORMAL and ACCEPTABLE?",
+    "meta_tag": "final_social_norm_perception"
+  },
+  {
+    "header": "Based on everything you know and have experienced, if you were to have a child assigned male at birth today, what would your decision regarding circumcision be, and what is the single most important reason for that choice?",
+    "meta_tag": "final_child_decision_reason"
+  },
+  {
+    "header": "When considering a NON-THERAPEUTIC, irreversible surgical procedure on a healthy infant (meaning there is no existing disease to treat), which principle do you believe should be given more weight?",
+    "meta_tag": "final_core_principle_choice"
+  },
+  {
+    "header": "What do you think is the single most important piece of information that people (especially expectant parents or young men) are MISSING when it comes to understanding male genital anatomy, intactness, and the lifelong impacts of circumcision?",
+    "meta_tag": "final_missing_info_opinion"
+  },
+  {
+    "header": "The \"Accidental Intactivist\" (that's me, the survey author!) argues that routine infant circumcision is a \"transparent monster\" – a significant harm hiding in plain sight, normalized by culture. \n\nDoes this metaphor resonate with your own observations or feelings? Why or why not?",
+    "meta_tag": "final_transparent_monster_resonance"
+  },
+  {
+    "header": "Please feel free to briefly explain your answer. Why does (or doesn't) this metaphor feel accurate to you?",
+    "meta_tag": "final_transparent_monster_reason"
+  },
+  {
+    "header": "Is there anything else you'd like to share about your experiences, observations, feelings about this topic, or anything this survey didn't cover that you feel is important?",
+    "meta_tag": "final_anything_else"
+  },
+  {
+    "header": "Would you be willing to be contacted anonymously by the survey author and team (the 'Accidental Intactivist') for a potential follow-up interview to discuss your experiences in more detail for research purposes? Your identity would remain confidential.",
+    "meta_tag": "contact_followup_consent"
+  },
+  {
+    "header": "Preferred email address",
+    "meta_tag": "contact_email"
+  },
+  {
+    "header": "Other Contact Method",
+    "meta_tag": "contact_other_method"
+  },
+  {
+    "header": "Beyond this anonymous survey, would you be open to potentially contributing your perspective in other ways to help further understanding of this topic?",
+    "meta_tag": "contact_contrib_interest"
+  },
+  {
+    "header": "Are there ways you might feel comfortable sharing your personal story or perspective beyond this survey, perhaps in a more direct (though still potentially anonymous or pseudonymous) format if opportunities arose?",
+    "meta_tag": "contact_contrib_format"
+  },
+  {
+    "header": "🔵  To what extent do you typically notice or pay attention to whether other men have the SAME circumcision status as you do?",
+    "meta_tag": "circ_notice_same_status"
+  },
+  {
+    "header": "🔵  And to what extent do you typically notice or pay attention to whether other men have a DIFFERENT circumcision status than you do?",
+    "meta_tag": "circ_notice_diff_status"
+  },
+  {
+    "header": "🔵  When you DO notice someone's circumcision status (whether same or different from yours), how significant or prominent is that observation for you compared to other physical characteristics you might notice about a person (e.g., height, build, hair color, tattoos, etc.)?",
+    "meta_tag": "circ_notice_significance"
+  },
+  {
+    "header": "🟢 To what extent do you typically notice or pay attention to whether other men have the SAME intact status as you do?",
+    "meta_tag": "intact_notice_same_status"
+  },
+  {
+    "header": "🟢 And to what extent do you typically notice or pay attention to whether other men have a DIFFERENT circumcision status than you do?",
+    "meta_tag": "intact_notice_diff_status"
+  },
+  {
+    "header": "🟢 When you DO notice someone's circumcision status (whether same or different from yours), how significant or prominent is that observation for you compared to other physical characteristics you might notice about a person (e.g., height, build, hair color, tattoos, etc.)?",
+    "meta_tag": "intact_notice_significance"
+  },
+  {
+    "header": "🟣Thank you for sharing insights into your restoration journey!",
+    "meta_tag": "restore_thank_you"
+  },
+  {
+    "header": "Please specify the country or territory in which you were born",
+    "meta_tag": "demo_country_born_specify"
+  },
+  {
+    "header": "Please specify the COUNTRY/REGION/TERRITORY where you primarily live now.",
+    "meta_tag": "demo_country_current_specify"
+  },
+  {
+    "header": "CULTURAL BACKGROUND:\nWhich religious or spiritual tradition(s), if any, best describes the CULTURAL or ANCESTRAL background of your family?",
+    "meta_tag": "family_cultural_background"
+  },
+  {
+    "header": "One last question to help us improve our outreach: Where did you first hear about this survey?",
+    "meta_tag": "meta_survey_source"
+  },
+  {
+    "header": "🟢 Do you have Pearly Penile Papules (PPP) – the small, harmless, dome-shaped bumps often found in rows around the corona (the ridge of the glans)",
+    "meta_tag": "intact_ppp_awareness"
+  },
+  {
+    "header": "🟢 If you have (or had) PPP, has their presence ever impacted your self-consciousness, body image, or interactions with partners? Please share any relevant experiences",
+    "meta_tag": "intact_ppp_impact"
+  },
+  {
+    "header": "🔵  Are you aware of having Pearly Penile Papules (PPP) – the small, harmless bumps that can sometimes appear around the corona (the ridge of the glans)",
+    "meta_tag": "circ_ppp_awareness"
+  },
+  {
+    "header": "🔵  If you have (or had) PPP, how has their presence factored into your overall feelings about your penis or its appearance?",
+    "meta_tag": "circ_ppp_impact"
+  },
+  {
+    "header": "In what type of location were you born?",
+    "meta_tag": "demo_birth_location"
+  },
+  {
+    "header": "Who was the primary medical attendant at your birth, to the best of your knowledge?",
+    "meta_tag": "demo_birth_attendant"
+  },
+  {
+    "header": "🟢 To the best of your knowledge, what was the circumcision norm within your parents' immediate social circle (close friends, family) at the time of your birth?",
+    "meta_tag": "intact_parents_social_norm"
+  },
+  {
+    "header": "🟢 Beyond general knowledge, do you know if your parents encountered any specific sources of information that influenced their decision to keep you intact?",
+    "meta_tag": "intact_parents_info_sources"
+  },
+  {
+    "header": "🟢 Do you have any reason to believe your parents' decision was influenced by a negative personal or observed experience with circumcision?",
+    "meta_tag": "intact_parents_neg_catalyst"
+  },
+  {
+    "header": "🟢 Based on what you've been told, did your parents encounter any pushback or questioning from medical staff, family, or friends when they made their decision to keep you intact?",
+    "meta_tag": "intact_parents_resistance_faced"
+  },
+  {
+    "header": "🟢 Based on your lifelong understanding of your parents, which of the following traits or values would you say strongly characterized them?",
+    "meta_tag": "intact_parents_traits_values"
+  },
+  {
+    "header": "🔵 To the best of your knowledge, what was the circumcision norm within your parents' immediate social circle (close friends, family) at the time of your birth?",
+    "meta_tag": "circ_parents_social_norm"
+  },
+  {
+    "header": "🔵 Reflecting on the information likely available to your parents at the time, how would you characterize the quality and balance of that information regarding circumcision?",
+    "meta_tag": "circ_parents_info_quality"
+  },
+  {
+    "header": "🔵 When you think about your parents making this decision, which of these statements best captures the emotional or psychological state you believe they were in?",
+    "meta_tag": "circ_parents_emotional_state"
+  },
+  {
+    "header": "🔵 Have you ever sensed or discussed whether your parents, in retrospect, had any second thoughts or regrets about their decision, especially as more information has become available over the years?",
+    "meta_tag": "circ_parents_regret"
+  },
+  {
+    "header": "🟣 Was there a single piece of information, a specific experience, or a particular realization that acted as the \"final straw\" or tipping point, moving you from passive feelings about being circumcised to the active decision to begin restoring?",
+    "meta_tag": "restore_tipping_point"
+  },
+  {
+    "header": "🟣 When you have chosen to disclose your restoration journey to others (partners, friends, family, medical professionals), what has the general reaction been?",
+    "meta_tag": "restore_disclosure_reaction"
+  },
+  {
+    "header": "🟣 How has the act of restoring changed your relationship with your own genitals and your overall body image?",
+    "meta_tag": "restore_body_image_shift"
+  },
+  {
+    "header": "🟣 What does \"success\" or \"completion\" look like for you in your restoration journey?",
+    "meta_tag": "restore_success_definition"
+  },
+  {
+    "header": "🟠 What has most shaped your current understanding or opinion about penile circumcision?",
+    "meta_tag": "religion_hindu_tradition_view"
+  },
+  {
+    "header": "🟠 In your personal experience and social circles, how is the topic of infant circumcision generally treated or discussed?",
+    "meta_tag": "exp_sex_rating_overall_satisfaction"
+  },
+  {
+    "header": "🟠 When you think about the decision to circumcise a newborn, how significant or impactful do you perceive that choice to be in the grand scheme of a person's life?",
+    "meta_tag": "intact_partner_preference_impact"
+  },
+  {
+    "header": "🟠 Imagine a close friend or family member was expecting a boy and asked for your thoughts on circumcision. How comfortable and prepared would you feel to discuss the pros and cons from different perspectives?",
+    "meta_tag": "circ_restoration_outcomes_desc"
+  },
+  {
+    "header": "Reflecting on media you've consumed throughout your life (e.g., movies, TV, pornography, health education), how do you believe it has shaped the cultural \"default\" or \"ideal\" for what a penis should look like?",
+    "meta_tag": "final_ethical_consideration_belief"
+  },
+  {
+    "header": "How significant a role do you believe social pressures—like the fear of a child \"looking different\" in a locker room or to future partners—play in the continuation of routine infant circumcision in cultures where it's common?",
+    "meta_tag": "culture_social_pressure_role"
+  },
+  {
+    "header": "Broadening the lens for a moment: What is your general stance on performing medically unnecessary, permanent cosmetic alterations on a minor who cannot consent?",
+    "meta_tag": "final_ethics_cosmetic_alteration_minor"
+  },
+  {
+    "header": "Looking forward 20-30 years, where do you predict the practice of routine infant circumcision will be in your primary country/culture?",
+    "meta_tag": "final_prediction_future_of_ric"
+  },
+  {
+    "header": "🔵 What was the primary nature of your circumcision?",
+    "meta_tag": "circ_adult_context"
+  },
+  {
+    "header": "🔵 Was this procedure something you actively consented to and chose for yourself?",
+    "meta_tag": "circ_adult_consent_status"
+  },
+  {
+    "header": "🔵 Reflecting on the information you received before the procedure, how well-informed did you feel about the potential changes to sensation, the full range of risks, and non-surgical alternatives (if applicable)?",
+    "meta_tag": "circ_adult_info_quality"
+  },
+  {
+    "header": "🔵 How would you describe your role in the decision-making process?",
+    "meta_tag": "circ_adult_decision_role"
+  },
+  {
+    "header": "🔵 What were the specific reasons or motivations that led to your circumcision?",
+    "meta_tag": "circ_adult_motivation_details"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [Overall satisfaction with the APPEARANCE of your penis]",
+    "meta_tag": "circ_adult_before_rating_appearance"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [Overall satisfaction with the FUNCTION of your penis (e.g., gliding, natural lubrication)]",
+    "meta_tag": "circ_adult_before_rating_function"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [INTENSITY of your orgasms]",
+    "meta_tag": "circ_adult_before_rating_orgasm_intensity"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [EASE of reaching orgasm]",
+    "meta_tag": "circ_adult_before_rating_ease_of_orgasm"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [General SENSITIVITY to light touch]",
+    "meta_tag": "circ_adult_before_rating_sensitivity"
+  },
+  {
+    "header": "🔵 Thinking about your experience as an intact person BEFORE you were circumcised, please rate the following:  [Your sense of HYGIENE and ease of care]",
+    "meta_tag": "circ_adult_before_rating_hygiene"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Overall satisfaction with the APPEARANCE of your penis]",
+    "meta_tag": "circ_adult_after_change_appearance"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Overall satisfaction with the FUNCTION of your penis (e.g., gliding, natural lubrication)]",
+    "meta_tag": "circ_adult_after_change_function"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [INTENSITY of your orgasms]",
+    "meta_tag": "circ_adult_after_change_orgasm_intensity"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [EASE of reaching orgasm]",
+    "meta_tag": "circ_adult_after_change_ease_of_orgasm"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [General SENSITIVITY to light touch]",
+    "meta_tag": "circ_adult_after_change_sensitivity"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience AFTER you were fully healed from your circumcision, please rate the change you've experienced in those same areas. [Your sense of HYGIENE and ease of care]",
+    "meta_tag": "circ_adult_after_change_hygiene"
+  },
+  {
+    "header": "🔵 In your own words, what has the transition to your \"new normal\" been like?",
+    "meta_tag": "circ_adult_new_normal_desc"
+  },
+  {
+    "header": "🔵 Overall, looking back, how do you feel about your choice to be circumcised (or the decision that was made for you)?",
+    "meta_tag": "circ_adult_retrospective_feeling"
+  },
+  {
+    "header": "🔵 What advice would you give to another intact adult who is considering circumcision today?",
+    "meta_tag": "circ_adult_advice_to_others"
+  },
+  {
+    "header": "🔵 Is there anything else you'd like to share about your experience being circumcised as a teen or adult?",
+    "meta_tag": "circ_adult_final_thoughts"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Overall Sensation & Pleasure]",
+    "meta_tag": "restore_impact_rating_sensation"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Orgasm Quality & Intensity]",
+    "meta_tag": "restore_impact_rating_orgasm"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Mechanical Function (e.g., gliding, natural lubrication)]",
+    "meta_tag": "restore_impact_rating_function"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Physical Comfort (e.g., reduced tightness, chafing)]",
+    "meta_tag": "restore_impact_rating_comfort"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Aesthetic Appearance & Body Image]",
+    "meta_tag": "restore_impact_rating_aesthetics"
+  },
+  {
+    "header": "🟣 Overall, how would you rate the impact of your restoration journey on the following aspects of your experience? [Psychological Well-being & Sense of Wholeness]",
+    "meta_tag": "restore_impact_rating_psychology"
+  },
+  {
+    "header": "🟠 What are the primary reasons you now feel regret or have second thoughts about your decision?",
+    "meta_tag": "observe_parent_circ_regret_reasons"
+  },
+  {
+    "header": "🟠  As a PARTNER, what have you observed or experienced regarding his genital anatomy (intact, circumcised, or restoring) and its impact on your shared intimacy, his sexual pleasure, or his feelings about his body?",
+    "meta_tag": "observe_partner_observations"
+  },
+  {
+    "header": "🟠  If your PARTNER'S circumcision status is different from what is most common in your culture, have you noticed any specific ways this impacts your relationship, communication, or intimacy (positively or negatively)?",
+    "meta_tag": "observe_partner_cultural_diff"
+  },
+  {
+    "header": "🟠  What is your general stance or approach when counseling parents about routine infant circumcision?",
+    "meta_tag": "observe_healthcare_counseling_stance"
+  },
+  {
+    "header": "🟠 What training or protocols influenced how you present circumcision to parents? Have you noticed changes over your career?",
+    "meta_tag": "observe_healthcare_training_protocol"
+  },
+  {
+    "header": "🟠In your practice, what are the most common questions or concerns you hear from parents regarding this procedure?",
+    "meta_tag": "observe_healthcare_parent_questions"
+  },
+  {
+    "header": "🟠  What, if any, changes have you observed in medical consensus or parental attitudes towards RIC over your career?",
+    "meta_tag": "observe_healthcare_attitudes_change"
+  },
+  {
+    "header": "🟠  What do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?",
+    "meta_tag": "observe_advocate_barrier_to_recognition"
+  },
+  {
+    "header": "🟠  What strategy or piece of information do you find most effective in engaging people in thoughtful conversation about this topic?",
+    "meta_tag": "observe_advocate_effective_strategy"
+  },
+  {
+    "header": "🟠  Do you see any parallels or significant divergences in how society discusses or treats non-therapeutic penile cutting versus clitoral/vulvar cutting (sometimes referred to as female circumcision or  FGM (female genital mutilation)?",
+    "meta_tag": "observe_advocate_fgm_mgm_parallel"
+  },
+  {
+    "header": "🟠 In your personal experience and social circles, how is the topic of infant circumcision generally treated or discussed?",
+    "meta_tag": "observe_all_social_climate_discussion"
+  },
+  {
+    "header": "🟠 Imagine a close friend or family member was expecting a boy and asked for your thoughts on circumcision. How comfortable and prepared would you feel to discuss the pros and cons from different perspectives?",
+    "meta_tag": "observe_all_comfort_discussing"
+  },
+  {
+    "header": "🟠 When you think about the decision to circumcise a newborn, how significant or impactful do you perceive that choice to be in the grand scheme of a person's life?",
+    "meta_tag": "observe_all_perceived_significance"
+  },
+  {
+    "header": "🟠 What has most shaped your current understanding or opinion about penile circumcision?",
+    "meta_tag": "observe_woman_shaping_factors"
+  },
+  {
+    "header": "🟠  From your unique standpoint, what is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding male circumcision, intactness, or their lifelong impacts?",
+    "meta_tag": "observe_woman_blind_spot"
+  },
+  {
+    "header": "🟠  Is there anything else you'd like to share based on your observations, experiences, or your reasons for being interested in this topic?",
+    "meta_tag": "observe_woman_final_thoughts"
+  },
+  {
+    "header": "🟠 Which of the following best describes your family's situation regarding the circumcision of your son(s) or AMAB children?",
+    "meta_tag": "observe_parent_multi_hat_selection"
+  },
+  {
+    "header": "🟠 Did your child require any follow-up medical interventions due to complications from being circumcised?",
+    "meta_tag": "observe_parent_circ_complications_exist"
+  },
+  {
+    "header": "🟠 Knowing this, would you be open to confidentially learning more about what becoming a plaintiff in such a case might entail for your family?",
+    "meta_tag": "observe_parent_circ_lawsuit_cta_openness"
+  },
+  {
+    "header": "🟠 Are You Wearing Any Other Hat(s) Today?",
+    "meta_tag": "observe_multi_hat_selection"
+  },
+  {
+    "header": "🟠 If yes, is there anything you're willing to share about any complications or medical treatments your child required following their circumcision?",
+    "meta_tag": "observe_parent_circ_complications_desc"
+  },
+  {
+    "header": "🟠 Thinking about the birth of your child or children, what was the primary type of location where they were/will be born?",
+    "meta_tag": "observe_parent_birth_location"
+  },
+  {
+    "header": "🟠 What is/was the circumcision status of your CO-PARENT or PRIMARY PARTNER during this decision-making process?",
+    "meta_tag": "observe_parent_coparent_status"
+  },
+  {
+    "header": "🟠 Before you gave birth to your child, had you ever had any direct, personal experience with an intact (uncircumcised) penis?",
+    "meta_tag": "observe_parent_intact_exposure"
+  },
+  {
+    "header": "🟠 In your immediate social circle (close friends, peers, family) at the time, what was the general expectation or norm for newborn boys?",
+    "meta_tag": "observe_parent_circ_social_norm"
+  },
+  {
+    "header": "🟠 What is the circumcision status of your primary PARTNER, or the partner whose experience is most relevant to your answers here?",
+    "meta_tag": "observe_partner_primary_status"
+  },
+  {
+    "header": "🟠 To help us understand the time frame of you as a parent in what year was your youngest son/AMAB child born?",
+    "meta_tag": "observe_parent_son_youngest_yob"
+  },
+  {
+    "header": "🟠 In what year was your OLDEST son/AMAB child born?",
+    "meta_tag": "observe_parent_son_oldest_yob"
+  },
+  {
+    "header": "🟠 Thinking about your YOUNGEST son/AMAB child, what was the decision you made regarding his circumcision?",
+    "meta_tag": "observe_parent_youngest_son_decision"
+  },
+  {
+    "header": "🟠 To begin, which of the following best describes your primary parenting or guardianship role for the AMAB (Assigned Male at Birth) child(ren) relevant to your answers?",
+    "meta_tag": "observe_parent_primary_role"
+  },
+  {
+    "header": "🟠 Were you (and your spouse/partner if applicable,) the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through family blending or adoption)?",
+    "meta_tag": "observe_parent_circ_decision_maker"
+  },
+  {
+    "header": "🟠 In what year was your YOUNGEST son/AMAB child born for whom a different decision was made born?",
+    "meta_tag": "observe_parent_mixed_son_yob"
+  },
+  {
+    "header": "🟠 Between these children, something shifted in your decision-making process. What were the key factors that led you to make a DIFFERENT choice?",
+    "meta_tag": "observe_parent_mixed_shift_factors"
+  },
+  {
+    "header": "🟠 If you're willing to share, could you tell us the story of that evolution in your own words?",
+    "meta_tag": "observe_parent_mixed_shift_story"
+  },
+  {
+    "header": "🟠 What was the experience of making a different choice like for your family?",
+    "meta_tag": "observe_parent_mixed_family_experience"
+  },
+  {
+    "header": "🟠 Looking back now, how do you feel about having children with different statuses?",
+    "meta_tag": "observe_parent_mixed_retrospective_feeling"
+  },
+  {
+    "header": "🟠 Thinking about your OLDEST son/AMAB child, what was the decision you made regarding his circumcision?",
+    "meta_tag": "observe_parent_oldest_son_decision"
+  },
+  {
+    "header": "🟠  As a PARENT or GUARDIAN, what were the most significant factors influencing your decision to keep your child or children intact?",
+    "meta_tag": "observe_parent_intact_factors"
+  },
+  {
+    "header": "🟠 To the best of your knowledge, what was the circumcision norm within your immediate social circle (close friends, family) at the time you made this choice?",
+    "meta_tag": "observe_parent_intact_social_norm"
+  },
+  {
+    "header": "🟠 Did you encounter any pushback, questioning, or pressure from medical staff, family, or friends regarding your decision to keep your child or children intact?",
+    "meta_tag": "observe_parent_intact_resistance_faced"
+  },
+  {
+    "header": "🟠 Looking back, have you ever experienced feelings of REGRET or reconsidered that decision to keep your child or children intact?",
+    "meta_tag": "observe_parent_intact_regret_reconsider"
+  },
+  {
+    "header": "🟠   What advice would you give to a new parent who is undecided about circumcising their child?",
+    "meta_tag": "observe_parent_intact_advice"
+  },
+  {
+    "header": "🟠  Do you personally know of a parent who might fit this specific profile?",
+    "meta_tag": "observe_parent_intact_lawsuit_cta_knowledge"
+  },
+  {
+    "header": "🟠 Beyond the general factors you just selected, can you pinpoint any specific resources, events, or key pieces of information that acted as a \"tipping point\" for your decision?",
+    "meta_tag": "observe_parent_intact_tipping_point"
+  },
+  {
+    "header": "🟠 What were the most significant factors influencing your decision to have your child or children circumcised?",
+    "meta_tag": "observe_parent_circ_factors"
+  },
+  {
+    "header": "🟠 Thinking about the timeline, when did you finalize your decision to keep your son intact?",
+    "meta_tag": "observe_parent_intact_decision_timeline"
+  },
+  {
+    "header": "🟠 Thinking about the timeline, when did you finalize your decision to have your (first) son circumcised?",
+    "meta_tag": "observe_parent_circ_decision_timeline"
+  },
+  {
+    "header": "🟠 To the best of your knowledge, what was the circumcision norm within your immediate social circle (close friends, family) at the time you made this choice?",
+    "meta_tag": "observe_parent_circ_social_norm_v2"
+  },
+  {
+    "header": "🟠 Before making your decision, were you ever exposed to information or perspectives that were critical of or advised against routine infant circumcision?",
+    "meta_tag": "observe_parent_circ_exposure_to_critique"
+  },
+  {
+    "header": "🟠 Has your son ever given you any feedback or expressed feelings (positive, negative, or neutral) about his circumcision?",
+    "meta_tag": "observe_parent_circ_son_feedback"
+  },
+  {
+    "header": "🟠 If your son did express feelings about it, what was your emotional experience as a parent during that conversation?",
+    "meta_tag": "observe_parent_circ_son_feedback_emotion"
+  },
+  {
+    "header": "🟠 Before making your decision, were you ever exposed to information or perspectives that were strongly in favor of routine infant circumcision?",
+    "meta_tag": "observe_parent_intact_exposure_to_pro"
+  },
+  {
+    "header": "🟠 Have any of your son(s)/AMAB children ever given you any feedback or expressed feelings (positive, negative, or neutral) about their intact status?",
+    "meta_tag": "observe_parent_intact_son_feedback"
+  },
+  {
+    "header": "🟠 If your son did express feelings about it, what was your emotional experience as a parent during that conversation?",
+    "meta_tag": "observe_parent_intact_son_feedback_emotion"
+  },
+  {
+    "header": "🟠 What advice would you give to a new parent who is undecided about circumcising their child?",
+    "meta_tag": "observe_parent_circ_advice"
+  },
+  {
+    "header": "🟠 Has your partner's circumcision status ever been a direct topic of conversation between you?",
+    "meta_tag": "observe_partner_conversation_status"
+  },
+  {
+    "header": "🟠 From your perspective, which of the following statements best describes your partner's emotional relationship with his own genital anatomy and circumcision status?",
+    "meta_tag": "observe_partner_emotional_state"
+  },
+  {
+    "header": "🟠 What advice would you offer to other partners to foster a more empathetic and connected intimate relationship, considering the nuances of circumcision status?",
+    "meta_tag": "observe_partner_advice"
+  },
+  {
+    "header": "🟠 How has your partner's circumcision status impacted communication about sexual pleasure in your relationship?",
+    "meta_tag": "observe_partner_comm_challenges"
+  },
+  {
+    "header": "🟠 From your perspective, what is the most significant misconception the general public has about your partner's anatomical state (intact, circumcised, or restoring)?",
+    "meta_tag": "observe_partner_blind_spot_v2"
+  },
+  {
+    "header": "🟠 What is your PRIMARY MEDICAL ROLE or specialty?",
+    "meta_tag": "observe_healthcare_role_v2"
+  },
+  {
+    "header": "🟠  What is your general stance or approach when counseling parents about routine infant circumcision? [With medical COLLEAGUES]",
+    "meta_tag": "observe_healthcare_stance_colleagues"
+  },
+  {
+    "header": "🟠  What is your general stance or approach when counseling parents about routine infant circumcision? [With FRIENDS or FAMILY in a personal setting]",
+    "meta_tag": "observe_healthcare_stance_friends_family"
+  },
+  {
+    "header": "🟠 How often, in your experience, does the topic of foreskin function, gliding mechanics, or specific sensory structures come up during the informed consent process with parents?",
+    "meta_tag": "observe_healthcare_sensation_discussion_v2"
+  },
+  {
+    "header": "🟠 From your professional viewpoint, how adequate do you believe the typical informed consent process is for routine infant circumcision in your region?",
+    "meta_tag": "observe_healthcare_consent_quality_v2"
+  },
+  {
+    "header": "🟠 Have you personally seen or treated complications resulting from infant circumcision in your practice?",
+    "meta_tag": "observe_healthcare_complications_seen_v2"
+  },
+  {
+    "header": "🟠  If you're willing to share, what types of complications have you seen?",
+    "meta_tag": "observe_healthcare_complications_desc"
+  },
+  {
+    "header": "🟠 From your unique standpoint within the healthcare system, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT regarding male circumcision?",
+    "meta_tag": "observe_healthcare_blind_spot_v2"
+  },
+  {
+    "header": "🟠 In what type of facility or practice setting do you primarily work?",
+    "meta_tag": "observe_healthcare_facility_type"
+  },
+  {
+    "header": "🟠 If you are male/AMAB, what is your own circumcision status?",
+    "meta_tag": "observe_healthcare_self_status"
+  },
+  {
+    "header": "🟠 Looking ahead 10-20 years, where do you predict the practice of routine infant circumcision will be in your country?",
+    "meta_tag": "observe_healthcare_prediction_future_ric"
+  },
+  {
+    "header": "🟠 How would you best describe your primary role or focus within the genital autonomy movement?",
+    "meta_tag": "observe_advocate_primary_role"
+  },
+  {
+    "header": "🟠 In your experience, what do you believe is the most critical barrier to widespread recognition of non-therapeutic infant circumcision as an ethical or human rights concern?",
+    "meta_tag": "observe_advocate_barrier_to_recognition_v2"
+  },
+  {
+    "header": "🟠 What strategy, argument, or piece of information do you find most effective in engaging people in a thoughtful, productive conversation about this topic?",
+    "meta_tag": "observe_advocate_effective_strategy_v2"
+  },
+  {
+    "header": "🟠 Looking forward, where do you believe the genital autonomy movement should be focusing its energy and resources for the greatest impact over the next 5 years?",
+    "meta_tag": "observe_advocate_future_focus"
+  },
+  {
+    "header": "🟠 Before encountering this survey or similar discussions, what was your general understanding or awareness of the differences between an intact and a circumcised penis?",
+    "meta_tag": "observe_curious_initial_awareness"
+  },
+  {
+    "header": "🟠 Have you had direct, personal experience (e.g., through intimate partners) with both intact and circumcised male partners?",
+    "meta_tag": "observe_curious_partner_experience"
+  },
+  {
+    "header": "🟠 If you have experience with both, have you observed any noticeable differences in terms of intimacy, function, or your partner's experience?",
+    "meta_tag": "observe_curious_partner_experience_desc"
+  },
+  {
+    "header": "🟠  What has most shaped your current understanding or opinion about penile circumcision?",
+    "meta_tag": "observe_curious_shaping_factors"
+  },
+  {
+    "header": "🟠 From your unique standpoint, what do you believe is the most significant societal MISCONCEPTION or BLIND SPOT you observe regarding this entire issue?",
+    "meta_tag": "observe_curious_blind_spot"
+  },
+  {
+    "header": "🟠 What is your primary field of study or research discipline?",
+    "meta_tag": "observe_student_field_v2"
+  },
+  {
+    "header": "🟠 What is your current academic or professional status?",
+    "meta_tag": "observe_student_status_v2"
+  },
+  {
+    "header": "🟠 What is your primary interest in the topic of genital cutting / circumcision?",
+    "meta_tag": "observe_student_primary_interest_v2"
+  },
+  {
+    "header": "🟠 From your perspective as a researcher or student, how might a large, qualitative/quantitative dataset like the one we are building be useful for your own work or field of study?",
+    "meta_tag": "observe_student_dataset_utility_v2"
+  },
+  {
+    "header": "🟠 What do you see as the biggest methodological challenge or limitation in conducting research on this topic?",
+    "meta_tag": "observe_student_method_challenge_v2"
+  },
+  {
+    "header": "🟠 If you hold a pro-circumcision or skeptical viewpoint regarding intactivist messaging, what is the strongest piece of evidence or a key logical argument that underpins your perspective?",
+    "meta_tag": "observe_student_pro_circ_argument_v2"
+  },
+  {
+    "header": "🟠 From your unique standpoint, what do you believe is the most significant gap in the current academic literature regarding genital cutting /circumcision?",
+    "meta_tag": "observe_student_literature_gap_v2"
+  },
+  {
+    "header": "🟠 As you navigate this decision, what are the primary sources of information you are relying on or have consulted so far?",
+    "meta_tag": "observe_undecided_info_sources_v2"
+  },
+  {
+    "header": "🟠 What are the main arguments or reasons IN FAVOR of circumcision that you are currently weighing?",
+    "meta_tag": "observe_undecided_pros_v2"
+  },
+  {
+    "header": "🟠 And what are the main arguments or reasons AGAINST circumcision (i.e., for leaving your son intact) that you are weighing?",
+    "meta_tag": "observe_undecided_cons_v2"
+  },
+  {
+    "header": "🟠 How would you describe the emotional state you and your partner (if applicable) are in regarding this decision?",
+    "meta_tag": "observe_undecided_emotional_state_v2"
+  },
+  {
+    "header": "🟠 What is the single most important question you have that, if answered, would help you make your final decision with more confidence?",
+    "meta_tag": "observe_undecided_key_question_v2"
+  },
+  {
+    "header": "🟠 Thinking about the possibility of choosing circumcision, what is your biggest FEAR or ANXIETY about that potential outcome?",
+    "meta_tag": "observe_undecided_fear_circ_v2"
+  },
+  {
+    "header": "🟠 Now, thinking about the possibility of leaving your son intact, what is your biggest FEAR or ANXIETY about that potential outcome?",
+    "meta_tag": "observe_undecided_fear_intact_v2"
+  },
+  {
+    "header": "🟠 In general, what is your primary reason for SKEPTICISM regarding the anti-circumcision or intactivist movement?",
+    "meta_tag": "observe_skeptic_primary_reason_v2"
+  },
+  {
+    "header": "🟠 Which pro-circumcision argument do you find to be the most logically sound or compelling?",
+    "meta_tag": "observe_skeptic_strongest_pro_arg_v2"
+  },
+  {
+    "header": "🟠 Conversely, which anti-circumcision (intactivist) argument do you find to be the weakest, least convincing, or most flawed?",
+    "meta_tag": "observe_skeptic_weakest_anti_arg_v2"
+  },
+  {
+    "header": "🟠 What would it take for you to find the intactivist perspective more credible or persuasive?",
+    "meta_tag": "observe_skeptic_persuasion_factors_v2"
+  },
+  {
+    "header": "🟠 Is there anything else you'd like to share about your perspective or the reasons for your skepticism?",
+    "meta_tag": "observe_skeptic_final_thoughts_v2"
+  },
+  {
+    "header": "[I actively recommend AGAINST the procedure, citing ethical/medical reasons.]",
+    "meta_tag": "observe_healthcare_stance_rec_against"
+  },
+  {
+    "header": "[I lean against it, but present it as the parents' choice.]",
+    "meta_tag": "observe_healthcare_stance_lean_against"
+  },
+  {
+    "header": "[I present it as a completely neutral choice with pros and cons.]",
+    "meta_tag": "observe_healthcare_stance_neutral"
+  },
+  {
+    "header": "[I lean towards it, but present it as the parents' choice.]",
+    "meta_tag": "observe_healthcare_stance_lean_for"
+  },
+  {
+    "header": "[I actively recommend IN FAVOR of the procedure.]",
+    "meta_tag": "observe_healthcare_stance_rec_for"
+  },
+  {
+    "header": "[I avoid the topic / The topic does not come up.]",
+    "meta_tag": "observe_healthcare_stance_avoid"
+  },
+  {
+    "header": "🟠 Were you the primary decision-maker for your child's circumcision, or had the procedure already been performed before they came into your care (e.g., through adoption)?",
+    "meta_tag": "observe_parent_circ_decision_maker_v2"
+  },
+  {
+    "header": "🔵 Now, thinking about your experience *after* you were fully healed from your circumcision, please rate the change you've experienced in those same areas.",
+    "meta_tag": "circ_adult_after_change_v2"
+  }
+]

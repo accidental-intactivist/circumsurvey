@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Harmonic Loom — Tuner — CircumSurvey</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --bgSoft:#131316; --bgCard:#18181c; --ghost:#2a2a30;
+    --text:#eee; --muted:#999; --gold:#d4a030; --goldBright:#e8b840;
+    --red:#d94f4f; --blue:#5b93c7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:'Barlow','Segoe UI',system-ui,sans-serif;}
+  header{padding:1rem 1.25rem;border-bottom:1px solid var(--ghost);}
+  header h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.02em}
+  header p{margin:.3rem 0 0;color:var(--muted);font-size:.8rem;max-width:70ch;line-height:1.5}
+  .wrap{display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 84px)}
+  @media(max-width:820px){.wrap{grid-template-columns:1fr}}
+  .stage{position:relative;background:
+    radial-gradient(ellipse at center, #131316 0%, #0a0a0c 55%, #050506 100%);
+    overflow:hidden;min-height:320px}
+  canvas{display:block;width:100%;height:100%;position:absolute;inset:0}
+  .stagehint{position:absolute;left:12px;bottom:10px;font-size:.65rem;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+    font-family:'JetBrains Mono',monospace;opacity:.6;pointer-events:none}
+  .panel{background:var(--bgSoft);border-left:1px solid var(--ghost);
+    padding:1rem 1.1rem;overflow-y:auto;max-height:calc(100vh - 84px)}
+  .grp{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;margin:1rem 0 .5rem;
+    border-bottom:1px solid var(--ghost);padding-bottom:.3rem}
+  .grp:first-child{margin-top:0}
+  .ctl{margin-bottom:.7rem}
+  .ctl label{display:flex;justify-content:space-between;font-size:.72rem;
+    color:var(--text);margin-bottom:.25rem}
+  .ctl label .val{font-family:'JetBrains Mono',monospace;color:var(--goldBright)}
+  .ctl-right{display:flex;align-items:center;gap:.45rem}
+  .lock{flex:none;background:none;border:none;cursor:pointer;font-size:.72rem;line-height:1;padding:0;opacity:.4;transition:.15s}
+  .lock:hover{opacity:.8}
+  .lock.on{opacity:1}
+  .ctl.locked input[type=range]{accent-color:var(--muted);opacity:.55}
+  .ctl input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer}
+  textarea#pasteBox{width:100%;min-height:84px;resize:vertical;background:var(--bgCard);
+    border:1px solid var(--ghost);border-radius:8px;color:var(--text);font-family:'JetBrains Mono',monospace;
+    font-size:.66rem;padding:.6rem;margin:.4rem 0;outline:none}
+  .hint{font-size:.62rem;color:var(--muted);margin-top:.1rem;line-height:1.35}
+  .row{display:flex;gap:.5rem;margin-top:1rem}
+  button{flex:1;background:transparent;border:1px solid var(--ghost);
+    color:var(--text);font-family:inherit;font-size:.72rem;text-transform:uppercase;
+    letter-spacing:.06em;padding:.5rem;border-radius:6px;cursor:pointer;transition:.15s}
+  button:hover{border-color:var(--gold);color:var(--goldBright)}
+  pre{background:var(--bgCard);border:1px solid var(--ghost);border-radius:8px;
+    padding:.75rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;
+    color:var(--muted);overflow-x:auto;margin:.6rem 0 0;line-height:1.5}
+  pre .k{color:var(--blue)} pre .n{color:var(--goldBright)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Harmonic Loom — Tuner</h1>
+  <p>Threads woven on a slow loom, with a <strong>glisten</strong> of light raking
+     across them. This mirrors the exact masthead math — dial the weave
+     (<strong>kinks &amp; twists</strong>, <strong>moiré</strong>,
+     <strong>tension &amp; release</strong>) and the <strong>glisten</strong>, then
+     copy the config block at the bottom into <code>PARAMS</code> in
+     <code>src/components/HarmonicCanvas.jsx</code>.</p>
+</header>
+<div class="wrap">
+  <div class="stage">
+    <canvas id="c"></canvas>
+    <div class="stagehint">live preview · same math as production</div>
+  </div>
+  <div class="panel" id="panel"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────
+// Default params — keep in sync with PARAMS in HarmonicCanvas.jsx
+// ─────────────────────────────────────────────────────────────────────────
+const DEFAULTS = {
+  speed: 0.005, travelSpeed: 0.0011, waveFreq: 4.5, moirePhaseSpread: 200,
+  ampXScale: 0.99, ampYScale: 0.9, rippleAmpScale: 0.04, loopAmpScale: 0.11,
+  parentSeparation: 0.13, endAnchorMargin: 0.3, nodeCount: 7, kinkDepth: 0.5,
+  focalLength: 990, lineWidth: 1.70,
+  glintGroups: 2, glintInterval: 11.5, glintSpeed: 0.05, glintWidth: 0.17, glintStrength: 0.35, glintTint: 1,
+};
+// Slider metadata: [min, max, step, hint]
+const META = {
+  "PHASE SHIFTING (moiré)": {
+    moirePhaseSpread:[0,1400,10,"Per-line time offset across the ribbon depth. 0 = rigid flat fan; higher = layers slide past each other into a rotating translucent ribbon."],
+  },
+  "TENSION & RELEASE (knots)": {
+    parentSeparation:[0.05,0.8,0.01,"Gap between the two invisible parent curves. Smaller = they cross more often into tight knots."],
+    loopAmpScale:[0,0.8,0.01,"Figure-8 push that folds the fabric back on itself."],
+    ampXScale:[0,1.2,0.01,"Horizontal sweep amplitude."],
+  },
+  "KINKS & TWISTS": {
+    nodeCount:[4,12,1,"Control points per line. MORE = more kinks and weave along each line. (4 = the old single-arc look.)"],
+    kinkDepth:[0.5,2.5,0.05,"How hard the interior points wander. Higher = curvier, knottier lines."],
+  },
+  "CONTINUOUS OSCILLATION (breathing)": {
+    speed:[0.005,0.12,0.001,"Global time scale — overall tempo."],
+    travelSpeed:[0.0002,0.004,0.0001,"How fast the wave travels along each curve."],
+    waveFreq:[0.5,6,0.1,"Number of waves packed along a curve."],
+    ampYScale:[0,1.4,0.01,"Vertical sweep amplitude."],
+    rippleAmpScale:[0,0.6,0.01,"Fast secondary wind-ripple."],
+  },
+  "FRAMING": {
+    endAnchorMargin:[0,1.5,0.05,"How far past the screen edge the line ENDS are pinned. Keeps every endpoint off-canvas so you only see the ribbon body flow through — no loose ends dancing in the middle."],
+  },
+  "GLISTEN (per colour family)": {
+    glintGroups:[0,6,1,"Colour families — each gets its own glint that traces only its hue, alternating direction (so opposite-moving glints cross). 0 = off."],
+    glintInterval:[1,20,0.5,"Seconds between a family's glints (families are staggered). ~8 is a good rhythm."],
+    glintSpeed:[0.05,1,0.01,"Pace of a pass (line-lengths/sec). Must finish before the next event, or there's no quiet gap."],
+    glintWidth:[0.02,0.6,0.01,"Streak (tail) length as a fraction of the line. Shorter = less long-lived."],
+    glintStrength:[0,1,0.05,"Brightness of the streak."],
+    glintTint:[0,1,0.05,"Holographic saturation: 0 = vivid rainbow, 1 = pearly white."],
+  },
+  "RENDER": {
+    focalLength:[300,1600,10,"Perspective depth — lower = stronger 3D foreshortening."],
+    lineWidth:[0.4,4,0.1,"Stroke weight multiplier."],
+  },
+};
+const P = {...DEFAULTS};
+const LOCKS = {};                 // per-attribute lock — locked keys are skipped by Randomize
+const RANGES = {};                // flat [min,max,step] lookup for every param
+for(const ctrls of Object.values(META)) for(const [k,m] of Object.entries(ctrls)) RANGES[k]=m;
+
+// ── Build controls ──
+const panel = document.getElementById('panel');
+function fmt(v){ return (v>=1? v.toFixed(v%1?2:0) : v.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')); }
+for(const [grp,ctrls] of Object.entries(META)){
+  const h=document.createElement('div');h.className='grp';h.textContent=grp;panel.appendChild(h);
+  for(const [key,[mn,mx,st,hint]] of Object.entries(ctrls)){
+    const wrap=document.createElement('div');wrap.className='ctl';
+    wrap.innerHTML=`<label><span>${key}</span><span class="ctl-right"><button type="button" class="lock" id="lk_${key}" title="Lock this value so Randomize leaves it alone">🔓</button><span class="val" id="v_${key}">${fmt(P[key])}</span></span></label>
+      <input type="range" id="s_${key}" min="${mn}" max="${mx}" step="${st}" value="${P[key]}">
+      <div class="hint">${hint}</div>`;
+    panel.appendChild(wrap);
+    wrap.querySelector('input').addEventListener('input',e=>{
+      P[key]=parseFloat(e.target.value);
+      document.getElementById('v_'+key).textContent=fmt(P[key]);
+      if(key==='nodeCount') buildGeometry();
+      writeConfig();
+    });
+    wrap.querySelector('.lock').addEventListener('click',ev=>{
+      LOCKS[key]=!LOCKS[key];
+      ev.currentTarget.textContent=LOCKS[key]?'🔒':'🔓';
+      ev.currentTarget.classList.toggle('on',LOCKS[key]);
+      wrap.classList.toggle('locked',LOCKS[key]);
+    });
+  }
+}
+const row=document.createElement('div');row.className='row';
+row.innerHTML=`<button id="rand">🎲 Randomize</button><button id="reset">Reset defaults</button><button id="copy">Copy config</button>`;
+panel.appendChild(row);
+const out=document.createElement('pre');out.id='out';panel.appendChild(out);
+
+// Paste-a-config box
+const paste=document.createElement('div');
+paste.innerHTML=`<div class="grp">PASTE A CONFIG</div>
+  <textarea id="pasteBox" placeholder="Paste a 'const PARAMS = { … }' block (or any key: value list) and hit Apply…"></textarea>
+  <button id="applyPaste" style="width:100%">Apply pasted config</button>
+  <div class="hint" id="pasteMsg" style="margin-top:.4rem"></div>`;
+panel.appendChild(paste);
+
+// Push the current values of P into the sliders + readout (after any bulk change).
+function syncAll(){
+  for(const k of Object.keys(P)){
+    const s=document.getElementById('s_'+k);
+    if(s) s.value=P[k];
+    const v=document.getElementById('v_'+k);
+    if(v) v.textContent=fmt(P[k]);
+  }
+  buildGeometry();
+  writeConfig();
+}
+
+document.getElementById('reset').onclick=()=>{ Object.assign(P,DEFAULTS); syncAll(); };
+
+document.getElementById('rand').onclick=()=>{
+  for(const [k,[mn,mx,st]] of Object.entries(RANGES)){
+    if(LOCKS[k]) continue;                       // leave locked attributes alone
+    const n=Math.round((mx-mn)/st);
+    P[k]=parseFloat((mn+st*Math.floor(Math.random()*(n+1))).toFixed(4));
+  }
+  syncAll();
+};
+
+document.getElementById('applyPaste').onclick=()=>{
+  const text=document.getElementById('pasteBox').value;
+  const re=/([A-Za-z]\w*)\s*:\s*(-?\d*\.?\d+)/g;
+  let m, applied=0, unknown=[];
+  while((m=re.exec(text))){
+    const k=m[1];
+    if(!(k in P)){ if(k!=='const'&&k!=='PARAMS') unknown.push(k); continue; }
+    let v=parseFloat(m[2]);
+    const r=RANGES[k]; if(r) v=Math.max(r[0],Math.min(r[1],v)); // clamp into range
+    P[k]=v; applied++;
+  }
+  syncAll();
+  const msg=document.getElementById('pasteMsg');
+  msg.textContent = applied
+    ? `Applied ${applied} value${applied===1?'':'s'}.` + (unknown.length?` Ignored: ${unknown.join(', ')}.`:'')
+    : 'No recognized key: value pairs found.';
+};
+
+document.getElementById('copy').onclick=()=>{
+  const txt=configText();navigator.clipboard?.writeText(txt);
+  const b=document.getElementById('copy');b.textContent='Copied!';setTimeout(()=>{b.textContent='Copy config';},1200);
+};
+function configText(){
+  const order=Object.keys(DEFAULTS);
+  return 'const PARAMS = {\n'+order.map(k=>`  ${k}: ${fmt(P[k])},`).join('\n')+'\n};';
+}
+function writeConfig(){
+  out.innerHTML=configText()
+    .replace(/(\b\w+)(:)/g,'<span class="k">$1</span>$2')
+    .replace(/: ([\d.]+)/g,': <span class="n">$1</span>');
+}
+writeConfig();
+
+// ─────────────────────────────────────────────────────────────────────────
+// Animation — faithful port of HarmonicCanvas.jsx
+// ─────────────────────────────────────────────────────────────────────────
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const dpr=Math.min(window.devicePixelRatio||1,2);
+function resize(){
+  const p=canvas.parentElement;
+  const w=p.clientWidth,h=p.clientHeight;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  canvas.style.width=w+'px';canvas.style.height=h+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener('resize',resize);
+
+const lerp=(a,b,t)=>a+(b-a)*t;
+const createNode=(offsetYBase)=>({
+  offsetYBase,
+  ax:Math.random()*0.5+0.7, ay:Math.random()*0.5+0.7,
+  az:(Math.random()*0.5+0.5)*600,
+  fx:(Math.random()*0.0015)+0.0005, fy:(Math.random()*0.0015)+0.0005, fz:(Math.random()*0.0015)+0.0005,
+  px:Math.random()*Math.PI*2, py:Math.random()*Math.PI*2, pz:Math.random()*Math.PI*2,
+});
+const curve=(offBase)=>{
+  const n=Math.max(4,Math.round(P.nodeCount));
+  const arr=[];
+  for(let i=0;i<n;i++) arr.push({...createNode(offBase),xFract:i/(n-1)});
+  return arr;
+};
+// offsetYBase signs/scales mirror the component (±sep, and -0.7/+1.3·sep)
+let r1a,r1b,r2a,r2b,lines;
+
+const steps=48, halfSteps=32;
+const styles1=[], styles2=[], rgb1=[], rgb2=[];
+const C={red:[217,79,79],gold:[212,160,48],blue:[91,147,199]};
+for(let i=0;i<=steps;i++){const t=i/steps,a=Math.sin(t*Math.PI)*0.5+0.2;
+  const r=Math.round(lerp(C.red[0],C.gold[0],t)),g=Math.round(lerp(C.red[1],C.gold[1],t)),b=Math.round(lerp(C.red[2],C.gold[2],t));
+  styles1.push(`rgba(${r},${g},${b},${a})`); rgb1.push([r,g,b]);}
+for(let i=0;i<=halfSteps;i++){const t=i/halfSteps,a=Math.sin(t*Math.PI)*0.5+0.2;
+  const r=Math.round(lerp(C.gold[0],C.blue[0],t)),g=Math.round(lerp(C.gold[1],C.blue[1],t)),b=Math.round(lerp(C.gold[2],C.blue[2],t));
+  styles2.push(`rgba(${r},${g},${b},${a})`); rgb2.push([r,g,b]);}
+// Position on the Catmull-Rom spline at u∈[0,1] — to scatter sparkles onto threads.
+function splinePoint(pts,u){
+  const n=pts.length;
+  const seg=Math.min(n-2,Math.floor(u*(n-1)));
+  const t=u*(n-1)-seg;
+  const p0=pts[seg-1]||pts[0], p1=pts[seg], p2=pts[seg+1], p3=pts[seg+2]||pts[n-1];
+  const t2=t*t, t3=t2*t;
+  return {
+    x:0.5*(2*p1.x+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),
+    y:0.5*(2*p1.y+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)
+  };
+}
+
+const total=(steps+1)+(halfSteps+1);
+function buildGeometry(){
+  r1a=curve(-1); r1b=curve(1); r2a=curve(-0.7); r2b=curve(1.3);
+  const nc=Math.max(4,Math.round(P.nodeCount));
+  lines=Array.from({length:total},()=>({pts:Array.from({length:nc},()=>({x:0,y:0})),avgZ:0,scale:0,style:'',rgb:[255,255,255],colorPos:0,phase:Math.random()*Math.PI*2}));
+}
+buildGeometry();
+
+// (Glisten drawn in render as sweeping light bars — see below.)
+
+let time=0,glintTime=0,last=performance.now();
+const MIN=1000/30;
+
+function evalNode(n,t){
+  const cw=canvas.width/dpr, ch=canvas.height/dpr;
+  const span=Math.max(cw,ch), half=span/2;
+  const xFract=n.xFract??0.5;
+  const xBase=-half-100+xFract*(span+200);
+  const speed=P.travelSpeed, waveFreq=P.waveFreq;
+  const travelingPhase=t*speed-xFract*waveFreq*Math.PI*2;
+  const phaseX=t*n.fx+n.px+travelingPhase;
+  const phaseY=t*n.fy+n.py+travelingPhase*1.5;
+  const ripplePhase=t*(speed*2.2)-xFract*(waveFreq*2.5)*Math.PI*2+n.px;
+  const loopPhase=t*(speed*1.9)-xFract*(waveFreq*1.7)*Math.PI*2+n.py;
+  const k=(n.xFract>0 && n.xFract<1)?P.kinkDepth:1;  // interior points wander harder
+  const ampX=half*P.ampXScale*n.ax*k;
+  const ampY=half*P.ampYScale*n.ay*k;
+  const rippleAmp=half*P.rippleAmpScale*n.ay*k;
+  const loopAmp=half*P.loopAmpScale*n.ax*k;
+  const offset=(n.offsetYBase??0)*P.parentSeparation*half;
+  const y=Math.sin(phaseY)*ampY+Math.cos(ripplePhase)*rippleAmp+Math.cos(loopPhase*1.5)*(rippleAmp*1.2)+offset;
+  // END ANCHORS OFF-CANVAS: pin the first/last control point (xFract 0 and 1)
+  // beyond the edge at flat depth so endpoints never appear inside the frame.
+  if(n.xFract===0 || n.xFract===1){
+    const dir=n.xFract===0?-1:1;
+    return {x:dir*half*(1+P.endAnchorMargin), y, z:0};
+  }
+  const x=xBase+Math.cos(phaseX)*ampX+Math.sin(loopPhase)*loopAmp;
+  const z=Math.sin(t*n.fz+n.pz)*n.az;
+  return {x,y,z};
+}
+const lerpN=(a,b,t)=>({x:lerp(a.x,b.x,t),y:lerp(a.y,b.y,t),z:lerp(a.z,b.z,t)});
+// Trace a Catmull-Rom spline through a line's points (caller does beginPath/stroke).
+function traceSpline(pts){
+  const n=pts.length;
+  ctx.moveTo(pts[0].x,pts[0].y);
+  for(let s=0;s<n-1;s++){
+    const p0=pts[s-1]||pts[0], p1=pts[s], p2=pts[s+1], p3=pts[s+2]||pts[n-1];
+    ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y);
+  }
+}
+
+function ribbon(p1,p2,sty,rgbArr,rsteps,start,colorStart,colorEnd){
+  const cw=canvas.width/dpr, ch=canvas.height/dpr, cx=cw/2, cy=ch/2;
+  const fl=P.focalLength;
+  let idx=start;
+  for(let i=0;i<=rsteps;i++){
+    const lb=i/rsteps;
+    const blend=0.5-Math.cos(lb*Math.PI)*0.5;
+    const lt=time+(lb-0.5)*P.moirePhaseSpread;       // ← moiré per-line phase
+    const L=lines[idx++];
+    const nc=p1.length;
+    let zSum=0,scSum=0;
+    for(let j=0;j<nc;j++){
+      const a=evalNode(p1[j],lt), b=evalNode(p2[j],lt);
+      const cz=lerp(a.z,b.z,blend);
+      const sc=fl/Math.max(1,fl+cz);
+      const pt=L.pts[j];
+      pt.x=cx+lerp(a.x,b.x,blend)*sc;
+      pt.y=cy+lerp(a.y,b.y,blend)*sc;
+      zSum+=cz; scSum+=sc;
+    }
+    L.avgZ=zSum/nc; L.scale=scSum/nc; L.style=sty[i]; L.rgb=rgbArr[i];
+    L.colorPos=colorStart+(rsteps>0?i/rsteps:0)*(colorEnd-colorStart);
+  }
+  return idx;
+}
+
+function render(now){
+  requestAnimationFrame(render);
+  const el=now-last; if(el<MIN) return;
+  time+=Math.min(el,100)*P.speed; glintTime+=Math.min(el,100); last=now;
+  const cw=canvas.width/dpr, ch=canvas.height/dpr;
+  const diag=Math.sqrt(cw*cw+ch*ch), sizeScale=Math.max(0.3,diag/1400);
+  ctx.clearRect(0,0,cw,ch);
+  let idx=0;
+  idx=ribbon(r1a,r1b,styles1,rgb1,steps,idx,0,0.5);
+  ribbon(r2a,r2b,styles2,rgb2,halfSteps,idx,0.5,1);
+  lines.sort((a,b)=>b.avgZ-a.avgZ);
+  const groups=new Map();
+  for(const L of lines){
+    const w=Math.max(0.4,L.scale*P.lineWidth*sizeScale);
+    const key=L.style+'|'+w.toFixed(2);
+    if(!groups.has(key)) groups.set(key,{style:L.style,width:w,lines:[]});
+    groups.get(key).lines.push(L);
+  }
+  // Base weave
+  for(const g of groups.values()){
+    ctx.strokeStyle=g.style;ctx.lineWidth=g.width;ctx.beginPath();
+    for(const L of g.lines) traceSpline(L.pts);
+    ctx.stroke();
+  }
+  // The glisten: one glint PER COLOUR FAMILY. Lines are binned by hue; each family
+  // glints on its own staggered interval, alternating direction (L→R vs R→L), so
+  // opposite-moving glints of different hues cross. Arc-length paced for smoothness.
+  if(P.glintGroups>0){
+    const groupsN=Math.max(1,Math.round(P.glintGroups));
+    const tailFrac=Math.max(0.02,P.glintWidth);
+    const sat=Math.max(0,Math.min(100,Math.round(95-P.glintTint*60))); // holographic saturation
+    const A=P.glintStrength;
+    const N=64;
+    const tSec=glintTime/1000;
+    const period=Math.max(0.5,P.glintInterval);
+    const speed=Math.max(0.001,P.glintSpeed);
+    const travelT=Math.min(period,1/speed);
+    const headByGroup=new Array(groupsN), dirByGroup=new Array(groupsN);
+    let anyActive=false;
+    for(let g=0;g<groupsN;g++){
+      dirByGroup[g]=(g%2===0)?1:-1;
+      const offset=(g/groupsN)*period;
+      const localT=(((tSec-offset)%period)+period)%period;
+      if(localT<travelT){ headByGroup[g]=localT/travelT; anyActive=true; } else headByGroup[g]=-1;
+    }
+    if(anyActive){
+      ctx.lineCap='round'; ctx.lineJoin='round';
+      for(const L of lines){
+        const g=Math.min(groupsN-1,Math.max(0,Math.floor((L.colorPos||0)*groupsN)));
+        const hp0=headByGroup[g];
+        if(hp0<0) continue;
+        const dir=dirByGroup[g];
+        const pts=L.pts;
+        const w=Math.max(1,L.scale*P.lineWidth*sizeScale*1.5);
+        const sx=[],sy=[],cum=[]; let total=0,px0=0,py0=0;
+        for(let i=0;i<=N;i++){ const p=splinePoint(pts,i/N); sx[i]=p.x; sy[i]=p.y; if(i===0) cum[i]=0; else { total+=Math.hypot(p.x-px0,p.y-py0); cum[i]=total; } px0=p.x; py0=p.y; }
+        if(total<1) continue;
+        const tailLen=tailFrac*total;
+        const at=(s)=>{ let i=1; while(i<N&&cum[i]<s) i++; const c0=cum[i-1],c1=cum[i]; const t=c1>c0?(s-c0)/(c1-c0):0; return {x:sx[i-1]+(sx[i]-sx[i-1])*t,y:sy[i-1]+(sy[i]-sy[i-1])*t}; };
+        const hp=dir===1?hp0:(1-hp0);
+        const sHead=hp*total, sTail=dir===1?Math.max(0,sHead-tailLen):Math.min(total,sHead+tailLen);
+        if(Math.abs(sHead-sTail)<0.5) continue;
+        const T=at(sTail), H=at(sHead);
+        // HOLOGRAPHIC: hue runs along the streak and drifts over time (offset per
+        // family); alpha falls off fast toward the tail (short-lived).
+        const grad=ctx.createLinearGradient(T.x,T.y,H.x,H.y);
+        const hueBase=glintTime*0.03+g*140+(L.colorPos||0)*60;
+        for(let q=0;q<=6;q++){
+          const f=q/6;
+          const hue=(((hueBase+f*150)%360)+360)%360;
+          const light=60+f*28, alpha=Math.pow(f,1.8)*A;
+          grad.addColorStop(f,`hsla(${hue.toFixed(0)},${sat}%,${light.toFixed(0)}%,${alpha.toFixed(3)})`);
+        }
+        ctx.strokeStyle=grad; ctx.lineWidth=w;
+        ctx.beginPath(); ctx.moveTo(T.x,T.y);
+        const sLo=Math.min(sTail,sHead), sHi=Math.max(sTail,sHead);
+        if(dir===1){ for(let i=0;i<=N;i++) if(cum[i]>sLo&&cum[i]<sHi) ctx.lineTo(sx[i],sy[i]); }
+        else { for(let i=N;i>=0;i--) if(cum[i]>sLo&&cum[i]<sHi) ctx.lineTo(sx[i],sy[i]); }
+        ctx.lineTo(H.x,H.y); ctx.stroke();
+      }
+      ctx.lineCap='butt'; ctx.lineJoin='miter';
+    }
+  }
+}
+resize();
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

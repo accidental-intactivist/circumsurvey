@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background Choreography — Draft 01 · CircumSurvey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,600&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Barlow',sans-serif;
+    color:#eeeef0;
+    background:#0e0e10;
+  }
+  #loom{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+  main{position:relative;z-index:1}
+
+  section{
+    min-height:140vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:6rem 1.5rem;
+  }
+  .card{
+    max-width:680px;width:100%;
+    background:rgba(12,12,17,0.60);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:12px;
+    padding:2.4rem 2.6rem;
+  }
+  section[data-theme="cream"] .card{
+    background:rgba(250,248,244,0.74);
+    border-color:rgba(26,92,58,0.18);
+    color:#2a2a2a;
+  }
+
+  .kicker{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;
+    color:#d4a030;margin-bottom:0.9rem;
+  }
+  h1{
+    font-family:'Playfair Display',serif;font-weight:800;
+    font-size:clamp(2.2rem,5.5vw,3.4rem);line-height:1.08;
+    margin-bottom:1.1rem;
+  }
+  h2{
+    font-family:'Playfair Display',serif;font-weight:700;
+    font-size:1.65rem;line-height:1.15;margin-bottom:0.9rem;
+  }
+  section[data-theme="cream"] h2{color:#1a5c3a}
+  p{font-size:0.92rem;line-height:1.65;font-weight:400;margin-bottom:0.85rem}
+  section[data-theme="cream"] p{color:#2a2a2a}
+  .sub{color:#8a8a96;font-size:0.88rem}
+  section[data-theme="cream"] .sub{color:#5a5a5a}
+
+  blockquote{
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:600;
+    font-size:1.18rem;line-height:1.45;margin:1.3rem 0 0.4rem;
+  }
+  cite{
+    display:block;font-style:normal;
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;
+    font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;
+    color:#8a8a96;margin-top:0.55rem;
+  }
+
+  .stats{display:flex;gap:1.8rem;flex-wrap:wrap;margin:1.4rem 0 0.6rem}
+  .stat b{
+    display:block;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:1.95rem;line-height:1;
+  }
+  .stat span{
+    display:block;font-family:'Barlow Condensed',sans-serif;font-weight:600;
+    font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+    color:#8a8a96;margin-top:0.35rem;max-width:9.5rem;
+  }
+
+  .note{
+    font-family:'JetBrains Mono',monospace;font-size:0.62rem;line-height:1.7;
+    color:#8a8a96;border-left:2px solid #d4a030;
+    padding-left:0.8rem;margin-top:1.6rem;
+  }
+  section[data-theme="cream"] .note{color:#5a5a5a}
+  .note b{color:#d4a030;font-weight:700}
+
+  .rule{
+    display:flex;gap:1rem;align-items:baseline;
+    padding:0.75rem 0;border-bottom:1px solid rgba(26,92,58,0.14);
+  }
+  .rule:last-child{border-bottom:none}
+  .rule i{
+    font-style:normal;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:0.7rem;color:#d4a030;flex:0 0 1.6rem;
+  }
+  .rule p{margin:0;font-size:0.85rem}
+
+  #hud{
+    position:fixed;right:1.1rem;bottom:1rem;z-index:2;
+    font-family:'JetBrains Mono',monospace;font-size:0.6rem;
+    letter-spacing:0.08em;color:#d4a030;opacity:0.85;
+    pointer-events:none;
+  }
+  @media (max-width:600px){
+    .card{padding:1.7rem 1.4rem}
+    section{min-height:125vh;padding:4rem 1rem}
+  }
+</style>
+</head>
+<body>
+<canvas id="loom"></canvas>
+<div id="hud"></div>
+<main>
+
+<section data-f="loom" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Design Draft &middot; Background Choreography 01</div>
+    <h1>The Loom, Choreographed</h1>
+    <p>One canvas. Sixty-four threads. Seven formations. The lines behind this page never leave — as you scroll, they <em>re-form</em> into the motif of each section, then hold still while you read.</p>
+    <p class="sub">This is the Harmonic Loom you already know: a random weave, full energy, front-door mode. Scroll to watch it take direction.</p>
+    <div class="note"><b>FORMATION 01 — THE LOOM.</b> Free weave. This is the only formation allowed full amplitude; every later formation obeys a stricter opacity and motion budget.</div>
+  </div>
+</section>
+
+<section data-f="quiet" data-theme="cream">
+  <div class="card">
+    <div class="kicker">The Researcher's Letter</div>
+    <h2>The "Why" Behind This Inquiry</h2>
+    <p>This inquiry began with a simple observation: as someone who grew up intact in the United States, I realized I had never heard anyone discuss how they actually felt about their circumcision status as adults. So I asked.</p>
+    <p class="sub">We are not telling people how to feel. We are creating a platform for them to anonymously share how they actually feel and what they actually experience.</p>
+    <div class="note"><b>FORMATION 02 — QUIET LOOM.</b> Editorial mode. Amplitude drops to 45%, palette shifts to teal and gold on cream, and idle motion damps to 30% when you stop scrolling. On text-heavy pages the loom keeps the eye moving without ever competing with the reading line.</div>
+  </div>
+</section>
+
+<section data-f="grat" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Phase 1 &middot; Global Reach</div>
+    <h2>The Inquiry Went Global</h2>
+    <p>What began as a US-focused inquiry spread organically. Respondents arrived from every inhabited continent — including a baseline of experience from non-cutting cultures that the United States has largely never had access to.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:#8bb8d9">322</b><span>United States</span></div>
+      <div class="stat"><b style="color:#8bb8d9">43</b><span>Canada</span></div>
+      <div class="stat"><b style="color:#8bb8d9">32</b><span>United Kingdom</span></div>
+      <div class="stat"><b style="color:#8bb8d9">21</b><span>Australia</span></div>
+    </div>
+    <div class="note"><b>FORMATION 03 — GRATICULE.</b> The threads become meridians and parallels of a slowly turning globe; a handful peel off to engrave a compass rose. No literal map imagery — the geography is implied by the grid, which keeps it atmosphere, not illustration.</div>
+  </div>
+</section>
+
+<section data-f="ridge" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Sexual Experience &middot; Six Metrics</div>
+    <h2>The Pleasure Gap</h2>
+    <p>On pleasure from mobile skin, intact respondents average <b style="font-family:'JetBrains Mono',monospace;color:#5b93c7">4.47</b> of 5. Circumcised respondents average <b style="font-family:'JetBrains Mono',monospace;color:#d94f4f">1.96</b> — the largest single finding in the dataset.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:#5b93c7">4.47</b><span>Intact Pathway &middot; mobile skin</span></div>
+      <div class="stat"><b style="color:#d94f4f">1.96</b><span>Circumcised Pathway &middot; mobile skin</span></div>
+      <div class="stat"><b style="color:#e8c868">&Delta; 2.52</b><span>a 56% drop</span></div>
+    </div>
+    <div class="note"><b>FORMATION 04 — RIDGELINE.</b> The pulsar-cover motif. Upper ridges (blue) run tall and sharp; lower ridges (red) are flattened. In production the peak heights are driven by the real distributions — the background <em>is</em> the chart, whispered.</div>
+  </div>
+</section>
+
+<section data-f="moire" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Mirror Pairs &middot; Parallel Questions</div>
+    <h2>The Curiosity Mirror</h2>
+    <p>The same question, asked from opposite sides. <b style="font-family:'JetBrains Mono',monospace;color:#d94f4f">67.8%</b> of circumcised respondents often wonder what intact experience is like. <b style="font-family:'JetBrains Mono',monospace;color:#5b93c7">27.3%</b> of intact respondents wonder the reverse.</p>
+    <div class="note"><b>FORMATION 05 — MOIR&Eacute;.</b> Two identical line grids, one blue, one red, about two degrees apart and drifting slowly. Neither grid is interesting alone; the interference pattern between them is the point — same questions, slight offset, visible difference. Tailor-made for the Mirror Pairs sections.</div>
+  </div>
+</section>
+
+<section data-f="spiro" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Future Sons &middot; All Pathways</div>
+    <h2>The Generational Break</h2>
+    <p>For generations the pattern repeated itself. Asked about their own future sons, respondents across every pathway converge on keeping them intact.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:#5b93c7">88.8%</b><span>Intact &middot; keep intact</span></div>
+      <div class="stat"><b style="color:#d94f4f">78.1%</b><span>Circumcised &middot; keep intact</span></div>
+      <div class="stat"><b style="color:#e8c868">98.1%</b><span>Restoring &middot; keep intact</span></div>
+      <div class="stat"><b style="color:#a0a0a0">0%</b><span>Intact &amp; Restoring &middot; would circumcise</span></div>
+    </div>
+    <div class="note"><b>FORMATION 06 — EPICYCLE.</b> A spirograph rosette traces the cycle — father to son, closed loop. But watch the outer threads: the loop fails to close and spirals open. The breaking of the pattern is drawn, not stated.</div>
+  </div>
+</section>
+
+<section data-f="flow" data-theme="dark">
+  <div class="card">
+    <div class="kicker">Bodily Autonomy &middot; The Consensus</div>
+    <h2>Where Every Stream Bends</h2>
+    <p>Whatever their starting point, respondents converge: the individual's right to bodily autonomy outweighs parental discretion.</p>
+    <div class="stats">
+      <div class="stat"><b style="color:#5b93c7">96.4%</b><span>Intact Pathway</span></div>
+      <div class="stat"><b style="color:#d94f4f">81.3%</b><span>Circumcised Pathway</span></div>
+      <div class="stat"><b style="color:#e8c868">100%</b><span>Restoring Pathway</span></div>
+      <div class="stat"><b style="color:#a0a0a0">97.0%</b><span>Observer Pathway</span></div>
+    </div>
+    <div class="note"><b>FORMATION 07 — CONVERGENCE.</b> Streamlines enter scattered across the full height in every pathway color and bend toward a single channel. The flow-field is the argument: different origins, one destination.</div>
+  </div>
+</section>
+
+<section data-f="quiet" data-theme="cream">
+  <div class="card">
+    <div class="kicker">The Discipline</div>
+    <h2>Beautiful, Engaging, Never Distracting</h2>
+    <p class="sub">The rules this draft obeys — and the production build must keep:</p>
+    <div style="margin-top:0.8rem">
+      <div class="rule"><i>R1</i><p><b>Opacity budget.</b> Background strokes stay in the 10–35% alpha band. The moment a line competes with type, it is too loud.</p></div>
+      <div class="rule"><i>R2</i><p><b>Transitions live in the gutters.</b> Formations hold steady while a section is centered in the viewport; the morph happens only in the dead zone between sections, where nobody is reading.</p></div>
+      <div class="rule"><i>R3</i><p><b>Motion damps at rest.</b> When scrolling stops for a beat, idle drift eases to 30% speed. The page stays alive but settles while you read. Watch the HUD in the corner.</p></div>
+      <div class="rule"><i>R4</i><p><b>Text always sits on a scrim.</b> Content cards carry a translucent blur layer, so legibility never depends on where the lines happen to be.</p></div>
+      <div class="rule"><i>R5</i><p><b>One motif per viewport.</b> Each formation echoes its section's subject — grid for geography, ridges for distributions, interference for mirrors — and never mixes metaphors.</p></div>
+      <div class="rule"><i>R6</i><p><b>Reduced motion is honored.</b> With <span style="font-family:'JetBrains Mono',monospace;font-size:0.78em">prefers-reduced-motion</span>, idle drift freezes; formations still change with scroll, since that motion is user-commanded.</p></div>
+    </div>
+    <div class="note"><b>NEXT STEP.</b> If this direction holds, the engine becomes a React component (one canvas, formations registered per station) and drops into the Guided Tour behind the existing station cards — theme-engine native, C/FONT tokens, var(--path-*) palettes.</div>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+  var canvas=document.getElementById('loom');
+  var ctx=canvas.getContext('2d');
+  var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var L=64,P=100;
+  var W=0,H=0,DPR=1;
+  var T=RM?7:0;
+
+  var PAL={red:[217,79,79],yel:[232,200,104],lbl:[139,184,217],blu:[91,147,199],gold:[212,160,48],teal:[26,92,58]};
+  var THEME={dark:[14,14,16],cream:[250,248,244]};
+  var N_MER=28,N_PAR=19;
+
+  function hash(n){var x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);}
+  function ss(a,b,x){x=Math.max(0,Math.min(1,(x-a)/(b-a)));return x*x*(3-2*x);}
+  function lerp(a,b,m){return a+(b-a)*m;}
+
+  var FORMS={
+    loom:function(i,u,o){
+      var v=i/(L-1);
+      var base=H*(0.12+0.76*v);
+      var amp=H*0.05*(0.55+0.45*Math.sin(i*1.7+T*0.11));
+      var f1=1.2+(i%5)*0.55,f2=2.3+(i%3);
+      o.x=u*W;
+      o.y=base+Math.sin(u*6.283*f1+T*0.25+i*0.8)*amp+Math.sin(u*6.283*f2-T*0.17+i*2.1)*amp*0.45;
+    },
+    quiet:function(i,u,o){
+      var v=i/(L-1);
+      var base=H*(0.2+0.6*v);
+      var amp=H*0.021*(0.55+0.45*Math.sin(i*1.7+T*0.09));
+      var f1=1.1+(i%4)*0.5;
+      o.x=u*W;
+      o.y=base+Math.sin(u*6.283*f1+T*0.16+i*0.8)*amp+Math.sin(u*9.4-T*0.11+i*2.1)*amp*0.4;
+    },
+    grat:function(i,u,o){
+      var cx=W*0.5,cy=H*0.47,R=Math.min(W,H)*0.36;
+      if(i<N_MER){
+        var lam=(i/N_MER)*Math.PI-Math.PI/2+T*0.05;
+        var th=(u-0.5)*Math.PI;
+        o.x=cx+R*Math.cos(th)*Math.sin(lam);
+        o.y=cy-R*Math.sin(th);
+      }else if(i<N_MER+N_PAR){
+        var k=i-N_MER;
+        var th2=((k+0.5)/N_PAR-0.5)*Math.PI*0.92;
+        var lam2=(u-0.5)*Math.PI;
+        o.x=cx+R*Math.cos(th2)*Math.sin(lam2);
+        o.y=cy-R*Math.sin(th2);
+      }else{
+        var idx=i-N_MER-N_PAR;
+        var rx=W*0.82,ry=H*0.22,r0=Math.min(W,H)*0.085;
+        var a=u*6.283,rot=T*0.03;
+        var r;
+        if(idx===0)r=r0;
+        else if(idx===1)r=r0*0.68;
+        else r=r0*(0.18+0.82*Math.pow(Math.abs(Math.cos(a*2+idx*0.12)),9))*(1-idx*0.015);
+        o.x=rx+r*Math.cos(a+rot);
+        o.y=ry+r*Math.sin(a+rot);
+      }
+    },
+    ridge:function(i,u,o){
+      var v=i/(L-1);
+      var yRow=H*(0.18+0.64*v);
+      var env=Math.exp(-Math.pow((u-0.5)/0.23,2));
+      var s=0,b,c,wd,am;
+      for(b=0;b<3;b++){
+        c=0.28+0.44*hash(i*3.1+b*7.7);
+        wd=0.035+0.05*hash(i*5.3+b*2.9);
+        am=Math.pow(hash(i*9.7+b*4.3),1.6);
+        s+=am*Math.exp(-Math.pow((u-c)/wd,2));
+      }
+      var A=(v<0.5?H*0.058:H*0.02)*(0.92+0.08*Math.sin(T*0.3+i));
+      o.x=u*W;
+      o.y=yRow-env*A*s*2.2;
+    },
+    moire:function(i,u,o){
+      var half=L/2;
+      var g=i<half?0:1;
+      var k=g?i-half:i;
+      var d=g?0.045+0.028*Math.sin(T*0.07):0;
+      var a=0.42+d;
+      var ca=Math.cos(a),sa=Math.sin(a);
+      var span=Math.max(W,H)*1.15,len=Math.hypot(W,H)*1.2;
+      var off=((k/(half-1))-0.5)*span;
+      var cx=W*0.5-sa*off,cy=H*0.5+ca*off;
+      o.x=cx+ca*(u-0.5)*len;
+      o.y=cy+sa*(u-0.5)*len;
+    },
+    spiro:function(i,u,o){
+      var cx=W*0.5,cy=H*0.47;
+      var r=0.30+0.012*(i%6);
+      var d=0.5+0.4*hash(i*1.3);
+      var m=(1-r)+d;
+      var S=Math.min(W,H)*0.36/m;
+      var s=u*6.283*3+i*0.09+T*0.02;
+      var q=(1-r)/r;
+      var x=(1-r)*Math.cos(s)+d*Math.cos(q*s);
+      var y=(1-r)*Math.sin(s)-d*Math.sin(q*s);
+      var br=ss(0.78,1,u)*(i%3===0?1:0.12);
+      var mul=1+br*(0.5+0.7*hash(i+9));
+      x*=mul;y*=mul;
+      var rot=T*0.015+br*0.5;
+      var cr=Math.cos(rot),sr=Math.sin(rot);
+      o.x=cx+S*(x*cr-y*sr);
+      o.y=cy+S*(x*sr+y*cr);
+    },
+    flow:function(i,u,o){
+      var v=i/(L-1);
+      var y0=H*(0.06+0.88*v);
+      var bend=ss(0.18,0.85,u);
+      var yT=H*0.5+(v-0.5)*H*0.05;
+      o.x=u*W;
+      o.y=lerp(y0,yT,bend)+Math.sin(u*9+T*0.4+i)*H*0.006*(1-bend*0.8);
+    }
+  };
+
+  var COLS={
+    loom:function(i){var c=[PAL.red,PAL.yel,PAL.blu,PAL.lbl][i%4];return[c[0],c[1],c[2],0.13];},
+    quiet:function(i){var c=i%3?PAL.teal:PAL.gold;return[c[0],c[1],c[2],i%3?0.10:0.13];},
+    grat:function(i){var c;if(i<N_MER+N_PAR){c=PAL.lbl;return[c[0],c[1],c[2],0.15];}c=PAL.gold;return[c[0],c[1],c[2],0.34];},
+    ridge:function(i){var v=i/(L-1);var c=v<0.5?PAL.blu:PAL.red;return[c[0],c[1],c[2],v<0.5?0.32:0.24];},
+    moire:function(i){var c=i<L/2?PAL.blu:PAL.red;return[c[0],c[1],c[2],0.12];},
+    spiro:function(i){var c=PAL.gold;return[c[0],c[1],c[2],i%9===0?0.30:0.15];},
+    flow:function(i){var c=[PAL.blu,PAL.red,PAL.yel,PAL.lbl][i%4];return[c[0],c[1],c[2],0.20];}
+  };
+
+  var secEls=Array.prototype.slice.call(document.querySelectorAll('main section'));
+  var secs=secEls.map(function(el){return{el:el,f:el.getAttribute('data-f'),theme:el.getAttribute('data-theme')};});
+  var centers=[];
+
+  function measure(){
+    DPR=Math.min(2,window.devicePixelRatio||1);
+    W=window.innerWidth;H=window.innerHeight;
+    canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    centers=secs.map(function(s){
+      var r=s.el.getBoundingClientRect();
+      return r.top+window.scrollY+r.height/2;
+    });
+  }
+  window.addEventListener('resize',measure);
+  window.addEventListener('load',measure);
+
+  var lastScrollT=-1e9;
+  window.addEventListener('scroll',function(){lastScrollT=performance.now();},{passive:true});
+
+  var NAMES={loom:'THE LOOM',quiet:'QUIET LOOM',grat:'GRATICULE',ridge:'RIDGELINE',moire:'MOIRÉ',spiro:'EPICYCLE',flow:'CONVERGENCE'};
+  var hud=document.getElementById('hud');
+  var pA={x:0,y:0},pB={x:0,y:0};
+  var damp=1,prev=performance.now();
+
+  function frame(now){
+    var dt=Math.min(0.05,(now-prev)/1000);prev=now;
+    var scrolling=(now-lastScrollT)<200;
+    damp+=((scrolling?1:0.3)-damp)*0.04;
+    if(!RM)T+=dt*(0.35+0.65*damp);
+
+    var p=window.scrollY+H*0.5;
+    var k=0;
+    while(k<centers.length-1&&p>centers[k+1])k++;
+    var mix=0;
+    if(k<centers.length-1){
+      var raw=(p-centers[k])/(centers[k+1]-centers[k]);
+      mix=ss(0.40,0.66,raw);
+    }
+    var A=secs[k],B=secs[Math.min(k+1,secs.length-1)];
+    var fA=FORMS[A.f],fB=FORMS[B.f],cA=COLS[A.f],cB=COLS[B.f];
+    var tA=THEME[A.theme],tB=THEME[B.theme];
+
+    ctx.fillStyle='rgb('+(lerp(tA[0],tB[0],mix)|0)+','+(lerp(tA[1],tB[1],mix)|0)+','+(lerp(tA[2],tB[2],mix)|0)+')';
+    ctx.fillRect(0,0,W,H);
+    ctx.lineWidth=1;
+
+    var i,j,u,x,y,ca2,cb2;
+    for(i=0;i<L;i++){
+      ca2=cA(i);cb2=cB(i);
+      ctx.strokeStyle='rgba('+(lerp(ca2[0],cb2[0],mix)|0)+','+(lerp(ca2[1],cb2[1],mix)|0)+','+(lerp(ca2[2],cb2[2],mix)|0)+','+lerp(ca2[3],cb2[3],mix).toFixed(3)+')';
+      ctx.beginPath();
+      for(j=0;j<P;j++){
+        u=j/(P-1);
+        fA(i,u,pA);
+        x=pA.x;y=pA.y;
+        if(mix>0.001){fB(i,u,pB);x=lerp(x,pB.x,mix);y=lerp(y,pB.y,mix);}
+        if(j===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+
+    var cur=mix<0.5?A:B;
+    hud.textContent='F0'+(secs.indexOf(cur)+1)+' · '+NAMES[cur.f]+' · motion '+damp.toFixed(2);
+    requestAnimationFrame(frame);
+  }
+
+  measure();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

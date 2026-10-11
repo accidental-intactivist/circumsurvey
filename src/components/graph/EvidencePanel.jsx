@@ -103,6 +103,12 @@ function NodeDetail({ graph, nodeId, mode, bfs, path, onSelectEdge, onSelectNode
     return out.sort((x, y) => y.w - x.w).slice(0, 25);
   }, [graph, nodeId]);
 
+  const nodeDocs = useMemo(() => {
+    if (!node) return [];
+    return (node.docIds || []).map(id => graph.docs.get(id)).filter(Boolean)
+      .sort((a, b) => String(a.date || '').localeCompare(String(b.date || ''))); // Chronological (oldest to newest) to show evolution
+  }, [graph, node]);
+
   if (!node) return null;
   const isCenter = mode === 'degrees' && bfs?.centerId === nodeId;
   const depth = mode === 'degrees' && bfs ? bfs.depth.get(nodeId) : undefined;
@@ -185,6 +191,30 @@ function NodeDetail({ graph, nodeId, mode, bfs, path, onSelectEdge, onSelectNode
               </li>
             ))}
           </ul>
+        )}
+
+        <div className="eg-section-title" style={{ marginTop: '2rem' }}>Timeline of Evidence</div>
+        {nodeDocs.length === 0 ? (
+          <p className="eg-empty">No timeline events found.</p>
+        ) : (
+          <div style={{ position: 'relative', margin: '1rem 0 2rem 1rem', borderLeft: '2px solid var(--c-ghost)' }}>
+            {nodeDocs.map((doc, idx) => (
+              <div key={doc.id} style={{ position: 'relative', paddingLeft: '1.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ position: 'absolute', left: '-5px', top: '0.3rem', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-gold)' }} />
+                <div style={{ fontSize: '0.75rem', color: 'var(--c-goldBright)', fontWeight: 'bold', marginBottom: '0.2rem', fontFamily: 'var(--f-mono)' }}>
+                  {doc.date || 'Unknown Date'}
+                </div>
+                <Link to={resolveItemRoute(doc).path} style={{ display: 'block', color: 'var(--c-textBright)', textDecoration: 'none', fontWeight: 600, lineHeight: 1.4, marginBottom: '0.4rem' }}>
+                  {doc.title}
+                </Link>
+                {doc.type && (
+                  <div style={{ fontSize: '0.75rem', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    {doc.type.replace(/_/g, ' ')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </>

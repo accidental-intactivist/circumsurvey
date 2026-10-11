@@ -190,7 +190,7 @@ export function buildEntityGraph(entities = [], docs = []) {
         const key = edgeKey(a, b);
         let edge = edges.get(key);
         if (!edge) {
-          edge = { key, a: a < b ? a : b, b: a < b ? b : a, docIds: [] };
+          edge = { key, a: a < b ? a : b, b: a < b ? b : a, docIds: [], isFinancial: false };
           edges.set(key, edge);
           if (!adj.has(a)) adj.set(a, new Map());
           if (!adj.has(b)) adj.set(b, new Map());
@@ -198,6 +198,17 @@ export function buildEntityGraph(entities = [], docs = []) {
           adj.get(b).set(a, key);
         }
         edge.docIds.push(doc.id);
+        
+        // Check if this document implies a financial relationship
+        const titleStr = (doc.title || '').toLowerCase();
+        const tagsStr = (meta.tags || []).join(' ').toLowerCase();
+        const keywordsStr = (meta.keywords || []).join(' ').toLowerCase();
+        const geminiKeywords = (meta.gemini_extracted_metadata?.keywords || []).join(' ').toLowerCase();
+        const combined = `${titleStr} ${tagsStr} ${keywordsStr} ${geminiKeywords}`;
+        
+        if (combined.includes('fund') || combined.includes('grant') || combined.includes('board member') || combined.includes('financial') || combined.includes('sponsor') || combined.includes('payment') || combined.includes('lobb')) {
+           edge.isFinancial = true;
+        }
       }
     }
   }
@@ -253,7 +264,7 @@ export const edgeWeight = (graph, a, b) => {
  * parent is its strongest-tied neighbor in the previous layer, so traced
  * paths favour the best-documented route.
  */
-export function bfsFrom(graph, centerId) {
+export function bfsFrom(graph, centerId, moneyTrailsOnly = false) {
   const depth = new Map([[centerId, 0]]);
   const parent = new Map();
   const layers = [[centerId]];
@@ -265,7 +276,8 @@ export function bfsFrom(graph, centerId) {
     for (const id of current) {
       const nbrs = graph.adj.get(id);
       if (!nbrs) continue;
-      for (const nb of nbrs.keys()) {
+      for (const [nb, key] of nbrs) {
+        if (moneyTrailsOnly && !graph.edges.get(key).isFinancial) continue;
         if (!depth.has(nb)) {
           depth.set(nb, d);
           next.push(nb);
@@ -276,6 +288,7 @@ export function bfsFrom(graph, centerId) {
       let best = null;
       let bestW = -1;
       for (const [nb, key] of graph.adj.get(id)) {
+        if (moneyTrailsOnly && !graph.edges.get(key).isFinancial) continue;
         if (depth.get(nb) === d - 1) {
           const w = graph.edges.get(key).docIds.length;
           if (w > bestW) { bestW = w; best = nb; }

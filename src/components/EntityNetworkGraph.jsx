@@ -55,6 +55,7 @@ export default function EntityNetworkGraph({ focusEntityId = null }) {
   const [depth, setDepth] = useState(focusEntityId ? 2 : 3);
   const [colorBy, setColorBy] = useState('stance');
   const [crossOnly, setCrossOnly] = useState(false);
+  const [moneyTrailsOnly, setMoneyTrailsOnly] = useState(false);
   const [pinnedId, setPinnedId] = useState(null);
   const [panel, setPanel] = useState(null); // { kind: 'node', id } | { kind: 'edge', key }
   const [ringMeta, setRingMeta] = useState(null);
@@ -125,7 +126,7 @@ export default function EntityNetworkGraph({ focusEntityId = null }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, centerId, graph, syncUrl]);
 
-  const bfs = useMemo(() => (graph && centerId ? bfsFrom(graph, centerId) : null), [graph, centerId]);
+  const bfs = useMemo(() => (graph && centerId ? bfsFrom(graph, centerId, moneyTrailsOnly) : null), [graph, centerId, moneyTrailsOnly]);
 
   const stats = useMemo(() => {
     if (!graph) return null;
@@ -227,6 +228,7 @@ export default function EntityNetworkGraph({ focusEntityId = null }) {
                 selectedId={pinnedId}
                 colorBy={colorBy}
                 crossOnly={crossOnly}
+                moneyTrailsOnly={moneyTrailsOnly}
                 onSelectNode={id => (id ? selectNode(id) : clearAll())}
                 onSelectEdge={selectEdge}
                 onCenter={centerOn}
@@ -243,6 +245,7 @@ export default function EntityNetworkGraph({ focusEntityId = null }) {
                 selectedId={pinnedId}
                 selectedPath={forcedPath}
                 colorBy={colorBy}
+                moneyTrailsOnly={moneyTrailsOnly}
                 onSelectNode={id => (id ? selectNode(id) : clearAll())}
                 onSelectEdge={selectEdge}
                 onCenter={centerOn}
@@ -309,12 +312,19 @@ export default function EntityNetworkGraph({ focusEntityId = null }) {
 
             {mode === 'ring' && (
               <button id="graph-cross-filter" className={`eg-toggle eg-glass ${crossOnly ? 'is-on' : ''}`}
-                onClick={() => { setCrossOnly(v => !v); clearAll(); }}
+                onClick={() => { setCrossOnly(v => !v); setMoneyTrailsOnly(false); clearAll(); }}
                 title="Only show links where a champion and a critic are named in the same document">
                 <span className="eg-swatch" style={{ background: CROSS_STANCE_COLOR }} />
                 Champion ↔ Critic
               </button>
             )}
+
+            <button id="graph-money-filter" className={`eg-toggle eg-glass ${moneyTrailsOnly ? 'is-on' : ''}`}
+              onClick={() => { setMoneyTrailsOnly(v => !v); setCrossOnly(false); clearAll(); }}
+              title="Only show financial links (funding, grants, boards, lobbying)">
+              <span className="eg-swatch" style={{ background: '#5b93c7' }} />
+              Money Trails
+            </button>
 
             {stats && (
               <div className="eg-stats eg-glass">

@@ -1,0 +1,149 @@
+/* ── Concept (semantic) search for the News Feed ─────────────────────────── */
+
+.nf-search-mode {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--c-borderMuted, rgba(255, 255, 255, 0.12));
+  background: var(--c-bgCard, rgba(255, 255, 255, 0.03));
+}
+
+.nf-search-mode button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--c-dim, #9aa0ad);
+  font-family: var(--f-condensed, inherit);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.nf-search-mode button:hover { color: var(--c-text, #e8e8ea); }
+
+.nf-search-mode button.is-active {
+  background: var(--c-goldBright, #f2c14e);
+  color: #000;
+}
+
+.nf-search-mode button.is-active.is-concept {
+  background: linear-gradient(135deg, #8f7ee7, #5aa9e6);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(143, 126, 231, 0.45);
+}
+
+.nf-search-input-wrap { position: relative; }
+
+.nf-search-input-wrap input {
+  transition: border-color 0.2s, box-shadow 0.2s, width 0.3s ease;
+}
+
+.nf-search-input-wrap.is-concept input {
+  width: 320px;
+  border-color: rgba(143, 126, 231, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(143, 126, 231, 0.12);
+}
+
+.nf-search-spinner {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -8px;
+  color: #8f7ee7;
+  animation: nf-spin 0.9s linear infinite;
+}
+
+@keyframes nf-spin { to { transform: rotate(360deg); } }
+
+.nf-concept-panel {
+  margin: -0.25rem 0 1.75rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(143, 126, 231, 0.3);
+  background: linear-gradient(135deg, rgba(143, 126, 231, 0.09), rgba(90, 169, 230, 0.04) 70%);
+  animation: nf-fade-in 0.25s ease;
+}
+
+@keyframes nf-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.nf-concept-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--c-text, #e8e8ea);
+  font-family: var(--f-body, inherit);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.nf-concept-status strong { color: #b8acff; font-weight: 600; }
+
+.nf-concept-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.nf-concept-chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 126, 231, 0.4);
+  background: rgba(143, 126, 231, 0.08);
+  color: var(--c-text, #e8e8ea);
+  font-family: var(--f-body, inherit);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.nf-concept-chip:hover {
+  background: rgba(143, 126, 231, 0.2);
+  border-color: #8f7ee7;
+  transform: translateY(-1px);
+}
+
+.nf-match-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--f-condensed, inherit);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.nf-match-bars { display: inline-flex; gap: 2px; align-items: flex-end; }
+
+.nf-match-bars i {
+  display: block;
+  width: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.25;
+}
+
+.nf-match-bars i:nth-child(1) { height: 6px; }
+.nf-match-bars i:nth-child(2) { height: 9px; }
+.nf-match-bars i:nth-child(3) { height: 12px; }
+.nf-match-bars i.on { opacity: 1; }
+
+@media (max-width: 640px) {
+  .nf-search-input-wrap.is-concept input { width: 100%; }
+  .nf-search-input-wrap { flex: 1 1 100%; }
+}

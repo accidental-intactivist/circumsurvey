@@ -20,8 +20,10 @@ const TimelineView = React.lazy(() => import('./pages/TimelineView'));
 const ArchiveTracker = React.lazy(() => import('./pages/ArchiveTracker'));
 const EntityManager = React.lazy(() => import('./pages/EntityManager'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
+const GuideOrProfile = React.lazy(() => import('./pages/GuideOrProfile'));
 const EntityDirectory = React.lazy(() => import('./pages/EntityDirectory'));
 const GlobalGraphPage = React.lazy(() => import('./pages/GlobalGraphPage'));
+const CitationWebPage = React.lazy(() => import('./pages/CitationWebPage'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const Policies = React.lazy(() => import('./pages/Policies'));
 const CollectionPage = React.lazy(() => import('./pages/CollectionPage'));
@@ -31,6 +33,12 @@ const ExplorePage = React.lazy(() => import('./pages/ExplorePage'));
 const NewsFeed = React.lazy(() => import('./pages/NewsFeed'));
 const NewsArticle = React.lazy(() => import('./pages/NewsArticle'));
 const SurveyStatsDashboard = React.lazy(() => import('./pages/SurveyStatsDashboard'));
+const GuideBuilderPage = React.lazy(() => import('./pages/GuideBuilderPage'));
+const GuideView = React.lazy(() => import('./pages/GuideView'));
+const CounterEvidencePage = React.lazy(() => import('./pages/CounterEvidencePage'));
+const AtlasPage = React.lazy(() => import('./pages/AtlasPage'));
+const InfographicGenerator = React.lazy(() => import('./pages/InfographicGenerator'));
+const ManifestoPage = React.lazy(() => import('./pages/ManifestoPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -40,7 +48,7 @@ function ScrollToTop() {
   return null;
 }
 
-function AppLayout() {
+export function AppLayout() {
   const { isOpen } = useAssistant();
   const location = useLocation();
   
@@ -48,16 +56,22 @@ function AppLayout() {
     <div className={`app-container ${isOpen ? 'assistant-open' : ''}`}>
       <ScrollToTop />
       <TopNav />
-      <main style={{ paddingTop: (location.pathname === '/' || location.pathname === '/report' || location.pathname.startsWith('/collections/') || location.pathname === '/news') ? '0px' : '80px', minHeight: '100dvh' }}>
+      <main style={{ paddingTop: (location.pathname === '/' || location.pathname === '/report' || location.pathname === '/manifesto' || location.pathname.startsWith('/collections/') || location.pathname === '/news') ? '0px' : '80px', minHeight: '100dvh' }}>
         <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh', color: 'var(--c-dim)' }}>Loading...</div>}>
           <Routes>
             <Route path="/admin/archive" element={<ProtectedRoute requireCurator={true}><AdminArchivePage /></ProtectedRoute>} />
             <Route path="/admin/cms" element={<ProtectedRoute requireCurator={true}><CMSWrangler /></ProtectedRoute>} />
             <Route path="/admin/inventory" element={<ProtectedRoute requireCurator={true}><ArchiveTracker /></ProtectedRoute>} />
             <Route path="/admin/entities" element={<ProtectedRoute requireCurator={true}><EntityManager /></ProtectedRoute>} />
-            <Route path="/to/*" element={<ProfilePage />} />
+            <Route path="/to/*" element={<GuideOrProfile />} />
             <Route path="/entities" element={<EntityDirectory />} />
             <Route path="/graph" element={<GlobalGraphPage />} />
+            <Route path="/citations" element={<CitationWebPage />} />
+            <Route path="/guides" element={<GuideBuilderPage />} />
+            <Route path="/guides/view" element={<GuideView />} />
+            <Route path="/guides/rebuttals" element={<CounterEvidencePage />} />
+            <Route path="/atlas" element={<AtlasPage />} />
+            <Route path="/share" element={<InfographicGenerator />} />
             <Route path="/library" element={<DigitalLibrary />} />
             <Route path="/news" element={<NewsFeed />} />
             <Route path="/news/:id" element={<NewsArticle />} />
@@ -70,6 +84,7 @@ function AppLayout() {
             <Route path="/collections" element={<CollectionsIndex />} />
             <Route path="/collections/:slug" element={<CollectionPage />} />
             <Route path="/report" element={<SpecialReportPage />} />
+            <Route path="/manifesto" element={<ManifestoPage />} />
             <Route path="/explore/*" element={<ExplorePage />} />
             <Route path="/sign-in/*" element={<div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><SignIn routing="path" path="/sign-in" /></div>} />
             <Route path="/sign-up/*" element={<div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><SignUp routing="path" path="/sign-up" /></div>} />

@@ -21,18 +21,23 @@ export default function TopNav() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const getActivityTitle = (path) => {
-    if (path === '/') return 'Home';
-    if (path.startsWith('/admin/archive')) return 'Archive Administration';
-    if (path.startsWith('/admin/cms')) return 'CMS Wrangler';
+    const getActivityTitle = (path) => {
+      if (path === '/') return 'Home';
+      if (path.startsWith('/manifesto')) return 'The Manifesto';
+      if (path.startsWith('/admin/archive')) return 'Archive Administration';
+      if (path.startsWith('/admin/cms')) return 'CMS Wrangler';
     if (path.startsWith('/admin/inventory')) return 'Archive Tracker';
     if (path.startsWith('/admin/entities')) return 'Entity Manager';
     if (path.startsWith('/to/')) return 'Profile';
     if (path.startsWith('/graph')) return 'Global Graph';
+    if (path.startsWith('/citations')) return 'Citation Web';
+    if (path.startsWith('/atlas')) return 'Global Circumcision Atlas';
+    if (path.startsWith('/guides/rebuttals')) return 'Counter-Evidence Builder';
+    if (path.startsWith('/guides')) return 'Guide Series';
     if (path.startsWith('/library/')) return 'Document View';
     if (path.startsWith('/library')) return 'Digital Library';
     if (path.startsWith('/timeline')) return 'Timeline';
-    if (path.startsWith('/assistant')) return 'Report Builder';
+    if (path.startsWith('/assistant') || path.startsWith('/report')) return 'Discussion Guides';
     if (path.startsWith('/contact')) return 'Contact';
     if (path.startsWith('/policies')) return 'Policies';
     if (path.startsWith('/collections/')) return 'Collection';

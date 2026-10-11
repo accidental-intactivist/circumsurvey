@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Settings2, BookOpen, User, Archive, Key, List, FileText, Globe, LogIn } from 'lucide-react';
+import { Menu, Layout, Settings2, BookOpen, User, Archive, Key, List, FileText, Globe, LogIn, Network, BookMarked, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { ThemeSettingsPanel } from './ThemeToggle';
@@ -99,10 +99,35 @@ export default function ArchiveHamburgerMenu() {
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                <Link to="/manifesto" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <BookOpen size={16} /> The Manifesto
+                </Link>
                 <Link to="/graph" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <Globe size={16} /> Knowledge Graph
+                </Link>
+                <Link to="/citations" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Network size={16} /> Citation Web
+                </Link>
+                <Link to="/guides" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <BookMarked size={16} /> Guide Series
+                </Link>
+                <Link to="/guides/rebuttals" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Shield size={16} /> Counter-Evidence
+                </Link>
+                <Link to="/atlas" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Globe size={16} /> Global Atlas
                 </Link>
                 <Link to="/survey-stats" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -118,6 +143,11 @@ export default function ArchiveHamburgerMenu() {
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <Globe size={16} /> News & Updates
+                </Link>
+                <Link to="/share" onClick={handleLinkClick} style={{...buttonStyle, color: 'var(--c-goldBright)'}}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Sparkles size={16} /> Share Studio
                 </Link>
 
                 <Link to="/entities" onClick={handleLinkClick} style={buttonStyle}

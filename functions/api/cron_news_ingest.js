@@ -19,6 +19,7 @@
  * We store ONLY metadata and our own summary, never the article's full text.
  */
 import { EVIDENCE_BRIEF, formatEvidenceBrief } from '../../lib/news/evidence_brief.js';
+import { normalizeDocId } from '../../lib/search/docIds.js';
 
 const QUERIES = [
   // Decline of RIC / rates & financing
@@ -92,11 +93,6 @@ const sameStory = (a, b) => {
   let inter = 0;
   for (const w of a) if (b.has(w)) inter++;
   return jaccard(a, b) >= 0.5 || (inter >= 4 && inter / Math.min(a.size, b.size) >= 0.7);
-};
-const normalizeDocId = (raw = '') => {
-  let id = String(raw).split('-chunk-')[0];
-  if (id.includes('-') && id.length > 8 && !id.startsWith('umass-') && !id.startsWith('digest-')) id = id.split('-')[0];
-  return id;
 };
 const safeJson = (s, fallback = {}) => { try { return JSON.parse(s || ''); } catch { return fallback; } };
 

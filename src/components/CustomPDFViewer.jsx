@@ -5,6 +5,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Maximize, RotateCw } from 'lucide-react';
 import ThinkingSpirograph from './ThinkingSpirograph';
+import { useAssistant } from '../contexts/AssistantContext';
 
 class PDFErrorBoundary extends React.Component {
   constructor(props) {
@@ -40,10 +41,44 @@ export default function CustomPDFViewer({ url, onPageCount }) {
   const [rotation, setRotation] = useState(0);
   const containerRef = React.useRef(null);
 
-  
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const highlightText = searchParams.get('highlight') || '';
+  
+  const { openAssistant, setInitialQuery } = useAssistant();
+  const [selectedText, setSelectedText] = useState('');
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleSelection = () => {
+      const selection = window.getSelection();
+      const text = selection.toString().trim();
+      
+      if (text.length > 5 && containerRef.current && containerRef.current.contains(selection.anchorNode)) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+        
+        setSelectedText(text);
+        setTooltipPos({
+          x: rect.left - containerRect.left + (rect.width / 2),
+          y: rect.top - containerRect.top - 10
+        });
+      } else {
+        setSelectedText('');
+      }
+    };
+
+    document.addEventListener('selectionchange', handleSelection);
+    return () => document.removeEventListener('selectionchange', handleSelection);
+  }, []);
+
+  const handleAskAI = () => {
+    setInitialQuery(`Analyze this excerpt:\n\n"${selectedText}"`);
+    openAssistant();
+    setSelectedText('');
+    window.getSelection().removeAllRanges();
+  };
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -81,6 +116,45 @@ export default function CustomPDFViewer({ url, onPageCount }) {
         </div>
       )}
       
+      {selectedText && (
+        <div style={{
+          position: 'absolute',
+          left: tooltipPos.x,
+          top: tooltipPos.y,
+          transform: 'translate(-50%, -100%)',
+          background: 'rgba(30, 41, 59, 0.95)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid var(--c-goldBright)',
+          borderRadius: '8px',
+          padding: '0.5rem',
+          display: 'flex',
+          gap: '0.5rem',
+          zIndex: 100,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          animation: 'fadeUp 0.2s ease-out'
+        }}>
+          <button
+            onClick={handleAskAI}
+            className="lux-hover-bright"
+            style={{
+              background: 'var(--c-gold)',
+              color: '#000',
+              border: 'none',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '4px',
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.3rem'
+            }}
+          >
+            Ask AI Assistant
+          </button>
+        </div>
+      )}
+
       {/* Floating Glassmorphic Toolbar */}
       <div style={{ 
         position: 'absolute',

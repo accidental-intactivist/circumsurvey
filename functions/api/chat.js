@@ -35,7 +35,7 @@ export async function onRequestPost(context) {
       }
     }
 
-    const { query } = await request.json();
+    const { query, attachedDocs, system_prompt_override } = await request.json();
     if (!query) return new Response(JSON.stringify({ error: "Missing query" }), { status: 400 });
 
     const aiBinding = env.AI || env.Workers_AI;
@@ -106,14 +106,58 @@ Keep it factual and concise.`;
 
     if (!intent.includes("ANALYTICAL") || fallbackToRag) {
       // --- STEP 2B: SEMANTIC RAG (QUALITATIVE) ---
+      let contextText = "";
+      let citationMap = new Map();
+
+      // IF ATTACHED DOCS PROVIDED, INJECT THEM FIRST
+      if (attachedDocs && Array.isArray(attachedDocs) && attachedDocs.length > 0) {
+        for (const doc of attachedDocs) {
+          const docId = doc.id;
+          const meta = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+          const title = meta.academic_title || meta.title || doc.title || "Untitled Document";
+          let docText = "";
+          
+          // Try to get text from vector index if possible, otherwise rely on metadata summary
+          if (meta.description) docText += meta.description + "\n";
+          if (meta.abstract) docText += meta.abstract + "\n";
+          if (meta.gemini_extracted_metadata?.summary) docText += meta.gemini_extracted_metadata.summary + "\n";
+          
+          contextText += `\n--- Document ID: ${docId} (Source: ${title}) [USER ATTACHED THIS DOCUMENT EXPLICITLY] ---\n${docText}\n`;
+          
+          citationMap.set(title + docId, {
+            source: title,
+            doc_id: docId,
+            snippets: ["User attached this document to the context."]
+          });
+        }
+      }
+
       if (!env.ARCHIVE_INDEX) throw new Error("ARCHIVE_INDEX binding is missing");
+
+      // INJECT EXACT ENTITY MATCHES INTO CONTEXT
+      if (env.SURVEY_DB) {
+        try {
+          const entityResults = await env.SURVEY_DB.prepare("SELECT * FROM entities WHERE ? LIKE '%' || name || '%'").bind(query).all();
+          if (entityResults.results && entityResults.results.length > 0) {
+            for (const entity of entityResults.results) {
+              const bioText = entity.bio || entity.description || entity.tagline || '';
+              contextText += `\n--- Entity Profile: ${entity.name} ---\nRole: ${entity.tagline || ''}\nBio: ${bioText}\n`;
+              citationMap.set("Entity:" + entity.id, { 
+                source: "Entity Directory", 
+                doc_id: entity.slug || entity.id, 
+                snippets: [bioText] 
+              });
+            }
+          }
+        } catch (e) {
+          console.warn("Could not query entities table:", e.message);
+        }
+      }
 
       const queryEmbedding = await aiBinding.run('@cf/baai/bge-small-en-v1.5', { text: [query] });
       const vector = queryEmbedding.data[0];
 
       const matches = await env.ARCHIVE_INDEX.query(vector, { topK: 3, returnMetadata: true });
-      let contextText = "";
-      let citationMap = new Map();
 
       if (matches.matches && matches.matches.length > 0) {
         matches.matches.forEach((match, index) => {
@@ -156,8 +200,11 @@ Keep it factual and concise.`;
               if (!image && row.type === 'image' && row.url) {
                 image = row.url;
               }
-              if (image) {
-                contextText += `\n[System Note: Document ID ${row.id} has an associated image. URL: ${image}]\n`;
+              let systemNotes = [];
+              if (image) systemNotes.push(`has an associated image. URL: ${image}`);
+              if (row.type) systemNotes.push(`Type: ${row.type}`);
+              if (systemNotes.length > 0) {
+                contextText += `\n[System Note: Document ID ${row.id} ${systemNotes.join(' | ')}]\n`;
               }
             });
           }
@@ -189,8 +236,19 @@ Keep it factual and concise.`;
         }
       }
 
-      const systemPrompt = `You are Glenda, the chief archivist and senior research assistant for a comprehensive archive of Intactivism (the movement for genital autonomy). 
-Your goal is to synthesize the provided archival documents into a deeply insightful, nuanced, and beautifully written encyclopedic response.
+      let systemPrompt = `You are Glenda, the chief archivist and senior research assistant for a comprehensive archive of Intactivism (the movement for genital autonomy). 
+Your ultimate thesis and guiding philosophy is: "Why isn't this weird to more of us?" You actively daylight the cognitive dissonance of a tradition rooted in censoring sexual gratification for conservative means, and point out the gaslighting that a normal healthy penis needs special maintenance.
+
+CRITICAL POSITIONALITY & PHILOSOPHY:
+- You speak from the perspective of an "outside investigator"—someone intact living in a genital cutting culture. You can see the objective reasons for bodily autonomy, but you NEVER speak for circumcised men regarding their grief, nor do you diminish what they are dealing with. You firmly believe in the disability rights slogan: "Not about us without us!"
+- When dealing with grief and support, you subscribe to the philosophy of "Empty and Meaningless"—meaning we are in control of our choices and ways of thinking. We encourage people not to be resentful of the past (it happened, it's never going to not have happened). Instead, you focus on the immense power of intentionally becoming the kind of person who is confident enough to challenge these notions in places where this conversation was never expected.
+- Your goal is to synthesize archival documents into a deeply insightful, nuanced, and beautifully written encyclopedic response that gently surfaces this weirdness and empowers action over resentment.`;
+
+      if (system_prompt_override) {
+        systemPrompt = system_prompt_override;
+      }
+
+      systemPrompt += `
 CRITICAL RULES:
 1. NEVER use the words "Snippet", "Extract", or refer to the "provided context" or "provided text". Weave the information organically into a cohesive, scholarly narrative as if you possess innate knowledge.
 2. If the documents contain powerful phrasing, integrate those exact quotes gracefully.
@@ -200,7 +258,8 @@ CRITICAL RULES:
 6. Whenever you mention a specific document, film, or source from the archives, include an inline markdown hyperlink pointing to its library page using the provided DocID from the documents: [Source Name](/library/DocID) (e.g. [Whose Body, Whose Rights?](/library/umass-ms1205-1234)).
 7. Frame your responses in the context of Intactivism as a broad human rights movement, rather than in relation to any specific project.
 8. If a Document ID has an associated image URL provided in a System Note, you MUST embed it inline when discussing that document using Markdown image syntax: ![Alt Text describing the image](URL).
-9. If a document is sourced from "Field Note (Accidental Intactivist)", you must NOT quote it directly, summarize its specifics, or reveal its raw unfiltered contents, as it may contain sensitive or shocking observations. Instead, ONLY use its themes, subtext, and overarching arguments to inform your own perspective, while strictly maintaining your academic, scholarly, and professional voice.${groundTruthOverride}
+9. If a document is sourced from "Field Note (Accidental Intactivist)", you must NOT quote it directly, summarize its specifics, or reveal its raw unfiltered contents, as it may contain sensitive or shocking observations. Instead, ONLY use its themes, subtext, and overarching arguments to inform your own perspective, while strictly maintaining your academic, scholarly, and professional voice.
+10. If a document has the type \`cultural_reference\`, it represents a colloquial, casual, or metaphorical use of the procedure in mainstream media. When synthesizing these, treat them as sociological evidence of how deeply normalized and trivialized the harm is in modern culture, highlighting the cognitive dissonance.${groundTruthOverride}
 
 ARCHIVAL DOCUMENTS:
 ${contextText || "No relevant documents found in the archive for this query."}`;

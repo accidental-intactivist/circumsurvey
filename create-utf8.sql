@@ -1,0 +1,2 @@
+﻿CREATE TABLE IF NOT EXISTS archive_documents (id TEXT PRIMARY KEY, title TEXT, source_collection TEXT, url TEXT, type TEXT, status TEXT, media_urls TEXT, metadata_json TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS ingestion_queue (id TEXT PRIMARY KEY, url TEXT, title TEXT, abstract TEXT, source TEXT, reason TEXT, status TEXT DEFAULT 'pending', created_at DATETIME DEFAULT CURRENT_TIMESTAMP);

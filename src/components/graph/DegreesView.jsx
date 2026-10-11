@@ -80,7 +80,7 @@ function layoutDegrees(graph, bfs, maxDepth, width, height, forcedIds, colorBy) 
   return { pos, rings, Rmax, fontSize, D };
 }
 
-export default function DegreesView({ graph, bfs, maxDepth, width, height, selectedId, selectedPath, colorBy = 'stance', onSelectNode, onSelectEdge, onCenter, onMeta }) {
+export default function DegreesView({ graph, bfs, maxDepth, width, height, selectedId, selectedPath, colorBy = 'stance', moneyTrailsOnly = false, onSelectNode, onSelectEdge, onCenter, onMeta }) {
   const [hoverId, setHoverId] = useState(null);
 
   const forcedKey = (selectedPath || []).join(',');
@@ -117,6 +117,7 @@ export default function DegreesView({ graph, bfs, maxDepth, width, height, selec
     for (const [nb, key] of graph.adj.get(activeId) || []) {
       if (!pos.has(nb) || pathSet.has(nb)) continue;
       if (pos.get(nb).parent === activeId) continue;
+      if (moneyTrailsOnly && !graph.edges.get(key).isFinancial) continue;
       out.push({ key, nb });
     }
     return out;

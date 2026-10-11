@@ -11,6 +11,8 @@ import CustomPDFViewer from '../components/CustomPDFViewer';
 import ThinkingSpirograph from '../components/ThinkingSpirograph';
 import CommentsWidget from '../components/CommentsWidget';
 import { generateFriendlySlug, parseFriendlySlug } from '../utils/slugs';
+import { SourceLensPanel, ContextNotes, AlsoCoveredBy, DigestPulse } from '../components/SourceLensPanel';
+import AutoEntityLinker from '../components/AutoEntityLinker';
 import './AdminArchivePage.css';
 
 const EntityPopover = ({ name, type }) => {
@@ -373,14 +375,14 @@ export default function DocumentView() {
       const data = await res.json();
       setSelection({ ...selection, visible: false });
       if (data.questions) {
-        openAssistant(selection.text, data.questions);
+        openAssistant(selection.text, data.questions, doc);
       } else {
-        openAssistant(selection.text, null);
+        openAssistant(selection.text, null, doc);
       }
     } catch (e) {
       console.error(e);
       setSelection({ ...selection, visible: false });
-      openAssistant(selection.text, null);
+      openAssistant(selection.text, null, doc);
     }
     setLoadingSuggestions(false);
   };
@@ -598,9 +600,14 @@ export default function DocumentView() {
                 </Link>
               )}
             </div>
-            <Link to="/library" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }} className="lux-hover-lift">
-              Return to Index
-            </Link>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button onClick={() => openAssistant('', null, doc)} style={{ color: 'var(--c-goldBright)', background: 'transparent', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-gold)', borderRadius: '20px', cursor: 'pointer' }} className="lux-hover-lift">
+                <Sparkles size={14} /> Ask Glenda
+              </button>
+              <Link to="/library" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }} className="lux-hover-lift">
+                Return to Index
+              </Link>
+            </div>
           </div>
           
           <h1 style={{ margin: '0 0 1rem 0', fontSize: '2.5rem', fontFamily: 'var(--f-display)', letterSpacing: '-0.02em', lineHeight: '1.1', color: 'var(--c-textBright)' }}>
@@ -1031,7 +1038,10 @@ export default function DocumentView() {
               <div style={{ color: 'var(--c-text)', lineHeight: '1.8', fontSize: '1.1rem', cursor: 'text' }}>
                 {(metadata.abstract || metadata.description || "No abstract or description is available for this document in the archive.").split('\n').map((paragraph, idx) => (
                   <p key={idx} style={{ margin: '0 0 1rem 0' }}>
-                    {paragraph}
+                    <AutoEntityLinker 
+                      text={paragraph} 
+                      entities={[...(metadata.gemini_extracted_metadata?.organizations || []), ...(metadata.organizations || []), ...(metadata.gemini_extracted_metadata?.authors || []), ...(metadata.key_people || [])]} 
+                    />
                   </p>
                 ))}
               </div>
@@ -1047,8 +1057,14 @@ export default function DocumentView() {
                   </div>
                 </div>
               )}
+              
+              <div style={{ marginTop: '3rem' }}>
+                <SourceLensPanel meta={metadata} category={metadata.category} />
+                <ContextNotes meta={metadata} />
+                <AlsoCoveredBy meta={metadata} url={doc.url} />
+                <DigestPulse meta={metadata} />
+              </div>
 
-              {/* Removed Key People, Tags, and Physical Provenance to top metadata table */}
             </div>
           </div>
 
@@ -1069,7 +1085,28 @@ export default function DocumentView() {
           )}
         </div>
 
-        <CommentsWidget docId={doc.id} title={citationTitle} />
+        <div style={{ marginTop: '4rem', marginBottom: '3rem', background: 'rgba(30, 41, 59, 0.5)', padding: '2.5rem', borderRadius: '16px', border: '1px solid var(--c-borderMuted)', backdropFilter: 'blur(10px)' }}>
+          <h2 style={{ fontSize: '1.6rem', color: 'var(--c-goldBright)', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Smart Next Steps</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+            <Link to="/atlas" className="lux-hover-lift" style={{ display: 'block', textDecoration: 'none', background: 'var(--c-card)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--c-border)', transition: 'all 0.3s ease' }}>
+              <h4 style={{ color: 'var(--c-textBright)', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>🌍 Explore the Atlas</h4>
+              <p style={{ color: 'var(--c-dim)', margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>See how these entities and events map out globally.</p>
+            </Link>
+            <Link to="/graph" className="lux-hover-lift" style={{ display: 'block', textDecoration: 'none', background: 'var(--c-card)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--c-border)', transition: 'all 0.3s ease' }}>
+              <h4 style={{ color: 'var(--c-textBright)', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>🕸️ Global Graph</h4>
+              <p style={{ color: 'var(--c-dim)', margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>Investigate the hidden network of champions and critics.</p>
+            </Link>
+            <Link to="/news" className="lux-hover-lift" style={{ display: 'block', textDecoration: 'none', background: 'var(--c-card)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--c-border)', transition: 'all 0.3s ease' }}>
+              <h4 style={{ color: 'var(--c-textBright)', margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>📰 Read the News</h4>
+              <p style={{ color: 'var(--c-dim)', margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>See how recent events connect to these historical documents.</p>
+            </Link>
+          </div>
+        </div>
+
+        <div>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--c-textBright)', marginBottom: '1rem', borderBottom: '1px solid var(--c-ghost)', paddingBottom: '1rem' }}>Discussion</h2>
+          <CommentsWidget docId={doc.id} title={citationTitle} />
+        </div>
 
       </div>
       {/* Translation Request Modal */}

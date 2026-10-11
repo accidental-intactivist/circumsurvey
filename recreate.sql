@@ -1,0 +1,1 @@
+﻿DROP TABLE IF EXISTS entities; CREATE TABLE entities (id TEXT PRIMARY KEY, type TEXT, name TEXT, slug TEXT, description TEXT, bio TEXT, url TEXT, image_url TEXT, role TEXT, tagline TEXT, stance TEXT, featured INTEGER DEFAULT 0, see_also_json TEXT);

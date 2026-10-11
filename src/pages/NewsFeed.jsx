@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Search, Sparkles } from 'lucide-react';
+import { Calendar, Search, Sparkles, Loader2, Type } from 'lucide-react';
 import NewsAggregator from '../components/NewsAggregator';
 import { C, FONT } from '../styles/tokens';
 import { resolveItemRoute } from '../utils/routing';
 import { resolveCollectionName } from '../utils/collections';
 import { NEWS_CATEGORIES, LEANS, parseMeta, storyDate, flaggedClaimCount, getFaviconUrl } from '../utils/newsLens';
+import { shouldRunSemanticSearch, rankBySemanticMatches, matchStrength, EXAMPLE_CONCEPT_QUERIES } from '../utils/semanticSearch';
 import { CategoryChip, LeanPill, ContextBadge, CoverageCount, CoverageBalanceBar } from '../components/LensChips';
 import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import AutoEntityLinker from '../components/AutoEntityLinker';
 import { useTheme } from '../contexts/ThemeContext';
+import { captureEvent } from '../lib/telemetry';
+import './NewsFeed.css';
 
 const NEWS_TYPES = ['external_news', 'recap', 'essay', 'article', 'internal_news', 'press_release', 'blog_post'];
 
@@ -21,6 +24,43 @@ export default function NewsFeed() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [leanFilter, setLeanFilter] = useState('All');
+  const [searchMode, setSearchMode] = useState('keyword'); // 'keyword' | 'concept'
+  const [semanticMatches, setSemanticMatches] = useState(null);
+  const [semanticStatus, setSemanticStatus] = useState('idle'); // 'idle' | 'loading' | 'error'
+  const isConcept = searchMode === 'concept';
+  const conceptReady = isConcept && shouldRunSemanticSearch(searchQuery);
+
+  // Debounced concept search against the vector index
+  useEffect(() => {
+    if (!conceptReady) {
+      setSemanticMatches(null);
+      setSemanticStatus('idle');
+      return;
+    }
+    let cancelled = false;
+    setSemanticStatus('loading');
+    const timer = setTimeout(async () => {
+      try {
+        captureEvent('News Concept Search', { query_text: searchQuery });
+        const res = await fetch('/api/semantic-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: searchQuery, scope: 'news', limit: 60 }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (cancelled) return;
+        setSemanticMatches(Array.isArray(data.matches) ? data.matches : []);
+        setSemanticStatus('idle');
+      } catch (e) {
+        if (cancelled) return;
+        console.error('Concept search failed', e);
+        setSemanticMatches(null);
+        setSemanticStatus('error');
+      }
+    }, 600);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [conceptReady, searchQuery]);
 
   useEffect(() => {
     async function fetchNews() {
@@ -55,14 +95,21 @@ export default function NewsFeed() {
     return counts;
   }, [articles]);
 
-  const filteredArticles = articles.filter(article => {
-    const meta = article._meta;
-    const searchString = `${article.title || ''} ${meta.abstract || ''} ${meta.source_publication || ''} ${(meta.tags || []).join(' ')}`.toLowerCase();
-    const matchesSearch = searchString.includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || article.category === categoryFilter;
-    const matchesLean = leanFilter === 'All' || meta.lens?.coverage_lean === leanFilter;
-    return matchesSearch && matchesCategory && matchesLean;
-  });
+  const passesFacets = (article) =>
+    (categoryFilter === 'All' || article.category === categoryFilter) &&
+    (leanFilter === 'All' || article._meta.lens?.coverage_lean === leanFilter);
+
+  const usingSemantic = conceptReady && Array.isArray(semanticMatches);
+  const filteredArticles = usingSemantic
+    ? rankBySemanticMatches(articles, semanticMatches).filter(passesFacets)
+    : articles.filter(article => {
+        if (!passesFacets(article)) return false;
+        // While a concept query is pending, keep showing the full feed rather than keyword-filtering it.
+        if (isConcept) return true;
+        const meta = article._meta;
+        const searchString = `${article.title || ''} ${meta.abstract || ''} ${meta.source_publication || ''} ${(meta.tags || []).join(' ')}`.toLowerCase();
+        return searchString.includes(searchQuery.toLowerCase());
+      });
 
   const activeCategories = NEWS_CATEGORIES.filter(c => categoryCounts[c.key]);
   const themeKey = `${theme}-dark-none`;
@@ -111,17 +158,44 @@ export default function NewsFeed() {
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h2 style={{ margin: 0, fontSize: '2rem', color: C.textBright, fontFamily: FONT.display }}>All Coverage</h2>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: C.dim }} />
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="nf-search-mode" role="tablist" aria-label="Search mode">
+            <button
+              id="news-search-mode-keyword"
+              type="button"
+              role="tab"
+              aria-selected={!isConcept}
+              className={!isConcept ? 'is-active' : ''}
+              onClick={() => setSearchMode('keyword')}
+              title="Instant filter on exact words"
+            >
+              <Type size={13} /> Keyword
+            </button>
+            <button
+              id="news-search-mode-concept"
+              type="button"
+              role="tab"
+              aria-selected={isConcept}
+              className={`is-concept ${isConcept ? 'is-active' : ''}`}
+              onClick={() => setSearchMode('concept')}
+              title="Find stories by meaning, not exact words"
+            >
+              <Sparkles size={13} /> Concept
+            </button>
+          </div>
+          <div className={`nf-search-input-wrap ${isConcept ? 'is-concept' : ''}`}>
+            {isConcept
+              ? <Sparkles size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#8f7ee7' }} />
+              : <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: C.dim }} />}
             <input
               id="news-search"
               type="text"
-              placeholder="Search keyword..."
+              placeholder={isConcept ? 'Describe an idea, e.g. "bias against infant pain"' : 'Search keyword...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ padding: '0.6rem 1rem 0.6rem 2.2rem', borderRadius: '6px', border: `1px solid ${C.borderMuted}`, background: C.card, color: C.text, fontFamily: FONT.body, outline: 'none' }}
+              style={{ padding: '0.6rem 2.2rem 0.6rem 2.2rem', borderRadius: '6px', border: `1px solid ${C.borderMuted}`, background: C.card, color: C.text, fontFamily: FONT.body, outline: 'none' }}
             />
+            {semanticStatus === 'loading' && <Loader2 size={16} className="nf-search-spinner" aria-label="Searching" />}
           </div>
           <select
             id="news-lean-filter"
@@ -135,6 +209,36 @@ export default function NewsFeed() {
           </select>
         </div>
       </div>
+
+      {/* Concept search status / examples */}
+      {isConcept && (
+        <div className="nf-concept-panel" id="news-concept-panel">
+          <div className="nf-concept-status">
+            <Sparkles size={15} style={{ color: '#8f7ee7', flexShrink: 0 }} />
+            {semanticStatus === 'error' ? (
+              <span>Concept search is unavailable right now. Try again, or switch to Keyword.</span>
+            ) : semanticStatus === 'loading' ? (
+              <span>Reading the feed for stories about <strong>&ldquo;{searchQuery.trim()}&rdquo;</strong>&hellip;</span>
+            ) : usingSemantic ? (
+              <span>
+                {filteredArticles.length} {filteredArticles.length === 1 ? 'story' : 'stories'} match the idea{' '}
+                <strong>&ldquo;{searchQuery.trim()}&rdquo;</strong>, ranked by closeness in meaning.
+              </span>
+            ) : (
+              <span>Search by <strong>meaning</strong> instead of exact words. Describe an idea in a few words, or try one of these:</span>
+            )}
+          </div>
+          {!conceptReady && (
+            <div className="nf-concept-examples">
+              {EXAMPLE_CONCEPT_QUERIES.map(q => (
+                <button key={q} type="button" className="nf-concept-chip" onClick={() => setSearchQuery(q)}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Category chips */}
       {activeCategories.length > 0 && (
@@ -157,7 +261,9 @@ export default function NewsFeed() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {filteredArticles.length === 0 ? (
-            <div style={{ color: C.dim, textAlign: 'center', padding: '2rem' }}>No articles found matching your criteria.</div>
+            <div style={{ color: C.dim, textAlign: 'center', padding: '2rem' }}>
+              {usingSemantic ? 'No stories are close in meaning to that idea yet. Try rephrasing it.' : 'No articles found matching your criteria.'}
+            </div>
           ) : (
             filteredArticles.map(article => {
               const meta = article._meta;
@@ -201,6 +307,17 @@ export default function NewsFeed() {
                     </div>
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginBottom: '0.9rem' }}>
+                      {article._score != null && (() => {
+                        const s = matchStrength(article._score);
+                        return (
+                          <span className="nf-match-pill" style={{ color: s.color }} title={`Semantic similarity ${article._score.toFixed(2)}`}>
+                            <span className="nf-match-bars" aria-hidden="true">
+                              {[1, 2, 3].map(n => <i key={n} className={n <= s.level ? 'on' : ''} />)}
+                            </span>
+                            {s.label}
+                          </span>
+                        );
+                      })()}
                       {article.category && <CategoryChip category={article.category} />}
                       {lens.coverage_lean && <LeanPill lean={lens.coverage_lean} />}
                       <CoverageCount count={outlets} />

@@ -13,20 +13,27 @@ function hasCrossEdge(graph, id) {
   return false;
 }
 
-function selectRingNodes(graph, width, height, crossOnly) {
+function hasFinancialEdge(graph, id) {
+  for (const key of graph.adj.get(id)?.values() || []) if (graph.edges.get(key).isFinancial) return true;
+  return false;
+}
+
+function selectRingNodes(graph, width, height, crossOnly, moneyTrailsOnly) {
   const size = Math.min(width, height);
   const labelSpace = Math.max(70, Math.min(170, size * 0.22));
   const R = Math.max(60, size / 2 - labelSpace);
   const maxNodes = Math.max(24, Math.min(160, Math.floor((2 * Math.PI * R) / 12)));
 
   const candidates = [...graph.nodes.values()].filter(n =>
-    degreeOf(graph, n.id) > 0 && (!crossOnly || hasCrossEdge(graph, n.id)));
+    degreeOf(graph, n.id) > 0 && 
+    (!crossOnly || hasCrossEdge(graph, n.id)) && 
+    (!moneyTrailsOnly || hasFinancialEdge(graph, n.id)));
   candidates.sort((a, b) => b.docIds.length - a.docIds.length || degreeOf(graph, b.id) - degreeOf(graph, a.id));
 
   return { R, labelSpace, base: candidates.slice(0, maxNodes), totalConnected: candidates.length };
 }
 
-function layoutRing(graph, { R, labelSpace, base }, extraId, colorBy, crossOnly) {
+function layoutRing(graph, { R, labelSpace, base }, extraId, colorBy, crossOnly, moneyTrailsOnly) {
   const chosen = [...base];
   if (extraId && graph.nodes.has(extraId) && !chosen.some(n => n.id === extraId)) {
     chosen.push(graph.nodes.get(extraId));
@@ -68,7 +75,9 @@ function layoutRing(graph, { R, labelSpace, base }, extraId, colorBy, crossOnly)
     const nbrs = graph.adj.get(id);
     if (!nbrs) continue;
     for (const [nb, key] of nbrs) {
-      if (id < nb && pos.has(nb) && (!crossOnly || isCrossStance(graph, id, nb))) edges.push(graph.edges.get(key));
+      if (id < nb && pos.has(nb) && (!crossOnly || isCrossStance(graph, id, nb)) && (!moneyTrailsOnly || graph.edges.get(key).isFinancial)) {
+        edges.push(graph.edges.get(key));
+      }
     }
   }
   edges.sort((a, b) => b.docIds.length - a.docIds.length);
@@ -103,12 +112,12 @@ function arcPath(r, start, end) {
   return `M${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2}`;
 }
 
-export default function RingView({ graph, width, height, selectedId, colorBy = 'stance', crossOnly = false, onSelectNode, onSelectEdge, onCenter, onMeta }) {
+export default function RingView({ graph, width, height, selectedId, colorBy = 'stance', crossOnly = false, moneyTrailsOnly = false, onSelectNode, onSelectEdge, onCenter, onMeta }) {
   const [hoverId, setHoverId] = useState(null);
 
-  const base = useMemo(() => selectRingNodes(graph, width, height, crossOnly), [graph, width, height, crossOnly]);
+  const base = useMemo(() => selectRingNodes(graph, width, height, crossOnly, moneyTrailsOnly), [graph, width, height, crossOnly, moneyTrailsOnly]);
   const extraId = selectedId && !base.base.some(n => n.id === selectedId) ? selectedId : null;
-  const layout = useMemo(() => layoutRing(graph, base, extraId, colorBy, crossOnly), [graph, base, extraId, colorBy, crossOnly]);
+  const layout = useMemo(() => layoutRing(graph, base, extraId, colorBy, crossOnly, moneyTrailsOnly), [graph, base, extraId, colorBy, crossOnly, moneyTrailsOnly]);
 
   React.useEffect(() => {
     onMeta?.({ shown: layout.shown, total: base.totalConnected, edges: layout.edges.length });

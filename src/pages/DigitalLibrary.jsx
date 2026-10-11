@@ -11,6 +11,7 @@ import AutoEntityLinker from '../components/AutoEntityLinker';
 import { generateFriendlySlug } from '../utils/slugs';
 import { resolveCollectionName } from '../utils/collections';
 import { captureEvent } from '../lib/telemetry';
+import { shouldRunSemanticSearch } from '../utils/semanticSearch';
 import './AdminArchivePage.css';
 
 export default function DigitalLibrary() {
@@ -66,8 +67,8 @@ export default function DigitalLibrary() {
   const [isSearchingSemantic, setIsSearchingSemantic] = useState(false);
 
   useEffect(() => {
-    // If the query is less than 3 words (or very short), we just use standard filter.
-    if (!searchQuery || searchQuery.trim().split(/\\s+/).length < 2 || searchQuery.length < 10) {
+    // Single words / very short queries use the standard filter; phrases trigger concept search.
+    if (!shouldRunSemanticSearch(searchQuery)) {
       setSemanticResults(null);
       return;
     }

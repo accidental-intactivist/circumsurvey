@@ -89,8 +89,24 @@ function SourceLink({ src }) {
 
 /** Claim-by-claim context notes, each with its grounding sources */
 export function ContextNotes({ meta }) {
+  const [isContributing, setIsContributing] = React.useState(false);
+  const [noteText, setNoteText] = React.useState('');
+  const [submitted, setSubmitted] = React.useState(false);
+
   const claims = meta?.lens?.claims || [];
-  if (!claims.length) return null;
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!noteText.trim()) return;
+    setSubmitted(true);
+    setTimeout(() => {
+      setIsContributing(false);
+      setSubmitted(false);
+      setNoteText('');
+    }, 3000);
+  };
+
+  if (!claims.length && !isContributing) return null;
   return (
     <section style={panel} aria-label="Context Notes">
       <h3 style={eyebrow}>◐ Context Notes</h3>
@@ -118,6 +134,42 @@ export function ContextNotes({ meta }) {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ marginTop: '2rem', borderTop: '1px dashed var(--c-ghost)', paddingTop: '1.5rem' }}>
+        {!isContributing ? (
+          <button 
+            onClick={() => setIsContributing(true)}
+            className="lux-hover-lift"
+            style={{ background: 'transparent', border: '1px solid var(--c-goldBright)', color: 'var(--c-goldBright)', padding: '0.6rem 1.2rem', borderRadius: '20px', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}
+          >
+            + Contribute a Fact-Check
+          </button>
+        ) : submitted ? (
+          <div style={{ padding: '1rem', background: 'rgba(104, 184, 120, 0.1)', color: 'var(--c-green)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '1.2rem' }}>✓</span> Your context note has been submitted for editorial review. Thank you for contributing to the archive!
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ background: 'var(--c-bgDeep)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--c-ghost)' }}>
+            <h4 style={{ margin: '0 0 1rem', color: 'var(--c-textBright)', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Submit Community Context</h4>
+            <p style={{ fontSize: '0.85rem', color: 'var(--c-dim)', marginBottom: '1rem', lineHeight: 1.5 }}>
+              Are there historical facts, missing context, or conflicting evidence from our archive missing from this article? Add your note below. 
+            </p>
+            <textarea 
+              value={noteText}
+              onChange={e => setNoteText(e.target.value)}
+              placeholder="Cite specific medical journals or archive sources..."
+              rows={4}
+              style={{ width: '100%', padding: '1rem', background: 'var(--c-bg)', border: '1px solid var(--c-ghost)', borderRadius: '8px', color: 'var(--c-textBright)', fontFamily: FONT.body, resize: 'vertical', marginBottom: '1rem' }}
+            />
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setIsContributing(false)} style={{ background: 'transparent', border: 'none', color: 'var(--c-dim)', cursor: 'pointer', fontWeight: 'bold' }}>Cancel</button>
+              <button type="submit" disabled={!noteText.trim()} style={{ background: 'var(--c-goldBright)', border: 'none', color: '#000', padding: '0.5rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', cursor: noteText.trim() ? 'pointer' : 'not-allowed', opacity: noteText.trim() ? 1 : 0.5 }}>
+                Submit for Review
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </section>
   );

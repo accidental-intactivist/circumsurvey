@@ -1,20 +1,17 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SignupForm from '../components/SignupForm';
-import HarmonicCanvas from '../components/HarmonicCanvas';
 import { useTheme } from '../contexts/ThemeContext';
-import { Database, ShieldAlert, Binary, Sparkles, ExternalLink, ArrowRight, ClipboardPen, Play, Pause, HeartHandshake, Scale, Mail, Coffee, BookOpen, Building2, Archive, BarChart2, Users, Newspaper } from 'lucide-react';
+import { Database, ShieldAlert, Sparkles, ExternalLink, ArrowRight, ClipboardPen, Play, Pause, HeartHandshake, Scale, Mail, Coffee, BookOpen, Building2, Archive, BarChart2, Users, Newspaper, ChevronRight } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
 import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import NewsAggregator from '../components/NewsAggregator';
-import { ExhibitCard } from '../explore/components/ExhibitsDashboard';
-import BentoBox from '../components/BentoBox';
 import LiveStatsBar from '../components/LiveStatsBar';
-import FeaturedEssay from '../components/FeaturedEssay';
+import BentoBox from '../components/BentoBox';
+import MegamenuNav from '../components/MegamenuNav';
 
 const RAINBOW = "linear-gradient(90deg, var(--c-red), var(--c-orange, #e8a44a), var(--c-yellow, #e8c868), var(--c-green, #68b878), var(--c-blue))";
-const PHASE1_TOTAL = 500;
 
 // Strategic Partner data matching the exact proportions & verbatim copy from original Google Sites
 const STRATEGIC_PARTNERS = [
@@ -61,59 +58,6 @@ const STRATEGIC_PARTNERS = [
         We are actively working with <strong>WIBM</strong>, the leading political advocacy group for men's and boys' issues in Washington State, to provide them with WA-specific data to support their legislative efforts.
       </>
     )
-  }
-];
-
-const CORE_ZONES = [
-  {
-    route: '/report',
-    num: 'ZONE 01',
-    label: 'The Special Report',
-    tagline: 'A deep-dive investigation exploring empirical findings.',
-    icon: Sparkles,
-    colorVar: 'var(--c-goldBright)'
-  },
-  {
-    route: '/explore',
-    num: 'ZONE 02',
-    label: 'Data Explorer',
-    tagline: 'Interactive visualizations and living cross-tabs.',
-    icon: BarChart2,
-    colorVar: 'var(--c-blue)'
-  },
-  {
-    route: '/library',
-    num: 'ZONE 03',
-    label: 'Digital Library',
-    tagline: 'Searchable repository & AI Research Assistant.',
-    icon: BookOpen,
-    colorVar: 'var(--c-purple)'
-  },
-
-  {
-    route: '/entities',
-    num: 'ZONE 04',
-    label: 'Key Figures & Organizations',
-    tagline: 'Encyclopedic directory of the movement\'s people and institutions.',
-    icon: Users,
-    colorVar: 'var(--c-red)'
-  },
-  {
-    route: 'https://forms.gle/FQ8o9g7j1yU3Cw7n7',
-    num: 'ZONE 05',
-    label: 'Take the Survey',
-    tagline: 'Share your experience anonymously.',
-    icon: ClipboardPen,
-    colorVar: 'var(--c-orange)',
-    external: true
-  },
-  {
-    route: '/news',
-    num: 'ZONE 06',
-    label: 'News & Field Notes',
-    tagline: 'Updates, analysis, and dispatches from the frontlines.',
-    icon: Newspaper,
-    colorVar: 'var(--c-teal, #20c997)'
   }
 ];
 
@@ -166,11 +110,10 @@ export default function LandingPage() {
         zIndex: -1, pointerEvents: 'none'
       }} />
 
-
       <UniversalSquishHeader
         themeKey={themeKey}
         loomPaused={loomPaused}
-        startVh={40}
+        startVh={30}
         title={<>The Accidental<br />Intactivist's Guide</>}
         navRightContent={
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
@@ -201,52 +144,248 @@ export default function LandingPage() {
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <ClipboardPen size={14} />
-              <span>Take the Survey</span>
+              <span className="hide-on-mobile">Take the Survey</span>
             </a>
-
-            <button onClick={toggleLoom} style={{
-              background: 'transparent', border: `1px solid ${C.ghost}`,
-              borderRadius: '50%', width: 34, height: 34,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', color: C.muted, transition: 'all 0.2s'
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = C.goldBright}
-              onMouseLeave={e => e.currentTarget.style.borderColor = C.ghost}
-              aria-label={loomPaused ? 'Play animation' : 'Pause animation'}
-            >
-              {loomPaused ? <Play size={14} /> : <Pause size={14} />}
-            </button>
-
+            
             <ArchiveHamburgerMenu />
           </div>
         }
         heroContent={null}
       />
 
-      {/* ════════════════════════════════════════════════════════════════════
-          MAIN CONTENT AREA (Starts immediately below the Squish Masthead)
-          ════════════════════════════════════════════════════════════════════ */}
-      <main style={{ maxWidth: '1140px', margin: '0 auto', padding: '2rem 2rem 2rem' }}>
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem 2rem 1.5rem', width: '100%' }}>
+        <MegamenuNav />
         
-        {/* Core Zones rendered as a premium Bento Box - Main Attraction */}
-        <BentoBox />
+        {/* ════════════════════════════════════════════════════════════════════
+            MEDIA HUB LAYOUT: Flexbox responsive (Hero + Sidebar)
+            ════════════════════════════════════════════════════════════════════ */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '2.5rem',
+          marginBottom: '4rem',
+          alignItems: 'flex-start'
+        }}>
+          
+          {/* HERO ARTICLE COLUMN */}
+          <div style={{ flex: '1 1 65%', minWidth: '300px' }}>
+            <Link to="/to/hadachek_v_oregon" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }} className="lux-hover-lift">
+              <div className="lux-lens" style={{
+                position: 'relative',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                aspectRatio: '16/9',
+                maxHeight: '600px',
+                display: 'flex',
+                alignItems: 'flex-end',
+                padding: '2.5rem',
+                border: '1px solid rgba(212, 160, 48, 0.4)',
+                background: 'linear-gradient(to top, rgba(15,15,20,0.95) 0%, rgba(15,15,20,0.4) 60%, rgba(15,15,20,0.1) 100%), url("/images/courtroom-bg.jpg") center/cover no-repeat var(--c-bgDeep)'
+              }}>
+                <div style={{ position: 'relative', zIndex: 2, maxWidth: '800px' }}>
+                  <div style={{
+                    display: 'inline-block', padding: '0.4rem 1rem', background: 'var(--c-red)',
+                    color: '#fff', fontFamily: FONT.condensed, fontWeight: 800, fontSize: '0.8rem',
+                    letterSpacing: '0.1em', textTransform: 'uppercase', borderRadius: '4px', marginBottom: '1rem'
+                  }}>
+                    Field Note • Legal Analysis
+                  </div>
+                  <h1 style={{
+                    fontFamily: FONT.display, fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
+                    color: '#ffffff', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem',
+                    letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                  }}>
+                    The Anatomy of a Courtroom Battle: Hadachek v. Oregon
+                  </h1>
+                  <p style={{
+                    fontFamily: FONT.body, fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+                    color: 'rgba(255,255,255,0.9)', lineHeight: 1.5, marginBottom: '1.5rem',
+                    maxWidth: '90%'
+                  }}>
+                    Yesterday in Portland, the State tried to legally downgrade bodily autonomy to a "female privilege." They failed. We are going to trial on December 7th.
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.05em' }}>
+                    <span>READ THE FULL NOTE</span>
+                    <ArrowRight size={16} />
+                  </div>
+                </div>
+              </div>
+            </Link>
 
-        <div style={{ marginTop: '-1rem', marginBottom: '3rem' }}>
+            {/* DATA GRID (Masonry style below hero) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.5rem',
+              marginTop: '1.5rem'
+            }}>
+              {/* Exhibit Card 1 */}
+              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-orange)' }}>
+                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-orange)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>TRENDING DATA</div>
+                <h3 style={{ fontFamily: FONT.display, fontSize: '1.5rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.75rem' }}>The 36% Pleasure Gap</h3>
+                <p style={{ fontFamily: FONT.body, fontSize: '0.9rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                  Our findings reveal a massive drop in "Pleasure from Mobile Skin" for circumcised men, mathematically proving the sensory amputation.
+                </p>
+                <Link to="/explore?exhibit=pleasure-gap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-orange)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem' }}>
+                  VIEW EXHIBIT <ChevronRight size={14} />
+                </Link>
+              </div>
+
+              {/* Exhibit Card 2 */}
+              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-blue)' }}>
+                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-blue)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>PSYCHOLOGICAL FALLOUT</div>
+                <h3 style={{ fontFamily: FONT.display, fontSize: '1.5rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.75rem' }}>60% Report Resentment</h3>
+                <p style={{ fontFamily: FONT.body, fontSize: '0.9rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                  The data shatters the "they won't remember it" myth, with over 60% of circumcised men experiencing frequent anger and loss.
+                </p>
+                <Link to="/explore?exhibit=psych-fallout" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-blue)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem' }}>
+                  VIEW EXHIBIT <ChevronRight size={14} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* SIDEBAR: DAILY DIGEST */}
+          <aside style={{ flex: '1 1 30%', minWidth: '300px' }}>
+            <div className="lux-lens" style={{
+              borderRadius: '16px',
+              padding: '1.5rem',
+              border: `1px solid ${C.ghost}`,
+              position: 'sticky',
+              top: '100px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: `1px solid ${C.ghost}`, paddingBottom: '1rem' }}>
+                <Newspaper size={20} style={{ color: C.goldBright }} />
+                <h2 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, margin: 0 }}>
+                  Field Notes & Headlines
+                </h2>
+              </div>
+              
+              {/* Injecting the NewsAggregator directly into the sidebar */}
+              <div style={{ maxHeight: '600px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                <NewsAggregator compact={true} />
+              </div>
+
+              <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: `1px solid ${C.ghost}`, textAlign: 'center' }}>
+                <Link to="/news" style={{
+                  color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 700,
+                  fontSize: '0.85rem', letterSpacing: '0.05em', textDecoration: 'none',
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem'
+                }}>
+                  VIEW FULL ARCHIVE <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+
+        <div style={{ marginTop: '2rem', marginBottom: '4rem' }}>
           <LiveStatsBar />
         </div>
 
         {/* ════════════════════════════════════════════════════════════════════
-            FEATURED PERSONAL ESSAY
+            ONE-CLICK ADVOCACY KITS
             ════════════════════════════════════════════════════════════════════ */}
-        <FeaturedEssay />
+        <div style={{ marginBottom: '5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <Sparkles size={20} style={{ color: C.goldBright }} />
+              <span style={{
+                fontFamily: FONT.condensed, fontWeight: 800,
+                fontSize: '0.85rem', color: C.goldBright,
+                letterSpacing: '0.12em', textTransform: 'uppercase'
+              }}>
+                Curated Parent Kits
+              </span>
+            </div>
+            <h2 style={{ fontFamily: FONT.display, fontSize: '2.2rem', color: C.textBright, marginBottom: '0.75rem' }}>
+              "One-Click" Advocacy Briefs
+            </h2>
+            <p style={{ color: C.muted, fontSize: '1rem', maxWidth: '680px', margin: '0 auto', fontFamily: FONT.body, lineHeight: 1.6 }}>
+              Overwhelmed by the data? We have pre-compiled the most undeniable primary sources into beautiful, ready-to-print discussion guides.
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '1.5rem',
+            alignItems: 'stretch'
+          }}>
+            {/* Kit 1 */}
+            <Link to="/report?kit=expectant" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+              <div style={{ background: 'rgba(212, 160, 48, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <BookOpen size={24} color={C.goldBright} />
+              </div>
+              <h3 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, marginBottom: '0.5rem' }}>The Expectant Parent's Guide</h3>
+              <p style={{ fontFamily: FONT.body, color: C.muted, fontSize: '0.9rem', lineHeight: 1.5, flex: 1, marginBottom: '1.5rem' }}>
+                A foundational packet of objective physiological facts. Gives you the exact anatomical language needed to make the default choice with confidence.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+                GENERATE BRIEF <ArrowRight size={14} />
+              </div>
+            </Link>
+
+            {/* Kit 2 */}
+            <Link to="/report?kit=pediatrician" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+              <div style={{ background: 'rgba(91, 147, 199, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <ShieldAlert size={24} color="var(--c-blue)" />
+              </div>
+              <h3 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, marginBottom: '0.5rem' }}>The Pediatrician Discussion Kit</h3>
+              <p style={{ fontFamily: FONT.body, color: C.muted, fontSize: '0.9rem', lineHeight: 1.5, flex: 1, marginBottom: '1.5rem' }}>
+                A highly-cited medical dossier designed to be handed to a hesitant or uninformed doctor to establish a firm boundary regarding intact care.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-blue)', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+                GENERATE BRIEF <ArrowRight size={14} />
+              </div>
+            </Link>
+
+            {/* Kit 3 */}
+            <Link to="/report?kit=partner" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+              <div style={{ background: 'rgba(232, 164, 74, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
+                <Users size={24} color="var(--c-orange)" />
+              </div>
+              <h3 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, marginBottom: '0.5rem' }}>The Partner Alignment Guide</h3>
+              <p style={{ fontFamily: FONT.body, color: C.muted, fontSize: '0.9rem', lineHeight: 1.5, flex: 1, marginBottom: '1.5rem' }}>
+                Key resources for couples trying to reach a consensus. Answers the most common cultural questions (like "what if he looks different?") with empathy and data.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-orange)', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+                GENERATE BRIEF <ArrowRight size={14} />
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            PUBLIC ARCHIVES (Re-exposing Bento Box)
+            ════════════════════════════════════════════════════════════════════ */}
+        <div style={{ marginBottom: '5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <Archive size={20} style={{ color: C.goldBright }} />
+              <span style={{
+                fontFamily: FONT.condensed, fontWeight: 800,
+                fontSize: '0.85rem', color: C.goldBright,
+                letterSpacing: '0.12em', textTransform: 'uppercase'
+              }}>
+                Explore The Public Archives
+              </span>
+            </div>
+            <h2 style={{ fontFamily: FONT.display, fontSize: '2.2rem', color: C.textBright, marginBottom: '0.75rem' }}>
+              Deep Dives & Research Tools
+            </h2>
+            <p style={{ color: C.muted, fontSize: '1rem', maxWidth: '680px', margin: '0 auto', fontFamily: FONT.body, lineHeight: 1.6 }}>
+              Access the foundational knowledge graph, specific topic guides, and full interactive datasets from our ongoing inquiries.
+            </p>
+          </div>
+          <BentoBox />
+        </div>
         
         {/* ════════════════════════════════════════════════════════════════════
             STRATEGIC PARTNERS & ALLIED COALITIONS
-            Matching exact Google Sites proportions, headlines & verbatim text
             ════════════════════════════════════════════════════════════════════ */}
         <div style={{ marginBottom: '5rem' }}>
-          
-          {/* Section Header */}
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
               <Building2 size={20} style={{ color: C.goldBright }} />
@@ -266,7 +405,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* 4-Column Partner Grid matching exact proportions from screenshot */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
@@ -274,99 +412,34 @@ export default function LandingPage() {
             alignItems: 'start'
           }}>
             {STRATEGIC_PARTNERS.map(partner => (
-              <div
-                key={partner.acronym}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'left'
+              <div key={partner.acronym} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'left' }}>
+                <a href={partner.url} target="_blank" rel="noreferrer" style={{
+                  width: '100%', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  marginBottom: '1.75rem', padding: '0.75rem', background: '#ffffff', borderRadius: '10px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transition: 'transform 0.25s, box-shadow 0.25s', textDecoration: 'none'
                 }}
-              >
-                {/* Large Proportional Logo Container */}
-                <a
-                  href={partner.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    width: '100%',
-                    height: '140px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1.75rem',
-                    padding: '0.75rem',
-                    background: '#ffffff',
-                    borderRadius: '10px',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                    transition: 'transform 0.25s, box-shadow 0.25s',
-                    textDecoration: 'none'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'scale(1.03)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,160,48,0.3)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
-                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,160,48,0.3)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)'; }}
                 >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    style={{
-                      maxHeight: '110px',
-                      maxWidth: '90%',
-                      objectFit: 'contain'
-                    }}
-                  />
+                  <img src={partner.logo} alt={partner.name} style={{ maxHeight: '110px', maxWidth: '90%', objectFit: 'contain' }} />
                 </a>
 
-                {/* Bold Underlined Headline matching original Google Sites style */}
                 <h4 style={{
-                  fontFamily: FONT.condensed,
-                  fontWeight: 800,
-                  fontSize: '1.05rem',
-                  color: C.textBright,
-                  marginBottom: '1.1rem',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  lineHeight: 1.35,
-                  textAlign: 'center',
-                  width: '100%'
+                  fontFamily: FONT.condensed, fontWeight: 800, fontSize: '1.05rem', color: C.textBright,
+                  marginBottom: '1.1rem', letterSpacing: '0.04em', textTransform: 'uppercase', lineHeight: 1.35,
+                  textAlign: 'center', width: '100%'
                 }}>
-                  <a
-                    href={partner.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      color: C.textBright,
-                      textDecoration: 'underline',
-                      textUnderlineOffset: '4px',
-                      transition: 'color 0.2s'
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.color = C.goldBright}
-                    onMouseLeave={e => e.currentTarget.style.color = C.textBright}
-                  >
+                  <a href={partner.url} target="_blank" rel="noreferrer" style={{ color: C.textBright, textDecoration: 'underline', textUnderlineOffset: '4px', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = C.goldBright} onMouseLeave={e => e.currentTarget.style.color = C.textBright}>
                     {partner.name}
                   </a>
                 </h4>
-
-                {/* Specific Verbatim Paragraph Body */}
-                <p style={{
-                  fontSize: '0.9rem',
-                  color: C.text,
-                  lineHeight: 1.6,
-                  fontFamily: FONT.body,
-                  margin: 0,
-                  textAlign: 'left'
-                }}>
+                <p style={{ fontSize: '0.9rem', color: C.text, lineHeight: 1.6, fontFamily: FONT.body, margin: 0, textAlign: 'left' }}>
                   {partner.body}
                 </p>
               </div>
             ))}
           </div>
-
         </div>
 
         {/* ── Rainbow divider ── */}
@@ -376,7 +449,7 @@ export default function LandingPage() {
             URGENT CALL TO ACTION: REGRET PARENTS & LEGAL ADVOCACY
             ════════════════════════════════════════════════════════════════════ */}
         <div className="lux-lens lux-glide-in" style={{
-          padding: '2.5rem',
+          padding: 'clamp(1.5rem, 4vw, 2.5rem)',
           background: 'rgba(232, 164, 74, 0.05)',
           border: `1px solid rgba(232, 164, 74, 0.2)`,
           borderRadius: '16px',
@@ -395,40 +468,13 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <h3 style={{ fontFamily: FONT.display, fontSize: '1.6rem', color: C.textBright, marginBottom: '1rem', lineHeight: 1.3 }}>
+          <h3 style={{ fontFamily: FONT.display, fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', color: C.textBright, marginBottom: '1rem', lineHeight: 1.3 }}>
             Supporting Landmark Equal Protection Legal Initiatives
           </h3>
 
           <p style={{ color: C.text, fontSize: '0.98rem', lineHeight: 1.65, fontFamily: FONT.body, marginBottom: '1.25rem' }}>
             Our project actively supports legal advocacy efforts alongside leaders from <strong>Intact Global</strong>, <strong>Doctors Opposing Circumcision (DOC)</strong>, <strong>GALDEF</strong>, and the <strong>Washington Initiative for Boys and Men (WIBM)</strong> preparing a historic Equal Protection challenge. To move forward, this legal initiative requires a courageous plaintiff.
           </p>
-
-          {/* Partner logo row in CTA */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1.25rem',
-            flexWrap: 'wrap',
-            padding: '1rem 1.25rem',
-            background: 'var(--c-bgDeep)',
-            borderRadius: '8px',
-            marginBottom: '1.5rem',
-            border: `1px solid ${C.ghost}`
-          }}>
-            <span style={{ fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.75rem', color: C.dim, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Coalition Partners:
-            </span>
-            {STRATEGIC_PARTNERS.map(p => (
-              <a key={p.acronym} href={p.url} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', background: '#fff', padding: '3px 8px', borderRadius: '4px' }}>
-                <img
-                  src={p.logo}
-                  alt={p.name}
-                  title={p.name}
-                  style={{ height: '26px', maxWidth: '100px', objectFit: 'contain' }}
-                />
-              </a>
-            ))}
-          </div>
 
           <div style={{
             background: 'var(--c-bgDeep)',
@@ -448,15 +494,11 @@ export default function LandingPage() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <a
-              href="mailto:tone@circumsurvey.online?subject=Confidential%20Inquiry%20-%20Equal%20Protection"
-              style={{
+            <a href="mailto:tone@circumsurvey.online?subject=Confidential%20Inquiry%20-%20Equal%20Protection" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                 background: 'var(--c-orange, #e8a44a)', color: 'var(--c-bgDeep)',
-                fontFamily: FONT.condensed, fontWeight: 800,
-                fontSize: '0.95rem', letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.65rem 1.4rem', borderRadius: '6px', textDecoration: 'none',
-                transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                fontFamily: FONT.condensed, fontWeight: 800, fontSize: '0.95rem', letterSpacing: '0.05em', textTransform: 'uppercase',
+                padding: '0.65rem 1.4rem', borderRadius: '6px', textDecoration: 'none', transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
                 boxShadow: '0 4px 15px rgba(232, 164, 74, 0.3)'
               }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(232, 164, 74, 0.5)'; }}
@@ -465,33 +507,12 @@ export default function LandingPage() {
               <Mail size={16} />
               <span>Reach Out Confidentially</span>
             </a>
-
-            <a
-              href="https://forms.gle/FQ8o9g7j1yU3Cw7n7"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                background: 'transparent', color: C.textBright,
-                border: `1px solid ${C.border}`,
-                fontFamily: FONT.condensed, fontWeight: 700,
-                fontSize: '0.95rem', letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.65rem 1.4rem', borderRadius: '6px', textDecoration: 'none',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = C.goldBright; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = C.border; }}
-            >
-              <ClipboardPen size={16} />
-              <span>Share Experience in Anonymous Survey</span>
-            </a>
           </div>
         </div>
 
         {/* ── Rainbow divider ── */}
         <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.4, marginBottom: '4rem' }} />
 
-        {/* Waitlist Section */}
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
           <SignupForm />
         </div>
@@ -503,7 +524,7 @@ export default function LandingPage() {
             GRASSROOTS RESEARCH FUNDRAISER & PLEDGE MATCH
             ════════════════════════════════════════════════════════════════════ */}
         <div className="lux-lens lux-glide-in" style={{
-          padding: '2.5rem',
+          padding: 'clamp(1.5rem, 4vw, 2.5rem)',
           background: 'rgba(255, 255, 255, 0.02)',
           border: `1px solid rgba(255, 255, 255, 0.05)`,
           borderRadius: '16px',
@@ -520,47 +541,27 @@ export default function LandingPage() {
               100% Grassroots & Independent Research
             </span>
           </div>
-
           <h3 style={{ fontFamily: FONT.display, fontSize: '1.5rem', color: C.textBright, marginBottom: '0.75rem' }}>
             Fundraiser & Pledge Match
           </h3>
-
           <p style={{ color: C.text, fontSize: '0.95rem', lineHeight: 1.65, fontFamily: FONT.body, marginBottom: '1.5rem' }}>
             This inquiry is conducted completely independently without institutional funding. One-time contributions and paid Substack memberships directly match operational costs for our living data pipeline, survey hosting, and Phase 2 AI research tools. Special thanks to founding supporters like David Montane for sustaining this work.
           </p>
-
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <a
-              href="https://coff.ee/accidental.intactivist"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                background: C.goldBright, color: C.bgDeep,
-                fontFamily: FONT.condensed, fontWeight: 800,
-                fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.65rem 1.3rem', borderRadius: '6px', textDecoration: 'none',
-                transition: 'opacity 0.2s'
+            <a href="https://coff.ee/accidental.intactivist" target="_blank" rel="noreferrer" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: C.goldBright, color: C.bgDeep,
+                fontFamily: FONT.condensed, fontWeight: 800, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase',
+                padding: '0.65rem 1.3rem', borderRadius: '6px', textDecoration: 'none', transition: 'opacity 0.2s'
               }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.9'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <Coffee size={16} />
               <span>One-Time Contribution</span>
             </a>
-
-            <a
-              href="https://theaccidentalintactivist.substack.com/subscribe"
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                background: 'transparent', color: C.textBright,
-                border: `1px solid ${C.border}`,
-                fontFamily: FONT.condensed, fontWeight: 700,
-                fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase',
-                padding: '0.65rem 1.3rem', borderRadius: '6px', textDecoration: 'none',
-                transition: 'all 0.2s'
+            <a href="https://theaccidentalintactivist.substack.com/subscribe" target="_blank" rel="noreferrer" style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'transparent', color: C.textBright, border: `1px solid ${C.border}`,
+                fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase',
+                padding: '0.65rem 1.3rem', borderRadius: '6px', textDecoration: 'none', transition: 'all 0.2s'
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,48,0.1)'; e.currentTarget.style.borderColor = C.goldBright; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = C.border; }}
@@ -570,52 +571,13 @@ export default function LandingPage() {
             </a>
           </div>
         </div>
-
-        {/* ── Rainbow divider ── */}
-        <div style={{ height: 2, background: RAINBOW, borderRadius: 2, opacity: 0.4, marginBottom: '4rem' }} />
-
-        {/* Phase 1 Cross-Link Footer CTA */}
-        <div style={{
-          padding: '2.5rem',
-          background: 'rgba(212, 160, 48, 0.04)',
-          border: `1px solid ${C.border}`,
-          borderRadius: '12px',
-          textAlign: 'center'
-        }}>
-          <h3 style={{ fontFamily: FONT.display, fontSize: '1.6rem', color: C.goldBright, marginBottom: '0.75rem' }}>
-            Haven't Explored the Data Yet?
-          </h3>
-          <p style={{ color: C.text, fontSize: '1rem', lineHeight: 1.6, maxWidth: '600px', margin: '0 auto 1.5rem', fontFamily: FONT.body }}>
-            Phase 1 is live with 100+ interactive charts, participant narratives, and international medical policy comparisons.
-          </p>
-          <Link
-            to="/report"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-              background: C.goldBright, color: C.bg,
-              fontFamily: FONT.condensed, fontWeight: 800,
-              fontSize: '1.1rem', letterSpacing: '0.05em', textTransform: 'uppercase',
-              padding: '0.8rem 2rem', borderRadius: '6px', textDecoration: 'none',
-              boxShadow: '0 4px 16px rgba(212,160,48,0.25)', transition: 'transform 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            <span>Launch Special Report Data Explorer</span>
-            <ArrowRight size={18} />
-          </Link>
-        </div>
-
       </main>
 
-      {/* ── Rainbow rule above footer ── */}
       <div style={{ height: 2, background: RAINBOW, marginTop: '4rem' }} />
 
       <footer style={{
-        padding: '2rem',
-        textAlign: 'center', color: C.muted,
-        fontSize: '0.85rem', fontFamily: FONT.condensed,
-        letterSpacing: '0.05em'
+        padding: '2rem', textAlign: 'center', color: C.muted,
+        fontSize: '0.85rem', fontFamily: FONT.condensed, letterSpacing: '0.05em'
       }}>
         © {new Date().getFullYear()} THE ACCIDENTAL INTACTIVIST'S INQUIRY // ALL RIGHTS RESERVED
       </footer>

@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Send, Search, Loader2, Sparkles, BookOpen, X, FilePlus, Copy, User, FileText, Link as LinkIcon, Building, EyeOff } from 'lucide-react';
 import { useAssistant } from '../contexts/AssistantContext';
 import { useReport } from '../contexts/ReportContext';
+import { useMediaList } from '../contexts/MediaListContext';
 import ThinkingSpirograph from './ThinkingSpirograph';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -26,8 +27,9 @@ const ENROLLING_QUESTIONS = [
 import SafeImage from './SafeImage';
 
 export default function AIAssistantFlyout() {
-  const { isOpen, closeAssistant, initialQuery, setInitialQuery, initialSuggestions, setInitialSuggestions } = useAssistant();
-  const { addToReport } = useReport();
+  const { isOpen, closeAssistant, initialQuery, setInitialQuery, initialSuggestions, setInitialSuggestions, attachedDocs, removeAttachedDoc, setAttachedDocs } = useAssistant();
+  const { addToReport, reportText } = useReport();
+  const { mediaLists } = useMediaList();
   const navigate = useNavigate();
   
   const [messages, setMessages] = useState([]);
@@ -37,6 +39,12 @@ export default function AIAssistantFlyout() {
   const [randomSuggestions, setRandomSuggestions] = useState([]);
   const endRef = useRef(null);
   const abortControllerRef = useRef(null);
+
+  const [showListSelector, setShowListSelector] = useState(false);
+  const [listDocs, setListDocs] = useState([]);
+  const [listSearch, setListSearch] = useState('');
+  const [listSort, setListSort] = useState('date');
+  const [loadingList, setLoadingList] = useState(false);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -84,7 +92,7 @@ export default function AIAssistantFlyout() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: userMsg }),
+        body: JSON.stringify({ query: userMsg, attachedDocs }),
         signal: abortControllerRef.current.signal
       });
 
@@ -136,6 +144,71 @@ export default function AIAssistantFlyout() {
     const citations = msg.citations ? msg.citations.map(c => c.source) : [];
     addToReport(msg.content, citations);
     // Optionally show a toast here
+  };
+
+  const handleAttachReport = () => {
+    setAttachedDocs(prev => {
+      if (prev.find(d => d.id === 'report-context')) return prev;
+      return [...prev, { id: 'report-context', title: 'Current Evidence Report', content: reportText }].slice(-5);
+    });
+  };
+
+  const openListSelector = async (list) => {
+    if (!list || !list.items || list.items.length === 0) return;
+    setShowListSelector(true);
+    setLoadingList(true);
+    try {
+      const res = await fetch('/api/cms');
+      if (res.ok) {
+        const data = await res.json();
+        const allDocs = data.data || data;
+        const docs = list.items.map(id => allDocs.find(d => d.id === id)).filter(Boolean);
+        setListDocs(docs);
+      }
+    } catch (e) {
+      console.error("Failed to fetch docs for media list", e);
+    }
+    setLoadingList(false);
+  };
+
+  const filteredAndSortedDocs = useMemo(() => {
+    let result = [...listDocs];
+    if (listSearch) {
+      const q = listSearch.toLowerCase();
+      result = result.filter(d => {
+        const title = (d.title || '').toLowerCase();
+        const meta = d.metadata_json ? JSON.parse(d.metadata_json) : {};
+        const metaTitle = (meta.title || meta.academic_title || '').toLowerCase();
+        const keywords = (meta.keywords || meta.tags || []).join(' ').toLowerCase();
+        return title.includes(q) || metaTitle.includes(q) || keywords.includes(q);
+      });
+    }
+    result.sort((a, b) => {
+      const metaA = a.metadata_json ? JSON.parse(a.metadata_json) : {};
+      const metaB = b.metadata_json ? JSON.parse(b.metadata_json) : {};
+      if (listSort === 'name') {
+        const titleA = metaA.academic_title || metaA.title || a.title || '';
+        const titleB = metaB.academic_title || metaB.title || b.title || '';
+        return titleA.localeCompare(titleB);
+      } else if (listSort === 'keyword') {
+        const kA = (metaA.keywords || metaA.tags || [])[0] || '';
+        const kB = (metaB.keywords || metaB.tags || [])[0] || '';
+        return kA.localeCompare(kB);
+      } else {
+        const dateA = metaA.date || '0000';
+        const dateB = metaB.date || '0000';
+        return dateB.localeCompare(dateA);
+      }
+    });
+    return result;
+  }, [listDocs, listSearch, listSort]);
+
+  const attachSpecificDoc = (doc) => {
+    setAttachedDocs(prev => {
+      if (prev.find(d => d.id === doc.id)) return prev;
+      return [...prev, doc].slice(-5);
+    });
+    setShowListSelector(false);
   };
 
   if (!isOpen) return null;
@@ -198,6 +271,76 @@ export default function AIAssistantFlyout() {
             <X size={18} />
           </button>
         </div>
+
+        {/* List Selector Overlay */}
+        {showListSelector && (
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            background: C.bgDeep, zIndex: 10, display: 'flex', flexDirection: 'column'
+          }}>
+            <div style={{ padding: '1.5rem', borderBottom: `1px solid ${C.ghost}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, color: C.textBright, fontFamily: FONT.display, fontSize: '1.2rem' }}>Select Document</h3>
+              <button onClick={() => setShowListSelector(false)} style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', padding: 0 }}><X size={18} /></button>
+            </div>
+            
+            <div style={{ padding: '1rem 1.5rem', borderBottom: `1px solid ${C.ghost}`, background: C.bgCard }}>
+              <div style={{ position: 'relative', marginBottom: '0.75rem' }}>
+                <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: C.muted }} />
+                <input 
+                  type="text" 
+                  placeholder="Search reading list..." 
+                  value={listSearch}
+                  onChange={e => setListSearch(e.target.value)}
+                  style={{ width: '100%', padding: '0.6rem 1rem 0.6rem 2rem', background: C.bgDeep, border: `1px solid ${C.border}`, borderRadius: '6px', color: C.textBright, fontSize: '0.85rem', outline: 'none' }}
+                />
+              </div>
+              <select 
+                value={listSort}
+                onChange={e => setListSort(e.target.value)}
+                style={{ width: '100%', padding: '0.6rem 1rem', background: C.bgDeep, border: `1px solid ${C.border}`, borderRadius: '6px', color: C.textBright, fontSize: '0.85rem', outline: 'none', cursor: 'pointer' }}
+              >
+                <option value="date">Sort by Date (Newest first)</option>
+                <option value="name">Sort by Name</option>
+                <option value="keyword">Sort by Keyword</option>
+              </select>
+            </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {loadingList ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', color: C.dim }}><Loader2 className="animate-spin" size={20} /></div>
+              ) : filteredAndSortedDocs.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '2rem', color: C.dim, fontSize: '0.85rem' }}>No documents found matching your criteria.</div>
+              ) : (
+                filteredAndSortedDocs.map(doc => {
+                  const meta = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+                  const title = meta.academic_title || meta.title || doc.title || 'Untitled Document';
+                  const date = meta.date || 'Unknown date';
+                  const isAttached = attachedDocs.some(d => d.id === doc.id);
+                  
+                  return (
+                    <div key={doc.id} style={{
+                      padding: '1rem', background: C.card, border: `1px solid ${isAttached ? C.goldBright : C.border}`, borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+                    }}>
+                      <div style={{ color: C.textBright, fontSize: '0.9rem', fontWeight: 'bold', lineHeight: 1.4 }}>{title}</div>
+                      <div style={{ color: C.dim, fontSize: '0.75rem' }}>{date} {meta.category ? `· ${meta.category}` : ''}</div>
+                      <button 
+                        disabled={isAttached}
+                        onClick={() => attachSpecificDoc(doc)}
+                        style={{
+                          marginTop: '0.5rem', padding: '0.4rem 0', background: isAttached ? 'rgba(255,255,255,0.05)' : 'rgba(212,160,48,0.1)',
+                          border: `1px solid ${isAttached ? 'transparent' : C.gold}`, borderRadius: '4px',
+                          color: isAttached ? C.muted : C.goldBright, fontSize: '0.75rem', fontWeight: 'bold', cursor: isAttached ? 'default' : 'pointer'
+                        }}
+                      >
+                        {isAttached ? 'Already Attached' : '+ Attach Document'}
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Chat Area */}
         <div style={{
@@ -404,6 +547,29 @@ export default function AIAssistantFlyout() {
           background: C.bgDeep,
           borderTop: `1px solid ${C.ghost}`
         }}>
+          {attachedDocs && attachedDocs.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              {attachedDocs.map(doc => (
+                <div key={doc.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  padding: '0.2rem 0.5rem', background: 'rgba(212,160,48,0.1)',
+                  border: `1px solid ${C.goldBright}`, borderRadius: '4px',
+                  fontSize: '0.75rem', color: C.textBright
+                }}>
+                  <BookOpen size={12} style={{ color: C.goldBright }} />
+                  <span style={{ maxWidth: '150px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {doc.title || 'Attached Document'}
+                  </span>
+                  <button 
+                    onClick={() => removeAttachedDoc(doc.id)}
+                    style={{ background: 'transparent', border: 'none', color: C.muted, cursor: 'pointer', display: 'flex', padding: 0 }}
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <form onSubmit={handleSubmit} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <div style={{ position: 'absolute', left: '1rem', color: C.muted }}>
               <Search size={16} />
@@ -440,6 +606,16 @@ export default function AIAssistantFlyout() {
               <Send size={14} style={{ marginLeft: '-2px' }} />
             </button>
           </form>
+          <div style={{ display: 'flex', gap: '1.25rem', marginTop: '0.75rem', paddingLeft: '1rem' }}>
+             <button onClick={handleAttachReport} style={{ background: 'none', border: 'none', color: C.dim, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', padding: 0 }} className="lux-hover-bright">
+               <FileText size={12} /> Attach Report
+             </button>
+             {mediaLists && mediaLists.length > 0 && (
+               <button onClick={() => openListSelector(mediaLists[0])} style={{ background: 'none', border: 'none', color: C.dim, fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', padding: 0 }} className="lux-hover-bright">
+                 <BookOpen size={12} /> Attach from List
+               </button>
+             )}
+          </div>
         </div>
       </div>
     </>

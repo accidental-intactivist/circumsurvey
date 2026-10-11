@@ -2,14 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Layers, Database, CheckCircle, Search, Edit3, ChevronRight, FileText, Download, Printer } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useSearchParams } from 'react-router-dom';
 import { useReport } from '../contexts/ReportContext';
+import { useMediaList } from '../contexts/MediaListContext';
+import { X } from 'lucide-react';
 
 export default function ReportBuilder() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const { reportText, setReportText, addToReport } = useReport();
+  const { mediaLists } = useMediaList();
   const chatEndRef = useRef(null);
+
+  const [showListModal, setShowListModal] = useState(false);
+  const [generatingList, setGeneratingList] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -18,6 +26,22 @@ export default function ReportBuilder() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  useEffect(() => {
+    const kit = searchParams.get('kit');
+    if (kit && !reportText) {
+      if (kit === 'pediatrician') {
+        setReportText(`# The Pediatrician Discussion Kit\n\n*A Curated Evidence Brief for Medical Consultations*\n\n---\n\n## Core Objective\nThis brief is designed to be provided to your child's pediatrician to establish a firm, medically-supported boundary regarding genital intactness.\n\n## Foundational Facts to Discuss\n\n### 1. The Prepuce is Normal, Functional Tissue\n**Source:** [Cold & Taylor (1999) - The Prepuce](/library/cold-taylor-1999)\n**Summary:** The prepuce is a highly innervated, functional mucosal tissue, not a "birth defect" or useless appendage.\n\n### 2. Routine Infant Circumcision is Not Recommended Globally\n**Source:** [Royal Dutch Medical Association (KNMG) Policy](/library/knmg-policy)\n**Summary:** The KNMG firmly concludes that there is no convincing medical evidence for routine neonatal circumcision and that it violates the child's right to autonomy.\n\n### 3. "Hygiene" is Not a Medical Indication\n**Source:** [AAP Task Force Context](/library/aap-task-force)\n**Summary:** Proper hygiene of the intact penis requires nothing more than washing with water, identical to female anatomy.\n\n---\n\n*Please append your own generated AI rebuttals or custom notes below this line.*`);
+      } else if (kit === 'expectant') {
+        setReportText(`# The Expectant Parent's Guide\n\n*Foundational Literature on Bodily Autonomy*\n\n---\n\n## Core Objective\nTo provide parents with clear, objective facts about the physiology and function of the intact penis, empowering them to make the default choice.\n\n## Key Reading\n\n### 1. The Anatomy of the Intact Penis\n**Source:** [British Medical Association (BMA) Guidelines](/library/bma-guidelines)\n**Summary:** Outlines the standard development and care of the intact child.\n\n### 2. Understanding the "Pleasure Gap"\n**Source:** [CircumSurvey Phase 1 Findings](/explore)\n**Summary:** Hard data showing a 36% drop in specific sensory experiences for circumcised men, confirming the physiological cost.\n\n---\n\n*Use the Assistant on the left to ask specific questions about care and append the answers here.*`);
+      } else if (kit === 'partner') {
+        setReportText(`# The Partner Alignment Guide\n\n*Navigating the Intact Conversation Together*\n\n---\n\n## Core Objective\nTo provide neutral, objective data for parents who may be coming from different cultural or familial backgrounds regarding circumcision.\n\n## Conversation Starters & Evidence\n\n### 1. "It's just a snip"\n**Counter-Evidence:** It involves the removal of 30-50% of the penile skin system, including the highly sensitive ridged band.\n\n### 2. "I want him to look like his father"\n**Counter-Evidence:** Medical ethics do not support altering a child's body for cosmetic family resemblance. The child has a right to an open future.\n\n---\n\n*Ask the Archive Researcher to generate empathetic rebuttals to specific family concerns and add them here.*`);
+      }
+      
+      // Clear the param so it doesn't keep overriding if they refresh
+      setSearchParams({});
+    }
+  }, [searchParams, reportText, setSearchParams, setReportText]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -74,6 +98,43 @@ export default function ReportBuilder() {
     }, 500);
   };
 
+  const handleGenerateBrief = async (list) => {
+    setGeneratingList(true);
+    try {
+      const res = await fetch('/api/cms?limit=1000');
+      if (res.ok) {
+        const data = await res.json();
+        const allDocs = data.data || data;
+        const docs = list.items.map(id => allDocs.find(d => d.id === id)).filter(Boolean);
+        
+        let brief = `## Evidence Brief: ${list.name}\n\n`;
+        brief += `*Generated on ${new Date().toLocaleDateString()}*\n\n---\n\n`;
+        
+        docs.forEach(doc => {
+          const meta = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+          const title = meta.academic_title || meta.title || doc.title || 'Untitled Document';
+          const author = meta.author || meta.authors?.join(', ') || 'Unknown Author';
+          const date = meta.date || 'Unknown Date';
+          const desc = meta.abstract || meta.summary || meta.description || 'No summary available.';
+          
+          brief += `### ${title}\n`;
+          brief += `**Date:** ${date} | **Author/Source:** ${author}\n\n`;
+          brief += `${desc}\n\n`;
+          if (doc.url && doc.url !== '#') {
+            brief += `*[View Primary Source](${doc.url})*\n\n`;
+          }
+          brief += `---\n\n`;
+        });
+
+        setReportText(prev => prev + (prev.trim() ? '\n\n' : '') + brief);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setGeneratingList(false);
+    setShowListModal(false);
+  };
+
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--c-bg)', color: 'var(--c-textBright)', overflow: 'hidden', fontFamily: 'var(--f-body)' }}>
       
@@ -85,15 +146,14 @@ export default function ReportBuilder() {
           <div>
             <h2 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'var(--f-display)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Layers size={22} color="var(--c-goldBright)" />
-              Semantic Engine
+              Archive Assistant
             </h2>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--c-dim)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-              RAG-Powered Archive Querying
+              Your Personal Research Aide
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <span style={{ fontSize: '0.7rem', background: 'rgba(0, 255, 128, 0.1)', color: '#00ff80', padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid rgba(0, 255, 128, 0.3)', fontFamily: 'var(--f-mono)', letterSpacing: '0.1em' }}>ARCHIVE INDEX: ONLINE</span>
-            <span style={{ fontSize: '0.7rem', background: 'rgba(128, 128, 255, 0.1)', color: '#8080ff', padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid rgba(128, 128, 255, 0.3)', fontFamily: 'var(--f-mono)', letterSpacing: '0.1em' }}>SURVEY DB: ONLINE</span>
+            <span style={{ fontSize: '0.7rem', background: 'rgba(0, 255, 128, 0.1)', color: '#00ff80', padding: '0.3rem 0.6rem', borderRadius: '4px', border: '1px solid rgba(0, 255, 128, 0.3)', fontFamily: 'var(--f-mono)', letterSpacing: '0.1em' }}>ARCHIVE LINKED</span>
           </div>
         </div>
 
@@ -104,7 +164,7 @@ export default function ReportBuilder() {
               <Database size={48} style={{ margin: '0 auto 1.5rem', opacity: 0.3, color: 'var(--c-gold)' }} />
               <h3 style={{ margin: '0 0 0.5rem', fontFamily: 'var(--f-display)', fontSize: '1.2rem', color: 'var(--c-textBright)' }}>Ask the Archive</h3>
               <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.6 }}>
-                The engine will automatically route your query. Analytical questions hit the SQL database; qualitative questions traverse the vector embeddings.
+                Type any question below. The Archive Researcher will read through the medical journals, historical documents, and survey data to find the exact answers for you.
               </p>
             </div>
           )}
@@ -122,10 +182,10 @@ export default function ReportBuilder() {
               
               {msg.role === 'assistant' && msg.intent && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.75rem', borderBottom: '1px solid var(--c-ghost)' }}>
-                  <span style={{ fontSize: '0.65rem', fontFamily: 'var(--f-mono)', letterSpacing: '0.15em', padding: '0.2rem 0.5rem', borderRadius: '4px', background: msg.intent === 'ANALYTICAL' ? 'rgba(128,128,255,0.15)' : 'rgba(0,255,128,0.15)', color: msg.intent === 'ANALYTICAL' ? '#a0a0ff' : '#60ffb0' }}>
-                    {msg.intent} ROUTE
+                  <span style={{ fontSize: '0.65rem', fontFamily: 'var(--f-mono)', letterSpacing: '0.15em', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(212,160,48,0.15)', color: 'var(--c-goldBright)' }}>
+                    ARCHIVE RESEARCHER
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--c-muted)' }}>Synthesized from vectors</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--c-muted)' }}>Synthesized from the Archive</span>
                 </div>
               )}
 
@@ -167,7 +227,7 @@ export default function ReportBuilder() {
                   className="lux-hover-lift"
                   style={{ marginTop: '1.5rem', fontSize: '0.8rem', background: 'var(--c-goldBright)', color: '#000', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold' }}
                 >
-                  <CheckCircle size={14} /> Send to Report
+                  <CheckCircle size={14} /> Add to Guide
                 </button>
               )}
             </div>
@@ -176,7 +236,7 @@ export default function ReportBuilder() {
           {loading && (
             <div style={{ alignSelf: 'flex-start', maxWidth: '85%', background: 'var(--c-bgCard)', border: '1px solid var(--c-gold)', borderRadius: '12px', padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div className="lux-lens" style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'var(--c-goldBright)', animation: 'pulse 1.5s infinite' }} />
-              <span style={{ fontSize: '0.9rem', color: 'var(--c-goldBright)', fontFamily: 'var(--f-mono)' }}>Querying Vector Index...</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--c-goldBright)', fontFamily: 'var(--f-mono)' }}>Reading the archive...</span>
             </div>
           )}
           <div ref={chatEndRef} />
@@ -213,9 +273,16 @@ export default function ReportBuilder() {
         <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid var(--c-ghost)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(8, 8, 10, 0.8)', backdropFilter: 'blur(12px)' }}>
           <h2 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'var(--f-display)', display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--c-textBright)' }}>
             <Edit3 size={22} color="var(--c-blue)" />
-            Astute Report Builder
+            Custom Discussion Guide
           </h2>
           <div style={{ display: 'flex', gap: '1rem' }}>
+            <button 
+              onClick={() => setShowListModal(true)}
+              className="lux-hover-lift"
+              style={{ background: 'transparent', color: 'var(--c-goldBright)', border: '1px solid var(--c-goldBright)', padding: '0.4rem 1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold' }}
+            >
+              <Database size={14} /> Import from List
+            </button>
             <button 
               onClick={downloadReport}
               className="lux-hover-lift"
@@ -236,7 +303,7 @@ export default function ReportBuilder() {
         <div style={{ flex: '1', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: '1', background: 'var(--c-bgDeep)', borderRadius: '12px', border: '1px solid var(--c-ghost)', padding: '2rem', display: 'flex', flexDirection: 'column', boxShadow: 'inset 0 4px 20px rgba(0,0,0,0.5)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--c-dim)', fontSize: '0.8rem', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              <FileText size={14} /> Markdown Editor
+              <FileText size={14} /> Your Notebook
             </div>
             <textarea
               value={reportText}
@@ -247,6 +314,41 @@ export default function ReportBuilder() {
           </div>
         </div>
       </div>
+
+      {/* Media List Import Modal */}
+      {showListModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseDown={(e) => e.stopPropagation()}>
+          <div className="lux-glide-in" style={{ background: 'var(--c-bgCard)', padding: '2rem', borderRadius: '12px', width: '400px', border: '1px solid var(--c-ghost)', position: 'relative' }}>
+            <button onClick={() => setShowListModal(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', color: 'var(--c-dim)', cursor: 'pointer' }}><X size={18} /></button>
+            <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--c-textBright)' }}>Generate Brief from List</h3>
+            
+            {mediaLists.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {mediaLists.map(list => (
+                  <button 
+                    key={list.id} 
+                    onClick={() => handleGenerateBrief(list)} 
+                    disabled={generatingList}
+                    style={{ 
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+                      width: '100%', padding: '1rem', background: 'var(--c-bgSoft)', 
+                      border: '1px solid var(--c-ghost)', borderRadius: '8px', 
+                      color: 'var(--c-textBright)', cursor: generatingList ? 'not-allowed' : 'pointer',
+                      opacity: generatingList ? 0.7 : 1
+                    }}
+                    className="lux-hover-lift"
+                  >
+                    <span style={{ fontWeight: 'bold' }}>{list.name}</span>
+                    <span style={{ color: 'var(--c-goldBright)', fontSize: '0.8rem', fontFamily: 'var(--f-mono)' }}>{list.items.length} docs</span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: 'var(--c-dim)', fontSize: '0.9rem' }}>You haven't created any reading lists yet. Save documents to a list while exploring the archive or news feed.</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Hidden Print Container */}
       {isPrinting && (

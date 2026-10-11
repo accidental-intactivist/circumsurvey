@@ -283,12 +283,18 @@ export default function TimelineView() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', padding: '2rem 0', color: 'var(--c-textBright)', overflow: 'hidden' }}>
-      <div style={{ padding: '0 2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <div style={{ minHeight: '100vh', background: 'radial-gradient(circle at 50% 0%, #1a1a24 0%, #0a0a0a 60%)', padding: '2rem 0', color: 'var(--c-textBright)', overflow: 'hidden', position: 'relative' }}>
+      {/* Museum lighting effect */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40vh', background: 'linear-gradient(180deg, rgba(212,160,48,0.03) 0%, transparent 100%)', pointerEvents: 'none' }} />
+
+      <div style={{ padding: '0 4rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 10 }}>
         <div style={{ flex: 1, paddingRight: '2rem' }}>
-          <div className="analog-band-cool" style={{ height: '4px', width: '60px', marginBottom: '1rem', borderRadius: '2px' }} />
-          <h1 style={{ margin: 0, fontFamily: 'var(--f-display)', fontSize: '2.5rem', color: '#fff' }}>Chronological Archive</h1>
-          <p style={{ color: 'var(--c-muted)', margin: '0.5rem 0 1rem 0' }}>Scroll horizontally to browse the digitized archive chronologically.</p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+             <div style={{ height: '2px', width: '40px', background: 'var(--c-goldBright)' }} />
+             <span style={{ fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--c-goldBright)', fontSize: '0.85rem', fontWeight: 800 }}>Exhibit 01</span>
+          </div>
+          <h1 style={{ margin: 0, fontFamily: 'var(--f-display)', fontSize: '3.5rem', color: '#fff', letterSpacing: '-0.02em', lineHeight: 1 }}>The Historical Archive</h1>
+          <p style={{ color: 'var(--c-muted)', margin: '1rem 0 2rem 0', fontSize: '1.1rem', maxWidth: '600px', lineHeight: 1.6 }}>Walk through the primary sources, scanned medical journals, and historical footage that document the evolution of this practice from the 1800s to today.</p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <input 
               type="text" 
@@ -356,34 +362,42 @@ export default function TimelineView() {
           return (
             <div key={doc.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', scrollSnapAlign: 'center', position: 'relative' }}>
               {showYearLabel && (
-                <div style={{ position: 'absolute', top: '-3rem', left: 0, fontSize: '2rem', fontWeight: 'bold', color: 'var(--c-goldBright)', opacity: 0.3, fontFamily: 'var(--f-display)' }}>
+                <div style={{ position: 'absolute', top: '-6rem', left: '-1rem', fontSize: '8rem', fontWeight: 900, color: 'transparent', WebkitTextStroke: '1px rgba(212,160,48,0.15)', fontFamily: 'var(--f-display)', pointerEvents: 'none', zIndex: 0 }}>
                   {year}
                 </div>
               )}
               
               <Link 
                 to={`/library/${generateFriendlySlug(doc, doc.metadata_json ? JSON.parse(doc.metadata_json) : {})}`}
-                className="lux-hover-lift"
+                className="lux-hover-bright"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  width: '300px',
-                  background: 'var(--c-bgCard)',
-                  border: '1px solid var(--c-ghost)',
-                  borderRadius: '8px',
+                  width: '340px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
                   textDecoration: 'none',
                   overflow: 'hidden',
                   position: 'relative',
                   flexShrink: 0,
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                  backdropFilter: 'blur(10px)'
                 }}
               >
-                <LazyDocumentThumbnail url={doc.url} fallbackImage={thumb} />
-                <div style={{ padding: '1rem' }}>
-                  <div style={{ color: 'var(--c-gold)', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>
+                {/* Museum placard pin */}
+                <div style={{ position: 'absolute', top: '12px', right: '12px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--c-gold)', boxShadow: '0 0 10px var(--c-goldBright)', zIndex: 10 }} />
+                
+                <div style={{ position: 'relative' }}>
+                  <LazyDocumentThumbnail url={doc.url} fallbackImage={thumb} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)', pointerEvents: 'none' }} />
+                </div>
+                
+                <div style={{ padding: '1.5rem', position: 'relative', zIndex: 2 }}>
+                  <div style={{ color: 'var(--c-goldBright)', fontFamily: 'var(--f-condensed)', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.1em' }}>
                     {year} &bull; {doc.type.replace('_', ' ')}
                   </div>
-                  <div style={{ color: 'var(--c-textBright)', fontSize: '1rem', fontWeight: 'bold', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '0.5rem' }}>
+                  <div style={{ color: 'var(--c-textBright)', fontFamily: 'var(--f-display)', fontSize: '1.25rem', fontWeight: 600, lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: '1rem' }}>
                     {getCleanTitle(doc)}
                   </div>
                   {(() => {
@@ -394,9 +408,9 @@ export default function TimelineView() {
                       : m.author;
                     if (!pages && !authors) return null;
                     return (
-                      <div style={{ color: 'var(--c-dim)', fontSize: '0.8rem', lineHeight: 1.4 }}>
-                        {authors && <div style={{ fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>By {authors}</div>}
-                        {pages && <div>{pages} page{pages !== 1 && pages !== '1' ? 's' : ''}</div>}
+                      <div style={{ color: 'var(--c-dim)', fontFamily: 'var(--f-body)', fontSize: '0.85rem', lineHeight: 1.5, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                        {authors && <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0.25rem' }}>Author: <strong style={{ color: 'var(--c-text)' }}>{authors}</strong></div>}
+                        {pages && <div>Length: <strong style={{ color: 'var(--c-text)' }}>{pages} page{pages !== 1 && pages !== '1' ? 's' : ''}</strong></div>}
                       </div>
                     );
                   })()}

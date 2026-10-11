@@ -4,8 +4,9 @@ import { Newspaper, ExternalLink, ArrowRight, Clock, ChevronLeft, ChevronRight }
 import { C, FONT } from '../styles/tokens';
 import ThinkingSpirograph from './ThinkingSpirograph';
 import { getFaviconUrl } from '../utils/newsLens';
+import CausticsBackground from './CausticsBackground';
 
-export default function NewsAggregator() {
+export default function NewsAggregator({ compact = false }) {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -75,33 +76,6 @@ export default function NewsAggregator() {
               image_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200&auto=format&fit=crop',
               abstract: 'The national medical board begins a formal review of infant consent policies amid growing international pressure from human rights organizations.'
             })
-          },
-          {
-            id: 'mock3', type: 'external_news', status: 'ingested', 
-            title: 'Advocacy Groups Demand Transparency in Clinical Data',
-            metadata_json: JSON.stringify({
-              source_publication: 'Civil Rights Daily', date: '2026-09-25', 
-              image_url: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?q=80&w=1200&auto=format&fit=crop',
-              abstract: 'A coalition of advocacy groups rally for transparent clinical data following the release of a controversial long-term impact study.'
-            })
-          },
-          {
-            id: 'mock4', type: 'external_news', status: 'ingested',
-            title: 'European Parliament Debates Resolution on Bodily Autonomy',
-            metadata_json: JSON.stringify({
-              source_publication: 'EU Observer', date: '2026-09-22',
-              image_url: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?q=80&w=1200&auto=format&fit=crop',
-              abstract: 'Members of the European Parliament introduce a non-binding resolution calling for the protection of children\'s rights to bodily integrity across all member states.'
-            })
-          },
-          {
-            id: 'mock5', type: 'external_news', status: 'ingested',
-            title: 'New Study Links Early Trauma to Long-Term Psychological Outcomes',
-            metadata_json: JSON.stringify({
-              source_publication: 'Journal of Pediatric Psychology', date: '2026-09-18',
-              image_url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=1200&auto=format&fit=crop',
-              abstract: 'A peer-reviewed longitudinal study involving over 10,000 participants finds significant correlations between neonatal procedures and adult psychological outcomes.'
-            })
           }
         ];
       }
@@ -113,12 +87,12 @@ export default function NewsAggregator() {
 
   // Auto-advance
   useEffect(() => {
-    if (news.length === 0 || isPaused) return;
+    if (news.length === 0 || isPaused || compact) return;
     const interval = setInterval(() => {
       setCurrentIndex(prev => (prev + 1) % news.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [news, isPaused]);
+  }, [news, isPaused, compact]);
 
   const goTo = useCallback((i) => {
     setCurrentIndex(i);
@@ -149,7 +123,70 @@ export default function NewsAggregator() {
 
   if (news.length === 0) return null;
 
-  const topNews = news.slice(0, 5);
+  const topNews = news.slice(0, compact ? 10 : 5);
+
+  if (compact) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        {topNews.map((item, i) => {
+          let meta = {};
+          try { meta = item.metadata_json ? JSON.parse(item.metadata_json) : {}; } catch(e){}
+          const isInternal = ['essay', 'recap', 'article', 'internal_news'].includes(item.type);
+          
+          return (
+            <a 
+              key={item.id || i} 
+              href={meta.url || item.url || '#'}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'block',
+                textDecoration: 'none',
+                paddingBottom: '1.2rem',
+                borderBottom: i === topNews.length - 1 ? 'none' : `1px solid ${C.ghost}`,
+              }}
+              className="lux-hover-lift"
+            >
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                {(meta.image_url || meta.og_image) && (
+                  <div style={{ flexShrink: 0, width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${C.ghost}` }}>
+                    <img src={meta.image_url || meta.og_image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
+                    <span style={{
+                      fontSize: '0.65rem', fontWeight: 800, fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.12em',
+                      color: isInternal ? C.blueBright : C.goldBright,
+                      background: isInternal ? 'rgba(59, 130, 246, 0.1)' : 'rgba(212, 160, 48, 0.1)',
+                      padding: '0.15rem 0.4rem', borderRadius: '4px',
+                    }}>
+                      {meta.publisher || meta.source_publication || (isInternal ? 'Original' : 'External')}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: C.dim, fontFamily: FONT.mono, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                      <Clock size={10} /> {meta.date || 'Recent'}
+                    </span>
+                  </div>
+                  <h4 style={{ 
+                    margin: '0 0 0.4rem 0', fontFamily: FONT.display, fontSize: '1.05rem', 
+                    color: C.textBright, lineHeight: 1.3
+                  }}>
+                    {item.title}
+                  </h4>
+                  <span style={{
+                    color: C.goldBright, fontSize: '0.75rem', fontFamily: FONT.condensed, fontWeight: 700,
+                    textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '0.3rem'
+                  }}>
+                    Read <ExternalLink size={11} />
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -195,12 +232,14 @@ export default function NewsAggregator() {
                 position: 'absolute',
                 top: 0, left: 0, right: 0, bottom: 0,
                 backgroundImage: imageUrl ? `url(${imageUrl})` : 'none',
-                backgroundColor: imageUrl ? 'transparent' : 'rgba(20, 20, 30, 0.9)',
+                backgroundColor: imageUrl ? 'transparent' : '#0A0A12',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 transition: 'transform 8s ease',
                 transform: isCurrent ? 'scale(1.05)' : 'scale(1)',
-              }} />
+              }}>
+                {!imageUrl && <CausticsBackground textSeed={item.title || item.id} themeColor={isInternal ? "rgba(59, 130, 246, 0.4)" : "rgba(212, 160, 48, 0.4)"} />}
+              </div>
 
               {/* Gradient Overlay — strong on bottom for text readability */}
               <div style={{

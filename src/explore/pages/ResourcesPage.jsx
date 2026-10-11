@@ -1,44 +1,21 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { FONT, C } from "../styles/tokens";
 import { useLegibleColor } from "../lib/colorUtils";
-import ExhibitSidebarNav from "../components/ExhibitSidebarNav";
+import { Search, ExternalLink, Building, Heart, Scale, Film, Headphones, BookOpen, Globe2, Activity, Shield, Share2, FilePlus, Sparkles } from "lucide-react";
+import { RESOURCES, RESOURCE_KINDS } from "../../../lib/resources/directory";
+import { useReport } from "../contexts/ReportContext";
+import { useAssistant } from "../../contexts/AssistantContext";
 
-const SECTIONS = [
-  { id: "advocacy", label: "Advocacy & Education" },
-  { id: "legal", label: "Legal & Direct Action" },
-  { id: "faith", label: "Community & Faith" },
-  { id: "manifesto", label: "The Manifesto" }
-];
-
-const SectionBlock = ({ id, title, children, accentColor = "var(--c-ghost)" }) => (
-  <section id={id} style={{
-    background: "var(--c-bgCard)",
-    color: "var(--c-text)",
-    borderRadius: 8,
-    padding: "3rem 2.5rem",
-    marginBottom: "2rem",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-    border: `1px solid ${accentColor}`
-  }}>
-    <h2 style={{ 
-      fontFamily: FONT.display, 
-      fontSize: "2rem", 
-      color: "var(--c-textBright)", 
-      borderBottom: `2px solid var(--c-ghost)`,
-      paddingBottom: "1rem",
-      marginBottom: "2rem",
-      marginTop: 0
-    }}>{title}</h2>
-    <div style={{
-      fontFamily: FONT.body,
-      fontSize: "1.05rem",
-      lineHeight: 1.6,
-      color: "var(--c-dim)"
-    }}>
-      {children}
-    </div>
-  </section>
-);
+const ICONS = {
+  org: Building,
+  legal: Scale,
+  faith: Heart,
+  restoration: Activity,
+  community: Globe2,
+  film: Film,
+  podcast: Headphones,
+  book: BookOpen,
+};
 
 const LinkButton = ({ href, children, primary }) => {
   const safeColor = useLegibleColor(
@@ -86,118 +63,365 @@ const LinkButton = ({ href, children, primary }) => {
 };
 
 export default function ResourcesPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const { addExhibitToReport } = useReport();
+  const { openAssistant } = useAssistant();
+
+  const filteredResources = useMemo(() => {
+    return RESOURCES.filter(res => {
+      const matchesSearch = (res.name + " " + res.blurb + " " + (res.tags || []).join(" "))
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory = activeCategory === "all" || res.kind === activeCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchQuery, activeCategory]);
+
   return (
     <div style={{ 
       minHeight: "100vh", 
-      padding: "2rem 1.5rem 6rem",
+      padding: "4rem 1.5rem 6rem",
+      background: "var(--c-bgDeep)",
+      color: "var(--c-text)"
     }}>
-      <div className="explore-grid" style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: "3rem", alignItems: "start", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         
-        {/* LEFT: Nav sidebar */}
-        <ExhibitSidebarNav sections={SECTIONS} />
-
-        {/* RIGHT: Content */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0rem", maxWidth: 900 }}>
-          
-          <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-          <p style={{
-            fontSize: "1.1rem",
-            lineHeight: 1.6,
+        {/* Header Section */}
+        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+          <Shield size={48} style={{ color: "var(--c-gold)", marginBottom: "1.5rem" }} />
+          <h1 style={{ 
+            fontFamily: FONT.display, 
+            fontSize: "3.5rem", 
             color: "var(--c-textBright)",
+            marginBottom: "1.5rem",
+            letterSpacing: "-0.02em"
+          }}>Resource Directory</h1>
+          <p style={{
+            fontFamily: FONT.body,
+            fontSize: "1.15rem",
+            lineHeight: 1.6,
+            color: "var(--c-dim)",
+            maxWidth: 700,
+            margin: "0 auto"
           }}>
-            The fight for genital autonomy and the reckoning with routine infant circumcision requires ongoing education, community support, and strategic action. This curated list provides key resources for deepening your understanding, connecting with others, and contributing to change.
+            A curated database of organizations, communities, legal advocates, and media dedicated to genital autonomy and the movement to end routine infant circumcision.
           </p>
           <div style={{ marginTop: "2rem" }}>
-            <LinkButton primary href="https://forms.gle/FQ8o9g7j1yU3Cw7n7">Take the Anonymous Survey</LinkButton>
+             <LinkButton primary href="https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing">Read the Manifesto</LinkButton>
           </div>
         </div>
 
-        <SectionBlock id="advocacy" title="Core Advocacy & Education" accentColor="var(--path-intact)">
-          <p>These organizations are central hubs for information, advocacy, parental support, and community.</p>
-          <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://intactamerica.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Intact America</a></strong>
-              <br />Leading US-based advocacy organization working to end Routine Infant Circumcision through public education, legislative action, and providing resources for parents and advocates.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://nocirc.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>NOCIRC</a></strong>
-              <br />A foundational US organization (since 1986) offering comprehensive educational materials, symposia proceedings, and resources for parents and medical professionals.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://doctorsopposingcircumcision.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Doctors Opposing Circumcision (DOC)</a></strong>
-              <br />An international group of physicians and health professionals challenging the practice on medical and ethical grounds, featuring position papers and research databases.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://circumcision.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Circumcision Resource Center</a></strong>
-              <br />Founded by psychologist Dr. Ronald Goldman, focusing on the psychological impacts of circumcision, providing educational resources and research analysis.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://yourwholebaby.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Your Whole Baby</a></strong>
-              <br />Offers evidence-based information and a supportive community specifically for parents navigating the circumcision decision and choosing to keep their children intact.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://savingoursons.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Saving Our Sons (SOS)</a></strong>
-              <br />A grassroots organization focused on public education, awareness events, supporting legislative action, and providing resources for families.
-            </li>
-          </ul>
-        </SectionBlock>
+        {/* Search and Filters */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "2rem",
+          marginBottom: "4rem"
+        }}>
+          {/* Search Bar */}
+          <div style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: 600
+          }}>
+            <Search style={{ 
+              position: "absolute", 
+              left: "1.2rem", 
+              top: "50%", 
+              transform: "translateY(-50%)",
+              color: "var(--c-muted)" 
+            }} size={20} />
+            <input 
+              type="text"
+              placeholder="Search by name, topic, or keyword..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "1.2rem 1.2rem 1.2rem 3.5rem",
+                fontSize: "1.1rem",
+                fontFamily: FONT.body,
+                background: "var(--c-bgCard)",
+                border: "1px solid var(--c-ghost)",
+                borderRadius: "100px",
+                color: "var(--c-textBright)",
+                outline: "none",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                transition: "border-color 0.3s ease"
+              }}
+              onFocus={(e) => e.target.style.borderColor = "var(--c-gold)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--c-ghost)"}
+            />
+          </div>
 
-        <SectionBlock id="legal" title="Direct Action & Legal Defense" accentColor="var(--c-red)">
-          <p>Organizations focusing on legal challenges, human rights perspectives, and direct public action.</p>
-          <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://www.galdef.org/" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>GALDEF (Genital Autonomy Legal Defense and Education Fund)</a></strong>
-              <br />Headed by human rights activist Tim Hammond, GALDEF focuses on educating and supporting attorneys in impact litigation to expand the US legal landscape to protect all children from forced genital cutting.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://intactglobal.org" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Intact Global</a></strong>
-              <br />Focuses on legal challenges to forced genital cutting globally, human rights perspectives, and strategic litigation.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://15square.org.uk/" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>15 Square</a></strong>
-              <br />A UK-based charity providing support, information, and a sense of community for individuals affected by circumcision issues, including those dealing with complications or seeking restoration.
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://bloodstainedmen.com" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Bloodstained Men & Their Friends</a></strong>
-              <br />A highly visible US-based activist group known for striking public protests across the country, using powerful visuals to raise awareness about the harms of circumcision.
-            </li>
-          </ul>
-        </SectionBlock>
+          {/* Category Pills */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            justifyContent: "center",
+            maxWidth: 900
+          }}>
+            <button
+              onClick={() => setActiveCategory("all")}
+              style={{
+                padding: "0.5rem 1.2rem",
+                borderRadius: "100px",
+                background: activeCategory === "all" ? "var(--c-gold)" : "var(--c-bgGlass)",
+                color: activeCategory === "all" ? "var(--c-bgDeep)" : "var(--c-textBright)",
+                border: `1px solid ${activeCategory === "all" ? "var(--c-gold)" : "var(--c-ghost)"}`,
+                cursor: "pointer",
+                fontFamily: FONT.condensed,
+                fontWeight: 600,
+                transition: "all 0.2s"
+              }}
+            >
+              All Resources
+            </button>
+            {Object.entries(RESOURCE_KINDS).map(([key, label]) => {
+              const Icon = ICONS[key] || Globe2;
+              const isActive = activeCategory === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveCategory(key)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.5rem 1.2rem",
+                    borderRadius: "100px",
+                    background: isActive ? "var(--c-gold)" : "var(--c-bgCard)",
+                    color: isActive ? "var(--c-bgDeep)" : "var(--c-textBright)",
+                    border: `1px solid ${isActive ? "var(--c-gold)" : "var(--c-ghost)"}`,
+                    cursor: "pointer",
+                    fontFamily: FONT.condensed,
+                    fontWeight: 600,
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={e => {
+                    if (!isActive) {
+                      e.currentTarget.style.borderColor = "var(--c-gold)";
+                      e.currentTarget.style.background = "var(--c-bgGlass)";
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!isActive) {
+                      e.currentTarget.style.borderColor = "var(--c-ghost)";
+                      e.currentTarget.style.background = "var(--c-bgCard)";
+                    }
+                  }}
+                >
+                  <Icon size={14} />
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        <SectionBlock id="faith" title="Community & Faith-Based" accentColor="var(--c-purple)">
-          <p>Resources addressing religious dimensions of genital cutting and promoting alternative, non-cutting practices consistent with bodily integrity and faith traditions.</p>
-          <ul style={{ paddingLeft: "1.5rem", marginTop: "1.5rem" }}>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://bruchim.online" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Bruchim</a></strong>
-              <br />A Jewish non-profit organization supporting Jewish families who choose not to circumcise their sons. Bruchim promotes alternative, non-cutting welcoming ceremonies (such as Brit Shalom).
-            </li>
-            <li style={{ marginBottom: "1rem" }}>
-              <strong><a href="https://quranicpath.com/misconceptions/circumcision.html" target="_blank" rel="noreferrer" style={{ color: "var(--c-gold)" }}>Quranic Path</a></strong>
-              <br />An exploration of Islamic perspectives that questions the necessity of routine Khitan (circumcision), focusing on Quranic non-mandate and the principle of harm avoidance.
-            </li>
-          </ul>
-        </SectionBlock>
+        {/* Results Grid */}
+        {filteredResources.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "4rem", color: "var(--c-dim)" }}>
+            <h3 style={{ fontFamily: FONT.display, fontSize: "1.5rem" }}>No resources found.</h3>
+            <p>Try adjusting your search terms or category filters.</p>
+          </div>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gap: "2rem"
+          }}>
+            {filteredResources.map((res) => {
+              const Icon = ICONS[res.kind] || Globe2;
+              return (
+                <a 
+                  key={res.id} 
+                  href={res.url || "#"} 
+                  target={res.url ? "_blank" : "_self"}
+                  rel="noreferrer"
+                  className="lux-hover-lift"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    background: "var(--c-bgCard)",
+                    border: "1px solid var(--c-ghost)",
+                    borderRadius: 16,
+                    padding: "2rem",
+                    textDecoration: "none",
+                    color: "inherit",
+                    position: "relative",
+                    overflow: "hidden",
+                    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = "var(--c-gold)";
+                    e.currentTarget.style.boxShadow = "0 12px 40px rgba(212,160,48,0.15)";
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = "var(--c-ghost)";
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
+                    <div style={{ 
+                      width: 48, 
+                      height: 48, 
+                      borderRadius: 12, 
+                      background: "rgba(212,160,48,0.1)", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      justifyContent: "center",
+                      border: "1px solid var(--c-goldBright)"
+                    }}>
+                      <Icon size={24} style={{ color: "var(--c-goldBright)" }} />
+                    </div>
+                    {res.url && <ExternalLink size={18} style={{ color: "var(--c-muted)" }} />}
+                  </div>
+                  
+                  <h3 style={{ 
+                    fontFamily: FONT.display, 
+                    fontSize: "1.4rem", 
+                    color: "var(--c-textBright)", 
+                    marginBottom: "0.5rem",
+                    lineHeight: 1.3
+                  }}>{res.name}</h3>
+                  
+                  <div style={{ 
+                    fontFamily: FONT.condensed, 
+                    fontSize: "0.85rem", 
+                    color: "var(--c-gold)", 
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    marginBottom: "1rem",
+                    display: "flex",
+                    gap: "0.5rem",
+                    alignItems: "center"
+                  }}>
+                    <span>{RESOURCE_KINDS[res.kind]}</span>
+                    {res.region && (
+                      <>
+                        <span style={{ color: "var(--c-dim)" }}>•</span>
+                        <span style={{ color: "var(--c-dim)" }}>{res.region}</span>
+                      </>
+                    )}
+                  </div>
 
-        <SectionBlock id="manifesto" title="The Accidental Intactivist Manifesto" accentColor="var(--c-gold)">
-          <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div style={{ flex: "0 0 auto", width: "100%", maxWidth: "220px", alignSelf: "flex-start", margin: "0 auto" }}>
-              <img src="/manifesto-cover.jpg" alt="The Accidental Intactivist Manifesto Cover" style={{ width: "100%", height: "auto", borderRadius: 4, boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }} />
-            </div>
-            <div style={{ flex: "1 1 300px" }}>
-              <p style={{ marginTop: 0, marginBottom: "1.5rem" }}>The perspective and research that inspired this survey are detailed in this comprehensive manifesto. It weaves together personal insight, scientific inquiry, and cultural critique into a bold, eye-opening call to action.</p>
-              <p>Whether you're new to this issue or deep in the fight for genital autonomy, this 117-page manifesto delivers the history, ethics, anatomy, and emotional truth that so often go unspoken.</p>
-              
-              <div style={{ marginTop: "2rem" }}>
-                <LinkButton primary href="https://drive.google.com/file/d/1C3T_nDzIPHSWDUcrvvvcrH_Iallk06pT/view?usp=sharing">Download Full Manifesto (PDF)</LinkButton>
-                <LinkButton href="https://medium.com/@ambp/the-accidental-intactivist-manifesto-exposing-the-monster-we-agree-not-to-see-e96e86490bc0">Read on Medium</LinkButton>
-                <LinkButton href="https://substack.com/@c4charkey">Read on Substack</LinkButton>
-              </div>
+                  <p style={{ 
+                    fontFamily: FONT.body, 
+                    fontSize: "1rem", 
+                    lineHeight: 1.6, 
+                    color: "var(--c-dim)",
+                    flexGrow: 1,
+                    marginBottom: "1.5rem"
+                  }}>
+                    {res.blurb}
+                  </p>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "auto", marginBottom: "1rem" }}>
+                    {res.tags?.map(tag => (
+                      <span key={tag} style={{
+                        padding: "0.25rem 0.75rem",
+                        background: "rgba(255,255,255,0.05)",
+                        borderRadius: "100px",
+                        fontSize: "0.75rem",
+                        fontFamily: FONT.condensed,
+                        color: "var(--c-muted)"
+                      }}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Actions Bar */}
+                  <div style={{ 
+                    display: "flex", 
+                    gap: "0.5rem", 
+                    borderTop: "1px solid var(--c-ghost)",
+                    paddingTop: "1rem",
+                    marginTop: "1rem" 
+                  }}>
+                    <button 
+                      title="Share"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (navigator.share) {
+                          navigator.share({ title: res.name, text: res.blurb, url: res.url || window.location.href });
+                        } else {
+                          navigator.clipboard.writeText(res.url || window.location.href);
+                          alert("Copied to clipboard!");
+                        }
+                      }}
+                      style={{ background: "transparent", border: "none", color: "var(--c-muted)", cursor: "pointer", padding: "0.5rem", borderRadius: "8px", transition: "all 0.2s" }}
+                      onMouseEnter={e => { e.currentTarget.style.color = "var(--c-gold)"; e.currentTarget.style.background = "var(--c-bgGlass)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "var(--c-muted)"; e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <Share2 size={18} />
+                    </button>
+                    <button 
+                      title="Add to Report"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addExhibitToReport('resource', { id: res.id });
+                      }}
+                      style={{ background: "transparent", border: "none", color: "var(--c-muted)", cursor: "pointer", padding: "0.5rem", borderRadius: "8px", transition: "all 0.2s" }}
+                      onMouseEnter={e => { e.currentTarget.style.color = "var(--c-gold)"; e.currentTarget.style.background = "var(--c-bgGlass)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "var(--c-muted)"; e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <FilePlus size={18} />
+                    </button>
+                    <button 
+                      title="Ask Research Assistant"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        openAssistant(`What can you tell me about the organization ${res.name}?`);
+                      }}
+                      style={{ background: "transparent", border: "none", color: "var(--c-muted)", cursor: "pointer", padding: "0.5rem", borderRadius: "8px", transition: "all 0.2s" }}
+                      onMouseEnter={e => { e.currentTarget.style.color = "var(--c-gold)"; e.currentTarget.style.background = "var(--c-bgGlass)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = "var(--c-muted)"; e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <Sparkles size={18} />
+                    </button>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Outreach & Updates CTA */}
+        <div style={{
+          marginTop: "6rem",
+          padding: "4rem",
+          background: "var(--c-bgCard)",
+          borderRadius: 24,
+          border: "1px solid var(--c-ghost)",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.2)"
+        }}>
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <h2 style={{ fontFamily: FONT.display, fontSize: "2.5rem", color: "var(--c-textBright)", marginBottom: "1rem" }}>
+              Partner With Us
+            </h2>
+            <p style={{ fontFamily: FONT.body, fontSize: "1.1rem", color: "var(--c-dim)", maxWidth: 650, margin: "0 auto 2rem", lineHeight: 1.6 }}>
+              Are you an organization, support group, or creator dedicated to genital autonomy? 
+              We are constantly expanding this directory to build a stronger network. 
+              Let us know if you'd like to be included, or if you need to update or remove an existing listing.
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+              <LinkButton primary href="/contact?subject=Resource%20Addition">Request Inclusion</LinkButton>
+              <LinkButton href="/contact?subject=Resource%20Update">Update / Remove</LinkButton>
             </div>
           </div>
-        </SectionBlock>
-
         </div>
       </div>
     </div>
   );
 }
+

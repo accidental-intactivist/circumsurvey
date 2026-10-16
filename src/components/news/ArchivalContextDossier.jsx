@@ -26,7 +26,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
   const study = lens?.study;
   const whyItMatters = meta?.why_it_matters;
 
-  const handleGlendaPrompt = (promptText) => {
+  const handleAssistantPrompt = (promptText) => {
     setInitialQuery(promptText);
     openAssistant();
   };
@@ -294,8 +294,8 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
                   </Link>
 
                   <button
-                    onClick={() => handleGlendaPrompt(`Analyze the relationship between this news story ("${articleTitle}") and archival document "${ref.title}" (Doc ID: ${ref.id}).`)}
-                    title="Cross-examine with Glenda"
+                    onClick={() => handleAssistantPrompt(`Analyze the relationship between this news story ("${articleTitle}") and archival document "${ref.title}" (Doc ID: ${ref.id}).`)}
+                    title="Cross-examine with Archive Assistant"
                     style={{
                       background: 'transparent',
                       border: 'none',
@@ -310,7 +310,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
                     onMouseLeave={e => e.currentTarget.style.color = 'var(--c-dim)'}
                   >
                     <Sparkles size={12} />
-                    <span>Ask Glenda</span>
+                    <span>Cross-Examine</span>
                   </button>
                 </div>
               </div>
@@ -319,7 +319,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
         </section>
       )}
 
-      {/* 3. Interactive Glenda Context Engine */}
+      {/* 3. Interactive Archive Assistant Context Engine */}
       <section
         style={{
           background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%)',
@@ -346,7 +346,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
           </div>
           <div>
             <h3 style={{ margin: 0, color: 'var(--c-textBright)', fontSize: '1.15rem', fontFamily: FONT.display }}>
-              Cross-Examine with Glenda
+              Cross-Examine with Archive Assistant
             </h3>
             <p style={{ margin: 0, color: 'var(--c-dim)', fontSize: '0.85rem' }}>
               Instant contextual briefing cross-referenced against 3,200+ archival holdings and survey microdata.
@@ -356,7 +356,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
           <button
-            onClick={() => handleGlendaPrompt(`Explain the historical context behind "${articleTitle}". Why was an association between circumcision and autism hypothesized in the first place, and how does the medical consensus view it today?`)}
+            onClick={() => handleAssistantPrompt(`Explain the historical context behind "${articleTitle}". Why was an association between circumcision and autism hypothesized in the first place, and how does the medical consensus view it today?`)}
             className="lux-hover-lift"
             style={{
               padding: '0.65rem 1.1rem',
@@ -378,7 +378,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
           </button>
 
           <button
-            onClick={() => handleGlendaPrompt(`In the context of intactivism and genital autonomy, why does a study showing no link between circumcision and autism strengthen the movement's focus on ethics, pain, and bodily integrity?`)}
+            onClick={() => handleAssistantPrompt(`In the context of intactivism and genital autonomy, why does a study showing no link between circumcision and autism strengthen the movement's focus on ethics, pain, and bodily integrity?`)}
             className="lux-hover-lift"
             style={{
               padding: '0.65rem 1.1rem',
@@ -400,7 +400,7 @@ export default function ArchivalContextDossier({ meta, articleTitle, articleId }
           </button>
 
           <button
-            onClick={() => handleGlendaPrompt(`Give me a calm, respectful, and evidence-grounded 3-point framework for discussing the headline "${articleTitle}" with parents or friends.`)}
+            onClick={() => handleAssistantPrompt(`Give me a calm, respectful, and evidence-grounded 3-point framework for discussing the headline "${articleTitle}" with parents or friends.`)}
             className="lux-hover-lift"
             style={{
               padding: '0.65rem 1.1rem',

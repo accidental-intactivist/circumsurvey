@@ -219,10 +219,7 @@ export default function NewsArticle() {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 2rem', position: 'relative' }}>
-      {/* Background Underloom in Radiant Amber */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="media" />
-      </div>
+
 
       {/* Floating Toolbar */}
       {selection.visible && (
@@ -315,8 +312,20 @@ export default function NewsArticle() {
         <ArrowLeft size={16} /> Back to Field Notes & Headlines
       </Link>
 
-      <div style={{ background: 'var(--c-bgDeep)', border: '1px solid var(--c-borderMuted)', borderRadius: '12px', padding: '2.5rem', marginBottom: '3rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+      <div style={{
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'var(--c-bgDeep)',
+        border: '1px solid var(--c-borderMuted)',
+        borderRadius: '12px',
+        padding: '2.5rem',
+        marginBottom: '3rem'
+      }}>
+        <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.18 }}>
+          <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="media" />
+        </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
           <span style={{ color: 'var(--c-goldBright)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {article.type === 'external_news' && article.url && article.url !== '#' && (
               <img src={getFaviconUrl(article.url)} alt="" style={{ width: 16, height: 16, borderRadius: '2px' }} onError={(e) => e.target.style.display = 'none'} />
@@ -383,7 +392,10 @@ export default function NewsArticle() {
             Copy Share Link
           </button>
         </div>
+        </div>
+      </div>
 
+      <div style={{ background: 'var(--c-bgDeep)', border: '1px solid var(--c-borderMuted)', borderRadius: '12px', padding: '2.5rem', marginBottom: '3rem' }}>
         {/* Executive Briefing / Summary Block */}
         <div style={{ 
           background: article.type === 'recap' ? 'linear-gradient(135deg, rgba(242,193,78,0.06), transparent 60%), var(--c-bgSoft)' : 'var(--c-bgSoft)', 

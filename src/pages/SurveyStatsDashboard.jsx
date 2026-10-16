@@ -54,45 +54,55 @@ export default function SurveyStatsDashboard() {
 
   return (
     <div style={{ background: 'var(--c-bg)', minHeight: '100vh', padding: '4rem 2rem', color: 'var(--c-text)', position: 'relative' }}>
-      {/* Background Underloom in Data Cyan */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
-        <LoomChoreography isInline={true} forceFormation="neural" opacity={1} themeColor="data" />
-      </div>
+
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        <header style={{ marginBottom: '3rem', borderBottom: '1px solid var(--c-ghost)', paddingBottom: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <Activity size={32} color="var(--c-gold)" />
-            <h1 style={{ margin: 0, fontSize: '2.5rem', fontFamily: 'var(--f-display)', color: 'var(--c-textBright)' }}>
-              Live Survey Statistics
-            </h1>
+        <header style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '16px',
+          padding: '2.5rem 2rem',
+          marginBottom: '3rem',
+          border: '1px solid var(--c-ghost)',
+          background: 'radial-gradient(ellipse at 50% 20%, rgba(6, 182, 212, 0.08) 0%, rgba(10, 12, 18, 0.95) 100%)'
+        }}>
+          <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.2 }}>
+            <LoomChoreography isInline={true} forceFormation="neural" opacity={1} themeColor="data" />
           </div>
-          <p style={{ fontSize: '1.2rem', color: 'var(--c-muted)', maxWidth: '800px', lineHeight: 1.6 }}>
-            Real-time demographic and experiential data aggregated from the Intactivist Guide's ongoing global survey. This dataset forms the ground truth for our AI archivist.
-          </p>
-          <div style={{ marginTop: '1.5rem', background: 'rgba(212, 160, 48, 0.1)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid var(--c-goldBright)' }}>
-            <p style={{ margin: 0, fontSize: '1rem', color: 'var(--c-textBright)', lineHeight: 1.5 }}>
-              <strong>The survey is still open!</strong> You can still contribute your experience. 
-              Looking for our initial analysis? <a href="/report" style={{ color: 'var(--c-blue)', textDecoration: 'none', fontWeight: 'bold' }}>Read the Phase 1 Report</a> of the first 500 respondents.
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <Activity size={32} color="var(--c-gold)" />
+              <h1 style={{ margin: 0, fontSize: '2.5rem', fontFamily: 'var(--f-display)', color: 'var(--c-textBright)' }}>
+                Live Survey Statistics
+              </h1>
+            </div>
+            <p style={{ fontSize: '1.2rem', color: 'var(--c-muted)', maxWidth: '800px', lineHeight: 1.6 }}>
+              Real-time demographic and experiential data aggregated from the Intactivist Guide's ongoing global survey. This dataset forms the ground truth for our AI archivist.
             </p>
-          </div>
-          <div style={{ marginTop: '2rem', display: 'flex', gap: '2rem' }}>
-            <div style={{ background: 'var(--c-bgSoft)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--c-ghost)', flex: 1, display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Users size={24} color="var(--c-blue)" />
-              <div>
-                <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--c-dim)', fontWeight: 'bold' }}>Total Respondents</div>
-                <div style={{ fontSize: '2rem', color: 'var(--c-textBright)', fontWeight: 'bold', fontFamily: 'var(--f-mono)' }}>
-                  {stats.total.toLocaleString()}
+            <div style={{ marginTop: '1.5rem', background: 'rgba(212, 160, 48, 0.1)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid var(--c-goldBright)' }}>
+              <p style={{ margin: 0, fontSize: '1rem', color: 'var(--c-textBright)', lineHeight: 1.5 }}>
+                <strong>The survey is still open!</strong> You can still contribute your experience. 
+                Looking for our initial analysis? <a href="/report" style={{ color: 'var(--c-blue)', textDecoration: 'none', fontWeight: 'bold' }}>Read the Phase 1 Report</a> of the first 500 respondents.
+              </p>
+            </div>
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '2rem' }}>
+              <div style={{ background: 'var(--c-bgSoft)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--c-ghost)', flex: 1, display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <Users size={24} color="var(--c-blue)" />
+                <div>
+                  <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--c-dim)', fontWeight: 'bold' }}>Total Respondents</div>
+                  <div style={{ fontSize: '2rem', color: 'var(--c-textBright)', fontWeight: 'bold', fontFamily: 'var(--f-mono)' }}>
+                    {stats.total.toLocaleString()}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div style={{ background: 'var(--c-bgSoft)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--c-ghost)', flex: 1, display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <FileText size={24} color="var(--c-green)" />
-              <div>
-                <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--c-dim)', fontWeight: 'bold' }}>Data Points Collected</div>
-                <div style={{ fontSize: '2rem', color: 'var(--c-textBright)', fontWeight: 'bold', fontFamily: 'var(--f-mono)' }}>
-                  {(stats.total * 360).toLocaleString()}+
+              <div style={{ background: 'var(--c-bgSoft)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--c-ghost)', flex: 1, display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <FileText size={24} color="var(--c-green)" />
+                <div>
+                  <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--c-dim)', fontWeight: 'bold' }}>Data Points Collected</div>
+                  <div style={{ fontSize: '2rem', color: 'var(--c-textBright)', fontWeight: 'bold', fontFamily: 'var(--f-mono)' }}>
+                    {(stats.total * 360).toLocaleString()}+
+                  </div>
                 </div>
               </div>
             </div>

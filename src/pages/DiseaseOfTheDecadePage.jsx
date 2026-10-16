@@ -159,10 +159,7 @@ export default function DiseaseOfTheDecadePage() {
       paddingBottom: '5rem',
       position: 'relative'
     }}>
-      {/* Background Holographic Choreography */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.28 }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
-      </div>
+
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* ── Top Header ── */}
@@ -232,50 +229,66 @@ export default function DiseaseOfTheDecadePage() {
         <section style={{
           maxWidth: '1200px',
           margin: '2rem auto 2.5rem',
-          padding: '0 1.5rem',
-          textAlign: 'center'
+          padding: '0 1.5rem'
         }}>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem',
-            background: 'rgba(212, 160, 48, 0.1)',
-            border: '1px solid rgba(212, 160, 48, 0.25)',
-            borderRadius: '999px',
-            color: '#d4a030',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '1rem'
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '16px',
+            padding: '3rem 2rem 2.5rem',
+            background: 'radial-gradient(ellipse at 50% 20%, rgba(212, 160, 48, 0.1) 0%, rgba(12, 12, 18, 0.95) 100%)',
+            border: '1px solid rgba(212, 160, 48, 0.22)',
+            textAlign: 'center',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)'
           }}>
-            <History size={14} /> The 150-Year Medical Retcon
+            <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.35 }}>
+              <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.35rem 0.85rem',
+                background: 'rgba(212, 160, 48, 0.1)',
+                border: '1px solid rgba(212, 160, 48, 0.25)',
+                borderRadius: '999px',
+                color: '#d4a030',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '1rem'
+              }}>
+                <History size={14} /> The 150-Year Medical Retcon
+              </div>
+
+              <h1 style={{
+                fontFamily: FONT.serif,
+                fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                fontWeight: 700,
+                lineHeight: 1.15,
+                color: '#fff',
+                marginBottom: '1rem',
+                maxWidth: '900px',
+                margin: '0 auto 1rem'
+              }}>
+                The "Disease of the Decade"
+              </h1>
+
+              <p style={{
+                fontSize: '1.15rem',
+                color: 'var(--c-dim, #aaa)',
+                maxWidth: '780px',
+                margin: '0 auto 1.5rem',
+                lineHeight: 1.6
+              }}>
+                A historical examination of how the justification for routine infant circumcision changes every fifteen years, 
+                while the physical target—the body’s most sensitive erogenous tissue—mysteriously remains the exact same.
+              </p>
+            </div>
           </div>
-
-          <h1 style={{
-            fontFamily: FONT.serif,
-            fontSize: 'clamp(2rem, 4vw, 3.2rem)',
-            fontWeight: 700,
-            lineHeight: 1.15,
-            color: '#fff',
-            marginBottom: '1rem',
-            maxWidth: '900px',
-            margin: '0 auto 1rem'
-          }}>
-            The "Disease of the Decade"
-          </h1>
-
-          <p style={{
-            fontSize: '1.15rem',
-            color: 'var(--c-dim, #aaa)',
-            maxWidth: '780px',
-            margin: '0 auto 1.5rem',
-            lineHeight: 1.6
-          }}>
-            A historical examination of how the justification for routine infant circumcision changes every fifteen years, 
-            while the physical target—the body’s most sensitive erogenous tissue—mysteriously remains the exact same.
-          </p>
 
           {/* The Pharmaceutical Parable Callout */}
           <div style={{

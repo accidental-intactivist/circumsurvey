@@ -17,7 +17,7 @@ import {
   ArrowRight,
   ArrowLeft
 } from 'lucide-react';
-import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+
 import { FONT } from '../styles/tokens';
 import manifestoData from '../data/manifesto_chapters.json';
 import ArchiveEvidenceCard from '../components/manifesto/ArchiveEvidenceCard';
@@ -151,25 +151,7 @@ export default function ManifestoPage() {
       className="manifesto-root"
       style={{ fontFamily: FONT.body }}
     >
-      {/* Background Underloom Visualization */}
-      <div 
-        className="no-print"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          pointerEvents: 'none',
-          zIndex: 0,
-          opacity: 0.16,
-          overflow: 'hidden'
-        }}
-      >
-        <LoomChoreography 
-          isInline={true} 
-          forceFormation="orbital" 
-          opacity={1} 
-          themeColor="manifesto" 
-        />
-      </div>
+
 
       {viewMode === 'portal' ? (
         <ManifestoPortal 

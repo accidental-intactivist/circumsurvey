@@ -25,10 +25,7 @@ export default function HadachekExhibitPage() {
       paddingBottom: '5rem',
       position: 'relative'
     }}>
-      {/* Background Underloom holographic canvas in Legal/Library Land (Crimson & Gold) */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.32 }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="library" />
-      </div>
+
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* ── Top Header / Breadcrumb ── */}
@@ -118,60 +115,75 @@ export default function HadachekExhibitPage() {
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem' }}>
         
         {/* Badge & Title */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-            <span style={{
-              background: 'var(--c-red, #ef4444)',
-              color: '#fff',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              fontFamily: FONT.condensed,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              padding: '0.3rem 0.75rem',
-              borderRadius: '4px',
-              boxShadow: '0 0 16px rgba(239, 68, 68, 0.4)'
-            }}>
-              Landmark Legal Exhibit • Case Dossier
-            </span>
-            <span style={{
-              background: 'rgba(245, 158, 11, 0.15)',
-              color: 'var(--c-goldBright, #f59e0b)',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              fontFamily: FONT.condensed,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              padding: '0.3rem 0.75rem',
-              borderRadius: '4px',
-              border: '1px solid rgba(245, 158, 11, 0.35)'
-            }}>
-              ⚖️ Active On Appeal
-            </span>
+        <div style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '16px',
+          border: '1px solid rgba(239, 68, 68, 0.28)',
+          background: 'radial-gradient(ellipse at 50% 20%, rgba(239, 68, 68, 0.1) 0%, rgba(12, 10, 14, 0.95) 100%)',
+          padding: '2.5rem 2rem',
+          marginBottom: '2rem',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5)'
+        }}>
+          <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.32 }}>
+            <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="library" />
           </div>
 
-          <h1 style={{
-            fontFamily: FONT.display,
-            fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-            color: '#ffffff',
-            fontWeight: 800,
-            lineHeight: 1.15,
-            margin: '0 0 0.8rem 0',
-            letterSpacing: '-0.02em'
-          }}>
-            The Anatomy of a Courtroom Battle:<br />
-            Hadachek v. Oregon
-          </h1>
-          <p style={{
-            fontFamily: FONT.body,
-            fontSize: 'clamp(1.05rem, 2vw, 1.3rem)',
-            color: 'rgba(255, 255, 255, 0.85)',
-            lineHeight: 1.6,
-            maxWidth: '950px',
-            margin: 0
-          }}>
-            An inside report from the 2nd Hadachek trial in Portland challenging the state's systemic denial of equal protection and bodily autonomy for male and intersex children.
-          </p>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+              <span style={{
+                background: 'var(--c-red, #ef4444)',
+                color: '#fff',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                fontFamily: FONT.condensed,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                padding: '0.3rem 0.75rem',
+                borderRadius: '4px',
+                boxShadow: '0 0 16px rgba(239, 68, 68, 0.4)'
+              }}>
+                Landmark Legal Exhibit • Case Dossier
+              </span>
+              <span style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                color: 'var(--c-goldBright, #f59e0b)',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                fontFamily: FONT.condensed,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '0.3rem 0.75rem',
+                borderRadius: '4px',
+                border: '1px solid rgba(245, 158, 11, 0.35)'
+              }}>
+                ⚖️ Active On Appeal
+              </span>
+            </div>
+
+            <h1 style={{
+              fontFamily: FONT.display,
+              fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+              color: '#ffffff',
+              fontWeight: 800,
+              lineHeight: 1.15,
+              margin: '0 0 0.8rem 0',
+              letterSpacing: '-0.02em'
+            }}>
+              The Anatomy of a Courtroom Battle:<br />
+              Hadachek v. Oregon
+            </h1>
+            <p style={{
+              fontFamily: FONT.body,
+              fontSize: 'clamp(1.05rem, 2vw, 1.3rem)',
+              color: 'rgba(255, 255, 255, 0.85)',
+              lineHeight: 1.6,
+              maxWidth: '950px',
+              margin: 0
+            }}>
+              An inside report from the 2nd Hadachek trial in Portland challenging the state's systemic denial of equal protection and bodily autonomy for male and intersex children.
+            </p>
+          </div>
         </div>
 
         {/* ── Authentic Courtroom Photo Hero ── */}

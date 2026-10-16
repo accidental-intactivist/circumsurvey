@@ -157,13 +157,13 @@ export default function CounterEvidencePage() {
 
   return (
     <div className={`gd-page ce-page ${selected.size ? 'has-selection' : ''}`} style={{ position: 'relative' }}>
-      {/* Background Underloom holographic canvas in Guides Land (The Great Loom) */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.28 }}>
-        <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
-      </div>
-
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <header className="ce-hero no-print" style={{ position: 'relative' }}>
+        <header className="ce-hero no-print" style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Confined Header Underloom */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.38 }}>
+            <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
+          </div>
+          <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <Link to="/guides" className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Guide Series</Link>
             <button
@@ -182,6 +182,7 @@ export default function CounterEvidencePage() {
             Pick the justifications you expect to hear or type a custom claim below. We utilize a <strong>highly effective, pro-social debate strategy</strong> that patiently listens and acknowledges the other person's concerns to help find where your alignment truly lies, before introducing counter-evidence and an "ask-back".
           </p>
           <LedgerLegend />
+          </div>
         </header>
 
         <div className="ce-controls no-print">

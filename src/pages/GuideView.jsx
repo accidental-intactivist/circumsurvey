@@ -9,7 +9,6 @@ import { useIsCurator } from '../components/guides/useIsCurator';
 import { useReport } from '../contexts/ReportContext';
 import { useAssistant } from '../contexts/AssistantContext';
 import { captureEvent } from '../lib/telemetry';
-import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 import './Guides.css';
 
 export default function GuideView({ overrideParams }) {
@@ -101,11 +100,6 @@ export default function GuideView({ overrideParams }) {
 
   return (
     <div className={`gd-page gv-page gv-format-${format}`} style={{ position: 'relative' }}>
-      {/* Background Underloom holographic canvas in Guides Land (The Great Loom) */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.32 }}>
-        <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
-      </div>
-
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div className="gv-toolbar no-print" role="toolbar" aria-label="Guide tools">
           <Link to={builderLink} className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Series & builder</Link>

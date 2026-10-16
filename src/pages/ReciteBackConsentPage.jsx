@@ -109,10 +109,7 @@ export default function ReciteBackConsentPage() {
       paddingBottom: '5rem',
       position: 'relative'
     }}>
-      {/* Background Holographic Canvas */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.25 }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
-      </div>
+
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* ── Top Header / Breadcrumb ── */}
@@ -210,54 +207,63 @@ export default function ReciteBackConsentPage() {
             
             {/* Clinical Governance Header */}
             <div style={{
+              position: 'relative',
+              overflow: 'hidden',
+              margin: '-2.5rem -2.5rem 2rem -2.5rem',
+              padding: '2.5rem 2.5rem 1.5rem',
               borderBottom: '2px solid rgba(212, 160, 48, 0.3)',
-              paddingBottom: '1.5rem',
-              marginBottom: '2rem'
+              background: 'radial-gradient(ellipse at 50% 0%, rgba(212, 160, 48, 0.12) 0%, rgba(10, 10, 14, 0.6) 100%)'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-                <div>
-                  <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#d4a030', fontWeight: 800 }}>
-                    CLINICAL BIOETHICS & RISK MANAGEMENT DISCLOSURE
-                  </div>
-                  <h1 style={{ fontFamily: FONT.serif, fontSize: '1.75rem', color: '#fff', margin: '0.4rem 0 0.2rem' }}>
-                    Elective Neonatal Preputial Excision
-                  </h1>
-                  <div style={{ fontSize: '0.88rem', color: '#aaa' }}>
-                    Document Standard: Joint Commission & AMA Code of Medical Ethics (Truth in Informed Consent)
-                  </div>
-                </div>
-                <div style={{
-                  background: 'rgba(212, 160, 48, 0.1)',
-                  border: '1px solid rgba(212, 160, 48, 0.3)',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  textAlign: 'right'
-                }}>
-                  <div style={{ fontSize: '0.72rem', color: '#888', textTransform: 'uppercase' }}>Form Designation</div>
-                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#d4a030' }}>FORM 104-RIC</div>
-                </div>
+              <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
+                <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
               </div>
 
-              {/* Patient & Case Meta Box */}
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '1rem',
-                marginTop: '1.5rem',
-                background: 'rgba(255,255,255,0.03)',
-                padding: '1rem',
-                borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.08)',
-                fontSize: '0.85rem'
-              }}>
-                <div>
-                  <span style={{ color: '#888' }}>PATIENT:</span> <strong style={{ color: '#eee' }}>Infant Male (~48h Postpartum)</strong>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#d4a030', fontWeight: 800 }}>
+                      CLINICAL BIOETHICS & RISK MANAGEMENT DISCLOSURE
+                    </div>
+                    <h1 style={{ fontFamily: FONT.serif, fontSize: '1.75rem', color: '#fff', margin: '0.4rem 0 0.2rem' }}>
+                      Elective Neonatal Preputial Excision
+                    </h1>
+                    <div style={{ fontSize: '0.88rem', color: '#aaa' }}>
+                      Document Standard: Joint Commission & AMA Code of Medical Ethics (Truth in Informed Consent)
+                    </div>
+                  </div>
+                  <div style={{
+                    background: 'rgba(212, 160, 48, 0.1)',
+                    border: '1px solid rgba(212, 160, 48, 0.3)',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '6px',
+                    textAlign: 'right'
+                  }}>
+                    <div style={{ fontSize: '0.72rem', color: '#888', textTransform: 'uppercase' }}>Form Designation</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#d4a030' }}>FORM 104-RIC</div>
+                  </div>
                 </div>
-                <div>
-                  <span style={{ color: '#888' }}>CLINICAL INDICATION:</span> <strong style={{ color: '#4ade80' }}>None (Healthy Anatomy)</strong>
-                </div>
-                <div>
-                  <span style={{ color: '#888' }}>AUTHORITY:</span> <strong style={{ color: '#eee' }}>Parent / Legal Proxy</strong>
+
+                {/* Patient & Case Meta Box */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem',
+                  marginTop: '1.5rem',
+                  background: 'rgba(255,255,255,0.03)',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  fontSize: '0.85rem'
+                }}>
+                  <div>
+                    <span style={{ color: '#888' }}>PATIENT:</span> <strong style={{ color: '#eee' }}>Infant Male (~48h Postpartum)</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#888' }}>CLINICAL INDICATION:</span> <strong style={{ color: '#4ade80' }}>None (Healthy Anatomy)</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#888' }}>AUTHORITY:</span> <strong style={{ color: '#eee' }}>Parent / Legal Proxy</strong>
+                  </div>
                 </div>
               </div>
             </div>

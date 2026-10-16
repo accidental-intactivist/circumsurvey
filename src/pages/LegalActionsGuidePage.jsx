@@ -73,11 +73,6 @@ export default function LegalActionsGuidePage() {
       paddingBottom: '5rem',
       position: 'relative'
     }}>
-      {/* Background Underloom Visualization in Legal Crimson / Bronze */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.28 }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="library" />
-      </div>
-
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Top Header / Breadcrumb */}
         <header style={{
@@ -186,8 +181,22 @@ export default function LegalActionsGuidePage() {
         {/* Main Content Area */}
         <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2.5rem 1.5rem' }}>
           
-          {/* Top Title Banner */}
-          <div style={{ marginBottom: '2.5rem' }}>
+          {/* Top Title Banner with Confined Header Underloom */}
+          <div style={{
+            position: 'relative',
+            overflow: 'hidden',
+            padding: '2.5rem 2rem',
+            borderRadius: '16px',
+            background: 'radial-gradient(ellipse at 80% 20%, rgba(212, 160, 48, 0.1), transparent 70%), rgba(20, 20, 28, 0.65)',
+            border: '1px solid rgba(212, 160, 48, 0.25)',
+            marginBottom: '2.5rem',
+            boxShadow: '0 12px 36px rgba(0,0,0,0.4)'
+          }}>
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.35 }}>
+              <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="library" />
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
               <span style={{
                 fontFamily: FONT.condensed,
@@ -238,6 +247,7 @@ export default function LegalActionsGuidePage() {
             }}>
               An exhaustive legal guide tracking the constitutional challenges dismantling the dual legal standard in the United States—focusing on <em>Huff v. Colorado</em> in Denver District Court and the broader legislative strategies for equal bodily protection.
             </p>
+            </div>
           </div>
 
           {/* Interactive Navigation Tabs */}

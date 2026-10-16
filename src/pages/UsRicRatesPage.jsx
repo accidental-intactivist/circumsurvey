@@ -88,10 +88,7 @@ export default function UsRicRatesPage() {
       paddingBottom: '5rem',
       position: 'relative'
     }}>
-      {/* Background Holographic Canvas */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.28 }}>
-        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
-      </div>
+
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* ── Top Header / Breadcrumb ── */}
@@ -176,44 +173,62 @@ export default function UsRicRatesPage() {
         </header>
 
         {/* ── Hero Section ── */}
-        <section style={{ maxWidth: '1100px', margin: '2.5rem auto', padding: '0 1.5rem', textAlign: 'center' }}>
+        <section style={{ maxWidth: '1100px', margin: '2.5rem auto 1.5rem', padding: '0 1.5rem' }}>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.85rem',
-            background: 'rgba(74, 222, 128, 0.1)',
-            border: '1px solid rgba(74, 222, 128, 0.25)',
-            borderRadius: '999px',
-            color: '#4ade80',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: '1rem'
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '16px',
+            padding: '3rem 2rem 2.5rem',
+            background: 'radial-gradient(ellipse at 50% 20%, rgba(74, 222, 128, 0.08) 0%, rgba(12, 14, 20, 0.95) 100%)',
+            border: '1px solid rgba(74, 222, 128, 0.22)',
+            textAlign: 'center',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
+            marginBottom: '2rem'
           }}>
-            <TrendingDown size={14} /> In-Hospital Birth Rate Sub-50%
+            <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.3 }}>
+              <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="gold" />
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.35rem 0.85rem',
+                background: 'rgba(74, 222, 128, 0.1)',
+                border: '1px solid rgba(74, 222, 128, 0.25)',
+                borderRadius: '999px',
+                color: '#4ade80',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '1rem'
+              }}>
+                <TrendingDown size={14} /> In-Hospital Birth Rate Sub-50%
+              </div>
+
+              <h1 style={{
+                fontFamily: FONT.serif,
+                fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
+                color: '#fff',
+                marginBottom: '1rem',
+                lineHeight: 1.15
+              }}>
+                The U.S. Circumcision Rate Reality
+              </h1>
+
+              <p style={{
+                fontSize: '1.2rem',
+                color: 'var(--c-dim, #aaa)',
+                maxWidth: '820px',
+                margin: '0 auto',
+                lineHeight: 1.6
+              }}>
+                National birth hospitalization rates have dropped below 50% for the first time in modern history (49.3%, <em>JAMA Pediatrics</em> 2025). But the true story lies in the profound regional split and the migration to outpatient billing.
+              </p>
+            </div>
           </div>
-
-          <h1 style={{
-            fontFamily: FONT.serif,
-            fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)',
-            color: '#fff',
-            marginBottom: '1rem',
-            lineHeight: 1.15
-          }}>
-            The U.S. Circumcision Rate Reality
-          </h1>
-
-          <p style={{
-            fontSize: '1.2rem',
-            color: 'var(--c-dim, #aaa)',
-            maxWidth: '820px',
-            margin: '0 auto 2.5rem',
-            lineHeight: 1.6
-          }}>
-            National birth hospitalization rates have dropped below 50% for the first time in modern history (49.3%, <em>JAMA Pediatrics</em> 2025). But the true story lies in the profound regional split and the migration to outpatient billing.
-          </p>
 
           {/* Key Stat Grid */}
           <div style={{

@@ -648,10 +648,7 @@ export default function DocumentView() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--c-bg)', position: 'relative' }}>
       
-      {/* Background Underloom in Library Crimson */}
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
-        <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
-      </div>
+
 
       {/* Floating Toolbar */}
       {selection.visible && (
@@ -762,47 +759,59 @@ export default function DocumentView() {
       <div className="lux-glide-in" style={{ position: 'relative', zIndex: 1, padding: '0rem 4rem 2rem 4rem' }}>
         
         {/* Hero Section */}
-        <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              {prevDoc && (
-                <Link to={`/library/${generateFriendlySlug(prevDoc, safeParseJson(prevDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>&larr;</span> Prev Document
+        <div style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: '16px',
+          padding: '2rem 2.5rem 1.5rem',
+          marginBottom: '2rem',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(212, 160, 48, 0.08) 0%, rgba(15, 17, 26, 0.7) 100%)',
+          border: '1px solid var(--c-ghost)'
+        }}>
+          <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.2 }}>
+            <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
+          </div>
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                {prevDoc && (
+                  <Link to={`/library/${generateFriendlySlug(prevDoc, safeParseJson(prevDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>&larr;</span> Prev Document
+                  </Link>
+                )}
+                {nextDoc && (
+                  <Link to={`/library/${generateFriendlySlug(nextDoc, safeParseJson(nextDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
+                    Next Document <span style={{ fontSize: '1.2rem' }}>&rarr;</span>
+                  </Link>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button onClick={() => openAssistant('', null, doc)} style={{ color: 'var(--c-goldBright)', background: 'transparent', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-gold)', borderRadius: '20px', cursor: 'pointer' }} className="lux-hover-lift">
+                  <Sparkles size={14} /> Ask Assistant
+                </button>
+                <Link to="/library" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }} className="lux-hover-lift">
+                  Return to Index
                 </Link>
+              </div>
+            </div>
+            
+            <h1 style={{ margin: '0 0 1rem 0', fontSize: '2.5rem', fontFamily: 'var(--f-display)', letterSpacing: '-0.02em', lineHeight: '1.1', color: 'var(--c-textBright)' }}>
+              {citationTitle}
+            </h1>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+              {(metadata.author || metadata.gemini_extracted_metadata?.authors?.join(', ')) && (
+                <div style={{ color: 'var(--c-text)', fontSize: '1.1rem', fontStyle: 'italic' }}>
+                  by {metadata.author || metadata.gemini_extracted_metadata?.authors?.join(', ')}
+                </div>
               )}
-              {nextDoc && (
-                <Link to={`/library/${generateFriendlySlug(nextDoc, safeParseJson(nextDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
-                  Next Document <span style={{ fontSize: '1.2rem' }}>&rarr;</span>
-                </Link>
+              {pageCount && (
+                <div style={{ color: 'var(--c-dim)', fontSize: '0.9rem', padding: '0.2rem 0.6rem', background: 'var(--c-bgDeep)', borderRadius: '4px', border: '1px solid var(--c-ghost)' }}>
+                  {pageCount} Pages
+                </div>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button onClick={() => openAssistant('', null, doc)} style={{ color: 'var(--c-goldBright)', background: 'transparent', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-gold)', borderRadius: '20px', cursor: 'pointer' }} className="lux-hover-lift">
-                <Sparkles size={14} /> Ask Assistant
-              </button>
-              <Link to="/library" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }} className="lux-hover-lift">
-                Return to Index
-              </Link>
-            </div>
           </div>
-          
-          <h1 style={{ margin: '0 0 1rem 0', fontSize: '2.5rem', fontFamily: 'var(--f-display)', letterSpacing: '-0.02em', lineHeight: '1.1', color: 'var(--c-textBright)' }}>
-            {citationTitle}
-          </h1>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-            {(metadata.author || metadata.gemini_extracted_metadata?.authors?.join(', ')) && (
-              <div style={{ color: 'var(--c-text)', fontSize: '1.1rem', fontStyle: 'italic' }}>
-                by {metadata.author || metadata.gemini_extracted_metadata?.authors?.join(', ')}
-              </div>
-            )}
-            {pageCount && (
-              <div style={{ color: 'var(--c-dim)', fontSize: '0.9rem', padding: '0.2rem 0.6rem', background: 'var(--c-bgDeep)', borderRadius: '4px', border: '1px solid var(--c-ghost)' }}>
-                {pageCount} Pages
-              </div>
-            )}
-          </div>
-
         </div>
 
         {/* Main Layout Container */}

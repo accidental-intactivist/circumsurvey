@@ -316,12 +316,23 @@ export default function TimelineView() {
       {/* Museum lighting effect */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40vh', background: 'linear-gradient(180deg, rgba(212,160,48,0.03) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 1 }} />
       
-      <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <LoomChoreography forceFormation="moire" isInline={true} opacity={0.15} themeColor="library" />
-      </div>
+      <div style={{
+        padding: '2.5rem 4rem 2rem',
+        marginBottom: '2rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        position: 'relative',
+        zIndex: 10,
+        overflow: 'hidden',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(212, 160, 48, 0.08) 0%, rgba(10, 10, 15, 0.4) 100%)'
+      }}>
+        <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.18 }}>
+          <LoomChoreography forceFormation="moire" isInline={true} opacity={1} themeColor="library" />
+        </div>
 
-      <div style={{ padding: '0 4rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 10 }}>
-        <div style={{ flex: 1, paddingRight: '2rem' }}>
+        <div style={{ flex: 1, paddingRight: '2rem', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
              <div style={{ height: '2px', width: '40px', background: 'var(--c-goldBright)' }} />
              <span style={{ fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--c-goldBright)', fontSize: '0.85rem', fontWeight: 800 }}>Exhibit 01</span>

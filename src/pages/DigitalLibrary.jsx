@@ -860,14 +860,14 @@ export default function DigitalLibrary() {
   return (
     <div className="library-root">
       
-      {/* Background Underloom */}
-      <div className="library-underloom">
-        <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
-      </div>
-
       {/* Hero Masthead & Omni-Search Command */}
-      <div className="library-hero">
-        <div className="library-hero-badge">
+      <div className="library-hero" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Confined Hero Underloom */}
+        <div className="library-underloom" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.16 }}>
+          <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
+        </div>
+
+        <div className="library-hero-badge" style={{ position: 'relative', zIndex: 1 }}>
           <Archive size={14} />
           <span>The Great Archive • UMass MS 1205 & MSU Collections</span>
         </div>

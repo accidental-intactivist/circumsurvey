@@ -184,11 +184,6 @@ export default function CollectionPage() {
 
   return (
     <div style={{ background: 'var(--c-bg)', minHeight: '100vh', paddingBottom: '4rem', position: 'relative' }}>
-      
-      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <LoomChoreography forceFormation="quiet" isInline={true} opacity={0.14} themeColor="library" />
-      </div>
-
       <div style={{ position: 'relative', zIndex: 1 }}>
         <UniversalSquishHeader
         themeKey={themeKey}

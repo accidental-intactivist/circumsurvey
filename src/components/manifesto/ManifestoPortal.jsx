@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { FONT, C } from '../../styles/tokens';
 import AutoEntityLinker from '../AutoEntityLinker';
+import LoomChoreography from '../GuidedTour/LoomChoreography';
 
 export const MANIFESTO_TRACKS = [
   {
@@ -388,8 +389,11 @@ export default function ManifestoPortal({
       </div>
 
       {/* ── Grand Exhibition Hero ── */}
-      <section className="manifesto-portal-hero">
-        <div className="manifesto-portal-hero-container">
+      <section className="manifesto-portal-hero" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.2 }}>
+          <LoomChoreography isInline={true} forceFormation="orbital" opacity={1} themeColor="manifesto" />
+        </div>
+        <div className="manifesto-portal-hero-container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="manifesto-hero-eyebrow">
             <span className="manifesto-eyebrow-pip" />
             <span>EXHIBITION PORTAL • 2025 ARCHIVAL COMPENDIUM EDITION</span>

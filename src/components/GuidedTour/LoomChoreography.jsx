@@ -1092,9 +1092,23 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     const pA = { x: 0, y: 0 }, pB = { x: 0, y: 0 };
     let damp = 1;
     let lastFrameTime = performance.now();
-    let idleCleared = false;
+    let isVisible = true;
+    let intersectionObserver = null;
+    if (typeof IntersectionObserver === "function") {
+      intersectionObserver = new IntersectionObserver(([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (!wasVisible && isVisible) {
+          lastFrameTime = performance.now();
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          animationFrameId = requestAnimationFrame(render);
+        }
+      }, { threshold: 0.01 });
+      intersectionObserver.observe(canvas);
+    }
 
     const render = (now) => {
+      if (!isVisible) return; // Zero CPU/GPU when out of viewport
       animationFrameId = requestAnimationFrame(render);
       const elapsed = now - lastFrameTime;
       if (elapsed < MIN_FRAME_INTERVAL) return;
@@ -1205,6 +1219,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("cs-loom-pause", onPauseToggle);
       window.removeEventListener("loom-weave-draft", onWeaveDraft);
+      if (intersectionObserver) intersectionObserver.disconnect();
       if (resizeObserver) resizeObserver.disconnect();
       if (remeasureTimer) clearInterval(remeasureTimer);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);

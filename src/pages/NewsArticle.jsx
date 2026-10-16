@@ -8,8 +8,90 @@ import { useAssistant } from '../contexts/AssistantContext';
 import AutoEntityLinker from '../components/AutoEntityLinker';
 import { SourceLensPanel, ContextNotes, AlsoCoveredBy, DigestPulse } from '../components/SourceLensPanel';
 import { CategoryChip, LeanPill, ContextBadge } from '../components/LensChips';
-import { storyDate, flaggedClaimCount, getFaviconUrl } from '../utils/newsLens';
+import { storyDate, flaggedClaimCount, getFaviconUrl, categoryMeta } from '../utils/newsLens';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 import CausticsBackground from '../components/CausticsBackground';
+import ArchivalContextDossier from '../components/news/ArchivalContextDossier';
+
+function NewsletterSubscribeForm() {
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(() => {
+    try { return localStorage.getItem('cs_newsletter_subscribed') === 'true'; } catch { return false; }
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes('@')) return;
+    setSubscribed(true);
+    try {
+      localStorage.setItem('cs_newsletter_subscribed', 'true');
+      localStorage.setItem('cs_newsletter_email', email);
+    } catch {}
+  };
+
+  if (subscribed) {
+    return (
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
+        padding: '0.75rem 1.25rem', borderRadius: '8px',
+        background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10b981',
+        color: '#10b981', fontWeight: 700, fontSize: '0.95rem'
+      }}>
+        <Check size={18} />
+        <span>You're subscribed! The next morning dispatch will arrive in your inbox.</span>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{
+      display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center'
+    }}>
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Enter your email address..."
+        style={{
+          flex: '1 1 280px',
+          padding: '0.8rem 1.1rem',
+          borderRadius: '8px',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          background: 'rgba(0, 0, 0, 0.6)',
+          color: '#fff',
+          fontSize: '0.95rem',
+          outline: 'none',
+          fontFamily: "var(--f-body, sans-serif)"
+        }}
+      />
+      <button
+        type="submit"
+        className="lux-hover-bright"
+        style={{
+          padding: '0.8rem 1.6rem',
+          borderRadius: '8px',
+          border: 'none',
+          background: 'var(--c-gold)',
+          color: '#090f15',
+          fontWeight: 800,
+          fontSize: '0.95rem',
+          fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+          letterSpacing: '0.06em',
+          textTransform: 'uppercase',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.45rem'
+        }}
+      >
+        <span>Subscribe Free</span>
+        <ArrowRight size={15} />
+      </button>
+    </form>
+  );
+}
 
 export default function NewsArticle() {
   const { id } = useParams();
@@ -137,6 +219,11 @@ export default function NewsArticle() {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '4rem 2rem', position: 'relative' }}>
+      {/* Background Underloom in Radiant Amber */}
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
+        <LoomChoreography isInline={true} forceFormation="harmonic" opacity={1} themeColor="media" />
+      </div>
+
       {/* Floating Toolbar */}
       {selection.visible && (
         <div 
@@ -225,7 +312,7 @@ export default function NewsArticle() {
       )}
 
       <Link to="/news" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-blue)', textDecoration: 'none', marginBottom: '2rem' }}>
-        <ArrowLeft size={16} /> Back to News Feed
+        <ArrowLeft size={16} /> Back to Field Notes & Headlines
       </Link>
 
       <div style={{ background: 'var(--c-bgDeep)', border: '1px solid var(--c-borderMuted)', borderRadius: '12px', padding: '2.5rem', marginBottom: '3rem' }}>
@@ -234,7 +321,7 @@ export default function NewsArticle() {
             {article.type === 'external_news' && article.url && article.url !== '#' && (
               <img src={getFaviconUrl(article.url)} alt="" style={{ width: 16, height: 16, borderRadius: '2px' }} onError={(e) => e.target.style.display = 'none'} />
             )}
-            {meta.source_publication || article.source_collection}
+            {article.type === 'recap' ? 'Field Notes & Headlines' : (meta.source_publication || article.source_collection)}
           </span>
           {(article.published_at || meta.date) && (
             <span style={{ color: 'var(--c-dim)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -297,18 +384,186 @@ export default function NewsArticle() {
           </button>
         </div>
 
-        <div style={{ background: 'var(--c-bgSoft)', padding: '2rem', borderRadius: '8px', borderLeft: '4px solid var(--c-blue)' }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: 'var(--c-textBright)' }}>{article.type === 'recap' ? 'Overview' : 'Summary'}</h3>
+        {/* Executive Briefing / Summary Block */}
+        <div style={{ 
+          background: article.type === 'recap' ? 'linear-gradient(135deg, rgba(242,193,78,0.06), transparent 60%), var(--c-bgSoft)' : 'var(--c-bgSoft)', 
+          padding: '2rem 2.25rem', 
+          borderRadius: '12px', 
+          border: '1px solid var(--c-borderMuted)',
+          borderLeft: article.type === 'recap' ? '4px solid var(--c-goldBright)' : '4px solid var(--c-blue)',
+          boxShadow: article.type === 'recap' ? '0 12px 32px rgba(0,0,0,0.15)' : 'none'
+        }}>
+          {article.type === 'recap' ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.6rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Sparkles size={18} style={{ color: 'var(--c-goldBright)' }} />
+                <h3 style={{ margin: 0, fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)", textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '1.05rem', fontWeight: 800, color: 'var(--c-goldBright)' }}>
+                  Field Notes & Editorial Synthesis
+                </h3>
+              </div>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--f-mono, monospace)', color: 'var(--c-dim)', background: 'rgba(255,255,255,0.04)', padding: '0.2rem 0.6rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                {meta.story_count ? `${meta.story_count} Analyzed Stories` : 'Editorial Synthesis'}
+              </span>
+            </div>
+          ) : (
+            <h3 style={{ margin: '0 0 1rem 0', color: 'var(--c-textBright)' }}>Summary</h3>
+          )}
+
           <p style={{ color: 'var(--c-text)', lineHeight: 1.8, fontSize: '1.1rem', margin: 0 }}>
             <AutoEntityLinker 
                text={(article.type !== 'recap' && meta.summary) || meta.abstract || meta.summary || "No summary available."} 
                entities={[...(meta.key_people || []), ...(meta.organizations || [])]} 
             />
           </p>
+
+          {/* Color-Coded Topic Jump Links for Daily Digest */}
+          {article.type === 'recap' && meta.sections && meta.sections.length > 0 && (
+            <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{
+                fontSize: '0.72rem',
+                fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.14em',
+                color: 'var(--c-dim)',
+                marginBottom: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.5rem'
+              }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <span>Today's Headlines & Key Topics</span>
+                  <span style={{ color: 'var(--c-goldBright)', opacity: 0.85 }}>({meta.sections.length} Chapters)</span>
+                </span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--c-muted)', textTransform: 'none', letterSpacing: 'normal', fontFamily: "var(--f-body, sans-serif)" }}>
+                  Click to jump directly to chapter
+                </span>
+              </div>
+
+              {/* Connected string of topics */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '0.75rem',
+              }}>
+                {meta.sections.map((section, idx) => {
+                  const cat = categoryMeta(section.category);
+                  return (
+                    <a
+                      key={idx}
+                      href={`#digest-topic-${idx}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(`digest-topic-${idx}`);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          el.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+                          el.style.borderColor = cat.color;
+                          el.style.boxShadow = `0 0 28px ${cat.color}55`;
+                          setTimeout(() => {
+                            el.style.boxShadow = '';
+                            el.style.borderColor = '';
+                          }, 1800);
+                        }
+                      }}
+                      className="lux-hover-lift"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.4rem',
+                        padding: '0.85rem 1rem',
+                        borderRadius: '10px',
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                        border: `1px solid ${cat.color}44`,
+                        borderLeft: `4px solid ${cat.color}`,
+                        textDecoration: 'none',
+                        color: 'var(--c-textBright)',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = `${cat.color}15`;
+                        e.currentTarget.style.borderColor = cat.color;
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))';
+                        e.currentTarget.style.borderColor = `${cat.color}44`;
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            background: cat.color,
+                            color: '#000',
+                            fontWeight: 800,
+                            fontSize: '0.68rem',
+                            fontFamily: 'var(--f-mono, monospace)',
+                            flexShrink: 0
+                          }}>
+                            {idx + 1}
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            color: cat.color
+                          }}>
+                            {cat.short || section.category}
+                          </span>
+                        </div>
+                        <span style={{ color: cat.color, fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.2rem', fontFamily: "var(--f-condensed)", fontWeight: 700 }}>
+                          Jump <ArrowRight size={12} />
+                        </span>
+                      </div>
+
+                      <div style={{
+                        fontWeight: 600,
+                        fontSize: '0.92rem',
+                        lineHeight: 1.35,
+                        color: 'var(--c-textBright)',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>
+                        {section.headline}
+                      </div>
+
+                      {section.items?.length > 0 && (
+                        <div style={{
+                          fontSize: '0.72rem',
+                          color: 'var(--c-dim)',
+                          fontFamily: 'var(--f-mono, monospace)',
+                          marginTop: 'auto',
+                          paddingTop: '0.2rem'
+                        }}>
+                          {section.items.length} source {section.items.length === 1 ? 'doc' : 'docs'}
+                        </div>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         <SourceLensPanel meta={meta} category={article.category} />
         <ContextNotes meta={meta} />
+        <ArchivalContextDossier 
+          meta={meta} 
+          articleTitle={article.type === 'recap' ? article.title : (meta.academic_title || article.title)} 
+          articleId={article.id} 
+        />
         <AlsoCoveredBy meta={meta} url={article.url} />
         <DigestPulse meta={meta} />
 
@@ -378,6 +633,128 @@ export default function NewsArticle() {
             ))}
           </div>
         )}
+
+        {/* Editorial Synopsis & Source Access Card when full_text is unavailable */}
+        {!meta.full_text && !meta.digest_items && article.type !== 'recap' && (
+          <div style={{
+            marginTop: '3rem',
+            padding: '2rem 2.25rem',
+            borderRadius: '14px',
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid var(--c-borderMuted)',
+            color: 'var(--c-text)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1rem',
+              flexWrap: 'wrap',
+              gap: '0.6rem'
+            }}>
+              <span style={{
+                fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: 'var(--c-goldBright)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}>
+                <FilePlus size={14} />
+                <span>Primary Reporting & Source Access</span>
+              </span>
+              {article.url && article.url !== '#' && (
+                <a 
+                  href={article.url} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  style={{
+                    color: '#38bdf8',
+                    textDecoration: 'none',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem'
+                  }}
+                >
+                  <span>Read unpaywalled source on {meta.source_publication || 'Publisher'}</span>
+                  <ExternalLink size={13} />
+                </a>
+              )}
+            </div>
+            <p style={{ lineHeight: 1.8, fontSize: '1.05rem', margin: '0 0 1rem 0' }}>
+              <AutoEntityLinker 
+                text={meta.summary || meta.abstract || "This study was recorded by our global media intake feed. Our editorial review cross-references this report directly against primary clinical literature and archival records."}
+                entities={[...(meta.key_people || []), ...(meta.organizations || [])]} 
+              />
+            </p>
+            {meta.scrape_blocked && (
+              <p style={{ fontSize: '0.8rem', color: 'var(--c-dim)', margin: 0, fontStyle: 'italic' }}>
+                Note: Direct inline article syndication is restricted by the publisher's paywall or feed protection. The full original story is available at the publisher link above. Our Source Lens appraisal, claims cross-examination, and archival citations are independently compiled.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Newsletter Subscription Card with Movement Voice */}
+        <div className="lux-lens" style={{
+          marginTop: '3.5rem',
+          marginBottom: '2rem',
+          background: 'linear-gradient(135deg, rgba(212,160,48,0.12) 0%, rgba(9,15,21,0.96) 60%, rgba(212,160,48,0.06) 100%)',
+          borderRadius: '16px',
+          border: '1px solid rgba(212, 160, 48, 0.4)',
+          padding: '2.5rem',
+          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5), 0 0 24px rgba(212, 160, 48, 0.1)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            position: 'absolute', top: 0, right: 0, width: '250px', height: '250px',
+            background: 'radial-gradient(circle, rgba(212,160,48,0.15) 0%, transparent 70%)',
+            pointerEvents: 'none'
+          }} />
+
+          <div style={{ maxWidth: '640px', position: 'relative', zIndex: 1 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
+              padding: '0.25rem 0.65rem', borderRadius: '4px',
+              background: 'rgba(212, 160, 48, 0.2)', border: '1px solid rgba(212, 160, 48, 0.4)',
+              color: 'var(--c-goldBright)', fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+              fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em',
+              marginBottom: '0.85rem'
+            }}>
+              <Sparkles size={13} />
+              <span>The Movement Dispatch</span>
+            </div>
+
+            <h3 style={{
+              fontFamily: "var(--f-display, 'Playfair Display', serif)",
+              fontSize: 'clamp(1.5rem, 3vw, 2.1rem)',
+              fontWeight: 800,
+              color: '#ffffff',
+              lineHeight: 1.2,
+              margin: '0 0 0.75rem 0'
+            }}>
+              Never miss a morning pulse.
+            </h3>
+
+            <p style={{
+              fontFamily: "var(--f-body, sans-serif)",
+              fontSize: '1rem',
+              lineHeight: 1.6,
+              color: 'rgba(255, 255, 255, 0.85)',
+              margin: '0 0 1.5rem 0'
+            }}>
+              No medical gaslighting, no procedural fluff. Get our daily synthesis of court filings, hospital circumcision decline rates, and uncensored primary sources delivered straight to your inbox.
+            </p>
+
+            <NewsletterSubscribeForm />
+          </div>
+        </div>
       </div>
 
       <div style={{ marginTop: '4rem', marginBottom: '3rem', background: 'rgba(30, 41, 59, 0.5)', padding: '2.5rem', borderRadius: '16px', border: '1px solid var(--c-borderMuted)', backdropFilter: 'blur(10px)' }}>

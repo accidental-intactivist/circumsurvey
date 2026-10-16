@@ -376,7 +376,7 @@ export default function DemographicsDashboardPage({ navigate, updateState, setEx
               color: C.muted,
               lineHeight: 1.45,
             }}>
-              For free-form flows across any three dimensions (or any X × Y matrix), use the <a href="#/correlations" style={{ color: C.goldBright, borderBottom: `1px solid ${C.goldBright}40`, paddingBottom: "0.1rem" }}>Correlations Explorer</a>.
+              For free-form flows across any three dimensions (or any X × Y matrix), use the <a href="/explore/correlations" style={{ color: C.goldBright, borderBottom: `1px solid ${C.goldBright}40`, paddingBottom: "0.1rem" }}>Correlations Explorer</a>.
             </div>
           </section>
         </SectionAnchor>

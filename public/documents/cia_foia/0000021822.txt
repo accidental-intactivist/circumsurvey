@@ -1,0 +1,136 @@
+Aillih
+                                                                             w
+                              l@larch 20, 1967
+     Dr.
+     Dear Dr.
+     Attached is a proposii fbz'a Research Contract, Physiological
+     ,Mechanisms Underlying the. Electrodermal,Response and their
+     Behavioral, Significance 'wftich will 2allow continuation and extension
+     of,work performed under ou \roriginal  Contra.ct
+                      The designated principal'Lnvestigator would again
+     be Dr.                - I It is 'requested t]@at this contract, if
+     approved, become efl'ective june'l, 1967.
+                               S%erely yours,
+                                                                  Approved for  Release
+                                  2                                            @3 -Ii
+                                       maul @l
+
+                                                 Prop
+                                                    _qsa
+                                        Piiysiological \4echanisms
+                                 Underlylng the Electrodermal Response
+                                     and their Behavicral Significance
+                                                  From
+                                             March 207, 1967
+
+                    Period of Work
+                        This proposal woule cover one year of effort.
+                    Facilities
+               '-@-@a    t@iori-td'equipm'ent originally available, there isno-'w--'an additional 4-cha
+                    D.C. polygraph purchased under the current contract, and a 2-channel magnetic
+                    .tape recorder with FM compoients for recording of biolcgi2cal signals.
+                    Amount of Support
+                        An estimate of costs is attached.  Contract-lat firtancial ar-rangements are
+                    proposed as exist under the current contract with the exception that indirect costs
+                    be calculated at the negotiated rate of 30 percent.
+                    Ref)orts
+                                @@pose@d-t  a@schedullng-of  pro.gress rep4orts-be'c6ntinued on the. same.
+                                          -Contrdet
+                    Principal Invest
+
+                 Cost Estimate
+                     FrLncipal investigator (part-time)
+                     Research Assistant (full-time)
+                     Electronics Techniciaii (half-time)
+                     Subjects
+                     Stenographic Services
+                     Reproduction Services
+                     Expendable Supplies (Paper, chemicals, electron ic components, etc.)
+                     Solid state special purpose comput9er components
+                     Impedance Bridge
+                     Magnetic -Recording Tape
+                     Travel @(2:coordinati@@@
+                                                                 Sub-To@al
+                                          Overliead at 307( (LNegotiaced Ea'-e)
+                                                                      Tol.al
+
+                             PHYSIOLOGICAL NIECI[ANISNIS UNDERLYING THE
+                 ELECTRODERP@LNL RESPONSE AND THEIR BEHAVIORAL SIGINIFICANCF,
+                1.  INT.RODUCTION
+                Reference is maje to the description of kic@g-@gtnq and statement of proposed
+                work described under current contract                                    r i rTtnT @ Ed
+                in June 1966.  FL:rtlier reference is madtto an interim 'Progress Report dated
+                February 15, 1967, which  describes  progress  to  January  31,  1967.  The  original
+                contract was aimed at a systematic investigation of the basic physiological
+                mechanisms responsible for electrodermal reflex events in the hopes that the
+                understanding of their nature would aid i)2ehavioral iriterpretation and afford a
+                rational basis for effective data treatment.  Attention was to be given to the
+                relative involvement (or lack of involvement) of vasomotor, sudom6tor and
+                epidermal activi ty in this reflex, to the special characteristics of the  response
+                which might be associated with each component, to the,  prin--iples  governing  the
+                addition of 2component activities '* and to the specific classes of stimuli which
+                evoke activity in the respective components. Efforts were @_,o be  made  to  identify
+                the nature of the biological adaptaton signified by the activity  of  each  component
+                in efforts to recognize their psychological significance.
+                The initial phases of this work (as described in  the  February.15,  1967,  interim
+                progre2ss report) consisted of experiments as follows:
+                       (a) Comparison of microelectrode recordings from sweat pores and
+                areas between sweat pores. These have since been extended to comparison of
+                surface recordings with those at the deepest level of the stratum corneum.
+                       (b) Comparison of recordings from the corneum in different states of
+                hydration.
+                       (c) Recording2s from cat foot-pad under'varying patterns of s-@-imulatioa
+                of the sympathetic nerve supply.
+                       (d) Recordings of potential responses from the r,,al.1 :)late which is
+                allegedly free of sweat glands.
+                       (e) Study of the effect of surface electrolytes on the  specific  components
+                of the skin potential response.
+                       (f) Production of local ele8ctrodertnal responses by mechanical stimulation
+                (calibrated stretch) and alteration of this response by cliemi-cal agents,  ischemia,
+                temperature change, and combl-iation with activity of central origin.
+
+                                                     -2-
+                            ExarnLriation of the effects on skin potential response of  vascular
+               changes produced by engorgement (venous cuff), arterial occlusion, or
+               exsanguination by a directed massage.
+                       (h) Comparison of electroder-mal behavior as measured by constant
+               voltage vs constz.-it current systems.
+           2    The results of these experiments together with  those  alreadv  reported  in  the
+               literature were utilized in the development of a  new  hypothesis  describing  the
+               peripheral proce@ses involved in the elect-roderrnal response. 'Ibis model,
+               described in the interim report,  ascribes  conductance  changes  having  a  slow
+               recovery rate and negative potential waves, also of slow recovery rate, to the
+             2  rise of sweat in the ducts. 'rbe fast recovering conductance wavi@s and the
+               positive potential waves are attributed to behavior of a neurally controlled
+               membrane readuv accessible to surface solution, and involved in the rapid
+               reabsorption of water fron-t the skin surface. An analysis of the manner in
+               which these comp:)nents combine was used to  explain  the  co  -nplex  wave  forms
+               o2btained under actual recordng conditions.
+               From this model it wa7s concluded that the half-time of the recovery process of the
+               skin conductance response should be a meaningful index of the  arrm)unt  of  fast-
+               recovering (membrane) component in the response.  A seric-s of behavioral
+               experiments was analyzed with the use of this index to determ@ ine whether it
+               distinguished d2ifferent behavioral states, for example, alerdng  for  a  task  as
+               opposed to execution of the task, and relaxing as opposed to task performance.
+               The measure successfully-di,5tingLilshed between these conditio@s even       cascs
+                                                                  to do so.
+               11. PROPOSED INVESTIGATIONS
+                       A.  Contiriuation of Physiological Investiga2tion
+                       Although considerable progress has beert made  in  clarifying  the  nature
+               of peripheral mechanisms, several important questions remain to be resolved.
+               These will receiv-3 continued investigation in terms of experiments described in
+               the current contract. Among these are:
+                                1. Does the nail bed in fact represent a sweat-gland free
+               area and, if so, may vascular 2processes  explain  the  nail  potential  responses
+               of central origin and the lo(@al positive potential responses obtained by mechanical
+               displacement? This will be investigated by simultaneous recordings of skin
+               potentials and reflectance plethysmographic changes from the nail plate.  Efforts
+               will also be made to alter the potential responses with electrolytes applied to the
+               nail plate, to test for a surfac9e membrane effect.
+
+                                     2.  Do  local  potential  responses  (prcduced   mechanically)
+                   depend upon z,  surface  membrane  alone,  or  may  a  vascular   component   be
+                   involved? TI)c effect of surface ;igciits ajid cxsaiiguinatio--i experiments  point
+                   to a surface membrane as the responsible cle2r-nent but surface reflectance
+                   monitoring undertaken since the last interim report de.-noiistratesa marked
+                   similarity between the form of the local 

@@ -1,0 +1,127 @@
+PROPOSAL
+                                                for a
+                               STUDY'OF THE SENSITIVITY AND RESPOf4SE
+                                       OF WEAKLY ELECTRIC FISH
+                                TO STATIC AND PULSO -4liAGNETIC FIELDS
+                                          submitted by the
+
+                     AIML
+                                           PROPOSAL
+                                                               'iSE
+                            STUDY OF TliE SEt'ISITIVITY i@fID rESPOi
+                                   OF IIEAI(LY ELECTRIC FISfl
+                             TO ST'ATIC A14D PULSED i-lAGIIETIC FIELDS
+                Backqt-ound.
+             2                                          rticularly in the  various spe-
+                    The study of bioelectrogenesis, pa
+                cies bf electric fish, has been of increasing scientific  concern in
+                recent years.  This interest stems primarily from the potential use-
+                .fulness'of research in.this area in contributing to our understand-
+                ing of i number of fundamental and significant problems.  By defini@g
+         2       the electric fish's unique sensitivity 'to electric and magnetic fields,
+                and how it codes and utilizes such sensory information in its detec-
+             ,tion and navigation behavior, current evidenob is providing a more
+                complete concept of such basic questions as migration and territorial-
+                ity, and is leading toward the development of various bionic devices
+                in the form of under@.jater sensors and po2wer sources.  In addition,
+                knowledge of the effects of magnetic and electric fields on physio-
+                logical and behavioral processes iias assumed great importance in viel't
+                of man's exposure to drastic changes in such stimuli during  space
+                @travel.
+                    Living things produce a changing electric fip-ll at and near the
+                surface of their. bodies; all fish, being sheathed in a conducti2ve
+                substance and living in a conductive medium, produce an electric field
+                that may be detected at relatively great distances.  However, there
+                are certain fish which produce electric fields exceeding the norm by
+                hundreds or thousands of degrees of magnitude.  The electric eels of
+                the Amazon can produce bursts in excess of 600 volts. Other electric
+                fish, i.e., weakly electric fish, produce continuous field2s measured
+                only in millivolts, but by means of interpreting distortions in these
+                fields are able to sense and navigate through their environment to a
+                degree comparable to that of other species in which vision is used
+                for these purposes.  The weakly electric fish,,having very poorly de-
+                veloped visual abilities, must depend on information acquired through
+                their electric fields in order to survive.
+ 2                   The magnetic field is a form of energy to  which  all  plants and
+                animals are exposed. Its influence on  living  systems,  however, is
+                subtle and not well understood.  One approach to  studying the effects
+                of magnetic fields upon behavior is through the use of an organ-ism
+                which produces an electric field and uses it as a detection and naviga-
+                tion qiechanism.  The electric fish is just su2ch an organism, and a one-
+                year s.tudy,                                                         .. I .i
+                                    .1 of S'ternarchus albifr'o'n'-s"a-nu'-S. 'I'e'c)torhv'nchus,
+                has demonstrated the feasibility of such @-iork.  In these species, im-
+                pulses are discharged from the tail and received by the head, which
+                b4ecomes positive in regard to the tail.  This potential difference
+                creates an electric field about the fish's body, permitting it to de-
+                .tect objects through distortions in the field.  Several studies have
+                shown that these fish can perceive a static (con,,tant strength) magnetic
+                field, but only when either the organism ot- the field is in motion,
+
+                  therby generating a current in the fish.  It was thought that the
+                  fish was responding to the current generated in itself by  the  magnet.
+                  However, in these experiments the magnetic field was presented al,
+                  a static field, and the sensitivity of -the fish to a pulsed field
+                  presented at various frequencies, praticularly the  frequency  at
+                  which the fish discharges its own electric field  2(500-1500  cps),  was
+                  not investigated.  Other investigators have shc@vin drastic increase
+                  in sensitivity to applied A.C. approximating the frequency of the
+                  fish's  discha'rge.  In addition, the strength of the field was not
+                  systematically varied in terms of the gauss level in  the  fish's  pro-
+                  ximity, Therefore, there are considerable  gaps  in  our  knowledgq  of2
+                  the degree of sensitivity of the fish to magnetic  ilields  at  various
+                  frequencies and strengths.
+                  @omplqted  And    osed Research.
+                      In order to more clearly define the weakly electric fish's
+                  sensitivity and responses to different types of magnetic fields, a
+                  study was undertaken on June 1, 1969,  in  which  se,/eral  individuals
+   2               of S. albifrons and S. leptorhynchus were obtained, life-support
+                  tec'Fni'@ue-s dev-eloped-, and test and recording equipment purchased
+                  and constructed. The fish were tested in a Y maze,  T  maze,  and
+                  restraining chamber, and oscilloscope  recordings.were  made  of  their
+                  discharge patterns over time, through variations in temperature,
+                  and in response to various dru2gs including levodopa in a base-line
+                  study.
+                      Thier sensiti@ity to static and pulsed magneti-. fields exceed-
+                  ing variations in the earth's magnetic fields was  observed  over
+                  the following ranges of values: between I and  10  gauss  with  a
+                  static field; from 0.29 to 82 gauss at 60 cps; and from 10 to 20
+                  'Ganss at frequencies of 685-1220 cps. depending on the fish's o2wn
+                  frequency. Apparent negative results  were  obtained  with  the  static
+                  field; but the subjects were clearly responsive  to  the  pulsed  field
+                  at all gauss and frequency levels. In addition,  a  method  was  devised
+                  to administer the drug levodopa to the fish in order  to  determine  the
+                  effects of this agent on their behavior.  Two  specimens  were  tested,
+                  and the influence of the drug on their 2electrical  and  overt  behavior
+                  noted.  However, the data are not complete enough to draw any firm
+                  conclusions,  Since this study is currently coming to a close, and
+                  the positive results wi)ich are emerging indicate  that  further  study
+                  should provide very meaningful results, it is hoped  that  the  work'can
+                  be continued.  It is proposed that the following lines of investigation
+                  be   follow2ed:
+                      A.  To determine the final absol-ute and terminal thresholds
+                          of t@e fish's perception of a static magnetic field.
+                      B.  To determine the final absolute and terminal thresholds  of  the
+                          fish's perception of a pulsed magnetic field by varying its
+                          freq@ency and strength over a wide range of values.
+                      C.  To determine the fish's sensitivity to e5lectric current, as
+                          a basis of comparison with his perception of  magnetic  fields.
+                          In addition, to calculate the current generated in the  fish  by
+                          magnetic fields, duplicate these values with  an  audio  signal
+                          generator, and compare the results with his  performance  under
+                          the other conditions.
+
+                III.    fnabilities
+                                                staff  consisting  of 42 full-time and    21 part-time
+                        employees and four students working for the Ph.D. degree in infoma-
+                        tion science.  Of this number of employees, two have M.D.'s, three
+                        have Ph.D.'s and nine have the I-l.A. or M.S. degree or are otherwise
+                        qualified to work at the professional level.,  The Droposed project
+                        would be under the  irection of
+                        is-a do:--toral candidate in psychology aod                'iis a graduate.'
+                        @iologist working for the M.S. degree in ecology-
+                               Laboratory facilities are available
+                IV.     Plan of Procedure.
+                               The work will be accomplished within six months from the       2 effective
+                        date of the contract.  Five copies of a final report will be prepared
+                        and submitted to the contracting agency

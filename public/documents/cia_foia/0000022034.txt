@@ -1,0 +1,122 @@
+TIltS DO(-,UMFNT CONTAINS
+                                                          __ILPAGES. COPY NO.
+                                                          OF  -R'   COPII!-,S.
+                                         ELEC'I'RIC CURRENT
+                                                 AS AN
+                             AcE,4,r FOR ?RRSONNEL INCAPACITATION
+                                      -______@lrepared  by:
+                                            22 Octobcr 1971
+
+                                is report has been prepared by
+                              Th
+                              as a part of a Government Contract,   @he views expressed
+                              are those of            personnel and not necessarily those
+                              of the United SLates Government.
+
+                                                 TABLE OF CONTENTS
+                                                                                                pa
+                     Prf-ttocol 91.,itemc,.nt . . . . . . . . . . . . . . .  .  .  .  .  .  .  .  i
+                     Li,st >f Figures and Tibles   . . . . . . . . . . . .  .  .  .  .  .  .
+                     Problem    . . . . . . . . . . . . . . .2 . .  .  .  .  .  .  .  .  .  .
+                     Discussicn    . . . . . . . . . . . . . . . . .  .  .  .  .  .  .  .  .
+                         1,  P.:)tential Applications .  .  . .  . .  .  .. . . . .  .  .  .
+                         11. P:iysical Variables of Electric Current    . . . . . .  .  .  .      3
+                        Ill. P--iysiological Considerations    .  .  .  . . .  .  .
+                             A.  Effects of Electrical Curren2t on Hurr-ans     . . . .  .  .      5
+                             F, -The Human Body as an Electrical Conductor       . . .  .  .    10
+                             C.  Skin Resistance  . . . . . . . . . . .  .  .  .  .  .  .  .    11
+                             D.  Burns and Other Thermal Injuries      . . . . .  .  .  .  .    12
+                             E.  Pulsed Current      . .  .  . I . . . . . . . .  .  .  .  .    13
+                      2       F.  Overcoming   Skin    Resistance . . . . . . . .  .  .  .  .    14
+                             G.  Path of Current Flow Through    the Body   . . . .  .  .  .    is
+                             I-f. Physiological Conclusions    . .  . .  . .  .  . .  .  .  . . .17
+                        IV. Other System Factors    . . . . . . . . . .  .  .  .  .  .  .  .    20
+                         V. Equipment State of the Art   . . . . . . . . .  .  .  .  .  .  .    23
+                       5 VI. Recor):imendations  . . . . . . . . . . . .  .  .  .  .  .  .  .    25
+                     References   . . . . . . . . . . . . . . . .  .  .  .  .  .  .  .  .  .    27
+
+                                              LIST OF FIGURES
+                  Figure I     Approxirnate Thrcsliold of I-leart F'.brillation
+                                                                I
+                                 Ilazard for Single 13rief Current Surges
+                                 (AC or DC)  . . . . . . . . . . .  . . . . . . .      9
+                 rigu-re 2    Diagrarn of 2Body Area Cornbinations for Current
+                                 FtOw Througli Chest   . . . . . . . . . . . . .      17
+                                              LIST OF TABLES
+                 Table I      Definition of Basic Electricity Terms  . . . . . .      3
+                 Table 11     Sensation.and Effects on Heart and Respiratory
+                                 Muscles of Currents Lasting I to 30
+                                 Seconds    . . . 1.   . . . . . . . .   .             8
+
+                                               ELECTRTC CTJRRENT
+                                                        AS AN
+                                 AGENT FOR PERSONNEL FNCAPACITATION
+                                                      PROBLEM
+                   To evaluate, especially frorn the pi-iysiologic point of view, electric  current
+                   as an agent for personnel incapacitation.
+                              2                       DISCUSSION
+                                     1.  Poteritial Applications for Incla@@@
+                   Electric current possesses  a  number  of  possible  advantages  when  compared,
+                  .to other proposed agents for personnel incapacitation.  Controlled electric
+                   shock offers, not necessarily simultaneously, the following possibilities.
+                       .Droad spectrum of  2incapacitation:  annoyance,  fear,  intimidation,  pain,
+                   muscle spasm, mincr burns, paralysis, suffocaticn, unconsciousness,
+                   severe burns, death.
+                       Relative predictabilit)r of physiologic effect.: reliable relationship be-
+                   Lween dose and responses.
+                       C-ontro'-Iability- of dose and on/off fimes.
+                       Directivity: with respect to person to be inca2pacitated and bo@ly part(s)
+                   to be affected.
+                       Effecti,.,en(-ss on a wide range of subjq_cts.: re,ardless of  determination
+                   or level of consciousness.
+                       Rapic'iity of inca]2acitation: onset of action witliin a second.
+                       Rapi(lity of recov=.-  only a few seconds for the milder effects.
+                       Safety.   f2or b@tli the operator and t-he subject,*if de-5ired.
+                     Througliout tt.s r,@port, stibjects irL- i.@,stimerl lo be lic,,ilthy, .1('Itllt 11LIrnanS
+                     in tl-se 45 to 90 kilogram weight range.
+
+                       Covertne-ss: quiet -tnci t;nt)l)triigive, cLn be clirnotifl.-Igerl.
+                  Aside from tcclinir,,i] detiiis of the delivery system, tl-t(@ oiil,,r I)ro.-Icl limita-
+                  tions to use of electric current as an i-.icapacita2tion agent liave to do  with
+                  the number of stii)jects and the duration of incapicitr--tion,  It is diffictilt to
+                  conceive of realistic circumstances th,-Lt would perrnit a safe and  ti-niforrn
+                  dose to be administered to a n@imber of subjects at one time, altbotigh current
+                  would be as effective for the entire group as it is f2or an individual.  In this
+                  report, current is coi-tsidered as an incapacitating agentf for individuals only.
+                  Elec'.ric ciirrent can be quite safe for periods of incapacitation of a few
+                  seconds only) hazards become much greater if current is used to ry)aintain
+                  incapacitation for a minute or  longer,  unless  special  techniques  and  pre-
+                  c2auti.ons are used.
+                  W'ithin these limitations, current could be used  as  an  incapacititing  agent
+                  under virtually any circurnstanc,@s.  Power can be su-pplied from permanent
+                  supply lines, temporary generators and lines, or portable supplies (includ-
+                  ing pocket-sized battery packs in some cases).  Delivery systems might be'
+                  p4@,,rmanent in5tallations, tem2porary traps, hand-held instruments or long-
+                  range project--le devices.  Automatic controls would suffice for systems
+                  designed for brief incapacitations, but  systems  main-.a,'ning  incapacitation
+                  for rnore than a. few seconds should be controll-ad by an operator who has
+                  some training in the methods of safeguarding the hea'th of the subject.
+
+                                            II.  Pliasicti  Variibles  of  1--lectric  Ctirr(,nt
+                        The performtnce ind suitibility of electric shocir for persoi-inet inc,,ip;icita-
+                        tion may be affected by several variables which characterize the incapaci-
+                        t,iting current.  The more important electrical 2parameters are voltige,
+                        current, power (or energy) and frequency.  For familiarity, these and
+                        other ter-ns used in  this  stud),  are  briefly  defined  in  Table  1.
+                                                                TABLE I
+                                          DEFINITION Or 13ASIC ;'LECTRICITY TF'-'@@AS
+                        Characteristic                     Brief Defiriit,oii                bymbot      Unit
+                        Voltage                      E,:Iectrical  pressure  or   the        E           volt
+                                                     electromotive force tending
+                                                     to move electrons, potential
+                        Current                      Volume of electron flow                 I           arnperp
+                        Direct Current  2             Current  that  does   not   vary        DC          a-rnpe re
+                                                     in direction or magnitude
+                                                     with time
+                        Alternating Current          Current that has continuous             AC          arnpere
+                                                     sinusoidal variation in direc-
+                                                     tion and magnitude xvith time
+2                        Frequenc-,r                  Rate  of  alteration  of  an  AC        f           I-Te rtz
+                                                     current                                       (cyc te s / sec)
+                        Resistance                   Opposition to the flow o--' di-         R           ohm
+              

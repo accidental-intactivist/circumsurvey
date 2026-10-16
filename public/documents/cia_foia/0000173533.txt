@@ -1,0 +1,118 @@
+PROPOSAL
+                            PHYSIOLOGICAL i\IE- CI-IANIS,\,!S, ANALYSIS-, AND
+                                 BE@IAVIORAL SIGNIFICANCE OF THE
+                                    ELECTRODERIM.AL RESPONSE
+                                               From
+                                                               App4roved for T,@eleasa
+                                                               Date
+
+                Period of @%lork-
+                    This proposal would cover one year of effort.
+                Faciliti@s
+                    This       described would be accomplislied in the same laboratories of the
+                In addition to equipment described under that contract, there is now available an
+                impedance bridge, a voltage to frequency converter, electronic counter and ratio
+               2 detector, an eleven column printer, and an expanded digital logic system for
+                on-line analysis.
+                Amount of Support
+                    An estimate of costs is attached.  Contractual financial arran,-ements are
+                proidosed as exist under the current contract.
+                ReiDorts
+                    h is proposed that schedulino- of progress reports be continued on the same
+                basis as described in
+        9        Pri@-iciDal Investi,7,ator
+
+                                  PI-IYSIOLOGIC@%L i\IECI-IANISNIS, ANALYSIS
+                                   AND 13CI-iAVIORAL SIGNIFICi%iNCE- OF TI-IE,
+                                          ELECTRODERMAL RI"SRON'SE
+                I.  INTR\ODUCTION
+                          Reference  is'made to the description of the background for this study
+                and of the proposed work- as described under contracts
+                initiated in June 1966 and                               a one year continuation
+                of t,ie earlier contract.  Further reference is made to Interim Reports dated
+                February 15, 1967 and October 25, 1967. The initial efforts were- directed toward
+                a study of the physiological mechanisms underlying the electrodermal response
+           2     i.n ai effort to provide a rational basis for quantitative treatment and interpretation
+                of electrodermal measures. Tlaese findings provide evidence to support the
+                conclusion that the electrodermal system is a tnvo-component system in which two
+                                                                                     P-
+                processes under autonomous control  sometimes function synergistically, sometimes
+           2     independently.  Evidence for this was drawn from microelectrode observations on
+                sweat ducts and areas between sweat ducts, obse@vation of potentials from the nail
+                plate, the differential effects of aluminum and of sodium on the positive and negative
+                potential waves, optical recording of a sweat reabsorption phenomenon and the
+                association of this phenomenon with the positive wave and finally the behavior of3 a
+                locally induced positive potential response.  From these and other pieces of evidence
+                it I@.-as concluded that information re.-ardin(-, the activity of the second hypothesized
+                co,-,,pone,it was to be found in the shape of the recovery lin-ib of the exosomatic
+
+                                                         -2-
+                   response, the speed of recovery increasing in accordance with such activity.
+                   various methods were developed for the quantitative treatri@cnt of the time constant
+                   of this recovery limb (it was treated as an exponential decay) and manual methods
+                   were d@veloped for its measurements. Tests of th2e strength of this measure
+                   revealed that it had an impressive capacity for discriminating states of activation
+                   and application to a task. Moreover, it also was capable of distinguishing between
+                   individuals having different behavioral patterns in a way far superior to amplitude
+                   measures. These results were described in the last report (October 1967).
+                            Since that report, efforts w2ere concentrated on three areas:
+                            a)  Phvsiological:   Despite conflicting evidence, the likelihood that the
+                   electrodermal response contains a component of vascular origin kept reappearing.
+                   A study was consequently undertaken involving the application of venous cuffs
+                   (for engorgement of surface vessels) and arterial cuffs (for generation of hypoxia)
+                   to determine the nature of any local process incide2nt to the removal of@these conditions.
+                   Great care was exercised to eliminate artifacts which might render results spurious.
+                   The conclusion (P < . 0 1 in two separate comparisons) is that a local potential shift
+                   attends the termination of either venous or arterial occlusion. Because of the
+                   significance of this finding to electrodermal interpretation, these studies will be
+                   pursued further.
+         0                   b)    Measurement of the recoverv limb time constant:  Atteition was
+                   given to those circumstances in which measurement of the time constant by template
+                   is in part confounded by the superposition of one response upon the recovery lin-Lb
+                   of another. A rationale was provided for the required correction in such measurements
+
+                                                          -3-
+                  and a validation obtained from mathematical dctcrminitions using measurements of
+                  the derivatives.
+                            An area given heavy empliasis was the automatic determination of the
+                  recovel'y limb time constant. A satisfactory system was achieved in which the
+               2   time constant is printed out on-line. The negative first derivative of the skin
+                  conductance response is divided by tl-ie positive second derivative at a point 0.6
+                  seconds after the peak of the primary wave. These results bear a very satisfactory
+                  relation to those obtained by template measurement.
+                            c)  Behavioral:    The characteristics of the recovery limb time constant
+                  ha2ve been studied in a human population in an effort to determine their individual
+                  specificity, their relationship to type of behavior in process, and their reliability
+                  over repeated testing. Since the automatic system was not operational at the time
+                  of these runs, data were obtained by template measurement. Runs on each of 12
+                  subjects taken for five consecutive weeks and under eight different conditions
+        2          showed that there were significant individual characteristic differences in the speed
+                  of recovery, even though for any given individual the rank order of his recovery
+                                                                                                                 f7
+                  speeds under different experimental situations was similar to that of the group.
+                  The change in time constant as a function of 8 different conditions w2as tested on a
+                  population of 21 subjects with results substantiating the earlier report on 9- subjects.
+                            Data on another population of 50 subjects were examined for the relationship
+                  between the recovery limb time constant for a given individual and the time it took
+                  his cutaneous vasoconstriction to recover (recovery half-time) after a stressful task.
+                  The rationale for examining this r0elation was the important behavioral significance
+
+                                                           -4-
+                  believed to lie in the rate at which an individual can "throttle back" after mobilizing
+                  to deal with an emergency. Surprisingly the shorter the time constant during the
+                  task, the longer the time required for recovery from vasoconstriction (P  .01).
+                  This may imply that subjects who are2 able to mobilize fully for a task (interpretation
+                  of short time constant) remain mobilized longer after its cessation. Since subjects
+                  with short time constants also showed better maintenance of an inhibitory set in a
+                  Imob-turning task, it is possible that such individuals are characterized by higher
+                  neuropl-lysiolo-ical inertia.
+                            One of the tasks required of subjects in t2hese studies was to count backwards
+                  from 500 as rapidly as pos@@le, by sevens. The total number span and number of
+                  errors in a fixed time (2 minutes) were compared with the characteristic time
+                  constant during this task. Shorter time constants were associated with faster
+                  rates of calculation and fewer errors. It can thus be concluded that the electrodermal
+                  recovery rate of an individual i2s not only predictive of his physiologic.@l performance
+                  but (at least in this task) of motor and cognitive performance as well.
+                  II.  PROPOSED INVESTIGATIONS
+                            Although most of the effort proposed for an additional year of support
+                  would be direct

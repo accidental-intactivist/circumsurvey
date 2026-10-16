@@ -21,7 +21,7 @@ export default function EditorialDashboardPage() {
         <div style={{ textAlign: "center" }}>
           <h1 style={{ fontFamily: FONT.display, color: C.red, marginBottom: "1rem" }}>Access Denied</h1>
           <p style={{ color: C.muted }}>The editorial channel is currently locked.</p>
-          <a href="#/" style={{ color: C.goldBright, textDecoration: "underline", marginTop: "1rem", display: "inline-block" }}>Return to Explore</a>
+          <a href="/explore" style={{ color: C.goldBright, textDecoration: "underline", marginTop: "1rem", display: "inline-block" }}>Return to Explore</a>
         </div>
       </div>
     );

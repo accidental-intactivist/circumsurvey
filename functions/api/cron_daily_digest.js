@@ -55,6 +55,8 @@ export async function onRequest(context) {
         abstract: meta.abstract || '',
         why: meta.why_it_matters || '',
         flagged: (lens.claims || []).filter(c => c.assessment !== 'accurate').map(c => `${c.claim} → ${c.assessment}: ${c.context_note}`),
+        image_url: meta.image_url || (meta.media_urls?.[0]) || null,
+        url: r.url || meta.url || null,
       };
     });
     const validIds = new Set(items.map(i => i.id));
@@ -73,19 +75,34 @@ export async function onRequest(context) {
     ).join('\n\n');
 
     const prompt = `
-You are Glenda, the Senior Research Assistant and Editor for "The Accidental Intactivist's Guide". Write today's "Pulse of the Movement" digest:
+You are the Senior Research Assistant and Editor for "The Accidental Intactivist Field Dispatch". Write today's dispatch:
 a synthesis of the current state of the genital autonomy movement and the decline of routine infant circumcision (RIC)
-in the United States, based ONLY on the analyzed stories below.
+in the United States and globally, based ONLY on the analyzed stories below.
 
-Take on the explicit role and editorial voice of the Accidental Intactivist. Your core operating thesis is: "Why isn't this weird to more of us?" 
-Do not merely regurgitate headlines. Apply sharp editorial acumen to daylight the cognitive dissonance in these stories. Point out the absurdity of a tradition rooted in censoring sexual gratification, and actively call out the gaslighting that a normal, healthy penis needs special maintenance unlike any other body part.
+Take on the explicit role and editorial voice of the Accidental Intactivist. 
+Your core operating thesis is: "Why isn't this weird to more of us, given everything we know laid out here?"
+Voice: Calm, curious, scientifically rigorous, accessible, compassionate, and sharp. Never hyperbolic, sensationalist, or conspiratorial. Reject all anti-vaccine or anti-abortion rhetoric—we stand squarely with peer-reviewed evidence-based medicine and universal bodily integrity.
+
+Contemporary Baseline to Keep in Mind:
+1. The AAP 2012 policy statement officially expired in August 2017 and was never renewed. In 2025 (J Med Ethics), task force chair Dr. Andrew Freedman admitted on record that circumcision is "not really a medical practice", while bioethicist Dr. Douglas Diekema conceded that benefits do not outweigh risks.
+2. In 2024 (J Pediatr Surg, Fendereski et al.), a matched cohort of 1.7 million boys followed over 5 years proved that circumcised boys have nearly 3x MORE documented penile complications requiring medical care (1.7% vs 0.5%) compared to intact boys.
+3. Epidemiological reality (Institut Pasteur): Circumcision provides 0% physical barrier protection upon viral exposure. Real prevention relies on condoms and PrEP.
+4. "Disease of the Decade": For 150 years, the target disease has been retconned every generation (paralysis, masturbation, syphilis, cervical cancer, UTIs, HIV) while the knife always removes the exact same erogenous tissue.
+5. Inpatient birth rates in the US have dropped below 50% (JAMA Peds 2025: 49.3%), with the West down to 19.7%.
+
+Do not merely regurgitate headlines. Apply sharp editorial acumen to daylight the cognitive dissonance in these stories. Point out the absurdity of a tradition rooted in censoring sexual gratification, and actively call out the gaslighting that a normal, healthy penis needs surgical modification.
 Provide a fair-use, strategic analysis of the news, interpreting events through the lens of our core principles (bodily autonomy, equal protection).
 Follow the "Inquiry Frame": lead with curiosity, respect lived experiences, and focus on systemic impact.
 Never use the phrase "So what"; embed the significance in the analysis itself. Where a story carries context notes,
 reflect that context accurately; do not overstate it or add claims not present below.
 
 CRITICAL INSTRUCTION FOR LIGHT NEWS DAYS:
-If there are few headlines provided, or if the news is largely trivial, dynamically pivot the "abstract" and "sections" to serve as a supportive guide. Creatively invite people to use various aspects of the site in their journey as Intactivists (e.g., contributing to the Live CircumSurvey at /explore, reading the interactive Field Guides at /guides, or searching the Tim Hammond Library). Speak directly and encouragingly to the "accidental or otherwise" intactivist journey.
+If there are few headlines provided, or if the news is largely trivial, dynamically pivot the "abstract" and "sections" to serve as an inspiring, supportive Field Note. Creatively invite people to use various aspects of the site in their journey as Intactivists—whether accidental or intentional:
+- Exploring the 150-year Retcon Timeline at /to/disease-of-the-decade
+- Reading the Expectant Parents Guide and Recite-Back Consent Form at /to/expectant-parents
+- Testing assumptions in the Live CircumSurvey Data Explorer at /explore
+- Reviewing peer-reviewed micrographs in the Histology Archive.
+Speak directly and encouragingly to the reader: "Why isn't this weird to more of us?"`;
 
 Stories from the last ${days} days:
 ${contextText}
@@ -101,9 +118,16 @@ Return ONLY a raw JSON object:
   "sections": [
     { "category": "one of the story categories above", "headline": "short section headline", "body": "1-2 paragraphs synthesizing these stories", "item_ids": ["story ids from above"] }
   ],
-  "decline_note": "1-2 sentences on what this period's coverage says about the trajectory of RIC in the US, or empty string if nothing relevant."
+  "decline_note": "1-2 sentences on what this period's coverage says about the trajectory of RIC in the US, or empty string if nothing relevant.",
+  "suggested_ground_truths": [
+    {
+      "keywords": "comma separated keywords",
+      "statement": "An absolute, factual truth grounded in this news cycle that should supersede ambiguous or outdated literature in AI retrieval.",
+      "zeitgeist_impact": "1 sentence explaining why this fact impacts the cultural, legal, or medical zeitgeist."
+    }
+  ]
 }
-Order sections by importance. Use only story ids listed above.`;
+Order sections by importance. Use only story ids listed above. Focus suggested_ground_truths on high-impact legal, anatomical, or institutional developments.`;
 
     let raw = "";
     if (env.GEMINI_API_KEY) {
@@ -147,7 +171,14 @@ Order sections by importance. Use only story ids listed above.`;
       body: s.body || '',
       items: (Array.isArray(s.item_ids) ? s.item_ids : [])
         .filter(id => validIds.has(id))
-        .map(id => ({ id, title: itemById[id].title, outlet: itemById[id].outlet, lean: itemById[id].lean })),
+        .map(id => ({
+          id,
+          title: itemById[id].title,
+          outlet: itemById[id].outlet,
+          lean: itemById[id].lean,
+          image_url: itemById[id].image_url,
+          url: itemById[id].url
+        })),
     })).filter(s => s.body);
 
     // 4. Save (one digest per Pacific-time day)
@@ -168,7 +199,7 @@ Order sections by importance. Use only story ids listed above.`;
       rate_datapoints,
       story_count: items.length,
       window_days: days,
-      author: "Glenda (AI Assistant)",
+      author: "AI Research Assistant",
       date: localDate,
       source_publication: "Internal Archives",
       tags: ["Daily Digest", "Pulse of the Movement", "AI Synthesis"]
@@ -189,6 +220,46 @@ Order sections by importance. Use only story ids listed above.`;
         INSERT INTO archive_documents (id, title, source_collection, type, status, metadata_json, category, published_at)
         VALUES (?, ?, ?, 'recap', 'indexed', ?, 'Pulse of the Movement', ?)
       `).bind(docId, digestTitle, "Daily Digests", metadata_json, new Date().toISOString()).run();
+    }
+
+    // 4b. Index suggested ground truths for editorial review
+    if (Array.isArray(digestData.suggested_ground_truths) && digestData.suggested_ground_truths.length > 0) {
+      try {
+        await env.SURVEY_DB.prepare(`
+          CREATE TABLE IF NOT EXISTS ground_truth_suggestions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            keywords TEXT NOT NULL,
+            statement TEXT NOT NULL,
+            zeitgeist_impact TEXT,
+            source_id TEXT,
+            source_title TEXT,
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+        `).run();
+
+        for (const sug of digestData.suggested_ground_truths) {
+          if (sug && sug.keywords && sug.statement) {
+            const exists = await env.SURVEY_DB.prepare(
+              "SELECT id FROM ground_truth_suggestions WHERE statement = ?"
+            ).bind(sug.statement).first();
+            if (!exists) {
+              await env.SURVEY_DB.prepare(`
+                INSERT INTO ground_truth_suggestions (keywords, statement, zeitgeist_impact, source_id, source_title)
+                VALUES (?, ?, ?, ?, ?)
+              `).bind(
+                Array.isArray(sug.keywords) ? sug.keywords.join(', ') : String(sug.keywords),
+                sug.statement,
+                sug.zeitgeist_impact || '',
+                docId,
+                digestTitle
+              ).run();
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to persist suggested ground truths:", e);
+      }
     }
 
     // 5. Vectorize the digest so the assistant can search it

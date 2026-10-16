@@ -38,6 +38,9 @@ export default function AIAssistantFlyout() {
   const [cooldown, setCooldown] = useState(0);
   const [randomSuggestions, setRandomSuggestions] = useState([]);
   const endRef = useRef(null);
+  const chatContainerRef = useRef(null);
+  const latestResponseRef = useRef(null);
+  const latestUserMsgRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   const [showListSelector, setShowListSelector] = useState(false);
@@ -69,8 +72,48 @@ export default function AIAssistantFlyout() {
   }, [isOpen, initialQuery]);
 
   useEffect(() => {
-    if (isOpen) {
-      endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!isOpen) return;
+
+    if (loading) {
+      // While thinking, keep the bottom (user question + loading indicator) in view
+      const timer = setTimeout(() => {
+        if (chatContainerRef.current) {
+          chatContainerRef.current.scrollTo({
+            top: chatContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+
+    if (messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg.role === 'assistant') {
+        // Scoot up so the top of this new response is right at the top of the chat window!
+        // The user shouldn't have to scroll back up to read from the start of the response.
+        const scrollToResponseTop = () => {
+          if (chatContainerRef.current && latestResponseRef.current) {
+            const targetTop = latestResponseRef.current.offsetTop - 16;
+            chatContainerRef.current.scrollTo({
+              top: Math.max(0, targetTop),
+              behavior: 'smooth'
+            });
+          } else if (latestResponseRef.current) {
+            latestResponseRef.current.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        };
+
+        const t1 = setTimeout(scrollToResponseTop, 50);
+        const t2 = setTimeout(scrollToResponseTop, 220); // follow-up in case markdown reflows
+        return () => {
+          clearTimeout(t1);
+          clearTimeout(t2);
+        };
+      }
     }
   }, [messages, loading, isOpen]);
 
@@ -84,7 +127,7 @@ export default function AIAssistantFlyout() {
     abortControllerRef.current = new AbortController();
 
     const userMsg = queryText.trim();
-    setInput(userMsg);
+    setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
 
@@ -343,14 +386,18 @@ export default function AIAssistantFlyout() {
         )}
 
         {/* Chat Area */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.5rem'
-        }}>
+        <div 
+          ref={chatContainerRef}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            position: 'relative',
+            scrollPaddingTop: '1rem'
+          }}>
           {messages.length === 0 ? (
             <div style={{ marginTop: '1rem', animation: 'fadeUp 0.6s ease forwards' }}>
               <div style={{ 
@@ -388,9 +435,21 @@ export default function AIAssistantFlyout() {
               </div>
             </div>
           ) : (
-            messages.map((m, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                <div style={{
+            messages.map((m, i) => {
+              const isLatestAssistant = m.role === 'assistant' && i === messages.length - 1;
+              const isLatestUser = m.role === 'user' && i === messages.length - 1;
+              return (
+                <div 
+                  key={i} 
+                  ref={isLatestAssistant ? latestResponseRef : (isLatestUser ? latestUserMsgRef : null)}
+                  style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+                    scrollMarginTop: '1rem'
+                  }}
+                >
+                  <div style={{
                   maxWidth: '90%',
                   padding: '1rem',
                   borderRadius: '12px',
@@ -529,8 +588,9 @@ export default function AIAssistantFlyout() {
                   </div>
                 )}
               </div>
-            ))
-          )}
+            );
+          })
+        )}
           
           {loading && (
             <div style={{ padding: '2rem 0' }}>

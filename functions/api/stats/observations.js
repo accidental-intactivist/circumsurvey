@@ -1,5 +1,5 @@
 // GET /api/stats/observations?metric=&level=&parent=&geo=
-// Public read API for the Global Circumcision Atlas (and later Glenda + guide embeds).
+// Public read API for the Global Circumcision Atlas (and AI assistant + guide embeds).
 // Returns approved observations + their sources. Always merges the curated seed so the
 // verified figures are present even before the collector has run.
 import { SEED_OBSERVATIONS, SEED_SOURCES } from '../../../lib/atlas/seed.js';

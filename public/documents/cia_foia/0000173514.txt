@@ -1,0 +1,116 @@
+CIO
+         SCIENCE
+                  I
+          SPECTRUM             1216 STATE ST RE ET  POSTOFFICE BOX 3003 -SANTA BARBARA, CALI FOR NIA 93105
+                                                                                      T E L E: P H 0 N E
+              cio                                                                     (80 5) 963-8605
+                  A NEW TECHNIQUE FOR STUDYING MICROORGANISMS
+              2    With differential light scattering you can learn more in minutes about
+                  microbial morphology and physiology than others have learned in years.
+                  Some examples are given in the accompanying Application Notes.
+                  This technique - new to the study of microorganisms - shares some
+                  capabilities of optical and electron microscopy.  Sample  preparation
+                  is simple and rapid; submicron physical details can be studied; a wide
+     2             variety of samples can be examined in many different environments
+                  and states, and physical changes monitored.
+                  The differential light scattering measurements detailed in the accompanying
+                  Application Notes were made with our DIFFERENTIAL I photometer.  In
+                  addition to determining structural parameters, such measurements ena  e
+                  bacterial presence and concentration to be determined easily.  The
+                2  scattering data can be analyzed rapidly, easily and quite accurately using
+                  the Atlas of Light Scattering Curves described in the enclosed flyer.
+                  For more information on these or other applications, or on our products,
+                  simply fill out the enclosed prepaid card.  A copy of our current seminar
+                  schedule also is enclosed.  If you have an@ question regarding the study or
+                  results reported in the Application Notes, pl2ease let us know.
+                  Sincerely yours,
+                  SCIENCE SPECTRUM, INC.
+                  James E. Hawes
+                  Vice President, Marketing
+                  Enclosures
+                                                            Approved for Releasib      13 C)
+                                                                   2 7 F P'P, ', r, 7,1.
+                                                           ,I)ate
+
+          .-WS C I EN CE
+                     I
+            SPECTRUM              121 6 S TAT E S T R E ET POST OFFICE BOX  30.03 SANTA BARBAMA, CALIFORNIA 931C
+                                                                                         T E L E P H 0 N
+                                                                                         (805) 963-86C
+                Jo
+                                                SEMINARS
+           2       Seminars with demonstrations explaining light scattering theory and its many
+                  applications are offered by Science Spectrum periodically at various central
+                  locations throughout the United States, free of charge.  The DIFFERENTIAL I
+                  and DIFFERENTIAL II instruments are also exhibited at selected professional
+                  meetings.   The   seminars and exhibits currently scheduled are:
+                        September 14  -  16, 1971        W2ashington, D. C. - Exhibit
+                        September  17,  1971             Washington, D. C. - Seminar
+                        September  21,  1971             Raleigh, North Carolina - Seminar
+                        September  24,  1971             New York, New York - Seminar
+                        September  27,  1971             Boston, Massachusetts - Semtlnar
+                        October 5, 1971                  Los Angeles, California - Seminar
+            2            October 7, 1971                  San Francisco, Calif. - Seminar (tentative)
+                        October 15, 1 971                Chicago, Illinois - Seminar (tentative)
+                  If you wish to attend one of the seminars listed above, please complete the
+                  form below and return it to the Company, A program will be sent to you about
+                  two weeks before the scheduled meeting, together with a confirmation of your
+                  reservation.
+2
+                  ------------------------------------------------------------------------
+                  I will attend your seminar to be held on
+                  at (city)                                                   Please send my prograrr
+                  to:   NAME                                          TITLE
+                        INSTITUTION
+                        STREET
+                        CITY,   STATE,   ZIP
+                        TELEPHONE(                     8                        EXTENSION
+                  T -,,- - - @,4     -@ -,- - --' -,I - -
+
+                                                 Atlas of Light Scattering Curves.
+             I n t r o d u c t i o n
+                                                                                                                VERTICRL
+                  The  interpretation  of  light  scattering  data   has                                       R   500 nm
+             long been  an  obstacle  to  the  widespread  use  of  this
+             powerful  analytical  tool.  Whil2e  some   scientists   de-
+             voted  their  careers  to  the  theoretical   understanding
+             of light scattering, their results were not readily  adapt-
+             ed  for  use  by  workers  in  other  fields.  High   speed
+             digital  computers  can  now  be   used   economically   to
+             generate scattering data for a variety of model  particles.
+                  The   purpose   of   the   Science   Spectrum    Light
+             Scattering  Atlas  is  to  2make   this   computer-generated                                                    U9
+                                                                                                               159
+             information available in  a  convenient  form  for  a  wide
+             range of light  scattering  applications,  involving  small
+             particles.  Computer-generated  light  scattering  patterns
+             are  plotted  on  the  same  scale  as   the   experimental
+   2                                                                                         9---
+             data measured by the Differential  /  and  //  light  scat-                      .,. m         TERaI.w-@t(xia
+             tering  photometers.  Semitransparent  vellum   paper   has           A sample page from the Atlas showing the light scattering
+             been  used  for  the  Atlas  so  that  accurate  comparison           curves for homogeneous spheri2cal particles of 500 nm radius
+                                                                                   and four different refractive indices.
+             of theory  and  experiment  is  achieved  by  merely  over-
+             laying  the  two  sheets.  Tables  of  normalization   con-     the  scattering  curves  of  spheres  with  radius  between
+             stants for absolute scattering  power  are  also  provided.     0.05  and  1  micrometer  in  steps  of  02.05   micrometer,
+                                                                             for refractive indices  ranging  from  1.33  to  1.59.  The
+             S i n g I e S p h e r i c a I P a r t i c I es i n A i r        refractive  index  of  the  surrounding  medium   is   that
+                  A  wide  variety   of   processes   produce   homogen-     of air (n - 1.0).  Curves  for  both  linear  polarizations
+             aous  spherical  particles  of 2 approximately  one  microm-     are given. Inspection of the scattering atlas  for  spheri-
+             ?ter  in  diameter.  For  example,  photochemical   aerosol     cal particles  shows  that  particle  size  can  easily  be
+             )r "smog"  droplets  and  colloidal  particles  like  those     specified  to  within  0.1  micrometer  diameter.   A   de-
+             n latex paints are  spherical.  Such  small  particles  may     termination of refractive index to  well  within  2ten  per-
+             !asily be suspended in air  by  nebulizing  a  liquid  sus-     cent accuracy is  achieved  for  spheres  by  simply  exam-
+             )ension  and  their  individual  scattering  patterns   are     ining the relative intensities at peak amplitudes.
+             eadily  measured  with  the  Differential   //   scattering     Supplements
+             )hotometer.
+                                                                                  Periodically, additi4onal scattering curves  are  pub-
+                 This important class of  scattering  objects  is  corn-     lished as supplement sections  to  the  Atlas.  Owners  of
+             letely  described  by  two  parameters:  radius   and   re-     the Science Spectrum Scattering  Atlas  will  receive  all
+             -active index. The first  section  of  the  Atlas  displays     supplements  issued  within  two  years  of  the  date  of
+
+              purchase without charge.  Subjects  selected  for  early     diameter at a  constant  refractive  index  can be
+              supplements include: the  effect  of  size  distribution     vided for studies of colloidal size distributions. E6N
+              upon scattering from suspensions of spheres; the  effect     this means sizing accuracy  of  +  10  nm  diameter  can
+              upon scattering of size and  size  distribution  changes     be obtained as reported 2 by  Phillips  etal  in  the  J.
+              in model  bacteria  and  mitochondria;  scatterin

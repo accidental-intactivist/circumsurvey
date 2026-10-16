@@ -1,38 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import { C, FONT } from '../styles/tokens';
 import { useAssistant } from '../contexts/AssistantContext';
 import ArchiveHamburgerMenu from './ArchiveHamburgerMenu';
+import SectionNavDropdown from './SectionNavDropdown';
 import './TopNav.css';
 
 export default function TopNav() {
-  const [scrolled, setScrolled] = useState(false);
   const { openAssistant } = useAssistant();
   const location = useLocation();
 
   const isLandingPage = location.pathname === '/';
 
-  // The Squish effect on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-    const getActivityTitle = (path) => {
-      if (path === '/') return 'Home';
-      if (path.startsWith('/manifesto')) return 'The Manifesto';
-      if (path.startsWith('/admin/archive')) return 'Archive Administration';
-      if (path.startsWith('/admin/cms')) return 'CMS Wrangler';
+  const getActivityTitle = (path) => {
+    if (path === '/') return 'Home';
+    if (path.startsWith('/manifesto')) return "The Accidental Intactivist's Manifesto";
+    if (path.startsWith('/admin/archive')) return 'Archive Administration';
+    if (path.startsWith('/admin/cms')) return 'CMS Wrangler';
     if (path.startsWith('/admin/inventory')) return 'Archive Tracker';
-    if (path.startsWith('/admin/entities')) return 'Entity Manager';
-    if (path.startsWith('/to/')) return 'Profile';
+    if (path.startsWith('/to/hadachek') || path.startsWith('/hadachek') || path === '/exhibits/hadachek') return 'Hadachek v. Oregon';
+    if (path.startsWith('/to/huff') || path.startsWith('/huff') || path === '/exhibits/huff' || path === '/legal' || path === '/litigation') return 'Huff v. Colorado';
+    if (path.startsWith('/to/foregen') || path === '/foregen') return 'Foregen';
+    if (path.startsWith('/exhibits/')) return 'Curated Exhibit';
+    if (path.startsWith('/to/parents') || path.startsWith('/to/restoration') || path.startsWith('/to/grief')) return 'Interactive Guide';
+    if (path.startsWith('/to/')) return 'Entity Profile';
     if (path.startsWith('/graph')) return 'Global Graph';
     if (path.startsWith('/citations')) return 'Citation Web';
     if (path.startsWith('/atlas')) return 'Global Circumcision Atlas';
-    if (path.startsWith('/guides/rebuttals')) return 'Counter-Evidence Builder';
+    if (path.startsWith('/guides/rebuttals')) return 'Counter-Evidence';
     if (path.startsWith('/guides')) return 'Guide Series';
     if (path.startsWith('/library/')) return 'Document View';
     if (path.startsWith('/library')) return 'Digital Library';
@@ -42,13 +38,15 @@ export default function TopNav() {
     if (path.startsWith('/policies')) return 'Policies';
     if (path.startsWith('/collections/')) return 'Collection';
     if (path.startsWith('/collections')) return 'Collections';
+    if (path.startsWith('/news')) return 'Field Notes & Headlines';
     return 'Guide';
   };
 
   const currentActivity = getActivityTitle(location.pathname);
   const isCollectionPage = location.pathname.startsWith('/collections/');
   const isNewsPage = location.pathname === '/news';
-  const hideTopNav = isLandingPage || isCollectionPage || isNewsPage;
+  const isExplorePage = location.pathname.startsWith('/explore');
+  const hideTopNav = isLandingPage || isCollectionPage || isNewsPage || isExplorePage;
 
   if (hideTopNav) return null;
 
@@ -66,14 +64,39 @@ export default function TopNav() {
     >
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #d94f4f, #e8a44a, #e8c868, #68b878, #5b93c7)', zIndex: 50, opacity: isSquished ? 1 : 0, transition: 'opacity 0.3s ease' }} />
       <div className="nav-container">
-        <div className="brand">
-          <Link to="/" className="brand-link">
-            <span className="brand-supertitle">The Accidental Intactivist's Guide</span>
-            <span className="brand-title">{currentActivity}</span>
-          </Link>
+        {/* Left: Brand + Section Selector Dropdown */}
+        <div className="brand" style={{ zIndex: 10 }}>
+          <SectionNavDropdown />
         </div>
         
-        <div className="nav-controls">
+        {/* Center: Reverted Centered Page Title */}
+        <div className="topnav-center-title" style={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          pointerEvents: 'none',
+          textAlign: 'center',
+          maxWidth: '52%'
+        }}>
+          <h1 style={{
+            fontFamily: FONT.display,
+            fontWeight: 800,
+            fontSize: 'clamp(0.95rem, 1.8vw, 1.25rem)',
+            letterSpacing: '0.03em',
+            textTransform: 'uppercase',
+            color: C.textBright,
+            margin: 0,
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}>
+            {currentActivity}
+          </h1>
+        </div>
+        
+        {/* Right: Controls */}
+        <div className="nav-controls" style={{ zIndex: 10 }}>
           <button 
             onClick={() => openAssistant()}
             className="lux-hover-lift ask-assistant-btn"

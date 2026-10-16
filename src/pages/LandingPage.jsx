@@ -7,7 +7,7 @@ import { C, FONT } from '../styles/tokens';
 import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import NewsAggregator from '../components/NewsAggregator';
-import LiveStatsBar from '../components/LiveStatsBar';
+import SiloGateways from '../components/SiloGateways';
 import BentoBox from '../components/BentoBox';
 import MegamenuNav from '../components/MegamenuNav';
 
@@ -75,7 +75,43 @@ export default function LandingPage() {
     const next = !loomPaused;
     setLoomPaused(next);
     try { localStorage.setItem('cs_loom_paused', String(next)); } catch {}
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cs-loom-pause', { detail: { paused: next } }));
+    }
   }, [loomPaused]);
+
+  // Dynamic Hero Story State: Supports Hadachek flagship or latest fresh dispatch
+  const [heroMode, setHeroMode] = useState('hadachek'); // 'hadachek' | 'fresh'
+  const [freshStory, setFreshStory] = useState(null);
+
+  useEffect(() => {
+    async function fetchLatestHero() {
+      try {
+        const res = await fetch('/api/cms?types=recap,article,essay,external_news&hide_rejected=1&sort=published&limit=5');
+        if (res.ok) {
+          const data = await res.json();
+          const list = Array.isArray(data) ? data : (data.data || []);
+          if (list.length > 0) {
+            const top = list[0];
+            let meta = {};
+            try { meta = JSON.parse(top.metadata_json || '{}'); } catch(e){}
+            setFreshStory({
+              id: top.id,
+              type: top.type,
+              title: top.title,
+              category: top.category || (top.type === 'recap' ? 'Pulse of the Movement' : 'Field Note'),
+              snippet: meta.abstract || meta.summary || (meta.sections?.[0]?.body) || 'Latest dispatch from the genital autonomy archive.',
+              imageUrl: meta.image_url || (meta.media_urls?.[0]) || null,
+              link: top.type === 'recap' ? `/news/${top.id}` : (top.url ? `/news/${top.id}` : `/to/${top.id}`)
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch fresh hero:', err);
+      }
+    }
+    fetchLatestHero();
+  }, []);
 
   useEffect(() => {
     let raf = null;
@@ -113,6 +149,7 @@ export default function LandingPage() {
       <UniversalSquishHeader
         themeKey={themeKey}
         loomPaused={loomPaused}
+        toggleLoom={toggleLoom}
         startVh={30}
         title={<>The Accidental<br />Intactivist's Guide</>}
         navRightContent={
@@ -169,77 +206,169 @@ export default function LandingPage() {
           
           {/* HERO ARTICLE COLUMN */}
           <div style={{ flex: '1 1 65%', minWidth: '300px' }}>
-            <Link to="/to/hadachek_v_oregon" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }} className="lux-hover-lift">
-              <div className="lux-lens" style={{
-                position: 'relative',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                aspectRatio: '16/9',
-                maxHeight: '600px',
-                display: 'flex',
-                alignItems: 'flex-end',
-                padding: '2.5rem',
-                border: '1px solid rgba(212, 160, 48, 0.4)',
-                background: 'linear-gradient(to top, rgba(15,15,20,0.95) 0%, rgba(15,15,20,0.4) 60%, rgba(15,15,20,0.1) 100%), url("/images/courtroom-bg.jpg") center/cover no-repeat var(--c-bgDeep)'
-              }}>
-                <div style={{ position: 'relative', zIndex: 2, maxWidth: '800px' }}>
-                  <div style={{
-                    display: 'inline-block', padding: '0.4rem 1rem', background: 'var(--c-red)',
-                    color: '#fff', fontFamily: FONT.condensed, fontWeight: 800, fontSize: '0.8rem',
-                    letterSpacing: '0.1em', textTransform: 'uppercase', borderRadius: '4px', marginBottom: '1rem'
-                  }}>
-                    Field Note • Legal Analysis
-                  </div>
-                  <h1 style={{
-                    fontFamily: FONT.display, fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
-                    color: '#ffffff', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem',
-                    letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0,0,0,0.5)'
-                  }}>
-                    The Anatomy of a Courtroom Battle: Hadachek v. Oregon
-                  </h1>
-                  <p style={{
-                    fontFamily: FONT.body, fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-                    color: 'rgba(255,255,255,0.9)', lineHeight: 1.5, marginBottom: '1.5rem',
-                    maxWidth: '90%'
-                  }}>
-                    Yesterday in Portland, the State tried to legally downgrade bodily autonomy to a "female privilege." They failed. We are going to trial on December 7th.
-                  </p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.05em' }}>
-                    <span>READ THE FULL NOTE</span>
-                    <ArrowRight size={16} />
-                  </div>
-                </div>
+            {/* Optional Switcher between Landmark Case & Fresh Daily Dispatch */}
+            {freshStory && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                <button
+                  onClick={() => setHeroMode('hadachek')}
+                  style={{
+                    background: heroMode === 'hadachek' ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
+                    border: `1px solid ${heroMode === 'hadachek' ? '#ef4444' : 'rgba(255,255,255,0.1)'}`,
+                    color: heroMode === 'hadachek' ? '#ef4444' : C.dim,
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: '6px',
+                    fontFamily: FONT.condensed,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  ⚖️ Landmark Case: Hadachek
+                </button>
+                <button
+                  onClick={() => setHeroMode('fresh')}
+                  style={{
+                    background: heroMode === 'fresh' ? 'rgba(242, 193, 78, 0.15)' : 'transparent',
+                    border: `1px solid ${heroMode === 'fresh' ? 'var(--c-goldBright)' : 'rgba(255,255,255,0.1)'}`,
+                    color: heroMode === 'fresh' ? 'var(--c-goldBright)' : C.dim,
+                    padding: '0.25rem 0.65rem',
+                    borderRadius: '6px',
+                    fontFamily: FONT.condensed,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  ⚡ Latest Movement Pulse
+                </button>
               </div>
-            </Link>
+            )}
 
-            {/* DATA GRID (Masonry style below hero) */}
+            {(() => {
+              const isHadachek = heroMode === 'hadachek' || !freshStory;
+              const link = isHadachek ? '/to/hadachek_v_oregon' : freshStory.link;
+              const badge = isHadachek ? 'Field Note • Landmark Legal Analysis' : freshStory.category;
+              const badgeColor = isHadachek ? 'var(--c-red)' : 'var(--c-gold)';
+              const title = isHadachek ? 'The Anatomy of a Courtroom Battle: Hadachek v. Oregon' : freshStory.title;
+              const snippet = isHadachek
+                ? 'Inside the landmark Hadachek v. Oregon equal protection proceedings in Portland. While the trial court granted summary judgment on standing, Intact Global and coalition allies have immediately appealed.'
+                : freshStory.snippet;
+              const bgImg = isHadachek ? '/images/hadachek-hero.jpg' : freshStory.imageUrl;
+
+              return (
+                <Link to={link} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }} className="lux-hover-lift">
+                  <div className="lux-lens" style={{
+                    position: 'relative',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    aspectRatio: '16/9',
+                    maxHeight: '620px',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    padding: '2.5rem',
+                    border: '1px solid rgba(212, 160, 48, 0.4)',
+                    background: bgImg
+                      ? `linear-gradient(to top, rgba(12,12,16,0.97) 0%, rgba(12,12,16,0.72) 42%, rgba(12,12,16,0.22) 75%, rgba(12,12,16,0.1) 100%), url("${bgImg}") center 20%/cover no-repeat var(--c-bgDeep)`
+                      : `radial-gradient(ellipse at 85% 20%, rgba(239, 68, 68, 0.16) 0%, transparent 60%), linear-gradient(145deg, rgba(26, 26, 34, 0.98) 0%, rgba(12, 12, 16, 1) 100%)`
+                  }}>
+                    {isHadachek && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '1.5rem',
+                        right: '1.5rem',
+                        zIndex: 3,
+                        background: 'rgba(0, 0, 0, 0.65)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(255, 255, 255, 0.18)',
+                        borderRadius: '20px',
+                        padding: '0.35rem 0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.45rem',
+                        color: 'rgba(255, 255, 255, 0.88)',
+                        fontSize: '0.72rem',
+                        fontFamily: FONT.condensed,
+                        fontWeight: 600,
+                        letterSpacing: '0.04em'
+                      }}>
+                        <span>Portland Courthouse • 2nd Trial (On Appeal)</span>
+                      </div>
+                    )}
+                    <div style={{ position: 'relative', zIndex: 2, maxWidth: '800px' }}>
+                      <div style={{
+                        display: 'inline-block', padding: '0.4rem 1rem', background: badgeColor,
+                        color: '#fff', fontFamily: FONT.condensed, fontWeight: 800, fontSize: '0.8rem',
+                        letterSpacing: '0.1em', textTransform: 'uppercase', borderRadius: '4px', marginBottom: '1rem',
+                        boxShadow: `0 0 16px ${badgeColor}60`
+                      }}>
+                        {badge}
+                      </div>
+                      <h1 style={{
+                        fontFamily: FONT.display, fontSize: 'clamp(1.8rem, 4vw, 3.2rem)', 
+                        color: '#ffffff', fontWeight: 800, lineHeight: 1.15, marginBottom: '1rem',
+                        letterSpacing: '-0.02em', textShadow: '0 4px 12px rgba(0,0,0,0.8)'
+                      }}>
+                        {title}
+                      </h1>
+                      <p style={{
+                        fontFamily: FONT.body, fontSize: 'clamp(0.95rem, 1.8vw, 1.2rem)',
+                        color: 'rgba(255,255,255,0.92)', lineHeight: 1.5, marginBottom: '1.5rem',
+                        maxWidth: '90%'
+                      }}>
+                        {snippet}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.05em' }}>
+                        <span>READ THE FULL NOTE</span>
+                        <ArrowRight size={16} />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })()}
+
+            {/* FEATURED EDITORIAL SPOTLIGHTS */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
               gap: '1.5rem',
               marginTop: '1.5rem'
             }}>
-              {/* Exhibit Card 1 */}
-              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-orange)' }}>
-                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-orange)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>TRENDING DATA</div>
-                <h3 style={{ fontFamily: FONT.display, fontSize: '1.5rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.75rem' }}>The 36% Pleasure Gap</h3>
-                <p style={{ fontFamily: FONT.body, fontSize: '0.9rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                  Our findings reveal a massive drop in "Pleasure from Mobile Skin" for circumcised men, mathematically proving the sensory amputation.
+              {/* Spotlight 1: Curated Legal Dossier */}
+              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-red, #d94f4f)' }}>
+                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-red, #d94f4f)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
+                  FEATURED CONSTITUTIONAL DOSSIER
+                </div>
+                <h3 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.65rem' }}>
+                  The FGM Firewall
+                </h3>
+                <p style={{ fontFamily: FONT.body, fontSize: '0.88rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                  Exposing the statutory double standard: why federal and state laws strictly criminalize any non-therapeutic alteration of female minors while leaving male infants legally unprotected.
                 </p>
-                <Link to="/explore?exhibit=pleasure-gap" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-orange)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem' }}>
-                  VIEW EXHIBIT <ChevronRight size={14} />
+                <Link to="/library?topic=fgm-firewall" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-red, #d94f4f)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.04em' }}>
+                  READ LEGAL DOSSIER <ChevronRight size={14} />
                 </Link>
               </div>
 
-              {/* Exhibit Card 2 */}
-              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-blue)' }}>
-                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-blue)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>PSYCHOLOGICAL FALLOUT</div>
-                <h3 style={{ fontFamily: FONT.display, fontSize: '1.5rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.75rem' }}>60% Report Resentment</h3>
-                <p style={{ fontFamily: FONT.body, fontSize: '0.9rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                  The data shatters the "they won't remember it" myth, with over 60% of circumcised men experiencing frequent anger and loss.
+              {/* Spotlight 2: Clinical Rebuttal Matrix */}
+              <div className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '1.5rem', borderTop: '4px solid var(--c-green, #68b878)' }}>
+                <div style={{ fontFamily: FONT.condensed, color: 'var(--c-green, #68b878)', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>
+                  PRACTICAL CLINICAL DEFENSE
+                </div>
+                <h3 style={{ fontFamily: FONT.display, fontSize: '1.4rem', color: C.textBright, lineHeight: 1.2, marginBottom: '0.65rem' }}>
+                  Counter-Evidence Builder
+                </h3>
+                <p style={{ fontFamily: FONT.body, fontSize: '0.88rem', color: C.muted, lineHeight: 1.5, marginBottom: '1.25rem' }}>
+                  Equip yourself with peer-reviewed medical literature, anatomical innervation studies, and point-by-point rebuttals to address outdated pediatric cutting justifications with calm confidence.
                 </p>
-                <Link to="/explore?exhibit=psych-fallout" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-blue)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem' }}>
-                  VIEW EXHIBIT <ChevronRight size={14} />
+                <Link to="/guides/rebuttals" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-green, #68b878)', textDecoration: 'none', fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.04em' }}>
+                  BUILD CLINICAL REBUTTALS <ChevronRight size={14} />
                 </Link>
               </div>
             </div>
@@ -280,9 +409,7 @@ export default function LandingPage() {
         </div>
 
 
-        <div style={{ marginTop: '2rem', marginBottom: '4rem' }}>
-          <LiveStatsBar />
-        </div>
+        <SiloGateways />
 
         {/* ════════════════════════════════════════════════════════════════════
             ONE-CLICK ADVOCACY KITS
@@ -314,7 +441,7 @@ export default function LandingPage() {
             alignItems: 'stretch'
           }}>
             {/* Kit 1 */}
-            <Link to="/report?kit=expectant" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+            <Link to="/assistant?kit=expectant" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
               <div style={{ background: 'rgba(212, 160, 48, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <BookOpen size={24} color={C.goldBright} />
               </div>
@@ -328,7 +455,7 @@ export default function LandingPage() {
             </Link>
 
             {/* Kit 2 */}
-            <Link to="/report?kit=pediatrician" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+            <Link to="/assistant?kit=pediatrician" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
               <div style={{ background: 'rgba(91, 147, 199, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <ShieldAlert size={24} color="var(--c-blue)" />
               </div>
@@ -342,7 +469,7 @@ export default function LandingPage() {
             </Link>
 
             {/* Kit 3 */}
-            <Link to="/report?kit=partner" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
+            <Link to="/assistant?kit=partner" className="lux-lens lux-hover-lift" style={{ borderRadius: '12px', padding: '2rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', border: '1px solid var(--c-ghost)' }}>
               <div style={{ background: 'rgba(232, 164, 74, 0.1)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
                 <Users size={24} color="var(--c-orange)" />
               </div>

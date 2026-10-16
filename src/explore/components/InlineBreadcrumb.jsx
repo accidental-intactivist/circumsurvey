@@ -28,7 +28,7 @@ export default function InlineBreadcrumb({ currentRoute, navigate }) {
       marginBottom: "1.2rem",
       flexWrap: "wrap",
     }}>
-      <a href="#/" style={{
+      <a href="/explore" style={{
         fontFamily: FONT.condensed,
         fontSize: "0.7rem",
         letterSpacing: "0.14em",

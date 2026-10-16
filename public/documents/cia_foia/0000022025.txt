@@ -1,0 +1,35 @@
+Electric Fish Study
+                 Investigations have been in progress on the species of electric fish,
+              Sternarchus albifrons, and S. leptorhynchus, for 7 months.  Now, having
+              sufficient equipwent, and with techniques developed over some months, we see
+              good prospects for success in several lines of investigation.
+                 Our initial work'was directed at the respon2ses of these fish to magnetic
+              fields. Investigators using other species of electric fish have observed  strong,
+              overt responses to extremely weak magnetic fields. It seems likely that  such  fistp,
+              jith proven ability to perceive extremely weak electric fields, must be  responsivc
+              to current induced in them by changing magnetic fields. However, our  investigatJ.ODS
+              indicate that for Sternarchus at least, ther2e is no response to strong  (100  gauss),
+              steady fields. Investigations with progressively weaker fields  continues  in  effoxt
+              to eliminate the possibility of the blanking effect of too powerful stimulus.  Ttic
+              case with the magnet may well be analagous to that reported for applied current
+              on these fish: the smaller the applied stimulus; the greater the  relative  response.
+                 A concurrent study will proc2eed using a  pulsed  magnetic  field,  Sternarchus  is
+              Teported to respond to applied A.C. currents and fields far more readily than  to
+              stimulation by currents and fields of D.C.
+                  Also in progress is a study of threshold perception for A.C.  and  D.C.  current.
+              There are several reports in the literature already on this topic.  However,  the
+              data is reported in such a way as to render the work of question2au e usefulness to us.
+              The threshold values are reported in Volts/distance.  Data on resistance of the syster
+              must be obtained before such figures are useful.
+                  The abo-@e experiments have a possible practical.application in  that  electric
+              fish may find use as or as a model for energy detection in the  water.  The  electric
+              field navigation system may also be practical and furt.ier baseline studies of  its2
+              natural originators, the-elect@ric fish, will be invaluable.
+                  The electrlc field of the electric fish is easily monitored by means of an
+              amplifier and oscilloscope. As such, the fish provides what amounts to  a  living
+              nerve preparation.  We feel that monitoring the free swimming animal provides a
+              I'window" on nervous activity. As such, this animal could provide a useful  model
+              for drug study. 3With the current,emphasis on the breakthrough  in  the  treatment  of
+              Parkinson's disease with dopamine, we saw an opportunity to test this theory.
+              Investigations are preliminary, but electrical activity and  physical  behavior  have
+              been observed to be altered after several hours in, L-ROPA solution.

@@ -5,8 +5,15 @@ import React, { useEffect, useRef } from 'react';
 // CSS vars from the document or return static fallbacks.
 const FALLBACKS = {
   '--c-red': '#e53935',
+  '--c-orange': '#e8a44a',
+  '--c-yellow': '#e8c868',
   '--c-gold': '#d4a030',
+  '--c-goldBright': '#e8b840',
+  '--c-green': '#68b878',
+  '--c-ltBlue': '#8bb8d9',
   '--c-blue': '#42a5f5',
+  '--c-purple': '#7868b8',
+  '--c-textBright': '#ffffff',
 };
 
 function resolveCssColor(varStr) {
@@ -49,7 +56,7 @@ export const LOOM_CONFIG = {
 
 export default function HarmonicCanvas({ position = 'absolute', opacity = 1, themeKey = '', paused = false }) {
   const canvasRef = useRef(null);
-  const pausedRef = useRef(paused);
+  const pausedRef = useRef(paused || (typeof localStorage !== 'undefined' && localStorage.getItem("cs_loom_paused") === "true"));
 
   useEffect(() => {
     pausedRef.current = paused;
@@ -160,19 +167,112 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     const precomputedRGB1 = [];
     const precomputedRGB2 = [];
 
+    let cRed, cOrange, cGold, cGoldBright, cGreen, cLtBlue, cBlue, cPurple, cBright;
+
+    const drawDiamondStarburst = (c, x, y, size, alpha) => {
+      if (alpha <= 0.02 || size <= 0.5) return;
+      c.save();
+      c.globalAlpha = Math.min(1, alpha);
+      const r = size * 2.8;
+      const th = Math.max(0.8, size * 0.35);
+
+      const toRgba = (rgb, a) => `rgba(${Math.round(rgb[0])}, ${Math.round(rgb[1])}, ${Math.round(rgb[2])}, ${a})`;
+
+      // Outer chromatic halo - theme cardinal glow
+      const radGlow = c.createRadialGradient(x, y, 0, x, y, r * 1.6);
+      radGlow.addColorStop(0, toRgba(cBright || [255, 255, 255], 0.95));
+      radGlow.addColorStop(0.3, toRgba(cLtBlue || cBlue || [139, 184, 217], 0.65));
+      radGlow.addColorStop(0.65, toRgba(cGoldBright || cGold || [232, 184, 64], 0.35));
+      radGlow.addColorStop(1, toRgba(cRed || [229, 57, 53], 0));
+      c.fillStyle = radGlow;
+      c.beginPath();
+      c.arc(x, y, r * 1.6, 0, Math.PI * 2);
+      c.fill();
+
+      // Horizontal Diamond Spike
+      c.fillStyle = toRgba(cBright || [255, 255, 255], 1);
+      c.beginPath();
+      c.moveTo(x - r, y);
+      c.quadraticCurveTo(x, y - th, x, y - th);
+      c.lineTo(x + r, y);
+      c.quadraticCurveTo(x, y + th, x, y + th);
+      c.closePath();
+      c.fill();
+
+      // Vertical Diamond Spike
+      c.beginPath();
+      c.moveTo(x, y - r);
+      c.quadraticCurveTo(x - th, y, x - th, y);
+      c.lineTo(x, y + r);
+      c.quadraticCurveTo(x + th, y, x + th, y);
+      c.closePath();
+      c.fill();
+
+      // 45° secondary diamond spikes (starlight cross)
+      const dR = r * 0.45;
+      c.strokeStyle = toRgba(cGoldBright || cGold || [232, 184, 64], 0.85);
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(x - dR, y - dR);
+      c.lineTo(x + dR, y + dR);
+      c.moveTo(x - dR, y + dR);
+      c.lineTo(x + dR, y - dR);
+      c.stroke();
+
+      // Pure hot nucleus
+      c.fillStyle = toRgba(cBright || [255, 255, 255], 1);
+      c.beginPath();
+      c.arc(x, y, Math.max(1, size * 0.45), 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+    };
+
     const initColors = () => {
-      const cRed = parseColor('--c-red', [229, 57, 53]);
-      const cGold = parseColor('--c-gold', [212, 160, 48]);
-      const cBlue = parseColor('--c-blue', [66, 165, 245]);
+      cRed = parseColor('--c-red', [229, 57, 53]);
+      cOrange = parseColor('--c-orange', [232, 164, 74]);
+      cGold = parseColor('--c-gold', [212, 160, 48]);
+      cGoldBright = parseColor('--c-goldBright', [232, 184, 64]);
+      cGreen = parseColor('--c-green', [104, 184, 120]);
+      cLtBlue = parseColor('--c-ltBlue', [139, 184, 217]);
+      cBlue = parseColor('--c-blue', [66, 165, 245]);
+      cPurple = parseColor('--c-purple', [120, 104, 184]);
+      cBright = parseColor('--c-textBright', [255, 255, 255]);
+
+      // Multi-stop cardinal color ramp for Ribbon 1: Red -> Orange -> Gold/Yellow -> Green
+      const ramp1 = (t) => {
+        if (t < 0.33) {
+          const u = t / 0.33;
+          return [lerp(cRed[0], cOrange[0], u), lerp(cRed[1], cOrange[1], u), lerp(cRed[2], cOrange[2], u)];
+        } else if (t < 0.66) {
+          const u = (t - 0.33) / 0.33;
+          return [lerp(cOrange[0], cGold[0], u), lerp(cOrange[1], cGold[1], u), lerp(cOrange[2], cGold[2], u)];
+        } else {
+          const u = (t - 0.66) / 0.34;
+          return [lerp(cGold[0], cGreen[0], u), lerp(cGold[1], cGreen[1], u), lerp(cGold[2], cGreen[2], u)];
+        }
+      };
+
+      // Multi-stop cardinal color ramp for Ribbon 2: Green -> Cyan/LtBlue -> Blue -> Purple/Violet
+      const ramp2 = (t) => {
+        if (t < 0.33) {
+          const u = t / 0.33;
+          return [lerp(cGreen[0], cLtBlue[0], u), lerp(cGreen[1], cLtBlue[1], u), lerp(cGreen[2], cLtBlue[2], u)];
+        } else if (t < 0.66) {
+          const u = (t - 0.33) / 0.33;
+          return [lerp(cLtBlue[0], cBlue[0], u), lerp(cLtBlue[1], cBlue[1], u), lerp(cLtBlue[2], cBlue[2], u)];
+        } else {
+          const u = (t - 0.66) / 0.34;
+          return [lerp(cBlue[0], cPurple[0], u), lerp(cBlue[1], cPurple[1], u), lerp(cBlue[2], cPurple[2], u)];
+        }
+      };
 
       precomputedStyles1.length = 0;
       precomputedRGB1.length = 0;
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
         const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
-        const r = Math.round(lerp(cRed[0], cGold[0], t));
-        const g = Math.round(lerp(cRed[1], cGold[1], t));
-        const b = Math.round(lerp(cRed[2], cGold[2], t));
+        const rgb = ramp1(t);
+        const r = Math.round(rgb[0]), g = Math.round(rgb[1]), b = Math.round(rgb[2]);
         precomputedStyles1.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
         precomputedRGB1.push([r, g, b]);
       }
@@ -182,9 +282,8 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       for (let i = 0; i <= halfSteps; i++) {
         const t = i / halfSteps;
         const alpha = Math.sin(t * Math.PI) * 0.5 + 0.2;
-        const r = Math.round(lerp(cGold[0], cBlue[0], t));
-        const g = Math.round(lerp(cGold[1], cBlue[1], t));
-        const b = Math.round(lerp(cGold[2], cBlue[2], t));
+        const rgb = ramp2(t);
+        const r = Math.round(rgb[0]), g = Math.round(rgb[1]), b = Math.round(rgb[2]);
         precomputedStyles2.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
         precomputedRGB2.push([r, g, b]);
       }
@@ -416,6 +515,15 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
             else { for (let i = N; i >= 0; i--) if (cum[i] > sLo && cum[i] < sHi) ctx.lineTo(sx[i], sy[i]); }
             ctx.lineTo(H.x, H.y);
             ctx.stroke();
+
+            // 4-Point Diamond Starburst at wave crest
+            if (A > 0.12 && hp > 0.06 && hp < 0.94) {
+              const flareAlpha = Math.sin(hp * Math.PI) * A;
+              if (flareAlpha > 0.1) {
+                const burstSize = (3.2 + Math.sin(glintTime * 0.02 + g * 2) * 1.2) * (dpr > 1 ? 1 : 0.85);
+                drawDiamondStarburst(ctx, H.x, H.y, burstSize, flareAlpha);
+              }
+            }
           }
           ctx.lineCap = 'butt';
           ctx.lineJoin = 'miter';
@@ -424,6 +532,12 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
 
       animationFrameId = requestAnimationFrame(render);
     };
+
+    const onPauseToggle = (e) => {
+      pausedRef.current = !!(e.detail && e.detail.paused);
+      pausedHeld = false;
+    };
+    window.addEventListener("cs-loom-pause", onPauseToggle);
 
     deferTimer = setTimeout(() => {
       initColors();
@@ -435,6 +549,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("cs-loom-pause", onPauseToggle);
       observer.disconnect();
       if (deferTimer) clearTimeout(deferTimer);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);

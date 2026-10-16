@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { X, Target, User, ArrowRight, FileText } from 'lucide-react';
-import { GROUP_COLOR, STANCES, STANCE_COLOR, degreeOf, stanceBreakdown } from '../../utils/entityGraph';
+import { GROUP_COLOR, STANCES, STANCE_COLOR, degreeOf, stanceBreakdown, getEntityAutonomy } from '../../utils/entityGraph';
 import { resolveItemRoute } from '../../utils/routing';
 
 const ORDINAL = ['', '1st', '2nd', '3rd', '4th', '5th', '6th'];
@@ -124,6 +124,14 @@ function NodeDetail({ graph, nodeId, mode, bfs, path, onSelectEdge, onSelectNode
         </div>
         <h3 className="eg-panel-title">{node.name}</h3>
         <p className="eg-panel-sub">
+          {(() => {
+            const auto = node.autonomy || getEntityAutonomy(node);
+            return (
+              <span className="eg-grade-pill" style={{ background: auto.bg, color: auto.color, borderColor: auto.border }}>
+                {auto.grade} · {auto.shortLabel}
+              </span>
+            );
+          })()}
           <span className="eg-stance-pill" style={{ '--pill': STANCE_COLOR[node.stance] }}>
             {STANCES.find(s => s.key === node.stance)?.label}
           </span>{' '}

@@ -1,0 +1,123 @@
+S LP, LA
+                                                -RY
+                Bjol,,OD is an operational system  specifically  desi&ned  to  make  it
+          .Convenient for unsophisticated couiputer users to study models of dy-
+            namic systems.  The system features a high degree of interaction,
+            user-oriented model-definition languages, and flerible, in-dep2th model
+            structuring.  It employs a graphics console comprising a television
+            screen, a data tablet, and a keyboard.
+                A BIO'@IOD user may represent a model by drawing block diagrams
+            and handprinting or typing text;  he  receives  iumiediate  feedback  about
+            the system's interpretation of iiis actions.  Each component of a model
+            block diagram may be defined by another block diagram; this facilitates
+            2organizing models into meaningful substructures.  A user ultimately
+            defines each co-,Pponent  block  by  analog-computer-like  elements,  alge-
+            braic, differential, or chemical equations, and/or Fortran statements.
+            A modeler may.thus define  his  model  in  whatever  terminology  is  mean-
+            ingful to him.  Displayed curves are continually and automatically
+            updated during model sit:,ulation. A  user  may  stop  2the  simulation  and
+            plot different variables, c@ange scales, or alter parameter values,
+            and then either continue  simulating  or  revise  the  description  of  his
+            model.
+                 This report demonstrates BIOIIOD  by  presenting  a  scenario  of  how
+            a user might describe and simulate a dru--effect model, briefly de-
+            scribes the system implementation, and discusses experience with users.
+           8                                                 linnroveld oor Rol  a
+                                                                     . - - - . @lez@
+
+                  II.  A @',(DEL FOR EVALUATI@,'G DP,CG           FOLICIRS
+                  liedications and their prescribed dosages are designed to maintain
+               a critical amount of drug in the blood for a specified period of time.
+               The conventional method for determining optimal dosages involves numer-
+               ous laboratory experiments.  If the drug effects carr be modeled, how-
+     2          ever, a more efeicient'method is to  experiment  by  running  computer
+               simulations.
+                  One technique for niaint:aining the prescribed amount of drug is to
+               use a,r-apsule containing a large number of differently coated pellets.
+               The pellets dissolve-at different times, so that, as drug leaves the
+               blood, it is replaced by drug released  by  newly  dissolved  pellets.
+               Garrett 2and Lambert (8] have proposed  the  following  model  to  descIribe
+               this situation.  A capsule comprises a number of pellet populations
+               with different mean times of release.  The  rate  of  drug  release  for
+               each population is assumed to be normally distributed (;.,,ith the same
+               standard deviation for each population) about  the  mean  time  of  release
+               for that population. The rate of addin2g  drug  to  the  body  is  therefore
+               specified by a sum of  normal  distributions.  The  transfer  of  drug
+               through the body is described by
+                                               kGl B      kB u
+                              drug
+                                                                  (D
+               V,iere GI refers to the gastrointestinal tract, B to the-blood, and U
+               to the urine and other excretory parts 2oi the body; this means that
+               drug flows from GI to B at rate k    and from B to U at rate k,,,.
+                                               GI,B
+               Thus, for exarple,
+                                    dD /dt - k     D     k    D
+                                      B       GI,B  GI    B,U  B
+               whe.re D  is the amount of drug in B, and D the amount of drug in GI.
+                     B  8                                GI
+                   Given this description together with the requisite parameter
+               values  I
+                       ITO",CD ca-.i be Lised to simi-tl.-,te the model. Note that the follow-
+                                                                                 ti-ic
+               saT,-@e goal, an@i that BIG!-!OD does not force the user to tale actiow  ii
+
+                                                       -6-
+                          1-.'nc-n u*iiig                     -via a data tiblet pen and A
+                     keyboard. rli'e peti's location on the tablet  is  alwiys  indicated  by,a
+                     dot displayed in the  corresponding  location  on  the  television  screen.
+                     BIO!@IOD's interpretation of user pen a2ctions depends  on  where  the  pen
+                     is placed and on what is currently displayed  on  the  screen.  I-le  may
+                     hindprint characters in most  areas.  As  we  write,  a  displayed  "ink"
+                     track appears to flow from the pen;  each  time  we  complete  a  character,
+                     its track is replaced by a stylized  character.  We  can  change  a  cliar-
+                     acter by writing another over  it.2  Some  symbols  are  used  for  editing;
+                     for example, we may use a carat to insert  text,  or  we  may  scrub  with
+                     the pen to delete text.  Some areas displayed on the screen act as
+                     pushbuttons; if we "push" one of these  (by  touching  the  pen  down),  the
+                     system performs the indicated  action.  If  we  push  a  displayed  arrow,
+                     a continuous action takes place, such as the rescaling of a se2t of
+                     curves. Some figures can be "dragged";  if  we  "touch"  one  of  these  and
+                     move the :)en, the displayed  figure  follows.the  pen's  motion.  We  may
+                     type (witi the keyboard) in  any  area  where  wricing  is  possible.  The
+                     keyboard cursor may be positioned either with  r-he  pen  or  with  keyboard
+                     control keys.
+                     iI   To create our model, we e2nter  our  identification,  name  our  -iodal
+                     DRUGS, then begin constructing  the  model.  Because  it  has  two  major
+                     vmponents, we first draw  two  rectangles;  these  are  replaced  by  styl-
+                     3.Zed'function boxes. We write CAPSULE in  one  box  and  names  of  parts
+                     of the body in the other box, and tnen draw a flowline to connect them.
+                     T'nis diagram (Fig. 2) pr2ovides n@t only a  picture  of  our  model,  but
+                     also a means of defining the two co-,nponents  of  the  model  separately.
+                          To define the capsule component,  we  first  push  the  DEFN  button
+                     on its box. The system replaces the  block  diaaram  with  a  list  of  lan-
+                     guages that we may choose  from  to  define  the  component.  The  languages
+                     are block diagrams, mathematical  2equations,  cli-3mical  equations,  and
+                     Fortran statements. t@a choose block di-,,,rains so t,iat we  can  define
+                     the capsule as a set of  boxes,  each  representing  a  pellet  population.
+                     This ability to define a box by another block  dia-ra,-i  enables  us  Eo
+                     organize a riodel as a hierarchical coll@@ct4-on :)f a nurl-er of com,)OVents
+                     at di'Lf;arent levels.     dra-,@t Ecu-,:    i-,-,d    PILL on t'i@n to;) li-@i
+
+                                                       CALL          L
+                                          lr$k4e.r. COS%($%   l@%                                                                  --JMLL
+                                                                                                  L I %I
+                                                        I PLY P@-I                2  LD
+                                                                                      Ot  TRACT
+                                                           CAPII:LT
+                                                                                        SLOno
+                                                                                        R I x e  TC
+                                                       Fig. 2--The DRUGS 9model block diagrom
+
+                       OA'@' call_lil to rcprk2scilt L.O@ir                     a           box
+                       in this @,ay          we anticipate using tlie same function repeatedly,
+                            Because each population is defined by a normal distribution, we
+                       indicate that we want to define the PILL function witli mit2hematical
+                       equ,it'-'ons.  B10'.-IOD responds by displaying a form for writing alpebraic
+                       and differential equations.  1,,'c assume that the probability of a pellet
+                       dissolving in an interval about time t is given by the prol)ability
+                       density function
+                                                                    2   2
+                       2                               1        (t-m)
+                                                p
+                       Using this function to approximate the drug release rate by a

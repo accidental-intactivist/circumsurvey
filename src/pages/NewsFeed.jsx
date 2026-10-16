@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Calendar, Search, Sparkles, Loader2, Type } from 'lucide-react';
 import NewsAggregator from '../components/NewsAggregator';
 import { C, FONT } from '../styles/tokens';
@@ -19,16 +19,41 @@ const NEWS_TYPES = ['external_news', 'recap', 'essay', 'article', 'internal_news
 
 export default function NewsFeed() {
   const { theme } = useTheme();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  const [leanFilter, setLeanFilter] = useState('All');
-  const [searchMode, setSearchMode] = useState('keyword'); // 'keyword' | 'concept'
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
+  const [categoryFilter, setCategoryFilter] = useState(() => {
+    const raw = searchParams.get('category');
+    if (!raw || raw === 'All') return 'All';
+    const lower = raw.toLowerCase();
+    const match = NEWS_CATEGORIES.find(c => c.key.toLowerCase() === lower || c.short.toLowerCase() === lower || c.key.toLowerCase().includes(lower));
+    return match ? match.key : raw;
+  });
+  const [leanFilter, setLeanFilter] = useState(() => {
+    const raw = searchParams.get('lean');
+    if (!raw || raw === 'All') return 'All';
+    const lower = raw.toLowerCase();
+    const match = LEANS.find(l => l.key.toLowerCase() === lower || l.label.toLowerCase() === lower || (lower.includes('intact') && l.key.includes('intact')) || (lower.includes('cutting') && l.key.includes('cutting')));
+    return match ? match.key : raw;
+  });
+  const [searchMode, setSearchMode] = useState(() => searchParams.get('mode') === 'concept' ? 'concept' : 'keyword');
   const [semanticMatches, setSemanticMatches] = useState(null);
   const [semanticStatus, setSemanticStatus] = useState('idle'); // 'idle' | 'loading' | 'error'
   const isConcept = searchMode === 'concept';
   const conceptReady = isConcept && shouldRunSemanticSearch(searchQuery);
+
+  // Sync state changes to URL search params
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (searchQuery) next.set('q', searchQuery); else next.delete('q');
+    if (categoryFilter && categoryFilter !== 'All') next.set('category', categoryFilter); else next.delete('category');
+    if (leanFilter && leanFilter !== 'All') next.set('lean', leanFilter); else next.delete('lean');
+    if (searchMode === 'concept') next.set('mode', 'concept'); else next.delete('mode');
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchQuery, categoryFilter, leanFilter, searchMode, searchParams, setSearchParams]);
 
   // Debounced concept search against the vector index
   useEffect(() => {
@@ -121,11 +146,7 @@ export default function NewsFeed() {
         startVh={45}
         title="Field Notes & Headlines"
         underloomFormation="pulsar"
-        navLeftContent={
-          <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ opacity: 0.6 }}>The Accidental Intactivist's Guide</span>
-          </Link>
-        }
+        themeColor="media"
         subtitle={
           <div style={{ maxWidth: '700px', margin: '1rem auto 0', color: 'var(--c-dim)', fontSize: '1.2rem', fontFamily: 'var(--f-body)', lineHeight: 1.6 }}>
             The pulse of the genital autonomy movement and the decline of routine infant circumcision, with every story

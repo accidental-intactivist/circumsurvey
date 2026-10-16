@@ -29,6 +29,15 @@ export async function onRequestGet(context) {
       queryFilter: "source_collection = 'UMass MS 1205'",
       bindArgs: []
     },
+    'tim-hammond-archive': {
+      title: "The Tim Hammond Genital Autonomy Advocacy Archive",
+      subtitle: "MS 1205",
+      institution: "UMass Amherst Special Collections",
+      curator: "Tim Hammond",
+      description: "The defining archive of the genital autonomy movement. This collection includes extensive hard copy and electronic records representing decades of advocacy, establishing the foundation of NOCIRC, NOHARMM, and modern human rights advocacy.",
+      queryFilter: "source_collection = 'UMass MS 1205'",
+      bindArgs: []
+    },
     'msu-clippings': {
       title: "Changing Men Collection",
       subtitle: "Historic News Clippings",

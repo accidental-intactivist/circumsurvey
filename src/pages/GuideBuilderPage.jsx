@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Shield, Sparkles, FileText, CreditCard, MessageCircle, Presentation, Mail, Wand2 } from 'lucide-react';
+import { BookOpen, Shield, Sparkles, FileText, CreditCard, MessageCircle, Presentation, Mail, Wand2, Play, Pause } from 'lucide-react';
 import { DIMENSIONS, normalizeParams, paramsToQuery } from '../../lib/guides/dimensions.js';
 import { PRESETS } from '../../lib/guides/presets.js';
 import { composeGuide } from '../../lib/guides/compose.js';
 import { SpecialReport, Playbook } from '../components/guides/GuideFormats';
 import { useIsCurator } from '../components/guides/useIsCurator';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 import { captureEvent } from '../lib/telemetry';
 import './Guides.css';
 
@@ -53,16 +54,44 @@ export default function GuideBuilderPage() {
   const [params, setParams] = useState(() => normalizeParams(PRESETS[0].params));
   const [activePreset, setActivePreset] = useState(PRESETS[0].id);
 
+  const [loomPaused, setLoomPaused] = useState(() => {
+    try { return localStorage.getItem('cs_loom_paused') === 'true'; } catch { return false; }
+  });
+
+  useEffect(() => {
+    const handlePauseEvent = (e) => {
+      if (e.detail && e.detail.paused !== undefined) {
+        setLoomPaused(e.detail.paused);
+      }
+    };
+    window.addEventListener('cs-loom-pause', handlePauseEvent);
+    return () => window.removeEventListener('cs-loom-pause', handlePauseEvent);
+  }, []);
+
+  const toggleLoom = () => {
+    const next = !loomPaused;
+    setLoomPaused(next);
+    try { localStorage.setItem('cs_loom_paused', String(next)); } catch {}
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cs-loom-pause', { detail: { paused: next } }));
+    }
+  };
+
   useEffect(() => { document.title = 'The Accidental Intactivist\u2019s Guide Series'; }, []);
 
   const guide = useMemo(() => composeGuide(params, { includeDrafts }), [params, includeDrafts]);
   const query = paramsToQuery(params, includeDrafts ? { drafts: '1' } : {});
 
-  const setDim = (id, v) => { setParams(p => normalizeParams({ ...p, [id]: v }, { includeDrafts })); setActivePreset(null); };
+  const setDim = (id, v) => { 
+    setParams(p => normalizeParams({ ...p, [id]: v }, { includeDrafts })); 
+    setActivePreset(null); 
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('loom-weave-draft', { detail: { id, v } }));
+  };
   const applyPreset = preset => {
     setParams(normalizeParams(preset.params, { includeDrafts }));
     setActivePreset(preset.id);
     captureEvent('guide_preset_selected', { preset: preset.id });
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('loom-weave-draft', { detail: { preset: preset.id } }));
     document.getElementById('gb-builder')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   const openFormat = fmt => {
@@ -72,18 +101,69 @@ export default function GuideBuilderPage() {
 
   return (
     <div className="gd-page gb-page">
-      <header className="gb-hero">
-        <div className="gd-series">The Accidental Intactivist's Guide · Series</div>
-        <h1>Meet them where they are.</h1>
-        <p className="gb-lede">
-          Build a guide for the person you're trying to reach: an expectant parent, a skeptical nurse, a conservative grandfather, a pastor.
-          Each one starts from values they already hold, finds the point where you agree, and backs every step with receipts.
-        </p>
-        <div className="gb-hero-actions">
-          <a href="#gb-series" className="gd-btn gd-btn--primary"><BookOpen size={16} /> Browse the Series</a>
-          <a href="#gb-builder" className="gd-btn"><Wand2 size={16} /> Build your own</a>
-          <Link to="/guides/rebuttals" className="gd-btn"><Shield size={16} /> Counter-evidence builder</Link>
+      <header className="gb-hero" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.45 }}>
+          <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
         </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div className="gd-series">The Accidental Intactivist's Guide · Series</div>
+          <h1>Meet them where they are.</h1>
+          <p className="gb-lede">
+            Build a guide for the person you're trying to reach: an expectant parent, a skeptical nurse, a conservative grandfather, a pastor.
+            Each one starts from values they already hold, finds the point where you agree, and backs every step with receipts.
+          </p>
+          <div className="gb-hero-actions">
+            <a href="#gb-series" className="gd-btn gd-btn--primary"><BookOpen size={16} /> Browse the Series</a>
+            <a href="#gb-builder" className="gd-btn"><Wand2 size={16} /> Build your own</a>
+            <Link to="/guides/rebuttals" className="gd-btn"><Shield size={16} /> Counter-evidence builder</Link>
+          </div>
+        </div>
+
+        {/* ── Great Loom Pause / Play Button ── */}
+        <button
+          type="button"
+          onClick={toggleLoom}
+          aria-label={loomPaused ? "Play background animation" : "Pause background animation"}
+          title={loomPaused ? "Play background animation" : "Pause background animation"}
+          className="gb-pause-btn"
+          style={{
+            position: "absolute",
+            bottom: "1rem",
+            right: "1.25rem",
+            zIndex: 10,
+            background: "rgba(0,0,0,0.45)",
+            border: `1px solid ${loomPaused ? "var(--c-goldBright)" : "var(--c-ghost)"}`,
+            color: loomPaused ? "var(--c-goldBright)" : "var(--c-dim)",
+            borderRadius: "50%",
+            width: "32px",
+            height: "32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.color = "var(--c-goldBright)";
+            e.currentTarget.style.borderColor = "var(--c-goldBright)";
+            e.currentTarget.style.background = "rgba(0,0,0,0.65)";
+          }}
+          onMouseLeave={e => {
+            if (!loomPaused) {
+              e.currentTarget.style.color = "var(--c-dim)";
+              e.currentTarget.style.borderColor = "var(--c-ghost)";
+              e.currentTarget.style.background = "rgba(0,0,0,0.45)";
+            }
+          }}
+        >
+          {loomPaused ? (
+            <Play size={14} style={{ marginLeft: "2px", fill: "currentColor" }} />
+          ) : (
+            <Pause size={14} style={{ fill: "currentColor" }} />
+          )}
+        </button>
       </header>
 
       <section id="gb-series" className="gb-series">

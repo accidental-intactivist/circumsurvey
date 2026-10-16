@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Printer, FilePlus2, Sparkles, Link2, Check, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Printer, FilePlus2, Sparkles, Link2, Check, Eye, EyeOff, Play, Pause } from 'lucide-react';
 import { queryToParams, paramsToQuery, normalizeParams } from '../../lib/guides/dimensions.js';
 import { composeGuide, guideToMarkdown } from '../../lib/guides/compose.js';
 import { GuideRenderer } from '../components/guides/GuideFormats';
@@ -9,6 +9,7 @@ import { useIsCurator } from '../components/guides/useIsCurator';
 import { useReport } from '../contexts/ReportContext';
 import { useAssistant } from '../contexts/AssistantContext';
 import { captureEvent } from '../lib/telemetry';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 import './Guides.css';
 
 export default function GuideView({ overrideParams }) {
@@ -33,6 +34,29 @@ export default function GuideView({ overrideParams }) {
   const { addToReport } = useReport();
   const { openAssistant } = useAssistant();
 
+  const [loomPaused, setLoomPaused] = useState(() => {
+    try { return localStorage.getItem('cs_loom_paused') === 'true'; } catch { return false; }
+  });
+
+  useEffect(() => {
+    const handlePauseEvent = (e) => {
+      if (e.detail && e.detail.paused !== undefined) {
+        setLoomPaused(e.detail.paused);
+      }
+    };
+    window.addEventListener('cs-loom-pause', handlePauseEvent);
+    return () => window.removeEventListener('cs-loom-pause', handlePauseEvent);
+  }, []);
+
+  const toggleLoom = () => {
+    const next = !loomPaused;
+    setLoomPaused(next);
+    try { localStorage.setItem('cs_loom_paused', String(next)); } catch {}
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cs-loom-pause', { detail: { paused: next } }));
+    }
+  };
+
   useEffect(() => {
     document.title = `${guide.title} · The Accidental Intactivist\u2019s Guide`;
   }, [guide.title]);
@@ -42,6 +66,7 @@ export default function GuideView({ overrideParams }) {
     next.set('format', fmt);
     setSearchParams(next, { replace: true });
     captureEvent('guide_format_changed', { format: fmt });
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('loom-weave-draft', { detail: { format: fmt } }));
   };
 
   const copyLink = async () => {
@@ -59,7 +84,7 @@ export default function GuideView({ overrideParams }) {
     captureEvent('guide_sent_to_report', { relationship: params.relationship });
   };
 
-  const askGlenda = () => {
+  const askAssistant = () => {
     const who = guide.audience || 'this reader';
     openAssistant(
       `I'm preparing to talk with: ${who}. Using the archive, what are the strongest additional receipts for this guide, and how should I handle their likely objections?`,
@@ -75,35 +100,51 @@ export default function GuideView({ overrideParams }) {
   const visibleFormats = guide.mode === 'playbook' ? [] : FORMATS;
 
   return (
-    <div className={`gd-page gv-page gv-format-${format}`}>
-      <div className="gv-toolbar no-print" role="toolbar" aria-label="Guide tools">
-        <Link to={builderLink} className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Series & builder</Link>
-        {visibleFormats.length > 0 && (
-          <div className="gv-tabs" role="tablist">
-            {visibleFormats.map(f => (
-              <button key={f.id} type="button" role="tab" id={`fmt-${f.id}`} aria-selected={format === f.id} className={`gv-tab ${format === f.id ? 'is-on' : ''}`} onClick={() => setFormat(f.id)}>
-                {f.label}
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="gv-actions">
-          {format === 'report' && guide.mode === 'guide' && (
-            <button type="button" className="gd-btn gd-btn--ghost" onClick={() => setShowNotes(s => !s)} title="Advocate's notes are never printed">
-              {showNotes ? <EyeOff size={16} /> : <Eye size={16} />} Notes
-            </button>
-          )}
-          <button type="button" id="guide-print" className="gd-btn gd-btn--ghost" onClick={() => window.print()}><Printer size={16} /> Print / PDF</button>
-          <button type="button" id="guide-copy-link" className="gd-btn gd-btn--ghost" onClick={copyLink}>{copied ? <Check size={16} /> : <Link2 size={16} />} {copied ? 'Copied' : 'Link'}</button>
-          <button type="button" id="guide-to-report" className="gd-btn gd-btn--ghost" onClick={sendToReport}>{added ? <Check size={16} /> : <FilePlus2 size={16} />} {added ? 'Added' : 'To Report'}</button>
-          <button type="button" id="guide-ask-glenda" className="gd-btn gd-btn--primary" onClick={askGlenda}><Sparkles size={16} /> Ask Glenda</button>
-        </div>
+    <div className={`gd-page gv-page gv-format-${format}`} style={{ position: 'relative' }}>
+      {/* Background Underloom holographic canvas in Guides Land (The Great Loom) */}
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.32 }}>
+        <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
       </div>
-      {includeDrafts && <div className="gd-draft-banner">DRAFT MODULES INCLUDED: not for distribution until reviewed.</div>}
-      <main className="gv-stage gd-print-root">
-        <GuideRenderer guide={guide} format={format} showAdvocateNotes={showNotes} />
-      </main>
-      <p className="gv-foot no-print gd-muted">Share: <code>/guides/view?{paramsToQuery(params, { format })}</code></p>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div className="gv-toolbar no-print" role="toolbar" aria-label="Guide tools">
+          <Link to={builderLink} className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Series & builder</Link>
+          {visibleFormats.length > 0 && (
+            <div className="gv-tabs" role="tablist">
+              {visibleFormats.map(f => (
+                <button key={f.id} type="button" role="tab" id={`fmt-${f.id}`} aria-selected={format === f.id} className={`gv-tab ${format === f.id ? 'is-on' : ''}`} onClick={() => setFormat(f.id)}>
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="gv-actions">
+            {format === 'report' && guide.mode === 'guide' && (
+              <button type="button" className="gd-btn gd-btn--ghost" onClick={() => setShowNotes(s => !s)} title="Advocate's notes are never printed">
+                {showNotes ? <EyeOff size={16} /> : <Eye size={16} />} Notes
+              </button>
+            )}
+            <button type="button" id="guide-print" className="gd-btn gd-btn--ghost" onClick={() => window.print()}><Printer size={16} /> Print / PDF</button>
+            <button type="button" id="guide-copy-link" className="gd-btn gd-btn--ghost" onClick={copyLink}>{copied ? <Check size={16} /> : <Link2 size={16} />} {copied ? 'Copied' : 'Link'}</button>
+            <button type="button" id="guide-to-report" className="gd-btn gd-btn--ghost" onClick={sendToReport}>{added ? <Check size={16} /> : <FilePlus2 size={16} />} {added ? 'Added' : 'To Report'}</button>
+            <button
+              type="button"
+              className="gd-btn gd-btn--ghost"
+              onClick={toggleLoom}
+              aria-label={loomPaused ? "Play background animation" : "Pause background animation"}
+              title={loomPaused ? "Play background animation" : "Pause background animation"}
+            >
+              {loomPaused ? <Play size={16} /> : <Pause size={16} />} {loomPaused ? 'Play Loom' : 'Pause Loom'}
+            </button>
+            <button type="button" id="guide-ask-assistant" className="gd-btn gd-btn--primary" onClick={askAssistant}><Sparkles size={16} /> Ask Assistant</button>
+          </div>
+        </div>
+        {includeDrafts && <div className="gd-draft-banner">DRAFT MODULES INCLUDED: not for distribution until reviewed.</div>}
+        <main className="gv-stage gd-print-root">
+          <GuideRenderer guide={guide} format={format} showAdvocateNotes={showNotes} />
+        </main>
+        <p className="gv-foot no-print gd-muted">Share: <code>/guides/view?{paramsToQuery(params, { format })}</code></p>
+      </div>
     </div>
   );
 }

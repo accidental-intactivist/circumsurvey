@@ -28,15 +28,15 @@ import CompareBySelector from "../components/CompareBySelector";
 import BreadcrumbDropdown from "../components/BreadcrumbDropdown";
 
 const SECTION_ITEMS = [
-  { id: "Demographics", label: "Demographics", href: "#/index?section=Demographics" },
-  { id: "Culture & Perspectives", label: "Culture & Perspectives", href: "#/index?section=Culture%20%26%20Perspectives" },
-  { id: "Anatomy & Appearance", label: "Anatomy & Appearance", href: "#/index?section=Anatomy%20%26%20Appearance" },
-  { id: "Sexual Experience", label: "Sexual Experience", href: "#/index?section=Sexual%20Experience" },
-  { id: "Experience", label: "Experience", href: "#/index?section=Experience" },
-  { id: "Pride & Regret", label: "Pride & Resentment", href: "#/index?section=Pride%20%26%20Regret" },
-  { id: "Parents & Guardians", label: "Parents & Guardians", href: "#/index?section=Parents%20%26%20Guardians" },
-  { id: "Partners & Intimacy", label: "Partners & Intimacy", href: "#/index?section=Partners%20%26%20Intimacy" },
-  { id: "Medical Professionals", label: "Medical Professionals", href: "#/index?section=Medical%20Professionals" },
+  { id: "Demographics", label: "Demographics", href: "/explore?section=Demographics" },
+  { id: "Culture & Perspectives", label: "Culture & Perspectives", href: "/explore?section=Culture%20%26%20Perspectives" },
+  { id: "Anatomy & Appearance", label: "Anatomy & Appearance", href: "/explore?section=Anatomy%20%26%20Appearance" },
+  { id: "Sexual Experience", label: "Sexual Experience", href: "/explore?section=Sexual%20Experience" },
+  { id: "Experience", label: "Experience", href: "/explore?section=Experience" },
+  { id: "Pride & Regret", label: "Pride & Resentment", href: "/explore?section=Pride%20%26%20Regret" },
+  { id: "Parents & Guardians", label: "Parents & Guardians", href: "/explore?section=Parents%20%26%20Guardians" },
+  { id: "Partners & Intimacy", label: "Partners & Intimacy", href: "/explore?section=Partners%20%26%20Intimacy" },
+  { id: "Medical Professionals", label: "Medical Professionals", href: "/explore?section=Medical%20Professionals" },
 ];
 
 export default function QuestionPage({ routerState, navigate, updateState, setCustomMeta, setExhibitContext }) {
@@ -328,7 +328,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                 borderBottom: `1px solid ${C.ghost}`,
                 paddingBottom: "0.6rem",
               }}>
-                <a href="#/" style={{
+                <a href="/explore" style={{
                   fontFamily: FONT.condensed,
                   fontSize: "0.72rem",
                   letterSpacing: "0.08em",
@@ -453,7 +453,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       return matches.map(q => (
                         <a
                           key={q.id}
-                          href={`#/q/${q.id}`}
+                          href={`/explore/q/${q.id}`}
                           style={{
                             display: "block",
                             padding: "0.6rem 0.8rem",
@@ -500,7 +500,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                   ].map(rec => (
                     <a
                       key={rec.id}
-                      href={`#/q/${rec.id}`}
+                      href={`/explore/q/${rec.id}`}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -687,7 +687,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     letterSpacing: "0.08em",
                     textTransform: "uppercase",
                   }}>
-                    <a href="#/" className="no-capture no-print" style={{
+                    <a href="/explore" className="no-capture no-print" style={{
                       color: C.muted,
                       transition: "color 0.15s",
                       textDecoration: "none",
@@ -703,7 +703,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                       
                       const dynamicSectionItems = [...SECTION_ITEMS];
                       if (!dynamicSectionItems.some(item => item.id === sectionStr)) {
-                        dynamicSectionItems.push({ id: sectionStr, label: sectionStr, href: `#/index?section=${encodeURIComponent(sectionStr)}` });
+                        dynamicSectionItems.push({ id: sectionStr, label: sectionStr, href: `/explore?section=${encodeURIComponent(sectionStr)}` });
                       }
 
                       return (
@@ -734,7 +734,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                                     label: p.label,
                                     emoji: p.emoji,
                                     color: p.color,
-                                    href: `#/index?pathway=${p.id}`
+                                    href: `/explore?pathway=${p.id}`
                                   }))}
                                 />
                               </span>
@@ -849,7 +849,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     userSelect: "none",
                   }}>
                     {prevQ ? (
-                      <a href={`#/q/${prevQ.id}`} style={{
+                      <a href={`/explore/q/${prevQ.id}`} style={{
                         fontFamily: FONT.condensed,
                         textTransform: "uppercase",
                         letterSpacing: "0.15em",
@@ -868,7 +868,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
                     ) : <div />}
 
                     {nextQ ? (
-                      <a href={`#/q/${nextQ.id}`} style={{
+                      <a href={`/explore/q/${nextQ.id}`} style={{
                         fontFamily: FONT.condensed,
                         textTransform: "uppercase",
                         letterSpacing: "0.15em",
@@ -1025,7 +1025,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
             borderTop: `1px solid ${C.ghost}`
           }}>
             {prevQ ? (
-              <a href={`#/q/${prevQ.id}`} style={{
+              <a href={`/explore/q/${prevQ.id}`} style={{
                 fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.1em",
                 color: C.gold, fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.5rem"
               }}>
@@ -1034,7 +1034,7 @@ export default function QuestionPage({ routerState, navigate, updateState, setCu
             ) : <div />}
             
             {nextQ ? (
-              <a href={`#/q/${nextQ.id}`} style={{
+              <a href={`/explore/q/${nextQ.id}`} style={{
                 fontFamily: FONT.condensed, textTransform: "uppercase", letterSpacing: "0.1em",
                 color: C.gold, fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.5rem"
               }}>

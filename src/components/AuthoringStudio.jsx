@@ -151,7 +151,7 @@ export default function AuthoringStudio() {
             <X size={20} />
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--c-blue)', fontWeight: 'bold', marginBottom: '1rem', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <Sparkles size={18} /> Glenda's Feedback
+            <Sparkles size={18} /> Assistant Feedback
           </div>
           <div style={{ color: 'var(--c-textBright)', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontFamily: FONT.body }}>
             {coachingFeedback}

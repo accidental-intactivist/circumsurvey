@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, B
 import { Activity, Users, FileText, PieChart as PieChartIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThinkingSpirograph from '../components/ThinkingSpirograph';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 
 const COLORS = ['#d4a030', '#3b82f6', '#10b981', '#f43f5e', '#8b5cf6', '#f97316', '#64748b'];
 
@@ -52,8 +53,13 @@ export default function SurveyStatsDashboard() {
   if (!stats) return null;
 
   return (
-    <div style={{ background: 'var(--c-bg)', minHeight: '100vh', padding: '4rem 2rem', color: 'var(--c-text)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ background: 'var(--c-bg)', minHeight: '100vh', padding: '4rem 2rem', color: 'var(--c-text)', position: 'relative' }}>
+      {/* Background Underloom in Data Cyan */}
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
+        <LoomChoreography isInline={true} forceFormation="neural" opacity={1} themeColor="data" />
+      </div>
+
+      <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
         <header style={{ marginBottom: '3rem', borderBottom: '1px solid var(--c-ghost)', paddingBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>

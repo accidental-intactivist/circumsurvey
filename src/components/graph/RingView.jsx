@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { TYPE_GROUPS, GROUP_COLOR, STANCES, degreeOf, isCrossStance, nodeColor, edgeColor } from '../../utils/entityGraph';
+import { TYPE_GROUPS, GROUP_COLOR, STANCES, degreeOf, isCrossStance, nodeColor, edgeColor, getEntityAutonomy } from '../../utils/entityGraph';
 
 const GROUP_ORDER = TYPE_GROUPS.map(g => g.key);
 const GROUP_LABEL = Object.fromEntries(TYPE_GROUPS.map(g => [g.key, g.label]));
@@ -39,10 +39,16 @@ function layoutRing(graph, { R, labelSpace, base }, extraId, colorBy, crossOnly,
     chosen.push(graph.nodes.get(extraId));
   }
 
-  // Arcs by type. Inside an arc: grouped by stance (stance mode) then alphabetical.
-  const inArc = (a, b) =>
-    (colorBy === 'stance' ? STANCE_ORDER.indexOf(a.stance) - STANCE_ORDER.indexOf(b.stance) : 0) ||
-    a.name.localeCompare(b.name);
+  // Arcs by type. Inside an arc: grouped by autonomy/stance then alphabetical.
+  const inArc = (a, b) => {
+    if (colorBy === 'rubric' || colorBy === 'grade') {
+      const scoreA = (a.autonomy || getEntityAutonomy(a)).score;
+      const scoreB = (b.autonomy || getEntityAutonomy(b)).score;
+      return scoreB - scoreA || a.name.localeCompare(b.name);
+    }
+    return (colorBy === 'stance' ? STANCE_ORDER.indexOf(a.stance) - STANCE_ORDER.indexOf(b.stance) : 0) ||
+      a.name.localeCompare(b.name);
+  };
   const grouped = GROUP_ORDER.map(key => ({
     key,
     nodes: chosen.filter(n => n.group === key).sort(inArc),

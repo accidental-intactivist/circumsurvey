@@ -1,0 +1,114 @@
+- - - - - - - - - - - - - - - - - - - - -
+              MEMORANDUM
+              -12 February 1971
+              TO:
+              FROM:
+              SUBJECT:    Comments on U.S. Patent 3,523,538 by.Kunio Shimizu
+              The device  as detailecl in Figure Z on sheet 1 of the pate-,it appears to be a
+              working system, capable of delivering a non lethal (to normal healthy subjects)
+        2      shock to the victim.  However, there are practical considerations which could
+              seriously degrade the device's effectiveness.
+              It is questionable exactly how far the projectile would travel since any kinetic
+              energy imparted the projectile would be partly expended unwinding the wire
+              from the device against the friction of air and the take up motor.  The wire
+              would have to be extremely light and flexible, yet strong.  This might result 2in
+              excessive electrical resistance, however.  Additional energy from the projectile
+              would be required to overcome the restraining  spring tension holding the needle
+              protector in the safe position and to compress the clothing of the victim.
+              Adequate tenacity of the projectile for proper needle insertion does not appear
+              to be insured by the "spearhead- shaped projections" on the projectile's ogive.
+              The spear2s might penetrate and slightly compress the clothing but will not
+              insure that the needles would stay implanted in the victim.
+              To circumvent the possibility that the victim is wearing an overcoat, suit coat,
+              shirt and undershirt', the needles would need to be extended about 2 cm in the
+              protracted position, These long needles, when used on a victim in light attire,
+              would be sufficient to provide lethal penetration or put 9an eye out.
+              The possibility of serious infection from contaminated needles, sk-"n or clothing
+              cannot be overlooked.  Sterilizing the needles or coating them with an antiseptic
+              gel,or paste would not preclude the possibility of infection.
+                               -7e
+                                      77
+
+                The bore of the pistol (Figure 1) appears to be about I- 1.,5 cm in diameter.
+                Scaling the'bore diameter to the diameter of the projectile would indicate that
+                the spacing of the needles could be no more than 0. 8- 1. 3 cm.  The paralyzing
+                effects on the victim would not extend beyond 1 cm radius from the axis of the
+                needles.  Therefore, the effective area of paralysis would 2resemble an elliptic
+                paraboloid with the approximate dimensions of depth 3 cm, major axis 2. 3 cm
+                and minor axis I cm.
+                The "false epilepsy" referred to in the patent, probably is the result of Mr.
+                himizu's limited research and confusion on the sub ect of electroshock therapy.
+                s
+                Needless to say electrodes must be correctly positioned on the head before
+                convulsions can be produced..  His 2device cannot do this.
+              -The basic resemblance of the device to a conventional pistol might cause an
+                armed, nervous assailant into a defensive position, possibly injuring the person
+                with the shocker gun.
+                Conclusions:
+                The device invented by Mr. Shimizu will not supply incapacitating energy to
+                disarm or disable a man.
+                Disadvantages of the device are:
+                   1.  Possibility of5 bfinding, bodily harming or killing the victim.
+                   2.  Limited. range due to friction, air drag and energy required to arm
+                      projectile.
+                   3. Incomplete incapacitation of victim due to low volume of tissue subject
+                      to paralysis.
+                   4. Basic resemblance to a conventional pistol.
+
+                                                                                                        p
+                                                                                                                                               
+3,523,539
+                                                    1721       inventor             Kunio Sliir-iizu
+               2                                                                                                     -ayi, Nlinaint,           
+2,805,067              9/1957         Ryan      ..................... . .. .  .                     43/6X
+                                                                                    33- 2. 1 -chottic. Asa,
+                                                                           2                                                                   
+2.966,621              1211960        Voll    .................. . . . .....  .
+                                                                                    Sur inamiau. Tok) o, J 2 pi n                              
+23112(E)X
+                           2                                                                                                                   
+113.766            4/1871         Havilind      et      at ............
+                                                                                                                                               
+124115
+                      2                              1:11       Appi. No.            S99,4-46                                                  
+2,033.397              3/1936         Richman         . ....... . ...... .  ...               128/303.ISX
+                                                                                    Dec. 6, 1966                                               
+2.516.8S2              8/19250         Kalom       ......
+                                                    1221       Filed                                                                           
+... . ..... . ......  .  129/303.      1      r.X
+                                                    it5l       Patented             Aur. 11. 1970                                              
+2 2.763.935              911956         Whaley et at         . ........... .  ...               123/303.18X
+                                                    (321       Priority             Dec. 6.1963; Feb. 10, 1966;,%12r. 5, 1966
+                                                                                                                                               
+3.027.333              3/1962         Friedman          ...... .   ..........   .                1281417X
+                                                                                    Japan
+                                                    (331
+                                                                                                                                               
+FOREIGN PATENTS
+                                                    [311                            40174,635; 41/7,409; 41/13,713
+                                                                                                                                               
+476,508            1211952        Italy             .......................                  231/2(E)
+                                                    1541       ARREST DEVICE                                                          2        
+407,648            3/1934         Great            Britain ............                          43/6
+                                                               9 CLsims, 6 Dra% in.- Figs.
+                                                    [521       U.S.                                                                            
+Primary E-rantiner- Richard A. Caudet
+       2                                                                                                                .  .  .  ......        
+128,'404,
+                                                                                                                                    
+124/15,43/6                   Assi-itant Era;niner- Channing L. Pace
+                                                                                                            2                                  
+Attorney- Eliot S. Gerber
+                                                    1511       Int.                                      .    ......    .............. A61m    
+21/00,
+                                                                                                                                       
+A6ld7/00.A6lm37/00
+                                                    12501       Field atscarch         .............. . ...........  .  ...............        
+4211,84;         ABSTRACT:      A      device      for      subduin-,      a      criminal      includes      a       pro.
+                                                                         102/46.92.1.92.4-.124/15;                   128/303.13,               
+303.18
+                                                            2                                                                                  
+I         jectile       having        two        needle        electrodes        which        have        different
+                                                                                404.4.17;      273/106.5(D);       231/2E;       4316;      
+12413.       15       potentials      and      2fC      2dapted      to 2     pierce       the       skin.       means       for
+                                                    1561                            

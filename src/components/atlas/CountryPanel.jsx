@@ -128,7 +128,7 @@ export default function CountryPanel({ geo, name, metric, observations, regionOb
       )}
 
       <div className="at-actions">
-        <button type="button" className="gd-btn gd-btn--primary" onClick={() => onAsk(name, latest)} id="atlas-ask-glenda"><Sparkles size={15} /> Ask Glenda</button>
+        <button type="button" className="gd-btn gd-btn--primary" onClick={() => onAsk(name, latest)} id="atlas-ask-assistant"><Sparkles size={15} /> Ask Assistant</button>
         {latest && (
           <button type="button" className="gd-btn" onClick={() => onAddToReport(observationToMarkdown(latest, sources.get(latest.source_id)), sources.get(latest.source_id))} id="atlas-add-report">
             <FilePlus2 size={15} /> Add to Report

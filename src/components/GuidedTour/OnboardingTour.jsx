@@ -3,7 +3,7 @@ import { Joyride, STATUS } from 'react-joyride';
 import { useTelemetry } from '../../explore/lib/telemetry';
 import { Info } from 'lucide-react';
 
-const CustomBeacon = React.forwardRef((props, ref) => {
+const CustomBeacon = React.forwardRef(({ continuous: _c, isLastStep: _ils, index: _idx, step: _st, size: _sz, ...domProps }, ref) => {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -14,7 +14,7 @@ const CustomBeacon = React.forwardRef((props, ref) => {
   return (
     <div
       ref={ref}
-      {...props}
+      {...domProps}
       style={{
         display: 'flex',
         alignItems: 'center',

@@ -140,17 +140,24 @@ export default function CitationWebPage() {
     if (center) centerOnNode(id, needsRelax ? 1400 : 0);
   }, [graph, archiveOnly, minCitations, centerOnNode]);
 
-  // Shareable focus: /citations?focus=<nodeId>
+  // Shareable focus: /citations?focus=<nodeId> or ?doc=<docId>
   useEffect(() => {
     if (!graph) return;
-    const f = searchParams.get('focus');
-    if (f && graph.nodes.has(f)) selectNode(f, { center: true });
+    const f = searchParams.get('focus') || searchParams.get('doc');
+    if (!f) return;
+    if (graph.nodes.has(f)) {
+      selectNode(f, { center: true });
+    } else {
+      const foundNode = [...graph.nodes.values()].find(n => n.doc?.id === f || n.id === f || n.label?.toLowerCase() === f.toLowerCase());
+      if (foundNode) selectNode(foundNode.id, { center: true });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graph]);
 
   useEffect(() => {
     const next = new URLSearchParams(searchParams);
     if (selectedId) next.set('focus', selectedId); else next.delete('focus');
+    if (next.has('doc')) next.delete('doc');
     if (next.toString() !== searchParams.toString()) setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
@@ -228,7 +235,7 @@ export default function CitationWebPage() {
     ? [...selected.cites].map(id => graph.nodes.get(id)).filter(Boolean).sort((a, b) => b.citedBy.size - a.citedBy.size).slice(0, 40)
     : []), [selected, graph]);
 
-  const askGlenda = () => {
+  const askAssistant = () => {
     if (!selected) return;
     const name = selected.title || selected.label;
     if (selected.kind === 'archive') {
@@ -381,7 +388,7 @@ export default function CitationWebPage() {
 
               <div className="cw-actions">
                 {(selected.citedBy.size > 0 || selected.kind === 'archive') && (
-                  <button className="cw-btn is-primary" onClick={askGlenda}><Sparkles size={14} /> Ask Glenda</button>
+                  <button className="cw-btn is-primary" onClick={askAssistant}><Sparkles size={14} /> Ask Assistant</button>
                 )}
                 {selected.kind === 'archive' && selected.doc && (
                   <Link className="cw-btn" to={resolveItemRoute(selected.doc, selected.meta).path}><BookOpen size={14} /> Open document</Link>

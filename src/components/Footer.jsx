@@ -84,27 +84,27 @@ export default function Footer() {
           <h4 style={{ color: 'var(--c-textBright)', marginBottom: '1.5rem', letterSpacing: '0.05em', fontFamily: 'var(--f-condensed)' }}>THE INQUIRY (SURVEY)</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <li>
-              <Link to="/explore#/" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore" style={LinkStyle} className="lux-hover-bright">
                 Master Index & Exhibits
               </Link>
             </li>
             <li>
-              <Link to="/explore#/report" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/report" style={LinkStyle} className="lux-hover-bright">
                 <BarChart2 size={16} /> Survey Paste-Up Desk
               </Link>
             </li>
             <li>
-              <Link to="/explore#/demographics" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/demographics" style={LinkStyle} className="lux-hover-bright">
                 Demographic Profile
               </Link>
             </li>
             <li>
-              <Link to="/explore#/methodology" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/methodology" style={LinkStyle} className="lux-hover-bright">
                 Survey Methodology
               </Link>
             </li>
             <li>
-              <Link to="/explore#/about" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/about" style={LinkStyle} className="lux-hover-bright">
                 About the Project
               </Link>
             </li>
@@ -121,12 +121,12 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/explore#/faq" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/faq" style={LinkStyle} className="lux-hover-bright">
                 FAQ
               </Link>
             </li>
             <li>
-              <Link to="/explore#/resources" style={LinkStyle} className="lux-hover-bright">
+              <Link to="/explore/resources" style={LinkStyle} className="lux-hover-bright">
                 Downloads & External
               </Link>
             </li>

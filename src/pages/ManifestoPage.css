@@ -1,0 +1,921 @@
+/* ManifestoPage.css - Interactive Archival Manifesto Reader Styles */
+
+.manifesto-root {
+  min-height: 100vh;
+  background: #08080c;
+  color: var(--c-textBright, #f0f0f5);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Sticky Nav Rail */
+.manifesto-nav-rail {
+  position: sticky;
+  top: 70px;
+  z-index: 50;
+  background: rgba(10, 10, 14, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(212, 160, 48, 0.2);
+  transition: all 0.3s ease;
+}
+
+.manifesto-progress-bar {
+  height: 3px;
+  background: linear-gradient(90deg, #d4a030 0%, #facc15 50%, #eab308 100%);
+  transition: width 0.15s ease-out;
+}
+
+.manifesto-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.manifesto-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.manifesto-drawer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #eee;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.manifesto-drawer-btn:hover {
+  background: rgba(212, 160, 48, 0.15);
+  border-color: rgba(212, 160, 48, 0.4);
+  color: #facc15;
+}
+
+.manifesto-nav-title-box {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.manifesto-nav-chapter-badge {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #facc15;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.manifesto-nav-chapter-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.manifesto-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.manifesto-mode-switch {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.manifesto-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #888;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manifesto-mode-btn.active {
+  background: rgba(212, 160, 48, 0.22);
+  color: #facc15;
+  font-weight: 700;
+}
+
+.manifesto-nav-arrow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.manifesto-nav-arrow-btn:hover:not(:disabled) {
+  background: rgba(212, 160, 48, 0.2);
+  border-color: rgba(212, 160, 48, 0.35);
+  color: #fff;
+}
+
+.manifesto-nav-arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Chapter Hero Banner */
+.manifesto-hero-card {
+  padding: 2.5rem 2.5rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(22, 22, 28, 0.96) 0%, rgba(12, 12, 16, 0.98) 100%);
+  border: 1px solid rgba(212, 160, 48, 0.25);
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+
+.manifesto-hero-ambient-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+.manifesto-hero-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.manifesto-hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.75rem 0;
+}
+
+.manifesto-hero-subtitle {
+  font-size: clamp(1.15rem, 2.5vw, 1.6rem);
+  color: rgba(250, 204, 21, 0.88);
+  font-weight: 300;
+  line-height: 1.4;
+  margin: 0 0 1.75rem 0;
+}
+
+.manifesto-thesis-card {
+  padding: 1.35rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(212, 160, 48, 0.04);
+  border-left: 3px solid #d4a030;
+  border-top: 1px solid rgba(212, 160, 48, 0.15);
+  border-right: 1px solid rgba(212, 160, 48, 0.15);
+  border-bottom: 1px solid rgba(212, 160, 48, 0.15);
+  margin-top: 1.25rem;
+}
+
+.manifesto-thesis-label {
+  font-size: 0.72rem;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #facc15;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.manifesto-thesis-text {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #ddd;
+  line-height: 1.7;
+  font-family: var(--f-display, 'Playfair Display', serif);
+}
+
+/* Prose and Sections */
+.manifesto-content-body {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.manifesto-section-block {
+  margin-bottom: 3.5rem;
+}
+
+.manifesto-section-heading {
+  font-size: clamp(1.4rem, 3vw, 1.95rem);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin: 2.25rem 0 1.25rem 0;
+}
+
+.manifesto-paragraph {
+  font-size: 1.1rem;
+  line-height: 1.85;
+  color: rgba(240, 240, 245, 0.88);
+  margin-bottom: 1.4rem;
+  text-align: justify;
+}
+
+.manifesto-subheading-lead {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #facc15;
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+/* Archival Evidence Card */
+.manifesto-evidence-card {
+  margin: 2.5rem 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(20, 20, 26, 0.96) 0%, rgba(12, 12, 16, 0.99) 100%);
+  border: 1px solid rgba(212, 160, 48, 0.26);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.manifesto-evidence-card:hover {
+  border-color: rgba(212, 160, 48, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 160, 48, 0.1);
+}
+
+.manifesto-evidence-inner {
+  padding: 1.6rem 1.85rem;
+  position: relative;
+  z-index: 2;
+}
+
+.manifesto-evidence-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.manifesto-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(212, 160, 48, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(212, 160, 48, 0.3);
+}
+
+.manifesto-evidence-accession {
+  font-size: 0.72rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #777;
+}
+
+.manifesto-evidence-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+  margin: 0 0 0.5rem 0;
+}
+
+.manifesto-evidence-provenance {
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #888;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.manifesto-evidence-quote {
+  padding: 0.85rem 1.15rem;
+  border-left: 2px solid #d4a030;
+  background: linear-gradient(90deg, rgba(212, 160, 48, 0.07) 0%, transparent 100%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  font-style: italic;
+  color: #eee;
+  margin: 1rem 0;
+}
+
+.manifesto-evidence-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.85rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.manifesto-evidence-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #facc15;
+  background: rgba(212, 160, 48, 0.12);
+  border: 1px solid rgba(212, 160, 48, 0.3);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manifesto-evidence-action-btn:hover {
+  background: rgba(212, 160, 48, 0.25);
+  border-color: rgba(212, 160, 48, 0.55);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(212, 160, 48, 0.2);
+}
+
+/* Citations Drawer / Modal */
+.manifesto-drawer-overlay {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+.manifesto-drawer-panel {
+  width: 100%;
+  max-width: 480px;
+  background: #0d0d12;
+  border-right: 1px solid rgba(212, 160, 48, 0.25);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.9);
+  animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .manifesto-hero-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .manifesto-hero-title {
+    font-size: 1.95rem;
+  }
+  .manifesto-paragraph {
+    font-size: 1rem;
+    text-align: left;
+  }
+  .manifesto-nav-chapter-title {
+    max-width: 180px;
+  }
+}
+
+/* ==========================================================
+   MANIFESTO ENTRY PORTAL & CURATED SUBJECT CORRIDOR STYLES
+   ========================================================== */
+
+.manifesto-portal-root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Masthead Sub-Bar */
+.manifesto-portal-masthead-bar {
+  position: sticky;
+  top: 70px;
+  z-index: 40;
+  background: rgba(10, 10, 14, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(212, 160, 48, 0.2);
+  padding: 0.6rem 1.5rem;
+}
+
+.manifesto-portal-masthead-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.manifesto-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Hero Section */
+.manifesto-portal-hero {
+  padding: 4rem 1.5rem 3rem 1.5rem;
+  position: relative;
+  text-align: center;
+}
+
+.manifesto-portal-hero-container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.manifesto-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 100px;
+  background: rgba(212, 160, 48, 0.12);
+  border: 1px solid rgba(212, 160, 48, 0.35);
+  color: #facc15;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.manifesto-eyebrow-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #facc15;
+  box-shadow: 0 0 8px #facc15;
+}
+
+.manifesto-portal-main-title {
+  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.12;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+
+.manifesto-portal-sub-title {
+  font-size: clamp(1.2rem, 2.8vw, 1.85rem);
+  font-weight: 400;
+  color: #d4a030;
+  margin: 0 0 1.25rem 0;
+  letter-spacing: -0.01em;
+}
+
+.manifesto-portal-author-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #999;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.manifesto-portal-lead-text {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 820px;
+  margin: 0 auto 2.5rem auto;
+}
+
+/* Metric Highlights */
+.manifesto-portal-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 880px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.manifesto-metric-box {
+  background: rgba(18, 18, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.manifesto-metric-val {
+  font-family: var(--f-display, 'Playfair Display', serif);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #facc15;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.manifesto-metric-lbl {
+  font-size: 0.72rem;
+  color: #888;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* CTA Row */
+.manifesto-portal-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.manifesto-portal-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.manifesto-portal-hero-btn.primary {
+  background: linear-gradient(135deg, #d4a030, #eab308);
+  color: #050508;
+  border: 1px solid #facc15;
+  box-shadow: 0 6px 20px rgba(212, 160, 48, 0.35);
+}
+
+.manifesto-portal-hero-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(212, 160, 48, 0.5);
+  color: #000;
+}
+
+.manifesto-portal-hero-btn.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.manifesto-portal-hero-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.manifesto-portal-hero-btn.tertiary {
+  background: rgba(250, 204, 21, 0.08);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+}
+
+/* Featured Concept Card (Figure I.i) */
+.manifesto-featured-concept-section {
+  padding: 2rem 0 3.5rem 0;
+  scroll-margin-top: 130px;
+}
+
+.manifesto-section-one-lead-reader {
+  scroll-margin-top: 130px;
+}
+
+.manifesto-concept-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 2.5rem;
+  background: linear-gradient(180deg, rgba(24, 24, 32, 0.85) 0%, rgba(14, 14, 20, 0.95) 100%);
+  border: 1px solid rgba(212, 160, 48, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.manifesto-concept-card-glow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(212, 160, 48, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* Browser Section */
+.manifesto-browser-section {
+  padding: 3rem 0 5rem 0;
+  scroll-margin-top: 130px;
+}
+
+.manifesto-track-pills-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.manifesto-track-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 100px;
+  border: 1px solid;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manifesto-track-chip:hover {
+  transform: translateY(-1px);
+}
+
+/* Section Cards Grid */
+.manifesto-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
+}
+
+.manifesto-section-card {
+  border-radius: 14px;
+  padding: 1.75rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.manifesto-section-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+}
+
+.manifesto-card-top-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.manifesto-card-number-badge {
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+}
+
+.manifesto-card-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.2;
+}
+
+.manifesto-card-subtitle {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #bbb;
+  margin: 0 0 0.85rem 0;
+  line-height: 1.35;
+}
+
+.manifesto-card-blurb {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.55;
+  margin: 0 0 1.25rem 0;
+  flex: 1;
+}
+
+.manifesto-card-subsections-box {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.manifesto-card-subsections-title {
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.45rem;
+}
+
+.manifesto-card-subsections-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.manifesto-sub-chip {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ddd;
+}
+
+.manifesto-sub-chip.more {
+  background: rgba(212, 160, 48, 0.12);
+  color: #facc15;
+}
+
+.manifesto-card-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.manifesto-card-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manifesto-card-action-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* Compendium Highlights Banner */
+.manifesto-compendium-banner-section {
+  padding-bottom: 5rem;
+}
+
+.manifesto-compendium-banner-card {
+  padding: 2.5rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(14, 14, 20, 0.98) 100%);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  justifyContent: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+@media (max-width: 860px) {
+  .manifesto-portal-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .manifesto-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── TWO-COLUMN INTERACTIVE GUIDE LAYOUT ── */
+.manifesto-guide-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 2.5rem;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 6rem 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.manifesto-toc-sidebar {
+  position: sticky;
+  top: 130px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.manifesto-toc-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.manifesto-toc-sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+.manifesto-toc-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(212, 160, 48, 0.3);
+  border-radius: 4px;
+}
+.manifesto-toc-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 160, 48, 0.6);
+}
+
+.manifesto-main-stage {
+  min-width: 0;
+  max-width: 880px;
+}
+
+@media (max-width: 1040px) {
+  .manifesto-guide-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem 1rem 5rem 1rem;
+  }
+  .manifesto-toc-sidebar {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+

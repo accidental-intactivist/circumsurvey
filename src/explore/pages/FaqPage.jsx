@@ -134,7 +134,7 @@ export default function FaqPage() {
       },
       {
         q: "Where can I download the Manifesto?",
-        a: "A full, clean PDF version of 'The Accidental Intactivist Manifesto' is available for download, sharing, and archiving. It is also available in full on Substack (The Accidental Intactivist's Guide) and Medium."
+        a: "A full, clean PDF version of 'The Accidental Intactivist\'s Manifesto' is available for download, sharing, and archiving. It is also available in full on Substack (The Accidental Intactivist's Guide) and Medium."
       }
     ],
     takingSurvey: [

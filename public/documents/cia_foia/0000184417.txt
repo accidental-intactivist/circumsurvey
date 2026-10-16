@@ -1,0 +1,135 @@
+RESEARCH ON SIDE-TONE DELAY
+             AS AN INTERROGATION DEVICE
+                                By
+                            May, 1953
+
+                                   Final Report
+            RESEARCH ON SIDE-TONE DELAY AS AN INTERROGATION DEVICE
+                                       by
+                                    May, 1953
+                      ContractPeriod: Junel, 1952toMay3l, 1953
+
+                                              I N D E X
+                                                                                  P age
+                   Aims and Purpose of this Research                                 I
+             II.   How the Side-Tone Delay Was Produced                              2
+             III.  Effect of the Side-Tone Delay on a Subject                        3
+             IV.   The Gainina of Confqssions Dependent Upon Two Factors   2          4
+             V.    Procedures                                                        5
+             VI.   Side-Tone Delay Instrument Is Not a Lie-Detector                 14
+             VII.  The Testing of Criminal Suspects                                 is
+             VIII. Examples of Experimental Cases                                   19
+             IX.   Instrumentation                                                  28
+             X.    Conclusions           5                                           34
+             XI.   Bibliography                                                     39
+
+                RESEARCH ON SIDE-TONE DELAY AS AN INTERROGATION DEVICE
+           I.  Aims and Purpose of this Research.
+                   The primary aim and purpose of this project was to obtain a successful
+               interrogation device from the effects of side-tone delay, toaether with an
+               appropriate procedure for its use with a minimum number of attachments.
+                   The secondary aim, developed in this laboratory, was to obtain more
+               e2asily interpreted polygraph records by use of side-tone delay in con-
+               junction with the polygraph.2
+             Throughout the report this phenomenon is termed "Side-Tone Delay" and
+           for brevity the initials STD are used.  Previous investigators in this field have
+           used other terms to denote this same phenomenon.  For example, Professor
+           John W. Black, Ohio State University, terms it "Delayed Side-Tone, 11 while
+           Professor Grant Fairb5anks, University of Illinois, has referred to it as
+           "Delayed Auditory Feedback.
+           2 The,,-.-, - Polygraph was utilized for these experiments. It provides for
+           the recording of five different responses -- blood pressure-pulse, respiration,
+           galvanic skin reflex, arm movements, and thigh-leg movements.  This poly-
+           graph is the only instrument equipped with arm and leg movement recorders.
+
+                How the Side-Tone Delay Was Produced.
+                    Basically the side-tone delay phenomenon was produced in this
+                laboratory by the following method:
+                        The subject's speech was picked up by a microphone, which
+                    was connected to a tape recorder.  At the recording head of
+                    this instrument the speech was recorded on a moving tape, and
+                    then this speech was reproduced when that p2art of the tape -
+                    reached the playback head of the instrument.  This. reproduce
+                    speech was then amplified by the amplifier which, in turn, was
+                    connected to the subject's earphones.
+                    Thus, the subject hears through his earphones what he has previously
+                said.  How later he hears his speech is dependent upon two equally im-
+                portant factors: first, the distance the recording tape must travel2 from
+                the recording head to the playback head, and second, the speed at which
+                the recording tape is traveling.
+                    That is, the amount of delay depends upon the time it takes for the
+                moving tape to go from the recording head to the playback head.  If this
+                interval of time is .20 seconds, the delay is . 20 seconds.  Naturally, if
+                either the distance between these two heads is varied or if the speed of2
+                the tape is changed, the amount of delay will also correspondinaly change.
+                                                   2
+
+          III. Effect of the Side-Tone Delay on a Subject.
+                  It was first believed that the general effect of delaying the side-tone
+               on a subject was to retard his speech and cause a variance in his vocal
+               intensity.  This belief was based upon the findings of previous experimenters.3
+               It was found at the    laboratory that this phenomenon only occasionally
+               occurred. It is thought by the investigators that the amount 2of difficulty
+               experienced by the subject might be based upon- his education, intelligence,
+               social consciousness, or a combination of these three factors.  In most
+               cases it appeared that the more education and higher intelligence a sub-
+               ject had, the areater difficulty he experienced with the side-tone delay.
+                           C2
+           3  For example, Black, John W.,  "The Effect of Delayed Side-Tone upon
+           Vo2cal Rate and Intensity, " THE JOURNAL OF SPEECH AND HEARING DIS-
+           ORDERS, 16, 1951, 56-60; Lee, B. S., "Some Effects of Side-Tone Delay,
+           JOURNAL OF THE ACOUSTICAL SOCIETY OF AMERICA, 22, 1950, 639-640;
+           and'4ee, B. S., "Effects of Delayed Speech Feedback, 11 JOURNAL OF THE
+           ACOUSTICAL SOCIETY OF AMERICA, 22, 1950, 824-8Z6.
+                                                  3
+
+          IV. The GaininoF of Confessions Dependent upon Two Factors.
+                   The use of the STD instrument in obtaining  confessions,  the  primary
+               aim of this project, is mainly dependent upon two things -- the interrogator
+               and his procedure. No instrument or device can even partially fulfill  the
+               basic requirement of having a good interrogator, and he must have suitable
+               procedures to use with the STD instrument.2
+                   The interroaator is the man in charge of the situation, and how he
+               performs will determine whether the interroaation is a success or a failure.
+               From this, one can logically conclude that the interrogator who is  better
+               qualified and trained will gain more confessions and information than  the
+               interrogator who is unqualified or who is untrained.  This is true regardless
+               of whether the STD instrument is or is 2not utilized during an interrogation.
+                   Therefore, the better interrogator will obtain more  confessions  with
+               the STD instrument than the poor interrogator.  The STD instrument is
+               certainly no panacea for the poor interrogator.  In fact, the poor interrogator
+               will not only obtain little information through the use of the instrument, he
+               possibly will hinder the investigation.
+                                      5             4
+
+          V.  Procedures.
+                   Because the interrogator must have suitable procedures to use with the
+               STD instrument, the investigators devoted the first five months of this
+               project to developing and preliminarily experimenting with various interro-
+               gational procedures and techniques.  A great number of criminal suspects
+               were experimented with during these months in order to determine which
+               procedures migh2t be the most effective.  Conclusions were reached as to
+               their practicability, and the following procedures were deemed worthy for
+               further experimentation.  These are now listed and explained alona with a
+               statement as to their value.
+                   It was decided that regardless of the type of procedure used, the subject
+               should be instructed before the use of the STD as to what he would experience
+               if he was not tellinc2, the truth. The actual wording of this instruction, of course,
+               was based upon the subject's intelligence, but the following is a sample
+               instruction.-
+                        "This instrument is a very sensitive device, and when you lie about
+                   a fact you have mental conflicts regarding that lie.  These conflicts are
+                   indicated in your voice, and this instrument amplifies these conflicts
+                   and they are heard2 as actual stuttering and hesitations. ,4
+           4 When the subject asked why he even stuttered on the irrelevant questions
+          (those questions not pertaining to the crime and to which the subject is telling the
+          truth, e. g. , "Where were you born?"), the examiner replied:
+                        "You are not really thinking about where you were born and about
+                   those other meaningless questions.  You are waiting for the crime
+                   question1s to be asked, and you are worried about whether the instrument
+                   will show you are telling the truth or show that you are lying.  That's
+                   why you stutter on these meaningless questions.
+                                                   5
+
+               A.  Use of the Polyaraph and Then the Side-Tone Delay Instrument.
+      

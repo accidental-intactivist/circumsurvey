@@ -51,6 +51,7 @@ beforeAll(() => {
     moveTo: vi.fn(),
     lineTo: vi.fn(),
     arc: vi.fn(),
+    fill: vi.fn(),
     stroke: vi.fn(),
     restore: vi.fn(),
     drawImage: vi.fn(),
@@ -75,10 +76,14 @@ vi.mock('react-pdf', () => ({
   pdfjs: { GlobalWorkerOptions: { workerSrc: '' } }
 }));
 
-vi.mock('react-joyride', () => ({
-  default: () => <div data-testid="joyride" />,
-  STATUS: { FINISHED: 'finished', SKIPPED: 'skipped' }
-}));
+vi.mock('react-joyride', () => {
+  const JoyrideMock = () => <div data-testid="joyride" />;
+  return {
+    default: JoyrideMock,
+    Joyride: JoyrideMock,
+    STATUS: { FINISHED: 'finished', SKIPPED: 'skipped' }
+  };
+});
 
 vi.mock('pdfjs-dist/build/pdf.worker.entry', () => ({}));
 

@@ -120,6 +120,7 @@ export default function BentoBox() {
         color="var(--c-goldBright)" 
         span={4} 
         rowSpan={1}
+        href="/manifesto"
       />
       
       {/* Row 2 Right */}
@@ -130,7 +131,7 @@ export default function BentoBox() {
         color="var(--c-blue)" 
         span={4} 
         rowSpan={1}
-        href="/explore" 
+        href="/atlas" 
       />
       
       {/* Row 3 */}
@@ -159,7 +160,7 @@ export default function BentoBox() {
         color="var(--c-green, #4ade80)" 
         span={4} 
         rowSpan={1}
-        href="/library" 
+        href="/explore/resources" 
       />
 
       {/* Row 4 */}

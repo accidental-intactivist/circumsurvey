@@ -5,8 +5,34 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+function findingsApiProxyPlugin() {
+  return {
+    name: 'findings-api-proxy',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (req.url && req.url.startsWith('/findings-api')) {
+          const targetUrl = 'https://findings.circumsurvey.online/api' + req.url.replace('/findings-api', '');
+          try {
+            const resp = await fetch(targetUrl);
+            res.statusCode = resp.status;
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            const buf = await resp.arrayBuffer();
+            res.end(Buffer.from(buf));
+          } catch (err) {
+            res.statusCode = 502;
+            res.end(JSON.stringify({ error: err.message }));
+          }
+          return;
+        }
+        next();
+      });
+    }
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), findingsApiProxyPlugin()],
   server: {
     proxy: {
       '/api/': {

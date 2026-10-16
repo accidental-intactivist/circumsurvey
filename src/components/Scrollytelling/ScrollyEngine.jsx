@@ -898,7 +898,7 @@ export default function ScrollyEngine() {
                       byPathway={geoByPathway}
                     />
                     <div style={{ marginTop: '1.25rem', textAlign: 'center', marginBottom: '2rem' }}>
-                      <a href="/demographics" style={{
+                      <a href="/explore/demographics" style={{
                         fontFamily: "var(--f-condensed)",
                         fontWeight: 700,
                         fontSize: '0.78rem',
@@ -968,7 +968,7 @@ export default function ScrollyEngine() {
                   <GenerationalTrendChart questionId={selectedGenQuestion} />
                   
                   <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-                    <a href="/culture" style={{
+                    <a href="/explore/culture" style={{
                       fontFamily: "var(--f-condensed)",
                       fontWeight: 700,
                       fontSize: '0.78rem',
@@ -1143,7 +1143,7 @@ export default function ScrollyEngine() {
               </div>
               
               <div style={{ marginTop: '1.25rem', textAlign: 'center', marginBottom: '3rem' }}>
-                <a href="/narrative-mirrors" style={{
+                <a href="/explore/narrative-mirrors" style={{
                   fontFamily: "var(--f-condensed)",
                   fontWeight: 700,
                   fontSize: '0.78rem',
@@ -1224,7 +1224,7 @@ export default function ScrollyEngine() {
             textAlign: 'center',
             marginTop: '1.5rem',
           }}>
-            <a href="/narrative-mirrors" style={{
+            <a href="/explore/narrative-mirrors" style={{
               fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
               fontWeight: 700,
               fontSize: '0.78rem',
@@ -1334,7 +1334,7 @@ export default function ScrollyEngine() {
             ) : null}
 
             <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-              <a href="/pleasure-gap" style={{
+              <a href="/explore/pleasure-gap" style={{
                 fontFamily: "var(--f-condensed)",
                 fontWeight: 700,
                 fontSize: '0.78rem',
@@ -1384,7 +1384,7 @@ export default function ScrollyEngine() {
             textAlign: 'center',
             marginTop: '1.5rem',
           }}>
-            <a href="/pairs" style={{
+            <a href="/explore/pairs" style={{
               fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
               fontWeight: 700,
               fontSize: '0.78rem',
@@ -1488,10 +1488,10 @@ export default function ScrollyEngine() {
               justifyContent: 'center',
             }}>
               {[
-                { label: 'Mirror Pairs', href: '/pairs' },
-                { label: 'Narrative Mirrors', href: '/narrative-mirrors' },
-                { label: 'Demographics', href: '/demographics' },
-                { label: 'Cultural Alignment', href: '/tools/cultural-alignment' },
+                { label: 'Mirror Pairs', href: '/explore/pairs' },
+                { label: 'Narrative Mirrors', href: '/explore/narrative-mirrors' },
+                { label: 'Demographics', href: '/explore/demographics' },
+                { label: 'Cultural Alignment', href: '/explore/tools/cultural-alignment' },
               ].map(link => (
                 <a key={link.label} href={link.href} style={{
                   fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",

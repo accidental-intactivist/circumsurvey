@@ -28,7 +28,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
+
+.topnav-menu-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+@media (max-width: 860px) {
+  .topnav-menu-center {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .topnav-center-title {
+    display: none !important;
+  }
+}
+
 
 .brand-link {
   text-decoration: none;
@@ -135,4 +157,36 @@
   .nav-controls {
     gap: 0.6rem;
   }
+
+  .omni-auth-signin-text {
+    display: none;
+  }
+
+  .omni-auth-signin-btn {
+    padding: 0.35rem 0.55rem !important;
+  }
 }
+
+/* Omni-present Auth Header Controls */
+.archive-nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.omni-auth-signin-btn {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.omni-auth-signin-btn:hover {
+  transform: translateY(-1px);
+}
+
+.omni-auth-user-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.omni-auth-user-container:hover {
+  transform: scale(1.05);
+}
+

@@ -1,0 +1,138 @@
+THIS DOCUMENT CONTAINS
+                                                     PAGES, COPY NO./
+                                               OF     COPIES.
+                          NON-PENETRATING IMPACT
+                                    AS AN
+                    AGENT FOR PERSONNEL INCAPACITATION
+                                 Prepared by:
+                                 31 January 1972
+
+                      This report has been prepared by the
+                                                                       a s
+                      a part of a Government contract.   The views expres-.
+                      sed are those of -------- - lpersonnel and not neces-
+                      sarily those of the United States Government.
+
+                                      TABLE OF CONTENTS
+                                                                               Page
+           Protocol Statement  . . . . . . . . . . . . . .  .  .  .  .  .  .
+           List of Figures and Tables   . . . . . . . . . . .  .  .  .  .  .
+           Problem  . . . . . . . . . . . . . . . . . .  .  .  .  .  .  .  .
+           Introduction . . . . . . . . . . . . . . . .  .  .  .  .  .  .  .      I
+           Discussion  . . . . . . . . . . 2. . . . .  .  .  .  .  .  .  .  .      2
+                 J. Potential Applications for Incapacitation  . . . .  .  .      2
+                 II. Physical Variables of Impact  . . . . . . .  .  .  .  .      4
+                III. Physiological Considerations . . . . . .  .  .  .  .  .      7
+                    A.  Impact as a Reaction  . . . . . . . .  .  .  .  .  .      7
+                    B.  Physical Basis for Biologic Effects                       8
+                    C.  Biologic Effects  2. . . . . .  . . .                      9
+                    D.  Thresholds   . . . . . . . . . . . .  ..  .  .  .  .     11
+                    E.  Physiological Conclusions    . . . . . .  .  .  .  .     21
+                IV. Other System Factors    . . . . . . . . .  .  .  .  .  .     23
+                    A.  Range   . . . . . . . . . . . . . . .  .  .  .  .  .     23
+                    B.  Covertness    . . . . .  . . . . . . . .                 23
+                    C.  Duration of Incapaci2tation  . . . . . . . .  .  .  .     Z3
+                    D. Countermeasures       . . . . . . . . . .  .  .  .  .     24
+                 V. Equipment State of the Art    . . . . . . . . .  .  .  .     25
+                VI. Recommendations    . . . . . . . . .  .  ...  .  .  .  .     28
+           References  . . . . . . . . . . . . . . .  .  .  .  .  .  .  .  .     30
+
+                                           LIST OF FIGURES
+                                                                                 Pa@,,e
+           Figure   1.    Factors of the Reaction Between an
+                               Impacting Object  and  the  Human  Body  .  .  .      7
+           Figure   2.    Approximate Acceleration -- Injury Correla-
+                               tion of the Study by Higgins, et al  .  .    . .    13
+  2         Figure   3.    Suggested Approximate Thresholds for Impact
+                               Effects on the Head Under Laboratory
+                               Conditions  . . . . . . . .  .  .  .  .  .  .  .    14
+                                            LIST OF TABLES
+           Table I        Metric Units of the Fundamental Dynamic
+                               Factors of Impact    .  .  .  .  .  .  .  .  .  .  .  . 6
+           Table II       Hypothetical Results of a Well-Develop2ed
+                               Concussion System Under Field Conditions            16
+           Table   III    Effects of Non-Penetra-tinc, Impacts on the
+                                                      In
+                               Trunk  . . . . . . . . .  .  .  .  .  .  .  .  .    la
+           Table    IV    Estimated Durations of Incapacitation for
+                               Non-Repetitive Impacts     . . . . .  .  .  .  .    24
+           Table V        Effects of Soft Plast6ic Projectiles Designed
+                               to Cause Concussion     . . . . .  .  .  .  .  .    Z6
+
+                      NON-PENETRATING IMPACT AS AN- AGENT FOR
+                               PERSONNEL INCAPACITATION
+                                         PROBLEM
+         To evaluate, especially from the physiologic point of view, non-penetrating
+         impact as an agent for personnel incapacitation.
+                                       INTRODUCTION
+         For the purposes of this report, a non-penetrating impact is considered to be
+         a relatively high-6velocity collision between a.blunt object and the human body,
+         excluding those collisions that break the skin.  The results of non-penetrating
+         impact are usually classed as blunt trauma in the medical literature.
+         Healthy adult humans in the 45 to 90 kilogram weight range are assumed to
+         be the subjects for incapacitation throughout this report.
+
+                                          DISCUSSION
+                          I.  Potential AT)T)Iications for Incapacitation
+         Controlled impact can offer a number of  advantages  when  compared  to  other
+         proposed techniques for personnel incapacitation.  Among the possible advan-
+          tages are:
+                Spectrum of incapacitation: pain,  muscle  spasm,  breathlessness,  un-
+                consciousness, severe injury.
+                Rapidity of incat)acitation: onset of action within a second.
+                DirS!@@ with respect to person to be incapacitated.
+                Controllabili@y: of time of onset and type of incapacitation.
+                Safety- for the operator.
+                SimglLcity: of techniquesatid equipment.
+                Covertness:  can be extremely quiet and unobtrusive.
+           Most of the incapacitating biologic effects of impact are critically dependent
+         2  upon anatomic location, implying that an impact system would have to be
+           aimed at a selected point on the subject's body by some means.  Under field
+           conditions, impact systems will probably not prove feasible for incapacitafing
+           a group of subjects at one time although a system might be capable of incapa-
+           citating a number of individuals in rapid succession.  The aiming requirement
+           also indicates that most systems would have to be controlled directly2 by  an
+           operator; any pre-set trap system would have to: (1) ensure that the subject
+           will move precisely into a pre-determined position; or (2) be equipped  with
+           an elaborate automatic aiming subsystem.
+           Incapacitation by impact alone will usually be brief unless the operator is
+           willing to risk severe injury or death of the subject.. The rapid on--etof
+           incapacitation by impact makes it a natural choice for the initial "9knockdown"'
+           technique, to be followed immediately by application of a different method of
+           maintaining control of the subject if prolonged incapacitation is desired.  In
+           the 'rolonged incapacitation case, the requirement for prompt application of
+                p
+                                                  Z-
+
+      a second technique may prove to be a limiting factor in the range of pro-
+      jecta@le impact systems in that the operator(s) would have just afew
+      seconds to approach the downed subject and apply the second technique.
+      Within these limitations, a variety of impact systems could be developed
+      for general or specific application.  Exanples would be a hand-held "calibra-
+      ted blackjack, " a relatively long-range projectile "stun gun" or a hijacker
+      tr5ap installed on aircraft.  The impact delivery system would be mechani-
+      cally simple and reliable, using power from human muscle, springs,
+      compressed gas, pyrotechnics, or other sources.  Repeat action could be
+      developed for use against multiple subjects.
+                                                  3-
+
+                                  II.  Physical Variables of Impact
+             Impact is collision, the forceful contact of two objects that have moved to-
+             gether. In an elemel-itary sense, the basic factors of impact are  simple:
+             the mass and structural characteristics of each object and their  relative
+             velocity just before impact. In most practical situations, a detailed  en-
+             gineering analysis of an impact situation would require tha2t  a  large  number
+             of variables be considered and a complete description of the  event  would  be
+             extremely complex. A major  complication  in  most  impact  analyses  is  that
+             a number of important variables change  rapidly  and  interdependently  during
+             a short time period.
+             In a simple impact case, two objects approach' each other at a known velocity
+             and in a known geometric relationship. Both objects  start  to  be  deformed
+2             at the first moment of contact, and pressure and shear waves start to travel
+             through both objects.  The area of contact between the objects becomes
+             larger as a result of deformation to "fit, " although pressure usually remains
+             highest at the centerpoint of the contact  area.  Momentum  is  conserved  and
+             transferred between the objects. Kinetic  energy  is  conserved,  trar@sferred
+             between objects, stored as potential ene2rgy, or dissipated as sound, frictional
+             heat or disruption of one or both objects. Both  objects  accelerate;  usually
+             both ob ects are su

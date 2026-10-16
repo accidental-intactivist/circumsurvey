@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Printer, FilePlus2, Check, ArrowLeft, X, Sparkles, Loader2 } from 'lucide-react';
+import { Search, Printer, FilePlus2, Check, ArrowLeft, X, Sparkles, Loader2, Play, Pause } from 'lucide-react';
 import { availableCards, cardClaims, TIERS } from '../../lib/guides/compose.js';
 import { CounterEvidenceCard, LedgerLegend } from '../components/guides/GuideParts';
 import { useReport } from '../contexts/ReportContext';
 import { captureEvent } from '../lib/telemetry';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
 import './Guides.css';
 
 function cardMatches(card, q) {
@@ -33,6 +34,29 @@ export default function CounterEvidencePage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [customRebuttal, setCustomRebuttal] = useState(null);
 
+  const [loomPaused, setLoomPaused] = useState(() => {
+    try { return localStorage.getItem('cs_loom_paused') === 'true'; } catch { return false; }
+  });
+
+  useEffect(() => {
+    const handlePauseEvent = (e) => {
+      if (e.detail && e.detail.paused !== undefined) {
+        setLoomPaused(e.detail.paused);
+      }
+    };
+    window.addEventListener('cs-loom-pause', handlePauseEvent);
+    return () => window.removeEventListener('cs-loom-pause', handlePauseEvent);
+  }, []);
+
+  const toggleLoom = () => {
+    const next = !loomPaused;
+    setLoomPaused(next);
+    try { localStorage.setItem('cs_loom_paused', String(next)); } catch {}
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cs-loom-pause', { detail: { paused: next } }));
+    }
+  };
+
   useEffect(() => { document.title = 'Counter-Evidence Builder · The Accidental Intactivist\u2019s Guide'; }, []);
 
   const cards = useMemo(() => availableCards(tone), [tone]);
@@ -47,6 +71,7 @@ export default function CounterEvidencePage() {
     const s = new Set(selected);
     if (s.has(id)) s.delete(id); else s.add(id);
     update('cards', [...s].join(','));
+    if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('loom-weave-draft', { detail: { id } }));
   };
   const sendToReport = () => {
     const chosen = cards.filter(c => selected.has(c.id));
@@ -131,18 +156,35 @@ export default function CounterEvidencePage() {
   };
 
   return (
-    <div className={`gd-page ce-page ${selected.size ? 'has-selection' : ''}`}>
-      <header className="ce-hero no-print">
-        <Link to="/guides" className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Guide Series</Link>
-        <div className="gd-series">The Accidental Intactivist's Guide</div>
-        <h1>Counter-Evidence Builder</h1>
-        <p className="gb-lede">
-          Pick the justifications you expect to hear or type a custom claim below. We utilize a <strong>highly effective, pro-social debate strategy</strong> that patiently listens and acknowledges the other person's concerns to help find where your alignment truly lies, before introducing counter-evidence and an "ask-back".
-        </p>
-        <LedgerLegend />
-      </header>
+    <div className={`gd-page ce-page ${selected.size ? 'has-selection' : ''}`} style={{ position: 'relative' }}>
+      {/* Background Underloom holographic canvas in Guides Land (The Great Loom) */}
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.28 }}>
+        <LoomChoreography isInline={true} forceFormation="greatLoom" opacity={1} themeColor="guides" />
+      </div>
 
-      <div className="ce-controls no-print">
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <header className="ce-hero no-print" style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <Link to="/guides" className="gd-btn gd-btn--ghost"><ArrowLeft size={16} /> Guide Series</Link>
+            <button
+              type="button"
+              className="gd-btn gd-btn--ghost"
+              onClick={toggleLoom}
+              aria-label={loomPaused ? "Play background animation" : "Pause background animation"}
+              title={loomPaused ? "Play background animation" : "Pause background animation"}
+            >
+              {loomPaused ? <Play size={16} /> : <Pause size={16} />} {loomPaused ? 'Play Loom' : 'Pause Loom'}
+            </button>
+          </div>
+          <div className="gd-series">The Accidental Intactivist's Guide</div>
+          <h1>Counter-Evidence Builder</h1>
+          <p className="gb-lede">
+            Pick the justifications you expect to hear or type a custom claim below. We utilize a <strong>highly effective, pro-social debate strategy</strong> that patiently listens and acknowledges the other person's concerns to help find where your alignment truly lies, before introducing counter-evidence and an "ask-back".
+          </p>
+          <LedgerLegend />
+        </header>
+
+        <div className="ce-controls no-print">
         <label className="ce-search" style={{ position: 'relative', display: 'flex', gap: '0.5rem', width: '100%', maxWidth: '800px', background: 'transparent' }}>
           <div style={{ position: 'relative', flex: 1 }}>
             <Search size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-dim)' }} />
@@ -198,6 +240,7 @@ export default function CounterEvidencePage() {
           </div>
         ))}
         {!visible.length && !customRebuttal && <p className="gd-muted">No cards match “{q}”. Type a claim and click "Ask Archive Researcher" to create a custom rebuttal.</p>}
+      </div>
       </div>
     </div>
   );

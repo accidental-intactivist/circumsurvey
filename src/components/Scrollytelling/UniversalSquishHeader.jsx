@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect, Suspense, lazy } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { Play, Pause } from 'lucide-react';
+import SectionNavDropdown from '../SectionNavDropdown';
 const HarmonicCanvas = lazy(() => import('../../components/HarmonicCanvas'));
 const LoomChoreography = lazy(() => import('../../components/GuidedTour/LoomChoreography'));
 
@@ -10,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function UniversalSquishHeader({
   themeKey,
   loomPaused,
+  toggleLoom,
   navLeftContent,
   navRightContent,
   eyebrow,
@@ -18,7 +21,8 @@ export default function UniversalSquishHeader({
   heroContent,
   isTomorrow = false,
   startVh = 85,
-  underloomFormation = null
+  underloomFormation = null,
+  themeColor = null
 }) {
   const containerRef = useRef(null);
   const headerRef = useRef(null);
@@ -32,6 +36,32 @@ export default function UniversalSquishHeader({
   const spacerRef = useRef(null);
 
   const [scrolled, setScrolled] = useState(false);
+  const [internalPaused, setInternalPaused] = useState(() => {
+    try { return localStorage.getItem('cs_loom_paused') === 'true'; } catch { return false; }
+  });
+
+  useEffect(() => {
+    const handlePauseEvent = (e) => {
+      if (e.detail && e.detail.paused !== undefined) {
+        setInternalPaused(e.detail.paused);
+      }
+    };
+    window.addEventListener('cs-loom-pause', handlePauseEvent);
+    return () => window.removeEventListener('cs-loom-pause', handlePauseEvent);
+  }, []);
+
+  const effectivePaused = loomPaused !== undefined ? loomPaused : internalPaused;
+
+  const handleToggleLoom = () => {
+    if (toggleLoom) {
+      toggleLoom();
+    } else {
+      const next = !effectivePaused;
+      setInternalPaused(next);
+      try { localStorage.setItem('cs_loom_paused', String(next)); } catch {}
+      window.dispatchEvent(new CustomEvent('cs-loom-pause', { detail: { paused: next } }));
+    }
+  };
 
   useEffect(() => {
     let raf = null;
@@ -177,9 +207,9 @@ export default function UniversalSquishHeader({
           <div ref={canvasRef} style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '85vh', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 0, opacity: 0.8 }}>
             <Suspense fallback={null}>
               {themeKey && underloomFormation ? (
-                <LoomChoreography themeKey={themeKey} opacity={1} forceFormation={underloomFormation} isInline={true} />
+                <LoomChoreography themeKey={themeKey} opacity={1} forceFormation={underloomFormation} isInline={true} themeColor={themeColor} />
               ) : (
-                themeKey && <HarmonicCanvas themeKey={themeKey} opacity={1} paused={loomPaused} />
+                themeKey && <HarmonicCanvas themeKey={themeKey} opacity={1} paused={effectivePaused} />
               )}
             </Suspense>
           </div>
@@ -188,8 +218,8 @@ export default function UniversalSquishHeader({
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #d94f4f, #e8a44a, #e8c868, #68b878, #5b93c7)', zIndex: 50 }} />
 
         <div ref={navContentRef} className="squish-nav-container" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 1.5rem', zIndex: 100, pointerEvents: 'none' }}>
-          <div className="squish-nav-left" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', pointerEvents: 'auto', fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', minWidth: 0 }}>
-            {navLeftContent}
+          <div className="squish-nav-left" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', pointerEvents: 'auto', minWidth: 0, zIndex: 120 }}>
+            {navLeftContent || <SectionNavDropdown />}
           </div>
         </div>
 
@@ -222,6 +252,55 @@ export default function UniversalSquishHeader({
             )}
           </div>
         </div>
+
+        {/* ── Pause / Play Button for Harmonic Loom & Underloom ── */}
+        <button
+          type="button"
+          onClick={handleToggleLoom}
+          aria-label={effectivePaused ? "Play background animation" : "Pause background animation"}
+          title={effectivePaused ? "Play background animation" : "Pause background animation"}
+          style={{
+            position: "absolute",
+            bottom: "1.2rem",
+            right: "1.5rem",
+            zIndex: 60,
+            background: "rgba(0,0,0,0.45)",
+            border: `1px solid ${effectivePaused ? "var(--c-goldBright)" : "var(--c-ghost)"}`,
+            color: effectivePaused ? "var(--c-goldBright)" : "var(--c-dim)",
+            borderRadius: "50%",
+            width: "32px",
+            height: "32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            opacity: scrolled ? 0 : 0.75,
+            pointerEvents: scrolled ? "none" : "auto",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.opacity = "1";
+            e.currentTarget.style.color = "var(--c-goldBright)";
+            e.currentTarget.style.borderColor = "var(--c-goldBright)";
+            e.currentTarget.style.background = "rgba(0,0,0,0.65)";
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.opacity = scrolled ? "0" : "0.75";
+            if (!effectivePaused) {
+              e.currentTarget.style.color = "var(--c-dim)";
+              e.currentTarget.style.borderColor = "var(--c-ghost)";
+              e.currentTarget.style.background = "rgba(0,0,0,0.45)";
+            }
+          }}
+        >
+          {effectivePaused ? (
+            <Play size={14} style={{ marginLeft: "2px", fill: "currentColor" }} />
+          ) : (
+            <Pause size={14} style={{ fill: "currentColor" }} />
+          )}
+        </button>
       </header>
     </div>
   );

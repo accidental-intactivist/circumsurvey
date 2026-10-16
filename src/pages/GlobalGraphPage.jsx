@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import Joyride, { STATUS } from 'react-joyride';
+import { useSearchParams } from 'react-router-dom';
+import { Joyride, STATUS } from 'react-joyride';
 import EntityNetworkGraph from '../components/EntityNetworkGraph';
 import './AdminArchivePage.css';
 
 export default function GlobalGraphPage() {
-  const [runTour, setRunTour] = useState(true);
+  const [searchParams] = useSearchParams();
+  const hasTarget = Boolean(searchParams.get('focus') || searchParams.get('center'));
+  const [runTour, setRunTour] = useState(!hasTarget);
 
   const steps = [
     {

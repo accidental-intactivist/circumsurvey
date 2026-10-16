@@ -31,7 +31,7 @@ export async function onRequestGet(context) {
 
     // Select columns based on field mode
     const columns = fields === 'slim'
-      ? 'id, type, name, tagline, stance, featured, image_url'
+      ? 'id, type, name, tagline, role, featured, image_url'
       : '*';
 
     let query = `SELECT ${columns} FROM entities ${whereClause} ORDER BY name`;
@@ -118,17 +118,47 @@ export async function onRequestPut(context) {
     const updates = [];
     const bindings = [];
 
-    if (data.project_context !== undefined) { updates.push('project_context = ?'); bindings.push(data.project_context || ''); }
-    if (data.universal_summary !== undefined) { updates.push('universal_summary = ?'); bindings.push(data.universal_summary || ''); }
-    if (data.metadata !== undefined) { updates.push('metadata = ?'); bindings.push(data.metadata || ''); }
-    if (data.wikipedia_url !== undefined) { updates.push('wikipedia_url = ?'); bindings.push(data.wikipedia_url || ''); }
-    if (data.tags !== undefined) { updates.push('tags = ?'); bindings.push(data.tags || ''); }
-    if (data.image_url !== undefined) { updates.push('image_url = ?'); bindings.push(data.image_url || ''); }
-    if (data.stance !== undefined) { updates.push('stance = ?'); bindings.push(data.stance); }
+    const desc = data.description !== undefined ? data.description : (data.universal_summary !== undefined ? data.universal_summary : data.project_context);
+    if (desc !== undefined) { updates.push('description = ?'); bindings.push(desc || ''); }
+
+    const roleVal = data.role !== undefined ? data.role : data.stance;
+    if (roleVal !== undefined) { 
+      updates.push('role = ?'); bindings.push(roleVal || 'notable'); 
+      updates.push('stance = ?'); bindings.push(roleVal || 'notable'); 
+    }
+
     if (data.tagline !== undefined) { updates.push('tagline = ?'); bindings.push(data.tagline || ''); }
-    if (data.featured !== undefined) { updates.push('featured = ?'); bindings.push(data.featured ? 1 : 0); }
-    if (data.see_also_json !== undefined) { updates.push('see_also_json = ?'); bindings.push(data.see_also_json || ''); }
+    if (data.image_url !== undefined) { updates.push('image_url = ?'); bindings.push(data.image_url || ''); }
     if (data.url !== undefined) { updates.push('url = ?'); bindings.push(data.url || ''); }
+    if (data.location !== undefined) { updates.push('location = ?'); bindings.push(data.location || ''); }
+    if (data.contact_info !== undefined) { updates.push('contact_info = ?'); bindings.push(data.contact_info || ''); }
+    if (data.status !== undefined) { updates.push('status = ?'); bindings.push(data.status || 'active'); }
+    if (data.featured !== undefined) { updates.push('featured = ?'); bindings.push(data.featured ? 1 : 0); }
+    if (data.see_also_json !== undefined) { updates.push('see_also_json = ?'); bindings.push(typeof data.see_also_json === 'string' ? data.see_also_json : JSON.stringify(data.see_also_json)); }
+
+    // Safe column additions for Scorecard rating system
+    if (data.rating_score !== undefined || data.rating_grade !== undefined || data.rating_quote !== undefined) {
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN rating_score REAL").run(); } catch (_) {}
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN rating_grade TEXT").run(); } catch (_) {}
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN rating_quote TEXT").run(); } catch (_) {}
+
+      if (data.rating_score !== undefined) { updates.push('rating_score = ?'); bindings.push(Number(data.rating_score) || 3); }
+      if (data.rating_grade !== undefined) { updates.push('rating_grade = ?'); bindings.push(String(data.rating_grade || '')); }
+      if (data.rating_quote !== undefined) { updates.push('rating_quote = ?'); bindings.push(String(data.rating_quote || '')); }
+    }
+
+    // Safe column additions for Archive Dossier / Nutrition Facts fields
+    if (data.years_active !== undefined || data.affiliations !== undefined || data.core_focus !== undefined || data.key_milestones !== undefined) {
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN years_active TEXT").run(); } catch (_) {}
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN affiliations TEXT").run(); } catch (_) {}
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN core_focus TEXT").run(); } catch (_) {}
+      try { await env.SURVEY_DB.prepare("ALTER TABLE entities ADD COLUMN key_milestones TEXT").run(); } catch (_) {}
+
+      if (data.years_active !== undefined) { updates.push('years_active = ?'); bindings.push(String(data.years_active || '')); }
+      if (data.affiliations !== undefined) { updates.push('affiliations = ?'); bindings.push(String(data.affiliations || '')); }
+      if (data.core_focus !== undefined) { updates.push('core_focus = ?'); bindings.push(String(data.core_focus || '')); }
+      if (data.key_milestones !== undefined) { updates.push('key_milestones = ?'); bindings.push(String(data.key_milestones || '')); }
+    }
 
     if (updates.length === 0) throw new Error("No fields to update");
 

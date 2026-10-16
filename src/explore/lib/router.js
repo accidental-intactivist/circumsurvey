@@ -13,7 +13,7 @@ function parseLocation() {
   if (typeof window !== "undefined" && window.location.hash && window.location.hash.length > 1) {
     const hashContent = window.location.hash.replace(/^#\/?/, "");
     const firstSegment = hashContent.split("/")[0];
-    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "contact", "the-forward-view", "editorial", "resources"];
+    const knownRoutes = ["q", "question", "pathways", "tools", "correlations", "pairs", "demographics", "religious-mirrors", "narrative-mirrors", "observer-triad", "observer-lens", "numbers", "pleasure-gap", "methodology", "report", "restoration-journey", "culture", "generational-faultlines", "the-decision", "final-thoughts", "trans-intersex", "cognizant-alteration", "adult-experience", "for-parents", "about", "faq", "get-involved", "contact", "the-forward-view", "editorial", "resources"];
     
     if (knownRoutes.includes(firstSegment)) {
       const newUrl = "/explore/" + hashContent + window.location.search;
@@ -34,7 +34,16 @@ function parseLocation() {
   
   let route = "index";
   let params = {};
-  if (segments[offset] === "pathways") {
+
+  const exhibitParam = query.get("exhibit");
+  if (exhibitParam === "pleasure-gap") {
+    route = "pleasure-gap";
+  } else if (exhibitParam === "psych-fallout") {
+    route = "question";
+    params.id = "circ_regret_feeling";
+  } else if (exhibitParam === "function-loss") {
+    route = "restoration-journey";
+  } else if (segments[offset] === "pathways") {
     route = "pathways";
   } else if ((segments[offset] === "q" || segments[offset] === "question") && segments[offset + 1]) {
     route = "question";
@@ -82,6 +91,8 @@ function parseLocation() {
     route = "about";
   } else if (segments[offset] === "faq") {
     route = "faq";
+  } else if (segments[offset] === "get-involved") {
+    route = "get-involved";
   } else if (segments[offset] === "contact") {
     route = "contact";
   } else if (segments[offset] === "the-forward-view") {
@@ -147,6 +158,7 @@ function serializeState(route, params, state) {
   else if (route === "for-parents") path = "/explore/for-parents";
   else if (route === "about") path = "/explore/about";
   else if (route === "faq") path = "/explore/faq";
+  else if (route === "get-involved") path = "/explore/get-involved";
   else if (route === "the-forward-view") path = "/explore/the-forward-view";
   else if (route === "editorial") path = "/explore/editorial";
   else if (route === "resources") path = "/explore/resources";

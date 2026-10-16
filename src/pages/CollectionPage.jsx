@@ -5,6 +5,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
 import MicrofilmTimeline from '../components/MicrofilmTimeline';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import { safeParseJson } from '../utils/json';
 
 export default function CollectionPage() {
   const { slug } = useParams();
@@ -67,8 +69,7 @@ export default function CollectionPage() {
   const filteredDocs = selectedSeries ? documents.filter(d => extractSection(d.source_collection) === selectedSeries) : documents;
 
   const getCleanTitle = (d) => {
-    let m;
-    try { m = JSON.parse(d.metadata_json); } catch(e) { m = {}; }
+    const m = safeParseJson(d.metadata_json);
     if (m && m.academic_title) return m.academic_title;
     let t = d.title || '';
     if (t.toLowerCase().match(/\.(pdf|mov|mp4|webm|ogg)$/i)) {
@@ -85,10 +86,8 @@ export default function CollectionPage() {
   };
 
   const getMetadataField = (doc, field) => {
-    try {
-      const m = JSON.parse(doc.metadata_json);
-      return m[field] || '';
-    } catch(e) { return ''; }
+    const m = safeParseJson(doc.metadata_json);
+    return m[field] || '';
   };
 
   const getDisplayDate = (doc) => {
@@ -184,9 +183,14 @@ export default function CollectionPage() {
   }
 
   return (
-    <div style={{ background: 'var(--c-bg)', minHeight: '100vh', paddingBottom: '4rem' }}>
+    <div style={{ background: 'var(--c-bg)', minHeight: '100vh', paddingBottom: '4rem', position: 'relative' }}>
       
-      <UniversalSquishHeader
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <LoomChoreography forceFormation="quiet" isInline={true} opacity={0.14} themeColor="library" />
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <UniversalSquishHeader
         themeKey={themeKey}
         eyebrow="Special Collection"
         title={collection.title}
@@ -198,6 +202,7 @@ export default function CollectionPage() {
         navLeftContent={navLeft}
         navRightContent={navRight}
         startVh={50}
+        themeColor="library"
       />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem', display: 'flex', gap: '4rem', alignItems: 'flex-start' }}>
@@ -229,7 +234,18 @@ export default function CollectionPage() {
             </p>
             
             <h3 style={{ fontSize: '0.85rem', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem', margin: 0 }}>Total Items</h3>
-            <p style={{ color: 'var(--c-textBright)', fontWeight: 'bold', marginBottom: '0', marginTop: '0.25rem' }}>{documents.length.toLocaleString()} items</p>
+            {slug === 'tim-hammond-archive' ? (
+              <div>
+                <p style={{ color: 'var(--c-textBright)', fontWeight: 'bold', marginBottom: '0.25rem', marginTop: '0.25rem', fontSize: '1.05rem' }}>
+                  {documents.length.toLocaleString()} dossiers & documents
+                </p>
+                <div style={{ fontSize: '0.75rem', color: 'var(--c-gold)', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(212, 160, 48, 0.1)', padding: '0.3rem 0.65rem', borderRadius: '4px', border: '1px solid rgba(212, 160, 48, 0.25)', marginTop: '0.25rem', lineHeight: 1.3 }}>
+                  <span>Consolidated from 24,000+ archival page scans</span>
+                </div>
+              </div>
+            ) : (
+              <p style={{ color: 'var(--c-textBright)', fontWeight: 'bold', marginBottom: '0', marginTop: '0.25rem' }}>{documents.length.toLocaleString()} items</p>
+            )}
           </div>
         </div>
 
@@ -384,6 +400,7 @@ export default function CollectionPage() {
           )}
 
         </div>
+      </div>
       </div>
     </div>
   );

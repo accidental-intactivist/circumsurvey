@@ -1,0 +1,138 @@
+-Amid                                            
+.........
+                                                                                            DATA                CTION
+                                               USE OF LINC-8 FOR EEG                                   REDU
+                                                                                  i/6-7/67
+
+                            USE OF LINC-8 FOP, EF-G DATA RZDUCTION
+                  Baci<;
+                       @round
+                         Interpretation of EEG Waveforms for information relating
+                  to subject state has been an area of long@ interest to people outside
+                   L'    curophysiological-field. A dozen years ago., Norbert
+                  o the  r
+                  W-.ener cc@r@3ucte-d i-avestigations of brain records. He sought to
+                  apply to E-EG interpretation, some of the statistical communica.
+                  tio-,i theory developed by his circle at MIT. This tleory has been
+                                          I
+                  set forth by Y. W. -Iee.  In 1954 Dr. Weiner was particularly
+                  interesteel in "a nominal 10 cps clock pulse" which he hypothe-
+      2            sized. formed the basic timing for serial rd-order-:ng of the brain
+                  processing organization, he noted state differences associated with
+                  this part of the spectrum in different subjects.
+                         Deta
+                             ilgd specific,_statis.t-ical reduction techn-ques are laid
+                  out by
+                  by Dr.                              2                         he
+                  former-attacks reduction in a classical statistical appro
+                  dealing wit@-i power spectral estimates, phase functions, auto-
+                  covariance and @cross covariance functions, transfer functions,
+                  ccrerenc%r, etc, He uses these descri,)tors to determine signifi-
+                  cant factor!; associated with EEG responses. A large number of
+ 2                 variables can be treated sirnultaneouily.
+                         The latte'r attacks the problem principally from a "period
+                  analysis" standppint. The basic waveform is clipped and zero-
+                  ciossover inter@Vals are scr,,,tinized. Similarly, the first and
+                  second der'Lvatives are processed for clipped periods. The inves-
+                  tigator utilizes all three of these on t2he same time base to ex=ine
+                  the sp4ictrum for state evaluation.
+                         The references also give summaries of other recent tech-
+                  niques applied to EEG analysis.
+                         It is intended here to preseat the results of a modest study
+                  car7ie,i out on @k set of data furnished through the corrtesy of Drs.
+                                    or educationa8l purposes. The subject was
+
+                           recorded, in three  states,  on  1/411,  2  track,  FM  tape  run  at
+                           7 1/2"Isec as follows:
+                                    (al) Drowsy        S m in.         (a-2)  I kcps tone
+                                    (bl) Alpha         S min.          (b-2)       13
+                                    (c 1) Light sleep and Alpha        (C-22)
+                           Editing  and Reduction
+                                    The tape was played, into the A/D che-anels of the LINC - 8
+                           for  editinv, using the SCOPE-8 program.  The three 5 minu'te
+                           samples were examined for gross character-.stics.  Comments
+                           were as ;ollows:
+                                           (a) Drowsy  30-60 secon2d arnplitude (long term)
+                                    modulation was noted to be present in addition to the
+                                    7-10 cps dominant component band.
+                                           (b) Aloha: more extreme excursion; less pro-
+                                    nounced long term modulation; pronounced short term
+                                    modulation or beating.
+                                           (c)  Lig2ht   Sleep:   less   pronounced   excursions.
+                                    The data was visually edited again and a run made to store
+                           the data.  This is given in the colmniilabeued Run I of Table 1.
+                           It was -at-tempted to recover representative samples of high, into-r-
+                           mediate and low signal power.  Block storage numbers are shown.
+                           2         Next tl-.; stored data was examined for spectral content using
+                           the proaram FROANA; scope camera pictures -wire taken for com-
+                                    0
+                           parison in matrix form for significant differences in the v-arious
+                           states.
+                                    Reloeats of data taking was next performed in Runs TI and
+                         2  Ill. R-.ln III was sampled at a  lower  rate;  this  gives  a  longer
+                           sample interval.
+                                    Next, selected blocks were differentiated once and stored
+                           in ILzations corresponding to start point 100       000      waveform
+                           s ample, I 0 0 ii r s t de r ivative, e tc.
+
+                                                                -3
+                                It w@(S feasible to make certain preliminary evaluations
+                        of the data at  this  point.  These  were,
+                                        1'.  Signal content for discrirnina-tion between states
+                                was highest for the high points of the long term mbdulation.
+                             2                              ncy resolution was (I/Z cps) more
+                                        1. A f ine r f reque
+                                 relevant than tl'--- I cps resOlution-
+                                                           c made for oscillosc-ope  pictures
+                                 Finally a set of  runs  wer
+                         to sbo.,v the below format:
+        2                                 1.   sampled    waveforra
+                                         2.   frequency   analysis of (1)
+                                                           ve   of (1)
+                                         3.  first  derivati
+                                         4.  frequency analysis of
+                                    ,d Conclusions
+                                  Figures 1, 21 and 3 show thr2ee reprerentative outputs
+                          whicl,. appeared tentatively as lity-pical":
+                                          1.  ELr@ this is sample 060, 160 of the data,
+                                  taken at a t@igh point.  The waveforrn is shown at the top;
+                                                                       shown out to
+                                  its spectrum is 2immediately below
+                                  32 cps.  A dominant spil-,e shows up at. 9 cps; a plateau
+                                  frorn 8-13 cps is present.  A "characteristir-11 bump
+                                   rhomed up in the, region 14-20 cps.
+                                              AlPba: this is sample 062. 162; a red-action of
+                                   the hump at 14-20 cps was noted.  k bifarcation or
+                                   "forking" appeared in the alpha region at the depression
+                                   zt 9 cps.  This would explain the bea--ing or short terrn
+                                   rnodulatiol.
+                                                                        this is sample 072, 172;
+                                           3.
+                                                DI           2                       a general
+                                   predominance of the alpha tones is noted with
+                                    shift in energy to the lower end of the spectrum.
+                                                                                            'hows
+                                    For all three sample$ the first derivative spectrum s
+                            -up as expected; namely, the "bluing" of the spectr4um by applying
+                            a derivative function.
+                                    It would appear that a. parametric stud-I of BW, frequency,
+                             accenting functions (S. S2  etc*    examination of phase relation-
+
+                                                          -4-
+                                                      nd ot
+                       ships, reducflon techniqueso a     her processing would be
+                       meaningiul,  "his rnight permit the design of j. real time EEG
+                       analyzer which would not require a high level of training for
+                       operation.
+
+                                             REFERENCES
+                        MIT Report i 181, Y. W. Lee
+                     2.
+                    3.
+
+                                           Li
+                                                             qt
+                                           th
+                                                                                        CO
+                                                     co               ti       A. C,P
+                     

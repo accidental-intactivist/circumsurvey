@@ -25,6 +25,7 @@
 // Standalone tuner for all constants: loom-choreography-v2.html (⚙ Tune).
 // ═══════════════════════════════════════════════════════════════════════════
 import React, { useEffect, useRef } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 import { resolveCssColor } from "../../explore/styles/tokens";
 import { LOOM_CONFIG } from "../HarmonicCanvas";
 
@@ -32,20 +33,20 @@ import { LOOM_CONFIG } from "../HarmonicCanvas";
 // missing anchors are skipped, and regions are sorted by document position.
 const REGIONS = [
   ["#ch-prologue", "tartan"], // researcher's letter
-  ["#act-1-mechanics", "canyon"], // lights down — the flight begins here
-  ["#sexual-experience-the-pleasure-gap", "canyon"], // pleasure gap
-  ["#lubrication-dependency", "canyon"], // lube dependency
+  ["#act-1-mechanics", "vortex"], // lights down — descent into physical realities
+  ["#sexual-experience-the-pleasure-gap", "helix"], // biology/anatomy
+  ["#lubrication-dependency", "helix"], // biology/anatomy
   ["#act-2-emotion", "moire"], // transition to emotions
-  ["#gratitude-vs-regret", "moire"], // mirror pairs
+  ["#gratitude-vs-regret", "orbital"], // complex intersecting emotions
   ["#the-raw-words", "pulsar"], // narrative mirrors
   ["#act-3-restoration", "pendulum"], // restoration journey
   ["#the-restoring-cohort-in-numbers", "pendulum"], // restoration numbers
   ["#act-4-resolution", "flow"], // convergence
   ["#the-convergence", "flow"], // forward view
   ["#appendix", "quiet"], // sober appendix
-  ["#the-survey-architecture", "flow"], // survey architecture
+  ["#the-survey-architecture", "tron"], // survey architecture
   ["#respondent-census-origins", "tron"], // demographics
-  ["#the-generational-faultline", "pendulum"], // culture & generations
+  ["#the-generational-faultline", "orbital"], // conflicting perspectives intertwined
   ["#for-new-expectant-parents", "quiet"] // for parents
 ];
 
@@ -92,8 +93,9 @@ export const UNDERLOOM_CONFIG = {
   ENG: { gutterA: 0.4, gutterB: 0.66, idleFloor: 0.3, alphaMul: 1, lineWidth: 1.6 },
 };
 
-export default function LoomChoreography({ themeKey = "", opacity = 1, forceFormation = null, isInline = false }) {
+export default function LoomChoreography({ themeKey = "", opacity = 1, forceFormation = null, isInline = false, themeColor = null }) {
   const canvasRef = useRef(null);
+  const { theme, mode } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -118,8 +120,6 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     const forcePause = prefersReduced || (isLowEndHardware && coarsePointer);
 
     // Background canvas: fill-rate is the enemy — cap DPR aggressively.
-    // (The masthead HarmonicCanvas keeps its higher fidelity; this layer is
-    // atmosphere and reads fine at 1.25x.)
     const dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.25);
     const L = lowPower ? 44 : 64;
     const P = lowPower ? 80 : 120; // max per-line resolution; most lines use far less
@@ -133,7 +133,13 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
 
     // ── Theme tokens (R7: the engine rules above all) ──
     const parseColor = (cssVar, fallback) => {
-      const raw = resolveCssColor(`var(${cssVar})`);
+      let raw = "";
+      if (typeof window !== "undefined") {
+        try {
+          raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+        } catch (e) {}
+      }
+      if (!raw) raw = resolveCssColor(`var(${cssVar})`);
       if (!raw) return fallback;
       if (raw.startsWith("#")) {
         return raw.length === 4
@@ -146,14 +152,55 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
 
     const PAL = {
       red: parseColor("--c-red", [217, 79, 79]),
+      orange: parseColor("--c-orange", [232, 164, 74]),
       yel: parseColor("--c-yellow", [232, 200, 104]),
       lbl: parseColor("--c-ltBlue", [139, 184, 217]),
       blu: parseColor("--c-blue", [91, 147, 199]),
       gold: parseColor("--c-gold", [212, 160, 48]),
+      goldBright: parseColor("--c-goldBright", [232, 184, 64]),
       green: parseColor("--c-green", [104, 184, 120]),
+      purple: parseColor("--c-purple", [120, 104, 184]),
       bright: parseColor("--c-textBright", [255, 255, 255]),
       text: parseColor("--c-text", [238, 238, 238]),
     };
+
+    // ── Land-Specific Underloom Coding ──
+    if (themeColor === 'library' || themeColor === 'red') {
+      PAL.red = [239, 68, 68];       // Crimson #ef4444
+      PAL.gold = [244, 63, 94];      // Rose #f43f5e
+      PAL.blu = [225, 29, 72];       // Deep Scarlet #e11d48
+      PAL.green = [220, 38, 38];     // Ruby #dc2626
+      PAL.yel = [251, 113, 133];     // Coral #fb7185
+      PAL.lbl = [190, 18, 60];       // Maroon #be123c
+    } else if (themeColor === 'green') {
+      PAL.red = [16, 185, 129];      // Emerald #10b981
+      PAL.gold = [52, 211, 153];     // Mint #34d399
+      PAL.blu = [20, 184, 166];      // Teal #14b8a6
+      PAL.green = [5, 150, 105];     // Jade #059669
+      PAL.yel = [110, 231, 183];     // Spring #6ee7b7
+      PAL.lbl = [4, 120, 87];        // Forest #047857
+    } else if (themeColor === 'data' || themeColor === 'blue') {
+      PAL.red = [56, 189, 248];      // Electric Cyan #38bdf8
+      PAL.gold = [14, 165, 233];     // Sapphire #0ea5e9
+      PAL.blu = [96, 165, 250];      // Sky #60a5fa
+      PAL.green = [2, 132, 199];     // Azure #0284c7
+      PAL.yel = [125, 211, 252];     // Ice #7dd3fc
+      PAL.lbl = [3, 105, 161];       // Deep Cobalt #0369a1
+    } else if (themeColor === 'media' || themeColor === 'gold') {
+      PAL.red = [245, 158, 11];      // Radiant Amber #f59e0b
+      PAL.gold = [212, 160, 48];     // Classic Gold #d4a030
+      PAL.blu = [251, 191, 36];      // Honey #fbbf24
+      PAL.green = [217, 119, 6];     // Deep Bronze #d97706
+      PAL.yel = [252, 211, 77];      // Solar #fcd34d
+      PAL.lbl = [180, 83, 9];        // Ochre #b45309
+    } else if (themeColor === 'manifesto' || themeColor === 'purple') {
+      PAL.red = [168, 85, 247];      // Amethyst #a855f7
+      PAL.gold = [139, 92, 246];     // Violet #8b5cf6
+      PAL.blu = [192, 132, 252];     // Lilac #c084fc
+      PAL.green = [147, 51, 234];    // Royal Purple #9333ea
+      PAL.yel = [216, 180, 254];     // Soft Lavender #d8b4fe
+      PAL.lbl = [126, 34, 206];      // Deep Imperial #7e22ce
+    }
     const PAT = {
       intact: parseColor("--path-intact", [42, 157, 143]),
       circ: parseColor("--path-circumcised", [231, 111, 81]),
@@ -172,6 +219,43 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     // ribbon wears it; per Tone it is the MODEL for the other formations —
     // continuous colorPos means richer color AND hue-true glint families.
     const spec3 = (t) => (t < 0.5 ? mixc(PAL.red, PAL.gold, t * 2) : mixc(PAL.gold, PAL.blu, (t - 0.5) * 2));
+
+    // ── Harmonious 16-Tone Distaff Spectrum (Variants of All Cardinal Colors) ──
+    // Derived dynamically from active theme custom properties.
+    // 8 Cardinal Families × 2 Distinct Variants (Root + Luminous/Resonant)
+    const themeDistaff = [
+      // 1. Red Family (Cardinal Red & Luminous Rose)
+      PAL.red,
+      mixc(PAL.red, PAL.bright, 0.22),
+
+      // 2. Orange Family (Cardinal Orange & Sunburst Amber)
+      PAL.orange || mixc(PAL.red, PAL.gold, 0.45),
+      mixc(PAL.orange || mixc(PAL.red, PAL.gold, 0.45), PAL.goldBright || PAL.yel || PAL.gold, 0.35),
+
+      // 3. Gold / Yellow Family (Imperial Gold & Starlight Canary)
+      PAL.gold,
+      PAL.goldBright || PAL.yel || mixc(PAL.gold, PAL.bright, 0.35),
+
+      // 4. Green Family (Cardinal Emerald & Mint / Seafoam)
+      PAL.green,
+      mixc(PAL.green, PAL.lbl || PAL.bright, 0.3),
+
+      // 5. Cyan / Light Blue Family (Cardinal Electric Cyan & Glacier Azure)
+      PAL.lbl || mixc(PAL.green, PAL.blu, 0.45),
+      mixc(PAL.lbl || mixc(PAL.green, PAL.blu, 0.45), PAL.bright, 0.25),
+
+      // 6. Blue Family (Cardinal Sapphire & Twilight Indigo)
+      PAL.blu,
+      mixc(PAL.blu, PAL.purple || PAL.lbl, 0.35),
+
+      // 7. Purple Family (Cardinal Violet & Cosmic Orchid / Magenta)
+      PAL.purple || mixc(PAL.blu, PAL.red, 0.5),
+      mixc(PAL.purple || mixc(PAL.blu, PAL.red, 0.5), PAL.red, 0.38),
+
+      // 8. Starlight Nexus Family (Solar Starlight Core & Lunar Diamond)
+      mixc(PAL.bright, PAL.goldBright || PAL.gold, 0.15),
+      mixc(PAL.bright, PAL.lbl || PAL.blu, 0.15),
+    ];
 
     // ── RIBBON LOOM (HarmonicCanvas DNA: parents, phase spread, taper) ──
     const parentY = (u, tau, seed, amp) => {
@@ -295,6 +379,66 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     // whichever formation is on stage — the streak follows that formation's
     // own geometry via pt(i,u).
     let glintT = 0; // real-seconds accumulator, decoupled from damp (like the masthead)
+
+    // ── Lucasfilm 1990 VGA Great Loom Diamond Starburst (`✦`) ──
+    const drawDiamondStarburst = (c, x, y, size, alpha) => {
+      if (alpha <= 0.02 || size <= 0.5) return;
+      c.save();
+      c.globalAlpha = Math.min(1, alpha);
+      const r = size * 2.8;
+      const th = Math.max(0.8, size * 0.35);
+
+      const toRgba = (rgb, a) => `rgba(${Math.round(rgb[0])}, ${Math.round(rgb[1])}, ${Math.round(rgb[2])}, ${a})`;
+
+      // Outer chromatic halo - theme-derived cardinal glow
+      const radGlow = c.createRadialGradient(x, y, 0, x, y, r * 1.6);
+      radGlow.addColorStop(0, toRgba(PAL.bright, 0.95));
+      radGlow.addColorStop(0.3, toRgba(PAL.lbl || PAL.blu, 0.65));
+      radGlow.addColorStop(0.65, toRgba(PAL.goldBright || PAL.gold, 0.35));
+      radGlow.addColorStop(1, toRgba(PAL.red, 0));
+      c.fillStyle = radGlow;
+      c.beginPath();
+      c.arc(x, y, r * 1.6, 0, Math.PI * 2);
+      c.fill();
+
+      // Horizontal Diamond Spike
+      c.fillStyle = toRgba(PAL.bright, 1);
+      c.beginPath();
+      c.moveTo(x - r, y);
+      c.quadraticCurveTo(x, y - th, x, y - th);
+      c.lineTo(x + r, y);
+      c.quadraticCurveTo(x, y + th, x, y + th);
+      c.closePath();
+      c.fill();
+
+      // Vertical Diamond Spike
+      c.beginPath();
+      c.moveTo(x, y - r);
+      c.quadraticCurveTo(x - th, y, x - th, y);
+      c.lineTo(x, y + r);
+      c.quadraticCurveTo(x + th, y, x + th, y);
+      c.closePath();
+      c.fill();
+
+      // 45° secondary diamond spikes (starlight cross - theme-derived gold/amber)
+      const dR = r * 0.45;
+      c.strokeStyle = toRgba(PAL.goldBright || PAL.gold, 0.85);
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(x - dR, y - dR);
+      c.lineTo(x + dR, y + dR);
+      c.moveTo(x - dR, y + dR);
+      c.lineTo(x + dR, y - dR);
+      c.stroke();
+
+      // Pure hot nucleus
+      c.fillStyle = toRgba(PAL.bright, 1);
+      c.beginPath();
+      c.arc(x, y, Math.max(1, size * 0.45), 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+    };
+
     const glisten = (F, wgt) => {
       if (wgt < 0.02 || GLN.groups <= 0) return;
       // formations may override glint cadence/size (F.glint) — the spirograph
@@ -360,21 +504,45 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
           F.pt(i, uTail, pA);
           F.pt(i, uHead, pB);
           if (Math.abs(pA.x - pB.x) + Math.abs(pA.y - pB.y) < 2) continue;
+          
+          const isGuidesMode = themeColor === 'guides' || (F && (F.name === 'greatLoom' || F.name === 'harmonic'));
           const grad = ctx.createLinearGradient(pA.x, pA.y, pB.x, pB.y);
-          const hb = hueBase + ps * 80; // the counter-wave shimmers offset
-          for (let q = 0; q <= 6; q++) {
-            const f = q / 6;
-            const hue = wrap(hb + f * 150, 360);
-            grad.addColorStop(f, `hsla(${hue.toFixed(0)}, ${sat}%, ${(60 + f * 28).toFixed(0)}%, ${(Math.pow(f, 1.8) * gStrength * wgt * vis).toFixed(3)})`);
+          if (isGuidesMode) {
+            // Stepped Mark Ferrari 1990 VGA palette for the glint trail
+            // Harmonious stops derived dynamically from the active theme's cardinal colors
+            const alphaBase = Math.min(1, Math.pow(Math.sin(hp * Math.PI), 0.6) * (gStrength + weaveImpulse * 0.5) * wgt * vis);
+            const toRgba = (rgb, a) => `rgba(${Math.round(rgb[0])}, ${Math.round(rgb[1])}, ${Math.round(rgb[2])}, ${(a * alphaBase).toFixed(3)})`;
+            grad.addColorStop(0.0, toRgba(PAL.purple, 0));
+            grad.addColorStop(0.2, toRgba(PAL.red, 0.45));
+            grad.addColorStop(0.45, toRgba(PAL.gold, 0.75));
+            grad.addColorStop(0.7, toRgba(PAL.green, 0.85));
+            grad.addColorStop(0.88, toRgba(PAL.lbl, 0.95));
+            grad.addColorStop(1.0, toRgba(PAL.bright, 1.0));
+          } else {
+            const hb = hueBase + ps * 80; // the counter-wave shimmers offset
+            for (let q = 0; q <= 6; q++) {
+              const f = q / 6;
+              const hue = wrap(hb + f * 150, 360);
+              grad.addColorStop(f, `hsla(${hue.toFixed(0)}, ${sat}%, ${(60 + f * 28).toFixed(0)}%, ${(Math.pow(f, 1.8) * gStrength * wgt * vis).toFixed(3)})`);
+            }
           }
           ctx.strokeStyle = grad;
-          ctx.lineWidth = Math.max(1, c[4] * 1.5 * ENG.lineWidth); // glints ride the same weight
+          ctx.lineWidth = Math.max(1, c[4] * (isGuidesMode ? 2.2 : 1.5) * ENG.lineWidth); // glints ride the same weight
           ctx.beginPath();
           for (let s2 = 0; s2 <= 20; s2++) {
             F.pt(i, uTail + (uHead - uTail) * (s2 / 20), pA);
             if (s2 === 0) ctx.moveTo(pA.x, pA.y); else ctx.lineTo(pA.x, pA.y);
           }
           ctx.stroke();
+
+          // 4-POINT DIAMOND STARBURST at the crest of the wave!
+          if (isGuidesMode && hp > 0.04 && hp < 0.96) {
+            const flareAlpha = Math.sin(hp * Math.PI) * (gStrength + weaveImpulse * 0.4) * wgt * vis;
+            if (flareAlpha > 0.1) {
+              const burstSize = (3.6 + Math.sin(glintT * 14 + i * 1.5) * 1.4 + weaveImpulse * 2.2) * sizeScale;
+              drawDiamondStarburst(ctx, pB.x, pB.y, burstSize, flareAlpha);
+            }
+          }
         }
       }
       ctx.lineCap = "butt";
@@ -723,7 +891,143 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
         pts: () => 48,
         scatter: 0.45, // parallel streams: sync would read as a solid bar — keep the cascade wide
       },
+      vortex: {
+        pt: (i, u, o) => {
+          const twist = 12; // How many radians the spiral turns
+          const angle = i * (Math.PI * 2 / L) - T * 0.4 + u * twist;
+          const radius = (1 - Math.pow(u, 0.8)) * Math.max(W, H) * 0.7; // Exponential pull to center
+          o.x = W * 0.5 + Math.cos(angle) * radius;
+          o.y = H * 0.5 + Math.sin(angle) * radius;
+        },
+        col: (i) => {
+          const pos = i / L;
+          const c = spec3(pos), c2 = spec3(wrap(pos + 0.2, 1));
+          return [c[0], c[1], c[2], 0.25, 2.0 * sizeScale, c2[0], c2[1], c2[2]];
+        },
+        hue: (i) => i / L,
+        order: (i) => i / L, // The cascade chases around the spiral
+        scatter: 0.8,
+        pts: () => 80,
+      },
+      orbital: {
+        pt: (i, u, o) => {
+          const t_u = u * Math.PI * 2;
+          const offset = i * (Math.PI * 2 / L) + T * 0.3;
+          // 3D Lissajous Torus
+          const kx = 3, ky = 2, kz = 4;
+          const A = W * 0.35, B = H * 0.35;
+          const x = Math.sin(kx * t_u + offset + T * 0.1) * A;
+          const y = Math.sin(ky * t_u + offset) * B;
+          const z = Math.sin(kz * t_u + offset);
+          
+          const scale = 1 / (1 - z * 0.25);
+          o.x = W * 0.5 + x * scale;
+          o.y = H * 0.5 + y * scale;
+        },
+        col: (i) => {
+          const pos = i / L;
+          const c = spec3(pos);
+          const c2 = mixc(c, PAL.bright, 0.5); // Gradients to a bright glowing core
+          return [c[0], c[1], c[2], 0.2, 1.5 * sizeScale, c2[0], c2[1], c2[2]];
+        },
+        hue: (i) => i / L,
+        order: (i) => i / L,
+        scatter: 0.2, // Very tight cascade for intense crossing beams
+        glint: { interval: 15, width: 0.2, speed: 0.08, crisscross: true, strength: 0.6 },
+        pts: () => 100,
+      },
+      helix: {
+        pt: (i, u, o) => {
+          const phase = i * (Math.PI * 2 / L);
+          const x = (u - 0.5) * W * 1.2; // Spans across the screen
+          const coils = 4 * Math.PI * 2;
+          const spin = T * 1.2;
+          
+          // Horizontal double-helix envelope
+          const yOffset = Math.sin(phase + u * coils - spin) * H * 0.25;
+          const z = Math.cos(phase + u * coils - spin);
+          
+          const scale = 1 / (1 - z * 0.3);
+          const pinch = Math.pow(Math.sin(u * Math.PI), 0.5); // Pinches at the edges
+          
+          o.x = W * 0.5 + x * scale;
+          o.y = H * 0.5 + yOffset * scale * pinch;
+        },
+        col: (i, u) => {
+          const pos = i / L;
+          const c = spec3(pos);
+          return [c[0], c[1], c[2], 0.25, 2.0 * sizeScale];
+        },
+        hue: (i) => i / L,
+        order: (i) => i / L,
+        scatter: 0.5,
+        pts: () => 64,
+      },
+      greatLoom: {
+        name: 'greatLoom',
+        pt: (i, u, o) => {
+          // The Great Loom of the Guild of Weavers (Lucasfilm 1990 VGA architecture)
+          // 64 threads: 32 vertical/diagonal Warp threads, 32 crossing Weft arcs.
+          const isWarp = i < 32;
+          const k = isWarp ? i : i - 32;
+          const frac = k / 31; // 0..1
+
+          if (isWarp) {
+            // Sanctuary ceiling beam down to the Loom's floor pedestal
+            const x0 = W * (0.04 + 0.92 * frac);
+            const y0 = H * 0.01;
+            const x1 = W * (0.16 + 0.68 * frac);
+            const y1 = H * 0.98;
+
+            // Physical string resonance / harmonic vibration
+            const bow = Math.sin(u * Math.PI);
+            const vibX = Math.sin(T * 1.6 + i * 0.38 + u * 3.2) * 12 * sizeScale * bow;
+            const vibY = Math.cos(T * 1.2 + i * 0.25 + u * 2.1) * 6 * sizeScale * bow;
+
+            o.x = lerp(x0, x1, u) + vibX;
+            o.y = lerp(y0, y1, u) + vibY;
+          } else {
+            // Lateral pylons crossing through the center hyperbolic diamond field
+            const leftToRight = frac < 0.5;
+            const sideFrac = leftToRight ? frac * 2 : (frac - 0.5) * 2;
+            const x0 = W * (leftToRight ? -0.02 : 1.02);
+            const y0 = H * (0.10 + 0.78 * sideFrac);
+            const x1 = W * (leftToRight ? 1.02 : -0.02);
+            const y1 = H * (0.90 - 0.78 * sideFrac);
+
+            // Hyperbolic diamond arc through the chamber center
+            const bow = Math.sin(u * Math.PI);
+            const dip = (leftToRight ? 1 : -1) * H * 0.16 * sizeScale * bow;
+            const vib = Math.sin(T * 1.5 + k * 0.42 + u * 4) * 8 * sizeScale * bow;
+
+            o.x = lerp(x0, x1, u);
+            o.y = lerp(y0, y1, u) + dip + vib;
+          }
+        },
+        col: (i) => {
+          // 16-Tone Cardinal Weave: distributes variants of all cardinal colors
+          const c1 = themeDistaff[i % themeDistaff.length];
+          // Harmonic chord interval across cardinal families
+          const c2 = themeDistaff[(i + 4) % themeDistaff.length];
+          const isLight = mode === 'light';
+          const alpha = i < 32 
+            ? (isLight ? 0.42 : 0.34) 
+            : (isLight ? 0.32 : 0.25);
+          const width = (1.5 + (i % 3) * 0.4) * sizeScale;
+          // Gradient returns 8 elements: r1, g1, b1, alpha, width, r2, g2, b2
+          return [c1[0], c1[1], c1[2], alpha, width, c2[0], c2[1], c2[2]];
+        },
+        hue: (i) => (i % 32) / 31,
+        order: (i) => (i < 32 ? i / 31 : (i - 32) / 31),
+        scatter: 0.08, // Oblique coherent chord sweep across the fan
+        glint: { interval: 7.5, width: 0.28, speed: 0.16, crisscross: true, strength: 0.95 },
+        pts: () => 48,
+      },
     };
+
+    FORMS.harmonic = FORMS.greatLoom;
+    FORMS.neural = FORMS.greatLoom;
+    FORMS.greatloom = FORMS.greatLoom;
 
     // ── Region measurement (anchors may mount/resize as data loads) ──
     let regions = []; // [{center, f}] sorted by center
@@ -780,6 +1084,11 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     const onPauseToggle = (e) => { loomPaused = !!(e.detail && e.detail.paused); };
     window.addEventListener("cs-loom-pause", onPauseToggle);
 
+    // ── Interactive "Weave Draft" Harmonic Resonance ──
+    let weaveImpulse = 0;
+    const onWeaveDraft = () => { weaveImpulse = 1.0; };
+    window.addEventListener("loom-weave-draft", onWeaveDraft);
+
     const pA = { x: 0, y: 0 }, pB = { x: 0, y: 0 };
     let damp = 1;
     let lastFrameTime = performance.now();
@@ -796,7 +1105,6 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       // the formations become a still engraving. Time (and the glint clock)
       // freeze, but we re-render a single static frame whenever scroll or
       // viewport changes, so a paused page still shows the right formation
-      // at every station — for ~zero CPU at rest.
       // at every station — for ~zero CPU at rest.
       if (loomPaused || forcePause) {
         const sig = window.scrollY + "|" + W + "|" + H;
@@ -819,21 +1127,18 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       idleCleared = false;
 
       const dt = delta / 1000;
-      if (!loomPaused && !forcePause) glintT += dt; // the glisten keeps its own clock, like the masthead's
+      if (weaveImpulse > 0) weaveImpulse = Math.max(0, weaveImpulse - dt * 1.2);
+      if (!loomPaused && !forcePause) glintT += dt * (1.0 + weaveImpulse * 1.8); // the glisten keeps its own clock, like the masthead's
       const scrolling = (now - lastScrollT) < 200;
       damp += ((scrolling ? 1 : ENG.idleFloor) - damp) * 0.04;
-      if (!forcePause && !loomPaused) T += dt * (0.35 + 0.65 * damp);
+      if (!forcePause && !loomPaused) T += dt * (0.35 + 0.65 * damp + weaveImpulse * 0.5);
 
       ctx.clearRect(0, 0, W, H); // TRANSPARENT — the theme's background rules
-      if (forceFormation) {
-        ctx.fillStyle = 'rgba(255,0,0,0.5)';
-        ctx.fillRect(50, 50, 200, 200);
-      }
 
       let FA, FB;
       let mix = 0;
       if (forceFormation) {
-        FA = FORMS[forceFormation] || FORMS.quiet;
+        FA = FORMS[forceFormation] || (themeColor === 'guides' ? FORMS.greatLoom : FORMS.quiet);
         FB = FA;
       } else {
         let k = 0;
@@ -899,11 +1204,12 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("cs-loom-pause", onPauseToggle);
+      window.removeEventListener("loom-weave-draft", onWeaveDraft);
       if (resizeObserver) resizeObserver.disconnect();
       if (remeasureTimer) clearInterval(remeasureTimer);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
-  }, [themeKey, forceFormation, isInline]);
+  }, [themeKey, forceFormation, isInline, themeColor, theme, mode]);
 
   return (
     <canvas

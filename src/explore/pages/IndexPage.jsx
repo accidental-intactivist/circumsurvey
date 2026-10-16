@@ -775,9 +775,9 @@ function Footer() {
           textTransform: "uppercase",
           color: C.dim,
         }}>
-          <a href="https://findings.circumsurvey.online" style={{ color: C.muted, marginRight: "0.8rem" }}>← Back to the Special Report</a>
+          <a href="/report" style={{ color: C.muted, marginRight: "0.8rem" }}>← Back to the Special Report</a>
           ·
-          <a href="#/methodology" style={{ color: C.goldBright, margin: "0 0.8rem" }}>Methodology & Data Rigor</a>
+          <a href="/explore/methodology" style={{ color: C.goldBright, margin: "0 0.8rem" }}>Methodology & Data Rigor</a>
           ·
           <a href="https://circumsurvey.online" style={{ color: C.muted, marginLeft: "0.8rem" }}>circumsurvey.online</a>
         </div>

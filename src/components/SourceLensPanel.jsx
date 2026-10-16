@@ -234,21 +234,221 @@ export function DigestPulse({ meta }) {
         <div style={{ marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           {meta.sections.map((s, idx) => {
             const cat = categoryMeta(s.category);
+
             return (
-              <article key={idx} className="lux-hover-lift" style={{ background: 'linear-gradient(145deg, var(--c-card), var(--c-bgSoft))', padding: '2rem 2.25rem', borderRadius: '16px', border: '1px solid var(--c-borderMuted)', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: cat.color }} />
-                <CategoryChip category={s.category} />
-                <h4 style={{ color: 'var(--c-textBright)', margin: '0.9rem 0 0.9rem', fontSize: '1.45rem', fontFamily: FONT.display, lineHeight: 1.3 }}>{s.headline}</h4>
-                <p style={{ color: 'var(--c-text)', lineHeight: 1.8, fontSize: '1.05rem', margin: 0 }}>{s.body}</p>
+              <article 
+                key={idx} 
+                id={`digest-topic-${idx}`}
+                className="lux-hover-lift" 
+                style={{ 
+                  scrollMarginTop: '110px',
+                  background: 'linear-gradient(145deg, var(--c-card), var(--c-bgSoft))', 
+                  padding: '2.25rem 2.5rem', 
+                  borderRadius: '16px', 
+                  border: `1px solid var(--c-borderMuted)`, 
+                  borderLeft: `4px solid ${cat.color}`,
+                  position: 'relative', 
+                  overflow: 'hidden' 
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    background: cat.color,
+                    color: '#000',
+                    fontWeight: 800,
+                    fontSize: '0.72rem',
+                    fontFamily: 'var(--f-mono, monospace)'
+                  }}>
+                    {idx + 1}
+                  </span>
+                  <CategoryChip category={s.category} />
+                </div>
+
+                <h4 style={{ color: 'var(--c-textBright)', margin: '0.6rem 0 1rem', fontSize: '1.5rem', fontFamily: FONT.display, lineHeight: 1.25 }}>
+                  {s.headline}
+                </h4>
+
+                <p style={{ color: 'var(--c-text)', lineHeight: 1.85, fontSize: '1.1rem', margin: 0, letterSpacing: '0.01em' }}>
+                  {s.body}
+                </p>
+
+                {/* Inline Referenced Story Thumbnails & Color-Coded Links */}
                 {s.items?.length > 0 && (
-                  <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    {s.items.map(it => (
-                      <Link key={it.id} to={`/news/${it.id}`} className="lux-hover-bright" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', textDecoration: 'none', color: 'var(--c-text)', padding: '0.55rem 0.8rem', borderRadius: '8px', background: 'rgba(255,255,255,0.03)' }}>
-                        <LeanPill lean={it.lean} />
-                        <span style={{ color: 'var(--c-textBright)' }}>{it.title}</span>
-                        <span style={{ color: 'var(--c-dim)', fontSize: '0.85rem' }}>· {it.outlet}</span>
-                      </Link>
-                    ))}
+                  <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{
+                      fontSize: '0.72rem',
+                      fontFamily: FONT.condensed,
+                      fontWeight: 800,
+                      letterSpacing: '0.12em',
+                      textTransform: 'uppercase',
+                      color: cat.color,
+                      marginBottom: '0.85rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem'
+                    }}>
+                      <span>Referenced Sources & Evidence ({s.items.length})</span>
+                    </div>
+
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                      gap: '0.85rem'
+                    }}>
+                      {s.items.map(it => {
+                        const fav = it.url ? getFaviconUrl(it.url) : null;
+                        const hasRealImage = Boolean(it.image_url);
+                        return (
+                          <Link
+                            key={it.id}
+                            to={`/news/${it.id}`}
+                            className="lux-hover-lift"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.85rem',
+                              textDecoration: 'none',
+                              background: 'rgba(255, 255, 255, 0.03)',
+                              border: `1px solid ${cat.color}40`,
+                              borderLeft: `3px solid ${cat.color}`,
+                              borderRadius: '10px',
+                              padding: '0.65rem',
+                              transition: 'all 0.2s ease',
+                              overflow: 'hidden'
+                            }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.07)';
+                              e.currentTarget.style.borderColor = cat.color;
+                              e.currentTarget.style.boxShadow = `0 4px 18px ${cat.color}25`;
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                              e.currentTarget.style.borderColor = `${cat.color}40`;
+                              e.currentTarget.style.boxShadow = 'none';
+                            }}
+                          >
+                            {/* Genuine Article Thumbnail or Respectful Editorial Badge */}
+                            <div style={{
+                              width: '74px',
+                              height: '74px',
+                              borderRadius: '6px',
+                              overflow: 'hidden',
+                              flexShrink: 0,
+                              background: 'var(--c-bgDeep)',
+                              border: `1px solid ${hasRealImage ? 'rgba(255,255,255,0.08)' : cat.color + '30'}`,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              position: 'relative'
+                            }}>
+                              {hasRealImage ? (
+                                <img
+                                  src={it.image_url}
+                                  alt=""
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                  onError={(e) => {
+                                    // If authentic image URL fails, replace with clean editorial badge
+                                    e.currentTarget.style.display = 'none';
+                                    const parent = e.currentTarget.parentElement;
+                                    if (parent) {
+                                      parent.style.background = `linear-gradient(135deg, rgba(255,255,255,0.03), ${cat.color}15)`;
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <div style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '4px',
+                                  width: '100%',
+                                  height: '100%',
+                                  background: `linear-gradient(135deg, rgba(255,255,255,0.03), ${cat.color}15)`
+                                }}>
+                                  {fav ? (
+                                    <img src={fav} alt="" style={{ width: 22, height: 22, borderRadius: '4px' }} onError={e => e.currentTarget.style.display = 'none'} />
+                                  ) : (
+                                    <Newspaper size={20} style={{ color: cat.color, opacity: 0.8 }} />
+                                  )}
+                                  <span style={{
+                                    fontFamily: FONT.condensed,
+                                    fontSize: '0.62rem',
+                                    fontWeight: 800,
+                                    color: cat.color,
+                                    letterSpacing: '0.04em',
+                                    textTransform: 'uppercase',
+                                    textAlign: 'center',
+                                    padding: '0 4px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '68px'
+                                  }}>
+                                    {it.outlet || 'SOURCE'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Content & Metadata */}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+                                {fav && <img src={fav} alt="" style={{ width: 12, height: 12, borderRadius: '2px' }} onError={e => e.target.style.display = 'none'} />}
+                                <span style={{
+                                  fontFamily: FONT.condensed,
+                                  fontSize: '0.7rem',
+                                  fontWeight: 800,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.06em',
+                                  color: cat.color
+                                }}>
+                                  {it.outlet}
+                                </span>
+                              </div>
+
+                              <div style={{
+                                fontFamily: FONT.body,
+                                fontWeight: 600,
+                                fontSize: '0.85rem',
+                                lineHeight: 1.3,
+                                color: 'var(--c-textBright)',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                marginBottom: '0.35rem'
+                              }}>
+                                {it.title}
+                              </div>
+
+                              <div style={{
+                                fontSize: '0.72rem',
+                                color: cat.color,
+                                fontFamily: FONT.condensed,
+                                fontWeight: 700,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem'
+                              }}>
+                                <span>Analyze note</span>
+                                <ExternalLink size={10} />
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </article>

@@ -1,0 +1,160 @@
+-11@) sO al4v@a
+                                                                                                  =Tea
+
+                                                       (63T YC
+
+               DC-at
+                     On July 6  1961m a- tdnt-vas b4do by       th
+               -tug iteaso
+                  2 r@@vr fiuppupa            Inc.                                 000,03
+                                        OW-  P"r.93  ln*trUMOAt'3 CO,,
+                  bir@@am evitching                             Q@A
+                                         & b@rtao@44rd3o-
+                  wize @%nd connector$.
+                  I v-bair for experimer*tal-subjecto Bacbt-Co,,--
+                  I rarts cabinct.-Giii@.Als                                      54,77
+                  I r-ulsz  -transformeri:LfteeilLTt"oforvatr  Coo                19,10
+                  d-todent roolstors -- LI,@ctronic  Wboleial-cr3. Inc,            -944-62
+                  capacitors  diodes  Capitol- iladio -h-kole3alers, Inc-*        77.55
+                  tubing$ reststori@p                                               -6632
+                  I-Ml P.3xt No, 1010671                                             7,30
+                  dust control                                                    45,s OC@
+                    Tot.it
+
+                                      -.plow
+                    A Look. into the  ftture@t --CddV4W@Tec
+                          @47
+                                                                              -the
+                                                 ion inlitirumenta Ion' lit@:tba'
+                                                                         Iho- SETAI
+                          (govial xvcn
+                          dalta pro                               il&fomatlon,
+                                                  Paalysis of@ptlysiologic response
+                          to fila,--
+                          cbann,ol4:ih2Alogital-comr-uter -formt directl  from the
+                          I.-uman eubj@te.,.ti
+                    Si-nee.-our reatarcb nisy    of intertst-to you       would
+               a,,o                                                     you dcci4
+                ,preciate bavlng  saich furi.,bc,,r surport from you, gis
+                                                               -yours-
+                                                     Bincerely
+
+                                                                    Plabrue xy 5  1963
+                    Your grant-holw to_suppq;t        the following   Vapors#
+              and publicationso
+                               onto-fol-t- ditra processi
+                                                       An IBM 620    r)rogran-for-
+                      'a rag
+                                             -a-I C -om@4t ioie
+                       one aj%tZi-nui4iration -ta4Db
+                                   *I-A 2 iiuu@ll 11'
+                      poiarizi
+
+                                                                 - -- - ------
+                                                                                       1961
+                                                                        November-17.,
+                                            tvm
+                                           --40mommli-ettor explains tKe enclo'sure.---After readin2g
+                                        t, I   uld -onrei, th6t it does-'conform to the best-current
+                                        thinkin on skin-conductonce.
+                                               Thiilij"ly copy. We'll send louml@reprints
+                                                                         b'
+                                        when-ovollable.@@M@@@Wis  it @my help some of
+                                        your- people who are thi nki ng a long si ml far I i nes.
+                                        Enc osure
+
+                                             8-1961-----
+                                   Novttb"
+                   inclosed-is-
+              for journal p@kbli-d-a
+                   This equi  ent was
+              suitable instrument-we -not- &vat-labl-ti- c-omdrcially.
+              It incorporate&--th"h&t0Att*tkgt-its--wbi-cb we fi
+              most                                            t"
+              beat current  t         on s'kin conductark@c*.@.
+                   Hope to  ste-yq4-9
+                                               B e-A t-- w-i a
+              znc-LoWuro
+
+            A Yprx-polariiLing, ..Agb-accutacy Skiti Conduct  Ttan$dUc#r
+                                        for
+                                 Digital cotivtt%ionl                  2,-l
+                                         by=@
+                                                       IMF
+            This instrument LiB arra2nged-id-ic-
+        subsequent record,ing-on magnetic tape', and was specifically-dt#Lgne4  or
+        this application.      vat-$-- t can  applied vith a Narkety-of readout,
+        devices,
+             The LrAstrMeAt described bore incorporates sgveral baiiia
+        cbaract2eriaticst.
+             (1)  overcome&__the-  larizatloh ef fttt at tba
+                  o*AttiAuous reversal--of-tbt- direction of
+                  tb,rougb -tho - $Ubj@@-ot - 2
+             (2)  an absolute valu"rcait nulwf its         *f ftd2"ich-
+                  curront-re)mroU-mi bt
+                                                          .rgsistanct from
+             (3)  covera'th@@tal7tiow-of tb-e subjectlei;
+                  0-40OK'aa-"ingle ebamal
+             (4)  a
+                  as
+          2   In practice: the-resolving
+                                        _power olov thLe-inatxumentLis limitta by
+        the readout@-device cou led to It    tput.--IW-ite,preeentapplication
+           This study V3&15   -Po r--t-
+           The iratial o@*geatioa  for nul@lifyin polariiatio3n  off-tcto by ine*ns of
+            current reversals
+
+                                            -2
+                                                                          12 d?
+         th,is,,,ts *no patt ln-2*04,9-o"b#:!*"stance range covered,,-wbicb
+         the maximum capabilitk__of___an *lev*r.-bit-bi@ @log-to-digital  converter
+         with a plus ox mi2nus 10- voltt@7ihi*t@
+              This unit utilize&
+         operational
+         I-R drop *cross & subject i7s-c-altdltttd by a dift*Mtial-aapAif@l-t
+         algebraically ad4tAh4:@lt4a at-one sid6--of the subj*t"d-th@--iUVOtO2d
+         volt4ge at the
+              A multivib-cator-cu.rrent-switcbing circuit is used to-reverse the-
+         current flow througli@@@V@@@ reVdntinq--*Iectrode pqWii-ation-g-
+         I>ulo to the current
+         circuit is added t                               renti2al-4kmolif
+         at &,II time.
+              The olectjvodes u"O-tiit@hAbibLinstiument-are-two zinc-titW.sulfatt-.
+         electrodes* 2 cm.-in-diameter, &M mounted--it-Idaite-cup@, and At*--tttAcbed--
+                                   2                           s and -- t
+         to the volar mwface of -th*:44kjtctl-x--Iltft -*Otti--arpu  orearms
+              The output volt@@                      uc circuit  wb4"ivided -i-t---
+         the constaat subject current (soua)  ec,,uala the 'SubJectlt conduc ances
+              The subject current,, wbith-t-tUt"@to"t-a-nt aftt@@:being-adjusted@-4s-
+         SOua.  This                               "itage between 0 to 20 volts
+         for resistanco t3eadings@-of -14@hiA:4"00 o'bati@-
+              Bacb amplifier has a sborting switch and balance circuit in@its input-,
+         A front P*nel switch and motor ore avall-ablb-tb@-read the outputo of eacb
+
+                                          3
+        amplifier wbich CAA ther6li@@@@4*AdOOXW without Oth'tlC test
+                 gion ye istors-(I%)--f loo.ooo alme. So QOO--ohms 25
+            Pr*ci       0            0
+        100000 obmo# S2pOOO-ohns                    be switched--IhWtb* feedback.
+                              $-and 20500      "Y
+        circuit of the c*nstant@Lcurrout              dalibt*tion-is doeired.
+                                      --Mplifier
+        -of a Pbilbri4:k                      2     a-Pbilbxick
+        &=Plifigro &Ad as:sociat44Lft44)A4)C*44::@@@ors.-@ If It is ngt
+        desirable to have a@-                  at 60 pul7s-es-p4or- a,c @tb--  --"bA---
+        Pbilbrick K2-P "Y be toplaced-i@/ith standard biasing@rtoiat*ts-0 -Oreat
+        ca,re must then.be- t"rcibt&@@@@tbig
+            The input circuit-voitt"--dividtt-@" lo-oooo-:dw-""htloaater       to
+        set the curcont flo-w-tbxi52@-u4jb a 270--000 a@ti--ihout reeiwtor.  If-Oe-current
+        flow through this resistor is sot--at 40va.-thth-th *-fftdback-ourrent fldW@--
+        tbrougb the 250,900OL:bbA                        connooto--to -the -suwaing
+        point 'Of the amplifidt, will ilt6-be 40ua--,-- --This is diie-to the
+        ebatacteriatice oflthe operational7-"oli--.Iitr.--Po-xty microamperes flowing
+        throu(jb a 250,000 ob*@-t"itto vilY-dt"@C-*72t4"lt potential-to-b"resent
+        at the one meg*bA-Lnpu-t--ttsistor of tho Lnv*xter P*Xtion of tb4 differential
+        amplifier.  Ten volts-droppo4_@                   vosistor pro4vcas a-
+        current flow of teniuw@@   "ombination of-th* 40ua7:cur2rent-and the ton ua
+        current both flow tbroug"*-oubjddt-.-- With-tbe-subJect resistance at I"s
+        t'nan 400,,000 ohnit, the current flow throucjb tbo@ sublect is SOU*-at all time@s.
+        The Lim;-ut voltage to the pecond, balf -of -the c3if f4@r0-antial amplif iok- is-- th,311
+        50(ua) tia*s tbe:oubject resistance p

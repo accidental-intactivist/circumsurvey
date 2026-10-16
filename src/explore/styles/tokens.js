@@ -59,10 +59,9 @@ export const FONT = {
   mono: "'JetBrains Mono', monospace",             // IDs, counts, data
 };
 
-export const API_BASE = "https://findings.circumsurvey.online/api";
-
-// To develop the worker locally, comment the line above:
-// export const API_BASE = (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') || (typeof import.meta !== 'undefined' && import.meta.env?.PROD) ? "https://findings.circumsurvey.online/api" : "http://localhost:8787/api";
+export const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+  ? '/findings-api'
+  : 'https://findings.circumsurvey.online/api';
 
 export const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Lexend:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=VT323&display=swap');

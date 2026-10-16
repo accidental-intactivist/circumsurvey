@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, Layout, Settings2, BookOpen, User, Archive, Key, List, FileText, Globe, LogIn, Network, BookMarked, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { ThemeSettingsPanel } from './ThemeToggle';
 
 export default function ArchiveHamburgerMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentView, setCurrentView] = useState('main'); 
   const menuRef = useRef(null);
+
+  const { user } = useUser();
+  const isCurator = user?.publicMetadata?.role === 'admin' || user?.publicMetadata?.role === 'curator' || user?.emailAddresses?.some(e => e.emailAddress?.includes('apettit') || e.emailAddress?.includes('tim'));
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -47,7 +50,75 @@ export default function ArchiveHamburgerMenu() {
   };
 
   return (
-    <div ref={menuRef} style={{ position: "relative" }}>
+    <div ref={menuRef} className="archive-nav-group" style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: "0.65rem" }}>
+      {/* Omni-present Auth Status / Sign In Button */}
+      <SignedOut>
+        <SignInButton mode="modal">
+          <button
+            className="omni-auth-signin-btn lux-hover-lift"
+            title="Sign in to your account"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.38rem",
+              background: "rgba(212, 160, 48, 0.08)",
+              color: "var(--c-goldBright, #facc15)",
+              border: "1px solid rgba(212, 160, 48, 0.35)",
+              padding: "0.35rem 0.8rem",
+              borderRadius: "20px",
+              cursor: "pointer",
+              fontSize: "0.76rem",
+              fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              transition: "all 0.2s ease",
+              whiteSpace: "nowrap"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(212, 160, 48, 0.18)";
+              e.currentTarget.style.borderColor = "var(--c-goldBright, #facc15)";
+              e.currentTarget.style.boxShadow = "0 0 10px rgba(212, 160, 48, 0.25)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(212, 160, 48, 0.08)";
+              e.currentTarget.style.borderColor = "rgba(212, 160, 48, 0.35)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <LogIn size={13} />
+            <span className="omni-auth-signin-text">Sign In</span>
+          </button>
+        </SignInButton>
+      </SignedOut>
+
+      <SignedIn>
+        <div 
+          className="omni-auth-user-container"
+          title={isCurator ? "Signed In: Archive Curator" : (user?.primaryEmailAddress?.emailAddress || "Signed In")}
+          style={{ 
+            display: "inline-flex", 
+            alignItems: "center",
+            padding: "2px",
+            borderRadius: "50%",
+            background: isCurator ? "rgba(212, 160, 48, 0.15)" : "rgba(255, 255, 255, 0.06)",
+            border: isCurator ? "1.5px solid rgba(212, 160, 48, 0.6)" : "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: isCurator ? "0 0 10px rgba(212, 160, 48, 0.25)" : "none",
+            transition: "all 0.2s ease"
+          }}
+        >
+          <UserButton 
+            afterSignOutUrl="/" 
+            appearance={{ 
+              elements: { 
+                userButtonAvatarBox: { width: 30, height: 30 } 
+              } 
+            }} 
+          />
+        </div>
+      </SignedIn>
+
+      {/* Hamburger Menu Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -137,7 +208,17 @@ export default function ArchiveHamburgerMenu() {
                 <Link to="/library" onClick={handleLinkClick} style={buttonStyle}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                  <BookOpen size={16} /> Digital Library
+                  <BookOpen size={16} /> Digital Library Stacks
+                </Link>
+                <Link to="/collections/tim-hammond-archive" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Archive size={16} /> Tim Hammond Archive (MS 1205)
+                </Link>
+                <Link to="/collections" onClick={handleLinkClick} style={buttonStyle}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <Archive size={16} /> Special Collections
                 </Link>
                 <Link to="/news" onClick={handleLinkClick} style={buttonStyle}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
@@ -193,22 +274,43 @@ export default function ArchiveHamburgerMenu() {
 
               <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "0.5rem 0" }} />
               
-              <div style={{ padding: "0.25rem 0.5rem" }}>
+              <div style={{ padding: "0.4rem 0.5rem" }}>
                 <SignedOut>
                   <SignInButton mode="modal">
                     <button 
-                      style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      style={{ ...buttonStyle, color: "var(--c-goldBright)", background: "rgba(212, 160, 48, 0.06)", border: "1px solid rgba(212, 160, 48, 0.2)" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(212, 160, 48, 0.14)"}
+                      onMouseLeave={e => e.currentTarget.style.background = "rgba(212, 160, 48, 0.06)"}
                     >
                       <LogIn size={16} /> Sign In
                     </button>
                   </SignInButton>
                 </SignedOut>
                 <SignedIn>
-                  <div style={{ padding: "0.5rem 1rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: { width: 28, height: 28 } } }} />
-                    <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.85rem', color: 'var(--c-textBright)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>My Account</span>
+                  <div style={{
+                    padding: "0.6rem 0.85rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    borderRadius: "8px"
+                  }}>
+                    <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: { width: 32, height: 32 } } }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                      <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '0.85rem', color: 'var(--c-textBright)', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {user?.fullName || user?.primaryEmailAddress?.emailAddress || 'My Account'}
+                      </span>
+                      {isCurator ? (
+                        <span style={{ fontSize: '0.68rem', color: 'var(--c-goldBright)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+                          ✦ Archive Curator
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.68rem', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          Researcher
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </SignedIn>
               </div>

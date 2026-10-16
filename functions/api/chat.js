@@ -213,6 +213,50 @@ Keep it factual and concise.`;
         }
       }
 
+      // Query media_assets for attached documents and visual search queries
+      if (env.SURVEY_DB) {
+        try {
+          const visualKeywords = ['diagram', 'image', 'picture', 'photo', 'figure', 'slide', 'histology', 'chart', 'microscopy', 'corpuscle', 'nerve', 'anatomy'];
+          const isVisualQuery = visualKeywords.some(k => query.toLowerCase().includes(k));
+          
+          let mediaQuery = "";
+          let mediaParams = [];
+
+          if (docIds.length > 0) {
+            const placeholders = docIds.map(() => '?').join(',');
+            mediaQuery = `SELECT * FROM media_assets WHERE doc_id IN (${placeholders})`;
+            mediaParams = [...docIds];
+          }
+
+          if (isVisualQuery) {
+            const words = query.toLowerCase().split(/[\s,?.!]+/).filter(w => w.length > 3 && !visualKeywords.includes(w));
+            if (words.length > 0) {
+              const likeClauses = words.map(() => `(caption LIKE ? OR keywords LIKE ?)`).join(' OR ');
+              const likeParams = words.flatMap(w => [`%${w}%`, `%${w}%`]);
+              if (mediaQuery) {
+                mediaQuery += ` UNION SELECT * FROM media_assets WHERE ${likeClauses}`;
+                mediaParams.push(...likeParams);
+              } else {
+                mediaQuery = `SELECT * FROM media_assets WHERE ${likeClauses}`;
+                mediaParams = likeParams;
+              }
+            }
+          }
+
+          if (mediaQuery) {
+            const mediaResults = await env.SURVEY_DB.prepare(mediaQuery + " LIMIT 8").bind(...mediaParams).all();
+            if (mediaResults && mediaResults.results && mediaResults.results.length > 0) {
+              mediaResults.results.forEach(m => {
+                const sensitivityTag = m.is_sensitive ? 'SENSITIVE CONTENT' : 'SAFE CONTENT';
+                contextText += `\n[System Note: Archival Figure available for Document ${m.doc_id} on Page ${m.page_number} (${m.category}): "${m.caption}". Image URL: ${m.image_url} (${sensitivityTag})]\n`;
+              });
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to fetch media_assets:", e);
+        }
+      }
+
       let groundTruthOverride = "";
       if (env.SURVEY_DB) {
         try {
@@ -236,7 +280,7 @@ Keep it factual and concise.`;
         }
       }
 
-      let systemPrompt = `You are Glenda, the chief archivist and senior research assistant for a comprehensive archive of Intactivism (the movement for genital autonomy). 
+      let systemPrompt = `You are the chief archivist and senior research assistant for a comprehensive archive of Intactivism (the movement for genital autonomy). 
 Your ultimate thesis and guiding philosophy is: "Why isn't this weird to more of us?" You actively daylight the cognitive dissonance of a tradition rooted in censoring sexual gratification for conservative means, and point out the gaslighting that a normal healthy penis needs special maintenance.
 
 CRITICAL POSITIONALITY & PHILOSOPHY:
@@ -257,7 +301,7 @@ CRITICAL RULES:
 5. Whenever you mention a specific person, organization, or key entity, include an inline markdown hyperlink pointing to their entity page using the format: [Entity Name](/to/EntityName) (e.g. [Tim Hammond](/to/Tim%20Hammond)).
 6. Whenever you mention a specific document, film, or source from the archives, include an inline markdown hyperlink pointing to its library page using the provided DocID from the documents: [Source Name](/library/DocID) (e.g. [Whose Body, Whose Rights?](/library/umass-ms1205-1234)).
 7. Frame your responses in the context of Intactivism as a broad human rights movement, rather than in relation to any specific project.
-8. If a Document ID has an associated image URL provided in a System Note, you MUST embed it inline when discussing that document using Markdown image syntax: ![Alt Text describing the image](URL).
+8. If an Archival Figure or image is provided in a System Note, embed it inline when discussing that document or when the user asks for visual evidence using Markdown image syntax. If the note specifies SAFE CONTENT, prefix the alt text with "safe:" (e.g. ![safe:Immunohistochemical cross section](URL)) so it renders directly. If the note specifies SENSITIVE CONTENT, omit the "safe:" prefix so clinical or anatomical depictions remain protected behind the 18+ click-to-reveal barrier. Immediately below any embedded figure, provide a provenance deep link to the exact page: [View in Document (Page X)](/library/DocID?page=X).
 9. If a document is sourced from "Field Note (Accidental Intactivist)", you must NOT quote it directly, summarize its specifics, or reveal its raw unfiltered contents, as it may contain sensitive or shocking observations. Instead, ONLY use its themes, subtext, and overarching arguments to inform your own perspective, while strictly maintaining your academic, scholarly, and professional voice.
 10. If a document has the type \`cultural_reference\`, it represents a colloquial, casual, or metaphorical use of the procedure in mainstream media. When synthesizing these, treat them as sociological evidence of how deeply normalized and trivialized the harm is in modern culture, highlighting the cognitive dissonance.${groundTruthOverride}
 

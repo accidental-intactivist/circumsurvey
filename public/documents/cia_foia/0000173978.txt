@@ -1,0 +1,72 @@
+September 29, 1966
+                Dear
+                     Attached are a few thoughts related to items we discussed during
+                my recent visit. Thanks to you and    I feel that the visit was
+                extremely fruitful and trust that it will @e possible' to periodically
+                dudlicate the experience.
+                     By now you may have heard          @is due back this week.
+                2However, I have included some miscellaneous systems specs and
+                costs for the ultrasonic si-nal device.
+                     I'm afraid I mislead.,   regarding a competing dog training
+                kit. It turned out to be only a book containing instructions for making
+                a home-made skinner box out of cardboard and mailin tubes.
+                                                                9
+                     Thank-you again for@the demonstrations, tours, and discussions
+                which              provided.
+                                                     9L=V rely, -
+
+                        Ul'
+                          i-rasonic Signal Svster,,i
+                        Several commercially available sphericon "tweeters" advertise
+                  a response up to 30-40 Kc.  The literature which we have seen suggests
+                  that these claims need to be'supplemented b-y  efficiency  and  power
+                  ratings at frequencies above 15 Kc.  An inexpensive speaker which
+                  y2ou might try is:
+                        Lafayette 2 lR67l5 Sphericon Tweeter @ $14. 40
+                        (Lafayette Radio Electronics, 111 Jericho Turnpike, Syosset,
+                         L. I., New York).
+                  We could test these speakers and provide you with- approximate po-.ver
+                  levels radiated at various frequencies and iriput power,. select an
+                  app.-opriate amplifier and ocsillators, and shi2p the system 46-0 YOU
+                  -vithin a period of about 2 weeks.  Coit for two  variable  frequency
+                  generators, 30 watt amplilier, speaker,   and testing would amount to
+                  2     Field Detector  for Ultrasound
+                        The sphericon.speakers can be used as rather crude and cheap
+                  microphones and could provide a simple technique for determining if
+                  moderate to large amounts o2f ultrasonic energy are being radiated in
+                  the field. You could filter the output of one of the above  speakers,
+                  amplify, and display the signal voltage on a meter.  The microphone
+                  would have to be positioned close to the speaker.
+                        If we were to supply the signal system we could also provide a
+                  self-contained detector system for an addition-al   1 5. 00.
+                        Because of  4the  many  transmission  problems  associated  with
+                  ultrasonic energy in the presence of wind or tl-iermal gradients it
+
+                                               -2 -
+                would be advantageous to consider an r. f. command system and signal
+                generation at the platforra.  To evaluate the training problems associated
+                with the generation of signals at the beast you could assemble a low cost
+                model plane R. C. system which gates ultrasonic signal oscillators to
+                an electrostatic transducer.  It is possible that t2he transducer could
+                be eliminated if sufficient ultrasonic energy is radiated directly from
+                the oscillator components, in which case the R. C. would have to switch
+                the oscillators on and off.  Weight should be less than 4 oz. using off-
+                the-shelf inexpensive gear.                could assemble such a system
+                and evaluate the circuit component radiation if desired.
+                3.
+                                   1      ican be ordered from:
+                     It might be simpler and less expensive to effect recall by merely
+                4.                   ]Releise
+                     R. F. command   receiver/actuator packages can be constructed which
+                weigh less than                           To prevent'undesired release
+
+                                                  3-
+                 by chance interference a lo,,Tic circuit .vould be desirable, but this could
+                 consist of                                              For training
+                 purposes a lo@v cost model R. C. unit can be used.  A test unit can be
+                 purchased directly from a model supply house (such as those described
+                 in the advertisement left with vou.  If the availa0ble model units prove
+                 too heavy or.unsuitable for your application               @could assemble
+                 a lo%v cost receiver/actuator pkg.                                and is
+                 tailored to your training situation.
+                                                        IL

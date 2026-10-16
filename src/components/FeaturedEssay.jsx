@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, ArrowRight, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BookOpen, ArrowRight, ExternalLink, User } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
+import { resolveItemRoute } from '../utils/routing';
 
 export default function FeaturedEssay() {
   const [essay, setEssay] = useState(null);
@@ -85,17 +87,31 @@ export default function FeaturedEssay() {
           {meta.abstract || 'A deep and personal reflection on the ongoing cultural shift.'}
         </p>
         
-        <a href={meta.url || '#'} target="_blank" rel="noreferrer" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 800,
-          textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'none',
-          transition: 'color 0.2s'
-        }}
-        onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-        onMouseLeave={e => e.currentTarget.style.color = C.goldBright}
-        >
-          Read Full Essay <ArrowRight size={14} />
-        </a>
+        {meta.url ? (
+          <a href={meta.url} target="_blank" rel="noreferrer" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 800,
+            textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'none',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+          onMouseLeave={e => e.currentTarget.style.color = C.goldBright}
+          >
+            Read Full Essay <ExternalLink size={14} />
+          </a>
+        ) : (
+          <Link to={resolveItemRoute(essay, meta).path} style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            color: C.goldBright, fontFamily: FONT.condensed, fontWeight: 800,
+            textTransform: 'uppercase', letterSpacing: '0.08em', textDecoration: 'none',
+            transition: 'color 0.2s'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+          onMouseLeave={e => e.currentTarget.style.color = C.goldBright}
+          >
+            Read Full Essay <ArrowRight size={14} />
+          </Link>
+        )}
       </div>
     </div>
   );

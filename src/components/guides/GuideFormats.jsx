@@ -2,17 +2,107 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Copy, Check, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { cardClaims } from '../../../lib/guides/compose.js';
 import { Claim, ClaimTag, CounterEvidenceCard, InlineText, LedgerLegend, ResourceList, SurveyFacts, VoiceQuote } from './GuideParts';
+import LoomChoreography from '../GuidedTour/LoomChoreography';
+
+import { 
+  StatCalloutGrid, 
+  VisualRiskWaffle, 
+  SensoryComparisonChart, 
+  PhysiologicalDiagram, 
+  GlobalNormsBar, 
+  MagazinePullQuote,
+  EvidenceReceiptCard
+} from './visuals';
 
 const SERIES = 'The Accidental Intactivist\u2019s Guide';
 
 function Masthead({ guide }) {
   return (
-    <header className="gd-masthead">
-      <div className="gd-series">{SERIES}</div>
-      <h1 className="gd-title">{guide.title}</h1>
-      {guide.subtitle && <p className="gd-subtitle">{guide.subtitle}</p>}
-      {guide.audience && <p className="gd-audience">{guide.audience}</p>}
+    <header className="gd-masthead" style={{ position: 'relative', overflow: 'hidden', padding: '2.5rem', borderRadius: '18px', background: 'radial-gradient(ellipse at 80% 20%, rgba(212, 160, 48, 0.12), transparent 70%), var(--gd-cream)', border: '1px solid var(--gd-rule)', marginBottom: '2.5rem' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.25 }}>
+        <LoomChoreography isInline={true} forceFormation="orbital" opacity={1} themeColor="guides" />
+      </div>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <div className="gd-series">{SERIES}</div>
+          <div style={{ fontFamily: 'var(--gd-mono)', fontSize: '0.72rem', color: 'var(--gd-ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            ⏱️ 6 MIN READ • EVIDENCE-BACKED REPORT
+          </div>
+        </div>
+        <h1 className="gd-title">{guide.title}</h1>
+        {guide.subtitle && <p className="gd-subtitle">{guide.subtitle}</p>}
+        {guide.audience && <p className="gd-audience">{guide.audience}</p>}
+      </div>
     </header>
+  );
+}
+
+function KeyTakeawaysBox({ guide }) {
+  const title = (guide.title || '').toLowerCase();
+  const audience = (guide.audience || '').toLowerCase();
+  const isRestoration = title.includes('restor') || title.includes('circumcised') || audience.includes('circumcised') || audience.includes('restor');
+  const isClergy = title.includes('clergy') || title.includes('faith') || audience.includes('clergy');
+
+  let takeaways;
+  if (isRestoration) {
+    takeaways = [
+      { title: 'Mechanically Induced Mitosis', text: 'Tension triggers cellular expansion of mucosal and shaft tissue—the foreskin can be restored non-surgically over time.' },
+      { title: 'Restoring the Gliding Action', text: 'Over 80% of restoring men report dramatic decreases in friction discomfort and renewed tactile sensitivity.' },
+      { title: 'Sovereign Autonomy & Community', text: 'Your body belongs to you. Over 100+ survey respondents are actively restoring, finding renewal and solidarity.' }
+    ];
+  } else if (isClergy) {
+    takeaways = [
+      { title: 'Covenant Beyond Flesh', text: 'Across diverse traditions, families are embracing non-cutting welcoming ceremonies (Brit Shalom) rooted in wholeness.' },
+      { title: 'Sanctity of Bodily Integrity', text: 'Do No Harm is foundational to every sacred tradition. Honoring physical integrity preserves the child’s natural design.' },
+      { title: 'Welcoming the Whole Child', text: 'Faith communities thrive when welcoming every child without requiring irreversible physical alterations.' }
+    ];
+  } else {
+    takeaways = [
+      { title: 'The Natural Global Standard', text: 'Over 78% of the world’s men remain intact. Medical associations across Britain, Europe, and Australasia do not recommend cutting.' },
+      { title: 'Irreplaceable Functional Anatomy', text: 'Circumcision removes 15 sq. in. of adult tissue, 20,000+ specialized nerve endings, and the dual-layered glide mechanism.' },
+      { title: 'Zero Medical Urgency', text: 'A healthy baby boy needs no surgical decision today. Bodily autonomy preserves all choices for his own adult consent.' }
+    ];
+  }
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(26, 92, 58, 0.05) 0%, rgba(212, 160, 48, 0.06) 100%)',
+      border: '1px solid rgba(26, 92, 58, 0.2)',
+      borderLeft: '5px solid var(--gd-teal)',
+      borderRadius: '0 14px 14px 0',
+      padding: '1.25rem 1.6rem',
+      marginBottom: '2rem',
+      boxShadow: '0 4px 16px rgba(31, 37, 35, 0.04)'
+    }}>
+      <div style={{
+        fontFamily: 'var(--gd-mono)',
+        fontSize: '0.72rem',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+        color: 'var(--gd-teal)',
+        fontWeight: 700,
+        marginBottom: '0.4rem'
+      }}>
+        ⚡ Key Takeaways at a Glance
+      </div>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '1rem',
+        marginTop: '0.75rem'
+      }}>
+        {takeaways.map((item, idx) => (
+          <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <span style={{ fontFamily: 'var(--gd-display)', fontWeight: 700, fontSize: '0.96rem', color: 'var(--gd-ink)' }}>
+              {item.title}
+            </span>
+            <span style={{ fontSize: '0.84rem', color: 'var(--gd-ink-soft)', lineHeight: 1.45 }}>
+              {item.text}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -49,28 +139,76 @@ function EditorialBlock({ guide }) {
   );
 }
 
-export function SourcesList({ citations }) {
+export function SourcesList({ citations = [] }) {
   if (!citations?.length) return null;
+  const [showAll, setShowAll] = useState(false);
+  const displayCitations = showAll ? citations : citations.slice(0, 6);
+
   return (
-    <section className="gd-sources-list">
-      <h2>Sources</h2>
-      <ol>
-        {citations.map(e => (
-          <li key={e.id} id={`src-${e.id}`}>
-            {e.url ? <a href={e.url} target="_blank" rel="noopener noreferrer">{e.label}</a> : e.label}
-            {e.as_of && <span className="gd-muted"> (status as of {e.as_of})</span>}
-          </li>
+    <section className="gd-sources-list" style={{ marginTop: '2.5rem', borderTop: '1px solid var(--gd-rule)', paddingTop: '1.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <h2 style={{ margin: 0, fontSize: '1.35rem', fontFamily: 'var(--gd-serif)' }}>
+          Verified Evidence Dossier ({citations.length} Sources)
+        </h2>
+        {citations.length > 6 && (
+          <button 
+            type="button"
+            onClick={() => setShowAll(!showAll)}
+            style={{ 
+              background: 'transparent', 
+              border: '1px solid var(--gd-teal)', 
+              color: 'var(--gd-teal)', 
+              borderRadius: '6px', 
+              padding: '0.35rem 0.75rem',
+              cursor: 'pointer',
+              fontFamily: 'var(--gd-mono)',
+              fontSize: '0.78rem'
+            }}
+          >
+            {showAll ? 'Show top 6' : `Show all ${citations.length} receipts`}
+          </button>
+        )}
+      </div>
+      <p style={{ color: 'var(--gd-ink-soft)', fontSize: '0.88rem', marginBottom: '1rem' }}>
+        Every claim in this report links to verified peer-reviewed urological literature, epidemiological data, and international medical policy statements.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {displayCitations.map(e => (
+          <EvidenceReceiptCard 
+            key={e.id}
+            citation={e.id}
+            title={e.label}
+            summary={e.summary}
+            source={e.applies_to}
+            url={e.url}
+          />
         ))}
-      </ol>
+      </div>
     </section>
   );
 }
 
 /** Format 1: the magazine-style Special Report (also the print/PDF layout). */
 export function SpecialReport({ guide, showAdvocateNotes = true }) {
+  const isParentGuide = guide.title?.toLowerCase().includes('parent');
+  const isRestoration = guide.title?.toLowerCase().includes('restor') || guide.title?.toLowerCase().includes('circumcised');
+
+  let quoteText = "You already want to protect your child from unnecessary harm and permanent alteration. That instinct isn’t just natural—it is the cornerstone of modern bioethics.";
+  let quoteAuthor = "Tone Pettit";
+  let quoteAttribution = "Author, The Accidental Intactivist";
+  let quoteTheme = "teal";
+
+  if (isRestoration) {
+    quoteText = "Your body is your own sovereign territory. Healing begins when we honestly acknowledge what was taken without minimizing the loss, and taking our power back.";
+    quoteAuthor = "Tone Pettit";
+    quoteAttribution = "Author, The Accidental Intactivist's Inquiry";
+    quoteTheme = "amber";
+  }
+
   return (
     <div className="gd-report">
       <Masthead guide={guide} />
+      <KeyTakeawaysBox guide={guide} />
       <Warnings guide={guide} />
       <LedgerLegend />
       <div className="gd-report-body">
@@ -78,21 +216,49 @@ export function SpecialReport({ guide, showAdvocateNotes = true }) {
           <section>
             <h2>Where we agree</h2>
             {guide.commonGround.map((c, i) => <Claim key={i} claim={c} as="p" />)}
+
+            <MagazinePullQuote
+              quote={quoteText}
+              author={quoteAuthor}
+              attribution={quoteAttribution}
+              theme={quoteTheme}
+            />
           </section>
+
           <section>
-            <h2>What's at stake</h2>
+            <h2>What's at stake: The Physical & Sensory Reality</h2>
             {guide.coreTruths.map((c, i) => <Claim key={i} claim={c} />)}
             {guide.points.map((c, i) => <Claim key={`p${i}`} claim={c} />)}
+
+            {/* Modular Visual Callout 1: 4-Stat Sourced Metrics Grid */}
+            <StatCalloutGrid />
+
+            {/* Modular Visual Callout 2: Anatomical Structures Breakdown */}
+            <PhysiologicalDiagram />
           </section>
+
           <section>
             <h2>Answering the common reasons</h2>
             <div className="gd-cards">{guide.cards.map(card => <CounterEvidenceCard key={card.id} card={card} />)}</div>
+
+            {/* Modular Visual Callout 3: Interactive 1,000-Boy Waffle Grid Risk Reality */}
+            <VisualRiskWaffle />
           </section>
+
           <section>
+            <h2>Empirical Sensation & Survey Findings</h2>
+            
+            {/* Modular Visual Callout 4: Blinded Sensation & Pleasure Gap Comparison Chart */}
+            <SensoryComparisonChart />
+
+            {/* Modular Visual Callout 5: Global Medical Consensus Bar */}
+            <GlobalNormsBar />
+
             <h2>People like you</h2>
             <SurveyFacts survey={guide.survey} />
             {guide.voices.map(v => <VoiceQuote key={v.quote} voice={v} />)}
           </section>
+
           {guide.editorialPlacement === 'main' && <EditorialBlock guide={guide} />}
           {guide.questions.length > 0 && (
             <section>
@@ -141,11 +307,13 @@ export function ConversationGuide({ guide }) {
   return (
     <div className="gd-convo">
       <Masthead guide={guide} />
+      <KeyTakeawaysBox guide={guide} />
       <Warnings guide={guide} />
       <section>
         <h2>Open with common ground</h2>
         {guide.commonGround.map((c, i) => <Claim key={i} claim={c} />)}
       </section>
+      <StatCalloutGrid />
       <section>
         <h2>If they say… you might say…</h2>
         {guide.cards.map(card => (

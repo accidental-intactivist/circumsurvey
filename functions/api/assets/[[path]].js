@@ -3,7 +3,7 @@ export async function onRequestGet(context) {
   const pathArray = params.path || [];
   let fullPath = pathArray.map(p => decodeURIComponent(p)).join('/');
   
-  if (!fullPath.startsWith('documents/') && !fullPath.startsWith('thumbnails/')) {
+  if (!fullPath.startsWith('documents/') && !fullPath.startsWith('thumbnails/') && !fullPath.startsWith('figures/')) {
     fullPath = `documents/${fullPath}`;
   }
   

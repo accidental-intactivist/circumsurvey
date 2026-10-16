@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Building2, Search, Star, BookOpen, ChevronDown, LayoutGrid, List, Filter, X } from 'lucide-react';
+import { safeParseJson } from '../utils/json';
 import './AdminArchivePage.css';
 
 const ROLE_CONFIG = {
@@ -84,11 +85,10 @@ let _cachedDocsPromise = null;
     
     documents.forEach(doc => {
       if (!doc.metadata_json) return;
-      try {
-        const meta = JSON.parse(doc.metadata_json);
-        
-        // Use a Set to avoid double-counting the same entity in a single document
-        const docNames = new Set();
+      const meta = safeParseJson(doc.metadata_json);
+      
+      // Use a Set to avoid double-counting the same entity in a single document
+      const docNames = new Set();
         
         const addNames = (arr) => {
           if (!Array.isArray(arr)) return;
@@ -105,8 +105,6 @@ let _cachedDocsPromise = null;
         docNames.forEach(lower => {
           frequencyMap[lower] = (frequencyMap[lower] || 0) + 1;
         });
-        
-      } catch (err) { /* skip malformed metadata */ }
     });
 
     // 2. Map entity names to their frequencies
@@ -134,9 +132,14 @@ let _cachedDocsPromise = null;
   };
 
   // Filter entities
-  const getNormalizedRole = (role) => {
+  const getNormalizedRole = (role, name = '') => {
+    const n = (name || '').toLowerCase();
+    if (n.includes('tim hammond') || n.includes('hammond tim')) return 'champion';
     if (!role || String(role).toUpperCase() === 'NULL' || String(role) === 'None') return 'notable';
-    return role;
+    const r = String(role).toLowerCase();
+    if (r === 'champion' || r.includes('champion') || r.includes('intactivist') || r.includes('autonomy')) return 'champion';
+    if (r === 'critic' || r.includes('critic') || r.includes('pro-circ')) return 'critic';
+    return 'notable';
   };
 
   const filteredEntities = entities.filter(e => {
@@ -146,7 +149,7 @@ let _cachedDocsPromise = null;
           !e.description?.toLowerCase().includes(q) &&
           !e.tagline?.toLowerCase().includes(q)) return false;
     }
-    const role = getNormalizedRole(e.role);
+    const role = getNormalizedRole(e.role, e.name);
     if (roleFilter !== 'all' && role !== roleFilter) return false;
     if (typeFilter !== 'all' && e.type !== typeFilter) return false;
     return true;
@@ -180,8 +183,8 @@ let _cachedDocsPromise = null;
 
   // Stats
   const stats = useMemo(() => {
-    const champions = entities.filter(e => getNormalizedRole(e.role) === 'champion').length;
-    const critics = entities.filter(e => getNormalizedRole(e.role) === 'critic').length;
+    const champions = entities.filter(e => getNormalizedRole(e.role, e.name) === 'champion').length;
+    const critics = entities.filter(e => getNormalizedRole(e.role, e.name) === 'critic').length;
     return {
       total: entities.length,
       champions,
@@ -192,7 +195,10 @@ let _cachedDocsPromise = null;
     };
   }, [entities]);
 
-  const getRoleConfig = (role) => ROLE_CONFIG[role] || ROLE_CONFIG.notable;
+  const getRoleConfig = (role, name = '') => {
+    const normalized = getNormalizedRole(role, name);
+    return ROLE_CONFIG[normalized] || ROLE_CONFIG.notable;
+  };
 
   const scrollToLetter = useCallback((letter) => {
     setActiveLetter(letter);
@@ -467,7 +473,7 @@ let _cachedDocsPromise = null;
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(280px, 1fr))`, gap: '1.25rem' }}>
             {featured.map((e) => {
-              const rc = getRoleConfig(e.role);
+              const rc = getRoleConfig(e.role, e.name);
               return (
                 <Link
                   key={e.id}
@@ -546,7 +552,7 @@ let _cachedDocsPromise = null;
                 /* ── COMPACT LIST VIEW (Stanford Profiles style) ── */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                   {entries.map((e, i) => {
-                    const rc = getRoleConfig(e.role);
+                    const rc = getRoleConfig(e.role, e.name);
                     const mentions = mentionCounts[e.id] || 0;
                     return (
                       <Link
@@ -634,7 +640,7 @@ let _cachedDocsPromise = null;
                 /* ── GRID VIEW (Original card layout) ── */
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.25rem' }}>
                   {entries.map((e, i) => {
-                    const rc = getRoleConfig(e.role);
+                    const rc = getRoleConfig(e.role, e.name);
                     const mentions = mentionCounts[e.id] || 0;
                     return (
                       <Link
@@ -693,14 +699,12 @@ let _cachedDocsPromise = null;
                               </span>
                             )}
                             {e.see_also_json && (() => {
-                              try {
-                                const sa = JSON.parse(e.see_also_json);
-                                if (sa && sa.length > 0) return (
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', opacity: 0.7 }}>
-                                    ↔ linked to {sa.length} other{sa.length !== 1 ? 's' : ''}
-                                  </span>
-                                );
-                              } catch { /* skip */ }
+                              const sa = safeParseJson(e.see_also_json, []);
+                              if (Array.isArray(sa) && sa.length > 0) return (
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', opacity: 0.7 }}>
+                                  ↔ linked to {sa.length} other{sa.length !== 1 ? 's' : ''}
+                                </span>
+                              );
                               return null;
                             })()}
                           </div>

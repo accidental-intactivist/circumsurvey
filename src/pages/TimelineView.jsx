@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { generateFriendlySlug } from '../utils/slugs';
 import ThinkingSpirograph from '../components/ThinkingSpirograph';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import { safeParseJson } from '../utils/json';
+import { resolveCollectionName } from '../utils/collections';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
@@ -51,13 +54,35 @@ function LazyDocumentThumbnail({ url, fallbackImage }) {
 }
 
 export default function TimelineView() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDecade, setSelectedDecade] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
+  const [selectedDecade, setSelectedDecade] = useState(() => {
+    const d = searchParams.get('decade');
+    if (d) return d.replace(/s$/i, '');
+    const y = searchParams.get('year');
+    if (y) {
+      const match = y.match(/\b(18|19|20)(\d)/);
+      if (match) return `${match[1]}${match[2]}0`;
+    }
+    return '';
+  });
+  const [selectedSubject, setSelectedSubject] = useState(() => searchParams.get('subject') || '');
   const scrollContainerRef = useRef(null);
+
+  // Sync state to URL search parameters
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (searchQuery) next.set('q', searchQuery); else next.delete('q');
+    if (selectedDecade) next.set('decade', `${selectedDecade.replace(/s$/i, '')}s`); else next.delete('decade');
+    if (selectedSubject) next.set('subject', selectedSubject); else next.delete('subject');
+    if (next.has('year')) next.delete('year');
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchQuery, selectedDecade, selectedSubject, searchParams, setSearchParams]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -129,7 +154,7 @@ export default function TimelineView() {
                 // Sort to ensure page 1 is first
                 rawFiles.sort((a,b) => (a.url||'').localeCompare(b.url||''));
                 const first = rawFiles[0];
-                const meta = first.metadata_json ? JSON.parse(first.metadata_json) : {};
+                const meta = safeParseJson(first.metadata_json);
                 
                 // Try to infer a nice title from the base
                 let cleanBaseTitle = first.title ? first.title.replace(/[\-_]?\d+\.(tif|tiff|txt|dat)$/i, '') : 'Compiled Scans';
@@ -156,10 +181,10 @@ export default function TimelineView() {
               const mockData = await mockRes.json();
               docList = docList.map(doc => {
                 const liveTitle = doc.title || '';
-                const liveMeta = JSON.parse(doc.metadata_json || '{}');
+                const liveMeta = safeParseJson(doc.metadata_json);
                 const geminiTitle = liveMeta.gemini_extracted_metadata?.title || '';
                 const match = mockData.find(m => {
-                  const mMeta = JSON.parse(m.metadata_json || '{}');
+                  const mMeta = safeParseJson(m.metadata_json);
                   const mTitle = m.title || mMeta.title || '';
                   if (!mTitle) return false;
                   const t1 = liveTitle.toLowerCase();
@@ -168,7 +193,7 @@ export default function TimelineView() {
                   return (t1 && (t1.includes(t2) || t2.includes(t1))) || (t3 && (t3.includes(t2) || t2.includes(t3)));
                 });
                 if (match) {
-                  const mMeta = JSON.parse(match.metadata_json || '{}');
+                  const mMeta = safeParseJson(match.metadata_json);
                   doc.metadata_json = JSON.stringify({
                      ...mMeta,
                      ...liveMeta,
@@ -187,16 +212,16 @@ export default function TimelineView() {
               let subject = resolveCollectionName(d, 'Tim Hammond Collection');
               if (subject.includes(': ')) {
                 subject = subject.split(': ')[1];
-              } else if (subject.toLowerCase() === 'msu clippings') {
+              } else if (subject.toLowerCase() === 'msu clippings' || subject.toLowerCase() === 'msu_clippings') {
                 subject = 'Clippings';
               }
-              return { ...d, source_collection: subject };
+              return { ...d, source_collection: subject, subject };
             });
 
             // Sort chronologically
             const sorted = enriched.filter(d => d.url).sort((a, b) => {
-              const dateA = a.metadata_json ? (JSON.parse(a.metadata_json).date || '9999') : '9999';
-              const dateB = b.metadata_json ? (JSON.parse(b.metadata_json).date || '9999') : '9999';
+              const dateA = safeParseJson(a.metadata_json).date || '9999';
+              const dateB = safeParseJson(b.metadata_json).date || '9999';
               if (dateA !== dateB) return dateA.localeCompare(dateB);
               return (a.title || '').localeCompare(b.title || '');
             });
@@ -212,7 +237,7 @@ export default function TimelineView() {
   }, []);
 
   const getCleanTitle = (d) => {
-    const m = d.metadata_json ? JSON.parse(d.metadata_json) : {};
+    const m = safeParseJson(d.metadata_json);
     if (m && m.academic_title) return m.academic_title;
     if (m && m.gemini_extracted_metadata && m.gemini_extracted_metadata.title) return m.gemini_extracted_metadata.title;
     if (m && m.title) return m.title;
@@ -229,7 +254,7 @@ export default function TimelineView() {
   };
 
   const getYear = (d) => {
-    const m = d.metadata_json ? JSON.parse(d.metadata_json) : {};
+    const m = safeParseJson(d.metadata_json);
     if (m && m.date && m.date !== 'Unknown') {
       return m.date.substring(0, 4);
     }
@@ -250,7 +275,7 @@ export default function TimelineView() {
   const filteredDocs = docs.filter(doc => {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      const meta = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+      const meta = safeParseJson(doc.metadata_json);
       const allTags = [
         ...(meta.tags || []),
         ...(meta.keywords || []),
@@ -262,7 +287,11 @@ export default function TimelineView() {
         return false;
       }
     }
-    if (selectedSubject && doc.subject !== selectedSubject) return false;
+    if (selectedSubject) {
+      const sSub = selectedSubject.toLowerCase();
+      const dSub = (doc.subject || doc.source_collection || '').toLowerCase();
+      if (dSub !== sSub && !dSub.includes(sSub) && !sSub.includes(dSub)) return false;
+    }
     if (selectedDecade) {
       const year = parseInt(getYear(doc), 10);
       if (isNaN(year) || Math.floor(year / 10) * 10 !== parseInt(selectedDecade, 10)) {
@@ -285,7 +314,11 @@ export default function TimelineView() {
   return (
     <div style={{ minHeight: '100vh', background: 'radial-gradient(circle at 50% 0%, #1a1a24 0%, #0a0a0a 60%)', padding: '2rem 0', color: 'var(--c-textBright)', overflow: 'hidden', position: 'relative' }}>
       {/* Museum lighting effect */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40vh', background: 'linear-gradient(180deg, rgba(212,160,48,0.03) 0%, transparent 100%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40vh', background: 'linear-gradient(180deg, rgba(212,160,48,0.03) 0%, transparent 100%)', pointerEvents: 'none', zIndex: 1 }} />
+      
+      <div className="no-print" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <LoomChoreography forceFormation="moire" isInline={true} opacity={0.15} themeColor="library" />
+      </div>
 
       <div style={{ padding: '0 4rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', position: 'relative', zIndex: 10 }}>
         <div style={{ flex: 1, paddingRight: '2rem' }}>
@@ -346,8 +379,43 @@ export default function TimelineView() {
         alignItems: 'center',
         minHeight: '60vh',
         WebkitOverflowScrolling: 'touch',
-        scrollSnapType: 'x mandatory'
+        scrollSnapType: 'x mandatory',
+        position: 'relative'
       }}>
+        
+        {/* Sankey River Timeline Line */}
+        {filteredDocs.length > 0 && (
+          <svg 
+            style={{ position: 'absolute', top: '50%', left: 0, height: '200px', width: Math.max(100, filteredDocs.length * 372 + 200), transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 0 }}
+          >
+            {filteredDocs.map((doc, idx) => {
+              if (idx === 0) return null;
+              const startX = 32 + 170 + (idx - 1) * 372;
+              const endX = 32 + 170 + idx * 372;
+              const startY = 100 + Math.sin(idx * 1.5) * 40;
+              const endY = 100 + Math.sin((idx + 1) * 1.5) * 40;
+              return (
+                <g key={`river-${doc.id}`}>
+                  <path 
+                    d={`M ${startX},${startY} C ${startX + 186},${startY} ${endX - 186},${endY} ${endX},${endY}`}
+                    fill="none"
+                    stroke="var(--c-goldBright)"
+                    strokeWidth="8"
+                    opacity="0.1"
+                  />
+                  <path 
+                    d={`M ${startX},${startY} C ${startX + 186},${startY} ${endX - 186},${endY} ${endX},${endY}`}
+                    fill="none"
+                    stroke="var(--c-gold)"
+                    strokeWidth="2"
+                    opacity="0.6"
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        )}
+
         {filteredDocs.length === 0 && (
           <div style={{ padding: '4rem', color: 'var(--c-dim)', width: '100%', textAlign: 'center', fontSize: '1.2rem' }}>
             No documents match your filters.
@@ -356,7 +424,7 @@ export default function TimelineView() {
         {filteredDocs.map((doc, idx) => {
           const year = getYear(doc);
           const showYearLabel = idx === 0 || getYear(filteredDocs[idx - 1]) !== year;
-          const mediaUrls = doc.media_urls ? JSON.parse(doc.media_urls) : [];
+          const mediaUrls = safeParseJson(doc.media_urls, []);
           const thumb = mediaUrls.find(u => u.match(/\.(jpeg|jpg|gif|png)$/i));
 
           return (
@@ -368,7 +436,7 @@ export default function TimelineView() {
               )}
               
               <Link 
-                to={`/library/${generateFriendlySlug(doc, doc.metadata_json ? JSON.parse(doc.metadata_json) : {})}`}
+                to={`/library/${generateFriendlySlug(doc, safeParseJson(doc.metadata_json))}`}
                 className="lux-hover-bright"
                 style={{
                   display: 'flex',
@@ -401,7 +469,7 @@ export default function TimelineView() {
                     {getCleanTitle(doc)}
                   </div>
                   {(() => {
-                    const m = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+                    const m = safeParseJson(doc.metadata_json);
                     const pages = m.page_count || m.pages || null;
                     const authors = m.gemini_extracted_metadata?.authors?.length > 0 
                       ? m.gemini_extracted_metadata.authors.join(', ')

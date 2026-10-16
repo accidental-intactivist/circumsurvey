@@ -5,6 +5,7 @@ import { C, FONT } from '../styles/tokens';
 import ThinkingSpirograph from './ThinkingSpirograph';
 import { getFaviconUrl } from '../utils/newsLens';
 import CausticsBackground from './CausticsBackground';
+import { resolveItemRoute } from '../utils/routing';
 
 export default function NewsAggregator({ compact = false }) {
   const [news, setNews] = useState([]);
@@ -131,14 +132,18 @@ export default function NewsAggregator({ compact = false }) {
         {topNews.map((item, i) => {
           let meta = {};
           try { meta = item.metadata_json ? JSON.parse(item.metadata_json) : {}; } catch(e){}
-          const isInternal = ['essay', 'recap', 'article', 'internal_news'].includes(item.type);
+          const isInternal = ['essay', 'recap', 'article', 'internal_news'].includes(item.type) || !(meta.url || item.url);
+          const route = resolveItemRoute(item, meta);
+          const externalUrl = !isInternal ? (meta.url || item.url) : null;
+          const CardElement = externalUrl ? 'a' : Link;
+          const linkProps = externalUrl 
+            ? { href: externalUrl, target: '_blank', rel: 'noreferrer' } 
+            : { to: route.path };
           
           return (
-            <a 
+            <CardElement 
               key={item.id || i} 
-              href={meta.url || item.url || '#'}
-              target="_blank"
-              rel="noreferrer"
+              {...linkProps}
               style={{
                 display: 'block',
                 textDecoration: 'none',
@@ -161,7 +166,7 @@ export default function NewsAggregator({ compact = false }) {
                       background: isInternal ? 'rgba(59, 130, 246, 0.1)' : 'rgba(212, 160, 48, 0.1)',
                       padding: '0.15rem 0.4rem', borderRadius: '4px',
                     }}>
-                      {meta.publisher || meta.source_publication || (isInternal ? 'Original' : 'External')}
+                      {meta.publisher || meta.source_publication || (isInternal ? (item.type === 'recap' ? 'Internal Archives' : 'Original') : 'External')}
                     </span>
                     <span style={{ fontSize: '0.7rem', color: C.dim, fontFamily: FONT.mono, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                       <Clock size={10} /> {meta.date || 'Recent'}
@@ -177,11 +182,11 @@ export default function NewsAggregator({ compact = false }) {
                     color: C.goldBright, fontSize: '0.75rem', fontFamily: FONT.condensed, fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '0.3rem'
                   }}>
-                    Read <ExternalLink size={11} />
+                    {item.type === 'recap' ? 'Read Digest' : isInternal ? 'Read Article' : 'Read'} {externalUrl ? <ExternalLink size={11} /> : <ArrowRight size={11} />}
                   </span>
                 </div>
               </div>
-            </a>
+            </CardElement>
           );
         })}
       </div>
@@ -208,14 +213,18 @@ export default function NewsAggregator({ compact = false }) {
           try { meta = item.metadata_json ? JSON.parse(item.metadata_json) : {}; } catch(e){}
           const isCurrent = i === currentIndex;
           const imageUrl = meta.image_url || meta.og_image || '';
-          const isInternal = ['essay', 'recap', 'article', 'internal_news'].includes(item.type);
+          const isInternal = ['essay', 'recap', 'article', 'internal_news'].includes(item.type) || !(meta.url || item.url);
+          const route = resolveItemRoute(item, meta);
+          const externalUrl = !isInternal ? (meta.url || item.url) : null;
+          const SlideElement = externalUrl ? 'a' : Link;
+          const slideProps = externalUrl 
+            ? { href: externalUrl, target: '_blank', rel: 'noreferrer' } 
+            : { to: route.path };
           
           return (
-            <a 
+            <SlideElement 
               key={item.id || i} 
-              href={meta.url || item.url || '#'}
-              target="_blank"
-              rel="noreferrer"
+              {...slideProps}
               style={{
                 position: 'absolute',
                 top: 0, left: 0, width: '100%', height: '100%',
@@ -355,10 +364,10 @@ export default function NewsAggregator({ compact = false }) {
                   letterSpacing: '0.08em',
                   marginTop: '0.25rem',
                 }}>
-                  Read Full Story <ExternalLink size={13} />
+                  {item.type === 'recap' ? 'Read Movement Digest' : isInternal ? 'Read Full Article' : 'Read Full Story'} {externalUrl ? <ExternalLink size={13} /> : <ArrowRight size={13} />}
                 </span>
               </div>
-            </a>
+            </SlideElement>
           );
         })}
 

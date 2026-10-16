@@ -9,7 +9,7 @@ export default function ReportBadge() {
 
   return (
     <a
-      href="#/report"
+      href="/explore/report"
       style={{
         position: "fixed",
         bottom: 24,

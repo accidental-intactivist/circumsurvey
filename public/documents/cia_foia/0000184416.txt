@@ -1,0 +1,99 @@
+llel)ort oi-i the I)estrn end Con3tructiori of Fido
+               Tone E@elay Apperstus on-,--.'--,uLcontract under Contract
+           lie first apporatiis built was de@signed on the principle of a con-
+           stant tape speed of about 40" per second nitli a variable distnnco
+           betrieen the recordinv, and playback heads.  The recording head 'Was
+           fixed In position and the playback head wes movable on a truck
+           v)iich wns do3ir                                   'I'he tape In the form
+                          ;nod to preserve ttic mlicnment.
+           of iin endless looo nos carried overtto licht l2ow inertia palloysi,
+           one of vtiich v:ss kixod and the other lievinr, a sprin(@ Mountin,-
+                                                                  C,)        , @Nhich
+           .maintained a constant tension on the tape*  'Die sound quality was
+           fair.  7ho loop of tape of overall length st@out 2 feet appear2ed to
+           r                                                            qlie overall
+           ,,ivo adeqtioto rosults for poriods tip to one-linif hour.
+                                                                        necord
+           quality, ho@,jever, ras not by any means equal to th.0 !."a
+           equipment.  Althou-i-i lo%,Yer atislit-y ar2iplifiers (P(     Y,,ero used
+           in t@iis %%,orl,c, the main difference in quality was noise inherent
+           In the tope and hcad system used.                     I
+           (;onseqtientl-                      nstont !-iced ,ioporation device rtis
+                      ,@t a variablo speed co
+           desicned and built.     'The hcG(Is riere,fixed in position et  the
+           rilnimun diatnnco (1").  1,he endless loop of tooc %@,a3 driven by a
+           variable speed LC motor,, iisin- a 6 volt storaf_,e battery.  Since an
+           overall speod rsnfrc of at least 10.1 %,js.s desired Y.,Ith E,,oo2d torque
+           over tho ren-cet the use of a resittencel,iri the field vies found to
+           be lni3dequat;.  I'h,e desired cariditions %@ere mode by varying the
+           or,-icture resistance and the field resistance sirrulteneoual7o but
+           in opposite directions,  'LEits %-;as accomt)lis2hed by 9 -iodific(l
+           potentiometers fixed rosistance combination betv--,,-,n the field and
+           tli.e, uri-,ioture. In this way., a 2-1---.1 !3pood range ras obtained @,7@ith
+           t,ood torque#
+           ]lie ren@f-o of delay with t'-Iis equipment vlios f2rom about 0.02 to 0*4
+           seconds    'llie nolso level of th,3 machine ras fairly vllgh,, apparently
+           due to ltiodcqiiate alif-@nment and tracking of tlio tape,
+           it boca-io oppnrent tritit constrkiction of a hi@,,Iior or,-ior of acci)-racy
+           vies necessary.  It      decided 2to               lq     rd recordinp,
+                                                modify tl-ie @' r
+                                                               ,,noco
+           i.init by 1,,Popl.nrr n fixed rolotionship batriern the, liencis and a con-
+           striiit tupe spood by incli).dinC-., r7ice2ns for var-.7in,, t,,,e lon(rtli of ttipe
+           betzeen tli-- fli.ed record and playback boadso  "Ltits afln be done by
+           an orron!-ement           pulle7s., the middle one of' v,,hich con be
+           varied  in distence from the heads.  In usin(@ thig ,rothod, the amount
+           of4 tnpe bety.,ecn the 1-iouds is t%,viae t)-to aonnrg*.Ion of tl-io middle
+           roller fron the heads,  ',','hcn this upceratus was cotistrticted and
+           tested,, it vins.found that ttie introduction of the auxiliary cquipment
+
+            lri tllc r,,-,If.,@ibortior)cl of tli.,3 lif3ot3s lipset the ahloldinc, syst,ori  tind
+            i,esi.ilted in the introd.uction of n fsir oir@ount of n,)iseo                 C,onscqitent-
+            ly the po2ition of tlio heads2 Y;i;s -7noiVio,,3- to the e:-:tent t!,at tl-ley
+            v.era  turned  at  JGOO  so  t@iat  tho  ,Lnpa  fecocl   each   oti-ior   end   were
+            abot.it  1/411  i3part.  i@  shield  wa-q   inserted   betvccn   ttie   hostis   end a
+            sniall2 pulley -motint;ed on t3 st-Left  ri-innii-if,,,  in  micro  bell  basrinf_,,s 'Was
+            tised  to  position  tlio  tape,,   '.nio   ecparotion   of   ti-iis   pulle7   from the
+            liendn ivas controlled b-y-P dial operstin!,,, a carrier
+                                             2                                @,e.   @.lie   dial r. e. s
+            colibrated directl-@r in doln-y in seconds,.            'f')-ils device viss extensivel,7
+            tested In tiie laboratory vnci found to                   -,,Itti  15"  T)or  second   telpe
+            speodp  dolay  rlitcli  could   te   v2eric.@l   bot7;eon   O.Ul   secon@is   snd   0.5
+            see,)ncls ritli overall sound qualit-y opproximetel-y equal to that of
+            t@ie oritrinal 11-lognecord iinite      Ilia   apperstiis   wee   tested   by   moons   of
+            a steady-ttiousend cycle Input from an audio frequency oscillators
+2            71,he sound from ttie playbeek lioad visa exoiiiint3d. anci found to bo of
+            adequate   que,lity   from   the   standpoint   of   roi-,,   flutter    and    noinas
+            iiiis ,nsc'.iine was in.-itlgllcd in tti,e lptioratories of
+         L7-1 --------- 0-'" and tc3sted enterisively -.,ith actiael subjects.          'j'.he   quality
+            of   reproduction    steadily    end    reoldly    deterioraterl    and    after    several
+            doys use become co-.npletely Inadequate.   !!'aamination disclosed the
+            fact   ttint   the   Pnachanicul   rugL..,,ednegs   of   the   equipment   vas   Inadequate
+            for the uonditions of use*
+            A small drive pulley ras constructed for u.se to tl-io.standard ',"a@,necord
+                                                                                                     le
+            equipm-.Yit v,ri.icii would permit a @lelay of 0*3 seconds with the 7-1          2        @)tt
+            per secot)d tape speed for use with the atiLJeots -viiila a new spl)oratus
+            was constructede
+            It r4-@3.3 docicterl tlist the cliff iculties ericotintered in previous  clesigns
+            could bast be avoided by usinr@ a varloblo tape speod witli the
+            st2ond.ord   ernsop   record   vnd   pl.pybook   head,essey--bly   of    the    1,!srnecord
+            unit.    Ttic standsrd "ac,.necord 7,1,itor viliicsi-i Ii3 L:zynchronous rill be used
+            to drive a Oise at variable Olstances fro,,i the nxino                         a     2drive
+            free from @vow shotild be realizable onO                   n 1-10 ',Mpccd ran-Co n
+            topo -,ii)oed of -'-"  to %"10" per seer)zicl r.111 'Lie obtainsble -rfilch %Vill P,.ive
+            a side tono delay from O.OE to O.E.seconds.
+            'lie
+     2             oEiiocord  recordin,7.   unit   1-in:s   tcon   completel-   .@ismantlod   onc)   la
+                   @-ebuilt with tl-iese ,nodif lestions.          Ilbe stniidard        'arnecord
+            e,.idless loop tnpe device -.v,ill be used.   It tiol@39 up to            GOO  fac,,t   of
+  2          t,qD-3                tI)i3,Li the ti3pe will holic o lonf3 life,                 de:3iCn,,
+            cfIcotirse,  3,cffore  fi,orr,  tlio  diestiventsi3(5  t@int  c   parini)nent   record   of
+            t.
+             rie to3t of t,,c siiLJect Is ii,)t obtained,, tut It Is felt t,iot the
+            ellvants!-os r-ill co,-,.ipenecto for tiie necesulty of i)slnc,  su.;tlliary
+            recordino   equip-,rent.   1'11.o   "tor   drive   is   presontl7    bol.n,,    asuoml)led.
+       4     1.@ifficulties 'fipve beon et-icountered bt--catice of ttio necest:ity t'kict
+            t'i,io driven (lise be free flostin,o   Completioti of the unit within
+            ti7o noolits is contemploted,
+            -2/24/%r.-3

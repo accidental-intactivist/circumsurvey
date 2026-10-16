@@ -1,0 +1,116 @@
+1. Summary of Progress
+                      A comprehensive series of runs involving a variety of electrodermal and other
+               physiological measures has been completed on a population of 26 subjects under a
+               variety of task conditions and contrived psychological "sets" to assess the relative
+               sensitivity and reliability of various electrodermal measures, including the recovery
+               limb time constant. Assessment o2f impulsivity and anxiety by psychological tests as
+               well-as a psychomotor test of fnhi ition have been obtained on the subjects. Data analysis
+               is still in progress, but some preliminary conclusions have already been drawn and
+               are reported here as an interim progress note. Runs on a separate por)ulation of
+               twenty subjects under a -different set of stimulus concutions have been used to examine
+               the 2dependence of recovery limb time constant upon base conductance level and response
+               amplitude. The initial study of the vascular compcnent in the sl-,In potential response
+               has been completed. Develot)ment of the automatic measurement of recovery limb
+               time constant has progressed to the point at which a system is now available, using
+               first derivatives, which overcome many of the di2fficulties of the earlier appro@, ch in
+               N,vhich second derivatives were employed. The new system has been used to print out
+               the time constants for 22 subjects whose data had been stored on magnetic tape. These
+               data are now being subjected to statistical evaluation.
+               11. '@'tudv of Characteristics of Recoverv Limb in Rela,'Uion to Oth--r Electrodermal
+                   h,leasures
+                       a. Der)--nde,,ice of Recovery Limb Time Constant on Base Level.
+                       To determine whether the apparent relatl-ior of recover@,- limb to nature of the
+               stimulus condition was to be explained by diff--rences in base resistance level, compe-risons
+                                                                        Approved for Releas3
+                                                                        Date
+
+                                                                                                       2
+             N,;ere made between base level and recover,
+                                                           .; lirb time constan" for 21 subjects in
+             two conditions, each of which caused activation and consequent decrease in base
+             resistance, but with different degrees of goal oriented task demands.
+                    2 Mean,,, for the two situations were as follonvs:
+                                                  BackNvard
+                                                  Countiag
+             Condition                                 ven.-,)                     Cold Pressor
+             Average time constan@.'
+                 (scale units)                      17. 1                               21.7
+             Average base resist.,.ace
+                 level                             29. 5 K                              27.6 K
+                     7bese de-ta indicate tl,.at despi-Le the fact that the cold pressor task was, If
+             anythin.,-,, -cli,,Yh*,Iy more activating (dffference in level not statistically si,,mLficant) the
+             time constants v.,ere sig,2-.ifican,,Iy differeat (p < .01., paired comporison), tvie difference
+             is therefore not r-ttributable to difference in base level.
+                     It- ic to be expected, however, th.,,t subjects v.,ho shom -,reater activatioa for
+             p--r.lormance of a task migh,, show a refle--',,ioa of this'mob,.I2ization both in base level
+             and in recovery limb time constant.  AccordLi.-ly the co@--elation betyieer. base cor--
+             ductance and rime constant was determined for this same grcup ol' subjects during the
+             bact,-ward countilg tas!c, and it showed a signii@ica,,-t rela-tiorship (--r = -.49. r, 05).
+             -7or the cold pressor si;'Iiation where the --c-.ivation is presumed to be of a different
+             quality, the co-rreL--tion was consideralily lesn (r = -.4'3, @'.S.)
+
+                                                                                                  3
+                      b. Dependence of r-,ecovery Limb  Time  Constant  on  Response  Amplitude
+                       Although the time constant of an exponential decay should, if properly measured,
+                  be independent of amplitude of the curve, there are many conceivable reasons for
+                  suspecting that such may not be the case for the electrodermal response. Accordingl2y
+                  for each of 12 subjects, time constants were compared with peak amplitudes (con-
+                  ductance change) for 30 sequential responses talen across four experimenw.1
+                  conditions (rest, perceptual task, cognitive task, perceptual-motor task). The
+                  Pearson's correlation--, are shown below:
+                  Subiect                Pearsor.'s r          Si-ibiects                Pearson's r
+           2       1                           .29                7                            -.04
+                  2                           .29                8                            .14
+                  3                           .06                9                            -.04
+                  4                             43               10                           .03
+                  5                           -.25               11     2                      -.06
+                  6                           .15                12                           .00
+                        Tne inderendence of these two measures is well demonstrated. Some n@-ga#,-ive
+                                                                 I
+                  correlations might be expected because demandiag tasks could produce higher responses
+                  and also, 2because of the nature of the activation, shorter time constants. For most of
+                  these subje--ts, 1-ioviever, such was clearly not the case.
+                         c. Denendence of Recoverv Limb Time Cons,-,ant on Ouall@tv of Task
+                         A study ivas u@-idertal-,en to answer t%vo cuestions.
+                         1) IDoes the recovc--y limb vary as a funct'lon of the p--rceptual, cognitive,
+
+                                                                                                   4
+               or motor aspects of a task.
+                      2) If it does so, how does its specificity and sensitivity compare vtith
+               those of more conventional methods.
+               A. Method
+                      Twenty-six subjects were used in an experiment in which three tasks were
+               performed, alon,,-, with associated rest periods.2  In order to exclude the variance
+               known to be due to the operator's mode of instruction and his relation to the subject,
+               the tasks were programmed on video tape.
+                      1. Cognitive
+                      Each of a series of 12 Ravens Matrices Problems was presented for 30 seconds
+               followed by a 15 second rest period. Tne subject was to choose the pattern which
+               properly completed the matrix2 and was to report only after the given problem dir,-
+               appeared from tiie screen. Responses were chosen only from thd period in which he
+               was solving the problem. Obviously, contLmL-i-Lints such as visual perception, frustra-
+               tioa, etc., were present, but it was hoped ttiat the group result as a whole would be
+               heavily wei&,Iited by the cognitive performance factor.
+          2            2.  Percen' ,,lal
+                      A fixed pattern remained on the screen for three minutes. At random intervals
+               during this perlod, il@. would disappear, momentarily (40 msec) and for a total of IS
+               times. The subject was to continuously obser,,,e the pattern and after the end of this
+               task, upon command, report the number of disaopearances. All us8eable resoonses
+               d,,lring the observation period were am. l@,zed.
+
+                                                                                                    5
+                  3.  Reaction Time
+                  A series of five reaction time trials was used, cacti having a warning signal
+          arid a 10 second foreperiod.  hicasures were taken -at the time of the reaction key
+          press.
+                  4.  Other Measures
+                  a) Beb-cvior2al.   ln v ddition to the ,-bove, two psychological tests were
+          administered to these subjects, the &-irrett Impulsivity Scale and the Spielberger
+          Tr--it Anxiet@,, Scale. A behaviorl,.l test of motor inhibitl-ion task- .@,as a'L--o administered.
+          In this                     a-irLveatig=r, "-.the subject i.,3 told to turn a knob through
+          2180 degrees, continuously, but as slowly as he can.  Inhibi,6ion is assessed by    the total
+          time taken and by the degree to which ,-,-te is accelerated as t@le task progresses.
+                  b) Phvsiological.  In addition to the skir- conductance measure, skin potential,
+          c@, rdiotachometer recorcling, resdiration (mechanical pr.--u,-ro6-raph2 only) and -frank
+          perspiration were meas=-ed.  The last measure was obtained bv a mod:L4icaticn of the
+          photoelectric p--i.-@m method previously described.  The de

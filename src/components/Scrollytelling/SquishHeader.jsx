@@ -90,7 +90,7 @@ export default function SquishHeader() {
         ← Guide Home
       </a>
       <span className="mobile-hide" style={{ color: 'var(--c-dim)', flexShrink: 0 }}>|</span>
-      <a href="#" className="mobile-hide" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+      <a href="/report" className="mobile-hide" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         style={{ color: 'var(--c-textBright)', textDecoration: 'none', flexShrink: 0, marginLeft: '0.5rem' }}>
         Special Report
       </a>

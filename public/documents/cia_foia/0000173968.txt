@@ -1,0 +1,132 @@
+ELECTRIC TRANSMITTING ORGANS AND DETECTION
+                        PROCESS HYPOTHESES IN ELE- CTRIC FISHES
+                                       4 February 1974
+                    Most authors and scholars of electric fishes agree that:
+                    1. The anatomy and physiology of the electric organs of different
+                       species are diverse;
+                    2  The diversity amohg species stronoly sugcest that the electric
+                       orc,,an-electroreceptor system plays quite different roles in the
+                       biology of different species.  But what is this role is not known
+                       .as of today;
+                   3. Some classification has been made with regard to their transmitting
+                       electric oroan as follows:
+                       a.  low resting frequency, high standard deviation of interval
+     2                      lengths and respondino- to different kinds of stimuli with a
+                           many-fold increase in frequency and amplitude of the sional
+                           (for example, Gnathonemus petersii).,
+                       b.  medium restin- frequency, medium standard deviation of
+                           interval lengths, responding to some stimuli with a several-
+                           fold increase in frequency (for example, Gymnotus carap6o),'
+                       C.  medium frequency with little or no change in the repetition
+                           rate of the siernal, but with the possibility to stop completely
+                           the discharge (for example,, Gyi-nnarclius niloticus),
+
+                       d.  hi-h restin- frequency with low standard deviation, respondin-
+                             r.,>                                                        CP
+                           to a few special stimuli with small shifts in repetition rate of
+                           the signal (for example, Sternarclius albifrons),
+                       e.  species with no known response to stimuli with chanae in
+                2                                                               CD
+                           the repetition rate of the signal.
+                    4. The discharge of the electric organ has been found to be commanded
+                       from a pacemaker center in the medulla, in most species studied
+                       until now. (See Fio,. 1.) This train of impulses seems to be re-
+                       layed 1:1 in a nucleus in the medulla and again in the electro2motor
+                       neurons in the spinal cord to be passed through the spinal nerves
+                       to the electric transmittino, organ.
+                    Some electric fishes have a very elaborate array of electroreceptors.
+             All electric fishes have other sensory receptors mostly part of the lateralis
+             line system like: temperature receptors, mechanical receptors and water-
+             displacement receptors.  These sensory receptors are located2 in the dermis.
+             There are other sensory receptors non-related to the lateralis line like:
+             acoustical receptors., chemical receptors,, olfactory receptors., taste receptors
+             and in some electric fishes optical receptors (vision)' not to mention equilibrium
+             and stabilizincr receptors.
+                    All these sensory receptors, electric and nonelectric, may work
+             separately or in accordance in a hybrid cross correlation information 2system
+             used in social interaction, feeding, swimming and navicration, in offense or
+             defense.  Because of the multiplicity of use the sensory system is very com-
+             .plicated usin- neuronal preprocessin-s and discriminating filterin- systems,,
+             delay-lines, etc.
+                                               is
+                    Some electric fishes use p, sive and/or ,tctive object detection systems.
+             Th0ere .ire some marine and fresh-iv,,iter fishes which do not have any electric
+             traiismittin- or,-an, but have ,in electroreceptor system.  (Marine sh,,irks lil:c:
+                                               2
+
+                                                                                      c
+                                                            4
+                                                                   ELECTR'C- 0 itr.Ati
+                                                                                                'PA
+                                                                           2              4Af.!,j -   f SIPE)
+                                    Fig. 1. Connection between the pacemaker in the brain,
+                                                    the relay nuclei, the electromotor neurons, the
+                                                    electric transmittin- or-an and the electrore-
+                                                                                       t=k    t:l
+                           0                         ceptors in electric fishes.
+                                                                                     3
+
+              Neo-
+                ,-,iprion brevirostris, Scilliorhinus canicula, a catfish: Plotosus  or  the
+              eel An@,milla an@,uilla and freshwater fishes like Clarias.)
+                      A classification of electroreceptors can be made  from  the  followincr
+                                                                                           r>
+              criteria:
+                      1.  Autorhytmic2. This means  that  they  emit  a  very  low  amplitude
+                          signal from less than one to a few  millivolts.  Depending  on  the
+                          particular receptor class it can have a. low repetition rate  (less
+                          than 100). a medium repetition rate (from 100 to  500)  or  a  high
+                          repetition rate (from 500 to 3000),
+                      2.  Nonautorhytmic.
+  2            or we can divide them in:
+                      3.  Synchronous.    This means that they respond  to  the  transmittina
+                                                                                           =P
+                          organ in case  of a stimulus with a nerve transmission spike rate
+                          synchronized to the electric oraan.
+                      4.  Nonsynchronous.
+              Another classification could be used as:
+          2            5.  Ampullary organs similar to or identical with the Lorenzini
+                          amnulla which has a canal lined with a very hiah resistance
+                          membr ne filled with a jelly  and  communicatincr  to  an  ampulla
+                          with sensory orcrans.-- The jelly can be high, medium or low con-
+                          ductive and accordingly beincr acid, neutral or basic.  There are
+                          many kinds of 2sensory cell formation classes.
+                      6.  Tuberous  or  mormyromasts,  mostly  not  directly  connected   to
+                          the surface of the skin.  Every mormyromast may have one, two
+                          or more sensory cells separately innervated and respondin- each
+                          to different amplitudes (levels) of stimuli.
+                      Maybe a more adequate classification would be one talcincr into account
+              the 3stimuli to which these electroreceptors respond such as:
+                                                  4
+
+                     a.   Conductivity: conductinc,r or nonconductin,- objects, the level
+                          of responi@e-bein- more or less proportional to their conductivity
+                          factor;
+                     b.   Direction: response of the sensory cells bein- conditioned to
+                                                                      0
+                          the fact that an object is directed toward or away from the fish;
+2                     c.   Form: sharp ed-es will stimulate some receptors, others will
+                          be stimulated by round or rounded objects;
+                     d.   Movement: the chanae in position or form of an object will pro-
+                          duce a m@@dulation of the autorhytmic impulses of some receptors
+                          and will be sensed by the fish;
+                     e.   Smoothness or Rouchness of objects could also constitute a criter2ia
+                          of stimuli classification;
+                     f.   Chemicals in the water may affect the electric receptors and
+                          their response., we have proof for this.
+                     Finally codina- can be a classification criteria. -Lissman and Machin.
+             proposed a
+                     1.  "Pulse-frequency-modulation" (like in Gymnarchus niloticus);
+             Watanabe and Bullock proposed a
+              2       2.  "Pulse-phase modulation" (like in Eicenmannia virescens);
+             Szabo and HaaiNvara analyzed and sua,,crested three other kinds of codino-s:
+                     3.   "Number cocl,:n-- mechanism" (like in gymnotidsas: Hypopomus
+                          artedi),
+                     4.   "Probability codin- mechanism" (like in gymotids as: Stern-,irchiis
+                                            t>
+           8               albifrons).,
+                     5.   "Latency codin(r mechanism" (like in mormyrids as: Gnathoiiei-lius
+                          petersii).
+                                                5
+
+                     Accordin- to the first hypothesis "Pul

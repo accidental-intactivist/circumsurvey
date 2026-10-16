@@ -3,9 +3,15 @@ export async function onRequestGet(context) {
   const id = params.id;
   
   try {
-    const stmt = env.SURVEY_DB.prepare("SELECT * FROM archive_documents WHERE id = ?").bind(id);
-    const doc = await stmt.first();
+    let stmt = env.SURVEY_DB.prepare("SELECT * FROM archive_documents WHERE id = ?").bind(id);
+    let doc = await stmt.first();
     
+    if (!doc && id) {
+      // Fallback: match by filename hash or url substring
+      stmt = env.SURVEY_DB.prepare("SELECT * FROM archive_documents WHERE url LIKE ? OR metadata_json LIKE ? LIMIT 1").bind(`%${id}%`, `%${id}%`);
+      doc = await stmt.first();
+    }
+
     if (!doc) {
       return new Response(JSON.stringify({ error: "Document not found" }), { status: 404 });
     }

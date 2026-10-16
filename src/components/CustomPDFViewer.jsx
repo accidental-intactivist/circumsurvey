@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useLocation } from 'react-router-dom';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import { Maximize, RotateCw } from 'lucide-react';
 import ThinkingSpirograph from './ThinkingSpirograph';
-import { useAssistant } from '../contexts/AssistantContext';
 
 class PDFErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("PDFErrorBoundary caught:", error, info);
   }
   render() {
     if (this.state.hasError) {
@@ -21,7 +23,7 @@ class PDFErrorBoundary extends React.Component {
         <div style={{ color: 'var(--c-red)', padding: '3rem', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>
           <h2>Failed to load PDF viewer</h2>
           <p style={{ color: 'var(--c-muted)', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal' }}>
-            The PDF could not be loaded or was not found. Please try downloading the file directly.
+            {this.state.error?.message || "The PDF could not be loaded or was not found."}
           </p>
         </div>
       );
@@ -30,8 +32,59 @@ class PDFErrorBoundary extends React.Component {
   }
 }
 
-// Configure the worker for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure the worker for react-pdf with polyfills for engines missing modern TC39 features
+const rawWorkerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+try {
+  const workerBlob = new Blob([
+    `if (typeof Uint8Array !== 'undefined') {
+      if (!Uint8Array.prototype.toHex) {
+        Uint8Array.prototype.toHex = function() {
+          return Array.from(this).map(b => b.toString(16).padStart(2, '0')).join('');
+        };
+      }
+      if (!Uint8Array.fromHex) {
+        Uint8Array.fromHex = function(hex) {
+          const bytes = new Uint8Array(hex.length / 2);
+          for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+          }
+          return bytes;
+        };
+      }
+    }
+    if (typeof Map !== 'undefined') {
+      if (!Map.prototype.getOrInsertComputed) {
+        Map.prototype.getOrInsertComputed = function(key, callback) {
+          if (this.has(key)) return this.get(key);
+          const val = callback(key);
+          this.set(key, val);
+          return val;
+        };
+      }
+      if (!Map.prototype.getOrInsert) {
+        Map.prototype.getOrInsert = function(key, defaultValue) {
+          if (this.has(key)) return this.get(key);
+          this.set(key, defaultValue);
+          return defaultValue;
+        };
+      }
+    }
+    if (typeof Promise !== 'undefined' && !Promise.withResolvers) {
+      Promise.withResolvers = function() {
+        let resolve, reject;
+        const promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        return { promise, resolve, reject };
+      };
+    }
+    import ${JSON.stringify(rawWorkerUrl)};`
+  ], { type: 'text/javascript' });
+  pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+} catch (e) {
+  pdfjs.GlobalWorkerOptions.workerSrc = rawWorkerUrl;
+}
 
 export default function CustomPDFViewer({ url, onPageCount }) {
   const [numPages, setNumPages] = useState(null);
@@ -43,46 +96,14 @@ export default function CustomPDFViewer({ url, onPageCount }) {
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const targetPage = (!isNaN(pageParam) && pageParam > 0) ? pageParam : 1;
   const highlightText = searchParams.get('highlight') || '';
-  
-  const { openAssistant, setInitialQuery } = useAssistant();
-  const [selectedText, setSelectedText] = useState('');
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleSelection = () => {
-      const selection = window.getSelection();
-      const text = selection.toString().trim();
-      
-      if (text.length > 5 && containerRef.current && containerRef.current.contains(selection.anchorNode)) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        const containerRect = containerRef.current.getBoundingClientRect();
-        
-        setSelectedText(text);
-        setTooltipPos({
-          x: rect.left - containerRect.left + (rect.width / 2),
-          y: rect.top - containerRect.top - 10
-        });
-      } else {
-        setSelectedText('');
-      }
-    };
-
-    document.addEventListener('selectionchange', handleSelection);
-    return () => document.removeEventListener('selectionchange', handleSelection);
-  }, []);
-
-  const handleAskAI = () => {
-    setInitialQuery(`Analyze this excerpt:\n\n"${selectedText}"`);
-    openAssistant();
-    setSelectedText('');
-    window.getSelection().removeAllRanges();
-  };
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
-    setPageNumber(1);
+    const startPage = Math.min(Math.max(1, targetPage), numPages || 1);
+    setPageNumber(startPage);
     if (onPageCount) onPageCount(numPages);
     
     if (highlightText) {
@@ -93,6 +114,12 @@ export default function CustomPDFViewer({ url, onPageCount }) {
       }, 1000);
     }
   }
+
+  React.useEffect(() => {
+    if (targetPage && numPages) {
+      setPageNumber(Math.min(Math.max(1, targetPage), numPages));
+    }
+  }, [targetPage, numPages]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -113,45 +140,6 @@ export default function CustomPDFViewer({ url, onPageCount }) {
           Searching for Context: "{highlightText.length > 60 ? highlightText.substring(0, 60) + '...' : highlightText}"
           <br/>
           <span style={{ fontSize: '0.75rem', fontWeight: 'normal' }}>(Use Ctrl+F / Cmd+F to locate this passage)</span>
-        </div>
-      )}
-      
-      {selectedText && (
-        <div style={{
-          position: 'absolute',
-          left: tooltipPos.x,
-          top: tooltipPos.y,
-          transform: 'translate(-50%, -100%)',
-          background: 'rgba(30, 41, 59, 0.95)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid var(--c-goldBright)',
-          borderRadius: '8px',
-          padding: '0.5rem',
-          display: 'flex',
-          gap: '0.5rem',
-          zIndex: 100,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-          animation: 'fadeUp 0.2s ease-out'
-        }}>
-          <button
-            onClick={handleAskAI}
-            className="lux-hover-bright"
-            style={{
-              background: 'var(--c-gold)',
-              color: '#000',
-              border: 'none',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '4px',
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            Ask AI Assistant
-          </button>
         </div>
       )}
 

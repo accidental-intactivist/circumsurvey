@@ -25,6 +25,126 @@ export const STANCES = [
 
 export const STANCE_COLOR = Object.fromEntries(STANCES.map(s => [s.key, s.color]));
 
+/**
+ * 5-Point Genital Autonomy Ground Truth Rubric Scale:
+ * Level 5 (A+) Very Pro-Intact / Autonomy <---> Level 1 (F) Very Pro-Genital Cutting
+ */
+export const AUTONOMY_SCALE = [
+  {
+    grade: 'A+',
+    score: 5,
+    key: 'A+',
+    label: 'Very Pro-Intact / Autonomy',
+    shortLabel: 'Very Pro-Intact',
+    tierName: 'Champion of Genital Autonomy',
+    color: '#facc15',
+    bg: 'rgba(250, 204, 21, 0.18)',
+    border: '#facc15',
+    glow: 'rgba(250, 204, 21, 0.35)'
+  },
+  {
+    grade: 'B+',
+    score: 4,
+    key: 'B+',
+    label: 'Leans Pro-Autonomy / Reformer',
+    shortLabel: 'Autonomy Advocate',
+    tierName: 'Autonomy Advocate / Reformer',
+    color: '#06b6d4',
+    bg: 'rgba(6, 182, 212, 0.18)',
+    border: '#06b6d4',
+    glow: 'rgba(6, 182, 212, 0.35)'
+  },
+  {
+    grade: 'C',
+    score: 3,
+    key: 'C',
+    label: 'Neutral / Mixed Institutional',
+    shortLabel: 'Neutral Record',
+    tierName: 'Neutral / Mixed Institutional Record',
+    color: '#94a3b8',
+    bg: 'rgba(148, 163, 184, 0.18)',
+    border: '#94a3b8',
+    glow: 'rgba(148, 163, 184, 0.25)'
+  },
+  {
+    grade: 'D',
+    score: 2,
+    key: 'D',
+    label: 'Leans Pro-Genital Cutting',
+    shortLabel: 'Leans Cutting',
+    tierName: 'Leans Pro-Genital Cutting',
+    color: '#f97316',
+    bg: 'rgba(249, 115, 22, 0.18)',
+    border: '#f97316',
+    glow: 'rgba(249, 115, 22, 0.3)'
+  },
+  {
+    grade: 'F',
+    score: 1,
+    key: 'F',
+    label: 'Very Pro-Genital Cutting',
+    shortLabel: 'Cutting Apologist',
+    tierName: 'Promoter / Apologist of Cutting',
+    color: '#ef4444',
+    bg: 'rgba(239, 68, 68, 0.18)',
+    border: '#ef4444',
+    glow: 'rgba(239, 68, 68, 0.35)'
+  }
+];
+
+export const GRADE_COLOR = Object.fromEntries(AUTONOMY_SCALE.map(s => [s.grade, s.color]));
+
+export function getEntityAutonomy(entity) {
+  if (!entity) return AUTONOMY_SCALE[2]; // Default to C Neutral
+
+  const savedGrade = entity.rating_grade || entity.grade;
+  const savedScore = Number(entity.rating_score || entity.score);
+
+  if (savedGrade && GRADE_COLOR[savedGrade]) {
+    return AUTONOMY_SCALE.find(s => s.grade === savedGrade) || AUTONOMY_SCALE[2];
+  }
+  if (savedScore >= 1 && savedScore <= 5) {
+    return AUTONOMY_SCALE.find(s => s.score === savedScore) || AUTONOMY_SCALE[2];
+  }
+
+  const normName = (entity.name || '').toLowerCase();
+  const stance = (entity.stance || entity.role || '').toLowerCase();
+
+  // Foundational Autonomy Pioneers & Coalitions (A+)
+  if (
+    normName.includes('tim hammond') || normName.includes('hammond tim') || 
+    normName.includes('galdef') || normName.includes('noharmm') || 
+    normName.includes('milos') || normName.includes('nocirc') || 
+    normName.includes('intact') || normName.includes('huff') || 
+    normName.includes('foregen') || normName.includes('15square') || 
+    normName.includes('frisch') || normName.includes('knmg') ||
+    normName.includes('bloodstained') || normName.includes('goldman')
+  ) {
+    return AUTONOMY_SCALE[0]; // A+
+  }
+
+  // Active Defenders & Whistleblowers (B+)
+  if (
+    normName.includes('thompson') || normName.includes('attorneys for the rights') ||
+    normName.includes('chhrp') || normName.includes('norm')
+  ) {
+    return AUTONOMY_SCALE[1]; // B+
+  }
+
+  // Historic Medicalizers & Cutting Proponents (F)
+  if (
+    normName.includes('sayre') || normName.includes('kellogg') || 
+    normName.includes('diekema') || normName.includes('freedman') || 
+    normName.includes('aap') || normName.includes('american academy of pediatrics')
+  ) {
+    return AUTONOMY_SCALE[4]; // F
+  }
+
+  if (stance === 'champion') return AUTONOMY_SCALE[0]; // A+
+  if (stance === 'critic') return AUTONOMY_SCALE[4]; // F
+  return AUTONOMY_SCALE[2]; // C Neutral
+}
+
 /** Entities tried, in order, as the default Six Degrees center. */
 export const PREFERRED_CENTERS = ['Tim Hammond'];
 
@@ -135,6 +255,9 @@ export function buildEntityGraph(entities = [], docs = []) {
       if (e.name.length > node.name.length) node.name = e.name;
       if (node.stance === 'unknown') node.stance = stanceOf(e.stance || e.role);
       if (!node.slug && e.slug) node.slug = e.slug;
+      if (e.rating_grade) node.rating_grade = e.rating_grade;
+      if (e.rating_score) node.rating_score = e.rating_score;
+      node.autonomy = getEntityAutonomy({ ...e, stance: node.stance });
       for (const v of variants) if (!byName.has(v)) byName.set(v, existingId);
       continue;
     }
@@ -148,6 +271,9 @@ export function buildEntityGraph(entities = [], docs = []) {
       stance: stanceOf(e.stance || e.role),
       slug: e.slug,
       tagline: e.tagline,
+      rating_grade: e.rating_grade,
+      rating_score: e.rating_score,
+      autonomy: getEntityAutonomy(e),
       docIds: [],
     });
   }
@@ -241,14 +367,27 @@ export function stanceBreakdown(graph, id) {
 export const CROSS_STANCE_COLOR = 'var(--c-orange)';
 
 export function nodeColor(node, colorBy) {
+  if (colorBy === 'rubric' || colorBy === 'grade') {
+    return (node.autonomy || getEntityAutonomy(node)).color;
+  }
   return colorBy === 'stance' ? STANCE_COLOR[node.stance] : GROUP_COLOR[node.group];
 }
 
-/** Line color: by type, or (stance mode) same-camp color / orange for champion↔critic / muted for mixed-neutral. */
+/** Line color: by type, or (stance/rubric mode) same-camp color / orange for champion↔critic / muted for mixed-neutral. */
 export function edgeColor(graph, a, b, colorBy) {
   const na = graph.nodes.get(a);
   const nb = graph.nodes.get(b);
-  if (colorBy !== 'stance') return GROUP_COLOR[na.group];
+  if (colorBy === 'type') return GROUP_COLOR[na.group];
+  
+  if (colorBy === 'rubric' || colorBy === 'grade') {
+    const autoA = na.autonomy || getEntityAutonomy(na);
+    const autoB = nb.autonomy || getEntityAutonomy(nb);
+    const isPolarOpposite = (autoA.score >= 4 && autoB.score <= 2) || (autoA.score <= 2 && autoB.score >= 4);
+    if (isPolarOpposite) return CROSS_STANCE_COLOR;
+    if (autoA.grade === autoB.grade) return autoA.color;
+    return 'var(--c-muted)';
+  }
+
   if (isCrossStance(graph, a, b)) return CROSS_STANCE_COLOR;
   if (na.stance === nb.stance) return STANCE_COLOR[na.stance];
   return 'var(--c-muted)';

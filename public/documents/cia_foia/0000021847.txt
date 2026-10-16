@@ -1,0 +1,86 @@
+August 30, 1973
+                Dear,
+                     Here is the first draft of the Sta+weriients of lfork
+                znd Cost.  My secretary put this on     i's-.ationary because
+                I forgot to mention to her that I was dictating for
+                ano'L-Iher party.
+                          would like to pitch to        when he visits
+         2       late in September.  That might be worthwhile if you have
+                a rather complete understanding of how he will address the
+                scaling p-roblem I mentioned and Itave an opportunity to
+                dry run his presentation.  Perhaps such a careful exposure.
+                would be good for the project's viability.
+                     See you soon.  Stay well and happy.
+                                                   Sincerely,
+                  4                                                              E@ IqD
+
+                                                                          AMk
+                                                 PHASE I
+                             ESTII,IATITIG TIIE ERFECTIVE@IESS OF -=LE CTP IC
+                        FIS[i' III DETECTIIIG FOREIGII OBJECTS AT A DISTAIICE
+                          Perform psychophysiological @xperi'Ments       using     different
+                    kinds 2of electric fish in restricted water         so as  to   esti-
+                    mate their ability to identify the exis:ence         of foreign
+                    objects  in  this  water  k@aking  inlo  account  ele!ctrica'l  dis-
+                    continuities in@posed by the boundaries of that water and
+                    -the  foreign  obects   placed   within   it.   Specifically,   con-
+                    Sider  the  natural  fish  as  a  signal  cenera2tor   and   receptor
+                    and  then  Lose  of  auxiliary  signals  which  replicate   the   fishes
+                    signal@ and otlier si'gnals of specific interest.        Compute   the
+                    expecte4  behavior  of  such  fish  in  open  ocean  or   fresh   waters
+                    given typical boundary conditions with respect.to depth,
+                    topology, inogeneity of thal     water, temperature, 2and so
+                    forth.    Summarize these findings     in terms of  tiie  prospec-,.,ive
+                    ability   of these fish to identify foreign objects in a
+                    harbor or  other  natural  body  of  water  of  interest  ...  foreign
+                    objects  such  as  small   submarines,   torpedoes,   scuba   divers
+                    skin divers, and so forth,
+                         'I-to-re explicitly,  deterriiiie  the  sensory  capability  of
+                    individual  electric  fish  in  terms  of   their   ability   to'sense
+                    the existence of foreian objects as a function of range,
+                    fundamental area, volumetric displicenert, dif-11erential
+                    @iscontinu'ity,  and  so  forth.  In  this  regard,  use  a  tank   of
+
+                 viater ad justed to the temperature and electrolytic conditions
+                 of presumed operational conditions.  Retain a fish near one
+                 point and insert in the %iater various objects, discerning
+                 the different beliavior of the fish as these ot)jects are
+                 inserted concurrently monitoring the electrical field
+                 within the i-iater.  From these results. calcijlate the es-
+                 timated behavior of such a fish in detecting an object in
+                 an infinite iiater dorain and large scale viaters with various
+                 boundary conditions.
+
+                                                                   IdaL
+                                           PIIASE I I
+                           DETERIlItlItIG TI[E @'AET)IODS USED BY ELECTRIC
+                                 FISti FOR RAIIGIIIG AIID LOCA'TIO14
+                         Perform detailed experiments wherein the particular
+                    characterist2ics of electric fish are related to their
+                    abilities @-iitti respect to ranging and location.  Particular
+                    attention %iill be focused up-an the use of phased arrays of
+                    receptors, the fish's ability to deterniine incremental
+                    time lags in the signal, the estimated spectral.properties
+                    of the signal, to modify the transmit*ued signal as a
+                    reflectio6n of knoiqledge gained from previous receptions,
+                    and so'forth.  Interpret these findings in terms of specific
+                    schematics and data analysis required to synthesize models of
+                    the fish's capability, nodels which w-ien reified vtould
+                    provide signal advantage over the state of the art with
+                    respect to such a target as described above.
+
+                                           PHASE III
+                     DESIGII OF EQUIPT-IEIIT SYSTERIS SUITABLE FOR REPL!CATII:G
+                   ELECTRIC  FISH III TER@IS OF TARGETITIG FOREIGII OB%I@CTS
+                        Design, fabricate and test experinantal apparatus
+                  suitable for replicating the above referenced models.  Perform
+                  expe?,ir.-ents k6-iith this apparatus so as tD improve its ability
+                  in various regards.  @lake a specific co-nparison of this
+                  capability to that of an electric fish and estimate the
+                  utility of such an apparatus- in terms of opqrational
+                  situations.
+
+                STATEIIENT OF COST
+                PHASE I - $          6 nonths
+                PHASE II                year
+                P[IASE III                year

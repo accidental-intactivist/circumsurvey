@@ -1,0 +1,76 @@
+AML
+                                                       January 10, 1967
+                          Dear Neal:
+                                   Enclosed is a short Progress -Report of our work
+                         ,.to date.pur.suant to
+                                                        Very truly yours,
+
+                                     THIRD PROGRESS REPORT
+                                          January-S. 1067
+                                        Contract No.
+
+                              SU'.@l't-L4.RY OF ACTN"ITY FOR THE QTJ-XRTER E-.IDI.\G
+                              December 31, 1966
+                              Contract efforts during this period have been in three areas; literature
+                        monitoring, a continuation of efforts to produce an improved piezoelectric
+                        generator design, and planning for animal research studies.  The results
+                        of acti-.,@ity in these areas af-e surnmariz4d separately below.
+                              A.    Literature Review
+                                    Many articles of peripheral relevance to this study have beeti
+                        scanned.  The sources utilized during this period are largely composed of
+                        the Biomedical Engineering Journals and public2ations of NAS.A. and
+                        During this quarter                      became a subscriber to the
+                        services of the Kno%vledge Availability Systems Center of the University
+                        of Pittsburgh. The KASC searchis STA-R and IAA indexes and provides
+                                             with documents- relevant to our interests.  Searchine
+                        under several descriptors  app2ropriate to this contract began with 1963
+                        documents and is n.ow up to date.  Descriptions of recent work of three
+                        research groups mentioned in our last -,ormal report are contained in
+                        Proceadin,as of the Annual Conference on En-aineering in Medicine :;,nd
+                        Biology, 1966.  Th@ report of P. J. Racine and 1-1. L. Massie addressed
+                        the pro2blem of determining the chemicall activity present in the Koni'A-off-
+                        Reynolds Galvanic Electrode Systeni.  Data from several -netal t),pes in
+                        in vitro experiments are discussed, oxidation of electrode metal to its ion
+                        and reduction of free oxygen were suggested as principal reactions.  Weii 1-1.
+                        [,Co described a prototype "piezoelectric energy con2verter for electronic
+                        implarits. " P,.,of-asi.;or I<o concurs %%,ith oui, analysis of the chtracteristics
+                        of ceramic bimorplis that resonant operation promises liigher efficiency.
+                        Iiis device, which w-.xs not lir-I)latited, utilized Inertial coupling and the
+                        proposed energy source was t3lio mcclianical enorgy of he-.irt notion. Pending
+
+                         ontrary data, the mass a.-id gravity limitations of such coupling discussed
+                         under Random Motion in our previous r@.@port stM apply.  His voltage doubler
+                         rectifi e r circuit should be useful.  The paper by C. C. Enger and M. iclin,
+                         "A Three Cram Self -Po%vered Pace-n@,'@-er Tr.-plaLn,-ed or. the Surface of t2he
+                         ir,eft Ventricle, " discusses recent work on solring the body fluid leakage
+                         problems of the Enger-Johr, H. F-'erLiedy device.
+                              B.    Piezoelectric Generator Desi@r_n
+                                    The main problem to be overcome by a successfil generator
+                         desigr. is coupling the availablr- form of host mechanical energy into 2the
+                         Piezoelectric element.  Fluid seals, overau efficiency, breakage, size
+                         and weight are some of the aspects of this proglem. -In our previous re-
+                         port we offered soine suggestions. apropos pars of this problem, arnong them
+                         a striker system which was simila@iz to the operation of a rnusic boc.- The
+                         intend-ed performance charact2eristi@'was for i-,iput mechanical energy to be
+                         captured in the piezoel,-ctric element Which would subsequently osemate
+                         freely until the en@re was all converted into hea-t (mechanical I sses) and
+                                                                                        40
+                         electricity. Another method of achieving'this characteristic has occurre2d
+                         to us .vhich has the, advintage of 'requiring no sliding off the end of the
+                         element thus elimi@atiner a possi'ble 'wear point.  The essence of this ne,.v
+                         method is to attach a small piece of steel to the Piezoelectric element and
+                         use a magnet to deform the element.  When th-3 magnet's holding force is
+                         exccejed, the el0ement i§ released and allowed to vibrate freely.  It appears
+                         that a pacl@:age similar to those used I)y Dr. ['%'cnnedy but licorporating this
+                         -technique could be constructed quite simply. As has been previously
+                         discussed, resonant operation should provide rignificantly more electrical
+                         output than does "direct" drive.
+
+                                                     -3-
+                           C.    Research Ecperimentation
+                                 Arrangements have been made wit@, an experienced animal
+                     researclier to conduct a fe%v measurements of the source res.stance and
+                     power yeeld characteristics from implai-it electrode E.'%,[G signals.
+                     U.    PLA.N2TS F'OR THE PEPIOD JA@NUARY I THROUGH FEBRLr@kRY 2tt. 1967
+                           Work in the three above areas wiU continue and a final report summarizing
+                     both ne%v data and previous reports will be prepared.

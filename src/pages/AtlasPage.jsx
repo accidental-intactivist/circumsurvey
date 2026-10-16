@@ -66,12 +66,39 @@ export default function AtlasPage() {
   const [params, setParams] = useSearchParams();
   const metric = METRICS[params.get('metric')] ? params.get('metric') : 'prevalence_adult';
   const layer = params.get('layer') === 'recency' ? 'recency' : 'reported';
-  const selected = params.get('geo') || null;
+  const rawGeo = params.get('geo') || null;
 
   const { loading, error, observations, sources, via } = useNationalData();
-  const region = useRegionData(selected);
   const [worldGeo, setWorldGeo] = useState(null);
   const [usGeo, setUsGeo] = useState(null);
+
+  const selected = useMemo(() => {
+    if (!rawGeo) return null;
+    const clean = rawGeo.trim();
+    if (clean.length === 3 && clean === clean.toUpperCase()) return clean;
+    const lower = clean.toLowerCase();
+    if (lower.includes('united states') || lower === 'us' || lower === 'usa') return 'USA';
+    if (lower.includes('denmark')) return 'DNK';
+    if (lower.includes('germany')) return 'DEU';
+    if (lower.includes('united kingdom') || lower === 'uk' || lower.includes('britain')) return 'GBR';
+    if (lower.includes('canada')) return 'CAN';
+    if (lower.includes('australia')) return 'AUS';
+    if (lower.includes('south africa')) return 'ZAF';
+    if (lower.includes('kenya')) return 'KEN';
+    if (lower.includes('israel')) return 'ISR';
+    if (lower.includes('philippines')) return 'PHL';
+    if (lower.includes('south korea') || lower === 'korea') return 'KOR';
+
+    const foundObs = (observations || []).find(x => x.geo_name && x.geo_name.toLowerCase() === lower);
+    if (foundObs) return foundObs.geo;
+
+    const foundFeature = worldGeo?.features?.find(x => x.properties?.name?.toLowerCase() === lower);
+    if (foundFeature) return foundFeature.id;
+
+    return clean.toUpperCase();
+  }, [rawGeo, observations, worldGeo]);
+
+  const region = useRegionData(selected);
   const [year, setYear] = useState(null);
   const { addToReport } = useReport();
   const { openAssistant } = useAssistant();
@@ -206,8 +233,8 @@ export default function AtlasPage() {
           <p>Official figures count what their systems can see. The US “49%” (JAMA Pediatrics, 2025) counts only procedures during the birth hospitalization. Outpatient, ritual and later-childhood procedures are not in it. We show the reported number, label its limits, and (Phase B) add a 🧮 modeled range with every assumption on display.</p>
         </article>
         <article>
-          <h2><ShieldCheck size={18} /> Glenda’s research desk</h2>
-          <p>Behind Glenda is a team of separate tools: <em>collectors</em> pull official survey data, a rule-based <em>validator</em> checks every number (range, denominators, sudden jumps), and curators review anything flagged. Glenda cites the ledger; she never invents a statistic. <Link to="/guides">Guides</Link> and the living Manifesto draw on the same numbers.</p>
+          <h2><ShieldCheck size={18} /> AI Research Desk</h2>
+          <p>Behind the research desk is a team of separate tools: <em>collectors</em> pull official survey data, a rule-based <em>validator</em> checks every number (range, denominators, sudden jumps), and curators review anything flagged. The assistant cites the ledger; it never invents a statistic. <Link to="/guides">Guides</Link> and the living Manifesto draw on the same numbers.</p>
         </article>
       </section>
     </div>

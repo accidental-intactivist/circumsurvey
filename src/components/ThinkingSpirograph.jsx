@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useMemo } from 'react';
-import { C, FONT } from '../styles/tokens';
+import React, { useRef, useEffect } from 'react';
+import { FONT } from '../styles/tokens';
 
 const gcd = (a, b) => { 
   a = Math.round(a); 
@@ -8,198 +8,208 @@ const gcd = (a, b) => {
   return a || 1; 
 };
 
+// Curated wheel set for Ring 105 producing gorgeous symmetrical rosettes
+const WHEELS = [24, 30, 32, 36, 40, 42, 45, 48, 50, 52, 56, 60, 63, 64, 72, 75, 80, 84];
+
+const THEME_PALETTE = [
+  { rgb: [212, 160, 48], hex: '#d4a030' }, // Gold
+  { rgb: [56, 189, 248], hex: '#38bdf8' }, // Electric Cyan
+  { rgb: [16, 185, 129], hex: '#10b981' }, // Emerald Green
+  { rgb: [245, 158, 11], hex: '#f59e0b' }, // Amber
+  { rgb: [168, 85, 247], hex: '#a855f7' }, // Purple
+  { rgb: [239, 68, 68],  hex: '#ef4444' }, // Crimson Red
+];
+
+/**
+ * ThinkingSpirograph — Mathematical Progressive Line-Drawing Loader
+ * 
+ * CRITICAL ARCHITECTURAL RULE:
+ * This component MUST progressively DRAW lines in real-time onto the canvas.
+ * It must NEVER use CSS rotation (e.g. cssSpin) or pre-render a static shape.
+ * The beauty and brand identity of this spinner comes from the user actively 
+ * watching the glowing pen tip trace out hypocycloid curves line-by-line.
+ */
 export default function ThinkingSpirograph({ text = "Consulting Archives...", size = 160 }) {
-  const safeGold = "var(--c-goldBright)";
   const canvasRef = useRef(null);
-  const layers = useMemo(() => {
-    // The classic Spirograph wheel set for Ring 105
-    const wheels = [24, 30, 32, 36, 40, 42, 45, 48, 50, 52, 56, 60, 63, 64, 72, 75, 80, 84];
-    
-    // Pick 1 random wheel for a clean, single spirograph
-    const shuffled = [...wheels].sort(() => 0.5 - Math.random());
-    const pickedWheels = shuffled.slice(0, 1);
-    
-    const thematicColors = [
-      [212, 160, 48],  // Gold
-      [59, 130, 246],  // Blue
-      [16, 185, 129],  // Green
-      [244, 63, 94],   // Rose
-      [139, 92, 246],  // Purple
-      [249, 115, 22],  // Orange
-    ];
-    
-    return pickedWheels.map((wheel, i) => ({
-      gearRing: 105,
-      gearWheel: wheel,
-      penHole: 0.6 + Math.random() * 0.35, // 0.6 to 0.95
-      twist: Math.random() * Math.PI * 2,
-      ecc: 0,
-      scaleMult: 1.0 - (i * 0.15), // Slightly nest them
-      color: thematicColors[i % thematicColors.length]
-    }));
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
-    
-    const dpr = window.devicePixelRatio || 1;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     canvas.style.width = `${size}px`;
     canvas.style.height = `${size}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Precalculate properties for each layer
-    const parsedLayers = layers.map(fig => {
-      const rg = Math.max(24, fig.gearRing);
-      const rw = Math.max(6, Math.min(fig.gearWheel, rg - 6));
+    // Offscreen trail canvas to accumulate drawn line segments with zero performance cost
+    const trailCanvas = document.createElement('canvas');
+    trailCanvas.width = canvas.width;
+    trailCanvas.height = canvas.height;
+    const trailCtx = trailCanvas.getContext('2d');
+    trailCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    trailCtx.lineCap = 'round';
+    trailCtx.lineJoin = 'round';
+
+    let colorIdx = Math.floor(Math.random() * THEME_PALETTE.length);
+
+    // Generator for a new spirograph gear setup
+    const createPattern = () => {
+      const wheel = WHEELS[Math.floor(Math.random() * WHEELS.length)];
+      const rg = 105;
+      const rw = Math.max(6, Math.min(wheel, rg - 6));
       const revs = rw / gcd(rg, rw);
       const q = (rg - rw) / rw;
       const Rr = rg - rw;
-      const d = fig.penHole * rw;
-      const scale = ((size * 0.42) / (Rr + d)) * fig.scaleMult;
+      const penHole = 0.62 + Math.random() * 0.32;
+      const d = penHole * rw;
+      const scale = (size * 0.43) / (Rr + d);
       const totalTheta = revs * Math.PI * 2;
-      return { ...fig, rg, rw, revs, q, Rr, d, scale, totalTheta };
-    });
-    
-    // The longest drawing time dictates the total span
-    const maxTheta = Math.max(...parsedLayers.map(l => l.totalTheta));
-    
-    // Create an offscreen canvas to cache the static part of the spirograph
-    const offscreen = document.createElement('canvas');
-    offscreen.width = canvas.width;
-    offscreen.height = canvas.height;
-    const offCtx = offscreen.getContext('2d');
-    offCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    offCtx.lineCap = 'round';
-    offCtx.lineJoin = 'round';
-    
-    const thematicColors = [
-      [212, 160, 48], // Gold
-      [59, 130, 246], // Blue
-      [16, 185, 129], // Green
-      [244, 63, 94],  // Rose
-      [139, 92, 246], // Purple
-      [249, 115, 22], // Orange
-    ];
-    
-    // Draw the full static trail ONCE to the offscreen canvas
-    parsedLayers.forEach(layer => {
-      const { q, Rr, d, scale, twist, totalTheta } = layer;
+      const twist = Math.random() * Math.PI * 2;
       const cr = Math.cos(twist);
       const sr = Math.sin(twist);
-      
-      const CHUNK = 60;
-      let t = 0;
-      while (t < totalTheta) {
-        const chunkEnd = Math.min(totalTheta, Math.floor(t / CHUNK) * CHUNK + CHUNK);
-        offCtx.beginPath();
-        for (let step = t; step <= chunkEnd + 0.05; step += 0.05) {
-          const drawT = Math.min(step, chunkEnd);
-          const x1 = (Rr * Math.cos(drawT) + d * Math.cos(q * drawT)) * scale;
-          const y1 = (Rr * Math.sin(drawT) - d * Math.sin(q * drawT)) * scale;
-          
-          const px = size / 2 + x1 * cr - y1 * sr;
-          const py = size / 2 + x1 * sr + y1 * cr;
-          
-          if (step === t) offCtx.moveTo(px, py);
-          else offCtx.lineTo(px, py);
+      const color = THEME_PALETTE[colorIdx % THEME_PALETTE.length];
+      colorIdx++;
+
+      return {
+        q, Rr, d, scale, totalTheta, cr, sr, color,
+        duration: Math.min(7500, Math.max(4500, revs * 1100))
+      };
+    };
+
+    let pattern = createPattern();
+    let theta = 0;
+    let phase = 'drawing'; // 'drawing' | 'holding' | 'fading'
+    let phaseStartTime = performance.now();
+    let lastTime = performance.now();
+
+    const getPoint = (t, p) => {
+      const x = (p.Rr * Math.cos(t) + p.d * Math.cos(p.q * t)) * p.scale;
+      const y = (p.Rr * Math.sin(t) - p.d * Math.sin(p.q * t)) * p.scale;
+      return {
+        x: size / 2 + x * p.cr - y * p.sr,
+        y: size / 2 + x * p.sr + y * p.cr
+      };
+    };
+
+    let prevPoint = getPoint(0, pattern);
+    trailCtx.clearRect(0, 0, size, size);
+
+    const strokeW = Math.max(0.9, (size / 160) * 1.35);
+
+    const render = (now) => {
+      const dt = Math.min(now - lastTime, 100);
+      lastTime = now;
+
+      if (phase === 'drawing') {
+        const speed = pattern.totalTheta / pattern.duration; // radians per ms
+        const nextTheta = Math.min(pattern.totalTheta, theta + speed * dt);
+
+        // Progressively trace lines from theta to nextTheta in fine increments
+        const stepSize = 0.04;
+        trailCtx.beginPath();
+        trailCtx.strokeStyle = `rgba(${pattern.color.rgb[0]}, ${pattern.color.rgb[1]}, ${pattern.color.rgb[2]}, 0.82)`;
+        trailCtx.lineWidth = strokeW;
+        trailCtx.moveTo(prevPoint.x, prevPoint.y);
+
+        let t = theta;
+        while (t < nextTheta) {
+          t = Math.min(nextTheta, t + stepSize);
+          const pt = getPoint(t, pattern);
+          trailCtx.lineTo(pt.x, pt.y);
+          prevPoint = pt;
         }
-        const colorIdx = Math.floor(t / CHUNK) % thematicColors.length;
-        const color = thematicColors[colorIdx];
-        
-        offCtx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.15)`; 
-        offCtx.lineWidth = 1;
-        offCtx.stroke();
-        
-        t = chunkEnd;
+        trailCtx.stroke();
+        theta = nextTheta;
+
+        // When complete, transition to brief celebratory hold
+        if (theta >= pattern.totalTheta) {
+          phase = 'holding';
+          phaseStartTime = now;
+        }
+      } else if (phase === 'holding') {
+        if (now - phaseStartTime > 1600) {
+          phase = 'fading';
+          phaseStartTime = now;
+        }
+      } else if (phase === 'fading') {
+        const fadeElapsed = now - phaseStartTime;
+        const fadeDuration = 600;
+        if (fadeElapsed >= fadeDuration) {
+          pattern = createPattern();
+          theta = 0;
+          prevPoint = getPoint(0, pattern);
+          trailCtx.clearRect(0, 0, size, size);
+          phase = 'drawing';
+          phaseStartTime = now;
+        }
       }
-    });
 
-    let startTime = performance.now();
-    const duration = 12000; // 12 seconds per full animation
-
-    const render = (time) => {
+      // Render to main display canvas
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, size, size);
-      
-      // Draw the cached static background
-      ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height, 0, 0, size, size);
-      
-      const elapsed = time - startTime;
-      const progress = (elapsed % duration) / duration;
-      
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
 
-      // Only draw the glowing playhead for each layer
-      parsedLayers.forEach(layer => {
-        const { q, Rr, d, scale, twist, totalTheta } = layer;
-        const currentT = progress * totalTheta;
-        
-        // Draw a small bright tail behind the current position
-        const tailLength = Math.PI * 1.5; 
-        const startT = Math.max(0, currentT - tailLength);
-        
-        const cr = Math.cos(twist);
-        const sr = Math.sin(twist);
-        
+      if (phase === 'fading') {
+        const fadeProgress = (now - phaseStartTime) / 600;
+        ctx.globalAlpha = Math.max(0, 1 - fadeProgress);
+      } else {
+        ctx.globalAlpha = 1;
+      }
+
+      // 1. Draw accumulated line trail
+      ctx.drawImage(trailCanvas, 0, 0, size, size);
+
+      // 2. Draw glowing leading pen tip (only while actively drawing)
+      if (phase === 'drawing') {
+        ctx.save();
+        ctx.shadowBlur = size > 60 ? 12 : 6;
+        ctx.shadowColor = pattern.color.hex;
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        for (let step = startT; step <= currentT; step += 0.05) {
-          const x1 = (Rr * Math.cos(step) + d * Math.cos(q * step)) * scale;
-          const y1 = (Rr * Math.sin(step) - d * Math.sin(q * step)) * scale;
-          
-          const px = size / 2 + x1 * cr - y1 * sr;
-          const py = size / 2 + x1 * sr + y1 * cr;
-          
-          if (step === startT) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        
-        const colorIdx = Math.floor(currentT / 60) % thematicColors.length;
-        const color = thematicColors[colorIdx] || thematicColors[0];
-        
-        ctx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`;
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-      });
+        const tipRadius = Math.max(1.8, (size / 160) * 3);
+        ctx.arc(prevPoint.x, prevPoint.y, tipRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(${pattern.color.rgb[0]}, ${pattern.color.rgb[1]}, ${pattern.color.rgb[2]}, 0.6)`;
+        ctx.beginPath();
+        ctx.arc(prevPoint.x, prevPoint.y, tipRadius * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
 
     animationFrameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [layers, size]);
+  }, [size]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: `${size + 40}px` }}>
-      <div style={{ animation: "cssSpin 10s linear infinite" }}>
-        <canvas ref={canvasRef} style={{ opacity: 0.9 }} />
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: `${size + 20}px` }}>
+      {/* Canvas is stationary — NO CSS ROTATION! Lines are drawn mathematically in real time */}
+      <canvas ref={canvasRef} style={{ display: 'block' }} />
       {text && (
         <div style={{
-          marginTop: "1rem",
+          marginTop: size > 80 ? "1rem" : "0.5rem",
           fontFamily: FONT.condensed,
-          fontSize: "0.85rem",
+          fontSize: size > 80 ? "0.85rem" : "0.75rem",
           fontWeight: 600,
           letterSpacing: "0.15em",
           textTransform: "uppercase",
-          color: safeGold,
-          animation: "synthesisPulse 2s infinite ease-in-out"
+          color: "var(--c-goldBright)",
+          animation: "synthesisPulse 2s infinite ease-in-out",
+          textAlign: "center"
         }}>
           {text}
         </div>
       )}
       <style>{`
         @keyframes synthesisPulse {
-          0% { opacity: 0.4; }
-          50% { opacity: 1; text-shadow: 0 0 10px rgba(212,160,48,0.4); }
-          100% { opacity: 0.4; }
-        }
-        @keyframes cssSpin {
-          100% { transform: rotate(360deg); }
+          0% { opacity: 0.45; }
+          50% { opacity: 1; text-shadow: 0 0 10px rgba(212,160,48,0.5); }
+          100% { opacity: 0.45; }
         }
       `}</style>
     </div>

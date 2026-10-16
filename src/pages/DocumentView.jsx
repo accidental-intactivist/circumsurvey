@@ -1,19 +1,126 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useReport } from '../contexts/ReportContext';
 import { useMediaList } from '../contexts/MediaListContext';
 import { useAssistant } from '../contexts/AssistantContext';
-import { FilePlus, PlusSquare, Sparkles, Loader, Globe, Copy, Check, ZoomIn, ZoomOut, Maximize, Minimize, RefreshCw, RotateCw, Lock } from 'lucide-react';
+import { 
+  FilePlus, PlusSquare, Sparkles, Loader, Globe, Copy, Check, ZoomIn, ZoomOut, 
+  Maximize, Minimize, RefreshCw, RotateCw, Lock, Video, Headphones, Newspaper, 
+  Image as ImageIcon, FileText, Calendar, MapPin, Building2, Folder, Tag, 
+  Bookmark, Download, ExternalLink, Share2, Scale, Film, Database, Info, 
+  ArrowLeft, ArrowRight, Clock, FileCode, User
+} from 'lucide-react';
 import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import CustomPDFViewer from '../components/CustomPDFViewer';
 import ThinkingSpirograph from '../components/ThinkingSpirograph';
 import CommentsWidget from '../components/CommentsWidget';
+import EntityLink from '../components/EntityLink';
 import { generateFriendlySlug, parseFriendlySlug } from '../utils/slugs';
+import { resolveCollectionName } from '../utils/collections';
+import { formatPlainTextToMarkdown, formatExecutiveSummary } from '../utils/formatMarkdown';
+import { safeParseJson } from '../utils/json';
 import { SourceLensPanel, ContextNotes, AlsoCoveredBy, DigestPulse } from '../components/SourceLensPanel';
 import AutoEntityLinker from '../components/AutoEntityLinker';
+import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import MediaEmbed, { parseMediaUrl } from '../components/MediaEmbed';
 import './AdminArchivePage.css';
+
+export const isVideoFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && (String(str).match(/\.(mp4|mov|webm|ogg|mkv|avi|m4v|wmv|flv)$/i) || String(str).match(/(youtube\.com|youtu\.be|vimeo\.com)/i)));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isAudioFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(mp3|wav|m4a|aac|flac|oga|opus)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isPdfFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).toLowerCase().endsWith('.pdf'));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isImageFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(jpeg|jpg|gif|png|webp|svg|bmp)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const getFormatMeta = (doc, displayUrl, rawFiles = []) => {
+  if (isVideoFile(displayUrl, doc?.title, rawFiles) || doc?.type === 'video') {
+    return {
+      type: 'video',
+      filterKey: 'video',
+      label: 'Video Archive',
+      icon: <Video size={13} />,
+      color: '#06b6d4',
+      bg: 'rgba(6, 182, 212, 0.15)',
+      border: 'rgba(6, 182, 212, 0.4)'
+    };
+  }
+  if (isAudioFile(displayUrl, doc?.title, rawFiles) || doc?.type === 'audio') {
+    return {
+      type: 'audio',
+      filterKey: 'audio',
+      label: 'Audio Recording',
+      icon: <Headphones size={13} />,
+      color: '#a855f7',
+      bg: 'rgba(168, 85, 247, 0.15)',
+      border: 'rgba(168, 85, 247, 0.4)'
+    };
+  }
+  if (doc?.type === 'dataset') {
+    return {
+      type: 'dataset',
+      filterKey: 'dataset',
+      label: 'Interactive Dataset',
+      icon: <Database size={13} />,
+      color: '#10b981',
+      bg: 'rgba(16, 185, 129, 0.15)',
+      border: 'rgba(16, 185, 129, 0.4)'
+    };
+  }
+  if (doc?.type === 'external_news') {
+    return {
+      type: 'news article',
+      filterKey: 'external_news',
+      label: 'News Clipping',
+      icon: <Newspaper size={13} />,
+      color: '#ef4444',
+      bg: 'rgba(239, 68, 68, 0.15)',
+      border: 'rgba(239, 68, 68, 0.4)'
+    };
+  }
+  if (isImageFile(displayUrl, doc?.title, rawFiles) || doc?.type === 'image') {
+    return {
+      type: 'image',
+      filterKey: 'image',
+      label: 'Archival Photograph',
+      icon: <ImageIcon size={13} />,
+      color: '#fb923c',
+      bg: 'rgba(251, 146, 60, 0.15)',
+      border: 'rgba(251, 146, 60, 0.4)'
+    };
+  }
+  return {
+    type: 'document',
+    filterKey: 'document',
+    label: 'Manuscript / Document',
+    icon: <FileText size={13} />,
+    color: '#facc15',
+    bg: 'rgba(250, 204, 21, 0.15)',
+    border: 'rgba(250, 204, 21, 0.4)'
+  };
+};
 
 const EntityPopover = ({ name, type }) => {
   const [open, setOpen] = useState(false);
@@ -100,6 +207,7 @@ export default function DocumentView() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [copiedRaw, setCopiedRaw] = useState(false);
   const [copiedGlobal, setCopiedGlobal] = useState(false);
+  const [isAbstractExpanded, setIsAbstractExpanded] = useState(false);
 
   // Translation State
   const [availableTranslations, setAvailableTranslations] = useState([]);
@@ -180,17 +288,23 @@ export default function DocumentView() {
   }, [id]);
 
   useEffect(() => {
-    const handleMouseUp = () => {
-      const activeSelection = window.getSelection();
-      const text = activeSelection.toString().trim();
+    const handleMouseUp = (e) => {
+      if (e?.target?.closest && (e.target.closest('[data-docview-toolbar="true"]') || e.target.closest('[data-docview-modal="true"]'))) {
+        return;
+      }
 
-      if (text.length > 10) {
+      const activeSelection = window.getSelection();
+      const text = activeSelection ? activeSelection.toString().trim() : '';
+
+      if (text.length > 10 && activeSelection.rangeCount > 0) {
         const range = activeSelection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
+        const placeBelow = rect.top < 230;
         setSelection({
           text,
-          x: rect.left + (rect.width / 2),
-          y: rect.top + window.scrollY - 10,
+          x: Math.max(110, Math.min(window.innerWidth - 110, rect.left + (rect.width / 2))),
+          y: placeBelow ? (rect.bottom + 10) : (rect.top - 10),
+          placeBelow,
           visible: true
         });
         setSuggestions([]); // reset suggestions on new selection
@@ -229,44 +343,46 @@ export default function DocumentView() {
         if (mockRes.ok) {
           const mockData = await mockRes.json();
           
-          // If we didn't get a valid doc from the backend (e.g. mock server), find it here by id
+          // If we didn't get a valid doc from the backend (e.g. mock server), find it here by id or url hash
           if (!foundDoc) {
              foundDoc = mockData.find(m => {
                if (m.id === id) return true;
-               const mMeta = JSON.parse(m.metadata_json || '{}');
-               return generateFriendlySlug(m, mMeta) === id;
+               const mMeta = safeParseJson(m.metadata_json);
+               return generateFriendlySlug(m, mMeta) === id || (m.url && m.url.includes(id));
              });
-             if (!foundDoc) foundDoc = data.data ? data.data[0] : {}; // fallback
+             if (!foundDoc) foundDoc = null;
           }
 
-          const liveTitle = foundDoc.title || '';
-          const liveMeta = foundDoc.metadata_json ? JSON.parse(foundDoc.metadata_json) : {};
-          const geminiTitle = liveMeta.gemini_extracted_metadata?.title || '';
-          
-          const match = mockData.find(m => {
-            if (m.id === foundDoc.id) return true;
-            const mMeta = JSON.parse(m.metadata_json || '{}');
-            const mTitle = m.title || mMeta.title || '';
-            if (!mTitle) return false;
+          if (foundDoc) {
+            const liveTitle = foundDoc.title || '';
+            const liveMeta = safeParseJson(foundDoc.metadata_json);
+            const geminiTitle = liveMeta.gemini_extracted_metadata?.title || '';
             
-            // Fuzzy match logic: check if one contains the other
-            const t1 = liveTitle.toLowerCase();
-            const t2 = mTitle.toLowerCase();
-            const t3 = geminiTitle.toLowerCase();
-            
-            return (t1 && (t1.includes(t2) || t2.includes(t1))) || 
-                   (t3 && (t3.includes(t2) || t2.includes(t3)));
-          });
-          
-          if (match) {
-            const mMeta = JSON.parse(match.metadata_json || '{}');
-            // Merge the two metadata objects, prioritizing the mock (richer) metadata,
-            // but keeping gemini_extracted_metadata and extracted_text_url
-            foundDoc.metadata_json = JSON.stringify({
-              ...mMeta,
-              ...liveMeta,
-              gemini_extracted_metadata: liveMeta.gemini_extracted_metadata || mMeta.gemini_extracted_metadata
+            const match = mockData.find(m => {
+              if (m.id === foundDoc.id) return true;
+              const mMeta = safeParseJson(m.metadata_json);
+              const mTitle = m.title || mMeta.title || '';
+              if (!mTitle) return false;
+              
+              // Fuzzy match logic: check if one contains the other
+              const t1 = liveTitle.toLowerCase();
+              const t2 = mTitle.toLowerCase();
+              const t3 = geminiTitle.toLowerCase();
+              
+              return (t1 && (t1.includes(t2) || t2.includes(t1))) || 
+                     (t3 && (t3.includes(t2) || t2.includes(t3)));
             });
+            
+            if (match) {
+              const mMeta = safeParseJson(match.metadata_json);
+              // Merge the two metadata objects, prioritizing the mock (richer) metadata,
+              // but keeping gemini_extracted_metadata and extracted_text_url
+              foundDoc.metadata_json = JSON.stringify({
+                ...mMeta,
+                ...liveMeta,
+                extracted_text_url: liveMeta.extracted_text_url || mMeta.extracted_text_url,
+                gemini_extracted_metadata: liveMeta.gemini_extracted_metadata || mMeta.gemini_extracted_metadata
+              });
             // Merge series/collection info
             if (match.series && !foundDoc.series) foundDoc.series = match.series;
             if (match.source_collection) {
@@ -274,6 +390,7 @@ export default function DocumentView() {
             }
           }
         }
+      }
       } catch (e) {
         console.warn("Failed to merge mock metadata", e);
       }
@@ -291,8 +408,8 @@ export default function DocumentView() {
           if (docList && Array.isArray(docList)) {
             // Sort by date then title to match timeline
             const sorted = [...docList].sort((a, b) => {
-              const dateA = a.metadata_json ? (JSON.parse(a.metadata_json).date || '9999') : '9999';
-              const dateB = b.metadata_json ? (JSON.parse(b.metadata_json).date || '9999') : '9999';
+              const dateA = safeParseJson(a.metadata_json).date || '9999';
+              const dateB = safeParseJson(b.metadata_json).date || '9999';
               if (dateA !== dateB) return dateA.localeCompare(dateB);
               return (a.title || '').localeCompare(b.title || '');
             });
@@ -327,7 +444,7 @@ export default function DocumentView() {
 
   useEffect(() => {
     if (doc) {
-      const meta = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
+      const meta = safeParseJson(doc.metadata_json);
       const title = getCleanTitle(doc, meta);
       document.title = `${title} — Intactivism Archive`;
     }
@@ -413,28 +530,54 @@ export default function DocumentView() {
 
   const handleToggleView = async (mode) => {
     setViewMode(mode);
-    if (mode === 'text' && !textContent && doc.url && doc.url.toLowerCase().endsWith('.pdf')) {
+    if (mode === 'text' && !textContent) {
       setLoadingText(true);
-      try {
-        const meta = JSON.parse(doc.metadata_json || '{}');
-        const textUrl = meta.extracted_text_url || doc.url.replace(/\.pdf$/i, '.txt');
-        const res = await fetch(textUrl);
-        if (res.ok) {
-          const text = await res.text();
-          setTextContent(text);
-        } else {
-          // If .md failed, try fallback .txt for legacy docs
-          if (textUrl.endsWith('.md')) {
-            const fallbackRes = await fetch(doc.url.replace(/\.pdf$/i, '.txt'));
-            if (fallbackRes.ok) {
-              setTextContent(await fallbackRes.text());
-              return;
+      let loadedText = null;
+
+      const meta = safeParseJson(doc?.metadata_json);
+
+      // Collect candidate URLs for rich Markdown (.md) or raw text (.txt)
+      const candidateUrls = [];
+      if (meta.extracted_text_url) {
+        candidateUrls.push(meta.extracted_text_url);
+      }
+      if (doc?.url && doc.url.toLowerCase().endsWith('.pdf')) {
+        // Prioritize Gemini OCR markdown (.md)
+        candidateUrls.push(doc.url.replace(/\.pdf$/i, '.md'));
+        // Fallback to legacy .txt
+        candidateUrls.push(doc.url.replace(/\.pdf$/i, '.txt'));
+      }
+      // If doc has an ID that looks like a hash or asset name, also check documents/{id}.md
+      if (doc?.id && !candidateUrls.some(u => u.includes(doc.id))) {
+        candidateUrls.push(`/api/assets/documents/${doc.id}.md`);
+        candidateUrls.push(`/api/assets/${doc.id}.md`);
+      }
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            const txt = await res.text();
+            // Verify it is actual text content and not an HTML error/fallback page
+            if (txt && txt.trim().length > 0 && !txt.includes('<!DOCTYPE html>')) {
+              loadedText = txt;
+              break;
             }
           }
-          setTextContent("No extracted text is available for this document.");
+        } catch (e) {
+          // try next candidate
         }
-      } catch (err) {
-        setTextContent("Failed to load extracted text.");
+      }
+
+      // If no external markdown file was found, fallback to doc.content
+      if (!loadedText && doc?.content && doc.content.trim().length > 0) {
+        loadedText = doc.content;
+      }
+
+      if (loadedText) {
+        setTextContent(formatPlainTextToMarkdown(loadedText));
+      } else {
+        setTextContent("No extracted text is available for this document.");
       }
       setLoadingText(false);
     }
@@ -460,8 +603,8 @@ export default function DocumentView() {
 
   if (!doc) return <div style={{ padding: '4rem', color: 'var(--c-dim)', fontFamily: 'var(--f-display)', fontSize: '1.2rem', textAlign: 'center' }}>Loading document...</div>;
 
-  const metadata = doc.metadata_json ? JSON.parse(doc.metadata_json) : {};
-  const mediaUrls = doc.media_urls ? JSON.parse(doc.media_urls) : [];
+  const metadata = safeParseJson(doc.metadata_json);
+  const mediaUrls = safeParseJson(doc.media_urls, []);
   
   const rawFiles = metadata.raw_files || [];
   const hasRawFile = rawFiles.length > 0;
@@ -469,24 +612,57 @@ export default function DocumentView() {
   const currentRawFile = rawFiles[imageIndex] || rawFiles[0];
   const displayUrl = doc.url || (currentRawFile ? `/api/assets/${encodeURIComponent(currentRawFile.path.split('/').pop())}` : null);
 
-  const coverImage = mediaUrls.find(url => url.match(/\.(jpeg|jpg|gif|png)$/i)) || 
-                    (displayUrl && displayUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? displayUrl : null);
+  const coverImage = mediaUrls.find(url => isImageFile(url)) || 
+                    (displayUrl && isImageFile(displayUrl) ? displayUrl : null);
                     
   const isPending = doc.status === 'pending_digitization' && !doc.url && !hasRawFile;
   const citationTitle = getCleanTitle(doc, metadata);
+  const formatMeta = getFormatMeta(doc, displayUrl, rawFiles);
+  const displayDate = getDisplayDate(doc, metadata);
+  const dateYear = displayDate ? (displayDate.match(/\b(19\d{2}|20\d{2})\b/)?.[1] || null) : null;
+
+  const keyPeopleList = [
+    ...(metadata.gemini_extracted_metadata?.authors || []),
+    ...(metadata.key_people || []),
+    ...(metadata.author ? [metadata.author] : [])
+  ].filter((v, i, a) => v && a.indexOf(v) === i);
+
+  const keywordList = [
+    ...(metadata.keywords || []),
+    ...(metadata.tags || []),
+    ...(metadata.gemini_extracted_metadata?.keywords || [])
+  ].filter((v, i, a) => v && a.indexOf(v) === i);
+
+  const orgList = [
+    ...(metadata.gemini_extracted_metadata?.organizations || []),
+    ...(metadata.organizations || [])
+  ].filter((v, i, a) => v && a.indexOf(v) === i);
+
+  const rawAbstract = metadata.abstract || metadata.description || "";
+  const formattedAbstract = formatExecutiveSummary(rawAbstract);
+  const allLinkedEntities = [
+    ...orgList,
+    ...keyPeopleList
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--c-bg)', position: 'relative' }}>
       
+      {/* Background Underloom in Library Crimson */}
+      <div className="no-print" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.12, overflow: 'hidden' }}>
+        <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
+      </div>
+
       {/* Floating Toolbar */}
       {selection.visible && (
         <div 
+          data-docview-toolbar="true"
           className="lux-glide-in"
           style={{
-            position: 'absolute',
+            position: 'fixed',
             left: selection.x,
-            top: selection.y - 10,
-            transform: 'translate(-50%, -100%)',
+            top: selection.y,
+            transform: selection.placeBelow ? 'translate(-50%, 0)' : 'translate(-50%, -100%)',
             background: 'var(--c-bgCard)',
             border: '1px solid var(--c-ghost)',
             borderRadius: '12px',
@@ -540,7 +716,7 @@ export default function DocumentView() {
 
       {/* Media List Modal */}
       {showListModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseDown={(e) => e.stopPropagation()}>
+        <div data-docview-modal="true" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseDown={(e) => e.stopPropagation()}>
           <div className="lux-glide-in" style={{ background: 'var(--c-bgCard)', padding: '2rem', borderRadius: '12px', width: '400px', border: '1px solid var(--c-ghost)' }}>
             <h3 style={{ margin: '0 0 1rem 0', color: 'var(--c-textBright)' }}>Add Document to Media List</h3>
             
@@ -590,19 +766,19 @@ export default function DocumentView() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', gap: '1rem' }}>
               {prevDoc && (
-                <Link to={`/library/${generateFriendlySlug(prevDoc, prevDoc.metadata_json ? JSON.parse(prevDoc.metadata_json) : {})}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
+                <Link to={`/library/${generateFriendlySlug(prevDoc, safeParseJson(prevDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
                   <span style={{ fontSize: '1.2rem' }}>&larr;</span> Prev Document
                 </Link>
               )}
               {nextDoc && (
-                <Link to={`/library/${generateFriendlySlug(nextDoc, nextDoc.metadata_json ? JSON.parse(nextDoc.metadata_json) : {})}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
+                <Link to={`/library/${generateFriendlySlug(nextDoc, safeParseJson(nextDoc.metadata_json))}`} className="lux-hover-lift" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }}>
                   Next Document <span style={{ fontSize: '1.2rem' }}>&rarr;</span>
                 </Link>
               )}
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button onClick={() => openAssistant('', null, doc)} style={{ color: 'var(--c-goldBright)', background: 'transparent', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-gold)', borderRadius: '20px', cursor: 'pointer' }} className="lux-hover-lift">
-                <Sparkles size={14} /> Ask Glenda
+                <Sparkles size={14} /> Ask Assistant
               </button>
               <Link to="/library" style={{ color: 'var(--c-textBright)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid var(--c-ghost)', borderRadius: '20px' }} className="lux-hover-lift">
                 Return to Index
@@ -632,93 +808,390 @@ export default function DocumentView() {
         {/* Main Layout Container */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', alignItems: 'flex-start' }}>
           
-          {/* Left Column: Metadata */}
-          <div style={{ flex: '1 1 300px', maxWidth: '400px', marginBottom: '2rem' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-              <tbody>
-                <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '110px', fontWeight: 'bold' }}>Type</td>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>
-                    {(displayUrl && displayUrl.match(/\.(mp4|mov|webm|ogg)$/i) ? 'video' : (doc.type || 'document')).replace(/_/g, ' ').replace(/newspaper clipping/i, 'news article').replace(/other/i, 'document').replace(/^pdf$/i, 'document').toUpperCase()}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Date</td>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>{getDisplayDate(doc, metadata)}</td>
-                </tr>
-                {metadata.original_location && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Location</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)', fontFamily: 'var(--f-mono)', fontSize: '0.85rem' }}>{metadata.original_location}</td>
-                  </tr>
-                )}
-                {(metadata.gemini_extracted_metadata?.authors?.length > 0 || (metadata.key_people && metadata.key_people.length > 0)) && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Key People</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        {(metadata.gemini_extracted_metadata?.authors || metadata.key_people).map(p => (
-                          <EntityPopover key={p} name={p} type="person" />
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-                {metadata.source_publication && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Publication</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>{metadata.source_publication}</td>
-                  </tr>
-                )}
-                {metadata.gemini_extracted_metadata?.publisher && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Publisher</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>{metadata.gemini_extracted_metadata.publisher}</td>
-                  </tr>
-                )}
+          {/* Left Column: Metadata Glow-Up Card */}
+          <div style={{ flex: '1 1 340px', maxWidth: '420px', marginBottom: '2rem' }}>
+            <div className="docview-metadata-card">
+              {/* Card Header */}
+              <div className="docview-meta-header">
+                <div className="docview-meta-title-row">
+                  <div className="docview-meta-title">
+                    <Database size={15} color="var(--c-goldBright)" /> Record Dossier
+                  </div>
+                  <Link 
+                    to={`/library?format=${formatMeta.filterKey}`}
+                    className="docview-format-badge"
+                    style={{
+                      background: formatMeta.bg,
+                      border: `1px solid ${formatMeta.border}`,
+                      color: formatMeta.color
+                    }}
+                    title={`Filter Library by ${formatMeta.label}`}
+                  >
+                    {formatMeta.icon} {formatMeta.label}
+                  </Link>
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--c-dim)', fontFamily: 'var(--f-mono)' }}>
+                  Catalog ID: {doc.id}
+                </div>
+              </div>
+
+              <div className="nutrition-bar-thick" />
+
+              {/* Metadata Fields Section */}
+              <div className="docview-meta-section">
+                
+                {/* Date */}
+                <div className="docview-meta-item">
+                  <span className="docview-meta-label">
+                    <Calendar size={13} color="var(--c-gold)" /> Chronology
+                  </span>
+                  <div className="docview-meta-value" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: '700', color: 'var(--c-goldBright)', fontSize: '0.95rem' }}>
+                      {displayDate}
+                    </span>
+                    {dateYear && (
+                      <Link 
+                        to={`/library?year=${dateYear}`}
+                        className="lux-hover-lift"
+                        style={{ fontSize: '0.72rem', color: 'var(--c-dim)', textDecoration: 'none', background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: '3px' }}
+                      >
+                        Browse {dateYear} receipts &rarr;
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Movement Category */}
                 {metadata.category && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Category</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>{metadata.category}</td>
-                  </tr>
+                  <div className="docview-meta-item">
+                    <span className="docview-meta-label">
+                      <Folder size={13} color="#38bdf8" /> Category Domain
+                    </span>
+                    <div className="docview-meta-value">
+                      <Link 
+                        to={`/library?category=${encodeURIComponent(metadata.category)}`}
+                        className="docview-interactive-chip"
+                      >
+                        <Folder size={12} color="#38bdf8" />
+                        <span>{metadata.category}</span>
+                      </Link>
+                    </div>
+                  </div>
                 )}
-                {metadata.subject && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Subject</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)' }}>{metadata.subject}</td>
-                  </tr>
-                )}
-                {doc.series && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Series</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)', fontSize: '0.85rem' }}>{doc.series}</td>
-                  </tr>
-                )}
-                {(metadata.tags?.length > 0 || metadata.keywords?.length > 0) && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold', verticalAlign: 'top' }}>Keywords</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)', verticalAlign: 'top' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        {(metadata.keywords || metadata.tags).map(t => (
-                          <Link key={t} to={`/library?tag=${encodeURIComponent(t)}`} className="lux-hover-lift" style={{ color: 'var(--c-blue)', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', padding: '0.2rem 0.5rem', border: '1px solid var(--c-ghost)', borderRadius: '4px' }}>{t}</Link>
-                        ))}
+
+                {/* Quick Abstract & Integrated Tags */}
+                {rawAbstract && (
+                  <div className="docview-meta-item">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span className="docview-meta-label" style={{ color: 'var(--c-goldBright)', fontWeight: '800' }}>
+                        <FileText size={13} color="var(--c-goldBright)" /> Quick Abstract
+                      </span>
+                      <span style={{ fontSize: '0.66rem', color: 'var(--c-dim)', fontFamily: 'var(--f-mono)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Executive Summary
+                      </span>
+                    </div>
+
+                    <div className="docview-quick-abstract-box">
+                      <div className={`docview-abstract-text ${isAbstractExpanded ? 'expanded' : 'collapsed'}`}>
+                        <AutoEntityLinker text={formattedAbstract} entities={allLinkedEntities} />
                       </div>
-                    </td>
-                  </tr>
+
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.4rem', borderTop: '1px dashed rgba(255,255,255,0.08)' }}>
+                        <button
+                          type="button"
+                          onClick={() => setIsAbstractExpanded(!isAbstractExpanded)}
+                          className="lux-hover-bright"
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--c-goldBright)',
+                            fontSize: '0.74rem',
+                            fontWeight: '700',
+                            letterSpacing: '0.04em',
+                            cursor: 'pointer',
+                            padding: 0,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem'
+                          }}
+                        >
+                          {isAbstractExpanded ? 'Show Less ▴' : 'Read Full Abstract ▾'}
+                        </button>
+                        
+                        <a 
+                          href="#deep-context-abstract"
+                          style={{
+                            color: 'var(--c-dim)',
+                            fontSize: '0.7rem',
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem'
+                          }}
+                          className="lux-hover-bright"
+                          title="Jump to comprehensive deep context section below"
+                        >
+                          Deep Context &darr;
+                        </a>
+                      </div>
+
+                      {/* Integrated Organizations & Focus Tags */}
+                      {(orgList.length > 0 || keywordList.length > 0) && (
+                        <div style={{ marginTop: '0.4rem', paddingTop: '0.6rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          {orgList.length > 0 && (
+                            <div>
+                              <div style={{ fontSize: '0.66rem', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Building2 size={11} color="#38bdf8" /> Key Organizations
+                              </div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                                {orgList.slice(0, 4).map(org => (
+                                  <EntityPopover key={org} name={org} type="organization" />
+                                ))}
+                                {orgList.length > 4 && (
+                                  <span style={{ fontSize: '0.7rem', color: 'var(--c-dim)', alignSelf: 'center' }}>
+                                    +{orgList.length - 4} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {keywordList.length > 0 && (
+                            <div>
+                              <div style={{ fontSize: '0.66rem', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <Tag size={11} color="var(--c-gold)" /> Focus Tags
+                              </div>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                                {keywordList.slice(0, 5).map(kw => (
+                                  <Link 
+                                    key={kw} 
+                                    to={`/library?tag=${encodeURIComponent(kw)}`}
+                                    className="docview-interactive-chip"
+                                    style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem' }}
+                                  >
+                                    #{kw}
+                                  </Link>
+                                ))}
+                                {keywordList.length > 5 && (
+                                  <span style={{ fontSize: '0.7rem', color: 'var(--c-dim)', alignSelf: 'center' }}>
+                                    +{keywordList.length - 5} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 )}
-                {metadata.physical_provenance && (
-                  <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Provenance</td>
-                    <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)', fontSize: '0.85rem', lineHeight: '1.5' }}>
-                      {metadata.physical_provenance.original_collection && <div><span style={{ color: 'var(--c-dim)' }}>Collection:</span> {metadata.physical_provenance.original_collection}</div>}
-                      {metadata.physical_provenance.holding_institution && <div><span style={{ color: 'var(--c-dim)' }}>Institution:</span> {metadata.physical_provenance.holding_institution}</div>}
-                      {metadata.physical_provenance.folder_number && <div><span style={{ color: 'var(--c-dim)' }}>Folder:</span> {metadata.physical_provenance.folder_number}</div>}
-                    </td>
-                  </tr>
+
+                {/* Subject & Series */}
+                {(metadata.subject || doc.series) && (
+                  <div className="docview-meta-item">
+                    <span className="docview-meta-label">
+                      <Tag size={13} color="#a855f7" /> Subject & Series
+                    </span>
+                    <div className="docview-meta-value" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                      {metadata.subject && (
+                        <Link 
+                          to={`/library?q=${encodeURIComponent(metadata.subject)}`}
+                          className="docview-interactive-chip"
+                        >
+                          <span>{metadata.subject}</span>
+                        </Link>
+                      )}
+                      {doc.series && doc.series !== metadata.subject && (
+                        <Link 
+                          to={`/library?q=${encodeURIComponent(doc.series)}`}
+                          className="docview-interactive-chip"
+                        >
+                          <span>{doc.series}</span>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
                 )}
-                <tr style={{ borderBottom: '1px solid var(--c-ghost)' }}>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-dim)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Translation</td>
-                  <td style={{ padding: '0.75rem 0', color: 'var(--c-textBright)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+                {/* Archive Provenance */}
+                <div className="docview-provenance-box">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-goldBright)' }}>
+                    <Building2 size={13} /> Provenance & Repository
+                  </div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--c-textBright)', fontWeight: '600', lineHeight: 1.4 }}>
+                    {doc.source_collection || 'The Tim Hammond Genital Autonomy Archive'}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--c-dim)' }}>
+                    University of Massachusetts Amherst Special Collections (MS 1205)
+                  </div>
+                  {metadata.original_location && (
+                    <div style={{ marginTop: '0.35rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <span style={{ fontSize: '0.68rem', color: 'var(--c-dim)', textTransform: 'uppercase' }}>Physical Box / Folder:</span>
+                      <Link
+                        to={`/library?q=${encodeURIComponent(metadata.original_location.split('/').pop().trim())}`}
+                        className="lux-hover-lift"
+                        style={{ fontSize: '0.72rem', color: 'var(--c-muted)', fontFamily: 'var(--f-mono)', background: 'rgba(0,0,0,0.3)', padding: '0.25rem 0.45rem', borderRadius: '4px', wordBreak: 'break-all', textDecoration: 'none' }}
+                        title="Click to search for related items in this archive folder"
+                      >
+                        {metadata.original_location}
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Key People */}
+                {keyPeopleList.length > 0 && (
+                  <div className="docview-meta-item">
+                    <span className="docview-meta-label">
+                      <User size={13} color="#facc15" /> Key Historical Figures
+                    </span>
+                    <div className="docview-meta-value" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                      {keyPeopleList.map(p => (
+                        <EntityLink key={p} name={p} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Keywords */}
+                {keywordList.length > 0 && (
+                  <div className="docview-meta-item">
+                    <span className="docview-meta-label">
+                      <Tag size={13} color="var(--c-dim)" /> Index Keywords
+                    </span>
+                    <div className="docview-meta-value" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                      {keywordList.map(kw => (
+                        <Link 
+                          key={kw} 
+                          to={`/library?tag=${encodeURIComponent(kw)}`}
+                          className="docview-interactive-chip"
+                          style={{ fontSize: '0.76rem', padding: '0.2rem 0.5rem' }}
+                        >
+                          #{kw}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Raw File & Digital Asset Specs */}
+                {currentRawFile && (
+                  <div className="docview-meta-item">
+                    <span className="docview-meta-label">
+                      <FileCode size={13} color="#06b6d4" /> Digital Asset Receipts
+                    </span>
+                    <div style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid var(--c-ghost)', borderRadius: '6px', padding: '0.65rem 0.8rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.78rem' }}>
+                      <div style={{ color: 'var(--c-textBright)', fontWeight: '600', wordBreak: 'break-all', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                        {isVideoFile(displayUrl, doc.title, rawFiles) ? <Video size={13} color="#06b6d4" /> : <FileText size={13} color="#facc15" />} 
+                        {currentRawFile.path ? currentRawFile.path.split('/').pop() : 'Archival File'}
+                      </div>
+                      {currentRawFile.source && (
+                        <div style={{ color: 'var(--c-dim)', fontSize: '0.72rem', fontFamily: 'var(--f-mono)' }}>
+                          Archive Zip: {currentRawFile.source}
+                        </div>
+                      )}
+                      {displayUrl && (
+                        <div style={{ marginTop: '0.2rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <a 
+                            href={displayUrl} 
+                            download 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="lux-hover-lift"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              color: 'var(--c-goldBright)',
+                              textDecoration: 'none',
+                              fontWeight: '700',
+                              fontSize: '0.72rem'
+                            }}
+                          >
+                            <Download size={12} /> Download Original
+                          </a>
+                          <a 
+                            href={displayUrl} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="lux-hover-lift"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              color: 'var(--c-dim)',
+                              textDecoration: 'none',
+                              fontSize: '0.72rem'
+                            }}
+                          >
+                            <ExternalLink size={12} /> Direct Stream URL
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Citation Box */}
+                <div className="docview-citation-box">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--c-dim)' }}>
+                      Cite this Record
+                    </span>
+                    <div style={{ display: 'flex', gap: '0.3rem' }}>
+                      {['APA', 'MLA', 'Chicago'].map(style => (
+                        <button
+                          key={style}
+                          type="button"
+                          onClick={() => setCitationStyle(style)}
+                          style={{
+                            background: citationStyle === style ? 'var(--c-goldBright)' : 'rgba(255,255,255,0.06)',
+                            color: citationStyle === style ? '#000' : 'var(--c-textBright)',
+                            border: 'none',
+                            padding: '0.15rem 0.45rem',
+                            borderRadius: '3px',
+                            fontSize: '0.68rem',
+                            fontWeight: '700',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {style}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--c-text)', fontStyle: 'italic', lineHeight: 1.45, wordBreak: 'break-word', background: 'rgba(255,255,255,0.03)', padding: '0.5rem', borderRadius: '4px' }}>
+                    {generateCitationText(metadata, citationTitle)}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyGlobalCitation(citationTitle, metadata)}
+                    className="lux-hover-lift"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      padding: '0.45rem',
+                      borderRadius: '4px',
+                      background: copiedGlobal ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+                      border: copiedGlobal ? '1px solid #10b981' : '1px solid var(--c-ghost)',
+                      color: copiedGlobal ? '#10b981' : 'var(--c-textBright)',
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {copiedGlobal ? <><Check size={13} /> Citation Copied to Clipboard</> : <><Copy size={13} /> Copy {citationStyle} Citation</>}
+                  </button>
+                </div>
+
+                {/* Translations */}
+                <div className="docview-meta-item">
+                  <span className="docview-meta-label">
+                    <Globe size={13} color="var(--c-blue)" /> Translations & Multi-Language
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                     {availableTranslations.length > 0 && (
                       <select 
                         value={currentLanguage} 
@@ -731,7 +1204,7 @@ export default function DocumentView() {
                             if (found) setTranslatedText(found.translated_text);
                           }
                         }}
-                        style={{ background: 'var(--c-bgDeep)', color: 'var(--c-goldBright)', border: '1px solid var(--c-gold)', padding: '0.3rem 0.8rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}
+                        style={{ background: 'var(--c-bgDeep)', color: 'var(--c-goldBright)', border: '1px solid var(--c-gold)', padding: '0.35rem 0.7rem', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 'bold' }}
                       >
                         <option value="English">English</option>
                         {availableTranslations.map(t => (
@@ -742,14 +1215,15 @@ export default function DocumentView() {
                     <button 
                       onClick={() => setShowTranslationModal(true)}
                       className="lux-hover-lift"
-                      style={{ background: 'transparent', color: 'var(--c-gold)', border: '1px dashed var(--c-gold)', padding: '0.3rem 0.8rem', borderRadius: '4px', fontSize: '0.85rem', cursor: 'pointer' }}
+                      style={{ background: 'transparent', color: 'var(--c-gold)', border: '1px dashed var(--c-gold)', padding: '0.35rem 0.7rem', borderRadius: '4px', fontSize: '0.78rem', cursor: 'pointer' }}
                     >
                       Request Translation
                     </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
 
           {/* Right Column: Viewer Section */}
@@ -799,13 +1273,25 @@ export default function DocumentView() {
                   <p style={{ color: 'var(--c-text)', maxWidth: '500px', margin: '0 0 2rem 0', lineHeight: 1.8 }}>
                     This is a structured qualitative dataset rather than a traditional document.
                   </p>
-                  <Link
-                    to={displayUrl}
-                    className="lux-hover-lift"
-                    style={{ background: 'var(--c-goldBright)', color: '#000', padding: '1rem 2.5rem', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}
-                  >
-                    Launch Interactive Explorer
-                  </Link>
+                  {displayUrl?.startsWith('http://') || displayUrl?.startsWith('https://') ? (
+                    <a
+                      href={displayUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="lux-hover-lift"
+                      style={{ background: 'var(--c-goldBright)', color: '#000', padding: '1rem 2.5rem', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}
+                    >
+                      Launch Interactive Explorer &rarr;
+                    </a>
+                  ) : (
+                    <Link
+                      to={displayUrl || '/explore'}
+                      className="lux-hover-lift"
+                      style={{ background: 'var(--c-goldBright)', color: '#000', padding: '1rem 2.5rem', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}
+                    >
+                      Launch Interactive Explorer
+                    </Link>
+                  )}
                 </div>
               ) : (displayUrl && displayUrl.toLowerCase().endsWith('.pdf')) ? (
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -845,7 +1331,7 @@ export default function DocumentView() {
                     )}
                   </div>
                 </div>
-              ) : (displayUrl && displayUrl.match(/\.(mp3|wav|m4a|aac|flac)$/i)) ? (
+              ) : (displayUrl && isAudioFile(displayUrl, doc.title, rawFiles)) ? (
                 <div style={{ flex: 1, background: '#000', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '4rem', opacity: 0.2, marginBottom: '2rem' }}>🎵</div>
                   <h2 style={{ color: 'var(--c-textBright)', margin: '0 0 2rem 0' }}>Audio Playback</h2>
@@ -857,17 +1343,90 @@ export default function DocumentView() {
                     Your browser does not support the audio tag.
                   </audio>
                 </div>
-              ) : (displayUrl && displayUrl.match(/\.(mp4|mov|webm|ogg)$/i)) ? (
-                <div style={{ flex: 1, background: '#000', display: 'flex', flexDirection: 'column' }}>
-                  <video 
-                    src={displayUrl} 
-                    controls 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-                  >
-                    Your browser does not support the video tag.
-                  </video>
+              ) : (displayUrl && isVideoFile(displayUrl, doc.title, rawFiles)) ? (
+                <div style={{ flex: 1, background: '#05070c', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '420px', background: '#000' }}>
+                    <MediaEmbed 
+                      url={displayUrl} 
+                      title={doc.title}
+                      host={doc.creator || doc.collection_name}
+                      year={doc.date}
+                      autoplay={true}
+                      style={{ width: '100%', height: '100%', maxHeight: '72vh', borderRadius: 0, border: 'none' }}
+                    />
+                  </div>
+
+                  {/* Video Provenance & Playback Toolbar */}
+                  <div style={{
+                    padding: '0.85rem 1.25rem',
+                    background: 'rgba(10, 15, 26, 0.95)',
+                    borderTop: '1px solid var(--c-ghost)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '1rem',
+                    flexWrap: 'wrap',
+                    fontSize: '0.8rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <div style={{ padding: '0.2rem 0.55rem', background: 'rgba(6, 182, 212, 0.15)', color: '#06b6d4', borderRadius: '4px', fontWeight: '800', fontSize: '0.72rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                        {displayUrl && displayUrl.match(/\.mkv$/i) ? 'Matroska (.mkv) Video' : 'Video Stream'}
+                      </div>
+                      <span style={{ color: 'var(--c-dim)', fontSize: '0.8rem' }}>
+                        {displayUrl && displayUrl.match(/\.mkv$/i)
+                          ? 'Plays natively in Chromium & Firefox. If video or audio codec is unsupported by browser, download to view in VLC or MPV.'
+                          : 'Archival video stream'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <a 
+                        href={displayUrl} 
+                        download 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="lux-hover-lift"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          color: 'var(--c-goldBright)',
+                          textDecoration: 'none',
+                          fontWeight: '700',
+                          background: 'rgba(234, 179, 8, 0.12)',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(234, 179, 8, 0.3)',
+                          fontSize: '0.78rem'
+                        }}
+                      >
+                        <Download size={13} /> Download Video
+                      </a>
+                      <a 
+                        href={displayUrl} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="lux-hover-lift"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          color: 'var(--c-textBright)',
+                          textDecoration: 'none',
+                          fontWeight: '600',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '4px',
+                          border: '1px solid var(--c-ghost)',
+                          fontSize: '0.78rem'
+                        }}
+                      >
+                        <ExternalLink size={13} /> Open Stream
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              ) : mediaUrls.length > 0 || (displayUrl && displayUrl.match(/\.(jpeg|jpg|gif|png)$/i)) ? (
+              ) : mediaUrls.length > 0 || (displayUrl && isImageFile(displayUrl, doc.title, rawFiles)) ? (
                 <div ref={mediaContainerRef} style={{ flex: 1, background: '#000', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ flex: 1, overflow: zoomLevel > 1 ? 'auto' : 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <SignedIn>
@@ -1034,16 +1593,12 @@ export default function DocumentView() {
         <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
           <div style={{ flex: '1 1 500px' }}>
             <div className="lux-lens" style={{ padding: '2.5rem', borderRadius: '12px' }}>
-              <h3 style={{ margin: '0 0 1.5rem 0', color: 'var(--c-textBright)', fontSize: '1.4rem', letterSpacing: '0.05em' }}>Abstract & Description</h3>
+              <h3 id="deep-context-abstract" style={{ margin: '0 0 1.5rem 0', color: 'var(--c-textBright)', fontSize: '1.4rem', letterSpacing: '0.05em', scrollMarginTop: '100px' }}>Full Abstract & Deep Context</h3>
               <div style={{ color: 'var(--c-text)', lineHeight: '1.8', fontSize: '1.1rem', cursor: 'text' }}>
-                {(metadata.abstract || metadata.description || "No abstract or description is available for this document in the archive.").split('\n').map((paragraph, idx) => (
-                  <p key={idx} style={{ margin: '0 0 1rem 0' }}>
-                    <AutoEntityLinker 
-                      text={paragraph} 
-                      entities={[...(metadata.gemini_extracted_metadata?.organizations || []), ...(metadata.organizations || []), ...(metadata.gemini_extracted_metadata?.authors || []), ...(metadata.key_people || [])]} 
-                    />
-                  </p>
-                ))}
+                <AutoEntityLinker 
+                  text={formattedAbstract || "No abstract or description is available for this document in the archive."} 
+                  entities={allLinkedEntities} 
+                />
               </div>
               
               {/* Entities and Tags */}

@@ -1,0 +1,135 @@
+## Page 1
+
+*(Handwritten note at top right: 145-1)*
+
+(When Filled In)
+
+No.: **85**  
+Cost Account: **4125-1390-3902**  
+Category: **Category II**  
+Object Class: [Blank]
+
+| Date | Remarks and References | Obligations Incurred | Obligations Liquidated | Unliquidated Balance |
+| :--- | :--- | :--- | :--- | :--- |
+| **30 JUL 1963** | MKULTRA Sub Proj. 145 7/23/63 | 15,412.80 | | 15,412.80 |
+| **13 AUG 1963** | Invoice #1 | | 15,412.80 | — |
+
+(When Filled In)
+
+---
+
+## Page 2
+
+*(Handwritten note at top right: 145-1)*
+
+Date: **23 July 1963**
+
+**MEMORANDUM FOR:** C/TSD/FASS  
+**SUBJECT:** MKULTRA, Subproject No. 145  
+
+Under the authority granted in the memorandum dated 13 April 1953, from the DCI to the DD/A, and the extension of this authority in subsequent memoranda, Subproject **145** has been approved, and **$15,412.80** of the over-all Project MKULTRA funds have been obligated to cover the subproject's expenses and should be charged to cost center **4125-1390-3902**.
+
+Concur:  
+[Redacted]  
+**Program Manager** *(Margin Note: A)*
+
+Concur:  
+[Redacted]  
+**Asst. Chief, TSD for R&D**
+
+APPROVED FOR OBLIGATION OF FUNDS:  
+[Redacted]
+
+*(Margin Note: Category II)*
+
+```
+I CERTIFY THAT FUNDS ARE AVAILABLE
+OBLIGATION REFERENCE No. 85
+CHARGE TO ALLOTMENT No. 4125-1390-3902
+_______________________________________
+AUTHORIZING OFFICER
+```
+
+---
+
+## Page 3
+
+*(Handwritten note at left margin: 145-1)*
+
+**(When Filled In)**
+
+### REQUEST FOR ADVANCE OF FUNDS
+
+**DATE:** 12 August 1963  
+**VOUCHER NO.:** [Blank]  
+**AMOUNT:** 592.80 Net ~~($14,820.00)~~  
+**NAME OF ADVANCEE:** MKULTRA 145  
+**PAYABLE TO:** See attached payment inst.  
+**ROOM:** 119  
+**BUILDING:** [Blank]  
+**TELEPHONE EXT.:** [Blank]  
+
+**PURPOSE:**  
+Advance to MKULTRA Subproject 145 invoice #1 for activity approved by C/TSD on 29 July 1963. Accounting for this advance will be in accordance with attachment B of MKULTRA Fiscal Annex.
+
+**ACCOUNTING & APPROVAL DATA:**
+* **Charge Allotment No.:** 4125-1390-3902
+* **Obligation Reference No.:** 85
+* **Authorized Certifying Officer:** STUART GOTTLIEB, DC/TSD *(Signed: SR 8/20)*
+
+| Allot. or Cost Acct. No. | Oblig. No. | Amount |
+| :--- | :--- | :--- |
+| 4125-1390-3902 | 85 | $592.80 |
+
+*(Stamp across bottom: CHECK IN THE AMOUNT OF $592.80 RECEIVED)*
+
+---
+
+## Page 4
+
+*(Handwritten note at left: 145-1)*
+
+*(Handwritten notes on page:)*
+
+2 Checks:  
+[Redacted] — **14,820.00**  
+[Redacted] — **592.80**  
+**(2) $15,412.80**
+
+*(Date Stamp: 13 AUG 1963)*  
+*(Note: By 8/20)*
+
+---
+
+## Page 5
+
+*(Handwritten note at left margin: 145-1)*
+
+**(When Filled In)**
+
+### REQUEST FOR ADVANCE OF FUNDS
+
+**DATE:** 12 August 1963  
+**VOUCHER NO.:** [Blank]  
+**AMOUNT:** ~~(592.80 Net)~~ **$14,820.00**  
+**NAME OF ADVANCEE:** MKULTRA 145  
+**PAYABLE TO:** See attached payment inst.  
+**ROOM:** 119  
+**BUILDING:** [Blank]  
+**TELEPHONE EXT.:** [Blank]  
+
+**PURPOSE:**  
+Advance to MKULTRA Subproject 145 invoice #1 for activity approved by C/TSD on 29 July 1963. Accounting for this advance will be in accordance with attachment B of MKULTRA Fiscal Annex.
+
+Please forward the checks to Chief, TSD/Biological Branch through TSD/Budget Officer no later than 20 August 1963.
+
+**ACCOUNTING & APPROVAL DATA:**
+* **Charge Allotment No.:** 4125-1390-3902
+* **Obligation Reference No.:** 85
+* **Authorized Certifying Officer:** STUART GOTTLIEB, DC/TSD
+
+| Allot. or Cost Acct. No. | Oblig. No. | Amount |
+| :--- | :--- | :--- |
+| 4125-1390-3902 | 85 | $14,820.00 |
+
+*(Stamp across bottom: CHECK IN THE AMOUNT OF $14,820.00 RECEIVED)*

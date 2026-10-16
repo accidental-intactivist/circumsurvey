@@ -156,17 +156,26 @@
   padding: 2rem;
 }
 
-/* ---------- Toolbar ---------- */
-.eg-toolbar {
+/* ---------- Toolbar & Overlays ---------- */
+.eg-top-overlay {
   position: absolute;
   top: 0.9rem;
   left: 0.9rem;
   right: 0.9rem;
   display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.eg-top-overlay > * { pointer-events: auto; }
+
+.eg-toolbar {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem;
-  z-index: 3;
   pointer-events: none;
 }
 
@@ -582,4 +591,213 @@
   .eg-legend { display: none; }
   .eg-search { min-width: 0; flex: 1 1 100%; }
   .eg-panel { top: auto; height: 55%; }
+  .eg-breadcrumb-bar { padding: 0.35rem 0.5rem; }
+}
+
+/* ---------- Horizontal Breadcrumb Trail Bar ---------- */
+.eg-breadcrumb-bar {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 0.4rem 0.75rem;
+  min-height: 38px;
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: eg-bc-slide 0.22s ease-out;
+}
+
+@keyframes eg-bc-slide {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.eg-breadcrumb-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+
+.eg-breadcrumb-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.eg-breadcrumb-node:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--c-goldBright);
+  transform: translateY(-1px);
+}
+
+.eg-breadcrumb-node.is-origin {
+  border-color: rgba(250, 204, 21, 0.55);
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.eg-breadcrumb-node.is-target {
+  border-color: rgba(6, 182, 212, 0.6);
+  background: rgba(6, 182, 212, 0.12);
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.2);
+}
+
+.eg-bc-step-tag {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-dim);
+}
+
+.eg-bc-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  line-height: 1.1;
+}
+
+.eg-bc-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--c-textBright);
+}
+
+.eg-breadcrumb-connector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.45rem;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 0.72rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.eg-breadcrumb-connector:hover {
+  background: rgba(250, 204, 21, 0.12);
+  color: var(--c-goldBright);
+}
+
+.eg-bc-line {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.eg-bc-doc-count {
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+.eg-bc-arrow {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Guide state when no node is hovered */
+.eg-breadcrumb-guide {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.76rem;
+  color: var(--c-muted);
+}
+
+.eg-bc-guide-icon {
+  font-size: 0.9rem;
+  color: var(--c-goldBright);
+  flex-shrink: 0;
+}
+
+.eg-bc-guide-text {
+  line-height: 1.4;
+}
+
+.eg-grade-inline {
+  font-weight: 700;
+  padding: 0.08rem 0.35rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.eg-grade-inline.grade-a {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
+}
+
+.eg-grade-inline.grade-f {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Grade Filter dropdown */
+.eg-grade-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem 0.25rem 0.85rem;
+}
+
+.eg-grade-picker .eg-kicker {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-goldBright);
+  white-space: nowrap;
+}
+
+.eg-grade-picker select {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--c-textBright);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.eg-grade-picker select option {
+  background: var(--c-bgDeep);
+  color: var(--c-textBright);
+}
+
+.eg-grade-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  margin-right: 0.4rem;
 }

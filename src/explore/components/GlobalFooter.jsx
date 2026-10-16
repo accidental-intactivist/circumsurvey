@@ -12,9 +12,8 @@ function ExhibitLink({ exhibit, direction, navigate }) {
 
   return (
     <a
-      href={`#/${exhibit.route}`}
+      href={exhibit.route === "index" ? "/explore" : `/explore/${exhibit.route}`}
       onClick={(e) => {
-        // We let the href handle the routing via hash, but we keep the smooth scroll
         window.scrollTo({ top: 0, behavior: "smooth" });
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -107,7 +106,7 @@ function DirectoryItem({ num, label, route, colorVar, isCurrent, navigate }) {
   if (!num) {
     return (
       <a
-        href={`#/${route}`}
+        href={route === "index" ? "/explore" : `/explore/${route}`}
         onClick={(e) => { window.scrollTo({ top: 0, behavior: "smooth" }); }}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
@@ -131,7 +130,7 @@ function DirectoryItem({ num, label, route, colorVar, isCurrent, navigate }) {
   
   return (
     <a
-      href={`#/${route}`}
+      href={route === "index" ? "/explore" : `/explore/${route}`}
       onClick={(e) => { window.scrollTo({ top: 0, behavior: "smooth" }); }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -353,11 +352,11 @@ export default function GlobalFooter({ route, navigate }) {
               Project & Community
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <a href="#/about" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>About the Project</a>
-              <a href="#/methodology" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Survey Methodology</a>
-              <a href="#/contact" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Contact Us</a>
-              <a href="#/get-involved" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Get Involved</a>
-              <a href="#/faq" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>FAQ</a>
+              <a href="/explore/about" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>About the Project</a>
+              <a href="/explore/methodology" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Survey Methodology</a>
+              <a href="/explore/contact" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Contact Us</a>
+              <a href="/explore/get-involved" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Get Involved</a>
+              <a href="/explore/faq" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>FAQ</a>
             </div>
           </div>
 
@@ -367,10 +366,10 @@ export default function GlobalFooter({ route, navigate }) {
               Resources & Tools
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <a href="#/for-parents" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>For New Parents</a>
-              <a href="#/demographics" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Demographic Profile</a>
-              <a href="#/report" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Report Builder</a>
-              <a href="#/resources" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Downloads & External</a>
+              <a href="/explore/for-parents" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>For New Parents</a>
+              <a href="/explore/demographics" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Demographic Profile</a>
+              <a href="/explore/report" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Report Builder</a>
+              <a href="/explore/resources" style={LinkStyle} onMouseEnter={e => e.target.style.color = C.textBright} onMouseLeave={e => e.target.style.color = C.muted} onClick={() => window.scrollTo(0,0)}>Downloads & External</a>
             </div>
           </div>
 

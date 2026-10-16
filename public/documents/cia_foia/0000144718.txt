@@ -1,0 +1,34 @@
+## Page 1
+
+*(Margin Note: (141))*
+
+**CENTRAL INTELLIGENCE AGENCY**  
+**OFFICIAL ROUTING SLIP**
+
+| TO | | INITIALS | DATE |
+| :---: | :--- | :---: | :---: |
+| 1 | Deputy Director/Intelligence | *[EB]* | 6/11 |
+| 2 | DDP | | |
+| 3 | | | |
+| 4 | | | |
+| 5 | | | |
+
+| FROM | | INITIALS | DATE |
+| :---: | :--- | :---: | :---: |
+| 1 | Assistant Director/SI | | 6 Jun 52 |
+| 2 | | | |
+| 3 | | | |
+
+| | | | | | |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [ ] | APPROVAL | [x] | INFORMATION | [ ] | SIGNATURE |
+| [ ] | ACTION | [ ] | DIRECT REPLY | [ ] | RETURN |
+| [ ] | COMMENT | [ ] | PREPARATION OF REPLY | [ ] | DISPATCH |
+| [ ] | CONCURRENCE | [ ] | RECOMMENDATION | [ ] | FILE |
+
+**REMARKS:**  
+The attached papers have been discussed by [redacted] and [redacted]/OSI. If you desire further information, suggest you and Dick ask [redacted] to come to your office. [redacted] is available to the agency to 13 June according to present Navy orders.
+
+---
+FORM NO. 30-4  
+16-63794-1  U. S. GOVERNMENT PRINTING OFFICE

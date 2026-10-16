@@ -47,8 +47,38 @@ export function initTelemetry() {
       api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://t.circumsurvey.online',
       disable_session_recording: false,
       session_recording: {
-        maskAllInputs: true,
-        maskTextSelector: '[data-private], .ph-no-capture',
+        maskAllInputs: false,
+        maskInputOptions: {
+          password: true,
+          email: true,
+          tel: true,
+          text: false,
+        },
+        maskTextSelector: '',
+        maskTextFn: (text) => {
+          if (!text || typeof text !== 'string') return text;
+          const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+          const PHONE_REGEX = /\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g;
+          const IP_REGEX = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
+          if (EMAIL_REGEX.test(text) || PHONE_REGEX.test(text) || IP_REGEX.test(text)) {
+            return text
+              .replace(EMAIL_REGEX, '***@***.***')
+              .replace(PHONE_REGEX, '***-***-****')
+              .replace(IP_REGEX, '***.***.***.***');
+          }
+          return text;
+        },
+        maskInputFn: (text, element) => {
+          if (!text || typeof text !== 'string') return text;
+          if (element?.type === 'password' || element?.type === 'email' || element?.name === 'email') {
+            return '********';
+          }
+          const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+          if (EMAIL_REGEX.test(text)) {
+            return text.replace(EMAIL_REGEX, '***@***.***');
+          }
+          return text;
+        },
         recordCanvas: false,
       },
       person_profiles: 'identified_only',

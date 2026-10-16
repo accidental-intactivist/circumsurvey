@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useReport } from '../contexts/ReportContext';
 import { useMediaList } from '../contexts/MediaListContext';
 import { X } from 'lucide-react';
+import { captureEvent } from '../lib/telemetry';
 
 export default function ReportBuilder() {
   const [messages, setMessages] = useState([]);
@@ -38,6 +39,7 @@ export default function ReportBuilder() {
         setReportText(`# The Partner Alignment Guide\n\n*Navigating the Intact Conversation Together*\n\n---\n\n## Core Objective\nTo provide neutral, objective data for parents who may be coming from different cultural or familial backgrounds regarding circumcision.\n\n## Conversation Starters & Evidence\n\n### 1. "It's just a snip"\n**Counter-Evidence:** It involves the removal of 30-50% of the penile skin system, including the highly sensitive ridged band.\n\n### 2. "I want him to look like his father"\n**Counter-Evidence:** Medical ethics do not support altering a child's body for cosmetic family resemblance. The child has a right to an open future.\n\n---\n\n*Ask the Archive Researcher to generate empathetic rebuttals to specific family concerns and add them here.*`);
       }
       
+      captureEvent('report_kit_loaded', { kit });
       // Clear the param so it doesn't keep overriding if they refresh
       setSearchParams({});
     }
@@ -50,6 +52,7 @@ export default function ReportBuilder() {
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    captureEvent('report_builder_query_submitted', { queryLength: userMessage.content.length });
 
     try {
       const response = await fetch('/api/chat', {
@@ -79,6 +82,7 @@ export default function ReportBuilder() {
 
 
   const downloadReport = () => {
+    captureEvent('report_downloaded', { format: 'markdown', length: reportText?.length || 0 });
     const element = document.createElement("a");
     const file = new Blob([reportText], {type: 'text/markdown'});
     element.href = URL.createObjectURL(file);
@@ -91,6 +95,7 @@ export default function ReportBuilder() {
   const [isPrinting, setIsPrinting] = useState(false);
 
   const downloadPdf = () => {
+    captureEvent('report_printed', { length: reportText?.length || 0 });
     setIsPrinting(true);
     setTimeout(() => {
       window.print();
@@ -223,7 +228,10 @@ export default function ReportBuilder() {
 
               {msg.role === 'assistant' && (
                 <button 
-                  onClick={() => addToReport(msg.content, msg.citations)}
+                  onClick={() => {
+                    addToReport(msg.content, msg.citations);
+                    captureEvent('report_section_appended', { citationsCount: msg.citations?.length || 0 });
+                  }}
                   className="lux-hover-lift"
                   style={{ marginTop: '1.5rem', fontSize: '0.8rem', background: 'var(--c-goldBright)', color: '#000', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 'bold' }}
                 >

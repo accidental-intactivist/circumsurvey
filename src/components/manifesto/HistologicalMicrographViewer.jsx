@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { FONT } from '../../styles/tokens';
+import { captureEvent } from '../../lib/telemetry';
 
 export const HISTOLOGICAL_SPECIMENS = [
   {
@@ -87,6 +88,33 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
   const [activeIndex, setActiveIndex] = useState(initialSpecimenIndex);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const activeSpecimen = HISTOLOGICAL_SPECIMENS[activeIndex] || HISTOLOGICAL_SPECIMENS[0];
+
+  const handleSelectSpecimen = (idx) => {
+    setActiveIndex(idx);
+    const spec = HISTOLOGICAL_SPECIMENS[idx];
+    if (spec) {
+      captureEvent('micrograph_specimen_viewed', {
+        specimenId: spec.id,
+        shortTitle: spec.shortTitle,
+        category: spec.category
+      });
+    }
+  };
+
+  const handleOpenLightbox = () => {
+    setIsLightboxOpen(true);
+    captureEvent('micrograph_magnified', {
+      specimenId: activeSpecimen.id,
+      shortTitle: activeSpecimen.shortTitle
+    });
+  };
+
+  const handleDownloadSpecimen = () => {
+    captureEvent('micrograph_downloaded', {
+      specimenId: activeSpecimen.id,
+      shortTitle: activeSpecimen.shortTitle
+    });
+  };
 
   return (
     <section 
@@ -169,7 +197,7 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
             Specimen {activeIndex + 1} of {HISTOLOGICAL_SPECIMENS.length}
           </span>
           <button
-            onClick={() => setIsLightboxOpen(true)}
+            onClick={handleOpenLightbox}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -205,7 +233,7 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
           return (
             <button
               key={specimen.id}
-              onClick={() => setActiveIndex(idx)}
+              onClick={() => handleSelectSpecimen(idx)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -258,7 +286,7 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
           <img 
             src={activeSpecimen.src} 
             alt={activeSpecimen.title}
-            onClick={() => setIsLightboxOpen(true)}
+            onClick={handleOpenLightbox}
             style={{
               maxWidth: '100%',
               maxHeight: '440px',
@@ -293,7 +321,7 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
 
           {/* Click to inspect affordance */}
           <div 
-            onClick={() => setIsLightboxOpen(true)}
+            onClick={handleOpenLightbox}
             style={{
               position: 'absolute',
               bottom: '0.75rem',
@@ -478,6 +506,7 @@ export default function HistologicalMicrographViewer({ initialSpecimenIndex = 0 
               <a
                 href={activeSpecimen.src}
                 download={`${activeSpecimen.id}.webp`}
+                onClick={handleDownloadSpecimen}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',

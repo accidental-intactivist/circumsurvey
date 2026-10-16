@@ -65,8 +65,19 @@ const posthogOptions = {
   api_host: POSTHOG_HOST,
   disable_session_recording: false,
   session_recording: {
-    maskAllInputs: false,
-    maskTextSelector: "*", // Optional: replace with specific classes if you want to mask
+    maskAllInputs: true, // Safely masks sensitive form inputs
+    maskTextSelector: '[data-private], .ph-no-capture', // Leaves readable UI and text intact in replays
+    recordCanvas: false, // Prevents canvas/performance overhead
+  },
+  person_profiles: 'identified_only',
+  persistence: 'localStorage+cookie',
+  autocapture: true,
+  capture_pageview: true,
+  capture_pageleave: true,
+  loaded: (posthogInstance) => {
+    if (posthogInstance && typeof posthogInstance.startSessionRecording === 'function') {
+      posthogInstance.startSessionRecording();
+    }
   }
 }
 

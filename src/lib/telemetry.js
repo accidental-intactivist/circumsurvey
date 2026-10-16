@@ -35,18 +35,30 @@ export function scrubPII(data) {
 }
 
 /**
- * Initialize PostHog but with strict anonymous/cookieless settings.
+ * Initialize PostHog with session recording enabled.
  */
 export function initTelemetry() {
-  if (typeof window !== 'undefined' && import.meta.env.VITE_POSTHOG_KEY) {
-    posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-      api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com',
-      // Strict anonymity enforcement
-      disable_session_recording: true,
-      person_profiles: 'never',
-      // We don't want to store anything that identifies a specific user across sessions
-      persistence: 'memory', 
-      autocapture: false, // We will manually trigger events so we can scrub them!
+  if (typeof window === 'undefined') return;
+  if (posthog.__loaded) return;
+
+  const key = import.meta.env.VITE_POSTHOG_PROJECT_TOKEN || import.meta.env.VITE_POSTHOG_KEY;
+  if (key) {
+    posthog.init(key, {
+      api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://t.circumsurvey.online',
+      disable_session_recording: false,
+      session_recording: {
+        maskAllInputs: true,
+        maskTextSelector: '[data-private], .ph-no-capture',
+        recordCanvas: false,
+      },
+      person_profiles: 'identified_only',
+      persistence: 'localStorage+cookie',
+      autocapture: true,
+      loaded: (ph) => {
+        if (ph && typeof ph.startSessionRecording === 'function') {
+          ph.startSessionRecording();
+        }
+      }
     });
   }
 }

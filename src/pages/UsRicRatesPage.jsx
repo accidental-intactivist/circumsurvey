@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BarChart3, 
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
 import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import { captureEvent } from '../lib/telemetry';
 import './AdminArchivePage.css';
 
 const REGIONAL_RATES_2022 = [
@@ -57,11 +58,25 @@ const REGIONAL_RATES_2022 = [
 
 export default function UsRicRatesPage() {
   const [copiedLink, setCopiedLink] = useState(false);
+  const [inspectedRegion, setInspectedRegion] = useState(null);
+
+  useEffect(() => {
+    captureEvent('rates_dossier_viewed');
+  }, []);
 
   const handleShare = () => {
+    captureEvent('rates_dossier_shared');
     navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleInspectRegion = (regionName, rate) => {
+    const isTogglingOff = inspectedRegion === regionName;
+    setInspectedRegion(isTogglingOff ? null : regionName);
+    if (!isTogglingOff) {
+      captureEvent('rate_region_inspected', { region: regionName, inpatientRate: rate });
+    }
   };
 
   return (
@@ -121,6 +136,7 @@ export default function UsRicRatesPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Link
                 to="/atlas?geo=USA"
+                onClick={() => captureEvent('rates_atlas_navigated', { source: 'header_button' })}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -264,35 +280,41 @@ export default function UsRicRatesPage() {
           </h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {REGIONAL_RATES_2022.map((r) => (
-              <div 
-                key={r.region}
-                style={{
-                  background: 'rgba(16, 16, 22, 0.95)',
-                  border: `1px solid rgba(255,255,255,0.08)`,
-                  borderLeft: `4px solid ${r.color}`,
-                  borderRadius: '10px',
-                  padding: '1.5rem',
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                  gap: '1.25rem',
-                  alignItems: 'center'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: 0 }}>{r.region}</h3>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      color: r.color,
-                      background: 'rgba(255,255,255,0.05)',
-                      padding: '0.2rem 0.5rem',
-                      borderRadius: '4px'
-                    }}>
-                      {r.status}
-                    </span>
-                  </div>
+            {REGIONAL_RATES_2022.map((r) => {
+              const isSelected = inspectedRegion === r.region;
+              return (
+                <div 
+                  key={r.region}
+                  onClick={() => handleInspectRegion(r.region, r.inpatientRate)}
+                  style={{
+                    background: isSelected ? 'rgba(25, 25, 36, 0.98)' : 'rgba(16, 16, 22, 0.95)',
+                    border: isSelected ? `1px solid ${r.color}` : `1px solid rgba(255,255,255,0.08)`,
+                    borderLeft: `5px solid ${r.color}`,
+                    borderRadius: '10px',
+                    padding: '1.5rem',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gap: '1.25rem',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    boxShadow: isSelected ? `0 6px 24px rgba(0,0,0,0.5), 0 0 16px ${r.color}22` : 'none',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: 0 }}>{r.region}</h3>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: r.color,
+                        background: 'rgba(255,255,255,0.05)',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '4px'
+                      }}>
+                        {r.status}
+                      </span>
+                    </div>
                   <div style={{ color: '#ccc', fontSize: '0.92rem', marginTop: '0.5rem', lineHeight: 1.5 }}>
                     {r.description}
                   </div>
@@ -309,7 +331,8 @@ export default function UsRicRatesPage() {
                   <div style={{ fontSize: '0.75rem', color: '#666' }}>Yang, Tobian et al. (2025)</div>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </section>
 
@@ -377,6 +400,7 @@ export default function UsRicRatesPage() {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
               <Link
                 to="/atlas?geo=USA"
+                onClick={() => captureEvent('rates_atlas_navigated', { source: 'bottom_cta' })}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -394,6 +418,7 @@ export default function UsRicRatesPage() {
               </Link>
               <Link
                 to="/to/expectant-parents"
+                onClick={() => captureEvent('rates_guide_navigated', { target: 'expectant-parents' })}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',

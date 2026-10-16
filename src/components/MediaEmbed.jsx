@@ -12,6 +12,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
+import { captureEvent } from '../lib/telemetry';
 
 /**
  * Universal media URL parser for YouTube, Vimeo, and direct archival video/audio.
@@ -105,6 +106,29 @@ export default function MediaEmbed({
   const [isTheaterOpen, setIsTheaterOpen] = useState(false);
   const parsed = parseMediaUrl(url);
 
+  const handleStartPlaying = () => {
+    setIsPlaying(true);
+    if (parsed) {
+      captureEvent('media_play_started', {
+        platform: parsed.platform,
+        title: title || 'Archival Media Item',
+        year: year || null,
+        videoId: parsed.videoId || null
+      });
+    }
+  };
+
+  const handleOpenTheater = () => {
+    setIsTheaterOpen(true);
+    if (parsed) {
+      captureEvent('media_theater_opened', {
+        platform: parsed.platform,
+        title: title || 'Archival Media Item',
+        year: year || null
+      });
+    }
+  };
+
   if (!parsed) return null;
 
   // External repository link fallback (e.g. Library of Congress, AAPB)
@@ -152,6 +176,7 @@ export default function MediaEmbed({
           href={parsed.originalUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => captureEvent('media_external_opened', { originalUrl: parsed.originalUrl, title })}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -266,7 +291,7 @@ export default function MediaEmbed({
               zIndex: 10
             }}>
               <button
-                onClick={() => setIsTheaterOpen(true)}
+                onClick={handleOpenTheater}
                 title="Expand to Theater Mode"
                 style={{
                   padding: '0.35rem 0.55rem',
@@ -290,7 +315,7 @@ export default function MediaEmbed({
         ) : (
           /* Facade Preview State (Fast, Zero Cookie Tracking, High Aesthetic) */
           <div 
-            onClick={() => setIsPlaying(true)}
+            onClick={handleStartPlaying}
             style={{
               position: 'relative',
               width: '100%',

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
 import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import { captureEvent } from '../lib/telemetry';
 import './AdminArchivePage.css';
 
 const CLAUSES = [
@@ -66,20 +67,34 @@ export default function ReciteBackConsentPage() {
   const [parentName, setParentName] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
 
+  React.useEffect(() => {
+    captureEvent('consent_page_viewed', { form: 'Form 104-RIC' });
+  }, []);
+
   const toggleInitial = (id) => {
+    const isNowAcknowledged = !initials[id];
     setInitials(prev => ({
       ...prev,
-      [id]: prev[id] ? null : (parentName.slice(0, 3).toUpperCase() || 'YES')
+      [id]: isNowAcknowledged ? (parentName.slice(0, 3).toUpperCase() || 'YES') : null
     }));
+    captureEvent('consent_clause_toggled', { 
+      clauseId: id, 
+      acknowledged: isNowAcknowledged 
+    });
   };
 
   const allInitialed = CLAUSES.every(c => initials[c.id]);
 
   const handlePrint = () => {
+    captureEvent('consent_form_printed', { 
+      allInitialed,
+      clausesAcknowledgedCount: Object.values(initials).filter(Boolean).length 
+    });
     window.print();
   };
 
   const handleShare = () => {
+    captureEvent('consent_form_shared');
     navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);

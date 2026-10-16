@@ -8,6 +8,7 @@ import ThinkingSpirograph from './ThinkingSpirograph';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { C, FONT } from '../styles/tokens';
+import { captureEvent } from '../lib/telemetry';
 
 const ENROLLING_QUESTIONS = [
   "What can you tell me about the history of the genital autonomy movement?",
@@ -50,11 +51,14 @@ export default function AIAssistantFlyout() {
   const [loadingList, setLoadingList] = useState(false);
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      const shuffled = [...ENROLLING_QUESTIONS].sort(() => 0.5 - Math.random());
-      setRandomSuggestions(shuffled.slice(0, 3));
+    if (isOpen) {
+      captureEvent('assistant_flyout_opened');
+      if (messages.length === 0) {
+        const shuffled = [...ENROLLING_QUESTIONS].sort(() => 0.5 - Math.random());
+        setRandomSuggestions(shuffled.slice(0, 3));
+      }
     }
-  }, [isOpen, messages.length]);
+  }, [isOpen]);
 
   useEffect(() => {
     let timer;
@@ -130,6 +134,10 @@ export default function AIAssistantFlyout() {
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
+    captureEvent('assistant_query_submitted', {
+      queryLength: userMsg.length,
+      attachedDocCount: attachedDocs ? attachedDocs.length : 0
+    });
 
     try {
       const response = await fetch('/api/chat', {
@@ -181,11 +189,13 @@ export default function AIAssistantFlyout() {
       });
     }
     navigator.clipboard.writeText(textToCopy);
+    captureEvent('assistant_response_copied');
   };
 
   const handleAddToReport = (msg) => {
     const citations = msg.citations ? msg.citations.map(c => c.source) : [];
     addToReport(msg.content, citations);
+    captureEvent('assistant_added_to_report', { citationsCount: citations.length });
     // Optionally show a toast here
   };
 

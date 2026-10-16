@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
 import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import { captureEvent } from '../lib/telemetry';
 import './AdminArchivePage.css';
 
 const DECADES = [
@@ -127,9 +128,23 @@ export default function DiseaseOfTheDecadePage() {
   const [activeDecadeIndex, setActiveDecadeIndex] = useState(0);
   const [copiedLink, setCopiedLink] = useState(false);
 
+  React.useEffect(() => {
+    captureEvent('retcon_timeline_viewed');
+  }, []);
+
+  const selectDecade = (idx) => {
+    setActiveDecadeIndex(idx);
+    captureEvent('retcon_decade_selected', {
+      decade: DECADES[idx].period,
+      title: DECADES[idx].title,
+      targetDisease: DECADES[idx].targetDisease
+    });
+  };
+
   const active = DECADES[activeDecadeIndex];
 
   const handleShare = () => {
+    captureEvent('retcon_timeline_shared', { currentDecade: active.period });
     navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
@@ -299,7 +314,7 @@ export default function DiseaseOfTheDecadePage() {
               return (
                 <button
                   key={d.period}
-                  onClick={() => setActiveDecadeIndex(idx)}
+                  onClick={() => selectDecade(idx)}
                   style={{
                     flex: '0 0 auto',
                     padding: '0.65rem 1.1rem',
@@ -427,7 +442,7 @@ export default function DiseaseOfTheDecadePage() {
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   {activeDecadeIndex > 0 && (
                     <button
-                      onClick={() => setActiveDecadeIndex(activeDecadeIndex - 1)}
+                      onClick={() => selectDecade(activeDecadeIndex - 1)}
                       style={{
                         padding: '0.4rem 0.85rem',
                         background: 'rgba(255,255,255,0.05)',
@@ -443,7 +458,7 @@ export default function DiseaseOfTheDecadePage() {
                   )}
                   {activeDecadeIndex < DECADES.length - 1 && (
                     <button
-                      onClick={() => setActiveDecadeIndex(activeDecadeIndex + 1)}
+                      onClick={() => selectDecade(activeDecadeIndex + 1)}
                       style={{
                         padding: '0.4rem 0.85rem',
                         background: 'rgba(212, 160, 48, 0.2)',

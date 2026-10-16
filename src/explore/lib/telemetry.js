@@ -7,20 +7,26 @@ let isInitialized = false;
 const MOCK_TELEMETRY = !import.meta.env.VITE_POSTHOG_KEY;
 
 export function initTelemetry() {
-  if (isInitialized) return;
+  if (isInitialized || (typeof posthog !== 'undefined' && posthog.__loaded)) {
+    isInitialized = true;
+    return;
+  }
 
-  if (MOCK_TELEMETRY) {
-    console.log('[Telemetry] Initialized in mock mode (no VITE_POSTHOG_KEY provided). Events will be logged to console.');
+  const key = import.meta.env.VITE_POSTHOG_PROJECT_TOKEN || import.meta.env.VITE_POSTHOG_KEY;
+
+  if (!key) {
+    console.log('[Telemetry] Initialized in mock mode (no key provided). Events will be logged to console.');
   } else {
-    posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-      api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://us.i.posthog.com',
-      person_profiles: 'always', // or 'identified_only'
-      capture_pageview: false, // We'll handle this manually via React Router
-      autocapture: false, // Opt-out of generic autocapture to respect privacy
-      disable_session_recording: true, // Disable to save payload/execution time on mobile
-      disable_surveys: true, // Disable to save payload/execution time
+    posthog.init(key, {
+      api_host: import.meta.env.VITE_POSTHOG_HOST || 'https://t.circumsurvey.online',
+      person_profiles: 'identified_only',
+      capture_pageview: true,
+      autocapture: true,
+      disable_session_recording: false,
       session_recording: {
-        recordCanvas: false // Prevents rrweb willReadFrequently warnings
+        maskAllInputs: true,
+        maskTextSelector: '[data-private], .ph-no-capture',
+        recordCanvas: false
       }
     });
   }

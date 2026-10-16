@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ExternalLink } from 'lucide-react';
 import EntityLink from './EntityLink';
+import SafeImage from './SafeImage';
 
 const CURATED_DEFAULT_ENTITIES = [
   // Legal Cases & Actions
@@ -219,7 +220,8 @@ const createMarkdownComponents = (validEntities) => ({
   ),
   hr: () => (
     <hr style={{ borderColor: 'rgba(255, 255, 255, 0.1)', margin: '1.75rem 0' }} />
-  )
+  ),
+  img: SafeImage
 });
 
 /**

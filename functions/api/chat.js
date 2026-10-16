@@ -10,6 +10,89 @@ CREATE TABLE questions (id TEXT PRIMARY KEY, section TEXT, prompt TEXT, type TEX
 const rateLimitMap = new Map();
 const RATE_LIMIT_MS = 5000; // 5 seconds per IP
 
+const CURATED_MEDIA_ASSETS = [
+  {
+    doc_id: 'umass-ms1205-raw-efbf6dd4',
+    doc_title: 'Goldstein & Yellen Gomco Clamp (U.S. Patent 1,935,188)',
+    page_number: 1,
+    image_url: '/figures/gomco-clamp-schematic.svg',
+    caption: 'Gomco Circumcision Clamp Engineering Schematic (1935): Illustrating metal bell, aperture plate, and 20,000 psi circumferential crush mechanism',
+    category: 'diagram',
+    keywords: ['gomco', 'clamp', 'patent', 'yellen', 'goldstein', 'surgical', 'tool', 'crush', 'hemostasis', 'aperture', 'tools'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: 'fda-mhn-2000-mogen',
+    doc_title: 'Mogen Clamp Guillotine Slit & Blind Entrapment Cross-Section',
+    page_number: 1,
+    image_url: '/figures/mogen-clamp-schematic.svg',
+    caption: 'Mogen Clamp Cross-Section: 2.5 mm blind slotted guillotine shield and glans entrapment hazard zone (FDA Public Health Notice 2000)',
+    category: 'diagram',
+    keywords: ['mogen', 'clamp', 'bronstein', 'guillotine', 'blind slit', 'glans amputation', 'iatrogenic', 'fda', 'tool', 'tools'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: 'plastibell-device-dossier',
+    doc_title: 'Hollister Plastibell Circumcision Device Schematic',
+    page_number: 1,
+    image_url: '/figures/plastibell-device-schematic.svg',
+    caption: 'Plastibell Circumcision Device: Ischemic necrosis ligature ring, snap-off handle, and proximal migration / impaction risk profile',
+    category: 'diagram',
+    keywords: ['plastibell', 'hollister', 'ligature', 'ischemic necrosis', 'strangulation', 'ring migration', 'device', 'tool', 'tools'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: '8d5a920fe2bd9c7d',
+    doc_title: 'Cepeda-Emiliani et al. (2025), Andrology',
+    page_number: 4,
+    image_url: '/figures/8d5a920fe2bd9c7d.webp',
+    caption: 'Immunohistochemistry: S100, CD56, PGP9.5 & PAN-TRK demonstrating dense peripheral nerve bundles and Schwann cell sheaths in prepuce',
+    category: 'histology',
+    keywords: ['microscopy', 'histology', 'nerve', 's100', 'cd56', 'schwann', 'innervation', 'anatomy', 'andrology'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: '0bce81d4b2f610e3',
+    doc_title: 'Cepeda-Emiliani et al. (2025), Andrology',
+    page_number: 5,
+    image_url: '/figures/0bce81d4b2f610e3.webp',
+    caption: 'Fetal & Perinatal Nerve Architecture (NF / SOX10 / CD56): Dual-stain confocal showing complete and active peripheral innervation at birth',
+    category: 'histology',
+    keywords: ['fetal', 'perinatal', 'neurofilament', 'sox10', 'cd56', 'confocal', 'nerve', 'anatomy', 'histology'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: '48ab95770483e073',
+    doc_title: 'Cepeda-Emiliani et al. (2025), Andrology',
+    page_number: 6,
+    image_url: '/figures/48ab95770483e073.webp',
+    caption: 'Subepithelial & Dermal Sensory Nerve Networks: High-power immunoreactivity showing delicate sensory web transducing mechanosensory touch',
+    category: 'histology',
+    keywords: ['subepithelial', 'dermal', 'sensory', 'pgp9.5', 'ngfr', 'fine touch', 'mechanoreceptor', 'histology'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: '0e26b020c7876475',
+    doc_title: 'Cepeda-Emiliani et al. (2025), Andrology',
+    page_number: 7,
+    image_url: '/figures/0e26b020c7876475.webp',
+    caption: 'Frenular & Coronal Innervation Cross-Sections: Detailed micrographs of frenular nerve bundles and microvascular architecture',
+    category: 'histology',
+    keywords: ['frenulum', 'coronal', 'lymphatics', 'microscopy', 'erogenous', 'histology'],
+    is_sensitive: 0
+  },
+  {
+    doc_id: 'edd5e6e267a419cb',
+    doc_title: 'Cepeda-Emiliani et al. (2025), Andrology',
+    page_number: 8,
+    image_url: '/figures/edd5e6e267a419cb.webp',
+    caption: 'Ontogenetic Progression of Penile Innervation: Progressive elongation of sensory fibers leading to mature encapsulated corpuscles',
+    category: 'diagram',
+    keywords: ['ontogenetic', 'development', 'corpuscle', 'timeline', 'innervation', 'sensory', 'biology'],
+    is_sensitive: 0
+  }
+];
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   
@@ -214,10 +297,28 @@ Keep it factual and concise.`;
       }
 
       // Query media_assets for attached documents and visual search queries
+      // Query media_assets for attached documents, visual search queries, and curated figures
+      const matchedFigures = [];
+      const seenUrls = new Set();
+      const lowerQuery = query.toLowerCase();
+
+      // 1. Check curated figures against query keywords or docIds
+      CURATED_MEDIA_ASSETS.forEach(item => {
+        const matchesDoc = docIds.includes(item.doc_id);
+        const matchesKeyword = item.keywords.some(k => lowerQuery.includes(k));
+        if (matchesDoc || matchesKeyword) {
+          if (!seenUrls.has(item.image_url)) {
+            seenUrls.add(item.image_url);
+            matchedFigures.push(item);
+          }
+        }
+      });
+
+      // 2. Query SURVEY_DB for additional database media_assets
       if (env.SURVEY_DB) {
         try {
-          const visualKeywords = ['diagram', 'image', 'picture', 'photo', 'figure', 'slide', 'histology', 'chart', 'microscopy', 'corpuscle', 'nerve', 'anatomy'];
-          const isVisualQuery = visualKeywords.some(k => query.toLowerCase().includes(k));
+          const visualKeywords = ['diagram', 'image', 'picture', 'photo', 'figure', 'slide', 'histology', 'chart', 'microscopy', 'corpuscle', 'nerve', 'anatomy', 'clamp', 'tool', 'gomco', 'mogen', 'plastibell', 'device', 'schematic', 'patent', 'illustration', 'micrograph', 'instrument'];
+          const isVisualQuery = visualKeywords.some(k => lowerQuery.includes(k));
           
           let mediaQuery = "";
           let mediaParams = [];
@@ -229,7 +330,7 @@ Keep it factual and concise.`;
           }
 
           if (isVisualQuery) {
-            const words = query.toLowerCase().split(/[\s,?.!]+/).filter(w => w.length > 3 && !visualKeywords.includes(w));
+            const words = lowerQuery.split(/[\s,?.!]+/).filter(w => w.length > 3 && !visualKeywords.includes(w));
             if (words.length > 0) {
               const likeClauses = words.map(() => `(caption LIKE ? OR keywords LIKE ?)`).join(' OR ');
               const likeParams = words.flatMap(w => [`%${w}%`, `%${w}%`]);
@@ -247,14 +348,24 @@ Keep it factual and concise.`;
             const mediaResults = await env.SURVEY_DB.prepare(mediaQuery + " LIMIT 8").bind(...mediaParams).all();
             if (mediaResults && mediaResults.results && mediaResults.results.length > 0) {
               mediaResults.results.forEach(m => {
-                const sensitivityTag = m.is_sensitive ? 'SENSITIVE CONTENT' : 'SAFE CONTENT';
-                contextText += `\n[System Note: Archival Figure available for Document ${m.doc_id} on Page ${m.page_number} (${m.category}): "${m.caption}". Image URL: ${m.image_url} (${sensitivityTag})]\n`;
+                if (!seenUrls.has(m.image_url)) {
+                  seenUrls.add(m.image_url);
+                  matchedFigures.push(m);
+                }
               });
             }
           }
         } catch (e) {
           console.warn("Failed to fetch media_assets:", e);
         }
+      }
+
+      if (matchedFigures.length > 0) {
+        matchedFigures.slice(0, 6).forEach(m => {
+          const sensitivityTag = m.is_sensitive ? 'SENSITIVE CONTENT' : 'SAFE CONTENT';
+          const docTitle = m.doc_title ? ` ("${m.doc_title}")` : '';
+          contextText += `\n[System Note: Archival Figure available for Document ${m.doc_id}${docTitle} on Page ${m.page_number} (${m.category}): "${m.caption}". Image URL: ${m.image_url} (${sensitivityTag})]\n`;
+        });
       }
 
       let groundTruthOverride = "";
@@ -301,7 +412,7 @@ CRITICAL RULES:
 5. Whenever you mention a specific person, organization, or key entity, include an inline markdown hyperlink pointing to their entity page using the format: [Entity Name](/to/EntityName) (e.g. [Tim Hammond](/to/Tim%20Hammond)).
 6. Whenever you mention a specific document, film, or source from the archives, include an inline markdown hyperlink pointing to its library page using the provided DocID from the documents: [Source Name](/library/DocID) (e.g. [Whose Body, Whose Rights?](/library/umass-ms1205-1234)).
 7. Frame your responses in the context of Intactivism as a broad human rights movement, rather than in relation to any specific project.
-8. If an Archival Figure or image is provided in a System Note, embed it inline when discussing that document or when the user asks for visual evidence using Markdown image syntax. If the note specifies SAFE CONTENT, prefix the alt text with "safe:" (e.g. ![safe:Immunohistochemical cross section](URL)) so it renders directly. If the note specifies SENSITIVE CONTENT, omit the "safe:" prefix so clinical or anatomical depictions remain protected behind the 18+ click-to-reveal barrier. Immediately below any embedded figure, provide a provenance deep link to the exact page: [View in Document (Page X)](/library/DocID?page=X).
+8. If an Archival Figure or image is provided in a System Note, embed it inline when discussing that document or when the user asks for visual evidence using Markdown image syntax with embedded attribution metadata: ![safe:<Caption> | Source: <Document Title or Archive> | Doc: <DocID> | Page: <PageNumber> | License: Archival Record](<ImageURL>). If the note specifies SAFE CONTENT, prefix the alt text with "safe:" so it renders directly inline. If the note specifies SENSITIVE CONTENT, omit the "safe:" prefix so clinical or anatomical depictions remain protected behind the 18+ click-to-reveal barrier. Immediately below any embedded figure, also provide the professional attribution link: [View Source in Library (Page X)](/library/DocID?page=X).
 9. If a document is sourced from "Field Note (Accidental Intactivist)", you must NOT quote it directly, summarize its specifics, or reveal its raw unfiltered contents, as it may contain sensitive or shocking observations. Instead, ONLY use its themes, subtext, and overarching arguments to inform your own perspective, while strictly maintaining your academic, scholarly, and professional voice.
 10. If a document has the type \`cultural_reference\`, it represents a colloquial, casual, or metaphorical use of the procedure in mainstream media. When synthesizing these, treat them as sociological evidence of how deeply normalized and trivialized the harm is in modern culture, highlighting the cognitive dissonance.${groundTruthOverride}
 

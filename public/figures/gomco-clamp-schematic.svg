@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c1222"/>
+      <stop offset="100%" stop-color="#060913"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4a030"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  
+  <!-- Blueprint Grid Pattern -->
+  <g stroke="rgba(56, 189, 248, 0.07)" stroke-width="1">
+    <line x1="50" y1="50" x2="750" y2="50"/>
+    <line x1="50" y1="120" x2="750" y2="120"/>
+    <line x1="50" y1="190" x2="750" y2="190"/>
+    <line x1="50" y1="260" x2="750" y2="260"/>
+    <line x1="50" y1="330" x2="750" y2="330"/>
+    <line x1="50" y1="400" x2="750" y2="400"/>
+    <line x1="120" y1="50" x2="120" y2="420"/>
+    <line x1="220" y1="50" x2="220" y2="420"/>
+    <line x1="320" y1="50" x2="320" y2="420"/>
+    <line x1="420" y1="50" x2="420" y2="420"/>
+    <line x1="520" y1="50" x2="520" y2="420"/>
+    <line x1="620" y1="50" x2="620" y2="420"/>
+    <line x1="720" y1="50" x2="720" y2="420"/>
+  </g>
+
+  <!-- Outer Blueprint Border -->
+  <rect x="25" y="25" width="750" height="450" fill="none" stroke="rgba(212, 160, 48, 0.4)" stroke-width="2"/>
+  <rect x="30" y="30" width="740" height="440" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+
+  <!-- Header Header / Patent Plate -->
+  <text x="50" y="55" font-family="'Cinzel', 'Playfair Display', Georgia, serif" font-size="16" font-weight="bold" fill="#facc15" letter-spacing="1">U.S. PATENT NO. 1,935,188 (1935)</text>
+  <text x="50" y="74" font-family="'Inter', sans-serif" font-size="11" fill="#94a3b8" letter-spacing="0.5">INVENTORS: H. S. YELLEN &amp; A. A. GOLDSTEIN — GOMCO CIRCUMCISION CLAMP</text>
+  <line x1="50" y1="84" x2="750" y2="84" stroke="rgba(212, 160, 48, 0.3)" stroke-width="1"/>
+
+  <!-- TECHNICAL DRAWING: Gomco Assembly -->
+  <!-- Base Plate -->
+  <g transform="translate(100, 110)">
+    <!-- Base Plate Footing -->
+    <path d="M 40,240 L 460,240 L 480,260 L 20,260 Z" fill="url(#metal)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="220" y="235" width="60" height="15" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" rx="3"/>
+    <text x="250" y="246" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38bdf8" text-anchor="middle">APERTURE</text>
+
+    <!-- Upright Arm Left -->
+    <rect x="140" y="100" width="28" height="140" fill="url(#metal)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <!-- Upright Pivot Fulcrum -->
+    <circle cx="154" cy="115" r="9" fill="#0f172a" stroke="#facc15" stroke-width="2"/>
+    <circle cx="154" cy="115" r="4" fill="#facc15"/>
+
+    <!-- Rocker Arm / Lever -->
+    <path d="M 120,110 L 380,140 L 375,160 L 115,130 Z" fill="url(#metal)" stroke="#e2e8f0" stroke-width="1.5"/>
+    
+    <!-- Heavy Tension Screw Top-Right -->
+    <rect x="360" y="80" width="22" height="100" fill="#475569" stroke="#cbd5e1" stroke-width="1.5"/>
+    <!-- Threaded ridges -->
+    <line x1="360" y1="90" x2="382" y2="90" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="360" y1="100" x2="382" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="360" y1="110" x2="382" y2="110" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="360" y1="120" x2="382" y2="120" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="360" y1="130" x2="382" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+    <!-- Screw Thumbscrew / Nut -->
+    <path d="M 345,65 L 397,65 L 390,80 L 352,80 Z" fill="url(#gold)" stroke="#fff" stroke-width="1.5"/>
+    <text x="371" y="60" font-family="'JetBrains Mono', monospace" font-size="9" fill="#facc15" text-anchor="middle">CLAMPING NUT</text>
+
+    <!-- Hemispherical Protective Bell (Center-Right) -->
+    <!-- Bell Stem -->
+    <rect x="242" y="145" width="16" height="50" fill="url(#metal)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <!-- Bell Cone / Hemispherical Cup -->
+    <path d="M 230,195 Q 250,180 270,195 L 285,225 Q 250,230 215,225 Z" fill="url(#metal)" stroke="#38bdf8" stroke-width="2"/>
+    <!-- Beveled Crushing Base Rim -->
+    <ellipse cx="250" cy="226" rx="35" ry="8" fill="#1e293b" stroke="#f43f5e" stroke-width="2.5"/>
+    
+    <!-- Circumferential Force Arrows -->
+    <path d="M 215,215 L 215,235" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 285,215 L 285,235" stroke="#f43f5e" stroke-width="2"/>
+  </g>
+
+  <!-- Technical Annotation Callouts -->
+  <!-- Callout 1: Bell Protection -->
+  <line x1="320" y1="280" x2="250" y2="330" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <rect x="180" y="335" width="160" height="34" fill="#0f172a" stroke="#38bdf8" stroke-width="1" rx="4"/>
+  <text x="190" y="350" font-family="'Inter', sans-serif" font-size="10" font-weight="bold" fill="#38bdf8">1. Stainless Steel Bell</text>
+  <text x="190" y="362" font-family="'Inter', sans-serif" font-size="9" fill="#94a3b8">Shields glans underneath aperture</text>
+
+  <!-- Callout 2: High Pressure Bevel -->
+  <line x1="390" y1="336" x2="350" y2="336" stroke="#f43f5e" stroke-width="1.5"/>
+  <rect x="390" y="320" width="180" height="42" fill="#0f172a" stroke="#f43f5e" stroke-width="1" rx="4"/>
+  <text x="400" y="337" font-family="'Inter', sans-serif" font-size="10" font-weight="bold" fill="#f87171">2. Crushing Rim Interface</text>
+  <text x="400" y="352" font-family="'Inter', sans-serif" font-size="9" fill="#cbd5e1">18,000–20,000 psi circumferential</text>
+
+  <!-- Callout 3: Lever Arm -->
+  <line x1="280" y1="200" x2="160" y2="170" stroke="#facc15" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <rect x="40" y="155" width="140" height="34" fill="#0f172a" stroke="#facc15" stroke-width="1" rx="4"/>
+  <text x="50" y="170" font-family="'Inter', sans-serif" font-size="10" font-weight="bold" fill="#facc15">3. Rocker Arm &amp; Yoke</text>
+  <text x="50" y="182" font-family="'Inter', sans-serif" font-size="9" fill="#94a3b8">Transmits leverage to base</text>
+
+  <!-- Specification Data Card (Right Side) -->
+  <rect x="580" y="110" width="170" height="230" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(212, 160, 48, 0.4)" stroke-width="1" rx="6"/>
+  <text x="595" y="132" font-family="'Cinzel', serif" font-size="11" font-weight="bold" fill="#facc15">DEVICE SPECIFICATIONS</text>
+  
+  <text x="595" y="155" font-family="'Inter', sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1">Action Mechanism:</text>
+  <text x="595" y="168" font-family="'Inter', sans-serif" font-size="9" fill="#94a3b8">Mechanical Crush (5 min)</text>
+
+  <text x="595" y="190" font-family="'Inter', sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1">Aperture Sizes:</text>
+  <text x="595" y="203" font-family="'Inter', sans-serif" font-size="9" fill="#94a3b8">1.1 cm, 1.3 cm, 1.5 cm</text>
+
+  <text x="595" y="225" font-family="'Inter', sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1">Historic Prevalence:</text>
+  <text x="595" y="238" font-family="'Inter', sans-serif" font-size="9" fill="#94a3b8">Dominant US hospital (1940s-80s)</text>
+
+  <text x="595" y="260" font-family="'Inter', sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1">Primary Risk Profile:</text>
+  <text x="595" y="273" font-family="'Inter', sans-serif" font-size="9" fill="#f87171">Laceration, bell mismatch,</text>
+  <text x="595" y="285" font-family="'Inter', sans-serif" font-size="9" fill="#f87171">inadequate hemostasis</text>
+
+  <text x="595" y="308" font-family="'Inter', sans-serif" font-size="8" font-style="italic" fill="#64748b">Archive Record: UMass MS-1205</text>
+  <text x="595" y="322" font-family="'Inter', sans-serif" font-size="8" font-style="italic" fill="#64748b">Collection: Intactivism Primary</text>
+
+  <!-- Footer Citation Banner -->
+  <rect x="50" y="425" width="700" height="35" fill="rgba(0, 0, 0, 0.4)" stroke="rgba(255, 255, 255, 0.08)" rx="4"/>
+  <text x="65" y="446" font-family="'Inter', sans-serif" font-size="10" fill="#cbd5e1">
+    FIG 1.1 — Goldstein &amp; Yellen Gomco Clamp Schematic (1935). Provenance: National Library of Medicine / U.S. Patent &amp; Trademark Office.
+  </text>
+</svg>

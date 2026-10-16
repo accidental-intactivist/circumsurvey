@@ -15,6 +15,7 @@ import { useReport } from "../contexts/ReportContext";
 import { useTelemetry } from "../lib/telemetry";
 import ThinkingSpirograph from "./ThinkingSpirograph";
 import { useLegibleColor } from "../lib/colorUtils";
+import SafeImage from "../../components/SafeImage";
 
 function DocentChart({ questionId }) {
   const [question, setQuestion] = useState(null);
@@ -720,7 +721,8 @@ export default function CopilotChat({ routerState, updateState, question, exhibi
                     ol: ({node, ...props}) => <ol style={{ paddingLeft: "1.5rem", marginTop: 0, marginBottom: "1rem" }} {...props} />,
                     li: ({node, ...props}) => <li style={{ marginBottom: "0.5rem" }} {...props} />,
                     strong: ({node, ...props}) => <strong style={{ color: C.textBright, fontWeight: 700 }} {...props} />,
-                    a: ({node, ...props}) => <a style={{ color: C.goldBright, textDecoration: "underline" }} target="_blank" rel="noopener noreferrer" {...props} />
+                    a: ({node, ...props}) => <a style={{ color: C.goldBright, textDecoration: "underline" }} target="_blank" rel="noopener noreferrer" {...props} />,
+                    img: SafeImage
                   }}
                 >
                   {part}

@@ -9,7 +9,7 @@ VALUES (
   '{"author":"NOHARMM","abstract":"The foundational quantitative and qualitative dataset containing responses from men reporting harm from infant circumcision. This data was collected by the National Organization to Halt the Abuse and Routine Mutilation of Males."}'
 );
 
-INSERT INTO entities (id, type, name, slug, tagline, stance, featured, bio)
+INSERT INTO entities (id, type, name, slug, tagline, stance, featured, bio, image_url)
 VALUES (
   'entity-tone-pettit',
   'person',
@@ -18,7 +18,8 @@ VALUES (
   'Lead Researcher, The Accidental Intactivist',
   'champion',
   1,
-  'Seattle-based independent researcher and author of the CircumSurvey Phase 1 Findings. Known for rigorous data journalism focusing on exposing the cognitive dissonance and "pleasure gap" of routine infant circumcision.'
+  'Seattle-based independent researcher and author of the CircumSurvey Phase 1 Findings. Known for rigorous data journalism focusing on exposing the cognitive dissonance and "pleasure gap" of routine infant circumcision.',
+  '/tone-headshot.jpg'
 );
 
 INSERT INTO entities (id, type, name, slug, tagline, stance, featured, bio)

@@ -334,6 +334,8 @@ export const TIM_HAMMOND_VIDEOS = [
     title: 'Global Survey of Circumcision Harm: Frankfurt Symposium',
     host: 'Symposium on Genital Autonomy: Myths and Multiple Standards',
     url: 'https://www.youtube.com/watch?v=v_ht2CRTdbo',
+    mirrorUrl: 'https://vimeo.com/132639344',
+    isAgeRestricted: true,
     platform: 'YouTube'
   },
   {
@@ -650,7 +652,7 @@ export function normalizeEntityRole(role, stance, name = '') {
   if (r === 'notable' || s === 'notable') return 'notable';
 
   // Prominent movement figures
-  if (n.includes('tim hammond') || n.includes('hammond tim') || n.includes('milos') || n.includes('tristan huff') || n.includes('foregen') || n.includes('noharmm') || n.includes('nocirc') || n.includes('galdef') || n.includes('arc') || n.includes('bloodstained men') || n.includes('intact') || n.includes('15square') || n.includes('frisch')) {
+  if (n.includes('tone pettit') || n.includes('pettit tone') || n.includes('accidental intactivist') || n.includes('tim hammond') || n.includes('hammond tim') || n.includes('milos') || n.includes('tristan huff') || n.includes('foregen') || n.includes('noharmm') || n.includes('nocirc') || n.includes('galdef') || n.includes('arc') || n.includes('bloodstained men') || n.includes('intact') || n.includes('15square') || n.includes('frisch')) {
     return 'champion';
   }
   if (n.includes('sayre') || n.includes('kellogg') || n.includes('diekema') || n.includes('freedman') || n.includes('aap') || n.includes('american academy of pediatrics')) {
@@ -908,6 +910,13 @@ export function getInitialRating(entity, overrides = {}) {
     };
   }
 
+  if (normName.includes('tone pettit') || normName.includes('pettit tone') || normName.includes('accidental intactivist')) {
+    return {
+      score: 5,
+      grade: 'A+',
+      quote: 'Awarded an A+ grade as the lead researcher, creator of CircumSurvey, and author of The Accidental Intactivist\'s Guide for pioneering data-driven bodily autonomy investigation and daylighting the cultural pleasure gap.'
+    };
+  }
   if (normName.includes('tim hammond') || normName.includes('hammond tim')) {
     return {
       score: 5,
@@ -1174,60 +1183,146 @@ export default function ProfilePage() {
         console.warn("Failed to fetch /api/entities, falling back to mock", err);
       }
 
-      if (!allEntities || allEntities.length === 0) {
-        try {
-          const mockRes = await fetch('/api_entities_mock.json');
-          if (mockRes.ok) {
-            const mockData = await mockRes.json();
-            allEntities = Array.isArray(mockData) ? mockData : (mockData.data || []);
-          }
-        } catch (e) {
-          console.error("Failed to load mock entities", e);
-        }
-      }
-
       const decodedId = decodeURIComponent(id || '');
+
+      const cleanSlug = (str) => {
+        if (!str) return '';
+        return str
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/'s\b/gi, 's')
+          .replace(/[+/]/g, '-')
+          .replace(/[-_]+/g, '-')
+          .replace(/[^\w-]/g, '')
+          .trim();
+      };
+
+      const cleanEntityName = (str) => {
+        if (!str) return '';
+        return str
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/,\s*(M\.?D\.?|Ph\.?D\.?|R\.?N\.?|D\.?O\.?|Esq\.?|Jr\.?|Sr\.?|III|II)\b/gi, '')
+          .replace(/^(Dr\.|Dr|Rev\.|Prof\.)\s*/gi, '')
+          .replace(/\([^)]*\)/g, '')
+          .toLowerCase()
+          .replace(/'s\b/gi, 's')
+          .replace(/[+/]/g, ' ')
+          .replace(/[-_]/g, ' ')
+          .replace(/[^\w\s]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      };
 
       const normalizeQuery = (str) => {
         if (!str) return '';
         return decodeURIComponent(str)
+          .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
           .toLowerCase()
           .replace(/^(dr\.|dr|rev\.|prof\.)\s*/i, '')
+          .replace(/'s\b/gi, 's')
+          .replace(/[+/]/g, ' ')
           .replace(/[-_]/g, ' ')
           .replace(/[^\w\s]/g, '')
           .trim();
       };
 
-      const query = normalizeQuery(decodedId);
+      // Always merge mock entities so locally curated entities are never missing or left with stub descriptions
+      try {
+        const mockRes = await fetch('/api_entities_mock.json');
+        if (mockRes.ok) {
+          const mockData = await mockRes.json();
+          const mockList = Array.isArray(mockData) ? mockData : (mockData.data || []);
+          for (const m of mockList) {
+            const mClean = cleanEntityName(m.name);
+            const mSlug = cleanSlug(m.slug || m.name);
+            const idx = allEntities.findIndex(e => {
+              if (e.id === m.id) return true;
+              if (m.slug && e.slug && (cleanSlug(e.slug) === mSlug || e.slug === m.slug)) return true;
+              const eClean = cleanEntityName(e.name);
+              if (eClean && mClean && eClean === mClean) return true;
+              const eSlug = cleanSlug(e.slug || e.name);
+              if (eSlug && mSlug && eSlug === mSlug) return true;
+              return false;
+            });
+            if (idx === -1) {
+              allEntities.push(m);
+            } else {
+              // If existing entity has missing/stub description, enrich with mock description
+              const curDesc = allEntities[idx].description || '';
+              allEntities[idx] = {
+                ...m,
+                ...allEntities[idx],
+                description: (curDesc.length >= 100) ? curDesc : (m.description || curDesc),
+                tagline: allEntities[idx].tagline || m.tagline,
+                role: allEntities[idx].role || m.role,
+                stance: allEntities[idx].stance || m.stance,
+                slug: allEntities[idx].slug || m.slug,
+                affiliations: allEntities[idx].affiliations || m.affiliations,
+                core_focus: allEntities[idx].core_focus || m.core_focus,
+                key_milestones: allEntities[idx].key_milestones || m.key_milestones,
+                years_active: allEntities[idx].years_active || m.years_active,
+                rating_score: allEntities[idx].rating_score || m.rating_score,
+                rating_grade: allEntities[idx].rating_grade || m.rating_grade,
+                rating_quote: allEntities[idx].rating_quote || m.rating_quote
+              };
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load mock entities", e);
+      }
 
-      let found = allEntities.find(e => {
+      const targetSlug = cleanSlug(decodedId);
+      const query = normalizeQuery(decodedId);
+      const queryClean = cleanEntityName(decodedId);
+
+      const candidates = allEntities.filter(e => {
         if (!e || !e.name) return false;
         if (e.id === decodedId) return true;
+
+        if (e.slug && (cleanSlug(e.slug) === targetSlug || e.slug === decodedId)) return true;
+
+        const eSlug = cleanSlug(e.slug || e.name);
+        if (eSlug === targetSlug) return true;
 
         const normName = normalizeQuery(e.name);
         if (normName === query) return true;
 
-        // Inverted names (e.g. "hammond tim" vs "tim hammond")
-        const parts = normName.split(/\s+/);
-        if (parts.length === 2) {
-          if (`${parts[1]} ${parts[0]}` === query) return true;
-        }
-        if (parts.length === 3) {
-          if (`${parts[2]} ${parts[0]} ${parts[1]}` === query) return true;
-          if (`${parts[0]} ${parts[2]}` === query) return true;
+        const eCleanName = cleanEntityName(e.name);
+        if (eCleanName && queryClean && eCleanName === queryClean) return true;
+
+        // Inverted names / tokens check (supports surname-first or reordered query words)
+        const eParts = eCleanName.split(/\s+/).filter(Boolean);
+        const qParts = queryClean.split(/\s+/).filter(Boolean);
+        if (eParts.length >= 2 && qParts.length >= 2) {
+          if (eParts.length === qParts.length && eParts.every(p => qParts.includes(p))) {
+            return true;
+          }
         }
 
         // Acronym in parenthesis: e.g. "Royal Dutch Medical Association (KNMG)"
         const parenMatch = e.name.match(/\(([^)]+)\)/);
-        if (parenMatch && normalizeQuery(parenMatch[1]) === query) return true;
+        if (parenMatch) {
+          const acr = normalizeQuery(parenMatch[1]);
+          if (acr === query || acr === targetSlug.replace(/-/g, '')) return true;
+        }
 
         // Explicit aliases
         if (Array.isArray(e.aliases)) {
-          if (e.aliases.some(a => normalizeQuery(a) === query)) return true;
+          if (e.aliases.some(a => {
+            const normA = normalizeQuery(a);
+            const cleanA = cleanEntityName(a);
+            const slugA = cleanSlug(a);
+            return normA === query || cleanA === queryClean || slugA === targetSlug;
+          })) return true;
         }
 
         return false;
       });
+
+      // Prioritize candidate with the richest description to completely eliminate blank stubs!
+      candidates.sort((a, b) => (b.description?.length || 0) - (a.description?.length || 0));
+      let found = candidates[0];
 
       if (!found) {
         // Auto-generate a stub entity so the page still loads archive mentions
@@ -1243,6 +1338,10 @@ export default function ProfilePage() {
       // Special fallback image for Tim Hammond if missing
       if (found.name.toLowerCase().includes('hammond') && !found.image_url) {
         found.image_url = '/tim_hammond.jpg';
+      }
+      // Special fallback image for Tone Pettit (Nate Gowdy headshot) if missing
+      if ((found.name.toLowerCase().includes('tone pettit') || found.name.toLowerCase().includes('pettit') || found.name.toLowerCase().includes('accidental intactivist') || found.id === 'entity-tone-pettit') && !found.image_url) {
+        found.image_url = '/tone-headshot.jpg';
       }
 
       // Check static local_edited_entities.json as well
@@ -1263,6 +1362,14 @@ export default function ProfilePage() {
       const localOverride = (found && overrides[found.id]) || overrides[decodedId] || overrides[query] || (found && overrides[normalizeQuery(found.name)]);
       if (localOverride) {
         found = { ...found, ...localOverride, isLocalOverride: hasUserBrowserOverride };
+      }
+
+      // Ensure fallback images persist even if local override had empty image_url
+      if ((found.name.toLowerCase().includes('tone pettit') || found.name.toLowerCase().includes('pettit') || found.name.toLowerCase().includes('accidental intactivist') || found.id === 'entity-tone-pettit') && !found.image_url) {
+        found.image_url = '/tone-headshot.jpg';
+      }
+      if (found.name.toLowerCase().includes('hammond') && !found.image_url) {
+        found.image_url = '/tim_hammond.jpg';
       }
 
       // Normalize role so it is strictly 'champion' | 'critic' | 'notable'
@@ -1504,23 +1611,44 @@ export default function ProfilePage() {
     if (!doc.metadata_json) return false;
     try {
       const meta = safeParseJson(doc.metadata_json);
-      const name = entity.name.toLowerCase();
+      const searchNames = [
+        entity.name.toLowerCase(),
+        ...(Array.isArray(entity.aliases) ? entity.aliases.map(a => a.toLowerCase()) : [])
+      ];
+
+      // Add alias specifically for Tone Pettit <-> The Accidental Intactivist
+      if (searchNames.some(s => s.includes('tone pettit') || s.includes('pettit tone'))) {
+        if (!searchNames.includes('the accidental intactivist')) searchNames.push('the accidental intactivist');
+        if (!searchNames.includes('accidental intactivist')) searchNames.push('accidental intactivist');
+      }
       
       const orgs = Array.isArray(meta.organizations) ? meta.organizations : (typeof meta.organizations === 'string' ? [meta.organizations] : []);
       const people = Array.isArray(meta.key_people) ? meta.key_people : (typeof meta.key_people === 'string' ? [meta.key_people] : []);
-      const authors = Array.isArray(meta.gemini_extracted_metadata?.authors) ? meta.gemini_extracted_metadata.authors : [];
+      const authors = Array.isArray(meta.gemini_extracted_metadata?.authors) ? [...meta.gemini_extracted_metadata.authors] : [];
+      if (meta.author) {
+        if (Array.isArray(meta.author)) authors.push(...meta.author);
+        else authors.push(meta.author);
+      }
+      if (meta.authors) {
+        if (Array.isArray(meta.authors)) authors.push(...meta.authors);
+        else authors.push(meta.authors);
+      }
       const geminiOrgs = Array.isArray(meta.gemini_extracted_metadata?.organizations) ? meta.gemini_extracted_metadata.organizations : [];
       const tags = Array.isArray(meta.tags) ? meta.tags : (typeof meta.tags === 'string' ? [meta.tags] : []);
       
       const allPeople = [...people, ...authors];
       const allOrgs = [...orgs, ...geminiOrgs];
 
-      const inOrgs = allOrgs.some(o => typeof o === 'string' && o.toLowerCase() === name);
-      const inPeople = allPeople.some(p => typeof p === 'string' && p.toLowerCase() === name);
-      const inPub = typeof meta.source_publication === 'string' && meta.source_publication.toLowerCase() === name;
-      const inTags = tags.some(t => typeof t === 'string' && t.toLowerCase() === name);
+      const matchesAny = (arr) => arr.some(item => typeof item === 'string' && searchNames.some(sn => item.toLowerCase().includes(sn) || sn.includes(item.toLowerCase())));
+
+      const inOrgs = matchesAny(allOrgs);
+      const inPeople = matchesAny(allPeople);
+      const inPub = typeof meta.source_publication === 'string' && searchNames.some(sn => meta.source_publication.toLowerCase().includes(sn));
+      const inTags = matchesAny(tags);
+      const inTitle = typeof meta.title === 'string' && searchNames.some(sn => meta.title.toLowerCase().includes(sn));
+      const inDocTitle = typeof doc.title === 'string' && searchNames.some(sn => doc.title.toLowerCase().includes(sn));
       
-      return inOrgs || inPeople || inPub || inTags;
+      return inOrgs || inPeople || inPub || inTags || inTitle || inDocTitle;
     } catch(e) { return false; }
   });
 
@@ -2909,6 +3037,8 @@ export default function ProfilePage() {
                 <MediaEmbed
                   key={idx}
                   url={vid.url}
+                  mirrorUrl={vid.mirrorUrl}
+                  isAgeRestricted={vid.isAgeRestricted}
                   title={vid.title}
                   host={vid.host}
                   year={vid.year}

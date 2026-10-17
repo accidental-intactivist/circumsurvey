@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout, Settings2, BookOpen, User, Archive, Key, List, FileText, Globe, LogIn, Network, BookMarked, Shield } from 'lucide-react';
+import { Menu, Settings2, BookOpen, User, Archive, Key, List, FileText, Globe, LogIn, Network, BookMarked, Shield, Sparkles, BarChart3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { ThemeSettingsPanel } from './ThemeToggle';
@@ -195,6 +195,11 @@ export default function ArchiveHamburgerMenu() {
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <Shield size={16} /> Counter-Evidence
                 </Link>
+                <Link to="/data" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <BarChart3 size={16} /> Movement Data Hub
+                </Link>
                 <Link to="/atlas" onClick={handleLinkClick} style={{ ...buttonStyle, color: "var(--c-goldBright)" }}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
@@ -214,11 +219,6 @@ export default function ArchiveHamburgerMenu() {
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
                   onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   <Archive size={16} /> Tim Hammond Archive (MS 1205)
-                </Link>
-                <Link to="/collections" onClick={handleLinkClick} style={buttonStyle}
-                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                  <Archive size={16} /> Special Collections
                 </Link>
                 <Link to="/news" onClick={handleLinkClick} style={buttonStyle}
                   onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}

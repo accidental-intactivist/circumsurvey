@@ -124,7 +124,7 @@ export default function SquishHeader() {
           <UserButton />
         </div>
       </SignedIn>
-      <a id="tour-explore" href="/explore" style={{
+      <a id="tour-explore" href="/explore" className="mobile-hide" style={{
         fontFamily: "var(--f-condensed, 'Barlow Condensed', sans-serif)",
         fontWeight: 700,
         fontSize: '0.75rem',
@@ -139,7 +139,7 @@ export default function SquishHeader() {
         whiteSpace: 'nowrap',
         flexShrink: 0
       }}>
-        <span className="mobile-hide">Interactive </span>Explorer ➔
+        <span>Interactive Explorer ➔</span>
       </a>
       <div className="mobile-hide" style={{ width: 1, height: 16, background: 'var(--c-ghost)' }} />
       <span id="tour-hamburger" style={{ display: 'flex', alignItems: 'center' }}>

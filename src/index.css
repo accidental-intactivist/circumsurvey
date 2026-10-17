@@ -1386,6 +1386,37 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   UNIVERSAL MOBILE RESPONSIVENESS (PHONES & FOLDABLES, E.G. GALAXY Z FOLD)
+   ══════════════════════════════════════════════════════════════ */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .mobile-hide, .hide-on-mobile {
+    display: none !important;
+  }
+  .mobile-show, .show-on-mobile {
+    display: block !important;
+  }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    display: block;
+  }
+  /* Constrain code blocks, tables, and images on narrow viewports */
+  table {
+    max-width: 100%;
+  }
+  img, svg, video, canvas {
+    max-width: 100%;
+  }
+}
+
 
 
 

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { ExternalLink, HelpCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, HelpCircle, BookOpen } from 'lucide-react';
 import { EVIDENCE_BRIEF } from '../../../lib/news/evidence_brief.js';
 import { TIERS } from '../../../lib/guides/compose.js';
 import { riskStats, formatPct, formatNNT, RISK_SCENARIOS } from '../../../lib/guides/risk.js';
@@ -34,7 +35,21 @@ export function Sources({ cites = [], refText }) {
         const e = BRIEF_BY_ID[id];
         if (!e) return null;
         const label = e.label.split(/[,:(]/)[0].trim();
-        const chip = <span className="gd-cite" title={`${e.label}\n\n${e.summary}\n\nScope: ${e.applies_to}`}>{label}{e.as_of ? ` · as of ${e.as_of}` : ''}</span>;
+        const readerUrl = e.readerUrl || (e.docId ? `/library/${e.docId}` : null);
+        const titleText = `${e.label}\n\n${e.summary}\n\nScope: ${e.applies_to}${readerUrl ? '\n\n📖 Click to view full digitized document in Archive Library' : ''}`;
+        
+        if (readerUrl) {
+          return (
+            <Link key={id} to={readerUrl} className="gd-cite-link gd-cite-link--library" title={titleText} style={{ textDecoration: 'none' }}>
+              <span className="gd-cite">
+                <BookOpen size={11} style={{ marginRight: 4, verticalAlign: '-1px', display: 'inline-block' }} />
+                {label}{e.as_of ? ` · as of ${e.as_of}` : ''}
+              </span>
+            </Link>
+          );
+        }
+        
+        const chip = <span className="gd-cite" title={titleText}>{label}{e.as_of ? ` · as of ${e.as_of}` : ''}</span>;
         return e.url
           ? <a key={id} href={e.url} target="_blank" rel="noopener noreferrer" className="gd-cite-link">{chip}<ExternalLink size={10} /></a>
           : <React.Fragment key={id}>{chip}</React.Fragment>;

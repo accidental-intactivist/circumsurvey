@@ -44,6 +44,7 @@ const ManifestoPage = React.lazy(() => import('./pages/ManifestoPage'));
 const DiseaseOfTheDecadePage = React.lazy(() => import('./pages/DiseaseOfTheDecadePage'));
 const ReciteBackConsentPage = React.lazy(() => import('./pages/ReciteBackConsentPage'));
 const UsRicRatesPage = React.lazy(() => import('./pages/UsRicRatesPage'));
+const DataHubPage = React.lazy(() => import('./pages/DataHubPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -91,6 +92,8 @@ export function AppLayout() {
             <Route path="/guides/view" element={<GuideView />} />
             <Route path="/guides/rebuttals" element={<CounterEvidencePage />} />
             <Route path="/atlas" element={<AtlasPage />} />
+            <Route path="/data" element={<DataHubPage />} />
+            <Route path="/media" element={<Navigate to="/news" replace />} />
             <Route path="/share" element={<InfographicGenerator />} />
             <Route path="/library" element={<DigitalLibrary />} />
             <Route path="/news" element={<NewsFeed />} />
@@ -101,7 +104,7 @@ export function AppLayout() {
             <Route path="/assistant" element={<ReportBuilder />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/policies" element={<Policies />} />
-            <Route path="/collections" element={<CollectionsIndex />} />
+            <Route path="/collections" element={<Navigate to="/collections/tim-hammond-archive" replace />} />
             <Route path="/collections/:slug" element={<CollectionPage />} />
             <Route path="/report" element={<SpecialReportPage />} />
             <Route path="/manifesto" element={<ManifestoPage />} />
@@ -118,8 +121,8 @@ export function AppLayout() {
             <Route path="/tools/cultural-alignment" element={<Navigate to="/explore/tools/cultural-alignment" replace />} />
             <Route path="/foregen" element={<Navigate to="/to/foregen" replace />} />
             <Route path="/tim-hammond-archive" element={<Navigate to="/collections/tim-hammond-archive" replace />} />
-            <Route path="/archive" element={<Navigate to="/collections" replace />} />
-            <Route path="/archives" element={<Navigate to="/collections" replace />} />
+            <Route path="/archive" element={<Navigate to="/collections/tim-hammond-archive" replace />} />
+            <Route path="/archives" element={<Navigate to="/collections/tim-hammond-archive" replace />} />
             <Route path="/sign-in/*" element={<div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><SignIn routing="path" path="/sign-in" /></div>} />
             <Route path="/sign-up/*" element={<div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><SignUp routing="path" path="/sign-up" /></div>} />
             <Route path="/*" element={<LandingPage />} />

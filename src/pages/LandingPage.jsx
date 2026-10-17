@@ -154,7 +154,7 @@ export default function LandingPage() {
         title={<>The Accidental<br />Intactivist's Guide</>}
         navRightContent={
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-            <Link to="/report" style={{
+            <Link to="/report" className="mobile-hide" style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
               fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
               color: C.goldBright, textDecoration: 'none',
@@ -169,7 +169,7 @@ export default function LandingPage() {
               <ExternalLink size={14} />
             </Link>
 
-            <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{
+            <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" className="mobile-hide" style={{
               display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
               fontFamily: FONT.condensed, fontWeight: 700, fontSize: '0.85rem',
               color: 'var(--c-bgDeep)', textDecoration: 'none',
@@ -181,7 +181,7 @@ export default function LandingPage() {
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >
               <ClipboardPen size={14} />
-              <span className="hide-on-mobile">Take the Survey</span>
+              <span>Take the Survey</span>
             </a>
             
             <ArchiveHamburgerMenu />

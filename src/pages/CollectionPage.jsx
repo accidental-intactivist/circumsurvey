@@ -4,8 +4,7 @@ import { Newspaper, BookOpen, Scale, Video, Headphones, Image as ImageIcon, File
 import { useTheme } from '../contexts/ThemeContext';
 import UniversalSquishHeader from '../components/Scrollytelling/UniversalSquishHeader';
 import ArchiveHamburgerMenu from '../components/ArchiveHamburgerMenu';
-import MicrofilmTimeline from '../components/MicrofilmTimeline';
-import LoomChoreography from '../components/GuidedTour/LoomChoreography';
+import CoverFlowTimeline from '../components/CoverFlowTimeline';
 import { safeParseJson } from '../utils/json';
 
 export default function CollectionPage() {
@@ -59,14 +58,17 @@ export default function CollectionPage() {
     );
   }
 
-  const extractSection = (str) => {
-    if (!str) return 'Uncategorized';
+  const extractSection = (docOrStr) => {
+    let str = typeof docOrStr === 'object' && docOrStr !== null 
+      ? (docOrStr.series || docOrStr.source_collection) 
+      : docOrStr;
+    if (!str) return 'General Canon';
     const parts = str.split(': ');
-    return parts.length > 1 ? parts[1].trim() : 'Uncategorized';
+    return parts.length > 1 ? parts[1].trim() : str.trim();
   };
 
-  const sections = Array.from(new Set(documents.map(d => extractSection(d.source_collection)))).sort();
-  const filteredDocs = selectedSeries ? documents.filter(d => extractSection(d.source_collection) === selectedSeries) : documents;
+  const sections = Array.from(new Set(documents.map(d => extractSection(d)))).filter(Boolean).sort();
+  const filteredDocs = selectedSeries ? documents.filter(d => extractSection(d) === selectedSeries) : documents;
 
   const getCleanTitle = (d) => {
     const m = safeParseJson(d.metadata_json);
@@ -152,7 +154,6 @@ export default function CollectionPage() {
   const paginatedDocs = sortedDocs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const hasSections = sections.length > 1 || (sections.length === 1 && sections[0] !== 'Uncategorized');
-  const showItems = !hasSections || selectedSeries;
 
   const getDocumentIcon = (type) => {
     switch ((type || '').toLowerCase()) {
@@ -256,113 +257,88 @@ export default function CollectionPage() {
             )}
           </div>
 
-          {showItems ? (
-            <>
+          {/* Section Navigation & Header Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2px solid var(--c-ghost)', paddingBottom: '1rem', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              {selectedSeries ? (
+                <>
+                  <button 
+                    onClick={() => { setSelectedSeries(null); setCurrentPage(1); }}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--c-gold)', fontSize: '0.9rem', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.5rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                  >
+                    <ArrowLeft size={14} /> All Sections
+                  </button>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>
+                    {selectedSeries}
+                  </h3>
+                </>
+              ) : (
+                <>
+                  <div style={{ color: 'var(--c-gold)', fontSize: '0.82rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                    Archival Explorer
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>
+                    Archival Folios & Timeline
+                  </h3>
+                </>
+              )}
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {/* Section Jump Selector */}
               {hasSections && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2px solid var(--c-ghost)', paddingBottom: '1rem', marginBottom: '2rem' }}>
-                  <div>
-                    <button 
-                      onClick={() => { setSelectedSeries(null); setCurrentPage(1); }}
-                      style={{ background: 'transparent', border: 'none', color: 'var(--c-gold)', fontSize: '0.9rem', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.5rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                    >
-                      <ArrowLeft size={14} /> All Sections
-                    </button>
-                    <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>
-                      {selectedSeries}
-                    </h3>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <select 
-                      value={itemsPerPage} 
-                      onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                      style={{ background: 'var(--c-bgCard)', color: 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.4rem', fontSize: '0.85rem' }}
-                    >
-                      <option value={20}>Show 20</option>
-                      <option value={50}>Show 50</option>
-                      <option value={100}>Show 100</option>
-                    </select>
-                  </div>
-                </div>
+                <select
+                  value={selectedSeries || ''}
+                  onChange={(e) => { setSelectedSeries(e.target.value || null); setCurrentPage(1); }}
+                  style={{ background: 'var(--c-bgCard)', color: 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.45rem 0.65rem', fontSize: '0.85rem' }}
+                  aria-label="Filter by Archive Section"
+                >
+                  <option value="">All Sections ({documents.length.toLocaleString()})</option>
+                  {sections.map(sec => {
+                    const count = documents.filter(d => extractSection(d) === sec).length;
+                    return (
+                      <option key={sec} value={sec}>
+                        {sec} ({count.toLocaleString()})
+                      </option>
+                    );
+                  })}
+                </select>
               )}
 
-              {/* Timeline Horizontal Carousel */}
-              <MicrofilmTimeline 
-                documents={filteredDocs} 
-                getYear={getYear} 
-                getCleanTitle={getCleanTitle} 
-                getDocumentIcon={getDocumentIcon} 
-              />
+              <select 
+                value={itemsPerPage} 
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                style={{ background: 'var(--c-bgCard)', color: 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.45rem 0.65rem', fontSize: '0.85rem' }}
+              >
+                <option value={20}>Show 20</option>
+                <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+              </select>
+            </div>
+          </div>
 
-              {/* Finding Aid Data Table */}
-              <div style={{ overflowX: 'auto', background: 'var(--c-bgCard)', border: '1px solid var(--c-ghost)', borderRadius: '8px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ background: 'var(--c-bgSoft)', borderBottom: '2px solid var(--c-ghost)' }}>
-                      <th onClick={() => handleSort('date')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Date {sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
-                      <th onClick={() => handleSort('title')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Title {sortConfig.key === 'title' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
-                      <th onClick={() => handleSort('location')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Box / Folder {sortConfig.key === 'location' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
-                      <th onClick={() => handleSort('format')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Format {sortConfig.key === 'format' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedDocs.map((doc, idx) => {
-                      const date = getDisplayDate(doc);
-                      const location = getMetadataField(doc, 'original_location') || 'Unknown';
-                      return (
-                        <tr key={doc.id} style={{ borderBottom: '1px solid var(--c-ghost)', background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)', transition: 'background 0.2s' }}>
-                          <td style={{ padding: '1rem', fontSize: '0.9rem', color: 'var(--c-text)', whiteSpace: 'nowrap' }}>{date}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.95rem', fontWeight: 'bold' }}>
-                            <Link to={`/library/${doc.id}`} style={{ color: 'var(--c-textBright)', textDecoration: 'none' }}>
-                              {getCleanTitle(doc)}
-                            </Link>
-                          </td>
-                          <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--c-muted)', fontFamily: 'var(--f-mono)' }}>{location}</td>
-                          <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--c-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            {getDocumentIcon(doc.type)} <span style={{ textTransform: 'capitalize' }}>{(doc.type || 'Document').replace('_', ' ')}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+          {/* iPod Cover Flow Timeline Carousel */}
+          <CoverFlowTimeline 
+            documents={filteredDocs} 
+            getYear={getYear} 
+            getCleanTitle={getCleanTitle} 
+            getDocumentIcon={getDocumentIcon}
+            selectedSeries={selectedSeries}
+            collection={collection}
+          />
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--c-ghost)' }}>
-                   <div style={{ fontSize: '0.85rem', color: 'var(--c-muted)' }}>
-                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredDocs.length)} of {filteredDocs.length} entries
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <button 
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        style={{ background: 'var(--c-bgCard)', color: currentPage === 1 ? 'var(--c-dim)' : 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.4rem 1rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
-                      >
-                        Prev
-                      </button>
-                      <span style={{ padding: '0.4rem 1rem', fontSize: '0.9rem', color: 'var(--c-text)' }}>Page {currentPage} of {totalPages}</span>
-                      <button 
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        style={{ background: 'var(--c-bgCard)', color: currentPage === totalPages ? 'var(--c-dim)' : 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.4rem 1rem', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
-                      >
-                        Next
-                      </button>
-                    </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              <div style={{ borderBottom: '2px solid var(--c-ghost)', paddingBottom: '1rem', marginBottom: '2rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.5rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>Browse by Section</h3>
+          {/* If on All Sections, show Section Cards grid */}
+          {!selectedSeries && hasSections && (
+            <div style={{ margin: '2.5rem 0 3.5rem' }}>
+              <div style={{ borderBottom: '1px solid var(--c-ghost)', paddingBottom: '0.75rem', marginBottom: '1.5rem' }}>
+                <h4 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>
+                  Browse by Section
+                </h4>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
                 {sections.map(sec => {
-                  const count = documents.filter(d => extractSection(d.source_collection) === sec).length;
+                  const count = documents.filter(d => extractSection(d) === sec).length;
                   return (
                     <button
                       key={sec}
@@ -372,7 +348,7 @@ export default function CollectionPage() {
                         background: 'var(--c-bgCard)',
                         border: '1px solid var(--c-ghost)',
                         borderRadius: '8px',
-                        padding: '1.5rem',
+                        padding: '1.25rem',
                         textAlign: 'left',
                         cursor: 'pointer',
                         display: 'flex',
@@ -381,17 +357,83 @@ export default function CollectionPage() {
                         transition: 'all 0.2s ease',
                       }}
                     >
-                      <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--c-textBright)', lineHeight: 1.3 }}>
+                      <div style={{ fontSize: '1.02rem', fontWeight: 'bold', color: 'var(--c-textBright)', lineHeight: 1.3 }}>
                         {sec}
                       </div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--c-gold)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--c-gold)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         {count.toLocaleString()} Items
                       </div>
                     </button>
                   );
                 })}
               </div>
-            </>
+            </div>
+          )}
+
+          {/* Finding Aid Data Table */}
+          <div style={{ borderBottom: '1px solid var(--c-ghost)', paddingBottom: '0.75rem', margin: '2.5rem 0 1.25rem' }}>
+            <h4 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-display)' }}>
+              Catalog & Finding Aid {selectedSeries ? `— ${selectedSeries}` : '— All Records'}
+            </h4>
+          </div>
+
+          <div style={{ overflowX: 'auto', background: 'var(--c-bgCard)', border: '1px solid var(--c-ghost)', borderRadius: '8px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ background: 'var(--c-bgSoft)', borderBottom: '2px solid var(--c-ghost)' }}>
+                  <th onClick={() => handleSort('date')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Date {sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
+                  <th onClick={() => handleSort('title')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Title {sortConfig.key === 'title' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
+                  <th onClick={() => handleSort('location')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Box / Folder {sortConfig.key === 'location' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
+                  <th onClick={() => handleSort('format')} style={{ padding: '1rem', color: 'var(--c-dim)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', cursor: 'pointer' }}>Format {sortConfig.key === 'format' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedDocs.map((doc, idx) => {
+                  const date = getDisplayDate(doc);
+                  const location = getMetadataField(doc, 'original_location') || 'Unknown';
+                  return (
+                    <tr key={doc.id} style={{ borderBottom: '1px solid var(--c-ghost)', background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)', transition: 'background 0.2s' }}>
+                      <td style={{ padding: '1rem', fontSize: '0.9rem', color: 'var(--c-text)', whiteSpace: 'nowrap' }}>{date}</td>
+                      <td style={{ padding: '1rem', fontSize: '0.95rem', fontWeight: 'bold' }}>
+                        <Link to={`/library/${doc.id}`} style={{ color: 'var(--c-textBright)', textDecoration: 'none' }}>
+                          {getCleanTitle(doc)}
+                        </Link>
+                      </td>
+                      <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--c-muted)', fontFamily: 'var(--f-mono)' }}>{location}</td>
+                      <td style={{ padding: '1rem', fontSize: '0.85rem', color: 'var(--c-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        {getDocumentIcon(doc.type)} <span style={{ textTransform: 'capitalize' }}>{(doc.type || 'Document').replace('_', ' ')}</span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--c-ghost)' }}>
+               <div style={{ fontSize: '0.85rem', color: 'var(--c-muted)' }}>
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredDocs.length)} of {filteredDocs.length} entries
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                  <button 
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    style={{ background: 'var(--c-bgCard)', color: currentPage === 1 ? 'var(--c-dim)' : 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.4rem 1rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                  >
+                    Prev
+                  </button>
+                  <span style={{ padding: '0.4rem 1rem', fontSize: '0.9rem', color: 'var(--c-text)' }}>Page {currentPage} of {totalPages}</span>
+                  <button 
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    style={{ background: 'var(--c-bgCard)', color: currentPage === totalPages ? 'var(--c-dim)' : 'var(--c-textBright)', border: '1px solid var(--c-dim)', borderRadius: '4px', padding: '0.4rem 1rem', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
+                  >
+                    Next
+                  </button>
+                </div>
+            </div>
           )}
 
         </div>

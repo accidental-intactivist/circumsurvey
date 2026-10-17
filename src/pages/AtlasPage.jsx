@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Globe2, Clock, Calculator, ArrowLeft, Database, ShieldCheck, Layers } from 'lucide-react';
+import { Globe2, Clock, Calculator, ArrowLeft, Database, ShieldCheck, Layers, Share2 } from 'lucide-react';
 import AtlasMap from '../components/atlas/AtlasMap';
 import CountryPanel from '../components/atlas/CountryPanel';
+import AtlasShareModal from '../components/atlas/AtlasShareModal';
 import { useNationalData, useRegionData, loadWorldGeo, loadUsStatesGeo } from '../components/atlas/useAtlasData';
 import { METRICS, PREVALENCE_BINS, binLabel, RECENCY, NO_DATA_COLOR } from '../../lib/atlas/metrics.js';
 import { latestByGeo, yearsAvailable, summarizeCoverage, formatValue } from '../../lib/atlas/series.js';
@@ -103,7 +104,9 @@ export default function AtlasPage() {
   const { addToReport } = useReport();
   const { openAssistant } = useAssistant();
 
-  useEffect(() => { document.title = 'Global Circumcision Atlas · The Accidental Intactivist'; }, []);
+  const [showGlobalShare, setShowGlobalShare] = useState(false);
+
+  useEffect(() => { document.title = 'Global Genital Integrity Atlas · The Accidental Intactivist'; }, []);
   useEffect(() => { loadWorldGeo().then(setWorldGeo).catch(() => setWorldGeo(null)); }, []);
 
   const usDrill = selected === 'USA' && metric === 'newborn_inpatient';
@@ -152,7 +155,7 @@ export default function AtlasPage() {
     <div className="gd-page at-page">
       <header className="at-hero">
         <div className="gd-series"><Globe2 size={13} /> The Living Manifesto · Evidence Base</div>
-        <h1 className="at-title">The Global Circumcision Atlas</h1>
+        <h1 className="at-title">The Global Genital Integrity Atlas</h1>
         <p className="at-lede">
           What is <em>reported</em>, where, and how recently. Every figure links to its source, its population and its limits.
           Where official numbers undercount, we say so, and in Phase B we'll show a 🧮 modeled estimate next to them, never instead of them.
@@ -183,6 +186,15 @@ export default function AtlasPage() {
             <input type="range" min={0} max={years.length - 1} step={1} value={years.indexOf(maxYear)} onChange={e => setYear(years[Number(e.target.value)])} id="atlas-year-slider" aria-label="Show data up to year" />
           </label>
         )}
+        <button
+          type="button"
+          className="gd-btn"
+          onClick={() => setShowGlobalShare(true)}
+          id="atlas-share-global"
+          style={{ marginLeft: 'auto', padding: '0.45rem 0.9rem', fontSize: '0.82rem' }}
+        >
+          <Share2 size={13} /> Share View
+        </button>
       </div>
 
       <div className="at-grid">
@@ -237,6 +249,15 @@ export default function AtlasPage() {
           <p>Behind the research desk is a team of separate tools: <em>collectors</em> pull official survey data, a rule-based <em>validator</em> checks every number (range, denominators, sudden jumps), and curators review anything flagged. The assistant cites the ledger; it never invents a statistic. <Link to="/guides">Guides</Link> and the living Manifesto draw on the same numbers.</p>
         </article>
       </section>
+
+      <AtlasShareModal
+        isOpen={showGlobalShare}
+        onClose={() => setShowGlobalShare(false)}
+        title="The Global Genital Integrity Atlas"
+        geoName={selectedName || 'World Overview'}
+        metricLabel={METRICS[metric].label}
+        statSummary={selected && latest.get(selected) ? `${formatValue(latest.get(selected).value)} (${latest.get(selected).period})` : `${coverage.countries} countries with documented data`}
+      />
     </div>
   );
 }

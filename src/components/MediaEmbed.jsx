@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Play, 
   Maximize2, 
@@ -9,10 +10,21 @@ import {
   ShieldCheck, 
   Video, 
   Clock,
-  Sparkles
+  Sparkles,
+  AlertTriangle,
+  Lock
 } from 'lucide-react';
 import { C, FONT } from '../styles/tokens';
 import { captureEvent } from '../lib/telemetry';
+
+// Known YouTube video IDs that are 18+ age-restricted or embed-restricted
+export const KNOWN_AGE_RESTRICTED_VIDEOS = new Set([
+  'v_ht2CRTdbo', // Frankfurt Symposium 2015 (Global Survey of Circumcision Harm)
+]);
+
+export const KNOWN_EMBED_BLOCKED_VIDEOS = new Set([
+  'Mdh5IYg7A9E', // Post-Conference Interview #2
+]);
 
 /**
  * Universal media URL parser for YouTube, Vimeo, and direct archival video/audio.
@@ -30,11 +42,16 @@ export function parseMediaUrl(url) {
     if (timeMatch) {
       startSeconds = parseInt(timeMatch[1], 10);
     }
+    const isAgeRestricted = KNOWN_AGE_RESTRICTED_VIDEOS.has(videoId);
+    const isEmbedBlocked = KNOWN_EMBED_BLOCKED_VIDEOS.has(videoId);
+
     return {
       platform: 'youtube',
-      label: 'YouTube (Privacy Mode)',
+      label: isAgeRestricted ? 'YouTube (18+ Age-Restricted)' : 'YouTube (Privacy Mode)',
       videoId,
       startSeconds,
+      isAgeRestricted,
+      isEmbedBlocked,
       embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0${startSeconds ? `&start=${startSeconds}` : ''}`,
       thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
       originalUrl: str
@@ -93,18 +110,30 @@ export function parseMediaUrl(url) {
  */
 export default function MediaEmbed({
   url,
+  mirrorUrl = null,
   title,
   host,
   year,
   aspectRatio = '16/9',
   autoplay = false,
+  isAgeRestricted: isAgeRestrictedProp = false,
   mode = 'inline', // 'inline' | 'card'
   className = '',
   style = {}
 }) {
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isTheaterOpen, setIsTheaterOpen] = useState(false);
-  const parsed = parseMediaUrl(url);
+  const [activeUrl, setActiveUrl] = useState(url);
+  const [attemptDirectEmbed, setAttemptDirectEmbed] = useState(false);
+
+  React.useEffect(() => {
+    setActiveUrl(url);
+    setAttemptDirectEmbed(false);
+  }, [url]);
+
+  const parsed = parseMediaUrl(activeUrl);
+  const mirrorParsed = mirrorUrl ? parseMediaUrl(mirrorUrl) : null;
+  const isAgeGated = Boolean((isAgeRestrictedProp || parsed?.isAgeRestricted || parsed?.isEmbedBlocked) && parsed?.platform === 'youtube');
 
   const handleStartPlaying = () => {
     setIsPlaying(true);
@@ -128,6 +157,145 @@ export default function MediaEmbed({
       });
     }
   };
+
+  const renderAgeGatedAdvisory = (isTheater = false) => (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      background: 'radial-gradient(ellipse at center, #171d2b 0%, #030712 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: isTheater ? '2rem' : '0.85rem 1rem',
+      textAlign: 'center',
+      zIndex: 5,
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        width: isTheater ? '54px' : '36px',
+        height: isTheater ? '54px' : '36px',
+        borderRadius: '50%',
+        background: 'rgba(245, 158, 11, 0.12)',
+        border: '1px solid rgba(245, 158, 11, 0.4)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: isTheater ? '0.75rem' : '0.35rem',
+        boxShadow: '0 0 20px rgba(245, 158, 11, 0.25)',
+        flexShrink: 0
+      }}>
+        <Lock size={isTheater ? 24 : 16} color="#fbbf24" />
+      </div>
+
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.35rem',
+        fontSize: isTheater ? '0.72rem' : '0.65rem',
+        fontFamily: FONT.mono,
+        color: '#fbbf24',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        marginBottom: '0.25rem'
+      }}>
+        <AlertTriangle size={isTheater ? 12 : 10} />
+        YouTube Age-Restricted
+      </div>
+
+      <h3 style={{
+        margin: '0 0 0.35rem',
+        fontSize: isTheater ? '1.25rem' : '0.92rem',
+        color: '#fff',
+        fontFamily: FONT.display,
+        maxWidth: isTheater ? '650px' : '360px',
+        lineHeight: 1.25,
+        display: '-webkit-box',
+        WebkitLineClamp: isTheater ? 2 : 1,
+        WebkitBoxOrient: 'vertical',
+        overflow: 'hidden'
+      }}>
+        {title || 'Archival Video Stream'}
+      </h3>
+
+      <p style={{
+        margin: isTheater ? '0 0 1.25rem' : '0 0 0.65rem',
+        fontSize: isTheater ? '0.85rem' : '0.72rem',
+        color: '#94a3b8',
+        lineHeight: 1.35,
+        maxWidth: isTheater ? '560px' : '340px'
+      }}>
+        {isTheater 
+          ? "YouTube disables third-party embedded playback for this recording under its platform 18+ policy. Watch directly on YouTube where your signed-in verified account applies, or stream an archival mirror."
+          : "YouTube blocks embedded playback for this 18+ recording. Watch directly on YouTube or open an archival mirror."}
+      </p>
+
+      <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+        <a
+          href={parsed?.originalUrl || url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => captureEvent('media_age_restricted_external_watch', { url: parsed?.originalUrl || url, title })}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            padding: isTheater ? '0.6rem 1.25rem' : '0.45rem 0.85rem',
+            borderRadius: '6px',
+            background: 'var(--c-goldBright)',
+            color: '#000',
+            fontWeight: 700,
+            fontSize: isTheater ? '0.84rem' : '0.74rem',
+            textDecoration: 'none',
+            boxShadow: '0 4px 14px rgba(212, 160, 48, 0.3)'
+          }}
+        >
+          <ExternalLink size={isTheater ? 14 : 12} />
+          <span>Watch on YouTube (18+ Verified)</span>
+        </a>
+
+        {mirrorUrl && (
+          <button
+            onClick={() => {
+              setActiveUrl(mirrorUrl);
+              setAttemptDirectEmbed(true);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: isTheater ? '0.6rem 1.15rem' : '0.45rem 0.8rem',
+              borderRadius: '6px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: isTheater ? '0.84rem' : '0.74rem',
+              cursor: 'pointer'
+            }}
+          >
+            <Film size={isTheater ? 14 : 12} />
+            <span>Mirror Stream</span>
+          </button>
+        )}
+      </div>
+
+      <button
+        onClick={() => setAttemptDirectEmbed(true)}
+        style={{
+          marginTop: isTheater ? '0.85rem' : '0.4rem',
+          background: 'transparent',
+          border: 'none',
+          color: '#64748b',
+          fontSize: '0.68rem',
+          cursor: 'pointer',
+          textDecoration: 'underline'
+        }}
+      >
+        Attempt embedded player anyway
+      </button>
+    </div>
+  );
 
   if (!parsed) return null;
 
@@ -253,7 +421,9 @@ export default function MediaEmbed({
         {isPlaying ? (
           /* Active Playing State */
           <div style={{ position: 'relative', width: '100%', aspectRatio, background: '#000' }}>
-            {parsed.platform === 'direct_video' ? (
+            {isAgeGated && !attemptDirectEmbed ? (
+              renderAgeGatedAdvisory()
+            ) : parsed.platform === 'direct_video' ? (
               <video
                 src={parsed.embedUrl}
                 controls
@@ -399,6 +569,24 @@ export default function MediaEmbed({
                 }}>
                   {parsed.platform === 'youtube' ? 'YouTube' : parsed.platform === 'vimeo' ? 'Vimeo' : 'Archival Video'}
                 </span>
+                {isAgeGated && (
+                  <span style={{
+                    fontSize: '0.68rem',
+                    fontFamily: FONT.mono,
+                    padding: '0.2rem 0.55rem',
+                    borderRadius: '4px',
+                    background: 'rgba(245, 158, 11, 0.15)',
+                    border: '1px solid rgba(245, 158, 11, 0.4)',
+                    color: '#fbbf24',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                    fontWeight: 600
+                  }}>
+                    <Lock size={10} />
+                    <span>18+ Age Gated</span>
+                  </span>
+                )}
               </div>
 
               <div style={{
@@ -431,16 +619,20 @@ export default function MediaEmbed({
                   width: '64px',
                   height: '64px',
                   borderRadius: '50%',
-                  background: 'var(--c-goldBright)',
+                  background: isAgeGated ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'var(--c-goldBright)',
                   color: '#000',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 35px rgba(250, 204, 21, 0.6), 0 4px 15px rgba(0,0,0,0.5)',
+                  boxShadow: isAgeGated ? '0 0 35px rgba(245, 158, 11, 0.5), 0 4px 15px rgba(0,0,0,0.5)' : '0 0 35px rgba(250, 204, 21, 0.6), 0 4px 15px rgba(0,0,0,0.5)',
                   transition: 'all 0.25s ease'
                 }}
               >
-                <Play size={26} style={{ marginLeft: '4px', fill: 'currentColor' }} />
+                {isAgeGated ? (
+                  <Lock size={24} style={{ fill: 'currentColor' }} />
+                ) : (
+                  <Play size={26} style={{ marginLeft: '4px', fill: 'currentColor' }} />
+                )}
               </div>
             </div>
 
@@ -469,8 +661,12 @@ export default function MediaEmbed({
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Click to stream presentation</span>
                 )}
 
-                <span style={{ fontSize: '0.72rem', color: 'var(--c-goldBright)', fontWeight: 700 }}>
-                  Click to Stream
+                <span style={{ 
+                  fontSize: '0.72rem', 
+                  color: isAgeGated ? '#fbbf24' : 'var(--c-goldBright)', 
+                  fontWeight: 700 
+                }}>
+                  {isAgeGated ? 'Age-Gated // Options Available' : 'Click to Stream'}
                 </span>
               </div>
             </div>
@@ -479,7 +675,7 @@ export default function MediaEmbed({
       </div>
 
       {/* Theater Lightbox Modal */}
-      {isTheaterOpen && (
+      {isTheaterOpen && typeof document !== 'undefined' && createPortal(
         <div 
           style={{
             position: 'fixed',
@@ -574,9 +770,12 @@ export default function MediaEmbed({
               overflow: 'hidden',
               boxShadow: '0 25px 60px rgba(0, 0, 0, 0.9)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
-              background: '#000'
+              background: '#000',
+              position: 'relative'
             }}>
-              {parsed.platform === 'direct_video' ? (
+              {isAgeGated && !attemptDirectEmbed ? (
+                renderAgeGatedAdvisory(true)
+              ) : parsed.platform === 'direct_video' ? (
                 <video
                   src={parsed.embedUrl}
                   controls
@@ -613,7 +812,8 @@ export default function MediaEmbed({
               {host}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

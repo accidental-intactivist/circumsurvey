@@ -22,7 +22,7 @@ const SILOS = [
     quickLinks: [
       { label: 'Tim Hammond Archive (MS 1205)', path: '/collections/tim-hammond-archive' },
       { label: 'Hadachek v. Oregon', path: '/to/hadachek_v_oregon' },
-      { label: 'Special Collections Index', path: '/collections' }
+      { label: 'Digital Library Index', path: '/library' }
     ]
   },
   {

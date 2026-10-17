@@ -93,6 +93,14 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
+    let parentResizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
+      parentResizeObserver = new ResizeObserver(() => {
+        resizeCanvas();
+      });
+      parentResizeObserver.observe(canvas.parentElement);
+    }
+
     let isVisible = true;
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -551,6 +559,7 @@ export default function HarmonicCanvas({ position = 'absolute', opacity = 1, the
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener("cs-loom-pause", onPauseToggle);
       observer.disconnect();
+      if (parentResizeObserver) parentResizeObserver.disconnect();
       if (deferTimer) clearTimeout(deferTimer);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };

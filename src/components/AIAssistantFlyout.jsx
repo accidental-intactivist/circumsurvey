@@ -132,6 +132,12 @@ export default function AIAssistantFlyout() {
 
     const userMsg = queryText.trim();
     setInput('');
+
+    // Capture recent history before appending the new user message
+    const historyToSend = messages
+      .filter(m => (m.role === 'user' || m.role === 'assistant') && !m.content?.startsWith('Error:'))
+      .slice(-6);
+
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
     captureEvent('assistant_query_submitted', {
@@ -143,7 +149,11 @@ export default function AIAssistantFlyout() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: userMsg, attachedDocs }),
+        body: JSON.stringify({ 
+          query: userMsg, 
+          history: historyToSend,
+          attachedDocs 
+        }),
         signal: abortControllerRef.current.signal
       });
 

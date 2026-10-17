@@ -67,8 +67,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/collections" style={LinkStyle} className="lux-hover-bright">
-                <BookOpen size={16} /> Curated Collections
+              <Link to="/collections/tim-hammond-archive" style={LinkStyle} className="lux-hover-bright">
+                <BookOpen size={16} /> Tim Hammond Archive (MS 1205)
               </Link>
             </li>
             <li>

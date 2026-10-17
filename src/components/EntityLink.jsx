@@ -52,7 +52,7 @@ const SPECIAL_DESTINATIONS = {
   'huff v. state of colorado': '/to/huff_v_colorado',
   'tristan huff': '/to/huff_v_colorado',
   'adam schwartz': '/to/huff_v_colorado',
-  'eric clopper': '/to/huff_v_colorado',
+  'eric clopper': '/to/eric-clopper',
   'hadachek v. oregon': '/to/hadachek_v_oregon',
   'hadachek v oregon': '/to/hadachek_v_oregon',
   'hadachek': '/to/hadachek_v_oregon',
@@ -327,6 +327,20 @@ const CURATED_FALLBACK_METADATA = {
     type: 'person',
     tagline: 'Psychologist and author of \'Circumcision: The Hidden Trauma\' and \'Questioning Circumcision: A Jewish Perspective\'.',
     url: '/to/goldman_ronald'
+  },
+  'substack': {
+    name: 'Substack',
+    role: 'notable',
+    type: 'platform',
+    tagline: 'Independent publishing network and newsletter platform widely utilized by genital autonomy researchers and investigative writers, including The Accidental Intactivist.',
+    url: 'https://theaccidentalintactivist.substack.com'
+  },
+  'medium': {
+    name: 'Medium',
+    role: 'notable',
+    type: 'platform',
+    tagline: 'Open digital publishing platform where independent researchers, cultural critics, and advocates publish long-form essays and investigative commentary.',
+    url: 'https://medium.com'
   }
 };
 
@@ -427,12 +441,15 @@ export default function EntityLink({ entityName, children, className = '', style
   const displayName = matchedEntity?.name || curated?.name || cleanName;
   const rawRole = (matchedEntity?.role || matchedEntity?.stance || curated?.role || 'notable').toLowerCase();
   const role = (rawRole === 'champion' || rawRole === 'critic') ? rawRole : 'notable';
-  const type = (matchedEntity?.type || curated?.type || (cleanName.includes(' v. ') ? 'legal' : 'person')).toLowerCase();
+  const type = (curated?.type || matchedEntity?.type || (cleanName.includes(' v. ') ? 'legal' : 'person')).toLowerCase();
 
+  // If matchedEntity has an automated stub tagline like "Organization; linked to...", prefer curated metadata
+  const isStubTagline = matchedEntity?.tagline && /appears in \d+ archived document/i.test(matchedEntity.tagline);
   const bioTagline = cleanBioText(
-    matchedEntity?.tagline || 
+    (!isStubTagline && matchedEntity?.tagline) || 
     curated?.tagline || 
     (matchedEntity?.description ? matchedEntity.description.slice(0, 160) + '...' : null) ||
+    matchedEntity?.tagline ||
     `Prominent entity referenced in genital autonomy archives, legal briefs, and historical treatises.`
   );
 
@@ -554,7 +571,10 @@ export default function EntityLink({ entityName, children, className = '', style
     return (
       <span className="entity-badge notable">
         <Scale size={12} />
-        {type === 'legal' ? 'Legal Precedent' : 'Notable Figure'}
+        {type === 'legal' ? 'Legal Precedent' : 
+         type === 'platform' || type === 'publisher' ? 'Media Platform' : 
+         type === 'organization' ? 'Notable Organization' : 
+         'Notable Figure'}
       </span>
     );
   };
@@ -615,6 +635,8 @@ export default function EntityLink({ entityName, children, className = '', style
                   />
                 ) : type === 'organization' ? (
                   <Building2 size={20} />
+                ) : type === 'platform' || type === 'publisher' ? (
+                  <BookOpen size={20} />
                 ) : type === 'legal' ? (
                   <Scale size={20} />
                 ) : (

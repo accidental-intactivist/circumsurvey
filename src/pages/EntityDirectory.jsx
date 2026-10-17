@@ -49,7 +49,11 @@ let _cachedDocsPromise = null;
   useEffect(() => {
     // 1. Fetch Entities Fast (Unblocks UI immediately)
     if (!_cachedEntitiesPromise) {
-      _cachedEntitiesPromise = fetch('/api/entities?fields=slim').then(r => r.ok ? r.json() : []);
+      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const fetchEntities = isLocal
+        ? fetch('/api_entities_mock.json').then(r => r.ok ? r.json() : fetch('/api/entities?fields=slim').then(r => r.json()))
+        : fetch('/api/entities?fields=slim').then(r => r.ok ? r.json() : fetch('/api_entities_mock.json').then(r => r.json()));
+      _cachedEntitiesPromise = fetchEntities.catch(() => []);
     }
     
     _cachedEntitiesPromise.then(ents => {
@@ -120,15 +124,18 @@ let _cachedDocsPromise = null;
     return counts;
   }, [entities, documents]);
 
-  const generateSlug = (name) => {
-    if (!name) return '';
-    const cleanName = name.replace(/,\s*[a-zA-Z\.]+$/, '');
-    const parts = cleanName.trim().split(/\s+/);
-    if (parts.length >= 2 && parts.length <= 4) {
-      const last = parts.pop();
-      return `${last}_${parts.join('_')}`;
-    }
-    return cleanName.replace(/\s+/g, '_');
+  const getEntitySlug = (e) => {
+    if (!e) return '';
+    if (e.slug) return e.slug;
+    const name = e.name || e.id || '';
+    return name
+      .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/'s\b/gi, 's')
+      .replace(/,\s*(m\.?d\.?|ph\.?d\.?|r\.?n\.?|d\.?o\.?|esq\.?|jr\.?|sr\.?)/gi, '')
+      .replace(/\([^)]*\)/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   };
 
   // Filter entities
@@ -247,8 +254,8 @@ let _cachedDocsPromise = null;
     <div className="lux-glide-in" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
 
       {/* ── Cinematic Header ── */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: '600px', height: '300px', background: 'radial-gradient(ellipse, rgba(232, 184, 64, 0.08) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ textAlign: 'center', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-60px', left: '50%', transform: 'translateX(-50%)', width: 'min(600px, 100vw)', maxWidth: '100vw', height: '300px', background: 'radial-gradient(ellipse, rgba(232, 184, 64, 0.08) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ fontSize: '0.75rem', color: 'var(--c-goldBright)', textTransform: 'uppercase', letterSpacing: '0.3em', fontWeight: 700, marginBottom: '1.5rem' }}>
             The Intactivism Archive
@@ -477,7 +484,7 @@ let _cachedDocsPromise = null;
               return (
                 <Link
                   key={e.id}
-                  to={`/to/${generateSlug(e.name)}`}
+                  to={`/to/${getEntitySlug(e)}`}
                   className="spotlight-card"
                   style={{
                     backgroundImage: e.image_url ? `url(${e.image_url})` : undefined,
@@ -557,7 +564,7 @@ let _cachedDocsPromise = null;
                     return (
                       <Link
                         key={e.id}
-                        to={`/to/${generateSlug(e.name)}`}
+                        to={`/to/${getEntitySlug(e)}`}
                         className="entity-stagger-in"
                         style={{
                           animationDelay: `${Math.min(i, 20) * 0.03}s`,
@@ -645,7 +652,7 @@ let _cachedDocsPromise = null;
                     return (
                       <Link
                         key={e.id}
-                        to={`/to/${generateSlug(e.name)}`}
+                        to={`/to/${getEntitySlug(e)}`}
                         className={`lux-hover-lift entity-stagger-in ${rc.cardClass}`}
                         style={{
                           animationDelay: `${Math.min(i, 20) * 0.04}s`,

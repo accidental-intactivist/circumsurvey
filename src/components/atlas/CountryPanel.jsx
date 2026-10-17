@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { Sparkles, FilePlus2, X, AlertTriangle, Calculator, ExternalLink } from 'lucide-react';
+import { Sparkles, FilePlus2, X, AlertTriangle, Calculator, ExternalLink, Share2, Check } from 'lucide-react';
 import { METRICS, STAT_TIERS, colorForValue, recencyBucket, RECENCY } from '../../../lib/atlas/metrics.js';
 import { formatValue, seriesFor, latestRegionalSet, observationToMarkdown } from '../../../lib/atlas/series.js';
 import { SEED_TODO, US_CENSUS_REGIONS } from '../../../lib/atlas/seed.js';
+import AtlasShareModal from './AtlasShareModal';
 
 function TierBadge({ tier = 'documented' }) {
   const t = STAT_TIERS[tier];
@@ -33,6 +35,9 @@ function RegionBars({ rows, todo = [] }) {
 }
 
 export default function CountryPanel({ geo, name, metric, observations, regionObs, regionsLoading, sources, nowYear, onClose, onAsk, onAddToReport, onMetric }) {
+  const [addedToReport, setAddedToReport] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+
   const m = METRICS[metric];
   const series = seriesFor(observations, geo, metric);
   const latest = series.at(-1);
@@ -42,6 +47,17 @@ export default function CountryPanel({ geo, name, metric, observations, regionOb
   const usedSourceIds = [...new Set([...series, ...regionRows].map(o => o.source_id))];
   const recency = latest ? recencyBucket(latest.period, nowYear) : 'none';
 
+  const handleAddToReportClick = () => {
+    if (!latest) return;
+    const src = sources.get(latest.source_id);
+    onAddToReport(observationToMarkdown(latest, src), src);
+    setAddedToReport(true);
+    setTimeout(() => setAddedToReport(false), 3500);
+  };
+
+  const statSummary = latest ? `${formatValue(latest.value)} (${latest.period})` : null;
+  const primaryCitation = latest && sources.get(latest.source_id)?.citation;
+
   return (
     <aside className="at-panel" aria-label={`${name} profile`}>
       <header className="at-panel-head">
@@ -49,7 +65,14 @@ export default function CountryPanel({ geo, name, metric, observations, regionOb
           <div className="gd-series">{m.label}</div>
           <h2 className="at-panel-title">{name}</h2>
         </div>
-        <button type="button" className="at-icon-btn" onClick={onClose} aria-label="Close profile" id="atlas-panel-close"><X size={18} /></button>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+          <button type="button" className="at-icon-btn" onClick={() => setShowShare(true)} aria-label="Share profile" title="Share profile" id="atlas-panel-share-icon">
+            <Share2 size={17} />
+          </button>
+          <button type="button" className="at-icon-btn" onClick={onClose} aria-label="Close profile" id="atlas-panel-close">
+            <X size={18} />
+          </button>
+        </div>
       </header>
 
       {latest ? (
@@ -128,13 +151,49 @@ export default function CountryPanel({ geo, name, metric, observations, regionOb
       )}
 
       <div className="at-actions">
-        <button type="button" className="gd-btn gd-btn--primary" onClick={() => onAsk(name, latest)} id="atlas-ask-assistant"><Sparkles size={15} /> Ask Assistant</button>
+        <button type="button" className="gd-btn gd-btn--primary" onClick={() => onAsk(name, latest)} id="atlas-ask-assistant">
+          <Sparkles size={15} /> Ask Assistant
+        </button>
         {latest && (
-          <button type="button" className="gd-btn" onClick={() => onAddToReport(observationToMarkdown(latest, sources.get(latest.source_id)), sources.get(latest.source_id))} id="atlas-add-report">
-            <FilePlus2 size={15} /> Add to Report
+          <button
+            type="button"
+            className={`gd-btn ${addedToReport ? 'gd-btn--success' : ''}`}
+            onClick={handleAddToReportClick}
+            id="atlas-add-report"
+          >
+            {addedToReport ? (
+              <><Check size={15} style={{ color: '#10b981' }} /> Added to Report</>
+            ) : (
+              <><FilePlus2 size={15} /> Add to Report</>
+            )}
           </button>
         )}
+        <button
+          type="button"
+          className="gd-btn"
+          onClick={() => setShowShare(true)}
+          id="atlas-share-btn"
+        >
+          <Share2 size={15} /> Share
+        </button>
       </div>
+
+      {addedToReport && (
+        <div className="at-report-alert">
+          <span><Check size={14} style={{ color: '#10b981' }} /> Added {name} profile to Evidence Report</span>
+          <Link to="/assistant" className="at-report-link" id="atlas-open-report-link">Open Report &rarr;</Link>
+        </div>
+      )}
+
+      <AtlasShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        title={`${name} · ${m.label}`}
+        statSummary={statSummary}
+        citation={primaryCitation}
+        geoName={name}
+        metricLabel={m.label}
+      />
     </aside>
   );
 }

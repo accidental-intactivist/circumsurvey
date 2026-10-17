@@ -1,0 +1,753 @@
+/* ==========================================================================
+   iPod Cover Flow Timeline & Folio Thumbnail Carousel
+   ========================================================================== */
+
+.ipod-coverflow-container {
+  position: relative;
+  margin: 2rem 0 3.5rem;
+  background: radial-gradient(ellipse at 50% 15%, rgba(250, 204, 21, 0.08) 0%, rgba(10, 15, 26, 0.98) 60%, #050811 100%);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  user-select: none;
+}
+
+/* Header & Controls Bar */
+.ipod-coverflow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--c-ghost);
+  font-family: var(--f-mono, monospace);
+  font-size: 0.82rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ipod-coverflow-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--c-goldBright);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ipod-coverflow-brand svg {
+  color: var(--c-gold);
+}
+
+.ipod-coverflow-mode-switch {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 2px;
+}
+
+.ipod-coverflow-mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--c-dim);
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  font-family: var(--f-body, sans-serif);
+}
+
+.ipod-coverflow-mode-btn.active {
+  background: var(--c-bgDeep);
+  color: var(--c-goldBright);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* 3D Stage Viewport */
+.ipod-coverflow-stage {
+  position: relative;
+  height: 380px;
+  perspective: 1000px;
+  perspective-origin: 50% 48%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding-bottom: 25px; /* room for reflection */
+}
+
+.ipod-coverflow-stage:active {
+  cursor: grabbing;
+}
+
+/* Reflective Floor Ambient Surface */
+.ipod-coverflow-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.8) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+/* Flanking Chevron Buttons */
+.ipod-nav-btn {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  z-index: 120;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(12, 16, 26, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  color: var(--c-goldBright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.ipod-nav-btn:hover {
+  background: var(--c-gold);
+  color: #000;
+  border-color: var(--c-goldBright);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 24px rgba(250, 204, 21, 0.35);
+}
+
+.ipod-nav-btn.prev {
+  left: 1.5rem;
+}
+
+.ipod-nav-btn.next {
+  right: 1.5rem;
+}
+
+/* 3D Track & Card Items */
+.ipod-coverflow-track {
+  position: relative;
+  width: 220px;
+  height: 290px;
+  transform-style: preserve-3d;
+}
+
+.ipod-coverflow-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 290px;
+  border-radius: 8px;
+  transform-style: preserve-3d;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), 
+              opacity 0.3s ease, 
+              filter 0.35s ease;
+  cursor: pointer;
+  will-change: transform, opacity;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  -webkit-box-reflect: below 4px linear-gradient(to bottom, transparent 65%, rgba(0, 0, 0, 0.35) 85%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.ipod-coverflow-card.active {
+  cursor: default;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.8), 
+              0 0 28px rgba(250, 204, 21, 0.3),
+              0 0 0 2px rgba(250, 204, 21, 0.8);
+}
+
+/* Fallback Mirror Reflection for non-WebKit engines */
+.ipod-cover-reflection {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin-top: 4px;
+  transform: scaleY(-1);
+  opacity: 0.32;
+  filter: blur(1px);
+  mask-image: linear-gradient(to top, transparent 65%, black 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 65%, black 100%);
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   Archival Folio Cover Styling (High-Fidelity Document Sleeves)
+   ========================================================================== */
+
+.folio-cover {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.1rem 1rem;
+  box-sizing: border-box;
+  border-left: 5px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Spine Shadow effect */
+.folio-cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 16px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Paper Sheen Reflection */
+.folio-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(0, 0, 0, 0.25) 100%);
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Genre 1: CIA MKULTRA / Government FOIA Dossier */
+.folio-theme-foia {
+  background: linear-gradient(145deg, #24221b 0%, #151410 100%);
+  border: 1px solid rgba(212, 160, 48, 0.3);
+  color: #f1ebd8;
+}
+
+.folio-theme-foia .folio-badge {
+  background: #dc2626;
+  color: #fff;
+  font-family: var(--f-mono, monospace);
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  padding: 0.2rem 0.45rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  align-self: flex-start;
+}
+
+.folio-theme-foia .folio-rubber-stamp {
+  position: absolute;
+  top: 36%;
+  right: 12px;
+  border: 2px solid rgba(220, 38, 38, 0.7);
+  color: rgba(220, 38, 38, 0.85);
+  font-family: var(--f-mono, monospace);
+  font-weight: 900;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.5rem;
+  text-transform: uppercase;
+  transform: rotate(-14deg);
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow: inset 0 0 4px rgba(220, 38, 38, 0.2);
+}
+
+.folio-theme-foia .folio-title {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  color: #fdf6e2;
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Genre 2: Medical Policy & Academic Journals (AAP / Journals) */
+.folio-theme-medical {
+  background: linear-gradient(145deg, #0e1e36 0%, #070d19 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #e0f2fe;
+}
+
+.folio-theme-medical .folio-badge {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  font-family: var(--f-mono, monospace);
+  font-weight: 700;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.folio-theme-medical .folio-title {
+  font-family: var(--f-display, 'Playfair Display', serif);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: #ffffff;
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Genre 3: Human Rights / Activism / NOHARMM / Whose Body */
+.folio-theme-activism {
+  background: linear-gradient(145deg, #2b1116 0%, #15080b 100%);
+  border: 1px solid rgba(251, 113, 133, 0.35);
+  color: #ffe4e6;
+}
+
+.folio-theme-activism .folio-badge {
+  background: rgba(251, 113, 133, 0.2);
+  color: #fb7185;
+  border: 1px solid rgba(251, 113, 133, 0.4);
+  font-family: var(--f-mono, monospace);
+  font-weight: 700;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.folio-theme-activism .folio-title {
+  font-family: var(--f-display, 'Playfair Display', serif);
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  color: #fff1f2;
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Genre 4: Media / Video / Audio */
+.folio-theme-media {
+  background: linear-gradient(145deg, #171b26 0%, #0d0f17 100%);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fef08a;
+}
+
+.folio-theme-media .folio-badge {
+  background: rgba(234, 179, 8, 0.2);
+  color: #facc15;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  font-family: var(--f-mono, monospace);
+  font-weight: 700;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.folio-theme-media .folio-title {
+  font-family: var(--f-body, sans-serif);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: #ffffff;
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Genre 5: General Archival Folio */
+.folio-theme-archival {
+  background: linear-gradient(145deg, #1e2430 0%, #10141d 100%);
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  color: #e2e8f0;
+}
+
+.folio-theme-archival .folio-badge {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  font-family: var(--f-mono, monospace);
+  font-weight: 700;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.folio-theme-archival .folio-title {
+  font-family: var(--f-body, sans-serif);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: #ffffff;
+  margin: 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Folio Header & Footer */
+.folio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.folio-year-stamp {
+  font-family: var(--f-mono, monospace);
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--c-goldBright);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+.folio-body {
+  position: relative;
+  z-index: 2;
+  margin: auto 0;
+}
+
+.folio-watermark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+  opacity: 0.45;
+}
+
+.folio-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--c-dim);
+  font-family: var(--f-mono, monospace);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.5rem;
+  width: 100%;
+}
+
+/* PDF / Real Image thumbnail wrapper */
+.folio-pdf-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   iPod Scrubber Track & Timeline Bar
+   ========================================================================== */
+
+.ipod-scrubber-bar {
+  padding: 1.25rem 2rem 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid var(--c-ghost);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* Range Scrubber Track */
+.ipod-range-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ipod-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #1e293b, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  outline: none;
+  cursor: pointer;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.ipod-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #fef08a 0%, #facc15 50%, #ca8a04 100%);
+  border: 1px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(250, 204, 21, 0.6);
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+
+.ipod-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.ipod-range-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.25);
+}
+
+.ipod-range-slider::-moz-range-thumb {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #fef08a 0%, #facc15 50%, #ca8a04 100%);
+  border: 1px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(250, 204, 21, 0.6);
+  cursor: grab;
+}
+
+/* Year Milestone Markers along Scrubber */
+.ipod-years-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 0 0.5rem;
+  overflow-x: auto;
+  gap: 0.5rem;
+  scrollbar-width: none;
+}
+
+.ipod-years-track::-webkit-scrollbar {
+  display: none;
+}
+
+.ipod-year-chip {
+  background: transparent;
+  border: none;
+  color: var(--c-dim);
+  font-family: var(--f-mono, monospace);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ipod-year-chip:hover {
+  color: var(--c-goldBright);
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.ipod-year-chip.active {
+  color: #000;
+  background: var(--c-goldBright);
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+}
+
+/* Transport Controls Row */
+.ipod-transport-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.ipod-ctrl-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--c-textBright);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ipod-ctrl-btn:hover {
+  background: rgba(250, 204, 21, 0.18);
+  border-color: var(--c-goldBright);
+  color: var(--c-goldBright);
+  transform: scale(1.08);
+}
+
+.ipod-ctrl-btn.play-btn {
+  width: 44px;
+  height: 44px;
+  background: var(--c-gold);
+  color: #000;
+  border: none;
+  box-shadow: 0 4px 12px rgba(250, 204, 21, 0.35);
+}
+
+.ipod-ctrl-btn.play-btn:hover {
+  background: var(--c-goldBright);
+  transform: scale(1.12);
+  box-shadow: 0 6px 18px rgba(250, 204, 21, 0.5);
+}
+
+/* ==========================================================================
+   Active Item Showcase Card
+   ========================================================================== */
+
+.ipod-showcase-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: rgba(10, 15, 26, 0.7);
+  border-top: 1px solid var(--c-ghost);
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ipod-showcase-info {
+  flex: 1;
+  min-width: 260px;
+}
+
+.ipod-showcase-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ipod-showcase-counter {
+  font-family: var(--f-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--c-gold);
+  background: rgba(250, 204, 21, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  font-weight: 700;
+}
+
+.ipod-showcase-location {
+  font-family: var(--f-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--c-dim);
+}
+
+.ipod-showcase-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--c-textBright);
+  line-height: 1.35;
+  margin: 0;
+  font-family: var(--f-display, 'Playfair Display', serif);
+}
+
+.ipod-showcase-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ipod-open-doc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #000;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(250, 204, 21, 0.3);
+  transition: all 0.2s ease;
+  font-family: var(--f-body, sans-serif);
+}
+
+.ipod-open-doc-btn:hover {
+  background: #ffffff;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================================
+   Alternative Grid View Mode
+   ========================================================================== */
+
+.ipod-grid-view {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.75rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.ipod-grid-item {
+  height: 270px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.ipod-grid-item:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(250, 204, 21, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ipod-coverflow-stage {
+    height: 320px;
+  }
+  .ipod-coverflow-track,
+  .ipod-coverflow-card {
+    width: 180px;
+    height: 240px;
+  }
+  .ipod-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .ipod-showcase-panel {
+    padding: 1rem 1.25rem;
+  }
+  .ipod-showcase-title {
+    font-size: 1.05rem;
+  }
+}

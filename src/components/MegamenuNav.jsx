@@ -147,7 +147,7 @@ export default function MegamenuNav({ isCompact = false, activeLand = null }) {
     fetch('/api/cms?types=external_news,essay,recap,internal_news&limit=3')
       .then(res => res.json())
       .then(data => setLatestNews(data.data || data))
-      .catch(console.error);
+      .catch(() => {});
   }, []);
 
   const handleMouseEnter = (menu) => {
@@ -176,15 +176,15 @@ export default function MegamenuNav({ isCompact = false, activeLand = null }) {
       columns: [
         {
           id: 'collections',
-          title: 'Core Collections',
-          badge: 'Archive Index',
+          title: 'Tim Hammond Archive',
+          badge: 'MS 1205',
           color: '#ef4444',
           gradient: ['#ef4444', '#f87171'],
           flex: 1,
           render: (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <Link to="/collections" onClick={handleMouseLeave} className="lux-hover-bright" style={{ color: 'var(--c-goldBright)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-                Special Collections Index <ArrowRight size={13} />
+              <Link to="/collections/tim-hammond-archive" onClick={handleMouseLeave} className="lux-hover-bright" style={{ color: 'var(--c-goldBright)', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                Tim Hammond Archive <ArrowRight size={13} />
               </Link>
               <Link to="/library?topic=legislation" onClick={handleMouseLeave} className="lux-hover-bright" style={{ color: C.dim, textDecoration: 'none' }}>Legislation Tracker</Link>
               <Link to="/library?topic=medical" onClick={handleMouseLeave} className="lux-hover-bright" style={{ color: C.dim, textDecoration: 'none' }}>Medical Journals</Link>
@@ -344,29 +344,32 @@ export default function MegamenuNav({ isCompact = false, activeLand = null }) {
     },
     data: {
       label: 'DATA',
-      sublabel: 'LIVE SURVEY',
-      link: '/explore',
+      sublabel: 'ANALYTICS & ATLAS',
+      link: '/data',
       color: '#38bdf8', // Electric Cyan / Blue
       columns: [
         {
           id: 'live-survey',
-          title: 'Survey Architecture',
-          badge: '501+ Live',
+          title: 'Movement Data Hub',
+          badge: 'Engines & Telemetry',
           color: '#38bdf8',
           gradient: ['#38bdf8', '#0ea5e9'],
           flex: 1,
           render: (
             <div>
               <p style={{ color: C.dim, fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                The quantitative ammunition of the movement. Documenting the pleasure gap and tracking psychological fallout in real-time across 6 cohorts.
+                The quantitative ammunition of the movement: Global Genital Integrity Atlas, 50-year U.S. hospital series, live survey telemetry, and network intelligence.
               </p>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <Link to="/explore" onClick={handleMouseLeave} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'linear-gradient(135deg, #38bdf8, #0284c7)', color: '#04131f', padding: '0.55rem 1.1rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.82rem' }} className="lux-hover-lift">
-                  Interactive Survey Map <ArrowRight size={14} />
+              <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+                <Link to="/data" onClick={handleMouseLeave} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'linear-gradient(135deg, #38bdf8, #0284c7)', color: '#04131f', padding: '0.55rem 1rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.82rem' }} className="lux-hover-lift">
+                  All Data Engines <ArrowRight size={14} />
                 </Link>
-                <a href="https://forms.gle/FQ8o9g7j1yU3Cw7n7" target="_blank" rel="noreferrer" style={{ display: 'inline-block', background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', color: C.textBright, padding: '0.55rem 1.1rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.82rem' }} className="lux-hover-lift">
-                  Contribute Data
-                </a>
+                <Link to="/atlas" onClick={handleMouseLeave} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', color: C.textBright, padding: '0.55rem 0.85rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.82rem' }} className="lux-hover-lift">
+                  Global Atlas
+                </Link>
+                <Link to="/rates" onClick={handleMouseLeave} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', color: C.textBright, padding: '0.55rem 0.85rem', borderRadius: '6px', textDecoration: 'none', fontWeight: 'bold', fontFamily: FONT.condensed, textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: '0.82rem' }} className="lux-hover-lift">
+                  U.S. Rates
+                </Link>
               </div>
             </div>
           )

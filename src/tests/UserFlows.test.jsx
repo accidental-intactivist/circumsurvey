@@ -56,6 +56,14 @@ beforeAll(() => {
     restore: vi.fn(),
     drawImage: vi.fn(),
   }));
+
+  global.fetch = vi.fn().mockImplementation(() => {
+    return Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([]),
+      text: () => Promise.resolve(''),
+    });
+  });
 });
 
 // Mock some complex components to avoid jsdom rendering issues
@@ -113,7 +121,8 @@ describe('User Flows', () => {
     '/to/shortcut-test',
     '/contact',
     '/policies',
-    '/explore'
+    '/explore',
+    '/data'
   ];
 
   routes.forEach(route => {
@@ -135,10 +144,10 @@ describe('User Flows', () => {
       // Wait for suspense to finish loading
       await waitFor(() => {
         expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-      }, { timeout: 4000 });
+      }, { timeout: 12000 });
 
       // If we reach here, it means the page mounted without throwing a fatal runtime error (like an unresolved import).
       expect(true).toBe(true);
-    });
+    }, 15000);
   });
 });

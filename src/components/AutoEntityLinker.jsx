@@ -34,7 +34,11 @@ const EXCLUDED_GENERIC_WORDS = new Set([
   'and', 'the', 'for', 'with', 'from', 'this', 'that', 'were', 'been', 'about', 'there',
   'where', 'which', 'their', 'other', 'some', 'what', 'when', 'than', 'them', 'these',
   'the conversation', 'john', 'jeff', 'david', 'mark', 'michael', 'paul', 'brian', 'andrew',
-  'douglas', 'charles', 'robert', 'william', 'james', 'peter', 'thomas', 'richard'
+  'douglas', 'charles', 'robert', 'william', 'james', 'peter', 'thomas', 'richard',
+  // Publishing, media & generic digital distribution platforms
+  'medium', 'substack', 'youtube', 'vimeo', 'twitter', 'x', 'facebook', 'instagram', 
+  'reddit', 'wordpress', 'blogger', 'amazon', 'wikipedia', 'patreon', 'spotify', 
+  'apple podcasts', 'tiktok', 'linkedin', 'github', 'google', 'zoom', 'discord', 'telegram'
 ]);
 
 let globalEntitiesCache = null;

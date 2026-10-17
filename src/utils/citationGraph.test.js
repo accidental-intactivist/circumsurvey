@@ -180,7 +180,7 @@ describe('topCited / citationSpan / selectView', () => {
   });
 
   it('filters weakly-cited external works out of the view', () => {
-    const view = selectView(graph, { minCitations: 2 });
+    const view = selectView(graph, { viewMode: 'all', minCitations: 2 });
     const ids = view.nodes.map(n => n.id);
     expect(ids).toContain('ext:hunter|1935');
     expect(ids).not.toContain('ext:bratu|2005');
@@ -188,12 +188,12 @@ describe('topCited / citationSpan / selectView', () => {
   });
 
   it('shows everything at minCitations 1 and nothing external in archive-only mode', () => {
-    expect(selectView(graph, { minCitations: 1 }).nodes.map(n => n.id)).toContain('ext:bratu|2005');
-    expect(selectView(graph, { archiveOnly: true }).nodes).toEqual([]);
+    expect(selectView(graph, { viewMode: 'all', minCitations: 1 }).nodes.map(n => n.id)).toContain('ext:bratu|2005');
+    expect(selectView(graph, { viewMode: 'all', archiveOnly: true }).nodes).toEqual([]);
   });
 
   it('returns fresh link objects so the force layout cannot mutate the graph', () => {
-    const view = selectView(graph, { minCitations: 1 });
+    const view = selectView(graph, { viewMode: 'all', minCitations: 1 });
     view.links[0].source = { id: 'mutated' };
     expect(typeof graph.links[0].source).toBe('string');
   });

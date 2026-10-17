@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useLocation } from 'react-router-dom';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -33,58 +33,19 @@ class PDFErrorBoundary extends React.Component {
 }
 
 // Configure the worker for react-pdf with polyfills for engines missing modern TC39 features
-const rawWorkerUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
-try {
-  const workerBlob = new Blob([
-    `if (typeof Uint8Array !== 'undefined') {
-      if (!Uint8Array.prototype.toHex) {
-        Uint8Array.prototype.toHex = function() {
-          return Array.from(this).map(b => b.toString(16).padStart(2, '0')).join('');
-        };
-      }
-      if (!Uint8Array.fromHex) {
-        Uint8Array.fromHex = function(hex) {
-          const bytes = new Uint8Array(hex.length / 2);
-          for (let i = 0; i < hex.length; i += 2) {
-            bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-          }
-          return bytes;
-        };
-      }
-    }
-    if (typeof Map !== 'undefined') {
-      if (!Map.prototype.getOrInsertComputed) {
-        Map.prototype.getOrInsertComputed = function(key, callback) {
-          if (this.has(key)) return this.get(key);
-          const val = callback(key);
-          this.set(key, val);
-          return val;
-        };
-      }
-      if (!Map.prototype.getOrInsert) {
-        Map.prototype.getOrInsert = function(key, defaultValue) {
-          if (this.has(key)) return this.get(key);
-          this.set(key, defaultValue);
-          return defaultValue;
-        };
-      }
-    }
-    if (typeof Promise !== 'undefined' && !Promise.withResolvers) {
-      Promise.withResolvers = function() {
-        let resolve, reject;
-        const promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        return { promise, resolve, reject };
-      };
-    }
-    import ${JSON.stringify(rawWorkerUrl)};`
-  ], { type: 'text/javascript' });
-  pdfjs.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
-} catch (e) {
-  pdfjs.GlobalWorkerOptions.workerSrc = rawWorkerUrl;
+if (typeof Response !== 'undefined' && !Response.prototype.bytes) {
+  Response.prototype.bytes = async function() {
+    return new Uint8Array(await this.arrayBuffer());
+  };
 }
+
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
+const PDF_OPTIONS = {
+  cMapUrl: '/cmaps/',
+  standardFontDataUrl: '/standard_fonts/',
+  wasmUrl: '/wasm/'
+};
 
 export default function CustomPDFViewer({ url, onPageCount }) {
   const [numPages, setNumPages] = useState(null);
@@ -133,6 +94,16 @@ export default function CustomPDFViewer({ url, onPageCount }) {
     }
   };
 
+  const isLargeDocument = Boolean(numPages && numPages > 20);
+
+  const pagesToRender = useMemo(() => {
+    if (!numPages) return [];
+    if (!isLargeDocument) {
+      return Array.from(new Array(numPages), (_, i) => i + 1);
+    }
+    return [pageNumber];
+  }, [numPages, isLargeDocument, pageNumber]);
+
   return (
     <div ref={containerRef} style={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--c-bgDeep)', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--c-ghost)' }}>
       {highlightText && (
@@ -151,21 +122,75 @@ export default function CustomPDFViewer({ url, onPageCount }) {
         transform: 'translateX(-50%)',
         padding: '0.5rem 1rem', 
         display: 'flex', 
-        gap: '1.5rem',
+        gap: '1.25rem',
         alignItems: 'center', 
-        background: 'rgba(20, 20, 24, 0.6)',
+        background: 'rgba(20, 20, 24, 0.75)',
         backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
         borderRadius: '100px',
         color: 'var(--c-textBright)',
         boxShadow: '0 10px 40px rgba(0,0,0,0.8)',
         zIndex: 50
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--c-muted)', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-            {numPages ? `${numPages} Pgs` : 'Loading'}
-          </span>
-        </div>
+        {isLargeDocument ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <button 
+              onClick={() => setPageNumber(p => Math.max(1, p - 1))} 
+              disabled={pageNumber <= 1}
+              className="lux-hover-lift" 
+              style={{ 
+                background: 'var(--c-bgSoft)', 
+                color: pageNumber <= 1 ? 'var(--c-ghost)' : 'var(--c-textBright)', 
+                border: '1px solid var(--c-ghost)', 
+                width: '26px', 
+                height: '26px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                cursor: pageNumber <= 1 ? 'not-allowed' : 'pointer', 
+                fontWeight: 'bold', 
+                fontSize: '0.85rem' 
+              }}
+              title="Previous Page"
+            >
+              &larr;
+            </button>
+
+            <span style={{ fontSize: '0.8rem', color: 'var(--c-textBright)', fontFamily: 'var(--f-condensed)', fontWeight: 'bold', padding: '0 0.25rem' }}>
+              Pg {pageNumber} / {numPages}
+            </span>
+
+            <button 
+              onClick={() => setPageNumber(p => Math.min(numPages, p + 1))} 
+              disabled={pageNumber >= numPages}
+              className="lux-hover-lift" 
+              style={{ 
+                background: 'var(--c-bgSoft)', 
+                color: pageNumber >= numPages ? 'var(--c-ghost)' : 'var(--c-textBright)', 
+                border: '1px solid var(--c-ghost)', 
+                width: '26px', 
+                height: '26px', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                cursor: pageNumber >= numPages ? 'not-allowed' : 'pointer', 
+                fontWeight: 'bold', 
+                fontSize: '0.85rem' 
+              }}
+              title="Next Page"
+            >
+              &rarr;
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--c-muted)', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {numPages ? `${numPages} Pgs` : 'Loading'}
+            </span>
+          </div>
+        )}
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button onClick={() => setScale(s => Math.max(0.5, s - 0.2))} className="lux-hover-lift" style={{ background: 'var(--c-bgSoft)', color: 'var(--c-textBright)', border: '1px solid var(--c-ghost)', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem' }}>-</button>
@@ -211,13 +236,14 @@ export default function CustomPDFViewer({ url, onPageCount }) {
           <React.Suspense fallback={<div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: 'var(--c-muted)', fontFamily: 'var(--f-mono)' }}><ThinkingSpirograph size={40} text={null} /><div>Loading PDF Engine...</div></div>}>
             <Document
               file={url}
+              options={PDF_OPTIONS}
               onLoadSuccess={onDocumentLoadSuccess}
               loading={<div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: 'var(--c-gold)', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em' }}><ThinkingSpirograph size={60} text={null} /><div>Loading PDF...</div></div>}
               error={<div style={{ color: 'var(--c-red)', padding: '3rem', fontFamily: 'var(--f-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Failed to load PDF.</div>}
             >
-              {numPages && Array.from(new Array(numPages), (el, index) => (
+              {pagesToRender.map((pg) => (
                 <div 
-                  key={`page_${index + 1}`} 
+                  key={`page_${pg}`} 
                   style={{ 
                     marginBottom: '2.5rem', 
                     boxShadow: '0 25px 50px rgba(0,0,0,0.5)', 
@@ -228,7 +254,7 @@ export default function CustomPDFViewer({ url, onPageCount }) {
                   }}
                 >
                   <Page 
-                    pageNumber={index + 1} 
+                    pageNumber={pg} 
                     scale={scale} 
                     rotate={rotation}
                     renderTextLayer={true}

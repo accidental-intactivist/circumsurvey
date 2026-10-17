@@ -1,6 +1,21 @@
 export function resolveCollectionName(doc, defaultFallback = 'The Tim Hammond Genital Autonomy Archive') {
-  let subject = doc.source_collection || 'Uncategorized';
-  
+  if (!doc) return defaultFallback;
+
+  let subject = typeof doc === 'string' ? doc : (doc.source_collection || doc.collection || 'Uncategorized');
+
+  // Any internal folder or WeTransfer upload names belong to the Tim Hammond Archive
+  const sLower = (subject || '').toLowerCase();
+  if (
+    sLower.includes('wetransfer') ||
+    sLower.includes('article-downloads') ||
+    sLower.includes('downloads-folder') ||
+    sLower.includes('bulk ingest') ||
+    sLower === 'uncategorized' ||
+    sLower.startsWith('wetransfer_')
+  ) {
+    return defaultFallback;
+  }
+
   if (subject === 'Bulk Ingest') {
     try {
       const meta = doc.metadata_json ? (typeof doc.metadata_json === 'string' ? JSON.parse(doc.metadata_json) : doc.metadata_json) : {};
@@ -16,10 +31,11 @@ export function resolveCollectionName(doc, defaultFallback = 'The Tim Hammond Ge
       } else {
         return defaultFallback;
       }
-    } catch (e) {
+    } catch (_e) {
       return defaultFallback;
     }
   }
   
   return subject;
 }
+

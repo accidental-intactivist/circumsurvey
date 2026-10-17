@@ -12,12 +12,12 @@ export async function onRequestGet(context) {
   // Define our curated collections metadata
   const collectionsData = {
     'published-articles': {
-      title: "Curated Published Articles",
-      subtitle: "Medical, Legal, and Academic Journals",
-      institution: "Intactivist Guide Archive",
-      curator: "Tim Hammond",
-      description: "A comprehensive collection of published articles spanning several decades, meticulously compiled by Tim Hammond. This collection contains critical medical literature, legal policy analyses, and academic journals regarding genital autonomy.",
-      queryFilter: "type = 'academic_journal'",
+      title: "Curated Published Articles & Legal Filings",
+      subtitle: "Medical Journals, Clinical Cohorts & Constitutional Briefs (1975–2026)",
+      institution: "Peer-Reviewed Medical Literature & Legal Records",
+      curator: "Tim Hammond, Tone Pettit & Research Contributors",
+      description: "The premier digital collection of seminal peer-reviewed medical papers, histological micro-anatomy discoveries (Taylor 1996, Sorrells 2007, Cepeda 2025), neonatal pain science (Anand 1987), large-scale epidemiological cohorts (Fendereski 2024), European pediatric whistleblower rebuttals (Frisch 2013), and landmark federal equal protection litigation (Huff v. Colorado).",
+      queryFilter: "(source_collection LIKE 'Published Canon%' OR type IN ('academic_journal', 'medical_journal', 'legal_filing'))",
       bindArgs: []
     },
     'umass-ms-1205': {

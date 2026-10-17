@@ -115,19 +115,18 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     const smallScreen = Math.min(window.innerWidth || 9999, window.innerHeight || 9999) < 700;
     const lowPower = prefersReduced || coarsePointer || fewCores || smallScreen;
 
-    // Freeze animations on low-end mobile hardware to save CPU
-    const isLowEndHardware = fewCores || lowRam;
-    const forcePause = prefersReduced || (isLowEndHardware && coarsePointer);
+    // Freeze animations ONLY if user explicitly prefers reduced motion
+    const forcePause = prefersReduced;
 
     // Background canvas: fill-rate is the enemy — cap DPR aggressively.
     const dpr = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 1.25);
-    const L = lowPower ? 44 : 64;
-    const P = lowPower ? 80 : 120; // max per-line resolution; most lines use far less
+    const L = lowPower ? 36 : 64;
+    const P = lowPower ? 60 : 120; // max per-line resolution; most lines use far less
     const MIN_FRAME_INTERVAL = 1000 / (lowPower ? 24 : 30);
 
     let W = window.innerWidth, H = window.innerHeight;
     let sizeScale = 1;
-    let T = forcePause ? 7 : 0; // reduced motion or low-end: freeze at a settled pose
+    let T = forcePause ? 7 : 0; // reduced motion: freeze at a settled pose
 
     const { RIB, TAR, TRON, CAN, MO, PEN, PUL, FL, GLN, ENG } = UNDERLOOM_CONFIG;
 
@@ -1048,16 +1047,33 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       gateTop = gate;
     };
 
+    let parentResizeObserver = null;
+
     const resizeCanvas = () => {
-      W = window.innerWidth; H = window.innerHeight;
-      sizeScale = Math.max(0.3, Math.min(1, Math.hypot(W, H) / 1400));
+      if (isInline && canvas.parentElement) {
+        W = canvas.parentElement.clientWidth || canvas.clientWidth || window.innerWidth;
+        H = canvas.parentElement.clientHeight || canvas.clientHeight || window.innerHeight;
+      } else {
+        W = window.innerWidth;
+        H = window.innerHeight;
+      }
+      sizeScale = Math.max(0.25, Math.min(1, Math.hypot(W, H) / 1000));
       canvas.width = Math.round(W * dpr);
       canvas.height = Math.round(H * dpr);
+      canvas.style.width = isInline ? "100%" : `${W}px`;
+      canvas.style.height = isInline ? "100%" : `${H}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       measureRegions();
     };
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
+
+    if (isInline && canvas.parentElement && typeof ResizeObserver === "function") {
+      parentResizeObserver = new ResizeObserver(() => {
+        resizeCanvas();
+      });
+      parentResizeObserver.observe(canvas.parentElement);
+    }
 
     // Content (maps, API data) shifts heights after mount — remeasure calmly.
     if (typeof ResizeObserver === "function") {
@@ -1093,6 +1109,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
     let damp = 1;
     let lastFrameTime = performance.now();
     let isVisible = true;
+    let idleCleared = false;
     let intersectionObserver = null;
     if (typeof IntersectionObserver === "function") {
       intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -1221,6 +1238,7 @@ export default function LoomChoreography({ themeKey = "", opacity = 1, forceForm
       window.removeEventListener("loom-weave-draft", onWeaveDraft);
       if (intersectionObserver) intersectionObserver.disconnect();
       if (resizeObserver) resizeObserver.disconnect();
+      if (parentResizeObserver) parentResizeObserver.disconnect();
       if (remeasureTimer) clearInterval(remeasureTimer);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };

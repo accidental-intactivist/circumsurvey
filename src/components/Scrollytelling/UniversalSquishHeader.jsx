@@ -87,10 +87,12 @@ export default function UniversalSquishHeader({
 
   useGSAP(() => {
     const isMobile = window.innerWidth <= 768;
-    if (isMobile) return;
-
-    const startHeight = spacerRef.current ? spacerRef.current.offsetHeight : Math.round(window.innerHeight * (startVh / 100));
-    const scrollDistance = Math.max(200, startHeight - 70);
+    const endHeight = isMobile ? 58 : 70;
+    const mobileStartH = Math.min(startVh, 55);
+    const startHeight = spacerRef.current 
+      ? spacerRef.current.offsetHeight 
+      : Math.round(window.innerHeight * ((isMobile ? mobileStartH : startVh) / 100));
+    const scrollDistance = Math.max(160, startHeight - endHeight);
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -103,7 +105,7 @@ export default function UniversalSquishHeader({
 
     tl.fromTo(headerRef.current, 
       { height: `${startHeight}px`, minHeight: `${startHeight}px` },
-      { height: "70px", minHeight: "70px", duration: 1, ease: "none" },
+      { height: `${endHeight}px`, minHeight: `${endHeight}px`, duration: 1, ease: "none" },
       0
     );
 
@@ -115,7 +117,11 @@ export default function UniversalSquishHeader({
     }
 
     if (titleRef.current) {
-      tl.to(titleRef.current, { fontSize: "1.2rem", letterSpacing: "0.02em", y: isTomorrow ? -3 : 0, duration: 1, ease: "none" }, 0);
+      if (isMobile) {
+        tl.to(titleRef.current, { opacity: 0, fontSize: "0.95rem", duration: 0.7, ease: "none" }, 0);
+      } else {
+        tl.to(titleRef.current, { fontSize: "1.2rem", letterSpacing: "0.02em", y: isTomorrow ? -3 : 0, duration: 1, ease: "none" }, 0);
+      }
     }
 
     if (subRef.current) {
@@ -123,58 +129,60 @@ export default function UniversalSquishHeader({
     }
 
     if (heroContentRef.current) {
-      tl.to(heroContentRef.current, { opacity: 0, y: -100, height: 0, margin: 0, padding: 0, duration: 1, ease: "none" }, 0);
+      tl.to(heroContentRef.current, { opacity: 0, y: -80, height: 0, margin: 0, padding: 0, duration: 1, ease: "none" }, 0);
     }
 
     tl.fromTo(navContentRef.current, 
       { opacity: 0 },
-      { opacity: 1, duration: 0.2, ease: "power1.inOut" },
-      0.8
+      { opacity: 1, duration: 0.25, ease: "power1.inOut" },
+      0.75
     );
 
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', zIndex: 100 }}>
+    <div ref={containerRef} style={{ position: 'relative', zIndex: 1100 }}>
       <style>
         {`
           :root { --squish-start-h: ${startVh}vh; }
+          .squish-spacer {
+            height: var(--squish-start-h);
+            display: block;
+          }
           @media (max-width: 768px) {
-            .mobile-hide { display: none !important; }
-            .squish-spacer { display: none !important; }
-            .squish-header-el {
-              position: static !important;
-              height: auto !important;
-              background: transparent !important;
-              box-shadow: none !important;
-              border: none !important;
+            :root { --squish-start-h: ${Math.min(startVh, 55)}vh; }
+            .mobile-hide, .hide-on-mobile { display: none !important; }
+            .squish-spacer {
+              height: var(--squish-start-h) !important;
               display: block !important;
             }
-            .squish-nav-container { display: none !important; }
-            .squish-title-group {
-              position: relative !important;
-              padding-top: 5rem !important;
-              padding-bottom: 4rem !important;
-              min-height: var(--squish-start-h) !important;
-              display: flex !important;
-              flex-direction: column !important;
-              justify-content: center !important;
-              height: auto !important;
-            }
-            .squish-canvas-wrapper {
-              position: absolute !important;
+            .squish-header-el {
+              position: fixed !important;
               top: 0 !important;
-              height: 100% !important;
+              left: 0 !important;
+              width: 100% !important;
+              z-index: 1000 !important;
             }
-            .squish-nav-left { max-width: calc(100% - 130px); }
+            .squish-nav-container {
+              display: flex !important;
+              padding: 0 0.75rem !important;
+            }
+            .squish-nav-left {
+              max-width: calc(100% - 60px) !important;
+            }
             .squish-nav-right { 
-              padding: 0 0.5rem !important; 
-              gap: 0.5rem !important; 
-              z-index: 1001 !important;
+              height: 58px !important;
+              padding: 0 0.75rem !important; 
+              gap: 0.4rem !important; 
+              z-index: 110 !important;
             }
-            .squish-nav-right a { padding: 0.3rem 0.5rem !important; }
+            .squish-nav-right a { padding: 0.3rem 0.4rem !important; }
+            .squish-title-group {
+              padding-top: 2.5rem !important;
+              padding-bottom: 1rem !important;
+            }
             #tour-start-target {
-              top: 80px !important;
+              top: 40px !important;
               left: 50% !important;
               transform: translateX(-50%);
             }
@@ -203,11 +211,11 @@ export default function UniversalSquishHeader({
       >
         <div id="tour-start-target" style={{ position: 'absolute', top: '24px', left: '24px', width: '1px', height: '1px', pointerEvents: 'none' }} />
 
-        <div className="squish-canvas-wrapper" style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 0 }}>
-          <div ref={canvasRef} style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '85vh', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 0, opacity: 0.8 }}>
+        <div className="squish-canvas-wrapper" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+          <div ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0, opacity: 0.8 }}>
             <Suspense fallback={null}>
-              {themeKey && underloomFormation ? (
-                <LoomChoreography themeKey={themeKey} opacity={1} forceFormation={underloomFormation} isInline={true} themeColor={themeColor} />
+              {themeKey && (underloomFormation || themeColor) ? (
+                <LoomChoreography themeKey={themeKey} opacity={1} forceFormation={underloomFormation || 'harmonic'} isInline={true} themeColor={themeColor} />
               ) : (
                 themeKey && <HarmonicCanvas themeKey={themeKey} opacity={1} paused={effectivePaused} />
               )}

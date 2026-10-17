@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useMediaList } from '../contexts/MediaListContext';
 import { useReport } from '../contexts/ReportContext';
+import { useAssistant } from '../contexts/AssistantContext';
 import { 
   Newspaper, BookOpen, Scale, Video, Headphones, Image as ImageIcon, 
   FileText, ChevronUp, ChevronDown, CheckSquare, PlusSquare, FilePlus, 
@@ -10,6 +11,38 @@ import {
   ArrowRight, ExternalLink, ShieldCheck, Heart, Stethoscope, Copy, Check,
   Folder, Tag, Calendar
 } from 'lucide-react';
+
+const getDocRelevanceScore = (doc, query, semanticResults = null) => {
+  let score = 0;
+  if (!query || !query.trim()) return 0;
+  
+  if (semanticResults && Array.isArray(semanticResults)) {
+    const match = semanticResults.find(m => m.doc_id === doc.id);
+    if (match && typeof match.score === 'number') {
+      score += match.score * 120;
+    }
+  }
+
+  const meta = safeParseJson(doc.metadata_json);
+  const qLower = query.toLowerCase().trim();
+  const titleLower = (doc.title || meta.title || meta.academic_title || '').toLowerCase();
+  
+  if (titleLower === qLower) score += 200;
+  else if (titleLower.includes(qLower)) score += 100;
+
+  const stopWords = new Set(['and', 'the', 'for', 'with', 'from', 'into', 'that', 'this', 'about', 'survey', 'policy', 'which', 'what', 'who', 'how', 'still', 'has', 'does']);
+  const tokens = qLower.replace(/[^\w\s]/g, ' ').split(/\s+/).filter(t => t.length > 1 && !stopWords.has(t));
+  
+  for (const tok of tokens) {
+    if (titleLower.includes(tok)) score += 30;
+    if (meta.author && String(meta.author).toLowerCase().includes(tok)) score += 20;
+    if (meta.description && meta.description.toLowerCase().includes(tok)) score += 10;
+    if (meta.abstract && meta.abstract.toLowerCase().includes(tok)) score += 10;
+    if (meta.keywords && Array.isArray(meta.keywords) && meta.keywords.some(k => String(k).toLowerCase().includes(tok))) score += 15;
+    if (meta.tags && Array.isArray(meta.tags) && meta.tags.some(t => String(t).toLowerCase().includes(tok))) score += 15;
+  }
+  return score;
+};
 import PDFThumbnail from '../components/PDFThumbnail';
 import EntityLink from '../components/EntityLink';
 import ThinkingSpirograph from '../components/ThinkingSpirograph';
@@ -40,68 +73,185 @@ const CURATED_TREASURES = [
   },
   {
     id: 'treasure-2',
-    title: 'AWAKENINGS: A Preliminary Poll of Circumcised Men',
+    docId: 'umass-ms1205-raw-4f594152',
+    title: 'AWAKENINGS: A Preliminary Poll of Circumcised Men (Full 1994 Report)',
     author: 'Tim Hammond',
-    date: '1999',
+    date: '1994',
     type: 'physical_document',
-    formatLabel: 'Empirical Survey',
-    collection: 'UMass MS 1205: AWAKENINGS Research',
-    excerpt: 'Foundational 1999 survey documenting the psychological trauma, somatic loss, and physical complications reported by adult circumcised men, initiating modern intactivism.',
-    targetSlug: 'awakenings-preliminary-poll-of-circumcised-men',
-    category: 'Men\'s Health Research',
+    formatLabel: 'Empirical Survey (Full 177p Report)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'The complete landmark 177-page empirical survey report documenting the psychological trauma, somatic loss, and physical complications reported by adult circumcised men. Digitized from the only extant print copy in existence, gifted directly by Tim Hammond.',
+    targetSlug: 'awakenings-a-preliminary-poll-of-circumcised-men-full-1994-report--tim-hammond-archive-4f594152',
+    category: "Men's Health Research",
     searchQuery: 'AWAKENINGS preliminary poll'
   },
   {
-    id: 'treasure-3',
-    title: 'Circumcision in America: Attitudes, Beliefs and Charges',
-    author: 'Marilyn Fayre Milos, RN',
-    date: '1998',
+    id: 'treasure-hammond-bju',
+    docId: 'hammond-bjui-1999-preliminary-poll',
+    title: 'A Preliminary Poll of Men Circumcised in Infancy or Childhood',
+    author: 'Tim Hammond',
+    date: '1999',
     type: 'medical_journal',
-    formatLabel: 'Physician Survey',
-    collection: 'UMass MS 1205: NOCIRC Archives',
-    excerpt: 'Comprehensive study of U.S. physician practices, financial incentives, and knowledge deficits regarding neonatal foreskin anatomy and infant surgical trauma.',
-    targetSlug: 'circumcision-in-america-in-1998',
-    category: 'Institutional Economics',
-    searchQuery: 'Circumcision in America 1998'
+    formatLabel: 'BJU International (Peer-Reviewed)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'The seminal peer-reviewed journal presentation of the Awakenings survey data published in the British Journal of Urology International, analyzing long-term physical, sexual, and psychological outcomes.',
+    targetSlug: 'a-preliminary-poll-of-men-circumcised-in-infancy-or-childhood--hammond-bjui-1999-preliminary-poll',
+    category: 'Medical Literature',
+    searchQuery: 'Hammond Preliminary Poll BJU International'
   },
   {
-    id: 'treasure-4',
-    title: 'Non-Therapeutic Circumcision of Male Minors Policy',
-    author: 'Royal Dutch Medical Association (KNMG)',
-    date: '2010',
-    type: 'policy_guideline',
-    formatLabel: 'Policy Guideline',
-    collection: 'UMass MS 1205: International Law',
-    excerpt: 'Landmark policy of the Royal Dutch Medical Association determining non-therapeutic infant circumcision to be medically unjustifiable and a violation of the child\'s right to bodily integrity.',
-    targetSlug: 'knmg-non-therapeutic-circumcision-policy',
-    category: 'International Consensus',
-    searchQuery: 'KNMG Royal Dutch Medical Association'
+    id: 'treasure-taylor-1996',
+    docId: 'taylor-lockwood-1996-prepuce-specialized-mucosa',
+    title: 'The Prepuce: Specialized Mucosa of the Penis and its Loss to Circumcision',
+    author: 'J.R. Taylor, A.P. Lockwood & A.J. Taylor',
+    date: '1996',
+    type: 'medical_journal',
+    formatLabel: 'British Journal of Urology',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'The foundational anatomical study discovering the ridged band mucosa, specialized Meissner corpuscle innervation, and mucocutaneous junction tissue excised by infant circumcision.',
+    targetSlug: 'the-prepuce-specialized-mucosa-of-the-penis-and-its-loss-to-circumcision--taylor-lockwood-1996-prepuce-specialized-mucosa',
+    category: 'Clinical Anatomy',
+    searchQuery: 'Taylor Lockwood Prepuce Specialized Mucosa'
   },
   {
     id: 'treasure-5',
+    docId: 'sorrells-2007-fine-touch-tactile-thresholds',
     title: 'Fine-Touch Tactile Thresholds in the Adult Penis',
     author: 'Morris L. Sorrells, M.D. et al.',
     date: '2007',
     type: 'medical_journal',
-    formatLabel: 'Clinical Trial',
-    collection: 'UMass MS 1205: Medical Policy & Ethics',
-    excerpt: 'Rigorous quantitative testing using Semmes-Weinstein monofilaments proving that the prepuce is the most sensitive portion of the adult intact human penis.',
-    targetSlug: 'fine-touch-tactile-thresholds-sorrells',
+    formatLabel: 'BJU International (Clinical Trial)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'Rigorous quantitative sensory testing using Semmes-Weinstein monofilaments across 19 penile sites proving that the prepuce is the most fine-touch sensitive portion of the adult intact human penis.',
+    targetSlug: 'fine-touch-pressure-thresholds-in-the-adult-penis--sorrells-2007-fine-touch-tactile-thresholds',
     category: 'Sensory Histology',
     searchQuery: 'Sorrells tactile thresholds'
   },
   {
+    id: 'treasure-anand-1987',
+    docId: 'anand-hickey-1987-pain-in-infants-nejm',
+    title: 'Pain and Its Effects in the Human Neonate and Fetus',
+    author: 'K.J.S. Anand, M.B., D.Phil. & P.R. Hickey, M.D.',
+    date: '1987',
+    type: 'medical_journal',
+    formatLabel: 'New England Journal of Medicine',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'The watershed New England Journal of Medicine investigation that definitively demonstrated human neonates feel pain and suffer severe stress neuroendocrine responses from surgery without anesthesia.',
+    targetSlug: 'pain-and-its-effects-in-the-human-neonate-and-fetus--anand-hickey-1987-pain-in-infants-nejm',
+    category: 'Neonatal Pain',
+    searchQuery: 'Anand Hickey Pain Neonate NEJM'
+  },
+  {
+    id: 'treasure-fendereski-2024',
+    docId: 'fendereski-2024-penile-problems-circumcised-boys',
+    title: 'Comparing Penile Problems in Circumcised vs. Uncircumcised Boys',
+    author: 'Kamyar Fendereski, M.D. et al.',
+    date: '2024',
+    type: 'medical_journal',
+    formatLabel: 'J. Pediatric Surgery (1.7M Cohort)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'Massive insurance-claims cohort of 1.7 million boys showing circumcised boys experience a 2.9-fold higher incidence of penile complications (meatal stenosis, stricture, adhesions) requiring medical treatment through age 5.',
+    targetSlug: 'comparing-penile-problems-in-circumcised-vs-uncircumcised-boys--fendereski-2024-penile-problems-circumcised-boys',
+    category: 'Pediatric Epidemiology',
+    searchQuery: 'Fendereski Comparing Penile Problems'
+  },
+  {
+    id: 'treasure-4',
+    docId: 'frisch-2013-cultural-bias-aap-pediatrics',
+    title: "Cultural Bias in the AAP's 2012 Technical Report and Policy Statement",
+    author: 'Morten Frisch, M.D. et al. (38 European Co-Authors)',
+    date: '2013',
+    type: 'medical_journal',
+    formatLabel: 'Pediatrics (International Coalition)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'International critique signed by 38 pediatric association presidents, urologists, and ethicists across 16 countries demonstrating cultural bias, selective literature citations, and ethical flaws in the AAP 2012 policy.',
+    targetSlug: 'cultural-bias-in-the-aaps-2012-technical-report--frisch-2013-cultural-bias-aap-pediatrics',
+    category: 'International Consensus',
+    searchQuery: 'Frisch Cultural Bias AAP Pediatrics'
+  },
+  {
+    id: 'treasure-hammond-restorers',
+    docId: 'hammond-sardi-2023-foreskin-restorers',
+    title: 'Foreskin Restorers Study: Outcomes, Relief, and Sensitivity Gains',
+    author: 'Tim Hammond & Lauren M. Sardi, Ph.D.',
+    date: '2023',
+    type: 'medical_journal',
+    formatLabel: 'IJIR (Nature Portfolio)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'Groundbreaking study documenting the emotional, physical, and sexual satisfaction outcomes reported by men undergoing non-surgical foreskin restoration.',
+    targetSlug: 'foreskin-restorers-study--hammond-sardi-2023-foreskin-restorers',
+    category: "Men's Health Research",
+    searchQuery: 'Hammond Sardi Foreskin Restorers'
+  },
+  {
+    id: 'treasure-earp-false-beliefs',
+    docId: 'earp-sardi-jellison-2018-false-beliefs',
+    title: 'False beliefs predict increased circumcision satisfaction in US American men',
+    author: 'Brian D. Earp, Lauren M. Sardi & William A. Jellison',
+    date: '2018',
+    type: 'medical_journal',
+    formatLabel: 'Culture, Health & Sexuality',
+    collection: 'Academic & Ethical Studies',
+    excerpt: 'Empirical study of 999 men demonstrating that satisfaction with being circumcised is strongly mediated by endorsing inaccurate beliefs regarding penile anatomy, citing Hammond (1999) and Goldman (1997).',
+    targetSlug: 'false-beliefs-predict-increased-circumcision-satisfaction-in-a-sample-of-us-american-men--earp-sardi-jellison-2018-false-beliefs',
+    category: 'Empirical Study',
+    searchQuery: 'Earp Sardi False beliefs circumcision satisfaction'
+  },
+  {
+    id: 'treasure-3',
+    docId: 'fletcher-milos-1999-circumcision-in-america',
+    title: 'Circumcision in America in 1998: Attitudes, Beliefs and Charges',
+    author: 'John E. Fletcher, Ph.D. & Marilyn Fayre Milos, R.N.',
+    date: '1999',
+    type: 'medical_journal',
+    formatLabel: 'Physician Survey (Plenum Press)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'Comprehensive study of U.S. physician practices, financial incentives, and knowledge deficits regarding neonatal foreskin anatomy and infant surgical trauma.',
+    targetSlug: 'circumcision-in-america-in-1998--fletcher-milos-1999-circumcision-in-america',
+    category: 'Institutional Economics',
+    searchQuery: 'Circumcision in America Fletcher Milos 1999'
+  },
+  {
     id: 'treasure-6',
+    docId: 'huff-v-colorado-2024-civil-rights-complaint',
     title: 'Huff v. State of Colorado Civil Rights Action',
-    author: 'Tristan Huff & Adam Schwartz',
+    author: 'Tristan Huff, Adam Schwartz & Counsel',
     date: '2024',
     type: 'legal_document',
-    formatLabel: 'Constitutional Brief',
-    collection: 'UMass MS 1205: Legal Litigation',
+    formatLabel: 'Federal Constitutional Complaint',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
     excerpt: 'Groundbreaking federal civil rights litigation asserting that state Medicaid funding and statutory carveouts for routine infant male circumcision violate the Equal Protection Clause.',
-    targetSlug: 'huff-v-colorado-2024',
+    targetSlug: 'huff-v-colorado-2024--huff-v-colorado-2024-civil-rights-complaint',
     category: 'Equal Protection',
-    searchQuery: 'Huff v Colorado'
+    searchQuery: 'Huff v Colorado Civil Rights Complaint'
+  },
+  {
+    id: 'treasure-milos-1997',
+    docId: 'milos-denniston-demeo-1997-sexual-mutilations',
+    title: 'Sexual Mutilations: A Human Tragedy (Proceedings of 4th International Symposium)',
+    author: 'George C. Denniston, Marilyn Fayre Milos & James DeMeo (Eds.)',
+    date: '1997',
+    type: 'book',
+    formatLabel: 'Symposium Book (Springer/Plenum)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'The monumental 300+ page compilation from the Lausanne, Switzerland symposium, uniting global legal, medical, and ethical scholarship on child genital autonomy.',
+    targetSlug: 'sexual-mutilations-a-human-tragedy--milos-denniston-demeo-1997-sexual-mutilations',
+    category: 'Movement Proceedings',
+    searchQuery: 'Sexual Mutilations A Human Tragedy Milos Denniston'
+  },
+  {
+    id: 'treasure-cepeda-2025',
+    docId: 'cepeda-emiliani-2025-sensory-penis-andrology',
+    title: 'The Sensory Penis: Neurohistological Mapping of Mechanoreceptors in the Prepuce',
+    author: 'Dr. Cepeda-Emiliani et al.',
+    date: '2025',
+    type: 'medical_journal',
+    formatLabel: 'Andrology (2025)',
+    collection: 'The Tim Hammond Genital Autonomy Archive',
+    excerpt: 'State-of-the-art immunohistochemical investigation documenting the dense morphology and distribution of sensory corpuscles and fine-touch mechanoreceptors in the human prepuce.',
+    targetSlug: 'the-sensory-penis-andrology--cepeda-emiliani-2025-sensory-penis-andrology',
+    category: 'Clinical Anatomy',
+    searchQuery: 'Cepeda Emiliani The sensory penis Andrology 2025'
   }
 ];
 
@@ -215,7 +365,23 @@ export default function DigitalLibrary() {
   const [itemsPerPage, setItemsPerPage] = useState(24);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const { openAssistant } = useAssistant();
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchDropdownRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
+
   const searchInputRef = useRef(null);
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(e.target) && !e.target.closest('.library-search-input-wrapper')) {
+        setIsSearchFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Keyboard shortcut '/' to search and 'Escape' to close drawer
   useEffect(() => {
@@ -283,6 +449,12 @@ export default function DigitalLibrary() {
 
             // Merge richer metadata and collection details onto live documents
             data = data.map(doc => {
+              if (doc.url && doc.url.includes('ce8288f8')) {
+                doc = {
+                  ...doc,
+                  title: 'AWAKENINGS: Order Form & Promotional Announcement (1991 Flyer)'
+                };
+              }
               const liveTitle = (doc.title || '').toLowerCase().trim();
               const liveMeta = safeParseJson(doc.metadata_json);
               const geminiTitle = (liveMeta.gemini_extracted_metadata?.title || '').toLowerCase().trim();
@@ -310,7 +482,7 @@ export default function DigitalLibrary() {
               return doc;
             });
 
-            // Append mock documents that are not already present in live data
+            // Prepend curated mock documents that are not already present in live data
             const existingIds = new Set(data.map(d => d.id));
             const existingTitles = new Set(data.map(d => (d.title || '').toLowerCase().trim()).filter(Boolean));
             const missingMock = mockData.filter(m => {
@@ -319,7 +491,7 @@ export default function DigitalLibrary() {
               if (t && existingTitles.has(t)) return false;
               return true;
             });
-            data = [...data, ...missingMock];
+            data = [...missingMock, ...data];
           }
         }
       } catch (e) {
@@ -468,14 +640,46 @@ export default function DigitalLibrary() {
   // When searching or picking a facet, automatically switch out of 'stacks' into 'gallery'
   const handleQueryChange = (q) => {
     setSearchQuery(q);
-    const newParams = new URLSearchParams(searchParams);
-    if (q.trim()) newParams.set('q', q);
-    else newParams.delete('q');
-    setSearchParams(newParams);
-    if (q.trim() && viewMode === 'stacks') {
-      setViewMode('gallery');
+    if (q.trim()) {
+      setIsSearchFocused(true);
+      if (viewMode === 'stacks') {
+        setViewMode('gallery');
+      }
     }
     setCurrentPage(1);
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      const newParams = new URLSearchParams(searchParams);
+      if (q.trim()) newParams.set('q', q);
+      else newParams.delete('q');
+      setSearchParams(newParams, { replace: true });
+    }, 250);
+  };
+
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+    setTimeout(() => {
+      searchInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  };
+
+  const scrollToResults = () => {
+    setIsSearchFocused(false);
+    const target = document.querySelector('.library-view-control-bar');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim().endsWith('?') || /^(which|what|how|why|who|is|are|can)\b/i.test(searchQuery.trim())) {
+      openAssistant(searchQuery);
+    }
+    scrollToResults();
   };
 
   // Dedicated preset search for chips & pillars that clears conflicting facets
@@ -747,6 +951,13 @@ export default function DigitalLibrary() {
 
   const sortedDocs = useMemo(() => {
     return [...filteredDocs].sort((a, b) => {
+      // Relevance sort takes priority when searching by keyword or semantic query
+      if (searchQuery && searchQuery.trim() && sortConfig.key === 'title') {
+        const scoreA = getDocRelevanceScore(a, searchQuery, semanticResults);
+        const scoreB = getDocRelevanceScore(b, searchQuery, semanticResults);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+      }
+
       let valA, valB;
       if (sortConfig.key === 'title') { 
         valA = a.title.toLowerCase(); 
@@ -767,7 +978,7 @@ export default function DigitalLibrary() {
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredDocs, sortConfig]);
+  }, [filteredDocs, sortConfig, searchQuery, semanticResults]);
 
   const totalPages = Math.ceil(sortedDocs.length / itemsPerPage);
 
@@ -861,9 +1072,9 @@ export default function DigitalLibrary() {
     <div className="library-root">
       
       {/* Hero Masthead & Omni-Search Command */}
-      <div className="library-hero" style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="library-hero" style={{ position: 'relative', overflow: 'visible', zIndex: 30 }}>
         {/* Confined Hero Underloom */}
-        <div className="library-underloom" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.16 }}>
+        <div className="library-underloom" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0, opacity: 0.16, overflow: 'hidden' }}>
           <LoomChoreography isInline={true} forceFormation="quiet" opacity={1} themeColor="library" />
         </div>
 
@@ -915,15 +1126,12 @@ export default function DigitalLibrary() {
             <Link to="/to/tim-hammond" className="library-featured-btn-secondary">
               Tim Hammond's Profile & Legacy
             </Link>
-            <Link to="/collections" className="library-featured-btn-secondary">
-              All Special Collections
-            </Link>
           </div>
         </div>
 
         {/* Omni-Search Box */}
         <div className="library-search-box">
-          <div className="library-search-input-wrapper">
+          <form onSubmit={handleSearchSubmit} className="library-search-input-wrapper">
             <Search size={22} className="library-search-icon-left" />
             <input 
               ref={searchInputRef}
@@ -931,11 +1139,13 @@ export default function DigitalLibrary() {
               className="library-search-input"
               value={searchQuery}
               onChange={(e) => handleQueryChange(e.target.value)}
+              onFocus={handleSearchFocus}
               placeholder="Search by keyword, author, legal case, or ask AI... (Press '/' to focus)"
             />
             <div className="library-search-icon-right">
               {searchQuery && (
                 <button 
+                  type="button"
                   className="library-clear-search-btn"
                   onClick={() => handleQueryChange('')}
                   title="Clear search"
@@ -943,17 +1153,115 @@ export default function DigitalLibrary() {
                   <X size={14} />
                 </button>
               )}
-              {isSearchingSemantic ? (
-                <Sparkles size={18} color="#facc15" style={{ animation: 'spin 2s linear infinite' }} />
-              ) : (
+              <button
+                type="button"
+                className="library-sparkle-btn"
+                onClick={() => openAssistant(searchQuery || 'What does the library archive say about infant circumcision?')}
+                title={isSearchingSemantic ? "AI Semantic Search Active — Click to ask Assistant" : "Ask AI Assistant"}
+              >
                 <Sparkles 
                   size={18} 
-                  color={semanticResults ? "#facc15" : "#64748b"} 
-                  title={semanticResults ? "AI Concept Search Active" : "AI Semantic Search Enabled"} 
+                  className={isSearchingSemantic ? "library-sparkle-active" : ""}
+                  color={semanticResults || isSearchingSemantic ? "#facc15" : "#64748b"} 
                 />
-              )}
+              </button>
             </div>
-          </div>
+
+          {/* Quick Instant Search Dropdown */}
+          {searchQuery.trim().length >= 2 && isSearchFocused && (
+            <div ref={searchDropdownRef} className="library-search-dropdown lux-fade-in">
+              <div className="library-search-dd-header">
+                <span className="library-search-dd-count">
+                  Found <strong>{filteredDocs.length}</strong> matching archival records
+                </span>
+                <button 
+                  type="button" 
+                  className="library-search-dd-jump"
+                  onClick={scrollToResults}
+                >
+                  View full results in gallery &darr;
+                </button>
+              </div>
+
+              {/* Direct Empirical/AI Insight Card if asking about rates/states */}
+              {/(state|rate|highest|percent|prevalence|medicaid|hospital)/i.test(searchQuery) && (
+                <div className="library-search-ai-tip">
+                  <div className="library-search-ai-tip-header">
+                    <Sparkles size={13} color="#facc15" />
+                    <span>EMPIRICAL KNOWLEDGE SYNTHESIS</span>
+                  </div>
+                  <p className="library-search-ai-tip-body">
+                    CDC &amp; HCUP hospital discharge registries indicate that <strong>Midwestern states</strong> currently retain the highest newborn circumcision rates (~68.5%), while Western states dropped to <strong>19.7%</strong> following Medicaid defunding.
+                  </p>
+                  <div className="library-search-ai-tip-actions">
+                    <Link to="/rates" className="library-search-ai-tip-link">
+                      Open 50-Year U.S. Rates Tracker &rarr;
+                    </Link>
+                    <button 
+                      type="button" 
+                      className="library-search-ai-tip-btn"
+                      onClick={() => openAssistant(searchQuery)}
+                    >
+                      Ask Assistant for Deep Dive
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Top matching records list */}
+              <div className="library-search-dd-list">
+                {filteredDocs.slice(0, 5).map(doc => {
+                  const meta = safeParseJson(doc.metadata_json);
+                  const title = getCleanTitle(doc, meta);
+                  const year = getYear(doc);
+                  const slug = generateFriendlySlug(doc, meta);
+                  return (
+                    <Link 
+                      key={doc.id}
+                      to={`/library/${slug}`}
+                      className="library-search-dd-item"
+                      onClick={() => setIsSearchFocused(false)}
+                    >
+                      <div className="library-search-dd-item-icon">
+                        {getDocumentIcon(doc.type, 15)}
+                      </div>
+                      <div className="library-search-dd-item-info">
+                        <div className="library-search-dd-item-title">{title}</div>
+                        <div className="library-search-dd-item-meta">
+                          {year && year !== 'Unknown' && <span>{year}</span>}
+                          {meta.author && <span>by {meta.author}</span>}
+                          <span className="library-search-dd-badge">{doc.type || 'document'}</span>
+                        </div>
+                      </div>
+                      <ArrowRight size={14} className="library-search-dd-arrow" />
+                    </Link>
+                  );
+                })}
+
+                {filteredDocs.length === 0 && (
+                  <div className="library-search-dd-empty">
+                    No direct catalog matches found for &ldquo;{searchQuery}&rdquo;.
+                  </div>
+                )}
+              </div>
+
+              {/* Ask Assistant Footer Row */}
+              <div className="library-search-dd-footer">
+                <button 
+                  type="button" 
+                  className="library-search-ask-ai-row"
+                  onClick={() => openAssistant(searchQuery)}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Sparkles size={16} color="#facc15" className="library-sparkle-active" />
+                    <span>Ask AI Assistant: &ldquo;{searchQuery}&rdquo;</span>
+                  </div>
+                  <span className="library-search-ask-ai-tag">Synthesize &rarr;</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </form>
 
           {/* Quick Exploratory Prompt Chips */}
           <div className="library-quick-prompts">
@@ -1322,11 +1630,10 @@ export default function DigitalLibrary() {
                         key={item.id}
                         className="library-treasure-card"
                         onClick={() => {
-                          const realDoc = documents.find(d => 
-                            d.title && d.title.toLowerCase().includes(item.title.toLowerCase().slice(0, 20))
-                          );
+                          const realDoc = (item.docId ? documents.find(d => d.id === item.docId) : null) ||
+                            documents.find(d => d.title && d.title.toLowerCase().includes(item.title.toLowerCase().slice(0, 20)));
                           setSelectedDoc(realDoc || {
-                            id: item.id,
+                            id: item.docId || item.id,
                             title: item.title,
                             type: item.type,
                             source_collection: item.collection,
@@ -1351,8 +1658,14 @@ export default function DigitalLibrary() {
                             <p className="library-treasure-excerpt">{item.excerpt}</p>
                           </div>
 
-                          <div className="library-treasure-footer">
-                            <span>Inspect Archival Record</span>
+                          <div 
+                            className="library-treasure-footer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/library/${item.targetSlug || item.docId || item.id}`);
+                            }}
+                          >
+                            <span>Read Full Document</span>
                             <ArrowRight size={13} />
                           </div>
                         </div>
@@ -1952,7 +2265,7 @@ export default function DigitalLibrary() {
                   Archival Record
                 </span>
                 <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                  {selectedDoc.source_collection || "UMass MS 1205"}
+                  {resolveCollectionName(selectedDoc, "The Tim Hammond Genital Autonomy Archive")}
                 </span>
               </div>
 

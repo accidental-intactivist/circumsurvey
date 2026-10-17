@@ -20,15 +20,15 @@ describe("GlobalFooter", () => {
     );
 
     const requiredLinks = [
-      { text: "About the Project", href: "#/about" },
-      { text: "Survey Methodology", href: "#/methodology" },
-      { text: "Contact Us", href: "#/contact" },
-      { text: "Get Involved", href: "#/get-involved" },
-      { text: "FAQ", href: "#/faq" },
-      { text: "For New Parents", href: "#/for-parents" },
-      { text: "Demographic Profile", href: "#/demographics" },
-      { text: "Report Builder", href: "#/report" },
-      { text: "Downloads & External", href: "#/resources" },
+      { text: "About the Project", href: "/explore/about" },
+      { text: "Survey Methodology", href: "/explore/methodology" },
+      { text: "Contact Us", href: "/explore/contact" },
+      { text: "Get Involved", href: "/explore/get-involved" },
+      { text: "FAQ", href: "/explore/faq" },
+      { text: "For New Parents", href: "/explore/for-parents" },
+      { text: "Demographic Profile", href: "/explore/demographics" },
+      { text: "Report Builder", href: "/explore/report" },
+      { text: "Downloads & External", href: "/explore/resources" },
     ];
 
     requiredLinks.forEach(({ text, href }) => {
@@ -50,6 +50,6 @@ describe("GlobalFooter", () => {
     const masterIndexLink = screen.getByText("Master Index");
     expect(masterIndexLink).toBeInTheDocument();
     expect(masterIndexLink.tagName).toBe("A");
-    expect(masterIndexLink).toHaveAttribute("href", "#/index");
+    expect(masterIndexLink).toHaveAttribute("href", "/explore");
   });
 });

@@ -118,11 +118,47 @@ export async function onRequestPost(context) {
       }
     }
 
-    const { query, attachedDocs, system_prompt_override } = await request.json();
+    const { query, history, attachedDocs, system_prompt_override } = await request.json();
     if (!query) return new Response(JSON.stringify({ error: "Missing query" }), { status: 400 });
 
     const aiBinding = env.AI || env.Workers_AI;
     if (!aiBinding) throw new Error("AI binding is missing");
+
+    // --- CONVERSATION CONTEXTUALIZATION (Anaphora Resolution) ---
+    // If user asks a follow-up (e.g. "Where does he live?"), resolve pronouns using history before search
+    let searchQuery = query;
+    if (history && Array.isArray(history) && history.length > 0) {
+      try {
+        const historySnippet = history
+          .slice(-4)
+          .map(h => `${h.role === 'user' ? 'User' : 'Assistant'}: ${(h.content || '').slice(0, 300)}`)
+          .join('\n');
+
+        const contextualizePrompt = `Given the chat history and the user's latest follow-up question, rewrite the question into a standalone, self-contained search query.
+If the question uses pronouns like "he", "she", "they", "it", "his", "her", or "that", replace them with the specific person or topic being discussed.
+Return ONLY the standalone search query without any explanation or commentary.
+
+Chat History:
+${historySnippet}
+
+Follow-up Question: ${query}
+Standalone Search Query:`;
+
+        const rewriteRes = await aiBinding.run('@cf/meta/llama-3.1-8b-instruct-fp8', { 
+          messages: [{ role: "system", content: contextualizePrompt }],
+          max_tokens: 60
+        });
+
+        if (rewriteRes && rewriteRes.response) {
+          const cleaned = rewriteRes.response.trim().replace(/^["']|["']$/g, '');
+          if (cleaned.length > 3 && !cleaned.toLowerCase().includes('standalone')) {
+            searchQuery = cleaned;
+          }
+        }
+      } catch (e) {
+        console.warn("Query contextualization failed:", e);
+      }
+    }
 
     // --- STEP 1: INTENT ROUTING ---
     const intentPrompt = `Classify the user's query into one of two categories:
@@ -131,7 +167,7 @@ QUALITATIVE: Asks for themes, beliefs, historical documents, feelings, narrative
 Reply ONLY with the exact word "ANALYTICAL" or "QUALITATIVE".`;
 
     const intentResponse = await aiBinding.run('@cf/meta/llama-3.1-8b-instruct-fp8', { 
-      messages: [{ role: "system", content: intentPrompt }, { role: "user", content: query }]
+      messages: [{ role: "system", content: intentPrompt }, { role: "user", content: searchQuery }]
     });
     
     let intent = intentResponse.response.trim().toUpperCase();
@@ -220,7 +256,7 @@ Keep it factual and concise.`;
       // INJECT EXACT ENTITY MATCHES INTO CONTEXT
       if (env.SURVEY_DB) {
         try {
-          const entityResults = await env.SURVEY_DB.prepare("SELECT * FROM entities WHERE ? LIKE '%' || name || '%'").bind(query).all();
+          const entityResults = await env.SURVEY_DB.prepare("SELECT * FROM entities WHERE ? LIKE '%' || name || '%'").bind(searchQuery).all();
           if (entityResults.results && entityResults.results.length > 0) {
             for (const entity of entityResults.results) {
               const bioText = entity.bio || entity.description || entity.tagline || '';
@@ -237,7 +273,7 @@ Keep it factual and concise.`;
         }
       }
 
-      const queryEmbedding = await aiBinding.run('@cf/baai/bge-small-en-v1.5', { text: [query] });
+      const queryEmbedding = await aiBinding.run('@cf/baai/bge-small-en-v1.5', { text: [searchQuery] });
       const vector = queryEmbedding.data[0];
 
       const matches = await env.ARCHIVE_INDEX.query(vector, { topK: 3, returnMetadata: true });
@@ -419,8 +455,19 @@ CRITICAL RULES:
 ARCHIVAL DOCUMENTS:
 ${contextText || "No relevant documents found in the archive for this query."}`;
 
+      const messagesToSend = [{ role: "system", content: systemPrompt }];
+      if (history && Array.isArray(history)) {
+        history.slice(-4).forEach(h => {
+          if (h.role === 'user' || h.role === 'assistant') {
+            const text = h.content && h.content.length > 800 ? h.content.slice(0, 800) + '...' : (h.content || '');
+            messagesToSend.push({ role: h.role, content: text });
+          }
+        });
+      }
+      messagesToSend.push({ role: "user", content: query });
+
       const response = await aiBinding.run('@cf/meta/llama-3.3-70b-instruct-fp8-fast', { 
-        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: query }],
+        messages: messagesToSend,
         max_tokens: 1024
       });
       finalAnswer = response.response;

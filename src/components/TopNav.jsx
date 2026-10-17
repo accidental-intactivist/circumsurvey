@@ -10,11 +10,23 @@ import './TopNav.css';
 export default function TopNav() {
   const { openAssistant } = useAssistant();
   const location = useLocation();
+  const [docTitle, setDocTitle] = useState(window.__currentDocumentTitle || null);
+
+  useEffect(() => {
+    const handleTitleChange = (e) => {
+      setDocTitle(e.detail);
+    };
+    window.addEventListener('document-title-change', handleTitleChange);
+    return () => window.removeEventListener('document-title-change', handleTitleChange);
+  }, []);
 
   const isLandingPage = location.pathname === '/';
 
   const getActivityTitle = (path) => {
     if (path === '/') return 'Home';
+    if (path === '/data' || path.startsWith('/data')) return 'Movement Data Hub';
+    if (path.startsWith('/rates') || path.startsWith('/us-ric-rates')) return 'U.S. Circumcision Rates';
+    if (path.startsWith('/survey-stats')) return 'Live Survey Telemetry';
     if (path.startsWith('/manifesto')) return "The Accidental Intactivist's Manifesto";
     if (path.startsWith('/admin/archive')) return 'Archive Administration';
     if (path.startsWith('/admin/cms')) return 'CMS Wrangler';
@@ -27,10 +39,20 @@ export default function TopNav() {
     if (path.startsWith('/to/')) return 'Entity Profile';
     if (path.startsWith('/graph')) return 'Global Graph';
     if (path.startsWith('/citations')) return 'Citation Web';
-    if (path.startsWith('/atlas')) return 'Global Circumcision Atlas';
+    if (path.startsWith('/atlas')) return 'Global Genital Integrity Atlas';
     if (path.startsWith('/guides/rebuttals')) return 'Counter-Evidence';
     if (path.startsWith('/guides')) return 'Guide Series';
-    if (path.startsWith('/library/')) return 'Document View';
+    if (path.startsWith('/library/')) {
+      if (docTitle) return docTitle;
+      const slug = path.replace('/library/', '');
+      if (slug.includes('--')) {
+        const raw = slug.split('--')[0].replace(/-/g, ' ');
+        if (raw && raw.length > 2) {
+          return raw.charAt(0).toUpperCase() + raw.slice(1);
+        }
+      }
+      return 'Document View';
+    }
     if (path.startsWith('/library')) return 'Digital Library';
     if (path.startsWith('/timeline')) return 'Timeline';
     if (path.startsWith('/assistant') || path.startsWith('/report')) return 'Discussion Guides';

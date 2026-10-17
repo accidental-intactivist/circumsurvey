@@ -189,9 +189,17 @@ export function buildCitationGraph(docs = []) {
     const nodeId = `doc:${id}`;
     if (!nodes.has(nodeId)) {
       const info = infoById.get(id);
+      const isCanon = Boolean(
+        info?.meta?.curated_seed || 
+        info?.meta?.archive_source || 
+        (info?.doc?.id && (info.doc.id.includes('taylor') || info.doc.id.includes('sorrells'))) ||
+        (info?.meta?.collection === 'Curated Published Articles & Legal Filings') ||
+        (info?.doc?.source_collection && info.doc.source_collection.startsWith('Published Canon'))
+      );
       nodes.set(nodeId, {
         id: nodeId, kind: 'archive', docId: id, label: info.title, title: info.title, year: info.year,
         author: info.author || null, category: info.category, doc: info.doc, meta: info.meta,
+        isCanon,
         citedBy: new Set(), cites: new Set(), raws: [],
       });
     }
@@ -283,20 +291,144 @@ export function citationSpan(graph, nodeId) {
 }
 
 /**
- * Plain {nodes, links} for the force layout.
- * - External works must be cited by at least `minCitations` documents.
- * - `archiveOnly` keeps only links between two archive documents.
- * - Citing documents appear only if at least one of their links survives.
+ * View selector for the citation force graph.
+ *
+ * Supported modes:
+ * - 'landmarks': (Default) Curated constellation of canonical archive holdings
+ *   and major external milestones (cited by >= 8 archive docs). Clean, spacious, and legible.
+ * - 'spotlight': (Ego network) Isolates a single chosen work at the center and its direct
+ *   1-hop (or 2-hop) citing and cited neighborhood. All unrelated noise is eliminated.
+ * - 'all': (Deep archive) Full raw network with user-configurable minCitations and archiveOnly filters.
  */
-export function selectView(graph, { minCitations = 2, archiveOnly = false } = {}) {
-  if (!graph) return { nodes: [], links: [] };
+export function selectView(graph, {
+  viewMode = 'landmarks',
+  minCitations = 2,
+  archiveOnly = false,
+  spotlightId = null,
+  spotlightHops = 1,
+} = {}) {
+  if (!graph) return { nodes: [], links: [], mode: viewMode };
+
+  // 1. SPOTLIGHT MODE: Focus on a single work and its neighborhood
+  if (spotlightId && (viewMode === 'spotlight' || viewMode === 'neighborhood')) {
+    const focal = graph.nodes.get(spotlightId);
+    if (focal) {
+      const neighborIds = new Set([spotlightId]);
+      focal.citedBy.forEach(id => neighborIds.add(id));
+      focal.cites.forEach(id => neighborIds.add(id));
+
+      if (spotlightHops >= 2) {
+        const hop1 = [...neighborIds];
+        for (const hid of hop1) {
+          const hn = graph.nodes.get(hid);
+          if (hn) {
+            hn.citedBy.forEach(id => neighborIds.add(id));
+            hn.cites.forEach(id => neighborIds.add(id));
+          }
+        }
+      }
+
+      // Keep links where both source and target are in the neighborhood
+      const links = graph.links.filter(l => neighborIds.has(l.source) && neighborIds.has(l.target));
+      const nodes = [...neighborIds].map(id => {
+        const n = graph.nodes.get(id);
+        const isFocal = id === spotlightId;
+        const isCiting = focal.citedBy.has(id);
+        const isCited = focal.cites.has(id);
+        return {
+          id,
+          kind: n?.kind || 'external',
+          label: n?.label || 'Unknown',
+          title: n?.title || n?.label || '',
+          year: n?.year,
+          citedBy: n?.citedBy?.size || 0,
+          cites: n?.cites?.size || 0,
+          isCanon: Boolean(n?.isCanon),
+          isFocal,
+          isCiting,
+          isCited,
+          role: isFocal ? 'focal' : (isCiting ? 'citing' : (isCited ? 'cited' : 'extended')),
+        };
+      });
+
+      return {
+        nodes,
+        links: links.map(l => ({
+          ...l,
+          isFocalLink: l.source === spotlightId || l.target === spotlightId,
+          direction: l.target === spotlightId ? 'incoming' : (l.source === spotlightId ? 'outgoing' : 'internal'),
+        })),
+        mode: 'spotlight',
+        focalId: spotlightId,
+        focalNode: focal,
+      };
+    }
+  }
+
+  // 2. LANDMARKS MODE (Default): Curated high-impact constellation (~60-90 works)
+  if (viewMode === 'landmarks') {
+    const extThreshold = Math.max(8, minCitations);
+    const keepTarget = (n) => {
+      if (!n) return false;
+      if (n.kind === 'archive') {
+        if (archiveOnly) return n.citedBy.size >= 1;
+        return n.isCanon || n.citedBy.size >= 2;
+      }
+      return !archiveOnly && n.citedBy.size >= extThreshold;
+    };
+
+    let links = graph.links.filter(l => {
+      const s = graph.nodes.get(l.source);
+      const t = graph.nodes.get(l.target);
+      return keepTarget(s) && keepTarget(t);
+    });
+
+    const ids = new Set();
+    links.forEach(l => { ids.add(l.source); ids.add(l.target); });
+
+    // Include top archive landmarks even if external links are sparse
+    for (const [id, n] of graph.nodes) {
+      if (n.isCanon && n.citedBy.size >= 1) {
+        ids.add(id);
+      }
+    }
+
+    const nodes = [...ids].map(id => {
+      const n = graph.nodes.get(id);
+      return {
+        id,
+        kind: n.kind,
+        label: n.label,
+        title: n.title,
+        year: n.year,
+        citedBy: n.citedBy.size,
+        cites: n.cites.size,
+        isCanon: Boolean(n.isCanon),
+      };
+    });
+
+    const validIds = new Set(nodes.map(n => n.id));
+    links = links.filter(l => validIds.has(l.source) && validIds.has(l.target));
+
+    return { nodes, links: links.map(l => ({ ...l })), mode: 'landmarks' };
+  }
+
+  // 3. COMPLETE ARCHIVE VIEW: Deep full web
   const keepTarget = (n) => n && (n.kind === 'archive' ? n.citedBy.size >= 1 : !archiveOnly && n.citedBy.size >= minCitations);
   const links = graph.links.filter(l => keepTarget(graph.nodes.get(l.target)));
   const ids = new Set();
   links.forEach(l => { ids.add(l.source); ids.add(l.target); });
   const nodes = [...ids].map(id => {
     const n = graph.nodes.get(id);
-    return { id, kind: n.kind, label: n.label, year: n.year, citedBy: n.citedBy.size, cites: n.cites.size };
+    return {
+      id,
+      kind: n.kind,
+      label: n.label,
+      year: n.year,
+      citedBy: n.citedBy.size,
+      cites: n.cites.size,
+      isCanon: Boolean(n.isCanon),
+    };
   });
-  return { nodes, links: links.map(l => ({ ...l })) };
+  return { nodes, links: links.map(l => ({ ...l })), mode: 'all' };
 }

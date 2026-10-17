@@ -19,7 +19,13 @@ import CommentsWidget from '../components/CommentsWidget';
 import EntityLink from '../components/EntityLink';
 import { generateFriendlySlug, parseFriendlySlug } from '../utils/slugs';
 import { resolveCollectionName } from '../utils/collections';
-import { formatPlainTextToMarkdown, formatExecutiveSummary } from '../utils/formatMarkdown';
+import { 
+  formatPlainTextToMarkdown, 
+  formatExecutiveSummary, 
+  parseRtfToText, 
+  parseCsvToMarkdownTable, 
+  normalizeDocumentText 
+} from '../utils/formatMarkdown';
 import { safeParseJson } from '../utils/json';
 import { SourceLensPanel, ContextNotes, AlsoCoveredBy, DigestPulse } from '../components/SourceLensPanel';
 import AutoEntityLinker from '../components/AutoEntityLinker';
@@ -49,9 +55,48 @@ export const isPdfFile = (url, title, rawFiles = []) => {
 };
 
 export const isImageFile = (url, title, rawFiles = []) => {
-  const check = (str) => Boolean(str && String(str).match(/\.(jpeg|jpg|gif|png|webp|svg|bmp)$/i));
+  const check = (str) => Boolean(str && String(str).match(/\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff?)$/i));
   if (check(url) || check(title)) return true;
   if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isWordDocFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(docx?|odt|pages)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isRtfFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.rtf$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isTabularFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(csv|tsv)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isCodeOrStructuredFile = (url, title, rawFiles = []) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(json|xml|html?|js|py|sh|sql)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  return false;
+};
+
+export const isTextDocument = (url, title, rawFiles = [], doc = null) => {
+  const check = (str) => Boolean(str && String(str).match(/\.(txt|text|log|md|markdown|rtf|docx?|odt|csv|tsv|json|xml|html?)$/i));
+  if (check(url) || check(title)) return true;
+  if (Array.isArray(rawFiles) && rawFiles.some(f => check(f?.path) || check(f?.name))) return true;
+  const meta = safeParseJson(doc?.metadata_json);
+  if (meta?.extracted_text_url) return true;
+  if (doc?.content && doc.content.trim().length > 0) return true;
+  if (doc?.type === 'text' || doc?.type === 'transcript') return true;
   return false;
 };
 
@@ -109,6 +154,72 @@ export const getFormatMeta = (doc, displayUrl, rawFiles = []) => {
       color: '#fb923c',
       bg: 'rgba(251, 146, 60, 0.15)',
       border: 'rgba(251, 146, 60, 0.4)'
+    };
+  }
+  if (isWordDocFile(displayUrl, doc?.title, rawFiles)) {
+    return {
+      type: 'word',
+      filterKey: 'document',
+      label: 'Word Document (.docx)',
+      icon: <FileText size={13} />,
+      color: '#60a5fa',
+      bg: 'rgba(96, 165, 250, 0.15)',
+      border: 'rgba(96, 165, 250, 0.4)'
+    };
+  }
+  if (isRtfFile(displayUrl, doc?.title, rawFiles)) {
+    return {
+      type: 'rtf',
+      filterKey: 'document',
+      label: 'Rich Text Format (.rtf)',
+      icon: <FileText size={13} />,
+      color: '#fb7185',
+      bg: 'rgba(251, 113, 133, 0.15)',
+      border: 'rgba(251, 113, 133, 0.4)'
+    };
+  }
+  if (isTabularFile(displayUrl, doc?.title, rawFiles)) {
+    return {
+      type: 'tabular',
+      filterKey: 'dataset',
+      label: 'Tabular Dataset (.csv)',
+      icon: <Database size={13} />,
+      color: '#34d399',
+      bg: 'rgba(52, 211, 153, 0.15)',
+      border: 'rgba(52, 211, 153, 0.4)'
+    };
+  }
+  if (displayUrl && displayUrl.toLowerCase().endsWith('.txt')) {
+    return {
+      type: 'text',
+      filterKey: 'document',
+      label: 'Plain Text (.txt)',
+      icon: <FileText size={13} />,
+      color: '#38bdf8',
+      bg: 'rgba(56, 189, 248, 0.15)',
+      border: 'rgba(56, 189, 248, 0.4)'
+    };
+  }
+  if (displayUrl && displayUrl.toLowerCase().endsWith('.md')) {
+    return {
+      type: 'markdown',
+      filterKey: 'document',
+      label: 'Markdown Archive (.md)',
+      icon: <FileCode size={13} />,
+      color: '#a78bfa',
+      bg: 'rgba(167, 139, 250, 0.15)',
+      border: 'rgba(167, 139, 250, 0.4)'
+    };
+  }
+  if (displayUrl && displayUrl.toLowerCase().endsWith('.pdf')) {
+    return {
+      type: 'pdf',
+      filterKey: 'document',
+      label: 'PDF Document (.pdf)',
+      icon: <FileText size={13} />,
+      color: '#facc15',
+      bg: 'rgba(250, 204, 21, 0.15)',
+      border: 'rgba(250, 204, 21, 0.4)'
     };
   }
   return {
@@ -325,9 +436,10 @@ export default function DocumentView() {
   const fetchDoc = async () => {
     setLoading(true);
     try {
+      const targetId = parseFriendlySlug(id);
       let foundDoc = null;
       try {
-        const apiUrl = `/api/cms/${id}`;
+        const apiUrl = `/api/cms/${targetId}`;
         const res = await fetch(apiUrl);
         if (res.ok) {
           const data = await res.json();
@@ -346,9 +458,13 @@ export default function DocumentView() {
           // If we didn't get a valid doc from the backend (e.g. mock server), find it here by id or url hash
           if (!foundDoc) {
              foundDoc = mockData.find(m => {
-               if (m.id === id) return true;
+               if (m.id === id || m.id === targetId) return true;
+               if (id === '1994-awakenings-full-report' && m.id === 'umass-ms1205-raw-4f594152') return true;
+               if (id === 'awakenings-preliminary-poll-of-circumcised-men' && m.id === 'umass-ms1205-raw-4f594152') return true;
                const mMeta = safeParseJson(m.metadata_json);
-               return generateFriendlySlug(m, mMeta) === id || (m.url && m.url.includes(id));
+               const fullSlug = generateFriendlySlug(m, mMeta);
+               if (fullSlug === id || fullSlug.split('--')[0] === id) return true;
+               return (m.url && (m.url.includes(id) || m.url.includes(targetId)));
              });
              if (!foundDoc) foundDoc = null;
           }
@@ -364,13 +480,15 @@ export default function DocumentView() {
               const mTitle = m.title || mMeta.title || '';
               if (!mTitle) return false;
               
-              // Fuzzy match logic: check if one contains the other
-              const t1 = liveTitle.toLowerCase();
-              const t2 = mTitle.toLowerCase();
-              const t3 = geminiTitle.toLowerCase();
+              const t1 = liveTitle.trim().toLowerCase();
+              const t2 = mTitle.trim().toLowerCase();
+              const t3 = geminiTitle.trim().toLowerCase();
               
-              return (t1 && (t1.includes(t2) || t2.includes(t1))) || 
-                     (t3 && (t3.includes(t2) || t2.includes(t3)));
+              // Strict title matching to prevent generic single-word false matches (e.g. matching "Circumcision" to any title)
+              if (t1 && t2 && t1 === t2) return true;
+              if (t3 && t2 && t3 === t2) return true;
+              if (t1.length > 25 && t2.length > 25 && (t1.includes(t2) || t2.includes(t1)) && Math.abs(t1.length - t2.length) < 15) return true;
+              return false;
             });
             
             if (match) {
@@ -393,6 +511,10 @@ export default function DocumentView() {
       }
       } catch (e) {
         console.warn("Failed to merge mock metadata", e);
+      }
+
+      if (foundDoc) {
+        foundDoc.source_collection = resolveCollectionName(foundDoc, 'The Tim Hammond Genital Autonomy Archive');
       }
       
       setDoc(foundDoc);
@@ -447,9 +569,23 @@ export default function DocumentView() {
       const meta = safeParseJson(doc.metadata_json);
       const title = getCleanTitle(doc, meta);
       document.title = `${title} — Intactivism Archive`;
+
+      // Broadcast title to TopNav and window state
+      window.__currentDocumentTitle = title;
+      window.dispatchEvent(new CustomEvent('document-title-change', { detail: title }));
+
+      // If visited via raw ID (e.g. /library/ec2f1b89), retitle the URL in place using friendly slug!
+      const friendlySlug = generateFriendlySlug(doc, meta || {});
+      if (friendlySlug && routeId && !routeId.includes('--')) {
+        window.history.replaceState(null, '', `/library/${friendlySlug}`);
+      }
     }
-    return () => { document.title = 'The Accidental Intactivist\'s Guide'; };
-  }, [doc]);
+    return () => { 
+      document.title = 'The Accidental Intactivist\'s Guide'; 
+      window.__currentDocumentTitle = null;
+      window.dispatchEvent(new CustomEvent('document-title-change', { detail: null }));
+    };
+  }, [doc, routeId]);
 
   const getCleanTitle = (d, m) => {
     if (m && m.academic_title) return m.academic_title;
@@ -523,65 +659,151 @@ export default function DocumentView() {
     setSelection({ ...selection, visible: false });
   };
 
-  // Toggle between PDF and Text View
+  // View mode and reader state
   const [viewMode, setViewMode] = useState('pdf');
   const [textContent, setTextContent] = useState('');
+  const [rawLoadedText, setRawLoadedText] = useState('');
   const [loadingText, setLoadingText] = useState(false);
+  const [textReadingMode, setTextReadingMode] = useState('rendered'); // 'rendered' | 'raw'
+  const [textFontSize, setTextFontSize] = useState('standard'); // 'compact' | 'standard' | 'large'
+  const [copiedFullText, setCopiedFullText] = useState(false);
+
+  const loadTextContent = async (targetDoc = doc) => {
+    if (!targetDoc) return;
+    setLoadingText(true);
+    let loadedText = null;
+    let loadedFromUrl = '';
+
+    const meta = safeParseJson(targetDoc?.metadata_json);
+
+    // Collect candidate URLs for rich Markdown (.md), raw text (.txt), etc.
+    // Strictly prioritize text formats; NEVER treat binary .pdf, .tif, or images as text
+    const candidateUrls = [];
+    if (meta.extracted_text_url) {
+      candidateUrls.push(meta.extracted_text_url);
+    }
+    if (targetDoc?.url) {
+      if (targetDoc.url.toLowerCase().endsWith('.pdf')) {
+        candidateUrls.push(targetDoc.url.replace(/\.pdf$/i, '.md'));
+        candidateUrls.push(targetDoc.url.replace(/\.pdf$/i, '.txt'));
+      } else if (targetDoc.url.match(/\.(docx?|odt|rtf|txt|md|html?|csv|tsv|json)$/i)) {
+        candidateUrls.push(targetDoc.url);
+        candidateUrls.push(targetDoc.url.replace(/\.(docx?|odt|rtf|txt)$/i, '.md'));
+        candidateUrls.push(targetDoc.url.replace(/\.(docx?|odt|rtf|txt)$/i, '.txt'));
+      }
+    }
+    if (Array.isArray(meta.raw_files)) {
+      meta.raw_files.forEach(f => {
+        if (f?.path && f.path.match(/\.(txt|md|rtf|csv|tsv|json|xml|html?)$/i)) {
+          candidateUrls.push(`/api/assets/${encodeURIComponent(f.path.split('/').pop())}`);
+        }
+      });
+    }
+    if (targetDoc?.id) {
+      candidateUrls.push(`/api/assets/documents/${targetDoc.id}.md`);
+      candidateUrls.push(`/api/assets/documents/${targetDoc.id}.txt`);
+      candidateUrls.push(`/api/assets/${targetDoc.id}.md`);
+      candidateUrls.push(`/api/assets/${targetDoc.id}.txt`);
+    }
+
+    const uniqueCandidates = [...new Set(candidateUrls.filter(Boolean))];
+
+    for (const url of uniqueCandidates) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const txt = await res.text();
+          const isBinaryOrHtml =
+            txt.startsWith('%PDF') ||
+            txt.includes('\x00') ||
+            txt.includes('<!DOCTYPE html>') ||
+            txt.includes('<!doctype html>');
+          if (txt && txt.trim().length > 0 && !isBinaryOrHtml) {
+            loadedText = txt;
+            loadedFromUrl = url;
+            break;
+          }
+        }
+      } catch (_e) {
+        // try next candidate
+      }
+    }
+
+    // Fallback to doc.content if available
+    if (!loadedText && targetDoc?.content && targetDoc.content.trim().length > 0) {
+      loadedText = targetDoc.content;
+      loadedFromUrl = 'inline_db';
+    }
+
+    if (loadedText) {
+      // Gracefully handle placeholder strings
+      if (loadedText.trim() === 'Text Temporarily Not Available') {
+        const title = targetDoc.title || 'Document';
+        loadedText = `# ${title}\n\n> **Archival Notice: OCR Digitization in Progress**\n>\n> An automated machine-readable transcript is currently being digitized for this historical scan. You can view the original archival document in high fidelity using the **High-Res Scan** or **PDF Reader** tab above.`;
+      }
+      const normalized = normalizeDocumentText(loadedText, loadedFromUrl || targetDoc?.url || '');
+      setRawLoadedText(loadedText);
+      setTextContent(normalized);
+    } else {
+      setTextContent("No extracted text or transcript is currently available for this document.");
+    }
+    setLoadingText(false);
+  };
 
   const handleToggleView = async (mode) => {
     setViewMode(mode);
-    if (mode === 'text' && !textContent) {
-      setLoadingText(true);
-      let loadedText = null;
-
-      const meta = safeParseJson(doc?.metadata_json);
-
-      // Collect candidate URLs for rich Markdown (.md) or raw text (.txt)
-      const candidateUrls = [];
-      if (meta.extracted_text_url) {
-        candidateUrls.push(meta.extracted_text_url);
-      }
-      if (doc?.url && doc.url.toLowerCase().endsWith('.pdf')) {
-        // Prioritize Gemini OCR markdown (.md)
-        candidateUrls.push(doc.url.replace(/\.pdf$/i, '.md'));
-        // Fallback to legacy .txt
-        candidateUrls.push(doc.url.replace(/\.pdf$/i, '.txt'));
-      }
-      // If doc has an ID that looks like a hash or asset name, also check documents/{id}.md
-      if (doc?.id && !candidateUrls.some(u => u.includes(doc.id))) {
-        candidateUrls.push(`/api/assets/documents/${doc.id}.md`);
-        candidateUrls.push(`/api/assets/${doc.id}.md`);
-      }
-
-      for (const url of candidateUrls) {
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            const txt = await res.text();
-            // Verify it is actual text content and not an HTML error/fallback page
-            if (txt && txt.trim().length > 0 && !txt.includes('<!DOCTYPE html>')) {
-              loadedText = txt;
-              break;
-            }
-          }
-        } catch (e) {
-          // try next candidate
-        }
-      }
-
-      // If no external markdown file was found, fallback to doc.content
-      if (!loadedText && doc?.content && doc.content.trim().length > 0) {
-        loadedText = doc.content;
-      }
-
-      if (loadedText) {
-        setTextContent(formatPlainTextToMarkdown(loadedText));
-      } else {
-        setTextContent("No extracted text is available for this document.");
-      }
-      setLoadingText(false);
+    if (mode === 'text' && !textContent && !loadingText) {
+      await loadTextContent(doc);
     }
   };
+
+  // Word count and reading time metrics
+  const textWordCount = useMemo(() => {
+    const textToCount = translatedText || textContent || '';
+    if (!textToCount) return 0;
+    const clean = textToCount.replace(/[#*`_~>[\]()|\\]/g, ' ');
+    const words = clean.trim().split(/\s+/).filter(Boolean);
+    return words.length;
+  }, [translatedText, textContent]);
+
+  const readingTimeMinutes = useMemo(() => {
+    return Math.max(1, Math.ceil(textWordCount / 225));
+  }, [textWordCount]);
+
+  const handleCopyFullText = async () => {
+    const textToCopy = textReadingMode === 'raw' && rawLoadedText ? rawLoadedText : (translatedText || textContent);
+    if (!textToCopy) return;
+    const meta = safeParseJson(doc?.metadata_json);
+    const citation = generateCitationText(meta, doc?.title);
+    const payload = `${textToCopy}\n\n---\nSource: ${citation}`;
+    try {
+      await navigator.clipboard.writeText(payload);
+      setCopiedFullText(true);
+      setTimeout(() => setCopiedFullText(false), 2500);
+    } catch (_e) {
+      // fallback
+    }
+  };
+
+  // Pre-load text in background on mount so switching to Extracted Text is instantaneous (0ms delay)
+  useEffect(() => {
+    if (doc) {
+      const meta = safeParseJson(doc.metadata_json);
+      const curRaw = (meta.raw_files && meta.raw_files[0]) ? meta.raw_files[0] : null;
+      const dUrl = doc.url || (curRaw ? `/api/assets/${encodeURIComponent(curRaw.path?.split('/').pop())}` : null);
+      const isPdf = isPdfFile(dUrl, doc.title, meta.raw_files);
+      const isMedia = isAudioFile(dUrl, doc.title, meta.raw_files) || isVideoFile(dUrl, doc.title, meta.raw_files) || isImageFile(dUrl, doc.title, meta.raw_files);
+      
+      if (!isPdf && !isMedia && (isTextDocument(dUrl, doc.title, meta.raw_files, doc) || meta?.extracted_text_url)) {
+        setViewMode('text');
+      }
+
+      // Always pre-load text content in the background
+      if (!textContent && !loadingText) {
+        loadTextContent(doc);
+      }
+    }
+  }, [doc?.id]);
 
   if (loading) {
     return (
@@ -645,7 +867,346 @@ export default function DocumentView() {
     ...keyPeopleList
   ];
 
+  const renderTextDocumentReader = () => {
+    const isWord = isWordDocFile(displayUrl, doc?.title, rawFiles);
+    const isRtf = isRtfFile(displayUrl, doc?.title, rawFiles);
+    const isCsv = isTabularFile(displayUrl, doc?.title, rawFiles);
+    const isPlain = displayUrl && displayUrl.toLowerCase().endsWith('.txt');
+    const isMd = displayUrl && displayUrl.toLowerCase().endsWith('.md');
+    const isPdf = isPdfFile(displayUrl, doc?.title, rawFiles);
+
+    const formatBadge = isWord
+      ? { label: 'Word Document (.docx)', color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.15)' }
+      : isRtf
+      ? { label: 'Rich Text Format (.rtf)', color: '#fb7185', bg: 'rgba(251, 113, 133, 0.15)' }
+      : isCsv
+      ? { label: 'Tabular Data (.csv)', color: '#34d399', bg: 'rgba(52, 211, 153, 0.15)' }
+      : isPlain
+      ? { label: 'Plain Text (.txt)', color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.15)' }
+      : isMd
+      ? { label: 'Markdown Archive (.md)', color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.15)' }
+      : isPdf
+      ? { label: 'Extracted OCR Transcript', color: '#facc15', bg: 'rgba(250, 204, 21, 0.15)' }
+      : { label: 'Archival Document', color: '#facc15', bg: 'rgba(250, 204, 21, 0.15)' };
+
+    const currentFontSizeRem = textFontSize === 'compact' ? '0.92rem' : textFontSize === 'large' ? '1.18rem' : '1.02rem';
+    const currentLineHeight = textFontSize === 'compact' ? 1.72 : textFontSize === 'large' ? 1.95 : 1.82;
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--c-bg)' }}>
+        {/* Top Reading Controls Bar */}
+        <div style={{
+          padding: '0.65rem 1.25rem',
+          background: 'var(--c-bgDeep)',
+          borderBottom: '1px solid var(--c-ghost)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          fontSize: '0.82rem'
+        }}>
+          {/* Format Badge & Metrics */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{
+              padding: '0.22rem 0.6rem',
+              background: formatBadge.bg,
+              color: formatBadge.color,
+              borderRadius: '4px',
+              fontWeight: '700',
+              fontSize: '0.72rem',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase'
+            }}>
+              {formatBadge.label}
+            </span>
+
+            {textWordCount > 0 && (
+              <span style={{ color: 'var(--c-dim)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}>
+                <Clock size={12} />
+                <span>{textWordCount.toLocaleString()} words</span>
+                <span>&bull;</span>
+                <span>~{readingTimeMinutes} min read</span>
+              </span>
+            )}
+
+            {translatedText && (
+              <span style={{
+                padding: '0.15rem 0.5rem',
+                background: 'rgba(16, 185, 129, 0.15)',
+                color: '#10b981',
+                borderRadius: '4px',
+                fontSize: '0.72rem',
+                fontWeight: '600'
+              }}>
+                Translated: {currentLanguage}
+              </span>
+            )}
+          </div>
+
+          {/* Reader Controls: Rendered/Raw Toggle, Font Size, Copy, Translate, Download */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {/* View Mode Toggle */}
+            <div style={{
+              display: 'inline-flex',
+              background: 'var(--c-bgCard)',
+              padding: '2px',
+              borderRadius: '6px',
+              border: '1px solid var(--c-ghost)'
+            }}>
+              <button
+                onClick={() => setTextReadingMode('rendered')}
+                style={{
+                  padding: '0.22rem 0.6rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  background: textReadingMode === 'rendered' ? 'var(--c-bg)' : 'transparent',
+                  color: textReadingMode === 'rendered' ? 'var(--c-goldBright)' : 'var(--c-dim)',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+              >
+                Rendered
+              </button>
+              <button
+                onClick={() => setTextReadingMode('raw')}
+                style={{
+                  padding: '0.22rem 0.6rem',
+                  border: 'none',
+                  borderRadius: '4px',
+                  background: textReadingMode === 'raw' ? 'var(--c-bg)' : 'transparent',
+                  color: textReadingMode === 'raw' ? 'var(--c-goldBright)' : 'var(--c-dim)',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+              >
+                Raw Source
+              </button>
+            </div>
+
+            {/* Font Size Selector */}
+            <div style={{
+              display: 'inline-flex',
+              background: 'var(--c-bgCard)',
+              padding: '2px',
+              borderRadius: '6px',
+              border: '1px solid var(--c-ghost)'
+            }}>
+              {[
+                { key: 'compact', label: 'A-' },
+                { key: 'standard', label: 'A' },
+                { key: 'large', label: 'A+' }
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setTextFontSize(key)}
+                  title={`Font size: ${key}`}
+                  style={{
+                    padding: '0.22rem 0.45rem',
+                    border: 'none',
+                    borderRadius: '4px',
+                    background: textFontSize === key ? 'var(--c-bg)' : 'transparent',
+                    color: textFontSize === key ? 'var(--c-textBright)' : 'var(--c-dim)',
+                    fontSize: key === 'compact' ? '0.68rem' : key === 'large' ? '0.85rem' : '0.75rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Translate Button */}
+            <button
+              onClick={() => setShowTranslationModal(true)}
+              className="lux-hover-lift"
+              title="Translate Document"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.3rem 0.6rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--c-ghost)',
+                borderRadius: '4px',
+                color: 'var(--c-textBright)',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: '600'
+              }}
+            >
+              <Globe size={12} /> Translate
+            </button>
+
+            {/* Copy Full Text */}
+            <button
+              onClick={handleCopyFullText}
+              className="lux-hover-lift"
+              title="Copy Full Document with Citation"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.3rem 0.65rem',
+                background: copiedFullText ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                border: `1px solid ${copiedFullText ? '#10b981' : 'var(--c-ghost)'}`,
+                borderRadius: '4px',
+                color: copiedFullText ? '#10b981' : 'var(--c-textBright)',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: '600'
+              }}
+            >
+              {copiedFullText ? <Check size={12} /> : <Copy size={12} />}
+              {copiedFullText ? 'Copied' : 'Copy'}
+            </button>
+
+            {/* Download Original File */}
+            {displayUrl && (
+              <a
+                href={displayUrl}
+                download
+                target="_blank"
+                rel="noreferrer"
+                className="lux-hover-lift"
+                title="Download original file"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.3rem 0.65rem',
+                  background: 'rgba(234, 179, 8, 0.12)',
+                  border: '1px solid rgba(234, 179, 8, 0.3)',
+                  borderRadius: '4px',
+                  color: 'var(--c-goldBright)',
+                  textDecoration: 'none',
+                  fontSize: '0.75rem',
+                  fontWeight: '700'
+                }}
+              >
+                <Download size={12} /> Download
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Word Document Banner if applicable */}
+        {isWord && (
+          <div style={{
+            padding: '0.65rem 1.25rem',
+            background: 'rgba(59, 130, 246, 0.08)',
+            borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            fontSize: '0.8rem',
+            color: '#93c5fd'
+          }}>
+            <span>
+              <strong>Word Document:</strong> Displaying extracted text transcript. Original styling, pagination, and tables are preserved in the original file.
+            </span>
+            <a
+              href={displayUrl}
+              download
+              style={{
+                color: '#bfdbfe',
+                textDecoration: 'underline',
+                fontWeight: '700',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Download Original (.docx) &rarr;
+            </a>
+          </div>
+        )}
+
+        {/* Reader Document Body */}
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '2.5rem 3.5rem',
+          background: 'var(--c-bg)',
+          color: 'var(--c-textBright)',
+          fontFamily: textReadingMode === 'raw' ? 'var(--f-mono, monospace)' : 'var(--f-body, sans-serif)',
+          lineHeight: currentLineHeight,
+          fontSize: currentFontSizeRem
+        }}>
+          {loadingText ? (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '280px',
+              color: 'var(--c-dim)'
+            }}>
+              <div style={{ height: '90px', display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                <ThinkingSpirograph />
+              </div>
+              <p style={{ fontFamily: 'var(--f-condensed)', letterSpacing: '0.05em', textTransform: 'uppercase', fontSize: '0.85rem' }}>
+                Loading document text...
+              </p>
+            </div>
+          ) : textReadingMode === 'raw' ? (
+            <pre style={{
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              fontFamily: 'Consolas, Monaco, "JetBrains Mono", monospace',
+              fontSize: currentFontSizeRem,
+              lineHeight: 1.6,
+              color: 'var(--c-textBright)',
+              background: 'rgba(0,0,0,0.3)',
+              padding: '1.75rem',
+              borderRadius: '8px',
+              border: '1px solid var(--c-ghost)',
+              margin: 0
+            }}>
+              {rawLoadedText || translatedText || textContent || 'No text available.'}
+            </pre>
+          ) : (
+            <div className="markdown-body" style={{ color: 'var(--c-textBright)', fontSize: currentFontSizeRem, maxWidth: '880px', margin: '0 auto' }}>
+              {translatedText ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{translatedText}</ReactMarkdown>
+              ) : textContent ? (
+                <AutoEntityLinker
+                  text={textContent}
+                  entities={allLinkedEntities}
+                />
+              ) : (
+                <div style={{ opacity: 0.6, textAlign: 'center', marginTop: '3rem' }}>
+                  <p style={{ marginBottom: '1rem' }}>No extracted text currently available for this document.</p>
+                  <button
+                    onClick={() => loadTextContent(doc)}
+                    style={{
+                      background: 'var(--c-goldBright)',
+                      color: '#000',
+                      border: 'none',
+                      padding: '0.5rem 1.25rem',
+                      borderRadius: '4px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Retry Loading Text
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
+
     <div style={{ minHeight: '100vh', background: 'var(--c-bg)', position: 'relative' }}>
       
 
@@ -1028,7 +1589,7 @@ export default function DocumentView() {
                     <Building2 size={13} /> Provenance & Repository
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--c-textBright)', fontWeight: '600', lineHeight: 1.4 }}>
-                    {doc.source_collection || 'The Tim Hammond Genital Autonomy Archive'}
+                    {resolveCollectionName(doc, 'The Tim Hammond Genital Autonomy Archive')}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--c-dim)' }}>
                     University of Massachusetts Amherst Special Collections (MS 1205)
@@ -1302,7 +1863,7 @@ export default function DocumentView() {
                     </Link>
                   )}
                 </div>
-              ) : (displayUrl && displayUrl.toLowerCase().endsWith('.pdf')) ? (
+              ) : (displayUrl && isPdfFile(displayUrl, doc?.title, rawFiles)) ? (
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div style={{ display: 'flex', borderBottom: '1px solid var(--c-ghost)', background: 'var(--c-bgDeep)' }}>
                     <button 
@@ -1315,28 +1876,14 @@ export default function DocumentView() {
                       onClick={() => handleToggleView('text')}
                       style={{ flex: 1, padding: '1rem', background: viewMode === 'text' ? 'var(--c-bg)' : 'transparent', border: 'none', color: viewMode === 'text' ? 'var(--c-textBright)' : 'var(--c-muted)', fontWeight: 'bold', cursor: 'pointer', borderBottom: viewMode === 'text' ? '2px solid var(--c-goldBright)' : '2px solid transparent', fontFamily: 'var(--f-condensed)', letterSpacing: '0.05em', textTransform: 'uppercase', transition: 'all 0.2s' }}
                     >
-                      Extracted Text
+                      Extracted Text {textWordCount > 0 ? `(${textWordCount.toLocaleString()} words)` : ''}
                     </button>
                   </div>
                   <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                     {viewMode === 'pdf' ? (
                       <CustomPDFViewer url={displayUrl} onPageCount={setPageCount} />
                     ) : (
-                      <div style={{ height: '100%', overflowY: 'auto', padding: '2rem 3rem', background: 'var(--c-bg)', color: 'var(--c-textBright)', fontFamily: 'var(--f-body)', lineHeight: 1.8, fontSize: '1rem' }}>
-                        {loadingText ? (
-                          <div style={{ opacity: 0.5, textAlign: 'center', marginTop: '2rem' }}>Extracting text...</div>
-                        ) : translatedText ? (
-                          <div className="markdown-body" style={{ color: 'var(--c-textBright)', fontSize: '0.95rem' }}>
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{translatedText}</ReactMarkdown>
-                          </div>
-                        ) : textContent ? (
-                          <div className="markdown-body" style={{ color: 'var(--c-textBright)', fontSize: '0.95rem' }}>
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{textContent}</ReactMarkdown>
-                          </div>
-                        ) : (
-                          <div style={{ opacity: 0.5, textAlign: 'center', marginTop: '2rem' }}>No extracted text available for this document.</div>
-                        )}
-                      </div>
+                      renderTextDocumentReader()
                     )}
                   </div>
                 </div>
@@ -1519,6 +2066,8 @@ export default function DocumentView() {
                     </>
                   )}
                 </div>
+              ) : (isTextDocument(displayUrl, doc?.title, rawFiles, doc) || Boolean(metadata?.extracted_text_url) || Boolean(doc?.content)) ? (
+                renderTextDocumentReader()
               ) : (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '3rem', textAlign: 'center' }}>
                   <div style={{ fontSize: '4rem', opacity: 0.2, marginBottom: '1rem' }}>??</div>

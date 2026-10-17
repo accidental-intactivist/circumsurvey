@@ -31,10 +31,10 @@ const MAIN_SECTIONS = [
   {
     id: 'data',
     label: 'Data',
-    path: '/explore',
+    path: '/data',
     color: '#38bdf8',
     icon: GitBranch,
-    sublabel: 'Live Survey & Findings'
+    sublabel: 'Atlas, Studies & Telemetry'
   },
   {
     id: 'media',
@@ -56,12 +56,13 @@ const MAIN_SECTIONS = [
 
 function getActiveSection(pathname) {
   if (pathname === '/') return MAIN_SECTIONS[0];
-  if (pathname.startsWith('/to/hadachek') || pathname.startsWith('/exhibits/')) return MAIN_SECTIONS[1];
+  if (pathname.startsWith('/data') || pathname.startsWith('/atlas') || pathname.startsWith('/rates') || pathname.startsWith('/us-ric-rates') || pathname.startsWith('/explore') || pathname.startsWith('/survey-stats') || pathname.startsWith('/graph') || pathname.startsWith('/citations') || pathname.startsWith('/exhibits/rates')) return MAIN_SECTIONS[3];
+  if (pathname.startsWith('/to/hadachek') || pathname.startsWith('/hadachek') || pathname.startsWith('/exhibits/hadachek') || pathname.startsWith('/to/huff') || pathname.startsWith('/huff') || pathname.startsWith('/exhibits/huff')) return MAIN_SECTIONS[1];
   if (pathname.startsWith('/library') || pathname.startsWith('/collections') || pathname.startsWith('/timeline')) return MAIN_SECTIONS[1];
   if (pathname.startsWith('/guides') || pathname.startsWith('/to/parents') || pathname.startsWith('/to/restoration') || pathname.startsWith('/to/grief')) return MAIN_SECTIONS[2];
   if (pathname.startsWith('/to/')) return MAIN_SECTIONS[1];
-  if (pathname.startsWith('/explore') || pathname.startsWith('/survey-stats') || pathname.startsWith('/graph') || pathname.startsWith('/citations') || pathname.startsWith('/atlas')) return MAIN_SECTIONS[3];
-  if (pathname.startsWith('/news')) return MAIN_SECTIONS[4];
+  if (pathname.startsWith('/exhibits/')) return MAIN_SECTIONS[1];
+  if (pathname.startsWith('/news') || pathname.startsWith('/media')) return MAIN_SECTIONS[4];
   if (pathname.startsWith('/manifesto')) return MAIN_SECTIONS[5];
   return {
     id: 'custom',

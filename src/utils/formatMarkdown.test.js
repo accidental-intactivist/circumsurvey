@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { hasMarkdownFormatting, formatPlainTextToMarkdown, formatExecutiveSummary } from './formatMarkdown';
+import { 
+  hasMarkdownFormatting, 
+  formatPlainTextToMarkdown, 
+  formatExecutiveSummary,
+  cleanLatexAndMathArtifacts,
+  parseRtfToText,
+  parseCsvToMarkdownTable,
+  normalizeDocumentText
+} from './formatMarkdown';
 
 describe('formatMarkdown', () => {
   it('detects existing markdown formatting', () => {
@@ -77,6 +85,117 @@ describe('formatExecutiveSummary', () => {
     expect(formatted).toContain('**Methods:** We conducted surveys.');
     expect(formatted).toContain('**Results:** Findings confirmed changes.');
     expect(formatted).toContain('**Conclusions:** Further study needed.');
+  });
+});
+
+describe('parseRtfToText', () => {
+  it('parses basic RTF documents with control words and paragraphs', () => {
+    const rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}\\viewkind4\\uc1\\pard\\b Historical Overview\\b0\\par A detailed analysis of neonatal policies.\\par}';
+    const parsed = parseRtfToText(rtf);
+    expect(parsed).toContain('**Historical Overview**');
+    expect(parsed).toContain('A detailed analysis of neonatal policies.');
+  });
+
+  it('decodes hex character entities and Unicode escapes', () => {
+    const rtf = '{\\rtf1\\ansi\\deff0 Complications occurred in 1990\\\'92s cohort \\u8212? an unexpected result.\\par}';
+    const parsed = parseRtfToText(rtf);
+    expect(parsed).toContain("1990’s cohort — an unexpected result.");
+  });
+
+  it('returns raw text unchanged if not RTF', () => {
+    const plain = 'Normal non-RTF text document.';
+    expect(parseRtfToText(plain)).toBe(plain);
+  });
+});
+
+describe('parseCsvToMarkdownTable', () => {
+  it('converts comma-separated values into a GitHub markdown table', () => {
+    const csv = 'Year,Region,Rate\n2018,Midwest,68.5%\n2020,West,19.7%';
+    const table = parseCsvToMarkdownTable(csv);
+    expect(table).toContain('| Year | Region | Rate |');
+    expect(table).toContain('| --- | --- | --- |');
+    expect(table).toContain('| 2018 | Midwest | 68.5% |');
+    expect(table).toContain('| 2020 | West | 19.7% |');
+  });
+
+  it('handles quotes with embedded commas properly', () => {
+    const csv = 'ID,Title,Author\n1,"Study, Part 1","Smith, John"\n2,"Report 2","Doe, Jane"';
+    const table = parseCsvToMarkdownTable(csv);
+    expect(table).toContain('| Study, Part 1 | Smith, John |');
+  });
+
+  it('handles tab-delimited values (TSV)', () => {
+    const tsv = 'Country\tPrevalence\tYear\nUSA\t80.5%\t2020\nGhana\t92.0%\t2017';
+    const table = parseCsvToMarkdownTable(tsv);
+    expect(table).toContain('| Country | Prevalence | Year |');
+    expect(table).toContain('| USA | 80.5% | 2020 |');
+  });
+});
+
+describe('normalizeDocumentText', () => {
+  it('routes .rtf files to RTF parser', () => {
+    const rtf = '{\\rtf1\\ansi\\pard\\b Test Header\\b0\\par Test body text.\\par}';
+    const res = normalizeDocumentText(rtf, 'sample.rtf');
+    expect(res).toContain('**Test Header**');
+  });
+
+  it('routes .csv files to CSV table formatter', () => {
+    const csv = 'Metric,Value\nTotal,100';
+    const res = normalizeDocumentText(csv, 'stats.csv');
+    expect(res).toContain('| Metric | Value |');
+  });
+
+  it('routes .json files to formatted JSON code block', () => {
+    const json = '{"status":"ok","count":42}';
+    const res = normalizeDocumentText(json, 'data.json');
+    expect(res).toContain('```json');
+    expect(res).toContain('"status": "ok"');
+  });
+
+  it('routes standard unformatted text to formatPlainTextToMarkdown', () => {
+    const text = 'ABSTRACT\nThis is a research document.';
+    const res = normalizeDocumentText(text, 'article.txt');
+    expect(res).toContain('### Abstract');
+  });
+});
+
+describe('cleanLatexAndMathArtifacts', () => {
+  it('converts LaTeX superscripts to clean Unicode superscripts', () => {
+    const raw = 'Smith$^1$, Doe$^{2}$, and Lee$^{1,2,\\dagger}$';
+    const cleaned = cleanLatexAndMathArtifacts(raw);
+    expect(cleaned).toBe('Smith¹, Doe², and Lee¹,²,†');
+  });
+
+  it('converts mathematical symbols and Greek letters to Unicode', () => {
+    const raw = 'Risk ratio was $1.25 \\pm 0.05$ with $p \\le 0.01$, $\\chi^2 = 14.2$, and $N = 500 \\times 2$.';
+    const cleaned = cleanLatexAndMathArtifacts(raw);
+    expect(cleaned).toContain('±');
+    expect(cleaned).toContain('≤');
+    expect(cleaned).toContain('χ²');
+    expect(cleaned).toContain('×');
+    expect(cleaned).not.toContain('\\pm');
+    expect(cleaned).not.toContain('\\le');
+  });
+
+  it('cleans author affiliation blocks and dagger notes as reported by user', () => {
+    const userSample = `$^1$ School of Paediatrics and Child Health, University of Western Australia, Perth, Australia
+$^2$ Kintampo Health Research Centre, Ghana Health Service, Kintampo, Ghana
+$^3$ Engender Health, New York, USA
+$^4$ School of Public Health, Kwame Nkrumah University of Science and Technology, Kumasi, Ghana
+$^5$ Faculty of Epidemiology and Population Health, London School of Hygiene and Tropical Medicine, London, UK
+$^\\dagger$Contributed equally.
+Abstract
+objective Male circumcision services have expanded throughout Africa as part of a long-term HIV prevention strategy. We assessed the effect of type of service provider (formal and informal) and hygiene practices on circumcision-related morbidities in rural Ghana.
+methods Population-based, cross-sectional study con`;
+
+    const normalized = normalizeDocumentText(userSample, 'ghana-study.txt');
+    expect(normalized).not.toContain('$^1$');
+    expect(normalized).not.toContain('$^\\dagger$');
+    expect(normalized).not.toContain('<sup>');
+    expect(normalized).toContain('¹ School of Paediatrics');
+    expect(normalized).toContain('†Contributed equally.');
+    expect(normalized).toContain('### Objective');
+    expect(normalized).toContain('### Methods');
   });
 });
 
